@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/switchSection"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/off_white"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/base_margin_double"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/switchImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/offer_switch" />
+
+    <TextView
+        android:id="@+id/switchTitle"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switchImage"
+        tools:text="@string/OFFER_SWITCH_TITLE_APP" />
+
+    <TextView
+        android:id="@+id/bulletOne"
+        style="@style/Headline.Medium.Negative"
+        android:layout_width="@dimen/offer_switch_bullet_size"
+        android:layout_height="@dimen/offer_switch_bullet_size"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:background="@drawable/circle_background"
+        android:backgroundTint="@color/purple"
+        android:gravity="center"
+        android:text="@string/numeric_one"
+        app:layout_constraintBaseline_toBaselineOf="@id/switchParagraphOne"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/switchParagraphOne"
+        style="@style/Body.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/SIGN_MOBILE_BANK_ID"
+        app:layout_constraintStart_toEndOf="@id/bulletOne"
+        app:layout_constraintTop_toBottomOf="@id/switchTitle" />
+
+    <TextView
+        android:id="@+id/bulletTwo"
+        style="@style/Headline.Medium.Negative"
+        android:layout_width="@dimen/offer_switch_bullet_size"
+        android:layout_height="@dimen/offer_switch_bullet_size"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:background="@drawable/circle_background"
+        android:backgroundTint="@color/purple"
+        android:gravity="center"
+        android:text="@string/numeric_two"
+        app:layout_constraintBottom_toBottomOf="@id/switchParagraphTwo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/switchParagraphTwo" />
+
+    <TextView
+        android:id="@+id/switchParagraphTwo"
+        style="@style/Body.Regular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bulletTwo"
+        app:layout_constraintTop_toBottomOf="@id/switchParagraphOne"
+        tools:text="@string/OFFER_SWITCH_COL_PARAGRAPH_ONE_APP" />
+
+    <TextView
+        android:id="@+id/bulletThree"
+        style="@style/Headline.Medium.Negative"
+        android:layout_width="@dimen/offer_switch_bullet_size"
+        android:layout_height="@dimen/offer_switch_bullet_size"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:background="@drawable/circle_background"
+        android:backgroundTint="@color/purple"
+        android:gravity="center"
+        android:text="@string/numeric_three"
+        app:layout_constraintBottom_toBottomOf="@id/switchParagraphThree"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/switchParagraphThree" />
+
+    <TextView
+        android:id="@+id/switchParagraphThree"
+        style="@style/Body.Regular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/OFFER_SWITCH_COL_THREE_PARAGRAPH_APP"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bulletThree"
+        app:layout_constraintTop_toBottomOf="@id/switchParagraphTwo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

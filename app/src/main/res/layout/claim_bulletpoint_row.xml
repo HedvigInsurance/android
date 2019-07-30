@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin"
+    android:layout_marginTop="@dimen/base_margin"
+    android:layout_marginEnd="@dimen/base_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/bulletPointIcon"
+            android:layout_width="@dimen/claim_bullet_point_row_icon"
+            android:layout_height="@dimen/claim_bullet_point_row_icon"
+            tools:src="@drawable/icon_failure" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bulletPointTitle"
+                style="@style/Headline.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Ersättning" />
+
+            <TextView
+                android:id="@+id/bulletPointDescription"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                tools:text="1 500 kr per dygn och väska, högst 4 000 kr totalt " />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.hedvig.app.ui.view.HedvigCardView>

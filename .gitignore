@@ -1,0 +1,22 @@
+.DS_Store
+.gradle
+build/
+.idea
+.settings
+maven/
+local.properties
+sentry.properties
+.sts4-cache
+*.iml
+*.li
+.classpath
+.project
+schema.json
+mapping.txt
+
+# graphql
+.graphqlconfig
+
+#branch file
+branch_key.xml
+

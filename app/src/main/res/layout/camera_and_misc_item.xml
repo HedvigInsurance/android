@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/base_margin_double"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/cameraButton"
+        android:layout_width="@dimen/camera_and_misc_button_width"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:layout_marginBottom="@dimen/base_margin_half"
+        android:background="@drawable/background_camera_and_misc_button"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
+
+        <ImageView
+            android:id="@+id/cameraIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_chat_take_picture"/>
+
+        <include layout="@layout/loading_spinner"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/miscButton"
+        android:layout_width="@dimen/camera_and_misc_button_width"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/base_margin_half"
+        android:background="@drawable/background_camera_and_misc_button"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_chat_grid"/>
+    </FrameLayout>
+</LinearLayout>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/base_margin_triple"
+    android:paddingEnd="@dimen/base_margin_triple"
+    android:paddingBottom="@dimen/base_margin_triple">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin"
+        android:text="@string/CHARITY_INFO_DIALOG_TITLE"
+        android:theme="@style/Headline.Small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/CHARITY_INFO_DIALOG_DESCRIPTION"
+        android:theme="@style/Body.Small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:fontFamily="@font/circular_bold"
+        android:text="@string/CHARITY_INFO_DIALOG_HOW_IT_WORKS_TITLE"
+        android:theme="@style/Body.Small" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/CHARITY_INFO_DIALOG_HOW_IT_WORKS_POINT_ONE"
+        android:theme="@style/Body.Small" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/CHARITY_INFO_DIALOG_HOW_IT_WORKS_POINT_TWO"
+        android:theme="@style/Body.Small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/CHARITY_INFO_DIALOG_HOW_IT_WORKS_POINT_THREE"
+        android:theme="@style/Body.Small" />
+
+</LinearLayout>

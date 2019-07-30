@@ -1,0 +1,3 @@
+mutation SendChatFileResponse($input: ChatResponseFileInput!) {
+  sendChatFileResponse(input: $input)
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_claims_cell_height"
+        android:layout_margin="@dimen/base_margin_double"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/commonClaimCellIcon"
+            android:layout_width="@dimen/common_claim_icon_size"
+            android:layout_height="@dimen/common_claim_icon_size"
+            tools:src="@drawable/icon_failure" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/commonClaimCellLabel"
+            style="@style/Body.Regular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Drulle" />
+    </LinearLayout>
+</com.hedvig.app.ui.view.HedvigCardView>

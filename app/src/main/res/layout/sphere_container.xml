@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/profile_sphere_side_length"
+    android:layout_height="@dimen/profile_sphere_side_length"
+    android:layout_marginTop="@dimen/base_margin_triple"
+    android:visibility="gone"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:showIn="@layout/fragment_my_info"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@id/sphere"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/sphere"
+        tools:tint="@color/dark_purple" />
+
+    <TextView
+        android:id="@+id/sphereText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:fontFamily="@font/soray_extrabold"
+        android:gravity="center"
+        android:maxLines="2"
+        android:textColor="@color/white"
+        android:padding="@dimen/sphere_text_padding"
+        android:ellipsize="end"
+        app:autoSizeMaxTextSize="@dimen/sphere_text_max_text_size"
+        app:autoSizeMinTextSize="@dimen/sphere_text_min_text_size"
+        app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
+        app:autoSizeTextType="uniform"
+        tools:text="Testina Testsdotteri" />
+</FrameLayout>

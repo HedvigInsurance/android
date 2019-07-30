@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/referralSuccessRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_purple"
+    android:gravity="center_horizontal|bottom"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:id="@+id/referralSuccessImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:srcCompat="@drawable/ic_invite_success" />
+
+    <TextView
+        android:id="@+id/referralSuccessTitle"
+        style="@style/Headline.Large.Negative"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:text="@string/REFERRAL_SUCCESS_HEADLINE"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/referralSuccessBody"
+        style="@style/Body.Regular.Negative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:text="@string/REFERRAL_SUCCESS_BODY"
+        tools:visibility="visible" />
+
+
+    <ImageView
+        android:id="@+id/referralUltimateSuccessImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_ultimate_success_alternative" />
+
+    <TextView
+        android:id="@+id/referralUltimateSuccessTitle"
+        style="@style/Headline.Large.Negative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:text="@string/REFERRAL_ULTIMATE_SUCCESS_TITLE" />
+
+    <TextView
+        android:id="@+id/referralUltimateSuccessBody"
+        style="@style/Body.Regular.Negative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:text="@string/REFERRAL_SUCCESS_BODY" />
+
+    <Button
+        android:id="@+id/referralSuccessInvite"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:background="@drawable/button_primary"
+        android:text="@string/REFERRAL_SUCCESS_BTN_CTA"
+        android:theme="@style/HedvigButton"
+        app:backgroundTint="@color/purple"
+        tools:backgroundTint="@color/purple" />
+
+    <Button
+        android:id="@+id/referralSuccessCloseButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:background="@drawable/button_primary"
+        android:text="@string/REFERRAL_SUCCESS_BTN_CLOSE"
+        android:theme="@style/HedvigButton"
+        app:backgroundTint="@color/dark_purple"
+        tools:backgroundTint="@color/dark_purple" />
+</LinearLayout>

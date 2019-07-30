@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/attachPickerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/attachPickerBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_attach_file_height"
+        android:layout_gravity="bottom"
+        android:background="@color/off_white">
+
+        <include layout="@layout/loading_spinner" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/attachFileRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </FrameLayout>
+</FrameLayout>

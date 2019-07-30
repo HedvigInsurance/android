@@ -1,0 +1,9 @@
+query MarketingStories {
+  marketingStories(orderBy: importance_ASC) {
+    asset {
+      mimeType
+      url
+    }
+    duration
+  }
+}

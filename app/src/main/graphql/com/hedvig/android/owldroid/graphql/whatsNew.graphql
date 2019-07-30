@@ -1,0 +1,16 @@
+query WhatsNewQuery(
+  $locale: Locale!,
+  $sinceVersion: String!
+) {
+  news(
+    platform: Android,
+    locale: $locale,
+    sinceVersion: $sinceVersion
+  ) {
+    illustration {
+      svgUrl
+    }
+    title
+    paragraph
+  }
+}

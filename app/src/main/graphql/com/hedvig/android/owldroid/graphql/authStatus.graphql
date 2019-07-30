@@ -1,0 +1,5 @@
+subscription authStatus {
+  authStatus {
+    status
+  }
+}

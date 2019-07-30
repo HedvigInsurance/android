@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_marginStart="@dimen/base_margin_half"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:contentDescription="@null"
+            android:layout_width="@dimen/base_margin_double"
+            android:layout_height="@dimen/base_margin_double"
+            app:srcCompat="@drawable/ic_filled_checkmark" />
+
+        <TextView
+            android:id="@+id/deductibleFootnote"
+            style="@style/Body.Small"
+            android:layout_marginStart="@dimen/base_margin"
+            android:text="@string/DASHBOARD_DEDUCTIBLE_FOOTNOTE"
+            android:layout_width="match_parent"
+            android:maxLines="1"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ownerFootnote"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        tools:ignore="UseCompoundDrawables"
+        tools:visibility="visible">
+
+        <ImageView
+            android:contentDescription="@null"
+            android:layout_width="@dimen/base_margin_double"
+            android:layout_height="@dimen/base_margin_double"
+            app:srcCompat="@drawable/ic_filled_checkmark" />
+
+        <TextView
+            style="@style/Body.Small"
+            android:layout_marginStart="@dimen/base_margin"
+            android:text="@string/DASHBOARD_OWNER_FOOTNOTE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:contentDescription="@null"
+            android:layout_width="@dimen/base_margin_double"
+            android:layout_height="@dimen/base_margin_double"
+            app:srcCompat="@drawable/ic_filled_checkmark" />
+
+        <TextView
+            android:id="@+id/totalCoverageFootnote"
+            style="@style/Body.Small"
+            android:layout_marginStart="@dimen/base_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:contentDescription="@null"
+            android:layout_width="@dimen/base_margin_double"
+            android:layout_height="@dimen/base_margin_double"
+            app:srcCompat="@drawable/ic_filled_checkmark" />
+
+        <TextView
+            android:id="@+id/travelFootnote"
+            style="@style/Body.Small"
+            android:layout_marginStart="@dimen/base_margin"
+            android:text="@string/DASHBOARD_TRAVEL_FOOTNOTE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</LinearLayout>

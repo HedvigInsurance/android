@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/base_margin">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@id/cashbackOptionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="22dp"
+            android:theme="@style/Headline.Small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="SOS Barnbyar" />
+
+        <TextView
+            android:id="@id/cashbackOptionParagraph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:theme="@style/Body.Small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cashbackOptionTitle"
+            tools:text="För att bli en trygg vuxen krävs en trygg barndom. Därför arbetar SOS Barnbyar med långsiktiga insatser för att inte ett enda barn ska behöva växa upp ensamt." />
+
+        <View
+            android:id="@id/separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/light_gray"
+            app:layout_constraintTop_toBottomOf="@id/cashbackOptionParagraph" />
+
+        <Button
+            android:id="@id/cashbackSelect"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical|end"
+            android:theme="@style/DialogButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator"
+            tools:text="Välj SOS Barnbyar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.hedvig.app.ui.view.HedvigCardView>

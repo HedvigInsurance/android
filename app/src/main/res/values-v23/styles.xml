@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Hedvig.Theme.V23" parent="Hedvig.Theme.V21">
+        <item name="android:statusBarColor">@color/off_white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
+
+    <style name="Hedvig.Theme.Offer">
+        <item name="android:statusBarColor">@color/dark_purple</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

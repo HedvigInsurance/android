@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/base_margin_triple"
+    android:background="@drawable/background_rounded_corners">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/base_margin_quadruple"
+        android:paddingEnd="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin"
+        android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
+        android:layout_gravity="center"
+        android:theme="@style/Headline.Large" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/REFERRAL_ADDCOUPON_BODY"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:theme="@style/Body.Small" />
+
+    <EditText
+        android:id="@+id/bottomSheetAddPromotionCodeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:background="@drawable/background_edit_text_rounded_corners"
+        android:hint="@string/REFERRAL_ADDCOUPON_INPUTPLACEHOLDER"
+        android:imeOptions="actionDone"
+        android:lines="1"
+        android:padding="@dimen/base_margin_double"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/bottomSheetPromotionCodeMissingCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:gravity="center"
+        android:text="@string/REFERRAL_ERROR_MISSINGCODE_BODY"
+        android:textColor="@color/pink"
+        android:theme="@style/Body.Small"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/bottomSheetAddPromotionCodeButton"
+        style="@style/HedvigButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:backgroundTint="@color/purple"
+        android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
+
+    <TextView
+        android:id="@+id/bottomSheetPromotionCodeTermsAndCondition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/base_margin_quadruple"
+        android:paddingEnd="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:gravity="center"
+        android:text="@string/REFERRAL_ADDCOUPON_TC_EXPLANATION_ANDROID"
+        android:theme="@style/Body.Small" />
+
+    <TextView
+        android:id="@+id/bottomSheetPromotionCodeTermsAndConditionLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/REFERRAL_ADDCOUPON_TC_LINK"
+        android:theme="@style/Body.Small.Link" />
+
+</LinearLayout>

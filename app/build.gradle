@@ -1,0 +1,249 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.apollographql.android'
+
+import com.android.build.OutputFile
+
+def enableSeparateBuildPerCPUArchitecture = false
+
+apollo {
+    useJavaBeansSemanticNaming = true
+    generateModelBuilder = true
+    customTypeMapping = [
+            "URL"      : "java.lang.String",
+            "LocalDate": "org.threeten.bp.LocalDate",
+            "Upload"   : "com.apollographql.apollo.api.FileUpload"
+    ]
+}
+
+apply plugin: 'com.jaredsburrows.license'
+licenseReport {
+    copyHtmlReportToAssets = true
+}
+
+android {
+    androidExtensions {
+        experimental = true
+    }
+    compileSdkVersion 28
+
+    defaultConfig {
+        targetSdkVersion 28
+        applicationId 'com.hedvig'
+
+        minSdkVersion 21
+        versionCode 43
+        versionName '3.0.0'
+
+        resValue "string", "build_config_package", "com.hedvig.app"
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("String", "DEFAULT_LANGUAGE", "\"${rootProject.ext.defaultLanguage}\"")
+        buildConfigField("String[]", "EXCLUDED_LANGUAGES", "{\"${rootProject.ext.excludedLanguages.join("\",\"")}\"}")
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk true
+            include 'armeabi-v7a', 'x86'
+        }
+    }
+
+    buildTypes {
+        release {
+            applicationIdSuffix '.app'
+
+            buildConfigField "String", "APP_ID", "\"com.hedvig.app\""
+            buildConfigField "String", "GRAPHQL_URL", "\"https://giraffe.hedvig.com/graphql\""
+            buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://giraffe.hedvig.com/subscriptions\""
+            buildConfigField "String", "BASE_URL", "\"https://giraffe.hedvig.com\""
+            buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://www.hedvig.com/referrals/\""
+
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        staging {
+            applicationIdSuffix '.test.app'
+
+            buildConfigField "String", "APP_ID", "\"com.hedvig.test.app\""
+            buildConfigField "String", "GRAPHQL_URL", "\"https://graphql.dev.hedvigit.com/graphql\""
+            buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
+            buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
+            buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
+
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            applicationIdSuffix '.dev.app'
+
+            buildConfigField "String", "APP_ID", "\"com.hedvig.dev.app\""
+            buildConfigField "String", "GRAPHQL_URL", "\"https://graphql.dev.hedvigit.com/graphql\""
+            buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
+            buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
+            buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
+
+            debuggable true
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def versionCodes = ['armeabi-v7a': 1, 'x86': 2]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {
+                output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+            }
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy.force 'android.arch.lifecycle:livedata-core:1.1.0'
+        resolutionStrategy.force 'android.arch.core:runtime:1.1.0'
+        resolutionStrategy.force 'android.arch.core:common:1.1.0'
+    }
+}
+
+dependencies {
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+    implementation 'nl.littlerobots.rxlint:rxlint:1.7.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.google.android.material:material:1.0.0'
+
+    // Android support
+    def support_version = "28.0.0"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.exifinterface:exifinterface:1.0.0'
+    implementation 'androidx.media:media:1.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
+
+    // Android lifecycle
+    def lifecycle_version = "1.1.0"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
+
+
+    // WorkManager
+    def workmanager_version = "1.0.1"
+    implementation "android.arch.work:work-runtime:$workmanager_version"
+    implementation "android.arch.work:work-runtime-ktx:$workmanager_version"
+
+    // Okhttp
+    def okhttp3_version = '3.12.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp3_version"
+
+    // Apollo
+    implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
+    implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
+    implementation "com.apollographql.apollo:apollo-rx2-support:$apollo_version"
+    androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
+
+    // Firebase
+    implementation 'com.google.android.gms:play-services-base:16.1.0'
+    releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+
+    implementation "com.google.firebase:firebase-core:16.0.9"
+    implementation "com.google.firebase:firebase-dynamic-links:17.0.0"
+    implementation "com.google.firebase:firebase-firestore:19.0.0"
+    implementation 'com.google.firebase:firebase-config:17.0.0'
+    implementation "com.google.firebase:firebase-messaging:18.0.0"
+
+    // Segment
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+    implementation 'com.segment.analytics.android:analytics:4.2.6'
+    // compile 'io.branch.segment.analytics.android.integrations:branch:1.0.2-RELEASE'
+
+    implementation 'io.branch.sdk.android:library:3.2.0'
+
+    // Animated GIF support
+    implementation 'com.facebook.fresco:animated-gif:1.11.0'
+
+    // Koin
+    def koin_version = "2.0.0-GA"
+    implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-android-viewmodel:$koin_version"
+
+    implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
+
+    def navigation_version = '1.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.0.0-rc02'
+    implementation 'androidx.navigation:navigation-ui:2.0.0-rc02'
+    implementation 'androidx.navigation:navigation-runtime-ktx:2.0.0-rc02'
+
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Lottie
+    implementation "com.airbnb.android:lottie:2.5.5"
+
+    // Exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.0'
+
+    // coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+
+    // Svg
+    implementation 'com.caverock:androidsvg-aar:1.3'
+
+    // Restring
+    implementation 'com.hedvig.restring:restring:0.0.1'
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:4.9.0"
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
+
+    //branch
+    implementation 'io.branch.sdk.android:library:3.2.0'
+
+    // test
+    testImplementation 'junit:junit:4.12'
+
+    debugApi 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+    releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+}
+
+apply plugin: 'com.google.gms.google-services'
+googleServices {
+    disableVersionCheck = true
+}
+
+apply plugin: 'com.hedvig.textkeys'
+
+textkeys {
+    graphqlEndpoint = 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master'
+    defaultLanguageCode = rootProject.ext.defaultLanguage
+    excludedLanguages = rootProject.ext.excludedLanguages
+}
+
+task updateSchema(type: Exec) {
+    group = 'GraphQL'
+    description = 'Fetches the latest schema from our dev GraphQL-server'
+
+    commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
+}

@@ -1,0 +1,3 @@
+mutation regiserBranchCampaign($campaign: CampaignInput!) {
+  registerBranchCampaign(campaign: $campaign)
+}

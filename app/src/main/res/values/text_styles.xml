@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_xxlarge">32sp</dimen>
+    <dimen name="text_xlarge">24sp</dimen>
+    <dimen name="text_large">18sp</dimen>
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_xsmall">12sp</dimen>
+    <dimen name="text_xxsmall">11sp</dimen>
+
+    <dimen name="spacing_large">8sp</dimen>
+    <dimen name="spacing_medium">6sp</dimen>
+    <dimen name="spacing_small">4sp</dimen>
+
+    <style name="Header">
+        <item name="android:fontFamily">@font/soray_extrabold</item>
+        <item name="android:textColor">@color/off_black_dark</item>
+    </style>
+
+    <style name="Header.Large">
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+    </style>
+
+    <style name="Header.Regular">
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Headline">
+        <item name="android:fontFamily">@font/circular_bold</item>
+        <item name="android:textColor">@color/off_black_dark</item>
+    </style>
+
+    <style name="Headline.Large">
+        <item name="android:fontFamily">@font/soray_extrabold</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+    </style>
+
+    <style name="Headline.Large.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Headline.Medium">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:lineSpacingExtra">@dimen/spacing_large</item>
+    </style>
+
+    <style name="Headline.Medium.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Headline.Small">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:lineSpacingExtra">@dimen/spacing_medium</item>
+    </style>
+
+    <style name="Headline.Small.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Body">
+        <item name="android:fontFamily">@font/circular_book</item>
+        <item name="android:textColor">@color/off_black</item>
+    </style>
+
+    <style name="Body.Regular">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:lineSpacingExtra">@dimen/spacing_large</item>
+    </style>
+
+    <style name="Body.Regular.Emphasized">
+        <item name="android:textColor">@color/off_black_dark</item>
+    </style>
+
+    <style name="Body.Regular.Link">
+        <item name="android:textColor">@color/purple</item>
+    </style>
+
+    <style name="Body.Regular.Link.Caution">
+        <item name="android:textColor">@color/pink</item>
+    </style>
+
+    <style name="Body.Regular.Link.Emphasized">
+        <item name="android:fontFamily">@font/circular_medium</item>
+    </style>
+
+    <style name="Body.Regular.Link.Emphasized.Caution">
+        <item name="android:textColor">@color/pink</item>
+    </style>
+
+    <style name="Body.Regular.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Body.Small">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:lineSpacingExtra">@dimen/spacing_large</item>
+    </style>
+
+    <style name="Body.Small.Link">
+        <item name="android:textColor">@color/purple</item>
+    </style>
+
+    <style name="Body.Small.Link.Caution">
+        <item name="android:textColor">@color/pink</item>
+    </style>
+
+    <style name="Body.Small.Link.Emphasized">
+        <item name="android:fontFamily">@font/circular_medium</item>
+    </style>
+
+    <style name="Body.Small.Link.Emphasized.Caution">
+        <item name="android:textColor">@color/pink</item>
+    </style>
+
+    <style name="Body.Small.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Body.XSmall">
+        <item name="android:textSize">@dimen/text_xsmall</item>
+        <item name="android:lineSpacingExtra">@dimen/spacing_small</item>
+    </style>
+
+    <style name="Body.XSmall.Negative">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TabBar">
+        <item name="android:fontFamily">@font/circular_book</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+</resources>

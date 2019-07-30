@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/newsContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/off_white"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="@dimen/news_close_button_size"
+            android:layout_height="@dimen/news_close_button_size"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/NEWS_CLOSE_DESCRIPTION"
+            android:padding="@dimen/base_margin_half"
+            app:srcCompat="@drawable/ic_close" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/Headline.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="@string/NEWS_TITLE"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.hedvig.app.feature.dismissablepager.PagerIndicatorView
+        android:id="@+id/pagerIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pager_indicator_height" />
+
+    <Button
+        android:id="@+id/proceed"
+        style="@style/HedvigButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:backgroundTint="@color/purple"
+        tools:text="Nästa" />
+
+</LinearLayout>

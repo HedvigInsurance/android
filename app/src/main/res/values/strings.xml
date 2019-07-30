@@ -1,0 +1,14 @@
+<resources>
+    <string name="dummy_string" translatable="false" />
+
+    <string name="app_name" translatable="false">Hedvig</string>
+    <string name="bug_report_mail" translatable="false">android@hedvig.com</string>
+    <string name="rate_us_link" translatable="false">Google Play</string>
+
+    <string name="two_hundred_thousand" translatable="false">200 000</string>
+    <string name="one_million" translatable="false">1 000 000</string>
+    <string name="CHAT_TITLE">Chat</string>
+    <string name="numeric_one" translatable="false">1</string>
+    <string name="numeric_two" translatable="false">2</string>
+    <string name="numeric_three" translatable="false">3</string>
+</resources>

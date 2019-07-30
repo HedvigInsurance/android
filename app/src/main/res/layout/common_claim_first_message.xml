@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/commonClaimFirstMessageContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/base_margin_triple"
+    android:paddingBottom="@dimen/common_claim_first_message_bottom_margin"
+    tools:background="#D7FDF4">
+
+    <ImageView
+        android:id="@+id/commonClaimFirstMessageIcon"
+        android:layout_width="@dimen/common_claim_icon_size"
+        android:layout_height="@dimen/common_claim_icon_size"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:contentDescription="@null"
+        tools:src="@drawable/icon_charity" />
+
+    <TextView
+        android:id="@+id/commonClaimFirstMessage"
+        style="@style/Headline.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Blir ditt bagage försenat när du flyger ersätter Hedvig dig för att du ska kunna köpa saker du behöver. Hur mycket du får beror på hur mycket bagaget är försenat." />
+
+
+    <Button
+        android:id="@+id/commonClaimCreateClaimButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:background="@drawable/button_primary"
+        android:fontFamily="@font/circular_book"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:textAllCaps="false"
+        android:textColor="@color/off_white"
+        android:textSize="@dimen/text_medium"
+        app:backgroundTint="@color/purple"
+        app:layout_constraintBottom_toTopOf="@id/login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:backgroundTint="@color/purple"
+        tools:text="Anmäl försenat bagage" />
+
+</LinearLayout>

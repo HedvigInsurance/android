@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/profile_menu_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@id/profile_menu_row_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/icon_my_home" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/profile_menu_row_icon"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@id/profile_menu_row_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_bold"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:text="Mitt hem" />
+
+        <TextView
+            android:id="@id/profile_menu_row_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_book"
+            android:textColor="@color/off_black"
+            android:textSize="14sp"
+            tools:text="109 kr/månad - Betalas via autogiro" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/notificationIcon"
+        android:layout_width="@dimen/profile_row_notification_size"
+        android:layout_height="@dimen/profile_row_notification_size"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:contentDescription="@null"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/iconNavigateNext"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_bottom_navigation_notification"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@id/iconNavigateNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_navigate_next" />
+</androidx.constraintlayout.widget.ConstraintLayout>

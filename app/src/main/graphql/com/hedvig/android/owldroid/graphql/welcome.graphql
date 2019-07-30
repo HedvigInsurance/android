@@ -1,0 +1,9 @@
+query WelcomeQuery($locale: Locale!) {
+  welcome(platform: Android, locale: $locale) {
+    illustration {
+      svgUrl
+    }
+    paragraph
+    title
+  }
+}

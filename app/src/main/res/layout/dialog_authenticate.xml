@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_rounded_corners"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/base_margin_double">
+
+    <TextView
+        android:id="@+id/authTitle"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin"
+        android:paddingBottom="@dimen/base_margin_double"
+        android:text="@string/BANK_ID_AUTH_TITLE_INITIATED" />
+
+    <ImageView
+        android:id="@+id/authImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/ic_bank_id" />
+
+</LinearLayout>

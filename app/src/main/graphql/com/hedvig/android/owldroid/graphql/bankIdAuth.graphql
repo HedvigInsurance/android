@@ -1,0 +1,5 @@
+mutation bankIdAuth {
+  bankIdAuth {
+    autoStartToken
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "50557424572",
+    "firebase_url": "https://hedvig-test.firebaseio.com",
+    "project_id": "hedvig-test",
+    "storage_bucket": "hedvig-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50557424572:android:b13f4f0c701d8299",
+        "android_client_info": {
+          "package_name": "com.hedvig.test.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "50557424572-bm12n8993fjpb65ueukdvvkd3dlij6pl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB99lRN-QvB3Si4UkxOwMn3p0N9oWhilSA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

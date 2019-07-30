@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/logged_in_navigation"
+    app:startDestination="@id/loggedInFragment">
+
+    <fragment
+        android:id="@+id/loggedInFragment"
+        android:name="com.hedvig.app.feature.loggedin.ui.LoggedInFragment"
+        android:label="LoggedInFragment">
+
+        <action
+            android:id="@+id/action_dashboardFragment_to_trustlyFragment"
+            app:destination="@id/trustlyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_commonClaimsFragment"
+            app:destination="@+id/claimsCommonClaimFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/stay_in_place"
+            app:popExitAnim="@anim/slide_out_down"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_emergencyFragment"
+            app:destination="@+id/claimsEmergencyFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/stay_in_place"
+            app:popExitAnim="@anim/slide_out_down"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_referralFragment"
+            app:destination="@id/referralFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_myInfoFragment"
+            app:destination="@+id/myInfoFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_myHomeFragment"
+            app:destination="@id/myHomeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_coinsuredFragment"
+            app:destination="@+id/coinsuredFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_charityFragment"
+            app:destination="@id/charityFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+        <action
+            android:id="@+id/action_loggedInFragment_to_feedbackFragment"
+            app:destination="@id/feedbackFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/loggedInFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/trustlyFragment"
+        android:name="com.hedvig.app.feature.profile.ui.payment.TrustlyFragment"
+        android:label="TrustlyFragment" />
+
+    <fragment
+        android:id="@+id/claimsCommonClaimFragment"
+        android:name="com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimFragment"
+        android:label="CommonClaimFragment" />
+
+    <fragment
+        android:id="@+id/claimsEmergencyFragment"
+        android:name="com.hedvig.app.feature.claims.ui.commonclaim.EmergencyFragment"
+        android:label="EmergencyFragment" />
+
+    <fragment
+        android:id="@+id/referralFragment"
+        android:name="com.hedvig.app.feature.profile.ui.referral.OldReferralFragment"
+        android:label="ReferralFragment" />
+
+    <fragment
+        android:id="@+id/newReferralFragment"
+        android:name="com.hedvig.app.feature.profile.ui.referral.NewReferralFragment"
+        android:label="ReferralFragment" />
+
+    <fragment
+        android:id="@+id/myInfoFragment"
+        android:name="com.hedvig.app.feature.profile.ui.myinfo.MyInfoFragment"
+        android:label="MyInfoFragment" />
+
+    <fragment
+        android:id="@+id/myHomeFragment"
+        android:name="com.hedvig.app.feature.profile.ui.myhome.MyHomeFragment"
+        android:label="MyHomeFragment" />
+
+    <fragment
+        android:id="@+id/coinsuredFragment"
+        android:name="com.hedvig.app.feature.profile.ui.coinsured.CoinsuredFragment"
+        android:label="CoinsuredFragment" />
+
+    <fragment
+        android:id="@+id/charityFragment"
+        android:name="com.hedvig.app.feature.profile.ui.charity.CharityFragment"
+        android:label="CharityFragment" />
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.hedvig.app.feature.profile.ui.payment.PaymentFragment"
+        android:label="PaymentFragment">
+
+        <action
+            android:id="@+id/action_paymentFragment_to_trustlyFragment"
+            app:destination="@id/trustlyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/paymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/feedbackFragment"
+        android:name="com.hedvig.app.feature.profile.ui.feedback.FeedbackFragment"
+        android:label="FeedbackFragment" />
+
+</navigation>

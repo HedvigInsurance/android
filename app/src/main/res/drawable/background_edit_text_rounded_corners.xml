@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke android:color="@color/light_gray"
+        android:width="@dimen/referral_background_edit_text_stroke_width"/>
+    <corners android:radius="@dimen/referral_background_edit_text_rounded_corner_radius" />
+</shape>

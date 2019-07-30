@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name" translatable="false">Hedvig</string>
+    <string name="APP_NAME" translatable="false">Hedvig</string>
+
+    <string name="APP_SCHEME" translatable="false">hedvig</string>
+    <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvig.page.link</string>
+
+    <string name="alert_title" translatable="false">Title</string>
+    <string name="alert_message" translatable="false">Message</string>
+</resources>

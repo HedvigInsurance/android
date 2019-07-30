@@ -1,0 +1,3 @@
+mutation SendChatSingleSelectResponse($input: ChatResponseSingleSelectInput!) {
+  sendChatSingleSelectResponse(input: $input)
+}

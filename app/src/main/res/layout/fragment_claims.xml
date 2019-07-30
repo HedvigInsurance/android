@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.claims.ui.ClaimsFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/claimsNestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/bottom_navigation_height">
+
+            <include
+                layout="@layout/loading_spinner"
+                android:layout_width="@dimen/loading_spinner_width"
+                android:layout_height="@dimen/loading_spinner_height"
+                android:layout_gravity="center" />
+
+            <LinearLayout
+                android:id="@+id/claimsViewContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/base_margin_double"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/insuranceInactiveMessage"
+                    style="@style/Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_corners_background_light_gray"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/base_margin_double"
+                    android:paddingTop="@dimen/base_margin_triple"
+                    android:paddingEnd="@dimen/base_margin_double"
+                    android:paddingBottom="@dimen/base_margin_triple"
+                    android:text="@string/CLAIMS_INACTIVE_INSURANCE_MESSAGE"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/claimsIllustration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/claims_fragment_image_height"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/claims_illustration"
+                    tools:visibility="visible" />
+
+                <TextView
+                    style="@style/Headline.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:gravity="center"
+                    android:text="@string/CLAIMS_CREATE_CLAIM_TITLE" />
+
+                <TextView
+                    style="@style/Body.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:gravity="center"
+                    android:text="@string/CLAIMS_CREATE_CLAIM_DESCRIPTION" />
+
+                <Button
+                    android:id="@+id/commonClaimCreateClaimButton"
+                    style="@style/HedvigButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:background="@drawable/button_primary"
+                    android:text="@string/CLAIMS_CREATE_CLAIM_BUTTON_LABEL"
+                    app:backgroundTint="@color/purple"
+                    tools:backgroundTint="@color/purple"
+                    tools:visibility="visible" />
+
+                <TextView
+                    style="@style/Headline.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/CLAIMS_QUICK_ACTIONS" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/commonClaimsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:clipToPadding="false" />
+
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

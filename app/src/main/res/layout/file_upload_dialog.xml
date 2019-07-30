@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/base_margin_triple"
+    android:paddingTop="@dimen/base_margin_half"
+    android:paddingEnd="@dimen/base_margin_triple"
+    android:paddingBottom="@dimen/base_margin_triple"
+    tools:background="@drawable/rounded_corners_background_light_gray">
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/FILE_UPLOAD_OVERLAY_TITLE"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:visibility="gone">
+
+        <Button
+            android:id="@+id/uploadImageOrVideo"
+            style="@style/HedvigButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/purple"
+            android:text="@string/FILE_UPLOAD_IMAGE" />
+
+        <Button
+            android:id="@+id/uploadFile"
+            style="@style/HedvigButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/purple"
+            android:text="@string/FILE_UPLOAD_FILE" />
+
+    </LinearLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@id/loadingSpinner"
+        style="@style/LoadingSpinner"
+        android:layout_width="@dimen/loading_spinner_width"
+        android:layout_height="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/hedvig_uploading_animation"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

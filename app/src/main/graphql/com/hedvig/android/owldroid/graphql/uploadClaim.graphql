@@ -1,0 +1,3 @@
+mutation UploadClaim($id: ID!, $claim: Upload!) {
+  sendChatAudioResponse(input: {globalId: $id, file: $claim})
+}

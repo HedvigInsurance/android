@@ -1,0 +1,11 @@
+subscription SignStatus {
+  signStatus {
+    status {
+      collectStatus {
+        status
+        code
+      }
+      signState
+    }
+  }
+}

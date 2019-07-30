@@ -1,0 +1,9 @@
+mutation RemoveDiscountCode {
+  removeDiscountCode {
+    cost {
+      monthlyDiscount {
+        amount
+      }
+    }
+  }
+}

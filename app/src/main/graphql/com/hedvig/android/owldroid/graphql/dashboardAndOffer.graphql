@@ -1,0 +1,173 @@
+query DashboardQuery {
+  insurance {
+    status
+    type
+    activeFrom
+
+    perilCategories {
+      ... PerilCategoryFragment
+    }
+  }
+
+  chatActions {
+    text
+    triggerUrl
+    enabled
+  }
+}
+
+query Offer {
+  insurance {
+    address
+    personsInHousehold
+    insuredAtOtherCompany
+    type
+    presaleInformationUrl
+    policyUrl
+    currentInsurerName
+
+    perilCategories {
+      ... PerilCategoryFragment
+    }
+
+    cost {
+      ... CostFragment
+    }
+  }
+
+  redeemedCampaigns {
+    ... IncentiveFragment
+  }
+}
+query Profile {
+  member {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+  insurance {
+    address
+    postalNumber
+    type
+    certificateUrl
+    personsInHousehold
+    livingSpace
+    cost {
+      ... CostFragment
+      freeUntil
+    }
+  }
+  bankAccount {
+    bankName
+    descriptor
+  }
+  cashback {
+    name
+    imageUrl
+    paragraph
+  }
+  cashbackOptions {
+    id
+    name
+    paragraph
+  }
+  referralInformation {
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            amount
+          }
+        }
+      }
+    }
+    referredBy {
+      __typename
+      ... on ActiveReferral {
+        name
+        discount {
+          amount
+        }
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on AcceptedReferral {
+        quantity
+      }
+    }
+    invitations {
+      __typename
+      ... on ActiveReferral {
+        name
+        discount {
+          amount
+        }
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on AcceptedReferral {
+        quantity
+      }
+    }
+  }
+}
+
+mutation RedeemReferralCodeMutation($code: String!) {
+  redeemCode(code: $code) {
+    campaigns {
+      ... IncentiveFragment
+    }
+    cost {
+      ... CostFragment
+    }
+  }
+}
+
+fragment PerilCategoryFragment on PerilCategory {
+  title
+  description
+  iconUrl
+
+  perils {
+    id
+    title
+    description
+  }
+}
+
+fragment IncentiveFragment on Campaign {
+  incentive {
+    ... on FreeMonths {
+      quantity
+    }
+    ... on MonthlyCostDeduction {
+      amount {
+        amount
+        currency
+      }
+    }
+  }
+}
+
+fragment CostFragment on InsuranceCost {
+  monthlyDiscount {
+    amount
+  }
+  monthlyNet {
+    amount
+  }
+  monthlyGross {
+    amount
+  }
+}

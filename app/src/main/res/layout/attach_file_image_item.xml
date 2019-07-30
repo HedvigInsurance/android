@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/attachFileContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:gravity="center"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+    <ImageView
+        android:id="@+id/attachFileImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <Button
+        android:id="@+id/attachFileSendButton"
+        style="@style/HedvigButton"
+        android:backgroundTint="@color/green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_primary"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:text="@string/CHAT_UPLOAD_PRESS_SEND_LABEL" />
+
+    <include layout="@layout/loading_spinner"/>
+
+</FrameLayout>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/base_margin"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:paddingBottom="1dp">
+
+    <com.hedvig.app.feature.profile.ui.referral.ProgressTankView
+        android:id="@+id/discountView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <LinearLayout
+        android:id="@+id/referralProgressHighPremiumContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin_double"
+        android:background="@drawable/background_rounded_corners_green"
+        android:orientation="vertical"
+        android:padding="@dimen/base_margin_triple">
+
+        <TextView
+            android:id="@+id/referralProgressHighPremiumDiscount"
+            style="@style/Header.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/referral_current_discount_huge_text"
+            tools:text="-10kr" />
+
+        <TextView
+            style="@style/Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="@string/REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE" />
+
+        <TextView
+            android:id="@+id/referralProgressHighPremiumCurrentPrice"
+            style="@style/Body.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin"
+            tools:text="Nuvarande pris: 259kr/mån" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/subtitle"
+        style="@style/Header.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/referral_title_spacing"
+        tools:text="9 vänner kvar att bjuda in" />
+
+    <TextView
+        android:id="@+id/explainer"
+        style="@style/Body.Regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:gravity="center_horizontal"
+        tools:text="Du ger bort 10 kr rabatt och får 10 kr rabatt för varje vän du bjuder in via din unika länk! Kan du nå gratis försäkring?" />
+
+    <TextView
+        style="@style/Body.XSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/REFERRAL_PROGRESS_CODE_TITLE" />
+
+    <TextView
+        android:id="@+id/code"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_half"
+        android:background="@drawable/background_very_rounded_corners"
+        android:backgroundTint="@color/white"
+        android:elevation="1dp"
+        android:paddingStart="@dimen/base_margin_double"
+        android:paddingTop="@dimen/base_margin_half"
+        android:paddingEnd="@dimen/base_margin_double"
+        android:paddingBottom="@dimen/base_margin_half"
+        android:textColor="@color/purple"
+        tools:text="HDVG87" />
+
+    <include
+        android:visibility="gone"
+        layout="@layout/referral_small_header_row"/>
+
+    <include
+        android:id="@+id/emptyStateRow"
+        android:visibility="gone"
+        layout="@layout/referral_invite_row"/>
+
+</LinearLayout>

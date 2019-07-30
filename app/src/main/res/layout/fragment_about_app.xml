@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/app_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/off_white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            android:orientation="vertical">
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@+id/licenseAttributions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/Body.Small"
+                app:name="@string/PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@+id/whatsNew"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:name="@string/PROFILE_ABOUT_APP_OPEN_WHATS_NEW" />
+
+            <TextView
+                android:id="@id/versionNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:gravity="center"
+                android:theme="@style/Body.Small"
+                tools:text="Version: 3.4.5" />
+
+            <TextView
+                android:id="@+id/memberId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:theme="@style/Body.Small"
+                tools:text="Medlemsnummer: 123456789" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/PROFILE_ABOUT_APP_COPYRIGHT"
+                android:theme="@style/Body.Small" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

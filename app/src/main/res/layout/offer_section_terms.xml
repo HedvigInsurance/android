@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/off_white"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/base_margin_triple">
+
+    <ImageView
+        android:id="@+id/offer_legal_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/offer_legal" />
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/OFFER_TERMS_TITLE"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/offer_legal_image" />
+
+    <TextView
+        android:id="@+id/noBindingPeriod"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:drawableStart="@drawable/ic_filled_checkmark_small"
+        android:drawablePadding="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        android:text="@string/OFFER_TERMS_NO_BINDING_PERIOD"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <TextView
+        android:id="@+id/noLimit"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:drawableStart="@drawable/ic_filled_checkmark_small"
+        android:drawablePadding="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        android:text="@string/OFFER_TERMS_NO_COVERAGE_LIMIT"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
+
+    <TextView
+        android:id="@+id/maxCompensation"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:drawableStart="@drawable/ic_filled_checkmark_small"
+        android:drawablePadding="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/noLimit"
+        tools:text="@string/OFFER_TERMS_MAX_COMPENSATION" />
+
+    <TextView
+        android:id="@+id/deductible"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:drawableStart="@drawable/ic_filled_checkmark_small"
+        android:drawablePadding="@dimen/base_margin_double"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/maxCompensation"
+        tools:text="@string/OFFER_TERMS_DEDUCTIBLE" />
+
+    <TextView
+        android:id="@+id/presaleInformation"
+        style="@style/Body"
+        android:layout_width="@dimen/terms_icon_size"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/ic_presale_information"
+        android:drawablePadding="@dimen/base_margin_half"
+        android:gravity="center_horizontal"
+        android:text="@string/OFFER_PRESALE_INFORMATION"
+        app:autoSizeMaxTextSize="@dimen/text_medium"
+        app:autoSizeMinTextSize="@dimen/text_small"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductible" />
+
+    <TextView
+        android:id="@+id/terms"
+        style="@style/Body"
+        android:layout_width="@dimen/terms_icon_size"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/ic_terms"
+        android:drawablePadding="@dimen/base_margin_half"
+        android:gravity="center_horizontal"
+        android:text="@string/OFFER_TERMS"
+        app:autoSizeMaxTextSize="@dimen/text_medium"
+        app:autoSizeMinTextSize="@dimen/text_small"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductible" />
+
+    <TextView
+        android:id="@+id/privacyPolicy"
+        style="@style/Body"
+        android:layout_width="@dimen/terms_icon_size"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/ic_privacy_policy"
+        android:drawablePadding="@dimen/base_margin_half"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:text="@string/OFFER_PRIVACY_POLICY"
+        app:autoSizeMaxTextSize="@dimen/text_medium"
+        app:autoSizeMinTextSize="@dimen/text_xxsmall"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

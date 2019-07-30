@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin"
+    tools:background="@color/dark_purple"
+    tools:layout_marginTop="0dp">
+
+    <FrameLayout
+        android:id="@+id/deductibleBubble"
+        android:layout_width="@dimen/deductible_bubble_size"
+        android:layout_height="@dimen/deductible_bubble_size"
+        android:layout_marginTop="@dimen/deductibe_bubble_top_offset"
+        android:layout_marginEnd="@dimen/deductible_bubble_end_offset"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/green"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/deductibleBubbleText"
+            style="@style/Body.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Självrisk\n1 500 kr" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/bindingPeriodBubble"
+        android:layout_width="@dimen/binding_period_bubble_size"
+        android:layout_height="@dimen/binding_period_bubble_size"
+        android:layout_marginTop="@dimen/binding_period_bubble_top_offset"
+        android:layout_marginEnd="@dimen/binding_period_bubble_end_offset"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/pink"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/bindingPeriodBubbleText"
+            style="@style/Body.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Bindingstid\nNope, så jobbar inte Hedvig" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/brfOrTravelBubble"
+        android:layout_width="@dimen/coverage_or_travel_bubble_size"
+        android:layout_height="@dimen/coverage_or_travel_bubble_size"
+        android:layout_marginStart="@dimen/coverage_or_travel_bubble_top_offset"
+        android:layout_marginTop="@dimen/coverage_or_travel_bubble_start_offset"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/purple"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/brfOrTravel"
+            style="@style/Body.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Bostadsrätts-\ntillägg ingår" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/startDateBubble"
+        android:layout_width="@dimen/start_date_bubble_size"
+        android:layout_height="@dimen/start_date_bubble_size"
+        android:layout_marginStart="@dimen/start_date_bubble_start_offset"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/green"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/startDateBubbleText"
+            style="@style/Body.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Startdatum\nSå fort din bindingstid går ut" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/amountInsuredBubble"
+        android:layout_width="@dimen/number_insured_bubble_size"
+        android:layout_height="@dimen/number_insured_bubble_size"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/purple"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/amountInsuredBubbleText"
+            style="@style/Body.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Försäkrade\n2 personer" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/discountButton"
+        style="@style/SmallButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/button_shadow_offset"
+        android:backgroundTint="@color/dark_purple"
+        android:textColor="@color/off_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductibleBubble"
+        tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

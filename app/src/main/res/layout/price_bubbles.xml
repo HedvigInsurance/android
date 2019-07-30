@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin"
+    tools:background="@color/dark_purple"
+    tools:layout_marginTop="0dp">
+
+    <FrameLayout
+        android:id="@+id/netPremiumBubble"
+        android:layout_width="@dimen/price_bubble_size"
+        android:layout_height="@dimen/price_bubble_size"
+        android:background="@drawable/sphere"
+        android:backgroundTint="@color/white"
+        android:scaleX="0"
+        android:scaleY="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1">
+
+        <TextView
+            android:id="@+id/grossPremium"
+            style="@style/Body.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/base_margin_sextuple"
+            android:textColor="@color/gray"
+            android:visibility="gone"
+            tools:text="109 kr/mån"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/netPremium"
+            style="@style/Body.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/base_margin"
+            android:textSize="60sp"
+            tools:text="99"
+            tools:textColor="@color/pink" />
+
+        <TextView
+            style="@style/Body.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:text="@string/OFFER_PRICE_PER_MONTH" />
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/discountBubble"
+        android:layout_width="@dimen/discount_bubble_size"
+        android:layout_height="@dimen/discount_bubble_size"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:translationX="-40dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/netPremiumBubble"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:scaleX="1"
+        tools:scaleY="1"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:tint="@color/pink"
+            app:srcCompat="@drawable/sphere" />
+
+        <TextView
+            android:id="@+id/discountTitle"
+            style="@style/Body.XSmall.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/base_margin_triple"
+            android:text="@string/OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/discount"
+            style="@style/Headline.Medium.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:lineSpacingExtra="0sp"
+            tools:text="Inbjuden!" />
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

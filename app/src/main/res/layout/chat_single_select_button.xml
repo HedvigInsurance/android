@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Body.Regular"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin_half"
+    android:layout_marginBottom="@dimen/base_margin_half"
+    android:background="@drawable/chat_selectable"
+    android:paddingStart="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin"
+    android:paddingEnd="@dimen/base_margin_double"
+    android:paddingBottom="@dimen/base_margin"
+    android:textColor="@color/purple"
+    tools:text="Select" />

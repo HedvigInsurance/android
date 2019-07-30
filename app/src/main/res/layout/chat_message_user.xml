@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin"
+    android:orientation="horizontal">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/userMessage"
+            style="@style/Body.Regular.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/base_margin"
+            android:background="@drawable/chat_message_hedvig"
+            android:backgroundTint="@color/purple"
+            android:padding="12dp"
+            app:layout_constraintBottom_toTopOf="@id/statusMessage"
+            app:layout_constraintEnd_toStartOf="@id/editMessage"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Min email är test@hedvig.com" />
+
+        <ImageButton
+            android:id="@+id/editMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/CHAT_EDIT_MESSAGE_DESCRIPTION"
+            android:src="@drawable/ic_chat_edit_last_message"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/statusMessage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/statusMessage"
+            style="@style/Body.XSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_half"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:textColor="@color/off_black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Hedvig svarar inom 15 min"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

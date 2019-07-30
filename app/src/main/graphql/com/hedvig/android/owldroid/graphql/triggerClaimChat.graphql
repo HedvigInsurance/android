@@ -1,0 +1,3 @@
+mutation TriggerClaimChat($input: TriggerClaimChatInput!) {
+  triggerClaimChat(input: $input)
+}

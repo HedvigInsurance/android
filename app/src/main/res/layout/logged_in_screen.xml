@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    tools:context="com.hedvig.app.feature.loggedin.ui.LoggedInFragment"
+    tools:visibility="visible">
+
+    <include layout="@layout/app_bar" />
+
+    <com.hedvig.app.feature.loggedin.ui.TabPager
+        android:id="@+id/tabContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <Button
+        android:id="@+id/referralButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/referrals_button_bottom_margin"
+        android:background="@drawable/button_primary"
+        android:backgroundTint="@color/purple"
+        android:text="@string/REFERRAL_SHAREINVITE"
+        android:theme="@style/HedvigButton"
+        android:visibility="gone" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomTabs"
+        style="@style/NavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_navigation_height"
+        android:layout_gravity="bottom"
+        app:itemIconSize="26dp"
+        app:menu="@menu/logged_in_menu" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

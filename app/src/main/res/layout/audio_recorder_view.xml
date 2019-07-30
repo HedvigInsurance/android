@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/recordingContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:visibility="gone">
+
+        <TextView
+            android:id="@+id/recordingLabel"
+            style="@style/Body.XSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/base_margin"
+            android:text="@string/AUDIO_INPUT_START_RECORDING" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/stopRecording"
+            android:layout_width="@dimen/audio_recorder_button_size"
+            android:layout_height="@dimen/audio_recorder_button_size"
+            android:layout_gravity="end"
+            android:contentDescription="@string/AUDIO_INPUT_STOP_DESCRIPTION"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/hedvig_voice_recording_animation"
+            tools:src="@drawable/ic_chat_stop_record_audio"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/startRecording"
+            android:layout_width="@dimen/audio_recorder_button_size"
+            android:layout_height="@dimen/audio_recorder_button_size"
+            android:contentDescription="@string/AUDIO_INPUT_RECORD_DESCRIPTION"
+            android:src="@drawable/ic_chat_record_audio"
+            tools:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/optionsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <include
+            android:id="@+id/redo"
+            layout="@layout/chat_single_select_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/base_margin"
+            android:text="@string/AUDIO_INPUT_REDO" />
+
+        <include
+            android:id="@+id/playback"
+            layout="@layout/chat_single_select_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/base_margin"
+            android:text="@string/AUDIO_INPUT_PLAY" />
+
+        <include
+            android:id="@+id/upload"
+            layout="@layout/chat_single_select_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/base_margin"
+            android:text="@string/AUDIO_INPUT_SAVE" />
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/loading_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:visibility="gone" />
+
+</FrameLayout>

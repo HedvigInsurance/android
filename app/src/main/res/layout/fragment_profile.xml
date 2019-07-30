@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context="com.hedvig.app.feature.profile.ui.ProfileFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/bottom_navigation_height">
+
+        <include layout="@layout/loading_spinner" />
+
+        <LinearLayout
+            android:id="@id/rowContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/profileReferralRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/base_margin_triple"
+                android:visibility="gone"
+                app:description="@string/PROFILE_ROW_REFERRAL_DESCRIPTION"
+                app:iconImage="@drawable/icon_share"
+                tools:visibility="visible" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/myInfoRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/icon_my_info"
+                app:name="@string/PROFILE_ROW_MY_INFO_TITLE" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/myHomeRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/icon_my_home"
+                app:name="@string/PROFILE_ROW_MY_HOME_TITLE" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/coinsuredRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:iconImage="@drawable/icon_coinsured"
+                app:name="@string/PROFILE_ROW_COINSURED_TITLE"
+                tools:visibility="visible" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/charityRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/icon_charity"
+                app:name="@string/PROFILE_ROW_CHARITY_TITLE" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/paymentRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/icon_payment"
+                app:name="@string/PROFILE_ROW_PAYMENT_TITLE" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/insuranceCertificateRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:description="@string/PROFILE_ROW_INSURANCE_LETTER_DESCRIPTION"
+                app:iconImage="@drawable/icon_insurance_certificate"
+                app:name="@string/PROFILE_ROW_INSURANCE_LETTER_TITLE"
+                tools:visibility="visible" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/feedbackRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:description="@string/PROFILE_ROW_FEEDBACK_DESCRIPTION"
+                app:iconImage="@drawable/icon_feedback"
+                app:name="@string/PROFILE_ROW_FEEDBACK_TITLE" />
+
+            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                android:id="@id/aboutAppRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                app:name="@string/PROFILE_ROW_ABOUT_APP_TITLE" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:background="@color/light_gray" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@id/logout"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginBottom="@dimen/base_margin_double"
+            android:fontFamily="@font/circular_book"
+            android:padding="8dp"
+            android:text="@string/PROFILE_LOGOUT_BUTTON"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/pink"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rowContainer"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

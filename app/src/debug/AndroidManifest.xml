@@ -1,0 +1,36 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.hedvig.app">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application
+        android:usesCleartextTraffic="true"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        tools:targetApi="28">
+
+        <activity
+            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+            android:theme="@style/Theme.Exponent.Splash" />
+
+        <activity
+            android:name=".feature.chat.ChatActivity"
+            android:theme="@style/Hedvig.Theme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DevelopmentActivity"
+            android:label="Hedvig Development Screen"
+            android:theme="@style/Hedvig.Theme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
