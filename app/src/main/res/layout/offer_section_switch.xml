@@ -52,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/SIGN_MOBILE_BANK_ID"
         app:layout_constraintStart_toEndOf="@id/bulletOne"
         app:layout_constraintTop_toBottomOf="@id/switchTitle" />
@@ -77,6 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletTwo"
         app:layout_constraintTop_toBottomOf="@id/switchParagraphOne"
@@ -104,6 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/OFFER_SWITCH_COL_THREE_PARAGRAPH_APP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletThree"
