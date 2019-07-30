@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_rounded_corners"
@@ -16,8 +17,10 @@
         android:layout_marginStart="@dimen/base_margin"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
+        android:gravity="center"
         android:paddingBottom="@dimen/base_margin_double"
-        android:text="@string/BANK_ID_AUTH_TITLE_INITIATED" />
+        android:text="@string/BANK_ID_AUTH_TITLE_INITIATED"
+        tools:text="@string/BANK_ID_NOT_INSTALLED" />
 
     <ImageView
         android:id="@+id/authImage"

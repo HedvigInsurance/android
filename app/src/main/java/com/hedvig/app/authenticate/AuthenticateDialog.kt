@@ -12,6 +12,7 @@ import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.LoggedInActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.UserViewModel
+import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
 import kotlinx.android.synthetic.main.dialog_authenticate.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -30,12 +31,17 @@ class AuthenticateDialog : DialogFragment() {
 
         userViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
             data?.bankIdAuth?.autoStartToken?.let { autoStartToken ->
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
+                val bankIdUri = Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
+                if (requireContext().canOpenUri(bankIdUri)) {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            bankIdUri
+                        )
                     )
-                )
+                } else {
+                    dialog.authTitle.text = getString(R.string.BANK_ID_NOT_INSTALLED)
+                }
             }
         }
         userViewModel.authStatus.observe(lifecycleOwner = this) { data ->

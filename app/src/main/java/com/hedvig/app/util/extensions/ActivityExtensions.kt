@@ -1,6 +1,7 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -201,5 +202,3 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
         Timber.e("Can't handle the link $value")
     }
 }
-
-fun Activity.canOpenUri(uri: Uri) = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
