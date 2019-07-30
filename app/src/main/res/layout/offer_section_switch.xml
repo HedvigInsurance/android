@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:background="@color/off_white"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin_quadruple"
+    android:paddingBottom="@dimen/base_margin_quadruple"
     android:visibility="gone"
     tools:visibility="visible">
 
