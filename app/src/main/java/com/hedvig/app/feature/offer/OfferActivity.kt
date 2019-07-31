@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -35,8 +34,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.isApartmentOwner
+import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.feature_bubbles.*
@@ -69,6 +68,7 @@ class OfferActivity : BaseActivity() {
 
     private val animationHandler = Handler()
     private var hasTriggeredAnimations = false
+    private var lastAnimationHasCompleted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,13 +88,13 @@ class OfferActivity : BaseActivity() {
                 container.show()
                 bindToolbar(d)
                 bindPriceBubbles(d)
-                bindFeatureBubbles(d)
                 bindDiscountButton(d)
                 bindHomeSection(d)
                 bindStuffSection(d)
                 bindMeSection(d)
                 bindTerms(d)
                 bindSwitchSection(d)
+                bindFeatureBubbles(d)
                 animateBubbles(d)
             }
         }
@@ -106,15 +106,6 @@ class OfferActivity : BaseActivity() {
 
     private fun bindStaticData() {
         setSupportActionBar(offerToolbar)
-
-        val deductibleText =
-            "${getString(R.string.OFFER_BUBBLES_DEDUCTIBLE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE)}"
-        deductibleBubbleText.text = deductibleText
-
-        val bindingPeriodText =
-            "${getString(R.string.OFFER_BUBBLES_BINDING_PERIOD_TITLE)}\n${getString(R.string.OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE)}"
-        bindingPeriodBubbleText.text = bindingPeriodText
-
 
         homeSection.paragraph.text = getString(R.string.OFFER_APARTMENT_PROTECTION_DESCRIPTION)
         homeSection.hero.setImageDrawable(getDrawable(R.drawable.offer_house))
@@ -231,6 +222,7 @@ class OfferActivity : BaseActivity() {
                     netPremium.setTextColor(compatColor(R.color.pink))
                 }
                 is IncentiveFragment.AsFreeMonths -> {
+                    discountBubble.show()
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
@@ -239,6 +231,12 @@ class OfferActivity : BaseActivity() {
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
             }
+            if (lastAnimationHasCompleted) {
+                animateDiscountBubble()
+            }
+        } else {
+            discountBubble.scaleX = 0f
+            discountBubble.scaleY = 0f
         }
     }
 
@@ -262,7 +260,9 @@ class OfferActivity : BaseActivity() {
         }, BASE_BUBBLE_ANIMATION_DELAY + 150)
         animationHandler.postDelayed({
             performBubbleAnimation(brfOrTravelBubble)
-            performBubbleAnimation(deductibleBubble)
+            performBubbleAnimation(deductibleBubble) {
+                lastAnimationHasCompleted = true
+            }
         }, BASE_BUBBLE_ANIMATION_DELAY + 200)
     }
 
@@ -278,21 +278,15 @@ class OfferActivity : BaseActivity() {
     }
 
     private fun bindFeatureBubbles(data: OfferQuery.Data) {
-        val amountInsuredInterpolated = interpolateTextKey(
+        amountInsuredBubbleText.text = interpolateTextKey(
             getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
             "personsInHousehold" to data.insurance.personsInHousehold
         )
-        val amountInsuredText = "${getString(R.string.OFFER_BUBBLES_INSURED_TITLE)}\n$amountInsuredInterpolated"
-        amountInsuredBubbleText.text = amountInsuredText
 
         if (data.insurance.insuredAtOtherCompany == true) {
-            val startDateText =
-                "${getString(R.string.OFFER_BUBBLES_START_DATE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)}"
-            startDateBubbleText.text = startDateText
+            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
         } else {
-            val startDateText =
-                "${getString(R.string.OFFER_BUBBLES_START_DATE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)}"
-            startDateBubbleText.text = startDateText
+            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)
         }
 
         data.insurance.type?.let { t ->
@@ -462,13 +456,20 @@ class OfferActivity : BaseActivity() {
 
         private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.size > 0
 
-        private fun performBubbleAnimation(view: View) {
+        private fun performBubbleAnimation(view: View, endAction: (() -> Unit)? = null) {
             view
                 .spring(SpringAnimation.SCALE_X, stiffness = 1200f)
                 .animateToFinalPosition(1f)
-            view
+            val handle = view
                 .spring(SpringAnimation.SCALE_Y, stiffness = 1200f)
-                .animateToFinalPosition(1f)
+
+
+            if (endAction != null) {
+                handle.addEndListener { _, _, _, _ ->
+                    endAction()
+                }
+            }
+            handle.animateToFinalPosition(1f)
         }
 
         private fun isSwitchableInsurer(insurerName: String?) = when (insurerName) {

@@ -8,7 +8,7 @@
     tools:background="@color/dark_purple"
     tools:layout_marginTop="0dp">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/deductibleBubble"
         android:layout_width="@dimen/deductible_bubble_size"
         android:layout_height="@dimen/deductible_bubble_size"
@@ -25,6 +25,18 @@
         tools:scaleY="1">
 
         <TextView
+            android:id="@+id/deductibleBubbleTitle"
+            style="@style/Headline.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_TITLE"
+            app:layout_constraintBottom_toTopOf="@id/deductibleBubbleText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
             android:id="@+id/deductibleBubbleText"
             style="@style/Body.Small.Negative"
             android:layout_width="wrap_content"
@@ -32,11 +44,15 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
-            tools:text="Självrisk\n1 500 kr" />
+            android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/deductibleBubbleTitle" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bindingPeriodBubble"
         android:layout_width="@dimen/binding_period_bubble_size"
         android:layout_height="@dimen/binding_period_bubble_size"
@@ -53,6 +69,18 @@
         tools:scaleY="1">
 
         <TextView
+            android:id="@+id/bindingPeriodBubbleTitle"
+            style="@style/Headline.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_TITLE"
+            app:layout_constraintBottom_toTopOf="@id/bindingPeriodBubbleText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
             android:id="@+id/bindingPeriodBubbleText"
             style="@style/Body.Small.Negative"
             android:layout_width="wrap_content"
@@ -60,9 +88,13 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
-            tools:text="Bindingstid\nNope, så jobbar inte Hedvig" />
+            android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bindingPeriodBubbleTitle" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/brfOrTravelBubble"
@@ -91,7 +123,7 @@
             tools:text="Bostadsrätts-\ntillägg ingår" />
     </FrameLayout>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/startDateBubble"
         android:layout_width="@dimen/start_date_bubble_size"
         android:layout_height="@dimen/start_date_bubble_size"
@@ -108,6 +140,18 @@
         tools:scaleY="1">
 
         <TextView
+            android:id="@+id/startDateBubbleTitle"
+            style="@style/Headline.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/OFFER_BUBBLES_START_DATE_TITLE"
+            app:layout_constraintBottom_toTopOf="@id/startDateBubbleText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
             android:id="@+id/startDateBubbleText"
             style="@style/Body.Small.Negative"
             android:layout_width="wrap_content"
@@ -117,11 +161,16 @@
             android:lineSpacingExtra="2sp"
             android:paddingStart="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin"
-            tools:text="Startdatum\nSå fort din bindingstid går ut" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/startDateBubbleTitle"
+            app:layout_constraintVertical_bias="0"
+            tools:text="Så fort din bindingstid går ut" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/amountInsuredBubble"
         android:layout_width="@dimen/number_insured_bubble_size"
         android:layout_height="@dimen/number_insured_bubble_size"
@@ -137,6 +186,18 @@
         tools:scaleY="1">
 
         <TextView
+            android:id="@+id/amountInsuredBubbleTitle"
+            style="@style/Headline.Small.Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/OFFER_BUBBLES_INSURED_TITLE"
+            app:layout_constraintBottom_toTopOf="@id/amountInsuredBubbleText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
             android:id="@+id/amountInsuredBubbleText"
             style="@style/Body.Small.Negative"
             android:layout_width="wrap_content"
@@ -144,9 +205,13 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
-            tools:text="Försäkrade\n2 personer" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/amountInsuredBubbleTitle"
+            tools:text="2 personer" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/discountButton"
