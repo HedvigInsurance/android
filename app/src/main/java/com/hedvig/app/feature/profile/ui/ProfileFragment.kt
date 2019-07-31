@@ -11,6 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
+import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.*
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
@@ -77,6 +78,7 @@ class ProfileFragment : BaseTabFragment() {
             }
             logout.setOnClickListener {
                 userViewModel.logout {
+                    requireContext().storeBoolean(IS_VIEWING_OFFER, false)
                     requireContext().setAuthenticationToken(null)
                     requireContext().setIsLoggedIn(false)
                     FirebaseInstanceId.getInstance().deleteInstanceId()
