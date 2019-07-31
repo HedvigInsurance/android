@@ -3,7 +3,6 @@ package com.hedvig.app.feature.chat
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.showRestartDialog
