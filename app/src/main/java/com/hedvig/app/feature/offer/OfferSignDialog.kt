@@ -14,11 +14,12 @@ import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.LoggedInActivity
 import com.hedvig.app.R
+import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.storeBoolean
 import kotlinx.android.synthetic.main.dialog_sign.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
 class OfferSignDialog : DialogFragment() {
     private val offerViewModel: OfferViewModel by sharedViewModel()
@@ -88,7 +89,7 @@ class OfferSignDialog : DialogFragment() {
                     }
                     SignState.COMPLETED -> {
                         dialog.signStatus.text = getString(R.string.SIGN_SUCCESSFUL)
-                        goToOffer()
+                        goToLoggedIn()
                     }
                     else -> {
                         dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
@@ -102,7 +103,8 @@ class OfferSignDialog : DialogFragment() {
         }
     }
 
-    private fun goToOffer() {
+    private fun goToLoggedIn() {
+        requireContext().storeBoolean(IS_VIEWING_OFFER, false)
         handler.postDelayed({
             startActivity(Intent(requireContext(), LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
