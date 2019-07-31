@@ -16,6 +16,7 @@ class OfferViewModel(
     val data = MutableLiveData<OfferQuery.Data>()
     val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     val signStatus = MutableLiveData<SignStatusSubscription.Data>()
+    val signError = MutableLiveData<Boolean>()
 
     private val disposables = CompositeDisposable()
 
@@ -77,10 +78,15 @@ class OfferViewModel(
             .subscribe({ response ->
                 if (response.hasErrors()) {
                     Timber.e(response.errors().toString())
+                    signError.postValue(true)
                     return@subscribe
                 }
 
                 autoStartToken.postValue(response.data())
             }, { Timber.e(it) })
+    }
+
+    fun clearPreviousErrors() {
+        signError.value = false
     }
 }

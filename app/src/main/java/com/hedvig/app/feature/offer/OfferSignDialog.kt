@@ -34,6 +34,13 @@ class OfferSignDialog : DialogFragment() {
         dialog.setContentView(view)
         dialog.setCanceledOnTouchOutside(false)
 
+        offerViewModel.clearPreviousErrors()
+        offerViewModel.signError.observe(lifecycleOwner = this) { err ->
+            if (err == true) {
+                dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                dialog.setCanceledOnTouchOutside(true)
+            }
+        }
         offerViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
             data?.signOfferV2?.autoStartToken?.let { autoStartToken -> startBankId(autoStartToken) }
         }
