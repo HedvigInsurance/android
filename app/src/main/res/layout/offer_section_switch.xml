@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:background="@color/off_white"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin_quadruple"
+    android:paddingBottom="@dimen/base_margin_quadruple"
     android:visibility="gone"
     tools:visibility="visible">
 
@@ -25,7 +26,7 @@
         style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_triple"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switchImage"
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/SIGN_MOBILE_BANK_ID"
         app:layout_constraintStart_toEndOf="@id/bulletOne"
         app:layout_constraintTop_toBottomOf="@id/switchTitle" />
@@ -76,6 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletTwo"
         app:layout_constraintTop_toBottomOf="@id/switchParagraphOne"
@@ -103,6 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/OFFER_SWITCH_COL_THREE_PARAGRAPH_APP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletThree"

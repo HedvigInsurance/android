@@ -29,8 +29,11 @@
             android:background="@drawable/chat_message_hedvig"
             android:backgroundTint="@color/purple"
             android:padding="12dp"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toStartOf="@id/editMessage"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Min email är test@hedvig.com" />
 

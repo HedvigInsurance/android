@@ -147,7 +147,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.hedvig.android.file.provider"
+            android:authorities="@string/file_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

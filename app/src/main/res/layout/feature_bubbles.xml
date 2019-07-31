@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:lineSpacingExtra="0sp"
+            android:lineSpacingExtra="2sp"
             tools:text="Självrisk\n1 500 kr" />
 
     </FrameLayout>
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:lineSpacingExtra="0sp"
+            android:lineSpacingExtra="2sp"
             tools:text="Bindingstid\nNope, så jobbar inte Hedvig" />
 
     </FrameLayout>
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:lineSpacingExtra="0sp"
+            android:lineSpacingExtra="2sp"
             tools:text="Bostadsrätts-\ntillägg ingår" />
     </FrameLayout>
 
@@ -114,7 +114,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:lineSpacingExtra="0sp"
+            android:lineSpacingExtra="2sp"
+            android:paddingStart="@dimen/base_margin"
+            android:paddingEnd="@dimen/base_margin"
             tools:text="Startdatum\nSå fort din bindingstid går ut" />
 
     </FrameLayout>
@@ -141,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:lineSpacingExtra="0sp"
+            android:lineSpacingExtra="2sp"
             tools:text="Försäkrade\n2 personer" />
 
     </FrameLayout>
