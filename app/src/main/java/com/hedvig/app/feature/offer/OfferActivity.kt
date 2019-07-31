@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -35,8 +34,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.isApartmentOwner
+import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.feature_bubbles.*
@@ -231,6 +230,7 @@ class OfferActivity : BaseActivity() {
                     netPremium.setTextColor(compatColor(R.color.pink))
                 }
                 is IncentiveFragment.AsFreeMonths -> {
+                    discountBubble.show()
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
@@ -239,6 +239,12 @@ class OfferActivity : BaseActivity() {
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
             }
+            if (hasTriggeredAnimations) {
+                animateDiscountBubble()
+            }
+        } else {
+            discountBubble.scaleX = 0f
+            discountBubble.scaleY = 0f
         }
     }
 
