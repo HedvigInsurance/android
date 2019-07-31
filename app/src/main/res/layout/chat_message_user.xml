@@ -22,7 +22,7 @@
         <TextView
             android:id="@+id/userMessage"
             style="@style/Body.Regular.Negative"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/base_margin"
@@ -31,7 +31,10 @@
             android:padding="12dp"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toStartOf="@id/editMessage"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_default="wrap"
             tools:text="Min email är test@hedvig.com" />
 
         <ImageButton
