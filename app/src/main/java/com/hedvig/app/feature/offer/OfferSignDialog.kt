@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
-import com.hedvig.android.owldroid.graphql.SignStatusSubscription
+import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.LoggedInActivity
@@ -39,6 +39,9 @@ class OfferSignDialog : DialogFragment() {
             if (err == true) {
                 dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                 dialog.setCanceledOnTouchOutside(true)
+            } else if (err == false) {
+                dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
+                dialog.setCanceledOnTouchOutside(false)
             }
         }
         offerViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
@@ -67,10 +70,10 @@ class OfferSignDialog : DialogFragment() {
         }
     }
 
-    private fun bindStatus(d: SignStatusSubscription.Data) {
-        when (d.signStatus?.status?.collectStatus?.status) {
+    private fun bindStatus(d: SignStatusFragment) {
+        when (d.collectStatus?.status) {
             BankIdStatus.PENDING -> {
-                when (d.signStatus?.status?.collectStatus?.code) {
+                when (d.collectStatus?.code) {
                     "noClient" -> {
                         dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
                     }
@@ -80,7 +83,7 @@ class OfferSignDialog : DialogFragment() {
                 }
             }
             BankIdStatus.FAILED -> {
-                when (d.signStatus?.status?.collectStatus?.code) {
+                when (d.collectStatus?.code) {
                     "userCancel", "cancelled" -> {
                         dialog.signStatus.text = getString(R.string.SIGN_CANCELED)
                     }
@@ -91,7 +94,7 @@ class OfferSignDialog : DialogFragment() {
                 dialog.setCanceledOnTouchOutside(true)
             }
             BankIdStatus.COMPLETE -> {
-                when (d.signStatus?.status?.signState) {
+                when (d.signState) {
                     SignState.IN_PROGRESS, SignState.INITIATED -> {
                     }
                     SignState.COMPLETED -> {
@@ -102,7 +105,7 @@ class OfferSignDialog : DialogFragment() {
                         dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                     }
                 }
-                if (d.signStatus?.status?.signState == SignState.COMPLETED) {
+                if (d.signState == SignState.COMPLETED) {
                 }
             }
             else -> {
@@ -124,6 +127,11 @@ class OfferSignDialog : DialogFragment() {
     override fun onPause() {
         handler.removeCallbacksAndMessages(null)
         super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        offerViewModel.manuallyRecheckSignStatus()
     }
 
     companion object {
