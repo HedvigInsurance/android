@@ -1,77 +1,77 @@
 query ChatMessages {
-    messages {
-        ... ChatMessageFragment
-    }
+  messages {
+    ... ChatMessageFragment
+  }
 }
 
 subscription ChatMessage {
-    message {
-        ... ChatMessageFragment
-    }
+  message {
+    ... ChatMessageFragment
+  }
 }
 
 fragment ChatMessageFragment on Message {
-    globalId
-    id
-    header {
-        fromMyself
-        statusMessage
-        editAllowed
-        pollingInterval
-        richTextChatCompatible
+  globalId
+  id
+  header {
+    fromMyself
+    statusMessage
+    editAllowed
+    pollingInterval
+    richTextChatCompatible
+  }
+  body {
+    ... on MessageBodySingleSelect {
+      type
+      choices {
+        ... on MessageBodyChoicesSelection {
+          type
+          value
+          text
+          selected
+          clearable
+        }
+        ... on MessageBodyChoicesLink {
+          type
+          value
+          text
+          selected
+          view
+          appUrl
+          webUrl
+        }
+        ... on MessageBodyChoicesUndefined {
+          type
+          value
+          text
+          selected
+        }
+      }
     }
-    body {
-        ... on MessageBodySingleSelect {
-            type
-            choices {
-                ... on MessageBodyChoicesSelection {
-                    type
-                    value
-                    text
-                    selected
-                    clearable
-                }
-                ... on MessageBodyChoicesLink {
-                    type
-                    value
-                    text
-                    selected
-                    view
-                    appUrl
-                    webUrl
-                }
-                ... on MessageBodyChoicesUndefined {
-                    type
-                    value
-                    text
-                    selected
-                }
-            }
-        }
-        ... on MessageBodyCore {
-            type
-            text
-        }
-        ... on MessageBodyFile {
-            file {
-                signedUrl
-            }
-        }
-        ... on MessageBodyText {
-            keyboard
-            placeholder
-        }
-        ... on MessageBodyNumber {
-            keyboard
-            placeholder
-        }
-        ... on MessageBodyParagraph {
-            id
-            text
-            type
-        }
-        ... on MessageBodyAudio {
-            id
-        }
+    ... on MessageBodyCore {
+      type
+      text
     }
+    ... on MessageBodyFile {
+      file {
+        signedUrl
+      }
+    }
+    ... on MessageBodyText {
+      keyboard
+      placeholder
+    }
+    ... on MessageBodyNumber {
+      keyboard
+      placeholder
+    }
+    ... on MessageBodyParagraph {
+      id
+      text
+      type
+    }
+    ... on MessageBodyAudio {
+      id
+    }
+  }
 }
