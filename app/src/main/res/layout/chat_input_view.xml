@@ -84,7 +84,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin"
         android:visibility="gone"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/hedvig_typing_animation_2"
