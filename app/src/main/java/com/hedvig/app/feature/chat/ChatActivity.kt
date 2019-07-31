@@ -131,7 +131,7 @@ class ChatActivity : BaseActivity() {
             showRestartDialog {
                 storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
                 setAuthenticationToken(null)
-                userViewModel.logout { triggerRestartActivity() }
+                userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
             }
         }
 
