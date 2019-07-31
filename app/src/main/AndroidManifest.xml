@@ -26,7 +26,11 @@
 
         <activity
             android:name=".feature.chat.ChatActivity"
-            android:theme="@style/Hedvig.Theme" />
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".SplashActivity"
@@ -82,9 +86,6 @@
         </activity>
         <activity
             android:name=".LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
 

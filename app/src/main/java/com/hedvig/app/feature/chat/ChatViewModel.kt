@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.chat
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.net.Uri
 import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
@@ -179,6 +179,7 @@ class ChatViewModel(
     }
 
     fun uploadClaim(path: String) {
+        isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .uploadClaim(getLastId(), path)
             .subscribe({ response ->
@@ -186,6 +187,7 @@ class ChatViewModel(
                     Timber.e(response.errors().toString())
                     return@subscribe
                 }
+                load()
             }, { Timber.e(it) })
     }
 
@@ -197,6 +199,7 @@ class ChatViewModel(
                     Timber.e(response.errors().toString())
                     return@subscribe
                 }
+                load()
             }, { Timber.e(it) })
     }
 }

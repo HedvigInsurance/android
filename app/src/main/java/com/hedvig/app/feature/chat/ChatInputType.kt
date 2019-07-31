@@ -9,10 +9,16 @@ sealed class ChatInputType {
     companion object {
         fun from(message: ChatMessagesQuery.Message) = when (val body = message.fragments.chatMessageFragment.body) {
             is ChatMessageFragment.AsMessageBodyFile -> TextInput()
-            is ChatMessageFragment.AsMessageBodyText -> TextInput(body.keyboard, body.placeholder, true)
+            is ChatMessageFragment.AsMessageBodyText -> TextInput(
+                body.keyboard,
+                body.placeholder,
+                message.fragments.chatMessageFragment.header.isRichTextChatCompatible
+            )
             is ChatMessageFragment.AsMessageBodyNumber -> TextInput(body.keyboard, body.placeholder, false)
-            is ChatMessageFragment.AsMessageBodySingleSelect -> SingleSelect(body.choices
-                ?: listOf())
+            is ChatMessageFragment.AsMessageBodySingleSelect -> SingleSelect(
+                body.choices
+                    ?: listOf()
+            )
             is ChatMessageFragment.AsMessageBodyParagraph -> ParagraphInput
             is ChatMessageFragment.AsMessageBodyAudio -> Audio
             else -> {

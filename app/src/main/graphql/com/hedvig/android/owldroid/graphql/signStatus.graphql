@@ -1,11 +1,21 @@
-subscription SignStatus {
+subscription SignStatusSubscription {
   signStatus {
     status {
-      collectStatus {
-        status
-        code
-      }
-      signState
+      ... SignStatusFragment
     }
   }
+}
+
+query SignStatusQuery {
+  signStatus {
+    ... SignStatusFragment
+  }
+}
+
+fragment SignStatusFragment on SignStatus {
+  collectStatus {
+    status
+    code
+  }
+  signState
 }
