@@ -179,6 +179,7 @@ class ChatViewModel(
     }
 
     fun uploadClaim(path: String) {
+        isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .uploadClaim(getLastId(), path)
             .subscribe({ response ->
@@ -186,6 +187,7 @@ class ChatViewModel(
                     Timber.e(response.errors().toString())
                     return@subscribe
                 }
+                load()
             }, { Timber.e(it) })
     }
 
