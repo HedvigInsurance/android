@@ -1,7 +1,6 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -197,6 +196,9 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     }
     "message.bankid.start" -> {
         AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+    }
+    "hedvig.com" -> { // bot-service is weird. it sends this when the user gets the option to go to `Hem`. We simply dismiss the activity for now in this case
+        finish()
     }
     else -> {
         Timber.e("Can't handle the link $value")
