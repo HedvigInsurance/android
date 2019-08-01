@@ -109,7 +109,7 @@ class ChatInputView : FrameLayout {
 
     fun audioRecorderPermissionGranted() = audioRecorder.permissionGranted()
 
-    private fun fadOutCurrent(fadeIn: () -> Unit) {
+    private fun fadeOutCurrent(fadeIn: () -> Unit) {
         when (currentlyDisplaying) {
             is TextInput -> textInputContainer.fadeOut(fadeIn)
             is SingleSelect -> singleSelectContainer.fadeOut(fadeIn)
@@ -121,7 +121,7 @@ class ChatInputView : FrameLayout {
 
     private fun show(value: ChatInputType) {
         if (value::class != currentlyDisplaying::class) {
-            fadOutCurrent {
+            fadeOutCurrent {
                 when (value) {
                     is TextInput -> textInputContainer.fadeIn()
                     is SingleSelect -> singleSelectContainer.fadeIn()
