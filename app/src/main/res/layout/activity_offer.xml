@@ -159,7 +159,7 @@
                 android:text="@string/OFFER_GET_HEDVIG_TITLE" />
 
             <TextView
-                style="@style/Body.XSmall.Negative"
+                style="@style/Body.Regular.Negative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/dark_purple"
