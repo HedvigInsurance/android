@@ -25,6 +25,7 @@ class ChatViewModel(
     val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
     val fileUploadOutcome = LiveEvent<FileUploadOutcome>()
     val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
+    val networkError = LiveEvent<Boolean>()
 
     private val disposables = CompositeDisposable()
     private val chatDisposable = CompositeDisposable()
@@ -32,6 +33,7 @@ class ChatViewModel(
     private var isSubscriptionAllowedToWrite = true
     private var isWaitingForParagraph = false
     private var isSendingMessage = false
+    private var loadRetries = 0L
 
     fun subscribe() {
         if (chatDisposable.size() > 0) {
@@ -65,14 +67,35 @@ class ChatViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
+                if (response.hasErrors()) {
+                    retryLoad()
+                    isSubscriptionAllowedToWrite = true
+                    return@subscribe
+                }
                 postResponseValue(response)
                 if (isFirstParagraph(response)) {
                     waitForParagraph(getFirstParagraphDelay(response))
                 }
                 isSubscriptionAllowedToWrite = true
             }, {
+                retryLoad()
+                isSubscriptionAllowedToWrite = true
                 Timber.e(it)
             })
+    }
+
+    private fun retryLoad() {
+        if (loadRetries < 5) {
+            loadRetries += 1
+            disposables += Observable
+                .timer(loadRetries, TimeUnit.SECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    load()
+                }, { Timber.e(it) })
+        } else {
+            networkError.postValue(true)
+        }
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =

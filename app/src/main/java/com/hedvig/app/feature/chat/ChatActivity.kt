@@ -140,6 +140,20 @@ class ChatActivity : BaseActivity() {
             }
         }
 
+        chatViewModel.networkError.observe(lifecycleOwner = this) { networkError ->
+            if (networkError == true) {
+                showAlert(
+                    R.string.NETWORK_ERROR_ALERT_TITLE,
+                    R.string.NETWORK_ERROR_ALERT_MESSAGE,
+                    R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
+                    R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
+                    positiveAction = {
+                        chatViewModel.load()
+                    }
+                )
+            }
+        }
+
         chatViewModel.subscribe()
         chatViewModel.load()
 
