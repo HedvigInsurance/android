@@ -27,11 +27,16 @@ class ChatViewModel(
     val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
 
     private val disposables = CompositeDisposable()
+    private val chatDisposable = CompositeDisposable()
 
     private var isSubscriptionAllowedToWrite = true
     private var isWaitingForParagraph = false
+    private var isSendingMessage = false
 
     fun subscribe() {
+        if (chatDisposable.size() > 0) {
+            chatDisposable.dispose()
+        }
         disposables += chatRepository.subscribeToChatMessages()
             .subscribe({ response ->
                 response.data()?.message?.let {
@@ -52,7 +57,10 @@ class ChatViewModel(
 
     fun load() {
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
+        if (chatDisposable.size() > 0) {
+            chatDisposable.clear()
+        }
+        chatDisposable += chatRepository
             .fetchChatMessages()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -132,39 +140,59 @@ class ChatViewModel(
     }
 
     fun respondToLastMessage(message: String) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendChatMessage(getLastId(), message)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatTextResponse == true) {
                     load()
                 }
                 sendMessageResponse.postValue(response.data()?.isSendChatTextResponse)
-            }, { Timber.e(it) })
+            }, {
+                isSendingMessage = false
+                Timber.e(it)
+            })
     }
 
     private fun respondWithFile(key: String, uri: Uri) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendFileResponse(getLastId(), key, uri)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatFileResponse == true) {
                     load()
                 }
             }, {
+                isSendingMessage = false
                 Timber.e(it)
             })
     }
 
     fun respondWithSingleSelect(value: String) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendSingleSelect(getLastId(), value)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatSingleSelectResponse == true) {
                     load()
                 }
             }, {
+                isSendingMessage = false
                 Timber.e(it)
             })
     }
@@ -176,6 +204,7 @@ class ChatViewModel(
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
+        chatDisposable.clear()
     }
 
     fun uploadClaim(path: String) {
