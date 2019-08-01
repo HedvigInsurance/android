@@ -40,7 +40,9 @@ class FileService(
     }
 
     fun getMimeType(path: String): String? {
-        val fileExtension = MimeTypeMap.getFileExtensionFromUrl(path)
+        val fileExtension = getFileExtension(path)
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase())
     }
+
+    fun getFileExtension(path: String) = MimeTypeMap.getFileExtensionFromUrl(path)
 }
