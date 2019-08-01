@@ -143,12 +143,12 @@ class ChatInputView : FrameLayout {
         }
         inputText.hint = input.hint ?: ""
         inputText.inputType = when (input.keyboardType) {
-            KeyboardType.DEFAULT -> InputType.TYPE_CLASS_TEXT
+            KeyboardType.DEFAULT -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             KeyboardType.EMAIL -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             KeyboardType.PHONE -> InputType.TYPE_CLASS_PHONE
             KeyboardType.NUMBERPAD, KeyboardType.NUMERIC -> InputType.TYPE_CLASS_NUMBER
             KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-            else -> InputType.TYPE_CLASS_TEXT
+            else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
         inputText.requestFocus()
     }
@@ -200,6 +200,9 @@ class ChatInputView : FrameLayout {
     }
 
     private fun performTextMessageSend() {
+        if (inputText.currentMessage.isBlank()) {
+            return
+        }
         sendTextMessage(inputText.currentMessage)
         dismissKeyboard()
     }
