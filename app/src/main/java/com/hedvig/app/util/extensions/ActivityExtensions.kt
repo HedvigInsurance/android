@@ -194,7 +194,7 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
             it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
     }
-    "message.bankid.start" -> {
+    "message.bankid.start", "message.bankid.autostart.respond" -> {
         AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
     }
     "hedvig.com" -> { // bot-service is weird. it sends this when the user gets the option to go to `Hem`. We simply dismiss the activity for now in this case
