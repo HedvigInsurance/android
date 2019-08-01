@@ -25,13 +25,20 @@ class ChatViewModel(
     val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
     val fileUploadOutcome = LiveEvent<FileUploadOutcome>()
     val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
+    val networkError = LiveEvent<Boolean>()
 
     private val disposables = CompositeDisposable()
+    private val chatDisposable = CompositeDisposable()
 
     private var isSubscriptionAllowedToWrite = true
     private var isWaitingForParagraph = false
+    private var isSendingMessage = false
+    private var loadRetries = 0L
 
     fun subscribe() {
+        if (chatDisposable.size() > 0) {
+            chatDisposable.dispose()
+        }
         disposables += chatRepository.subscribeToChatMessages()
             .subscribe({ response ->
                 response.data()?.message?.let {
@@ -52,19 +59,43 @@ class ChatViewModel(
 
     fun load() {
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
+        if (chatDisposable.size() > 0) {
+            chatDisposable.clear()
+        }
+        chatDisposable += chatRepository
             .fetchChatMessages()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
+                if (response.hasErrors()) {
+                    retryLoad()
+                    isSubscriptionAllowedToWrite = true
+                    return@subscribe
+                }
                 postResponseValue(response)
                 if (isFirstParagraph(response)) {
                     waitForParagraph(getFirstParagraphDelay(response))
                 }
                 isSubscriptionAllowedToWrite = true
             }, {
+                retryLoad()
+                isSubscriptionAllowedToWrite = true
                 Timber.e(it)
             })
+    }
+
+    private fun retryLoad() {
+        if (loadRetries < 5) {
+            loadRetries += 1
+            disposables += Observable
+                .timer(loadRetries, TimeUnit.SECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    load()
+                }, { Timber.e(it) })
+        } else {
+            networkError.postValue(true)
+        }
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
@@ -132,39 +163,59 @@ class ChatViewModel(
     }
 
     fun respondToLastMessage(message: String) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendChatMessage(getLastId(), message)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatTextResponse == true) {
                     load()
                 }
                 sendMessageResponse.postValue(response.data()?.isSendChatTextResponse)
-            }, { Timber.e(it) })
+            }, {
+                isSendingMessage = false
+                Timber.e(it)
+            })
     }
 
     private fun respondWithFile(key: String, uri: Uri) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendFileResponse(getLastId(), key, uri)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatFileResponse == true) {
                     load()
                 }
             }, {
+                isSendingMessage = false
                 Timber.e(it)
             })
     }
 
     fun respondWithSingleSelect(value: String) {
+        if (isSendingMessage) {
+            return
+        }
+        isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         disposables += chatRepository
             .sendSingleSelect(getLastId(), value)
             .subscribe({ response ->
+                isSendingMessage = false
                 if (response.data()?.isSendChatSingleSelectResponse == true) {
                     load()
                 }
             }, {
+                isSendingMessage = false
                 Timber.e(it)
             })
     }
@@ -176,6 +227,7 @@ class ChatViewModel(
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
+        chatDisposable.clear()
     }
 
     fun uploadClaim(path: String) {
