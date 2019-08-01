@@ -27,7 +27,7 @@ class AttachFileAdapter(
     private val takePhoto: () -> Unit,
     private val showUploadFileDialog: () -> Unit,
     private val uploadFile: (Uri) -> Unit
-) : androidx.recyclerview.widget.RecyclerView.Adapter<AttachFileAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<AttachFileAdapter.ViewHolder>() {
 
     var isUploadingTakenPicture: Boolean = false
         set(value) {
@@ -139,7 +139,7 @@ class AttachFileAdapter(
     override fun getItemViewType(position: Int) =
         if (position == 0) CAMERA_AND_MISC_VIEW_TYPE else IMAGE_VIEW_TYPE
 
-    sealed class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         class CameraAndMiscViewHolder(itemView: View) : ViewHolder(itemView) {
             val cameraButton: FrameLayout = itemView.cameraButton
             val cameraIcon: ImageView = itemView.cameraIcon

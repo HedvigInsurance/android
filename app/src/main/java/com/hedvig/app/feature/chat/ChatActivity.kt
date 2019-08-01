@@ -330,7 +330,13 @@ class ChatActivity : BaseActivity() {
         val columnIndexData: Int
 
         val projection = arrayOf(MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val cursor = this@ChatActivity.contentResolver.query(uri, projection, null, null, null)
+        val cursor = this@ChatActivity.contentResolver.query(
+            uri,
+            projection,
+            null,
+            null,
+            "${MediaColumns.DATE_ADDED} DESC"
+        )
 
         cursor?.let {
             columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DATA)

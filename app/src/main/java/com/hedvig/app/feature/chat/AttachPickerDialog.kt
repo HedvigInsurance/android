@@ -128,9 +128,9 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     }
 
     private fun setupRecyclerView() {
-        attachFileRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(
+        attachFileRecyclerView.layoutManager = LinearLayoutManager(
             context,
-            androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
+            LinearLayoutManager.HORIZONTAL,
             false
         )
     }
