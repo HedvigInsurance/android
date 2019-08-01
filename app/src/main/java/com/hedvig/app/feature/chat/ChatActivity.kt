@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
@@ -43,6 +44,8 @@ class ChatActivity : BaseActivity() {
 
     private val chatViewModel: ChatViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
+
+    private val tracker: ChatTracker by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -98,7 +101,8 @@ class ChatActivity : BaseActivity() {
             uploadRecording = { path ->
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
-            }
+            },
+            tracker = tracker
         )
 
         messages.setHasFixedSize(false)
@@ -111,7 +115,7 @@ class ChatActivity : BaseActivity() {
                     chatViewModel.editLastResponse()
                 }
             )
-        })
+        }, tracker = tracker)
 
         chatViewModel.messages.observe(lifecycleOwner = this) { data ->
             data?.let { bindData(it, forceScrollToBottom) }
@@ -127,7 +131,8 @@ class ChatActivity : BaseActivity() {
             currentPhotoPath?.let { File(it).delete() }
         }
 
-        resetChatButton.setOnClickListener {
+        resetChatButton.setHapticClickListener {
+            tracker.restartChat()
             showRestartDialog {
                 storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
                 setAuthenticationToken(null)
@@ -152,6 +157,7 @@ class ChatActivity : BaseActivity() {
         }
 
         closeChatButton.setHapticClickListener {
+            tracker.closeChat()
             onBackPressed()
         }
 

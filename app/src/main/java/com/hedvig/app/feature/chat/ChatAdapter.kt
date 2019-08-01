@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.chat_message_user.view.*
 import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
 import kotlinx.android.synthetic.main.chat_message_user_image.view.*
 
-class ChatAdapter(context: Context, private val onPressEdit: () -> Unit) :
+class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private val tracker: ChatTracker) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
@@ -188,7 +188,10 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit) :
             }
             if (editAllowed) {
                 edit.show()
-                edit.setHapticClickListener { onPressEdit() }
+                edit.setHapticClickListener {
+                    tracker.editMessage()
+                    onPressEdit()
+                }
                 message.updateMargin(end = baseMargin)
             } else {
                 edit.remove()
@@ -258,6 +261,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit) :
                 "EXTENSION" to extension
             )
             label.setHapticClickListener {
+                tracker.openUploadedFile()
                 label.context.openUri(Uri.parse(url))
             }
         }

@@ -2,8 +2,6 @@ package com.hedvig.app.feature.chat
 
 import android.app.Activity
 import android.content.Context
-import androidx.dynamicanimation.animation.DynamicAnimation
-import androidx.dynamicanimation.animation.SpringAnimation
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -12,12 +10,18 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.children
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.view.*
+import com.hedvig.app.util.extensions.view.fadeIn
+import com.hedvig.app.util.extensions.view.fadeOut
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.chat_input_view.view.*
 
 class ChatInputView : FrameLayout {
@@ -26,6 +30,7 @@ class ChatInputView : FrameLayout {
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(context, attributeSet, defStyle)
 
+    private lateinit var tracker: ChatTracker
     private lateinit var sendTextMessage: ((String) -> Unit)
     private lateinit var sendSingleSelect: ((String) -> Unit)
     private lateinit var singleSelectLink: ((String) -> Unit)
@@ -51,6 +56,7 @@ class ChatInputView : FrameLayout {
     init {
         inflate(context, R.layout.chat_input_view, this)
         inputText.sendClickListener = {
+            tracker.sendChatMessage()
             performTextMessageSend()
         }
         inputText.setOnEditorActionListener { _, actionId, event ->
@@ -65,6 +71,7 @@ class ChatInputView : FrameLayout {
             true
         }
         uploadFile.setHapticClickListener {
+            tracker.openAttachFile()
             inputText.clearFocus()
             openAttachFile()
         }
@@ -85,13 +92,15 @@ class ChatInputView : FrameLayout {
         sendSingleSelectLink: (String) -> Unit,
         openAttachFile: () -> Unit,
         requestAudioPermission: () -> Unit,
-        uploadRecording: (String) -> Unit
+        uploadRecording: (String) -> Unit,
+        tracker: ChatTracker
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
         this.singleSelectLink = sendSingleSelectLink
         this.openAttachFile = openAttachFile
         audioRecorder.initialize(requestAudioPermission, uploadRecording)
+        this.tracker = tracker
     }
 
     fun clearInput() {
@@ -163,6 +172,7 @@ class ChatInputView : FrameLayout {
             layoutInflater.inflate(R.layout.chat_single_select_button, singleSelectContainer, false) as TextView
         singleSelectButton.text = label
         singleSelectButton.setHapticClickListener {
+            tracker.singleSelect(label)
             singleSelectButton.isSelected = true
             singleSelectButton.setTextColor(context.compatColor(R.color.white))
             disableSingleButtons()
