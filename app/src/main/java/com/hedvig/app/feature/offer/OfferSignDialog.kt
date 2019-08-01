@@ -19,10 +19,12 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
 import kotlinx.android.synthetic.main.dialog_sign.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class OfferSignDialog : DialogFragment() {
     private val offerViewModel: OfferViewModel by sharedViewModel()
+    private val tracker: OfferTracker by inject()
 
     val handler = Handler()
 
@@ -99,6 +101,7 @@ class OfferSignDialog : DialogFragment() {
                     }
                     SignState.COMPLETED -> {
                         dialog.signStatus.text = getString(R.string.SIGN_SUCCESSFUL)
+                        tracker.userDidSign(offerViewModel.data.value?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toDouble() ?: 0.0)
                         goToLoggedIn()
                     }
                     else -> {

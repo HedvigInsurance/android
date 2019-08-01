@@ -44,12 +44,14 @@ import kotlinx.android.synthetic.main.offer_peril_section.view.*
 import kotlinx.android.synthetic.main.offer_section_switch.*
 import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import kotlin.math.min
 
 class OfferActivity : BaseActivity() {
 
     private val offerViewModel: OfferViewModel by viewModel()
+    private val tracker: OfferTracker by inject()
 
     private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
     private val perilTotalWidth: Int by lazy { resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2) }
@@ -75,6 +77,7 @@ class OfferActivity : BaseActivity() {
         setContentView(R.layout.activity_offer)
 
         offerChatButton.setHapticClickListener {
+            tracker.openChat()
             offerViewModel.triggerOpenChat {
                 startClosableChat(true)
             }
@@ -118,6 +121,7 @@ class OfferActivity : BaseActivity() {
         meSection.paragraph.text = getString(R.string.OFFER_PERSONAL_PROTECTION_DESCRIPTION)
 
         termsSection.privacyPolicy.setHapticClickListener {
+            tracker.openTerms()
             startActivity(Intent(Intent.ACTION_VIEW, PRIVACY_POLICY_URL))
         }
 
@@ -129,9 +133,11 @@ class OfferActivity : BaseActivity() {
 
     private fun setupButtons() {
         signButton.setHapticClickListener {
+            tracker.floatingSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
         offerToolbarSign.setHapticClickListener {
+            tracker.toolbarSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
     }
@@ -182,6 +188,7 @@ class OfferActivity : BaseActivity() {
 
         discountButton.setHapticClickListener {
             if (hasActiveCampaign(data)) {
+                tracker.removeDiscount()
                 showAlert(
                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
@@ -192,6 +199,7 @@ class OfferActivity : BaseActivity() {
                     }
                 )
             } else {
+                tracker.addDiscount()
                 OfferRedeemCodeDialog.newInstance().show(supportFragmentManager, OfferRedeemCodeDialog.TAG)
             }
         }
@@ -344,11 +352,13 @@ class OfferActivity : BaseActivity() {
         }
         data.insurance.presaleInformationUrl?.let { piu ->
             termsSection.presaleInformation.setHapticClickListener {
+                tracker.presaleInformation()
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(piu)))
             }
         }
         data.insurance.policyUrl?.let { pu ->
             termsSection.terms.setHapticClickListener {
+                tracker.terms()
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pu)))
             }
         }
