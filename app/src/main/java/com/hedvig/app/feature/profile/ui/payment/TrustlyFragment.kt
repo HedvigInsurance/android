@@ -5,12 +5,12 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -25,10 +25,12 @@ import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class TrustlyFragment : androidx.fragment.app.Fragment() {
+class TrustlyFragment : Fragment() {
 
-    val profileViewModel: ProfileViewModel by sharedViewModel()
-    val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
+
+    private val tracker: TrustlyTracker by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_trustly, container, false)
@@ -99,6 +101,7 @@ class TrustlyFragment : androidx.fragment.app.Fragment() {
     }
 
     fun showSuccess() {
+        tracker.addPaymentInfo()
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_success)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
