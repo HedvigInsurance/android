@@ -8,6 +8,7 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.analytics.AnalyticsRepository
 import com.hedvig.app.data.debit.DirectDebitRepository
 import com.hedvig.app.feature.chat.ChatRepository
@@ -32,6 +33,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
@@ -149,4 +151,6 @@ val trackerModule = module {
     single { WelcomeTracker(get()) }
     single { OfferTracker(get()) }
     single { ChatTracker(get()) }
+    single { AuthTracker(get()) }
+    single { TrustlyTracker(get()) }
 }
