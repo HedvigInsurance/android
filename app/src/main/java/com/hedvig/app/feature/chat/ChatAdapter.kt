@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
 import kotlinx.android.synthetic.main.chat_message_user.view.*
 import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
 import kotlinx.android.synthetic.main.chat_message_user_image.view.*
+import timber.log.Timber
 
 class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private val tracker: ChatTracker) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -107,22 +108,28 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                     false
                 )
             )
+            NULL_RENDER -> NullMessage(View(parent.context))
             else -> TODO("Handle the invalid invariant")
         }
 
     override fun getItemCount() = messages.size
 
     override fun getItemViewType(position: Int) =
-        if (messages[position].fragments.chatMessageFragment.header.isFromMyself) {
-            when {
-                isImageUploadMessage(messages[position].fragments.chatMessageFragment.body) -> FROM_ME_IMAGE_UPLOAD
-                isFileUploadMessage((messages[position].fragments.chatMessageFragment.body)) -> FROM_ME_FILE_UPLOAD
-                isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_GIPHY
-                isImageMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_IMAGE
-                else -> FROM_ME_TEXT
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.header?.isFromMyself?.let { isFromMyself ->
+            if (isFromMyself) {
+                when {
+                    isImageUploadMessage(messages[position].fragments.chatMessageFragment.body) -> FROM_ME_IMAGE_UPLOAD
+                    isFileUploadMessage((messages[position].fragments.chatMessageFragment.body)) -> FROM_ME_FILE_UPLOAD
+                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_GIPHY
+                    isImageMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_IMAGE
+                    else -> FROM_ME_TEXT
+                }
+            } else {
+                FROM_HEDVIG
             }
-        } else {
-            FROM_HEDVIG
+        } ?: run {
+            Timber.e("Found no message to render with position: %d", position)
+            NULL_RENDER
         }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -151,6 +158,8 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             }
             FROM_ME_FILE_UPLOAD -> {
                 (viewHolder as? FileUploadUserMessage)?.apply { bind(getFileUrl(messages[position].fragments.chatMessageFragment.body)) }
+            }
+            NULL_RENDER -> {
             }
         }
     }
@@ -267,6 +276,8 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
         }
     }
 
+    inner class NullMessage(view: View) : RecyclerView.ViewHolder(view)
+
     companion object {
         private const val FROM_HEDVIG = 0
         private const val FROM_ME_TEXT = 1
@@ -274,6 +285,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
         private const val FROM_ME_IMAGE = 3
         private const val FROM_ME_IMAGE_UPLOAD = 4
         private const val FROM_ME_FILE_UPLOAD = 5
+        private const val NULL_RENDER = 6
 
         private val imageExtensions = listOf(
             "jpg", "png", "gif", "jpeg"
