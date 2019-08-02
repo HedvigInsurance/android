@@ -69,7 +69,10 @@ class AuthenticateDialog : DialogFragment() {
             dialog.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             tracker.login()
             dismiss()
-            startActivity(Intent(this.context, LoggedInActivity::class.java))
+            startActivity(Intent(this.context, LoggedInActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            })
         }
     }
 
