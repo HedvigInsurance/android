@@ -25,11 +25,11 @@ import kotlin.math.min
 class InvitesAdapter(
     private val monthlyCost: Int,
     private val data: ProfileQuery.ReferralInformation
-) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         position: Int
-    ): androidx.recyclerview.widget.RecyclerView.ViewHolder = when (position) {
+    ): RecyclerView.ViewHolder = when (position) {
         HEADER -> {
             HeaderViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.referral_header, parent, false)
@@ -63,7 +63,7 @@ class InvitesAdapter(
         return count
     }
 
-    override fun onBindViewHolder(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (viewHolder.itemViewType) {
             HEADER -> (viewHolder as? HeaderViewHolder)?.apply {
                 val incentive =
@@ -283,7 +283,7 @@ class InvitesAdapter(
         private const val PROGRESS_TANK_MAX_SEGMENTS = 20
     }
 
-    inner class HeaderViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+    inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val progressTankView: ProgressTankView = view.discountView
         val referralProgressHighPremiumContainer: LinearLayout = view.referralProgressHighPremiumContainer
         val referralProgressHighPremiumDiscount: TextView = view.referralProgressHighPremiumDiscount
@@ -301,11 +301,11 @@ class InvitesAdapter(
         val emptyStateTitle: TextView = view.referralSmallHeader
     }
 
-    inner class SmallHeaderViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+    inner class SmallHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val headerTextView: TextView = view as TextView
     }
 
-    inner class ItemViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+    inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val avatar: ImageView = view.avatar
         val avatarLetter: TextView = view.avatarLetter
         val name: TextView = view.name
@@ -315,5 +315,5 @@ class InvitesAdapter(
         val statusIcon: ImageView = view.statusIcon
     }
 
-    inner class EmptyViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+    inner class EmptyViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }
