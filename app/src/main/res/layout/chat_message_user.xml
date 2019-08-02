@@ -16,6 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.8"
+        android:animateLayoutChanges="false"
         android:gravity="end"
         android:orientation="vertical">
 
@@ -28,9 +29,15 @@
             android:layout_marginEnd="@dimen/base_margin"
             android:background="@drawable/chat_message_hedvig"
             android:backgroundTint="@color/purple"
-            android:padding="12dp"
+            android:paddingStart="@dimen/base_margin_double"
+            android:paddingTop="@dimen/base_margin"
+            android:paddingEnd="@dimen/base_margin_double"
+            android:paddingBottom="@dimen/base_margin"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toStartOf="@id/editMessage"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Min email är test@hedvig.com" />
 

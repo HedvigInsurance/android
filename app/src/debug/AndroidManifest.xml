@@ -5,13 +5,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
-        android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="28">
-
-        <activity
-            android:name="com.facebook.react.devsupport.DevSettingsActivity"
-            android:theme="@style/Theme.Exponent.Splash" />
 
         <activity
             android:name=".feature.chat.ChatActivity"

@@ -17,7 +17,10 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin"
             android:background="@drawable/chat_message_hedvig"
-            android:padding="12dp"
+            android:paddingStart="@dimen/base_margin_double"
+            android:paddingTop="@dimen/base_margin"
+            android:paddingEnd="@dimen/base_margin_double"
+            android:paddingBottom="@dimen/base_margin"
             tools:text="Hej! Jag heter Hedvig 👋" />
 
     </FrameLayout>

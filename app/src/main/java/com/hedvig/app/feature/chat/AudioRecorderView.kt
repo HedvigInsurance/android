@@ -123,10 +123,10 @@ class AudioRecorderView : LinearLayout {
         startRecording.remove()
 
         recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setAudioSource(MediaRecorder.AudioSource.DEFAULT)
             setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
             setOutputFile(filePath)
-            setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
 
             try {
                 prepare()

@@ -144,3 +144,5 @@ fun Context.hasPermissions(vararg permissions: String): Boolean {
     }
     return true
 }
+
+fun Context.canOpenUri(uri: Uri) = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null

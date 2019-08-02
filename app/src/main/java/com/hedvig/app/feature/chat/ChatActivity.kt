@@ -1,46 +1,51 @@
 package com.hedvig.app.feature.chat
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.showRestartDialog
-import kotlinx.android.synthetic.main.activity_chat.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
-import android.net.Uri
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.handleSingleSelectLink
+import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
-import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
-import com.hedvig.app.util.extensions.hasPermissions
-import com.hedvig.app.util.extensions.askForPermissions
-import android.content.Intent
-import android.app.Activity
-import android.os.Handler
-import com.hedvig.app.util.extensions.view.updatePadding
-import kotlinx.coroutines.*
-import timber.log.Timber
-import android.os.Environment
-import java.io.File
-import androidx.core.content.FileProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.hedvig.app.BaseActivity
-import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.showRestartDialog
+import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
+import java.io.File
 import java.io.IOException
-import com.hedvig.app.util.extensions.*
 
 class ChatActivity : BaseActivity() {
 
     private val chatViewModel: ChatViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
+
+    private val tracker: ChatTracker by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -96,7 +101,8 @@ class ChatActivity : BaseActivity() {
             uploadRecording = { path ->
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
-            }
+            },
+            tracker = tracker
         )
 
         messages.setHasFixedSize(false)
@@ -109,7 +115,7 @@ class ChatActivity : BaseActivity() {
                     chatViewModel.editLastResponse()
                 }
             )
-        })
+        }, tracker = tracker)
 
         chatViewModel.messages.observe(lifecycleOwner = this) { data ->
             data?.let { bindData(it, forceScrollToBottom) }
@@ -125,11 +131,26 @@ class ChatActivity : BaseActivity() {
             currentPhotoPath?.let { File(it).delete() }
         }
 
-        resetChatButton.setOnClickListener {
+        resetChatButton.setHapticClickListener {
+            tracker.restartChat()
             showRestartDialog {
                 storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
                 setAuthenticationToken(null)
-                userViewModel.logout { triggerRestartActivity() }
+                userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+            }
+        }
+
+        chatViewModel.networkError.observe(lifecycleOwner = this) { networkError ->
+            if (networkError == true) {
+                showAlert(
+                    R.string.NETWORK_ERROR_ALERT_TITLE,
+                    R.string.NETWORK_ERROR_ALERT_MESSAGE,
+                    R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
+                    R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
+                    positiveAction = {
+                        chatViewModel.load()
+                    }
+                )
             }
         }
 
@@ -150,6 +171,7 @@ class ChatActivity : BaseActivity() {
         }
 
         closeChatButton.setHapticClickListener {
+            tracker.closeChat()
             onBackPressed()
         }
 
@@ -281,7 +303,7 @@ class ChatActivity : BaseActivity() {
         tempTakenPhotoFile?.also { file ->
             val photoURI: Uri = FileProvider.getUriForFile(
                 this,
-                "com.hedvig.android.file.provider",
+                getString(R.string.file_provider_authority),
                 file
             )
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
@@ -308,7 +330,13 @@ class ChatActivity : BaseActivity() {
         val columnIndexData: Int
 
         val projection = arrayOf(MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val cursor = this@ChatActivity.contentResolver.query(uri, projection, null, null, null)
+        val cursor = this@ChatActivity.contentResolver.query(
+            uri,
+            projection,
+            null,
+            null,
+            "${MediaColumns.DATE_ADDED} DESC"
+        )
 
         cursor?.let {
             columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DATA)

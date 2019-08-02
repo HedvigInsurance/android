@@ -18,6 +18,7 @@ fragment ChatMessageFragment on Message {
     statusMessage
     editAllowed
     pollingInterval
+    richTextChatCompatible
   }
   body {
     ... on MessageBodySingleSelect {

@@ -5,8 +5,8 @@
     android:id="@+id/chatRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
     android:animateLayoutChanges="true"
+    android:background="@color/off_white"
     tools:context=".feature.chat.ChatActivity">
 
     <FrameLayout
@@ -62,12 +62,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/off_white"
+        android:paddingBottom="@dimen/base_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/input"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
         app:layout_constraintVertical_weight="1"
         app:reverseLayout="true"
-        tools:listItem=""
         tools:listitem="@layout/chat_message_hedvig" />
 
     <com.hedvig.app.feature.chat.ChatInputView

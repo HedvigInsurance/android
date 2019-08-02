@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/off_white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/base_margin_quadruple"
+    android:paddingBottom="@dimen/base_margin_quadruple">
 
     <ImageView
         android:id="@+id/hero"
@@ -37,7 +39,6 @@
         android:id="@+id/perilsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/base_margin_double"
         android:gravity="center_horizontal"
         android:orientation="horizontal" />
 

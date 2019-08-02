@@ -8,15 +8,19 @@ import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
-import com.hedvig.android.owldroid.graphql.*
-import com.hedvig.android.owldroid.type.*
+import com.hedvig.android.owldroid.graphql.ChatMessageSubscription
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.EditLastResponseMutation
+import com.hedvig.android.owldroid.graphql.SendChatFileResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatSingleSelectResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatTextResponseMutation
+import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
 import com.hedvig.android.owldroid.graphql.UploadClaimMutation
+import com.hedvig.android.owldroid.graphql.UploadFileMutation
+import com.hedvig.android.owldroid.type.ChatResponseBodyFileInput
 import com.hedvig.android.owldroid.type.ChatResponseBodySingleSelectInput
 import com.hedvig.android.owldroid.type.ChatResponseBodyTextInput
+import com.hedvig.android.owldroid.type.ChatResponseFileInput
 import com.hedvig.android.owldroid.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.type.ChatResponseTextInput
 import com.hedvig.app.ApolloClientWrapper
@@ -24,6 +28,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import io.reactivex.Observable
 import java.io.File
+import java.util.UUID
 
 class ChatRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -123,9 +128,13 @@ class ChatRepository(
     }
 
     fun uploadFileFromProvider(uri: Uri): Observable<Response<UploadFileMutation.Data>> {
-        val file = File.createTempFile(TEMP_FILE_PREFIX, null) // I hate this but it seems there's no other way
+        val mimeType = fileService.getMimeType(uri)
+        val file = File(
+            context.cacheDir,
+            fileService.getFileName(uri) ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
+        ) // I hate this but it seems there's no other way
         context.contentResolver.openInputStream(uri)?.into(file)
-        return uploadFile(file, fileService.getMimeType(uri) ?: "")
+        return uploadFile(file, mimeType ?: "")
     }
 
     fun uploadFile(uri: Uri): Observable<Response<UploadFileMutation.Data>> =
@@ -138,7 +147,8 @@ class ChatRepository(
             .build()
 
         return Rx2Apollo.from(
-            apolloClientWrapper.apolloClient.mutate(uploadFileMutation))
+            apolloClientWrapper.apolloClient.mutate(uploadFileMutation)
+        )
     }
 
     fun sendFileResponse(id: String, key: String, uri: Uri): Observable<Response<SendChatFileResponseMutation.Data>> {
@@ -161,7 +171,8 @@ class ChatRepository(
             .build()
 
         return Rx2Apollo.from(
-            apolloClientWrapper.apolloClient.mutate(chatFileResponse))
+            apolloClientWrapper.apolloClient.mutate(chatFileResponse)
+        )
     }
 
     fun editLastResponse() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()))
@@ -170,9 +181,5 @@ class ChatRepository(
         val triggerFreeTextChatMutation = TriggerFreeTextChatMutation.builder().build()
 
         return Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(triggerFreeTextChatMutation))
-    }
-
-    companion object {
-        const val TEMP_FILE_PREFIX = "hedvig_upload_temp_file"
     }
 }

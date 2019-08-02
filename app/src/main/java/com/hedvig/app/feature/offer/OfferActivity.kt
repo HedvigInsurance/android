@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -35,8 +34,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.isApartmentOwner
+import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.feature_bubbles.*
@@ -45,12 +44,14 @@ import kotlinx.android.synthetic.main.offer_peril_section.view.*
 import kotlinx.android.synthetic.main.offer_section_switch.*
 import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import kotlin.math.min
 
 class OfferActivity : BaseActivity() {
 
     private val offerViewModel: OfferViewModel by viewModel()
+    private val tracker: OfferTracker by inject()
 
     private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
     private val perilTotalWidth: Int by lazy { resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2) }
@@ -69,12 +70,14 @@ class OfferActivity : BaseActivity() {
 
     private val animationHandler = Handler()
     private var hasTriggeredAnimations = false
+    private var lastAnimationHasCompleted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_offer)
 
         offerChatButton.setHapticClickListener {
+            tracker.openChat()
             offerViewModel.triggerOpenChat {
                 startClosableChat(true)
             }
@@ -88,13 +91,13 @@ class OfferActivity : BaseActivity() {
                 container.show()
                 bindToolbar(d)
                 bindPriceBubbles(d)
-                bindFeatureBubbles(d)
                 bindDiscountButton(d)
                 bindHomeSection(d)
                 bindStuffSection(d)
                 bindMeSection(d)
                 bindTerms(d)
                 bindSwitchSection(d)
+                bindFeatureBubbles(d)
                 animateBubbles(d)
             }
         }
@@ -107,15 +110,6 @@ class OfferActivity : BaseActivity() {
     private fun bindStaticData() {
         setSupportActionBar(offerToolbar)
 
-        val deductibleText =
-            "${getString(R.string.OFFER_BUBBLES_DEDUCTIBLE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE)}"
-        deductibleBubbleText.text = deductibleText
-
-        val bindingPeriodText =
-            "${getString(R.string.OFFER_BUBBLES_BINDING_PERIOD_TITLE)}\n${getString(R.string.OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE)}"
-        bindingPeriodBubbleText.text = bindingPeriodText
-
-
         homeSection.paragraph.text = getString(R.string.OFFER_APARTMENT_PROTECTION_DESCRIPTION)
         homeSection.hero.setImageDrawable(getDrawable(R.drawable.offer_house))
 
@@ -127,6 +121,7 @@ class OfferActivity : BaseActivity() {
         meSection.paragraph.text = getString(R.string.OFFER_PERSONAL_PROTECTION_DESCRIPTION)
 
         termsSection.privacyPolicy.setHapticClickListener {
+            tracker.openTerms()
             startActivity(Intent(Intent.ACTION_VIEW, PRIVACY_POLICY_URL))
         }
 
@@ -138,9 +133,11 @@ class OfferActivity : BaseActivity() {
 
     private fun setupButtons() {
         signButton.setHapticClickListener {
+            tracker.floatingSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
         offerToolbarSign.setHapticClickListener {
+            tracker.toolbarSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
     }
@@ -191,6 +188,7 @@ class OfferActivity : BaseActivity() {
 
         discountButton.setHapticClickListener {
             if (hasActiveCampaign(data)) {
+                tracker.removeDiscount()
                 showAlert(
                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
@@ -201,6 +199,7 @@ class OfferActivity : BaseActivity() {
                     }
                 )
             } else {
+                tracker.addDiscount()
                 OfferRedeemCodeDialog.newInstance().show(supportFragmentManager, OfferRedeemCodeDialog.TAG)
             }
         }
@@ -231,6 +230,7 @@ class OfferActivity : BaseActivity() {
                     netPremium.setTextColor(compatColor(R.color.pink))
                 }
                 is IncentiveFragment.AsFreeMonths -> {
+                    discountBubble.show()
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
@@ -239,6 +239,12 @@ class OfferActivity : BaseActivity() {
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
             }
+            if (lastAnimationHasCompleted) {
+                animateDiscountBubble()
+            }
+        } else {
+            discountBubble.scaleX = 0f
+            discountBubble.scaleY = 0f
         }
     }
 
@@ -262,7 +268,9 @@ class OfferActivity : BaseActivity() {
         }, BASE_BUBBLE_ANIMATION_DELAY + 150)
         animationHandler.postDelayed({
             performBubbleAnimation(brfOrTravelBubble)
-            performBubbleAnimation(deductibleBubble)
+            performBubbleAnimation(deductibleBubble) {
+                lastAnimationHasCompleted = true
+            }
         }, BASE_BUBBLE_ANIMATION_DELAY + 200)
     }
 
@@ -278,21 +286,15 @@ class OfferActivity : BaseActivity() {
     }
 
     private fun bindFeatureBubbles(data: OfferQuery.Data) {
-        val amountInsuredInterpolated = interpolateTextKey(
+        amountInsuredBubbleText.text = interpolateTextKey(
             getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
             "personsInHousehold" to data.insurance.personsInHousehold
         )
-        val amountInsuredText = "${getString(R.string.OFFER_BUBBLES_INSURED_TITLE)}\n$amountInsuredInterpolated"
-        amountInsuredBubbleText.text = amountInsuredText
 
         if (data.insurance.insuredAtOtherCompany == true) {
-            val startDateText =
-                "${getString(R.string.OFFER_BUBBLES_START_DATE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)}"
-            startDateBubbleText.text = startDateText
+            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
         } else {
-            val startDateText =
-                "${getString(R.string.OFFER_BUBBLES_START_DATE_TITLE)}\n${getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)}"
-            startDateBubbleText.text = startDateText
+            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)
         }
 
         data.insurance.type?.let { t ->
@@ -350,11 +352,13 @@ class OfferActivity : BaseActivity() {
         }
         data.insurance.presaleInformationUrl?.let { piu ->
             termsSection.presaleInformation.setHapticClickListener {
+                tracker.presaleInformation()
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(piu)))
             }
         }
         data.insurance.policyUrl?.let { pu ->
             termsSection.terms.setHapticClickListener {
+                tracker.terms()
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pu)))
             }
         }
@@ -462,13 +466,20 @@ class OfferActivity : BaseActivity() {
 
         private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.size > 0
 
-        private fun performBubbleAnimation(view: View) {
+        private fun performBubbleAnimation(view: View, endAction: (() -> Unit)? = null) {
             view
                 .spring(SpringAnimation.SCALE_X, stiffness = 1200f)
                 .animateToFinalPosition(1f)
-            view
+            val handle = view
                 .spring(SpringAnimation.SCALE_Y, stiffness = 1200f)
-                .animateToFinalPosition(1f)
+
+
+            if (endAction != null) {
+                handle.addEndListener { _, _, _, _ ->
+                    endAction()
+                }
+            }
+            handle.animateToFinalPosition(1f)
         }
 
         private fun isSwitchableInsurer(insurerName: String?) = when (insurerName) {

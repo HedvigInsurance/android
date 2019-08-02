@@ -68,6 +68,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://giraffe.hedvig.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://giraffe.hedvig.com\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://www.hedvig.com/referrals/\""
+            resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
             shrinkResources true
@@ -82,6 +83,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
+            resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
             shrinkResources true
@@ -96,6 +98,8 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
+
+            resValue "string", "file_provider_authority", "\"com.hedvig.android.dev.file.provider\""
 
             debuggable true
         }
@@ -129,7 +133,6 @@ dependencies {
 
     // Android support
     def support_version = "28.0.0"
-    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
     implementation 'androidx.media:media:1.0.1'
@@ -173,13 +176,6 @@ dependencies {
 
     // Segment
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
-    implementation 'com.segment.analytics.android:analytics:4.2.6'
-    // compile 'io.branch.segment.analytics.android.integrations:branch:1.0.2-RELEASE'
-
-    implementation 'io.branch.sdk.android:library:3.2.0'
-
-    // Animated GIF support
-    implementation 'com.facebook.fresco:animated-gif:1.11.0'
 
     // Koin
     def koin_version = "2.0.0-GA"
@@ -220,6 +216,7 @@ dependencies {
 
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'
+    implementation 'com.android.installreferrer:installreferrer:1.0'
 
     // test
     testImplementation 'junit:junit:4.12'
