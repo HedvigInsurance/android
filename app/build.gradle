@@ -176,10 +176,6 @@ dependencies {
 
     // Segment
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
-    implementation 'com.segment.analytics.android:analytics:4.2.6'
-    // compile 'io.branch.segment.analytics.android.integrations:branch:1.0.2-RELEASE'
-
-    implementation 'io.branch.sdk.android:library:3.2.0'
 
     // Koin
     def koin_version = "2.0.0-GA"
@@ -220,6 +216,7 @@ dependencies {
 
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'
+    implementation 'com.android.installreferrer:installreferrer:1.0'
 
     // test
     testImplementation 'junit:junit:4.12'
