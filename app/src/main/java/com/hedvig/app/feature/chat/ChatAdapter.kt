@@ -46,16 +46,16 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             val diff =
                 DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                        oldMessages[oldItemPosition].fragments.chatMessageFragment.globalId ==
-                            value[newItemPosition].fragments.chatMessageFragment.globalId
+                        oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
+                            value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
 
                     override fun getOldListSize(): Int = oldMessages.size
 
                     override fun getNewListSize(): Int = value.size
 
                     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                        oldMessages[oldItemPosition].fragments.chatMessageFragment ==
-                            value[newItemPosition].fragments.chatMessageFragment
+                        oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
+                            value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
                 })
             diff.dispatchUpdatesTo(this)
         }
