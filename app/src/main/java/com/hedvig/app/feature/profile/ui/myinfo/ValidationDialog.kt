@@ -1,11 +1,10 @@
 package com.hedvig.app.feature.profile.ui.myinfo
 
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import com.hedvig.app.R
 import kotlinx.android.synthetic.main.dialog_validation.*
 
@@ -22,7 +21,7 @@ class ValidationDialog : androidx.fragment.app.DialogFragment() {
             dialogConfirm.text = resources.getString(args.getInt(DISMISS))
 
             dialogConfirm.setOnClickListener {
-                dialog.dismiss()
+                dialog?.dismiss()
             }
         }
     }

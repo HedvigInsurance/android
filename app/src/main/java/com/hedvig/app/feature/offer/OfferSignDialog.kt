@@ -39,7 +39,7 @@ class OfferSignDialog : DialogFragment() {
         offerViewModel.clearPreviousErrors()
         offerViewModel.signError.observe(lifecycleOwner = this) { err ->
             if (err == true) {
-                dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                dialog.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                 dialog.setCanceledOnTouchOutside(true)
             } else if (err == false) {
                 dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
@@ -68,7 +68,7 @@ class OfferSignDialog : DialogFragment() {
                 )
             )
         } else {
-            dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
+            dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
         }
     }
 
@@ -77,38 +77,39 @@ class OfferSignDialog : DialogFragment() {
             BankIdStatus.PENDING -> {
                 when (d.collectStatus?.code) {
                     "noClient" -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
                     }
                     "unknown", "userSign" -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_IN_PROGRESS)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_IN_PROGRESS)
                     }
                 }
             }
             BankIdStatus.FAILED -> {
                 when (d.collectStatus?.code) {
                     "userCancel", "cancelled" -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_CANCELED)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_CANCELED)
                     }
                     else -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                     }
                 }
-                dialog.setCanceledOnTouchOutside(true)
+                dialog?.setCanceledOnTouchOutside(true)
             }
             BankIdStatus.COMPLETE -> {
                 when (d.signState) {
                     SignState.IN_PROGRESS, SignState.INITIATED -> {
                     }
                     SignState.COMPLETED -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_SUCCESSFUL)
-                        tracker.userDidSign(offerViewModel.data.value?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toDouble() ?: 0.0)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_SUCCESSFUL)
+                        tracker.userDidSign(
+                            offerViewModel.data.value?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toDouble()
+                                ?: 0.0
+                        )
                         goToLoggedIn()
                     }
                     else -> {
-                        dialog.signStatus.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                        dialog?.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                     }
-                }
-                if (d.signState == SignState.COMPLETED) {
                 }
             }
             else -> {

@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.hedvig.app.R
 
-abstract class BaseTabFragment : androidx.fragment.app.Fragment() {
+abstract class BaseTabFragment : Fragment() {
     val navController by lazy { requireActivity().findNavController(R.id.loggedNavigationHost) }
 
     @get:LayoutRes
@@ -28,20 +28,20 @@ abstract class BaseTabFragment : androidx.fragment.app.Fragment() {
         if (isVisibleToUser) {
             view?.let { v ->
                 (v as? NestedScrollView)?.scrollTo(0, 0)
-                (v as? androidx.recyclerview.widget.RecyclerView)?.let { recyclerView ->
+                (v as? RecyclerView)?.let { recyclerView ->
                     recyclerView.scrollToPosition(0)
-                    (recyclerView.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager)?.scrollToPositionWithOffset(
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
                         0,
                         0
                     )
                 }
-                (v as? androidx.coordinatorlayout.widget.CoordinatorLayout)?.let { coordinatorLayout ->
+                (v as? CoordinatorLayout)?.let { coordinatorLayout ->
                     (coordinatorLayout.getChildAt(0) as? NestedScrollView)?.let {
                         it.scrollTo(0, 0)
                     }
-                    (coordinatorLayout.getChildAt(0) as? androidx.recyclerview.widget.RecyclerView)?.let { recyclerView ->
+                    (coordinatorLayout.getChildAt(0) as? RecyclerView)?.let { recyclerView ->
                         recyclerView.scrollToPosition(0)
-                        (recyclerView.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager)?.scrollToPositionWithOffset(
+                        (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
                             0,
                             0
                         )

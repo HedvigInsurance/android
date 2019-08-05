@@ -62,18 +62,18 @@ class AuthenticateDialog : DialogFragment() {
 
     private fun bindNewStatus(state: AuthState) = when (state) {
         AuthState.INITIATED -> {
-            dialog.authTitle.text = getString(R.string.BANK_ID_AUTH_TITLE_INITIATED)
+            dialog?.authTitle?.text = getString(R.string.BANK_ID_AUTH_TITLE_INITIATED)
         }
         AuthState.IN_PROGRESS -> {
-            dialog.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
+            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
         AuthState.`$UNKNOWN`,
         AuthState.FAILED -> {
-            dialog.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
-            dialog.setCanceledOnTouchOutside(true)
+            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
+            dialog?.setCanceledOnTouchOutside(true)
         }
         AuthState.SUCCESS -> {
-            dialog.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
+            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             tracker.login()
             requireContext().setIsLoggedIn(true)
             GlobalScope.launch(Dispatchers.IO) {
