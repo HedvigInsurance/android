@@ -123,7 +123,7 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
             LoggedInTabs.CLAIMS,

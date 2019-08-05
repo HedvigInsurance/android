@@ -1,9 +1,6 @@
 package com.hedvig.app.feature.profile.ui.myinfo
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.appcompat.view.menu.ActionMenuItemView
 import android.text.TextWatcher
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
@@ -12,6 +9,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.hedvig.app.R
@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class MyInfoFragment : androidx.fragment.app.Fragment() {
+class MyInfoFragment : Fragment() {
     private val profileViewModel: ProfileViewModel by sharedViewModel()
 
     private var emailTextWatcher: TextWatcher? = null
@@ -69,7 +69,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val prevEmail = profileViewModel.data.value?.member?.email ?: ""
         val prevPhoneNumber = profileViewModel.data.value?.member?.phoneNumber ?: ""
 

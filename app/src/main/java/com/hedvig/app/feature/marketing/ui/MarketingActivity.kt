@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.marketing.ui
 
 import android.animation.ValueAnimator
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import android.view.GestureDetector
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.ProgressBar
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.Observer
 import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -17,14 +17,20 @@ import com.hedvig.app.feature.chat.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
-import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.hideStatusBar
+import com.hedvig.app.util.extensions.setDarkNavigationBar
+import com.hedvig.app.util.extensions.setLightNavigationBar
+import com.hedvig.app.util.extensions.showStatusBar
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.percentageFade
-import kotlinx.android.synthetic.main.marketing_activity.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import kotlinx.android.synthetic.main.marketing_activity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -263,7 +269,6 @@ class MarketingActivity : BaseActivity() {
                 doOnEnd {
                     sayHello.translationY = translation
                     sayHello.show()
-                    hedvigFaceAnimation.useHardwareAcceleration(true)
                     hedvigFaceAnimation.show()
                     hedvigFaceAnimation.translationY = translation
                     hedvigFaceAnimation.playAnimation()

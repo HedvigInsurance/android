@@ -25,7 +25,7 @@ class ReferralsFragment : BaseTabFragment() {
 
     private var shouldRemoveReferralNotification: Boolean = false
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (shouldRemoveReferralNotification) {
             tabViewModel.removeReferralNotification()

@@ -41,11 +41,11 @@ class UploadBottomSheet : RoundedBottomSheetDialogFragment() {
         chatViewModel.isUploading.observe(lifecycleOwner = this) { isUploading ->
             isUploading?.let { iu ->
                 if (iu) {
-                    dialog.header.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
-                    dialog.loadingSpinner.playAnimation()
-                    dialog.loadingSpinner.show()
-                    dialog.uploadImageOrVideo.remove()
-                    dialog.uploadFile.remove()
+                    dialog?.header?.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
+                    dialog?.loadingSpinner?.playAnimation()
+                    dialog?.loadingSpinner?.show()
+                    dialog?.uploadImageOrVideo?.remove()
+                    dialog?.uploadFile?.remove()
                     isCancelable = false
                 }
             }

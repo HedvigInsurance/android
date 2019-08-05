@@ -41,11 +41,13 @@ class MainApplication : Application() {
             androidLogger()
             androidContext(this@MainApplication)
             modules(
-                applicationModule,
-                viewModelModule,
-                serviceModule,
-                repositoriesModule,
-                trackerModule
+                listOf(
+                    applicationModule,
+                    viewModelModule,
+                    serviceModule,
+                    repositoriesModule,
+                    trackerModule
+                )
             )
         }
 

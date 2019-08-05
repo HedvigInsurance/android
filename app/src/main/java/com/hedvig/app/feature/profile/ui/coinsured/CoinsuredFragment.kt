@@ -1,14 +1,13 @@
 package com.hedvig.app.feature.profile.ui.coinsured
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -50,7 +49,6 @@ class CoinsuredFragment : androidx.fragment.app.Fragment() {
             textContainer.show()
 
             loadingAnimation.show()
-            loadingAnimation.useHardwareAcceleration(true)
             loadingAnimation.playAnimation()
 
             profileData?.insurance?.personsInHousehold?.let { personsInHousehold ->
