@@ -6,6 +6,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
 class OfferTracker(
     private val firebaseAnalytics: FirebaseAnalytics
 ) {
+
+    private var hasSigned = false
+
     fun openChat() = firebaseAnalytics.logEvent("OFFER_OPEN_CHAT", null)
     fun openTerms() = firebaseAnalytics.logEvent("OFFER_PRIVACY_POLICY", null)
     fun floatingSign() = firebaseAnalytics.logEvent("OFFER_SIGN_BUTTON", null)
@@ -15,9 +18,12 @@ class OfferTracker(
     fun presaleInformation() = firebaseAnalytics.logEvent("OFFER_PRESALE_INFORMATION", null)
     fun terms() = firebaseAnalytics.logEvent("OFFER_TERMS", null)
     fun userDidSign(price: Double) {
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, Bundle().apply {
-            putDouble(FirebaseAnalytics.Param.VALUE, price)
-            putString(FirebaseAnalytics.Param.CURRENCY, "SEK")
-        })
+        if (!hasSigned) {
+            hasSigned = true
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, Bundle().apply {
+                putDouble(FirebaseAnalytics.Param.VALUE, price)
+                putString(FirebaseAnalytics.Param.CURRENCY, "SEK")
+            })
+        }
     }
 }
