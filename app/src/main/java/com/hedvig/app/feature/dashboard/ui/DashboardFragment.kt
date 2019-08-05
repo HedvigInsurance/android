@@ -2,10 +2,10 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.content.res.Resources
 import android.os.Bundle
-import com.google.android.material.appbar.AppBarLayout
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.google.android.material.appbar.AppBarLayout
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
@@ -17,8 +17,8 @@ import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.remove
@@ -75,6 +75,7 @@ class DashboardFragment : BaseTabFragment() {
 
     override fun onResume() {
         super.onResume()
+        dashboardNestedScrollView.scrollTo(0, 0)
         dashboardViewModel.data.value?.insurance?.activeFrom?.let { localDate ->
             setActivationFigures(localDate)
         }

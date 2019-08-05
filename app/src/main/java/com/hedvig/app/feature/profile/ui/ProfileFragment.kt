@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.widget.NestedScrollView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -33,6 +34,11 @@ class ProfileFragment : BaseTabFragment() {
 
         populateData()
         loadReferralFeature()
+    }
+
+    override fun onResume() {
+        (view as? NestedScrollView)?.scrollTo(0, 0)
+        super.onResume()
     }
 
     private fun loadReferralFeature() {

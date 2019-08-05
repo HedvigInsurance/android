@@ -101,7 +101,7 @@ class ProgressTankView : View {
     private var isInitialized = false
     private var hasDiscount = false
 
-    private var isWaitingForAnimation = false
+    private var isWaitingForAnimation = true
 
     fun initialize(premium: Int, discount: Int, step: Int) {
         this.premium = premium
@@ -109,7 +109,6 @@ class ProgressTankView : View {
         this.step = step
         segments = ceil(premium.toFloat() / step).toInt()
         isInitialized = true
-        startAnimation()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -425,7 +424,7 @@ class ProgressTankView : View {
     }
 
     // Animation
-    private fun startAnimation() {
+    fun startAnimation() {
         isWaitingForAnimation = true
         postDelayed({
             isWaitingForAnimation = false

@@ -3,9 +3,9 @@ package com.hedvig.app.feature.claims.ui
 import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.type.InsuranceStatus
@@ -15,10 +15,8 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsAdapter
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.proxyNavigate
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
@@ -54,12 +52,12 @@ class ClaimsFragment : BaseTabFragment() {
             }
         }
 
-        commonClaimsRecyclerView.addItemDecoration(object : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+        commonClaimsRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
                 outRect: Rect,
                 view: View,
-                parent: androidx.recyclerview.widget.RecyclerView,
-                state: androidx.recyclerview.widget.RecyclerView.State
+                parent: RecyclerView,
+                state: RecyclerView.State
             ) {
                 val position = parent.getChildAdapterPosition(view)
                 val column = position % 2
@@ -97,7 +95,7 @@ class ClaimsFragment : BaseTabFragment() {
         }
 
         // setup common claims
-        commonClaimsRecyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2)
+        commonClaimsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         commonClaimsRecyclerView.adapter =
             CommonClaimsAdapter(
                 commonClaims = commonClaimsData.commonClaims,
@@ -112,7 +110,11 @@ class ClaimsFragment : BaseTabFragment() {
                     navController.proxyNavigate(R.id.action_loggedInFragment_to_emergencyFragment)
                 }
             )
+    }
+
+    override fun onResume() {
         claimsNestedScrollView.scrollTo(0, 0)
+        super.onResume()
     }
 
     private fun handleNoQuickActions() {
