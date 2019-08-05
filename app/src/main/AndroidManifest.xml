@@ -178,10 +178,6 @@
         </receiver>
 
         <meta-data
-            android:name="io.branch.sdk.BranchKey"
-            android:value="@string/BRANCH_KEY" />
-
-        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_symbol_android" />
     </application>

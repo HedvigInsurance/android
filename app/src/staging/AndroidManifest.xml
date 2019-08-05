@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hedvig.dev.app">
+
+    <application>
+
+        <meta-data
+            android:name="io.branch.sdk.BranchKey.test"
+            android:value="@string/BRANCH_KEY" />
+        <meta-data
+            android:name="io.branch.sdk.TestMode"
+            android:value="true" />
+
+    </application>
+
+</manifest>
