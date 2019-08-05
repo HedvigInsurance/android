@@ -84,7 +84,9 @@ class MarketingStoriesRepository(
                         CacheUtil.cache(
                             DataSpec(Uri.parse(url)),
                             cache,
+                            null,
                             dataSourceFactory.createDataSource(),
+                            null,
                             null
                         )
                     }

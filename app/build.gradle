@@ -194,7 +194,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:3.0.7"
 
     // Exoplayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.3'
 
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.0'
 
