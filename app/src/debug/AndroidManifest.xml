@@ -26,6 +26,13 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="io.branch.sdk.BranchKey.test"
+            android:value="@string/BRANCH_KEY" />
+        <meta-data
+            android:name="io.branch.sdk.TestMode"
+            android:value="true" />
+
     </application>
 
 </manifest>
