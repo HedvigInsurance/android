@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:resize_mode="zoom"
+        app:resize_mode="fill"
         app:use_controller="false" />
 
 
