@@ -17,7 +17,6 @@ class ClaimsViewModel(
 ) : ViewModel() {
 
     val data: MutableLiveData<CommonClaimQuery.Data> = MutableLiveData()
-    val selectedSubViewData: MutableLiveData<CommonClaimQuery.CommonClaim> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -32,9 +31,6 @@ class ClaimsViewModel(
                 Timber.e(error, "Failed to fetch claims data")
             })
     }
-
-    fun setSelectedSubViewData(selectedSubView: CommonClaimQuery.CommonClaim) =
-        selectedSubViewData.postValue(selectedSubView)
 
     fun triggerClaimsChat(claimTypeId: String? = null, done: () -> Unit) {
         disposables += claimsRepository

@@ -19,24 +19,6 @@
             app:popUpTo="@+id/loggedInFragment" />
 
         <action
-            android:id="@+id/action_loggedInFragment_to_commonClaimsFragment"
-            app:destination="@+id/claimsCommonClaimFragment"
-            app:enterAnim="@anim/slide_in_up"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/stay_in_place"
-            app:popExitAnim="@anim/slide_out_down"
-            app:popUpTo="@+id/loggedInFragment" />
-
-        <action
-            android:id="@+id/action_loggedInFragment_to_emergencyFragment"
-            app:destination="@+id/claimsEmergencyFragment"
-            app:enterAnim="@anim/slide_in_up"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/stay_in_place"
-            app:popExitAnim="@anim/slide_out_down"
-            app:popUpTo="@+id/loggedInFragment" />
-
-        <action
             android:id="@+id/action_loggedInFragment_to_referralFragment"
             app:destination="@id/referralFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -105,16 +87,6 @@
         android:id="@+id/trustlyFragment"
         android:name="com.hedvig.app.feature.profile.ui.payment.TrustlyFragment"
         android:label="TrustlyFragment" />
-
-    <fragment
-        android:id="@+id/claimsCommonClaimFragment"
-        android:name="com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimFragment"
-        android:label="CommonClaimFragment" />
-
-    <fragment
-        android:id="@+id/claimsEmergencyFragment"
-        android:name="com.hedvig.app.feature.claims.ui.commonclaim.EmergencyFragment"
-        android:label="EmergencyFragment" />
 
     <fragment
         android:id="@+id/referralFragment"

@@ -16,12 +16,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.util.extensions.view.setupLargeTitle
 import kotlinx.android.synthetic.main.app_bar.*
 
-val androidx.fragment.app.Fragment.localBroadcastManager
+val Fragment.localBroadcastManager
     get() = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(
         requireContext()
     )
 
-fun androidx.fragment.app.Fragment.setupLargeTitle(
+fun Fragment.setupLargeTitle(
     @StringRes title: Int,
     @FontRes font: Int,
     @DrawableRes icon: Int? = null,
@@ -31,7 +31,7 @@ fun androidx.fragment.app.Fragment.setupLargeTitle(
     setupLargeTitle(getString(title), font, icon, backgroundColor, backAction)
 }
 
-fun androidx.fragment.app.Fragment.setupLargeTitle(
+fun Fragment.setupLargeTitle(
     title: String,
     @FontRes font: Int,
     @DrawableRes icon: Int? = null,
@@ -48,17 +48,17 @@ fun androidx.fragment.app.Fragment.setupLargeTitle(
     )
 }
 
-fun androidx.fragment.app.Fragment.makeACall(uri: Uri) {
+fun Fragment.makeACall(uri: Uri) {
     val intent = Intent(Intent.ACTION_DIAL)
     intent.data = uri
     startActivity(intent)
 }
 
-var androidx.fragment.app.Fragment.statusBarColor: Int
+var Fragment.statusBarColor: Int
     @ColorInt get() = requireActivity().window.statusBarColor
     set(@ColorInt value) {
         requireActivity().window.statusBarColor = value
     }
 
-val androidx.fragment.app.Fragment.screenWidth: Int
+val Fragment.screenWidth: Int
     get() = requireActivity().screenWidth

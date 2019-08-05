@@ -12,11 +12,14 @@ import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsAdapter
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
@@ -102,12 +105,14 @@ class ClaimsFragment : BaseTabFragment() {
                 baseUrl = BuildConfig.BASE_URL,
                 requestBuilder = requestBuilder,
                 navigateToCommonClaimFragment = { commonClaim ->
-                    claimsViewModel.setSelectedSubViewData(commonClaim)
-                    navController.proxyNavigate(R.id.action_loggedInFragment_to_commonClaimsFragment)
+                    CommonClaimsData.from(commonClaim, commonClaimsData.insurance.status)?.let { ccd ->
+                        startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
+                    }
                 },
                 navigateToEmergencyFragment = { commonClaim ->
-                    claimsViewModel.setSelectedSubViewData(commonClaim)
-                    navController.proxyNavigate(R.id.action_loggedInFragment_to_emergencyFragment)
+                    EmergencyData.from(commonClaim, commonClaimsData.insurance.status)?.let { ed ->
+                        startActivity(EmergencyActivity.newInstance(requireContext(), ed))
+                    }
                 }
             )
     }
