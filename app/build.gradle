@@ -50,6 +50,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     splits {
         abi {
             reset()
@@ -147,12 +151,12 @@ dependencies {
 
 
     // WorkManager
-    def workmanager_version = "1.0.1"
-    implementation "android.arch.work:work-runtime:$workmanager_version"
-    implementation "android.arch.work:work-runtime-ktx:$workmanager_version"
+    def workmanager_version = "2.1.0"
+    implementation "androidx.work:work-runtime:$workmanager_version"
+    implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
     // Okhttp
-    def okhttp3_version = '3.12.0'
+    def okhttp3_version = '4.0.1'
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp3_version"
 
