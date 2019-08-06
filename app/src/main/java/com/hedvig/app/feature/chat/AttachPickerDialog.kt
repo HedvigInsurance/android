@@ -46,7 +46,6 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         setupDialogTouchEvents()
         setupWindowsParams()
         setupBottomSheetParams()
-        setupRecyclerView()
     }
 
     fun initialize(
@@ -125,14 +124,6 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         val params = attachPickerBottomSheet.layoutParams
         params.height = pickerHeight
         attachPickerBottomSheet.layoutParams = params
-    }
-
-    private fun setupRecyclerView() {
-        attachFileRecyclerView.layoutManager = LinearLayoutManager(
-            context,
-            LinearLayoutManager.HORIZONTAL,
-            false
-        )
     }
 
     fun setImages(images: List<String>) {

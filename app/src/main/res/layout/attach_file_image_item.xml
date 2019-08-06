@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/attachFileContainer"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_marginEnd="@dimen/base_margin_double"
-    android:gravity="center"
-    android:foreground="?attr/selectableItemBackgroundBorderless">
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:gravity="center">
 
     <ImageView
         android:id="@+id/attachFileImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:contentDescription="@null"
+        tools:layout_height="200dp"
+        tools:layout_width="200dp"
+        tools:src="@drawable/ic_vandalism_red" />
 
     <Button
         android:id="@+id/attachFileSendButton"
         style="@style/HedvigButton"
-        android:backgroundTint="@color/green"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_primary"
-        android:visibility="gone"
         android:layout_gravity="center"
-        android:text="@string/CHAT_UPLOAD_PRESS_SEND_LABEL" />
+        android:background="@drawable/button_primary"
+        android:backgroundTint="@color/green"
+        android:text="@string/CHAT_UPLOAD_PRESS_SEND_LABEL"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-    <include layout="@layout/loading_spinner"/>
+    <include layout="@layout/loading_spinner" />
 
 </FrameLayout>
