@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessageSubscription
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.EditLastResponseMutation
+import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.SendChatFileResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatSingleSelectResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatTextResponseMutation
@@ -182,4 +183,9 @@ class ChatRepository(
 
         return Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(triggerFreeTextChatMutation))
     }
+
+    fun searchGifs(query: String) = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.query(
+            GifQuery.builder().query(query).build()
+        ))
 }

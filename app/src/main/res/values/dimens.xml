@@ -135,4 +135,8 @@
     <dimen name="image_upload_corner_radius">20dp</dimen>
     <dimen name="chat_text_input_vertical_padding">6dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
+    <dimen name="bottom_sheet_handle_height">4dp</dimen>
+    <dimen name="bottom_sheet_handle_width">32dp</dimen>
+    <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
+    <dimen name="gif_image_size">240dp</dimen>
 </resources>

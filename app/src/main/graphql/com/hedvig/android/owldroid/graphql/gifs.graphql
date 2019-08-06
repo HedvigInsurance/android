@@ -1,0 +1,5 @@
+query GifQuery($query: String!) {
+  gifs(query: $query) {
+    url
+  }
+}

@@ -17,6 +17,7 @@ import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.children
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
@@ -35,6 +36,7 @@ class ChatInputView : FrameLayout {
     private lateinit var sendSingleSelect: ((String) -> Unit)
     private lateinit var singleSelectLink: ((String) -> Unit)
     private lateinit var openAttachFile: (() -> Unit)
+    private lateinit var openSendGif: (() -> Unit)
 
     private var currentlyDisplaying: ChatInputType = NullInput
 
@@ -75,6 +77,11 @@ class ChatInputView : FrameLayout {
             inputText.clearFocus()
             openAttachFile()
         }
+        sendGif.setHapticClickListener {
+            tracker.openSendGif()
+            inputText.clearFocus()
+            openSendGif()
+        }
 
         hideAllViews()
     }
@@ -93,7 +100,8 @@ class ChatInputView : FrameLayout {
         openAttachFile: () -> Unit,
         requestAudioPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
-        tracker: ChatTracker
+        tracker: ChatTracker,
+        openSendGif: () -> Unit
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -101,6 +109,7 @@ class ChatInputView : FrameLayout {
         this.openAttachFile = openAttachFile
         audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.tracker = tracker
+        this.openSendGif = openSendGif
     }
 
     fun clearInput() {
@@ -136,10 +145,10 @@ class ChatInputView : FrameLayout {
     private fun bindTextInput(input: TextInput) {
         if (input.richTextSupport) {
             uploadFile.show()
-            //sendGif.show()
+            sendGif.show()
         } else {
             uploadFile.remove()
-            //sendGif.remove()
+            sendGif.remove()
         }
         inputText.hint = input.hint ?: ""
         inputText.inputType = when (input.keyboardType) {
@@ -150,6 +159,7 @@ class ChatInputView : FrameLayout {
             KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
+        
         inputText.requestFocus()
     }
 
@@ -205,11 +215,6 @@ class ChatInputView : FrameLayout {
         }
         sendTextMessage(inputText.currentMessage)
         dismissKeyboard()
-    }
-
-    private fun dismissKeyboard() {
-        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }
 
