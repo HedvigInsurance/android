@@ -16,12 +16,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin"
+            android:autoLink="web"
             android:background="@drawable/chat_message_hedvig"
+            android:linksClickable="true"
             android:paddingStart="@dimen/base_margin_double"
             android:paddingTop="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin_double"
             android:paddingBottom="@dimen/base_margin"
-            tools:text="Hej! Jag heter Hedvig 👋" />
+            android:textColorLink="@color/purple"
+            tools:text="Hej! Jag heter Hedvig 👋\nhttps://www.hedvig.com" />
 
     </FrameLayout>
 
