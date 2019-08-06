@@ -184,3 +184,12 @@ fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
     }
     animation.start()
 }
+
+fun View.dismissKeyboard() =
+    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+        windowToken,
+        0
+    )
+
+fun View.openKeyboard() =
+    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(this, 0)

@@ -95,6 +95,10 @@ class ChatActivity : BaseActivity() {
                     }
                 }
             },
+            openSendGif = {
+                scrollToBottom(true)
+                openGifPicker()
+            },
             requestAudioPermission = {
                 askForPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_AUDIO_PERMISSION)
             },
@@ -277,6 +281,14 @@ class ChatActivity : BaseActivity() {
 
         input.rotateFileUploadIcon(true)
         this.attachPickerDialog = attachPickerDialog
+    }
+
+    private fun openGifPicker() {
+        val gifPickerBottomSheet = GifPickerBottomSheet.newInstance(isKeyboardShown)
+        gifPickerBottomSheet.initialize(onSelectGif = { gifUrl ->
+            chatViewModel.respondToLastMessage(gifUrl)
+        })
+        gifPickerBottomSheet.show(supportFragmentManager, GifPickerBottomSheet.TAG)
     }
 
     private fun startTakePicture() {
