@@ -164,6 +164,21 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
         }
     }
 
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        when (holder) {
+            is GiphyUserMessage -> {
+                Glide
+                    .with(holder.image)
+                    .clear(holder.image)
+            }
+            is ImageUploadUserMessage -> {
+                Glide
+                    .with(holder.image)
+                    .clear(holder.image)
+            }
+        }
+    }
+
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
 
@@ -217,11 +232,8 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                 .with(image)
                 .load(url)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(20)))
-                .override(
-                    com.bumptech.glide.request.target.Target.SIZE_ORIGINAL,
-                    com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-                )
                 .into(image)
+                .clearOnDetach()
         }
     }
 
@@ -255,6 +267,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                     convertDpToPixel(200f)
                 )
                 .into(image)
+                .clearOnDetach()
         }
     }
 
