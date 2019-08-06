@@ -5,9 +5,16 @@
     android:id="@+id/gifDialogContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/off_white"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin">
+    android:paddingTop="@dimen/base_margin"
+    android:paddingBottom="@dimen/base_margin_double">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@null"
+        android:src="@drawable/bottom_sheet_handle" />
 
     <EditText
         android:id="@+id/gifSearchField"
@@ -15,23 +22,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
         android:background="@drawable/chat_background_edit_text_rounded_corners"
         android:hint="@string/CHAT_GIPHY_SEARCH_HINT"
         android:importantForAutofill="no"
         android:inputType="text"
         android:paddingStart="@dimen/base_margin_double"
-        android:paddingTop="@dimen/chat_text_input_vertical_padding"
+        android:paddingTop="@dimen/base_margin"
         android:paddingEnd="@dimen/base_margin_double"
-        android:paddingBottom="@dimen/chat_text_input_vertical_padding"
+        android:paddingBottom="@dimen/base_margin"
         tools:targetApi="O" />
 
     <TextView
         android:id="@+id/emptyGifLabel"
         style="@style/Body.Regular"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="@dimen/gif_image_size"
         android:gravity="center"
         tools:text="👋\nSök på något för att få upp GIFar!" />
 
@@ -39,7 +46,7 @@
         android:id="@+id/gifRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

@@ -1,19 +1,13 @@
 package com.hedvig.app.feature.chat
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.FrameLayout
-import androidx.fragment.app.DialogFragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
+import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
-import com.hedvig.app.util.extensions.view.openKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import io.reactivex.Observable
@@ -27,38 +21,25 @@ import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
 
+    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
+
     private val chatViewModel: ChatViewModel by sharedViewModel()
 
     private lateinit var onSelectGif: (String) -> Unit
 
     private val disposables = CompositeDisposable()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetDialogTheme)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.send_gif_dialog, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Magic to make the bottom sheet not get hidden by the keyboard
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        dialog?.setOnShowListener {
-            val bottomSheet = (dialog as? BottomSheetDialog)?.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            bottomSheet?.let {
-                BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setContentView(LayoutInflater.from(requireContext()).inflate(R.layout.send_gif_dialog, null))
+        dialog.makeKeyboardAware()
 
         val emptyText = "\uD83D\uDC4B\n${getString(R.string.CHAT_GIPHY_PICKER_TEXT)}"
-        emptyGifLabel.text = emptyText
+        dialog.emptyGifLabel.text = emptyText
         val noGifsText = "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
 
         disposables += Observable.create<String> { emitter ->
-            gifSearchField.onChange { emitter.onNext(it) }
+            dialog.gifSearchField.onChange { emitter.onNext(it) }
         }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
             .subscribe({ query ->
@@ -67,30 +48,36 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
                 }
                 chatViewModel.searchGifs(query)
             }, { Timber.e(it) })
-        gifRecyclerView.adapter = GifAdapter(sendGif = { url ->
+        dialog.gifRecyclerView.adapter = GifAdapter(sendGif = { url ->
             onSelectGif(url)
             dismiss()
         })
 
         chatViewModel.gifs.observe(lifecycleOwner = this) { data ->
             data?.gifs?.let { gifs ->
-                (gifRecyclerView.adapter as? GifAdapter)?.items = gifs
+                (dialog.gifRecyclerView.adapter as? GifAdapter)?.items = gifs
                 if (gifs.isEmpty()) {
-                    gifRecyclerView.remove()
-                    emptyGifLabel.show()
-                    emptyGifLabel.text = noGifsText
+                    dialog.gifRecyclerView.remove()
+                    dialog.emptyGifLabel.show()
+                    dialog.emptyGifLabel.text = noGifsText
                     return@observe
                 }
 
-                gifRecyclerView.show()
-                emptyGifLabel.remove()
+                dialog.gifRecyclerView.show()
+                dialog.emptyGifLabel.remove()
             }
         }
 
         if (requireArguments().getBoolean(IS_KEYBOARD_SHOWN)) {
-            gifSearchField.requestFocus()
-            gifSearchField.openKeyboard()
+            dialog.gifSearchField.requestFocus()
         }
+
+        return dialog
+    }
+
+    override fun onDestroy() {
+        disposables.clear()
+        super.onDestroy()
     }
 
     fun initialize(onSelectGif: (String) -> Unit) {

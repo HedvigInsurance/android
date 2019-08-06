@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.app.R
@@ -42,7 +43,7 @@ class GifAdapter(
                 Glide
                     .with(image)
                     .load(Uri.parse(url))
-                    .transform(RoundedCorners(20))
+                    .transform(CenterCrop(), RoundedCorners(40))
                     .into(image)
                     .clearOnDetach()
 

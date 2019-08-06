@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
@@ -231,7 +230,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             Glide
                 .with(image)
                 .load(url)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(20)))
+                .transform(FitCenter(), RoundedCorners(40))
                 .into(image)
                 .clearOnDetach()
         }

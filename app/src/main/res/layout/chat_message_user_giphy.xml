@@ -16,11 +16,11 @@
 
         <ImageView
             android:id="@+id/messageImage"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="@dimen/gif_image_size"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:contentDescription="@null"
-            tools:scaleType="fitXY"
+            tools:scaleType="fitCenter"
             tools:src="@drawable/ic_break_in" />
 
         <LinearLayout
