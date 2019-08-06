@@ -1,10 +1,9 @@
 package com.hedvig.app.feature.dashboard.ui
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import androidx.annotation.DrawableRes
 import android.view.LayoutInflater
+import androidx.annotation.DrawableRes
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.compatDrawable

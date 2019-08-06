@@ -200,7 +200,6 @@ class ChatActivity : BaseActivity() {
     }
 
     private fun scrollToBottom(smooth: Boolean) {
-        Timber.i("Scroll to bottom $smooth")
         if (smooth) {
             (messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(messages, null, 0)
         } else {

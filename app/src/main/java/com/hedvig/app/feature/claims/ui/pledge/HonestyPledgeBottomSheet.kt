@@ -14,9 +14,9 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class HonestyPledgeBottomSheet : RoundedBottomSheetDialogFragment() {
-    val tracker: ClaimsTracker by inject()
-
-    val claimsViewModel: ClaimsViewModel by sharedViewModel()
+    private val tracker: ClaimsTracker by inject()
+   
+    private val claimsViewModel: ClaimsViewModel by sharedViewModel()
 
     override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
 
