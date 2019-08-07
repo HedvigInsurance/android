@@ -109,6 +109,14 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".feature.profile.ui.myinfo.MyInfoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".feature.profile.ui.myhome.MyHomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"

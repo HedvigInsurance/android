@@ -13,7 +13,7 @@ import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.dialog_change_home_info.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class ChangeHomeInfoDialog : androidx.fragment.app.DialogFragment() {
+class ChangeHomeInfoDialog : DialogFragment() {
     val profileViewModel: ProfileViewModel by sharedViewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

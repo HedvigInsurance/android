@@ -16,6 +16,7 @@ import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.feature.profile.ui.myhome.MyHomeActivity
+import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.proxyNavigate
@@ -107,8 +108,8 @@ class ProfileFragment : BaseTabFragment() {
         val firstName = profileData.member.firstName ?: ""
         val lastName = profileData.member.lastName ?: ""
         myInfoRow.description = "$firstName $lastName"
-        myInfoRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_myInfoFragment)
+        myInfoRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), MyInfoActivity::class.java))
         }
     }
 
