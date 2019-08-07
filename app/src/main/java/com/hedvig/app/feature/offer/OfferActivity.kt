@@ -314,10 +314,12 @@ class OfferActivity : BaseActivity() {
 
     private fun bindHomeSection(data: OfferQuery.Data) {
         homeSection.title.text = data.insurance.address
-        addPerils(
-            homeSection.perilsContainer,
-            data.insurance.arrangedPerilCategories.home.fragments.perilCategoryFragment
-        )
+        data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                homeSection.perilsContainer,
+                it
+            )
+        }
     }
 
     private fun bindStuffSection(data: OfferQuery.Data) {
@@ -331,14 +333,21 @@ class OfferActivity : BaseActivity() {
                 }
             )
         }
-        addPerils(
-            stuffSection.perilsContainer,
-            data.insurance.arrangedPerilCategories.stuff.fragments.perilCategoryFragment
-        )
+        data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                stuffSection.perilsContainer,
+                it
+            )
+        }
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
-        addPerils(meSection.perilsContainer, data.insurance.arrangedPerilCategories.me.fragments.perilCategoryFragment)
+        data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                meSection.perilsContainer,
+                it
+            )
+        }
     }
 
     private fun bindTerms(data: OfferQuery.Data) {
