@@ -46,15 +46,6 @@
             app:popUpTo="@+id/loggedInFragment" />
 
         <action
-            android:id="@+id/action_loggedInFragment_to_coinsuredFragment"
-            app:destination="@+id/coinsuredFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/loggedInFragment" />
-
-        <action
             android:id="@+id/action_loggedInFragment_to_paymentFragment"
             app:destination="@id/paymentFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -84,11 +75,6 @@
         android:id="@+id/myHomeFragment"
         android:name="com.hedvig.app.feature.profile.ui.myhome.MyHomeFragment"
         android:label="MyHomeFragment" />
-
-    <fragment
-        android:id="@+id/coinsuredFragment"
-        android:name="com.hedvig.app.feature.profile.ui.coinsured.CoinsuredFragment"
-        android:label="CoinsuredFragment" />
 
     <fragment
         android:id="@+id/paymentFragment"

@@ -13,6 +13,7 @@ import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
+import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
@@ -129,8 +130,8 @@ class ProfileFragment : BaseTabFragment() {
             resources.getString(R.string.PROFILE_MY_COINSURED_ROW_SUBTITLE),
             "amountCoinsured" to "${personsInHousehold - 1}"
         )
-        coinsuredRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_coinsuredFragment)
+        coinsuredRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), CoinsuredActivity::class.java))
         }
         coinsuredRow.show()
     }

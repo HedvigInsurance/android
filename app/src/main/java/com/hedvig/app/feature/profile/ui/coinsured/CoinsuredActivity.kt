@@ -4,11 +4,8 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.CustomTypefaceSpan
@@ -21,23 +18,21 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_coinsured.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class CoinsuredFragment : androidx.fragment.app.Fragment() {
+class CoinsuredActivity : BaseActivity() {
 
-    private val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by viewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_coinsured, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_coinsured)
 
         setupLargeTitle(R.string.PROFILE_COINSURED_TITLE, R.font.circular_bold, R.drawable.ic_back) {
-            requireActivity().findNavController(R.id.loggedNavigationHost).popBackStack()
+            onBackPressed()
         }
 
-        coinsuredSphere.drawable.compatSetTint(requireContext().compatColor(R.color.purple))
+        coinsuredSphere.drawable.compatSetTint(compatColor(R.color.purple))
 
         loadData()
     }
@@ -56,7 +51,7 @@ class CoinsuredFragment : androidx.fragment.app.Fragment() {
                 val partOne = SpannableString("${personsInHousehold - 1}\n")
                 val partTwo = SpannableString(label)
                 partOne.setSpan(
-                    CustomTypefaceSpan(requireContext().compatFont(R.font.soray_extrabold)),
+                    CustomTypefaceSpan(compatFont(R.font.soray_extrabold)),
                     0,
                     1,
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE
