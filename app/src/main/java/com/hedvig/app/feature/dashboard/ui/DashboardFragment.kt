@@ -105,15 +105,27 @@ class DashboardFragment : BaseTabFragment() {
 
         perilCategoryContainer.removeAllViews()
 
-        perilCategoryContainer.addView(
-            makePerilCategoryRow(dashboardData.insurance.arrangedPerilCategories.me.fragments.perilCategoryFragment)
-        )
-        perilCategoryContainer.addView(
-            makePerilCategoryRow(dashboardData.insurance.arrangedPerilCategories.home.fragments.perilCategoryFragment)
-        )
-        perilCategoryContainer.addView(
-            makePerilCategoryRow(dashboardData.insurance.arrangedPerilCategories.stuff.fragments.perilCategoryFragment)
-        )
+        dashboardData.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let { me ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    me
+                )
+            )
+        }
+        dashboardData.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let { home ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    home
+                )
+            )
+        }
+        dashboardData.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let { stuff ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    stuff
+                )
+            )
+        }
 
         dashboardData.insurance.status.let { insuranceStatus ->
             when (insuranceStatus) {
