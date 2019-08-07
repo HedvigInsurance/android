@@ -33,6 +33,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isStudentInsurance
@@ -113,12 +114,17 @@ class OfferActivity : BaseActivity() {
         homeSection.paragraph.text = getString(R.string.OFFER_APARTMENT_PROTECTION_DESCRIPTION)
         homeSection.hero.setImageDrawable(getDrawable(R.drawable.offer_house))
 
+        val quadrupleMargin = resources.getDimensionPixelSize(R.dimen.base_margin_quadruple)
+
         stuffSection.hero.setImageDrawable(getDrawable(R.drawable.offer_stuff))
         stuffSection.title.text = getString(R.string.OFFER_STUFF_PROTECTION_TITLE)
+        stuffSection.updatePadding(top = quadrupleMargin)
+
 
         meSection.hero.setImageDrawable(getDrawable(R.drawable.offer_me))
         meSection.title.text = getString(R.string.OFFER_PERSONAL_PROTECTION_TITLE)
         meSection.paragraph.text = getString(R.string.OFFER_PERSONAL_PROTECTION_DESCRIPTION)
+        meSection.updatePadding(top = quadrupleMargin)
 
         termsSection.privacyPolicy.setHapticClickListener {
             tracker.openTerms()
@@ -308,7 +314,10 @@ class OfferActivity : BaseActivity() {
 
     private fun bindHomeSection(data: OfferQuery.Data) {
         homeSection.title.text = data.insurance.address
-        addPerils(homeSection.perilsContainer, data.insurance.arrangedPerilCategories.home.fragments.perilCategoryFragment)
+        addPerils(
+            homeSection.perilsContainer,
+            data.insurance.arrangedPerilCategories.home.fragments.perilCategoryFragment
+        )
     }
 
     private fun bindStuffSection(data: OfferQuery.Data) {
@@ -322,7 +331,10 @@ class OfferActivity : BaseActivity() {
                 }
             )
         }
-        addPerils(stuffSection.perilsContainer, data.insurance.arrangedPerilCategories.stuff.fragments.perilCategoryFragment)
+        addPerils(
+            stuffSection.perilsContainer,
+            data.insurance.arrangedPerilCategories.stuff.fragments.perilCategoryFragment
+        )
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
