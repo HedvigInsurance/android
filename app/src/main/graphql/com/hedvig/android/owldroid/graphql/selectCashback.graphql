@@ -1,7 +1,5 @@
 mutation SelectCashback($id: ID!) {
   selectCashbackOption(id: $id) {
-    name
-    imageUrl
-    paragraph
+    ... CashbackFragment
   }
 }

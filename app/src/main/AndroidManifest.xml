@@ -93,6 +93,14 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".feature.profile.ui.charity.CharityActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
