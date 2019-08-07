@@ -20,38 +20,24 @@ import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
-import com.hedvig.app.util.extensions.hideStatusBar
-import com.hedvig.app.util.extensions.setDarkNavigationBar
-import com.hedvig.app.util.extensions.setLightNavigationBar
-import com.hedvig.app.util.extensions.showStatusBar
+import com.hedvig.app.util.extensions.view.activateEdgeToEdge
 import com.hedvig.app.util.extensions.view.doOnLayout
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.percentageFade
+import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import kotlinx.android.synthetic.main.marketing_activity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class MarketingActivity : BaseActivity() {
+    private val tracker: MarketingTracker by inject()
 
-    enum class MarketingResult {
-        ONBOARD,
-        LOGIN;
-
-        override fun toString(): String {
-            return when (this) {
-                ONBOARD -> "onboard"
-                LOGIN -> "login"
-            }
-        }
-    }
-
-    val tracker: MarketingTracker by inject()
-
-    val marketingStoriesViewModel: MarketingStoriesViewModel by viewModel()
+    private val marketingStoriesViewModel: MarketingStoriesViewModel by viewModel()
 
     private var buttonsAnimator: ValueAnimator? = null
     private var blurDismissAnimator: ValueAnimator? = null
@@ -59,9 +45,14 @@ class MarketingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.marketing_activity)
+        setContentView(R.layout.activity_marketing)
+        marketingRoot.activateEdgeToEdge()
+        storyProgressIndicatorContainer.setOnApplyWindowInsetsListener { v, insets ->
+            val baseMargin = resources.getDimensionPixelSize(R.dimen.base_margin)
+            v.updateMargin(top = insets.systemWindowInsetTop + baseMargin)
+            insets.consumeSystemWindowInsets()
+        }
 
-        setupSystemDecoration()
         observeMarketingStories()
     }
 
@@ -73,11 +64,6 @@ class MarketingActivity : BaseActivity() {
         blurDismissAnimator?.cancel()
         topHideAnimation?.removeAllListeners()
         topHideAnimation?.cancel()
-    }
-
-    override fun onDestroy() {
-        cleanupSystemDecoration()
-        super.onDestroy()
     }
 
     private fun observeMarketingStories() {
@@ -105,7 +91,7 @@ class MarketingActivity : BaseActivity() {
             marketingStoriesViewModel.startFirstStory()
         }
         storyProgressIndicatorContainer.show()
-        val width = activity_marketing.width
+        val width = marketingRoot.width
         for (n in 0 until nStories) {
             val progressBar = layoutInflater.inflate(
                 R.layout.marketing_progress_bar,
@@ -184,7 +170,7 @@ class MarketingActivity : BaseActivity() {
                 }
                 doOnEnd {
                     marketing_hedvig_logo.remove()
-                    storyProgressIndicatorContainer.remove()
+                    storyProgressIndicatorContainer.hide()
                 }
                 start()
             }
@@ -243,7 +229,7 @@ class MarketingActivity : BaseActivity() {
             })
 
             val currentTop = getHedvig.top
-            val newTop = activity_marketing.height / 2 + getHedvig.height / 2
+            val newTop = marketingRoot.height / 2 + getHedvig.height / 2
             val translation = (newTop - currentTop).toFloat()
 
             buttonsAnimator = ValueAnimator.ofFloat(0f, translation).apply {
@@ -299,16 +285,6 @@ class MarketingActivity : BaseActivity() {
             intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
             startActivity(intent)
         }
-    }
-
-    private fun setupSystemDecoration() {
-        hideStatusBar()
-        setDarkNavigationBar()
-    }
-
-    private fun cleanupSystemDecoration() {
-        showStatusBar()
-        setLightNavigationBar()
     }
 
     companion object {

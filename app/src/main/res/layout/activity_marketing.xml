@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/activity_marketing"
+    android:id="@+id/marketingRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
+    android:fitsSystemWindows="false"
     tools:context="com.hedvig.app.feature.marketing.ui.MarketingActivity">
 
     <include layout="@layout/loading_spinner" />
@@ -24,22 +25,24 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:id="@id/storyProgressIndicatorContainer"
+        android:id="@+id/storyProgressIndicatorContainer"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@id/marketing_hedvig_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/marketing_hedvig_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:contentDescription="@string/MARKETING_LOGO_ACCESSIBILITY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/storyProgressIndicatorContainer"
         app:srcCompat="@drawable/ic_hedvig_wordmark_white" />
 
     <com.airbnb.lottie.LottieAnimationView

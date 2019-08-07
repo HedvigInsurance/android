@@ -8,8 +8,6 @@
     <item name="sayHello" type="id" />
     <item name="pager" type="id" />
     <item name="blurOverlay" type="id" />
-    <item name="marketing_hedvig_logo" type="id" />
-    <item name="storyProgressIndicatorContainer" type="id" />
     <item name="hedvigFaceAnimation" type="id" />
     <item name="login" type="id" />
     <item name="activity_marketing" type="id" />

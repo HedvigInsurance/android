@@ -3,22 +3,20 @@ package com.hedvig.app.util.extensions.view
 import android.app.Activity
 import android.graphics.Rect
 import android.os.Build
-import androidx.annotation.ColorInt
-import androidx.annotation.Dimension
-import androidx.annotation.DrawableRes
-import androidx.annotation.FontRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.appcompat.app.AppCompatActivity
 import android.view.HapticFeedbackConstants
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
-import android.widget.RelativeLayout
+import androidx.annotation.ColorInt
+import androidx.annotation.Dimension
+import androidx.annotation.DrawableRes
+import androidx.annotation.FontRes
+import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.app_bar.view.*
 
 fun View.show(): View {
@@ -104,19 +102,14 @@ fun View.updateMargin(
     @Dimension end: Int? = null,
     @Dimension bottom: Int? = null
 ) {
-    val prevLayoutParams = layoutParams as? ViewGroup.MarginLayoutParams
-    when (parent) {
-        is ConstraintLayout -> ConstraintLayout.LayoutParams(
-            layoutParams.width,
-            layoutParams.height
-        )
-        is RelativeLayout -> RelativeLayout.LayoutParams(layoutParams.width, layoutParams.height)
-        else -> ViewGroup.MarginLayoutParams(layoutParams.width, layoutParams.height)
-    }.apply {
-        (start ?: prevLayoutParams?.marginStart)?.let { marginStart = it }
-        (top ?: prevLayoutParams?.topMargin)?.let { topMargin = it }
-        (end ?: prevLayoutParams?.marginEnd)?.let { marginEnd = it }
-        (bottom ?: prevLayoutParams?.bottomMargin)?.let { bottomMargin = it }
+    val newLayoutParams = (layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
+        start?.let { marginStart = it }
+        top?.let { topMargin = it }
+        end?.let { marginEnd = it }
+        bottom?.let { bottomMargin = it }
+    }
+
+    layoutParams = newLayoutParams
     }
 }
 
@@ -185,6 +178,10 @@ fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
         endAction?.invoke()
     }
     animation.start()
+}
+
+fun View.activateEdgeToEdge() {
+    systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 }
 
 fun View.dismissKeyboard() =

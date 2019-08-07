@@ -13,6 +13,8 @@
 
     <style name="Hedvig.Theme.Offer" />
 
+    <style name="Hedvig.Theme.Marketing" />
+
     <style name="Theme.Exponent.Splash" parent="Hedvig.Theme">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
