@@ -1,13 +1,11 @@
 package com.hedvig.app.feature.chat
 
-import android.app.Activity
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
