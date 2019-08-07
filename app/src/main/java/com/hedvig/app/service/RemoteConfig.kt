@@ -8,7 +8,7 @@ class RemoteConfig {
 
     init {
         firebaseRemoteConfig.setDefaults(
-            hashMapOf(
+            mapOf(
                 "Referrals_Enabled" to false,
                 "Referrals_Incentive" to DEFAULT_INCENTIVE,
                 "DynamicLink_iOS_BundleId" to "",
@@ -19,7 +19,7 @@ class RemoteConfig {
     }
 
     fun fetch(): Observable<RemoteConfigData> {
-        return Observable.create<RemoteConfigData> { emitter ->
+        return Observable.create { emitter ->
             emitter.onNext(RemoteConfigData.from(firebaseRemoteConfig))
 
             firebaseRemoteConfig

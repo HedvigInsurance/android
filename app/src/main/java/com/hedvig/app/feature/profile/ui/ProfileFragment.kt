@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.NestedScrollView
-import androidx.lifecycle.Observer
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -43,7 +42,6 @@ class ProfileFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         populateData()
-        loadReferralFeature()
     }
 
     override fun onResume() {
@@ -51,28 +49,8 @@ class ProfileFragment : BaseTabFragment() {
         super.onResume()
     }
 
-    private fun loadReferralFeature() {
-        profileViewModel.remoteConfigData.observe(this) { remoteConfigData ->
-            remoteConfigData?.let { rcd ->
-                if (!rcd.referralsEnabled || rcd.newReferralsEnabled) {
-                    return@let
-                }
-
-                profileReferralRow.setHighlighted()
-                profileReferralRow.name = interpolateTextKey(
-                    resources.getString(R.string.PROFILE_ROW_REFERRAL_TITLE),
-                    "INCENTIVE" to rcd.referralsIncentiveAmount.toString()
-                )
-                profileReferralRow.setOnClickListener {
-                    navController.proxyNavigate(R.id.action_loggedInFragment_to_referralFragment)
-                }
-                profileReferralRow.show()
-            }
-        }
-    }
-
     private fun populateData() {
-        profileViewModel.data.observe(this, Observer { profileData ->
+        profileViewModel.data.observe(lifecycleOwner = this) { profileData ->
             loadingSpinner.remove()
             rowContainer.show()
             logout.show()
@@ -101,7 +79,7 @@ class ProfileFragment : BaseTabFragment() {
                     requireActivity().triggerRestartActivity()
                 }
             }
-        })
+        }
     }
 
     private fun setupMyInfoRow(profileData: ProfileQuery.Data) {

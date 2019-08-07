@@ -44,11 +44,6 @@
         android:label="TrustlyFragment" />
 
     <fragment
-        android:id="@+id/referralFragment"
-        android:name="com.hedvig.app.feature.profile.ui.referral.OldReferralFragment"
-        android:label="ReferralFragment" />
-
-    <fragment
         android:id="@+id/paymentFragment"
         android:name="com.hedvig.app.feature.profile.ui.payment.PaymentFragment"
         android:label="PaymentFragment">
