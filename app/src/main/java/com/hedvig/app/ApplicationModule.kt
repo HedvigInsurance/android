@@ -82,16 +82,20 @@ val applicationModule = module {
                 val original = chain.request()
                 val builder = original
                     .newBuilder()
-                    .method(original.method(), original.body())
+                    .method(original.method, original.body)
                 get<Context>().getAuthenticationToken()?.let { token ->
                     builder.header("Authorization", token)
                 }
                 chain.proceed(builder.build())
             }
         if (isDebug()) {
-            builder.addInterceptor(HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message ->
-                Timber.tag("OkHttp").i(message)
-            }).setLevel(HttpLoggingInterceptor.Level.BODY))
+            val logger = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
+                override fun log(message: String) {
+                    Timber.tag("OkHttp").i(message)
+                }
+            })
+            logger.level = HttpLoggingInterceptor.Level.BODY
+            builder.addInterceptor(logger)
         }
         builder.build()
     }

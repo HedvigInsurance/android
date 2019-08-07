@@ -40,7 +40,7 @@ class PushNotificationService : FirebaseMessagingService() {
             )
             .build()
         WorkManager
-            .getInstance()
+            .getInstance(this)
             .beginWith(work)
             .enqueue()
     }

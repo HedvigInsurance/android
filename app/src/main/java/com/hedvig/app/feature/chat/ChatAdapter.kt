@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
@@ -73,6 +72,13 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                     false
                 )
             )
+            FROM_HEDVIG_GIPHY -> HedvigGiphyMessage(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.chat_message_hedvig_giphy,
+                    parent,
+                    false
+                )
+            )
             FROM_ME_TEXT -> UserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_user,
@@ -125,7 +131,11 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                     else -> FROM_ME_TEXT
                 }
             } else {
-                FROM_HEDVIG
+                if (isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text)) {
+                    FROM_HEDVIG_GIPHY
+                } else {
+                    FROM_HEDVIG
+                }
             }
         } ?: run {
             Timber.e("Found no message to render with position: %d", position)
@@ -136,6 +146,9 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
         when (viewHolder.itemViewType) {
             FROM_HEDVIG -> {
                 (viewHolder as? HedvigMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+            }
+            FROM_HEDVIG_GIPHY -> {
+                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_TEXT -> {
                 (viewHolder as? UserMessage)?.apply {
@@ -164,6 +177,26 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
         }
     }
 
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        when (holder) {
+            is HedvigGiphyMessage -> {
+                Glide
+                    .with(holder.image)
+                    .clear(holder.image)
+            }
+            is GiphyUserMessage -> {
+                Glide
+                    .with(holder.image)
+                    .clear(holder.image)
+            }
+            is ImageUploadUserMessage -> {
+                Glide
+                    .with(holder.image)
+                    .clear(holder.image)
+            }
+        }
+    }
+
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
 
@@ -178,6 +211,19 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             }
             message.show()
             message.text = text
+        }
+    }
+
+    inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
+        val image: ImageView = view.messageImage
+
+        fun bind(url: String?) {
+            Glide
+                .with(image)
+                .load(url)
+                .transform(FitCenter(), RoundedCorners(40))
+                .into(image)
+                .clearOnDetach()
         }
     }
 
@@ -216,12 +262,9 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             Glide
                 .with(image)
                 .load(url)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(20)))
-                .override(
-                    com.bumptech.glide.request.target.Target.SIZE_ORIGINAL,
-                    com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-                )
+                .transform(FitCenter(), RoundedCorners(40))
                 .into(image)
+                .clearOnDetach()
         }
     }
 
@@ -255,6 +298,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                     convertDpToPixel(200f)
                 )
                 .into(image)
+                .clearOnDetach()
         }
     }
 
@@ -280,6 +324,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
 
     companion object {
         private const val FROM_HEDVIG = 0
+        private const val FROM_HEDVIG_GIPHY = 7
         private const val FROM_ME_TEXT = 1
         private const val FROM_ME_GIPHY = 2
         private const val FROM_ME_IMAGE = 3

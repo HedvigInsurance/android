@@ -204,3 +204,9 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
         Timber.e("Can't handle the link $value")
     }
 }
+
+fun Activity.makeACall(uri: Uri) {
+    val intent = Intent(Intent.ACTION_DIAL)
+    intent.data = uri
+    startActivity(intent)
+}

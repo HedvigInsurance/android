@@ -1,16 +1,20 @@
 package com.hedvig.app.feature.profile.ui.referral
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.util.LightClass
-import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.copyToClipboard
+import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.getLightness
@@ -26,6 +30,11 @@ class InvitesAdapter(
     private val monthlyCost: Int,
     private val data: ProfileQuery.ReferralInformation
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var triggerTankAnimationPostLoad = false
+    private var triggerTankAnimation: (() -> Unit)? = null
+    private var hasTriggeredTankAnimation = false
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         position: Int
@@ -77,6 +86,13 @@ class InvitesAdapter(
                     )
                     progressTankView.show()
                     referralProgressHighPremiumContainer.remove()
+                    if (triggerTankAnimationPostLoad) {
+                        progressTankView.startAnimation()
+                        triggerTankAnimationPostLoad = false
+                    }
+                    triggerTankAnimation = {
+                        progressTankView.startAnimation()
+                    }
                 } else {
                     referralProgressHighPremiumContainer.show()
                     val highPremiumStringKey = if (calculateDiscount() == 0) {
@@ -270,6 +286,17 @@ class InvitesAdapter(
             (data.campaign.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()?.toDouble()
                 ?: 0.0
         return ceil((amount / incentive)).toInt()
+    }
+
+    fun startTankAnimation() {
+        if (!hasTriggeredTankAnimation) {
+            hasTriggeredTankAnimation = true
+            if (triggerTankAnimation != null) {
+                triggerTankAnimation?.invoke()
+            } else {
+                triggerTankAnimationPostLoad = true
+            }
+        }
     }
 
     companion object {

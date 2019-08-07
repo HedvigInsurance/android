@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
+import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.app.util.LiveEvent
 import io.reactivex.Observable
@@ -26,6 +27,7 @@ class ChatViewModel(
     val fileUploadOutcome = LiveEvent<FileUploadOutcome>()
     val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
     val networkError = LiveEvent<Boolean>()
+    val gifs = MutableLiveData<GifQuery.Data>()
 
     private val disposables = CompositeDisposable()
     private val chatDisposable = CompositeDisposable()
@@ -252,6 +254,17 @@ class ChatViewModel(
                     return@subscribe
                 }
                 load()
+            }, { Timber.e(it) })
+    }
+
+    fun searchGifs(query: String) {
+        disposables += chatRepository
+            .searchGifs(query)
+            .subscribe({ response ->
+                if (response.hasErrors()) {
+                    Timber.e(response.errors().toString())
+                }
+                gifs.postValue(response.data())
             }, { Timber.e(it) })
     }
 }

@@ -10,7 +10,6 @@ query CommonClaim {
     layout {
       ... on TitleAndBulletPoints {
         bulletPoints {
-          description
           title
           description
           icon {
@@ -23,7 +22,6 @@ query CommonClaim {
       }
       ... on Emergency {
         color
-        title
       }
     }
   }

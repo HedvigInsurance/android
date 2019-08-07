@@ -1,20 +1,20 @@
 package com.hedvig.app.feature.marketing.ui
 
-import androidx.lifecycle.Observer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -29,7 +29,7 @@ import com.hedvig.app.util.extensions.view.show
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class StoryFragment : androidx.fragment.app.Fragment() {
+class StoryFragment : Fragment() {
 
     private val cache: SimpleCache by inject()
     private val tracker: MarketingTracker by inject()
@@ -83,7 +83,7 @@ class StoryFragment : androidx.fragment.app.Fragment() {
                 )
             )
         val cacheDataSourceFactory = CacheDataSourceFactory(cache, dataSourceFactory)
-        val mediaSource = ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(Uri.parse(url))
+        val mediaSource = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(Uri.parse(url))
         player?.prepare(mediaSource)
         player?.playWhenReady = false
         player?.volume = 0f

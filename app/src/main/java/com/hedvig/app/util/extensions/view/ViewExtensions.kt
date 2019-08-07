@@ -1,5 +1,6 @@
 package com.hedvig.app.util.extensions.view
 
+import android.app.Activity
 import android.graphics.Rect
 import android.os.Build
 import androidx.annotation.ColorInt
@@ -13,6 +14,7 @@ import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.whenApiVersion
@@ -184,3 +186,12 @@ fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
     }
     animation.start()
 }
+
+fun View.dismissKeyboard() =
+    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+        windowToken,
+        0
+    )
+
+fun View.openKeyboard() =
+    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(this, 0)

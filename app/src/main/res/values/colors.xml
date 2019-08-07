@@ -14,6 +14,7 @@
     <color name="white">#ffffff</color>
     <color name="purple">#651eff</color>
     <color name="gray">#9b9baa</color>
+    <color name="semi_light_gray">#d7d7dc</color>
     <color name="light_gray">#e9ecef</color>
     <color name="off_white">#f9fafc</color>
     <color name="off_white_light">#fafafa</color>

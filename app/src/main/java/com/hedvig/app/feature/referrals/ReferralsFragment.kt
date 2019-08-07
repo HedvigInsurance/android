@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.hedvig.android.owldroid.graphql.ProfileQuery
@@ -23,14 +22,10 @@ class ReferralsFragment : BaseTabFragment() {
 
     override val layout = R.layout.fragment_new_referral
 
-    private var shouldRemoveReferralNotification: Boolean = false
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (shouldRemoveReferralNotification) {
-            tabViewModel.removeReferralNotification()
-            shouldRemoveReferralNotification = false
-        }
+    override fun onResume() {
+        tabViewModel.removeReferralNotification()
+        (invites.adapter as? InvitesAdapter)?.startTankAnimation()
+        super.onResume()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,13 +49,5 @@ class ReferralsFragment : BaseTabFragment() {
 
     private fun bindData(monthlyCost: Int, data: ProfileQuery.ReferralInformation) {
         invites.adapter = InvitesAdapter(monthlyCost, data)
-    }
-
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        if (isVisibleToUser) {
-            shouldRemoveReferralNotification = true
-        }
     }
 }

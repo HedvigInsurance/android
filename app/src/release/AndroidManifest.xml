@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hedvig.app">
+
+    <application>
+
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="@string/BRANCH_KEY" />
+
+    </application>
+
+</manifest>
