@@ -23,9 +23,7 @@ query Profile {
     descriptor
   }
   cashback {
-    name
-    imageUrl
-    paragraph
+    ... CashbackFragment
   }
   cashbackOptions {
     id

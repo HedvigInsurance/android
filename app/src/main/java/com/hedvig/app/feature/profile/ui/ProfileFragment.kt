@@ -1,25 +1,30 @@
 package com.hedvig.app.feature.profile.ui
 
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.Observer
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
+import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.proxyNavigate
+import com.hedvig.app.util.extensions.setAuthenticationToken
+import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : BaseTabFragment() {
@@ -129,9 +134,9 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupCharity(profileData: ProfileQuery.Data) {
-        charityRow.description = profileData.cashback?.name
+        charityRow.description = profileData.cashback?.fragments?.cashbackFragment?.name
         charityRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_charityFragment)
+            startActivity(Intent(requireContext(), CharityActivity::class.java))
         }
     }
 

@@ -90,17 +90,17 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .read(profileQuery)
             .execute()
 
-        val newCashback = ProfileQuery.Cashback
-            .builder()
-            .__typename(cashback.__typename)
-            .name(cashback.name)
-            .imageUrl(cashback.imageUrl)
-            .paragraph(cashback.paragraph)
-            .build()
-
         val newData = cachedData
             .toBuilder()
-            .cashback(newCashback)
+            .cashback(
+                ProfileQuery.Cashback.builder().fragments(
+                    ProfileQuery.Cashback.Fragments.builder().cashbackFragment(
+                        cashback.fragments.cashbackFragment
+                    ).build()
+                )
+                    .__typename(cashback.__typename)
+                    .build()
+            )
             .build()
 
         apolloClientWrapper.apolloClient
