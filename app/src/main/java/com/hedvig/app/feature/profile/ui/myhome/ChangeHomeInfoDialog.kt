@@ -36,4 +36,8 @@ class ChangeHomeInfoDialog : androidx.fragment.app.DialogFragment() {
             }
         }
     }
+
+    companion object {
+        const val TAG = "change_home_info_dialog"
+    }
 }

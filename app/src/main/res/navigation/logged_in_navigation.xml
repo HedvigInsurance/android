@@ -37,15 +37,6 @@
             app:popUpTo="@+id/loggedInFragment" />
 
         <action
-            android:id="@+id/action_loggedInFragment_to_myHomeFragment"
-            app:destination="@id/myHomeFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/loggedInFragment" />
-
-        <action
             android:id="@+id/action_loggedInFragment_to_paymentFragment"
             app:destination="@id/paymentFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -70,11 +61,6 @@
         android:id="@+id/myInfoFragment"
         android:name="com.hedvig.app.feature.profile.ui.myinfo.MyInfoFragment"
         android:label="MyInfoFragment" />
-
-    <fragment
-        android:id="@+id/myHomeFragment"
-        android:name="com.hedvig.app.feature.profile.ui.myhome.MyHomeFragment"
-        android:label="MyHomeFragment" />
 
     <fragment
         android:id="@+id/paymentFragment"

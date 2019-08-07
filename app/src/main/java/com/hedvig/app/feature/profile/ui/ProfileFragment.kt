@@ -15,6 +15,7 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
+import com.hedvig.app.feature.profile.ui.myhome.MyHomeActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.proxyNavigate
@@ -113,8 +114,8 @@ class ProfileFragment : BaseTabFragment() {
 
     private fun setupMyHomeRow(profileData: ProfileQuery.Data) {
         myHomeRow.description = profileData.insurance.address
-        myHomeRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_myHomeFragment)
+        myHomeRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), MyHomeActivity::class.java))
         }
     }
 
