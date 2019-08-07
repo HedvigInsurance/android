@@ -10,8 +10,6 @@ import androidx.navigation.findNavController
 import com.hedvig.app.R
 
 abstract class BaseTabFragment : Fragment() {
-    val navController by lazy { requireActivity().findNavController(R.id.loggedNavigationHost) }
-
     @get:LayoutRes
     abstract val layout: Int
 

@@ -5,10 +5,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.apollographql.android'
 
-import com.android.build.OutputFile
-
-def enableSeparateBuildPerCPUArchitecture = false
-
 apollo {
     useJavaBeansSemanticNaming = true
     generateModelBuilder = true
@@ -52,15 +48,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-
-    splits {
-        abi {
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk true
-            include 'armeabi-v7a', 'x86'
-        }
     }
 
     buildTypes {
@@ -107,22 +94,6 @@ android {
 
             debuggable true
         }
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def versionCodes = ['armeabi-v7a': 1, 'x86': 2]
-            def abi = output.getFilter(OutputFile.ABI)
-            if (abi != null) {
-                output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
-            }
-        }
-    }
-
-    configurations.all {
-        resolutionStrategy.force 'android.arch.lifecycle:livedata-core:1.1.0'
-        resolutionStrategy.force 'android.arch.core:runtime:1.1.0'
-        resolutionStrategy.force 'android.arch.core:common:1.1.0'
     }
 }
 
@@ -182,10 +153,6 @@ dependencies {
     implementation "org.koin:koin-android-viewmodel:$koin_version"
 
     implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
-
-    implementation 'androidx.navigation:navigation-fragment:2.1.0-beta02'
-    implementation 'androidx.navigation:navigation-ui:2.1.0-beta02'
-    implementation 'androidx.navigation:navigation-runtime-ktx:2.1.0-beta02'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'

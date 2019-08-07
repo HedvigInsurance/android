@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
@@ -14,6 +15,7 @@ import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
@@ -234,7 +236,7 @@ class DashboardFragment : BaseTabFragment() {
                 directDebitNeedsSetup.show()
                 directDebitConnectButton.setHapticClickListener {
                     tracker.setupDirectDebit()
-                    navController.proxyNavigate(R.id.action_dashboardFragment_to_trustlyFragment)
+                    startActivity(Intent(requireContext(), TrustlyActivity::class.java))
                 }
             }
         }

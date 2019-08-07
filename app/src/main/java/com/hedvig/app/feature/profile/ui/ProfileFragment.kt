@@ -16,9 +16,9 @@ import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.feature.profile.ui.myhome.MyHomeActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
+import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.storeBoolean
@@ -129,7 +129,7 @@ class ProfileFragment : BaseTabFragment() {
             "COST" to profileData.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
         )
         paymentRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_paymentFragment)
+            startActivity(Intent(requireContext(), PaymentActivity::class.java))
         }
     }
 

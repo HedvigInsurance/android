@@ -5,13 +5,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
@@ -23,21 +20,19 @@ import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.fragment_trustly.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class TrustlyFragment : Fragment() {
+class TrustlyActivity : BaseActivity() {
 
-    private val profileViewModel: ProfileViewModel by sharedViewModel()
-    private val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by viewModel()
+    private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
     private val tracker: TrustlyTracker by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_trustly, container, false)
-
     @SuppressLint("SetJavaScriptEnabled")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_trustly)
 
         trustlyContainer.settings.apply {
             javaScriptEnabled = true
@@ -46,6 +41,14 @@ class TrustlyFragment : Fragment() {
         }
 
         loadUrl()
+    }
+
+    override fun onDestroy() {
+        (trustlyContainer.parent as ViewGroup).removeView(trustlyContainer)
+
+        trustlyContainer.removeAllViews()
+        trustlyContainer.destroy()
+        super.onDestroy()
     }
 
     private fun loadUrl() {
@@ -87,30 +90,17 @@ class TrustlyFragment : Fragment() {
         profileViewModel.startTrustlySession()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        (trustlyContainer.parent as ViewGroup).removeView(trustlyContainer)
-
-        trustlyContainer.removeAllViews()
-        trustlyContainer.destroy()
-    }
-
-    private fun goBack() {
-        this.view?.findNavController()?.popBackStack()
-    }
-
     fun showSuccess() {
         tracker.addPaymentInfo()
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_success)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
         resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
-        resultClose.background.compatSetTint(requireContext().compatColor(R.color.green))
+        resultClose.background.compatSetTint(compatColor(R.color.green))
         resultClose.setOnClickListener {
             profileViewModel.refreshBankAccountInfo()
             directDebitViewModel.refreshDirectDebitStatus()
-            goBack()
+            onBackPressed()
         }
         resultScreen.show()
     }
@@ -120,9 +110,9 @@ class TrustlyFragment : Fragment() {
         resultIcon.setImageResource(R.drawable.icon_failure)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_TITLE)
         resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_DESCRIPTION)
-        resultClose.background.compatSetTint(requireContext().compatColor(R.color.pink))
+        resultClose.background.compatSetTint(compatColor(R.color.pink))
         resultClose.setOnClickListener {
-            goBack()
+            onBackPressed()
         }
         resultScreen.show()
     }

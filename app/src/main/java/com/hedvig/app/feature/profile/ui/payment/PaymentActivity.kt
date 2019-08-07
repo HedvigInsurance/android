@@ -1,18 +1,14 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import androidx.lifecycle.Observer
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.lifecycle.Observer
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -20,7 +16,6 @@ import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.CustomTypefaceSpan
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.extensions.concat
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -30,29 +25,23 @@ import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.fragment_payment.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.Calendar
 
-class PaymentFragment : Fragment() {
+class PaymentActivity : BaseActivity() {
 
-    private val profileViewModel: ProfileViewModel by sharedViewModel()
-    private val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by viewModel()
+    private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
     private val tracker: ProfileTracker by inject()
 
-    private val navController: NavController by lazy {
-        requireActivity().findNavController(R.id.loggedNavigationHost)
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_payment, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        setContentView(R.layout.fragment_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.font.circular_bold, R.drawable.ic_back) {
-            navController.popBackStack()
+            onBackPressed()
         }
 
         val today = Calendar.getInstance()
@@ -74,18 +63,18 @@ class PaymentFragment : Fragment() {
         )
 
         changeBankAccount.setHapticClickListener {
-            navController.proxyNavigate(R.id.action_paymentFragment_to_trustlyFragment)
+            startActivity(Intent(this, TrustlyActivity::class.java))
         }
 
         connectBankAccount.setHapticClickListener {
-            navController.proxyNavigate(R.id.action_paymentFragment_to_trustlyFragment)
+            startActivity(Intent(this, TrustlyActivity::class.java))
         }
 
         redeemCode.setHapticClickListener {
             tracker.clickRedeemCode()
             RefetchingRedeemCodeDialog
                 .newInstance()
-                .show(childFragmentManager, RefetchingRedeemCodeDialog.TAG)
+                .show(supportFragmentManager, RefetchingRedeemCodeDialog.TAG)
         }
 
         loadData()
@@ -103,7 +92,7 @@ class PaymentFragment : Fragment() {
             val perMonthLabel = resources.getString(R.string.PROFILE_PAYMENT_PER_MONTH_LABEL)
             val amountPartTwo = SpannableString(perMonthLabel)
             amountPartTwo.setSpan(
-                CustomTypefaceSpan(requireContext().compatFont(R.font.circular_book)),
+                CustomTypefaceSpan(compatFont(R.font.circular_book)),
                 0,
                 perMonthLabel.length,
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE
