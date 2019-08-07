@@ -1,0 +1,13 @@
+fragment IncentiveFragment on Campaign {
+  incentive {
+    ... on FreeMonths {
+      quantity
+    }
+    ... on MonthlyCostDeduction {
+      amount {
+        amount
+        currency
+      }
+    }
+  }
+}
