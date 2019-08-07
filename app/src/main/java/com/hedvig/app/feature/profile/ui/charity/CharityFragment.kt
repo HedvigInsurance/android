@@ -26,9 +26,9 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class CharityFragment : androidx.fragment.app.Fragment() {
-    val tracker: ProfileTracker by inject()
+    private val tracker: ProfileTracker by inject()
 
-    val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by sharedViewModel()
 
     private val navController: NavController by lazy {
         requireActivity().findNavController(R.id.loggedNavigationHost)
@@ -76,20 +76,19 @@ class CharityFragment : androidx.fragment.app.Fragment() {
         selectedCharityCardParagraph.text = cashback.paragraph
         charitySelectedHowDoesItWorkButton.setHapticClickListener {
             tracker.howDoesItWorkClick()
-            CharityExplanationBottomSheet.newInstance().show(requireFragmentManager(), "charitySheet")
+            CharityExplanationBottomSheet.newInstance().show(requireFragmentManager(), CharityExplanationBottomSheet.TAG)
         }
     }
 
     private fun showCharityPicker(options: List<ProfileQuery.CashbackOption>) {
         selectCharityContainer.show()
-        cashbackOptions.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
         cashbackOptions.adapter =
             CharityAdapter(options, requireContext()) { id ->
                 profileViewModel.selectCashback(id)
             }
         selectCharityHowDoesItWorkButton.setHapticClickListener {
             tracker.howDoesItWorkClick()
-            CharityExplanationBottomSheet.newInstance().show(requireFragmentManager(), "charitySheet")
+            CharityExplanationBottomSheet.newInstance().show(requireFragmentManager(), CharityExplanationBottomSheet.TAG)
         }
     }
 
