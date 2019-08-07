@@ -14,7 +14,6 @@ import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.app_bar.view.*
@@ -110,7 +109,6 @@ fun View.updateMargin(
     }
 
     layoutParams = newLayoutParams
-    }
 }
 
 inline fun <reified T : ViewGroup.LayoutParams> View.setSize(
