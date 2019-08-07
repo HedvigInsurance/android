@@ -13,6 +13,7 @@ import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
+import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.proxyNavigate
@@ -21,6 +22,7 @@ import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -81,8 +83,8 @@ class ProfileFragment : BaseTabFragment() {
                 setupCertificateUrl(data)
             }
 
-            feedbackRow.setOnClickListener {
-                navController.proxyNavigate(R.id.action_loggedInFragment_to_feedbackFragment)
+            feedbackRow.setHapticClickListener {
+                startActivity(Intent(requireContext(), FeedbackActivity::class.java))
             }
             aboutAppRow.setOnClickListener {
                 startActivity(Intent(requireActivity(), AboutAppActivity::class.java))
