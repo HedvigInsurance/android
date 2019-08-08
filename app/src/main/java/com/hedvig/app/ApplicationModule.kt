@@ -109,7 +109,7 @@ val viewModelModule = module {
     viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { DirectDebitViewModel(get()) }
-    viewModel { DashboardViewModel(get(), get()) }
+    viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
