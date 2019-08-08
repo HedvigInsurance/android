@@ -5,6 +5,7 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -66,7 +67,8 @@ val applicationModule = module {
     single {
         SimpleCache(
             File(get<Context>().cacheDir, "hedvig_story_video_cache"),
-            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong())
+            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong()),
+            ExoDatabaseProvider(get())
         )
     }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
