@@ -121,7 +121,7 @@ class ChatActivity : BaseActivity() {
         )
 
         messages.setHasFixedSize(false)
-        messages.adapter = ChatAdapter(this, onPressEdit = {
+        val adapter = ChatAdapter(this, onPressEdit = {
             showAlert(
                 R.string.CHAT_EDIT_MESSAGE_TITLE,
                 positiveLabel = R.string.CHAT_EDIT_MESSAGE_SUBMIT,
@@ -131,6 +131,10 @@ class ChatActivity : BaseActivity() {
                 }
             )
         }, tracker = tracker)
+        adapter.setHasStableIds(true)
+        messages.addOnScrollListener(adapter.recyclerViewPreloader)
+        messages.adapter = adapter
+
 
         chatViewModel.messages.observe(lifecycleOwner = this) { data ->
             data?.let { bindData(it, forceScrollToBottom) }

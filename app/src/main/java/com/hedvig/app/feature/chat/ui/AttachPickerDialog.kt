@@ -129,13 +129,16 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     }
 
     fun setImages(images: List<String>) {
-        attachFileRecyclerView.adapter = AttachFileAdapter(
+        val adapter = AttachFileAdapter(
+            context,
             images.map { AttachImageData(it) },
             pickerHeight,
             takePhotoCallback,
             showUploadBottomSheetCallback,
             uploadFileCallback
         )
+        attachFileRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+        attachFileRecyclerView.adapter = adapter
         attachFileRecyclerView.fadeIn()
         loadingSpinner.remove()
     }

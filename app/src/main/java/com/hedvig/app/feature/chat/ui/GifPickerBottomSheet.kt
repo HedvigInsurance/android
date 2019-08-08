@@ -49,10 +49,12 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
                 }
                 chatViewModel.searchGifs(query)
             }, { Timber.e(it) })
-        dialog.gifRecyclerView.adapter = GifAdapter(sendGif = { url ->
+        val adapter = GifAdapter(requireContext(), sendGif = { url ->
             onSelectGif(url)
             dismiss()
         })
+        dialog.gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+        dialog.gifRecyclerView.adapter = adapter
 
         chatViewModel.gifs.observe(lifecycleOwner = this) { data ->
             data?.gifs?.let { gifs ->
