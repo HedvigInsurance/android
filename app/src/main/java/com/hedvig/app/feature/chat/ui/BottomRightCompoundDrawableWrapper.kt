@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
@@ -9,8 +9,8 @@ import android.graphics.drawable.Drawable
 class BottomRightCompoundDrawableWrapper(
     private val drawable: Drawable,
     private val paddingEnd: Int,
-    private val paddingBottom: Int) : Drawable() {
-
+    private val paddingBottom: Int
+) : Drawable() {
 
     override fun getIntrinsicWidth(): Int = drawable.intrinsicWidth
 

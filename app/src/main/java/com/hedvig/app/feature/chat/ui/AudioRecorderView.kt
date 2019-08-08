@@ -1,13 +1,13 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.Manifest
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
-import androidx.annotation.StringRes
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.remove

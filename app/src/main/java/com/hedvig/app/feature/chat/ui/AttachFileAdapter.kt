@@ -1,5 +1,6 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
+import android.content.Context
 import android.net.Uri
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -11,10 +12,15 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
@@ -26,12 +32,19 @@ import kotlinx.android.synthetic.main.loading_spinner.view.*
 import timber.log.Timber
 
 class AttachFileAdapter(
+    private val context: Context,
     private val attachImageData: List<AttachImageData>,
     private val pickerHeight: Int,
     private val takePhoto: () -> Unit,
     private val showUploadFileDialog: () -> Unit,
     private val uploadFile: (Uri) -> Unit
 ) : RecyclerView.Adapter<AttachFileAdapter.ViewHolder>() {
+
+    private val roundedCornersRadius =
+        context.resources.getDimensionPixelSize(R.dimen.attach_file_rounded_corners_radius)
+
+    val recyclerViewPreloader =
+        RecyclerViewPreloader(Glide.with(context), AttachFilePreloadModelProvider(), ViewPreloadSizeProvider(), 10)
 
     var isUploadingTakenPicture: Boolean = false
         set(value) {
@@ -82,8 +95,6 @@ class AttachFileAdapter(
                     val image = attachImageData[position - 1]
                     val params = attachFileImage.layoutParams
                     val margin = attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
-                    val roundedCornersRadius =
-                        attachFileImage.context.resources.getDimensionPixelSize(R.dimen.attach_file_rounded_corners_radius)
                     params.height = pickerHeight - margin
                     params.width = pickerHeight - margin
                     attachFileImage.layoutParams = params
@@ -168,6 +179,17 @@ class AttachFileAdapter(
             val attachFileSendButton: Button = itemView.attachFileSendButton
             val loadingSpinner: LottieAnimationView = itemView.loadingSpinner
         }
+    }
+
+    inner class AttachFilePreloadModelProvider : ListPreloader.PreloadModelProvider<AttachImageData> {
+        override fun getPreloadItems(position: Int): List<AttachImageData> =
+            attachImageData.getOrNull(position)?.let { listOf(it) } ?: emptyList()
+
+        override fun getPreloadRequestBuilder(item: AttachImageData): RequestBuilder<*>? =
+            Glide
+                .with(context)
+                .load(item.path)
+                .transform(MultiTransformation(CenterCrop(), RoundedCorners(roundedCornersRadius)))
     }
 
     companion object {

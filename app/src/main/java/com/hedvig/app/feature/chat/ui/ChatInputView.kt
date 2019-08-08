@@ -1,13 +1,11 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
-import android.app.Activity
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -15,6 +13,14 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.Audio
+import com.hedvig.app.feature.chat.ChatInputType
+import com.hedvig.app.feature.chat.NullInput
+import com.hedvig.app.feature.chat.ParagraphInput
+import com.hedvig.app.feature.chat.SingleSelect
+import com.hedvig.app.feature.chat.SingleSelectChoiceType
+import com.hedvig.app.feature.chat.TextInput
+import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.children
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.dismissKeyboard
@@ -159,7 +165,7 @@ class ChatInputView : FrameLayout {
             KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
-        
+
         inputText.requestFocus()
     }
 
@@ -168,11 +174,20 @@ class ChatInputView : FrameLayout {
         input.options.forEach {
             when (it) {
                 is ChatMessageFragment.AsMessageBodyChoicesSelection ->
-                    inflateSingleSelectButton(it.text, it.value, SingleSelectChoiceType.SELECTION)
+                    inflateSingleSelectButton(
+                        it.text, it.value,
+                        SingleSelectChoiceType.SELECTION
+                    )
                 is ChatMessageFragment.AsMessageBodyChoicesLink ->
-                    inflateSingleSelectButton(it.text, it.value, SingleSelectChoiceType.LINK)
+                    inflateSingleSelectButton(
+                        it.text, it.value,
+                        SingleSelectChoiceType.LINK
+                    )
                 is ChatMessageFragment.AsMessageBodyChoicesUndefined ->
-                    inflateSingleSelectButton(it.text, it.value, SingleSelectChoiceType.UNDEFINED)
+                    inflateSingleSelectButton(
+                        it.text, it.value,
+                        SingleSelectChoiceType.UNDEFINED
+                    )
             }
         }
     }

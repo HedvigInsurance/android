@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +7,8 @@ import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
+import com.hedvig.app.feature.chat.FileUploadOutcome
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

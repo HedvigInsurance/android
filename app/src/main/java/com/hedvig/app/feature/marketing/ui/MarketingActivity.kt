@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
-import com.hedvig.app.feature.chat.ChatActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener

@@ -3,7 +3,6 @@ package com.hedvig.app.feature.dashboard.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.app.feature.chat.ChatRepository
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

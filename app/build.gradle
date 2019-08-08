@@ -178,6 +178,10 @@ dependencies {
     // Glide
     implementation "com.github.bumptech.glide:glide:4.9.0"
     kapt 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
+        transitive = false
+    }
+
 
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'

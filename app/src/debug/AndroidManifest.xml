@@ -9,7 +9,7 @@
         tools:targetApi="28">
 
         <activity
-            android:name=".feature.chat.ChatActivity"
+            android:name=".feature.chat.ui.ChatActivity"
             android:theme="@style/Hedvig.Theme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -11,11 +11,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.analytics.AnalyticsRepository
 import com.hedvig.app.data.debit.DirectDebitRepository
-import com.hedvig.app.feature.chat.ChatRepository
-import com.hedvig.app.feature.chat.ChatTracker
-import com.hedvig.app.feature.chat.ChatViewModel
-import com.hedvig.app.feature.chat.UserRepository
-import com.hedvig.app.feature.chat.UserViewModel
+import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -89,7 +89,7 @@ val applicationModule = module {
                 chain.proceed(builder.build())
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
+            val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
                     Timber.tag("OkHttp").i(message)
                 }

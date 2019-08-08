@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.profile.ui
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.net.Uri
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.app.feature.chat.ChatRepository
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.service.Referrals
 import com.hedvig.app.service.RemoteConfig

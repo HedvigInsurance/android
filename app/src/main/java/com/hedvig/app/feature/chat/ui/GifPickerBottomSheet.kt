@@ -1,9 +1,10 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.observe
@@ -48,10 +49,12 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
                 }
                 chatViewModel.searchGifs(query)
             }, { Timber.e(it) })
-        dialog.gifRecyclerView.adapter = GifAdapter(sendGif = { url ->
+        val adapter = GifAdapter(requireContext(), sendGif = { url ->
             onSelectGif(url)
             dismiss()
         })
+        dialog.gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+        dialog.gifRecyclerView.adapter = adapter
 
         chatViewModel.gifs.observe(lifecycleOwner = this) { data ->
             data?.gifs?.let { gifs ->

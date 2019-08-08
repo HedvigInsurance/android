@@ -17,7 +17,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
-import com.hedvig.app.feature.chat.ChatActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.interpolateTextKey

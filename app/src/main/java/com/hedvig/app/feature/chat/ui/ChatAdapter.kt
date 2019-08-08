@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.content.Context
 import android.net.Uri
@@ -11,12 +11,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
-import com.hedvig.app.util.convertDpToPixel
+import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -30,12 +34,17 @@ import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
 import kotlinx.android.synthetic.main.chat_message_user_image.view.*
 import timber.log.Timber
 
-class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private val tracker: ChatTracker) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(
+    private val context: Context,
+    private val onPressEdit: () -> Unit,
+    private val tracker: ChatTracker
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
     private val baseMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin)
-    private val roundingRadius = context.resources.getDimensionPixelSize(R.dimen.image_upload_corner_radius)
+
+    val recyclerViewPreloader =
+        RecyclerViewPreloader(Glide.with(context), ChatPreloadModelProvider(), ViewPreloadSizeProvider(), 10)
 
     var messages: List<ChatMessagesQuery.Message> = listOf()
         set(value) {
@@ -167,10 +176,22 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                 (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_IMAGE_UPLOAD -> {
-                (viewHolder as? ImageUploadUserMessage)?.apply { bind(getFileUrl(messages[position].fragments.chatMessageFragment.body)) }
+                (viewHolder as? ImageUploadUserMessage)?.apply {
+                    bind(
+                        getFileUrl(
+                            messages[position].fragments.chatMessageFragment.body
+                        )
+                    )
+                }
             }
             FROM_ME_FILE_UPLOAD -> {
-                (viewHolder as? FileUploadUserMessage)?.apply { bind(getFileUrl(messages[position].fragments.chatMessageFragment.body)) }
+                (viewHolder as? FileUploadUserMessage)?.apply {
+                    bind(
+                        getFileUrl(
+                            messages[position].fragments.chatMessageFragment.body
+                        )
+                    )
+                }
             }
             NULL_RENDER -> {
             }
@@ -196,6 +217,8 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             }
         }
     }
+
+    override fun getItemId(position: Int) = messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong() ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
@@ -292,11 +315,7 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
             Glide
                 .with(image)
                 .load(url)
-                .transform(RoundedCorners(roundingRadius), FitCenter())
-                .override(
-                    convertDpToPixel(280f),
-                    convertDpToPixel(200f)
-                )
+                .transform(FitCenter(), RoundedCorners(40))
                 .into(image)
                 .clearOnDetach()
         }
@@ -321,6 +340,29 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
     }
 
     inner class NullMessage(view: View) : RecyclerView.ViewHolder(view)
+
+    inner class ChatPreloadModelProvider : ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
+        override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
+            messages.getOrNull(position)?.let { message ->
+                when {
+                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(message)
+                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(message)
+                    else -> emptyList()
+                }
+            } ?: emptyList()
+
+        override fun getPreloadRequestBuilder(item: ChatMessagesQuery.Message): RequestBuilder<*>? {
+            val url = when {
+                isGiphyMessage(item.fragments.chatMessageFragment.body?.text) -> item.fragments.chatMessageFragment.body?.text
+                isImageUploadMessage(item.fragments.chatMessageFragment.body) -> (item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
+                else -> null
+            }
+            return Glide
+                .with(context)
+                .load(url)
+                .transform(FitCenter(), RoundedCorners(40))
+        }
+    }
 
     companion object {
         private const val FROM_HEDVIG = 0
