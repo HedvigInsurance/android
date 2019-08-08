@@ -6,7 +6,6 @@
     <color name="colorAccentDark">#FFFFFF</color>
     <color name="colorText">@color/off_white</color>
     <color name="colorLight">#F6F6F7</color>
-    <color name="splashBackground">@color/white</color>
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="transparent_white">#00FFFFFF</color>
