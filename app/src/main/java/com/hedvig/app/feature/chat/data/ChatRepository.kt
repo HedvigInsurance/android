@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.data
 
 import android.content.Context
 import android.net.Uri
@@ -185,7 +185,9 @@ class ChatRepository(
     }
 
     fun searchGifs(query: String) = Rx2Apollo
-        .from(apolloClientWrapper.apolloClient.query(
-            GifQuery.builder().query(query).build()
-        ))
+        .from(
+            apolloClientWrapper.apolloClient.query(
+                GifQuery.builder().query(query).build()
+            )
+        )
 }

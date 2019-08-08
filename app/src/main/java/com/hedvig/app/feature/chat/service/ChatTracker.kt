@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.service
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics

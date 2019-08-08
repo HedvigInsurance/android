@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.Manifest
 import android.app.Activity
@@ -15,6 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.ChatInputType
+import com.hedvig.app.feature.chat.ParagraphInput
+import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -91,7 +96,10 @@ class ChatActivity : BaseActivity() {
                     if (hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         openAttachPicker()
                     } else {
-                        askForPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_WRITE_PERMISSION)
+                        askForPermissions(
+                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                            REQUEST_WRITE_PERMISSION
+                        )
                     }
                 }
             },
@@ -100,7 +108,10 @@ class ChatActivity : BaseActivity() {
                 openGifPicker()
             },
             requestAudioPermission = {
-                askForPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_AUDIO_PERMISSION)
+                askForPermissions(
+                    arrayOf(Manifest.permission.RECORD_AUDIO),
+                    REQUEST_AUDIO_PERMISSION
+                )
             },
             uploadRecording = { path ->
                 scrollToBottom(true)
@@ -209,7 +220,11 @@ class ChatActivity : BaseActivity() {
 
     private fun bindData(data: ChatMessagesQuery.Data, forceScrollToBottom: Boolean) {
         var triggerScrollToBottom = false
-        val firstMessage = data.messages.firstOrNull()?.let { ChatInputType.from(it) }
+        val firstMessage = data.messages.firstOrNull()?.let {
+            ChatInputType.from(
+                it
+            )
+        }
         input.message = firstMessage
         if (firstMessage is ParagraphInput) {
             triggerScrollToBottom = true
@@ -234,7 +249,10 @@ class ChatActivity : BaseActivity() {
                 if (hasPermissions(Manifest.permission.CAMERA)) {
                     startTakePicture()
                 } else {
-                    askForPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+                    askForPermissions(
+                        arrayOf(Manifest.permission.CAMERA),
+                        REQUEST_CAMERA_PERMISSION
+                    )
                 }
             },
             showUploadBottomSheetCallback = {
@@ -283,11 +301,15 @@ class ChatActivity : BaseActivity() {
     }
 
     private fun openGifPicker() {
-        val gifPickerBottomSheet = GifPickerBottomSheet.newInstance(isKeyboardShown)
+        val gifPickerBottomSheet =
+            GifPickerBottomSheet.newInstance(isKeyboardShown)
         gifPickerBottomSheet.initialize(onSelectGif = { gifUrl ->
             chatViewModel.respondToLastMessage(gifUrl)
         })
-        gifPickerBottomSheet.show(supportFragmentManager, GifPickerBottomSheet.TAG)
+        gifPickerBottomSheet.show(
+            supportFragmentManager,
+            GifPickerBottomSheet.TAG
+        )
     }
 
     private fun startTakePicture() {
@@ -318,7 +340,10 @@ class ChatActivity : BaseActivity() {
                 file
             )
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-            startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE)
+            startActivityForResult(
+                takePictureIntent,
+                TAKE_PICTURE_REQUEST_CODE
+            )
         }
     }
 

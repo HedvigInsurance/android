@@ -2,10 +2,10 @@ package com.hedvig.app
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
-import com.hedvig.app.feature.chat.ChatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity

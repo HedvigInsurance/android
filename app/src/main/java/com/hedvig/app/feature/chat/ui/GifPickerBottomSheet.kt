@@ -1,9 +1,10 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.observe

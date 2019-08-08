@@ -8,7 +8,7 @@ import androidx.core.widget.NestedScrollView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.UserViewModel
+import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity

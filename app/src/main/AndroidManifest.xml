@@ -25,7 +25,7 @@
         tools:replace="android:label">
 
         <activity
-            android:name=".feature.chat.ChatActivity"
+            android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

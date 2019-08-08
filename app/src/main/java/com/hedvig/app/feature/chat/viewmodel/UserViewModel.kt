@@ -1,10 +1,11 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.BankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.feature.chat.data.UserRepository
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber

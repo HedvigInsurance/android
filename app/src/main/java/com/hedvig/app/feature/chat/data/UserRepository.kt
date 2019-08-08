@@ -1,7 +1,10 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.data
 
 import com.apollographql.apollo.rx2.Rx2Apollo
-import com.hedvig.android.owldroid.graphql.*
+import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
+import com.hedvig.android.owldroid.graphql.BankIdAuthMutation
+import com.hedvig.android.owldroid.graphql.LogoutMutation
+import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.ApolloClientWrapper
 
 class UserRepository(private val apolloClientWrapper: ApolloClientWrapper) {

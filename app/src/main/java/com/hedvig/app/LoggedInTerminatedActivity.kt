@@ -2,7 +2,7 @@ package com.hedvig.app
 
 import android.content.Intent
 import android.os.Bundle
-import com.hedvig.app.feature.chat.ChatActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener

@@ -1,19 +1,21 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.app.Dialog
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import android.view.*
-import com.hedvig.app.R
-import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.attach_picker_dialog.*
+import android.view.MotionEvent
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
+import com.hedvig.app.R
+import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.whenApiVersion
+import kotlinx.android.synthetic.main.attach_picker_dialog.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 
 class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {

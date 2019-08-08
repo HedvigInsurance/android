@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.net.Uri
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.net.Uri
 import android.util.TypedValue
@@ -15,6 +15,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove

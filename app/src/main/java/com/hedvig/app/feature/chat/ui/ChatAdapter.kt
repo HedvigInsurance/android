@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.content.Context
 import android.net.Uri
@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
-import com.hedvig.app.util.convertDpToPixel
+import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -167,10 +167,22 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                 (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_IMAGE_UPLOAD -> {
-                (viewHolder as? ImageUploadUserMessage)?.apply { bind(getFileUrl(messages[position].fragments.chatMessageFragment.body)) }
+                (viewHolder as? ImageUploadUserMessage)?.apply {
+                    bind(
+                        getFileUrl(
+                            messages[position].fragments.chatMessageFragment.body
+                        )
+                    )
+                }
             }
             FROM_ME_FILE_UPLOAD -> {
-                (viewHolder as? FileUploadUserMessage)?.apply { bind(getFileUrl(messages[position].fragments.chatMessageFragment.body)) }
+                (viewHolder as? FileUploadUserMessage)?.apply {
+                    bind(
+                        getFileUrl(
+                            messages[position].fragments.chatMessageFragment.body
+                        )
+                    )
+                }
             }
             NULL_RENDER -> {
             }
@@ -293,10 +305,6 @@ class ChatAdapter(context: Context, private val onPressEdit: () -> Unit, private
                 .with(image)
                 .load(url)
                 .transform(RoundedCorners(roundingRadius), FitCenter())
-                .override(
-                    convertDpToPixel(280f),
-                    convertDpToPixel(200f)
-                )
                 .into(image)
                 .clearOnDetach()
         }

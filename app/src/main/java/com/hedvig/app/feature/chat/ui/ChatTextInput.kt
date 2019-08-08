@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.app.feature.chat.ui
 
 import android.content.Context
 import android.graphics.Rect
@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.EditText
 import kotlinx.android.synthetic.main.chat_input_view.view.*
-
 
 class ChatTextInput : EditText {
 
@@ -46,7 +45,11 @@ class ChatTextInput : EditText {
 
     override fun setCompoundDrawables(left: Drawable?, top: Drawable?, right: Drawable?, bottom: Drawable?) {
         right?.let { rightDrawable ->
-            val gravityDrawable = BottomRightCompoundDrawableWrapper(rightDrawable, this.paddingEnd, this.paddingBottom)
+            val gravityDrawable = BottomRightCompoundDrawableWrapper(
+                rightDrawable,
+                this.paddingEnd,
+                this.paddingBottom
+            )
             rightDrawable.setBounds(0, 0, rightDrawable.intrinsicWidth, rightDrawable.intrinsicHeight)
             gravityDrawable.setBounds(0, 0, rightDrawable.intrinsicWidth, rightDrawable.intrinsicHeight)
 
@@ -58,10 +61,12 @@ class ChatTextInput : EditText {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (!sendIsDisabled && event.action == MotionEvent.ACTION_DOWN) {
             val tapBounds = Rect(sendDrawable.bounds)
-            tapBounds.set(tapBounds.left - EXTRA_TAP_AREA,
+            tapBounds.set(
+                tapBounds.left - EXTRA_TAP_AREA,
                 tapBounds.top - EXTRA_TAP_AREA,
                 tapBounds.right + EXTRA_TAP_AREA,
-                tapBounds.bottom + EXTRA_TAP_AREA)
+                tapBounds.bottom + EXTRA_TAP_AREA
+            )
 
             val offset = height - sendDrawable.bounds.height()
             if (tapBounds.contains(width - event.x.toInt(), event.y.toInt() - offset)) {
