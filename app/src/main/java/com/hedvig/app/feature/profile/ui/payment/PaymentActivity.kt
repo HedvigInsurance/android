@@ -22,7 +22,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
-import kotlinx.android.synthetic.main.fragment_payment.*
+import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -39,7 +39,7 @@ class PaymentActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.fragment_payment)
+        setContentView(R.layout.activity_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.font.circular_bold, R.drawable.ic_back) {
             onBackPressed()
         }

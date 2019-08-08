@@ -12,7 +12,7 @@ import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import kotlinx.android.synthetic.main.fragment_my_home.*
+import kotlinx.android.synthetic.main.activity_my_home.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -22,7 +22,7 @@ class MyHomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_my_home)
+        setContentView(R.layout.activity_my_home)
 
         setupLargeTitle(R.string.PROFILE_MY_HOME_TITLE, R.font.circular_bold, R.drawable.ic_back) {
             onBackPressed()

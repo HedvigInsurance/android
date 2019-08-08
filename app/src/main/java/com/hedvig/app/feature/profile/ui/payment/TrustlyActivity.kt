@@ -17,7 +17,7 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.viewmodel.DirectDebitViewModel
-import kotlinx.android.synthetic.main.fragment_trustly.*
+import kotlinx.android.synthetic.main.activity_trustly.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -32,7 +32,7 @@ class TrustlyActivity : BaseActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_trustly)
+        setContentView(R.layout.activity_trustly)
 
         trustlyContainer.settings.apply {
             javaScriptEnabled = true

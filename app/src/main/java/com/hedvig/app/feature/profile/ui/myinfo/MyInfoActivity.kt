@@ -20,7 +20,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
-import kotlinx.android.synthetic.main.fragment_my_info.*
+import kotlinx.android.synthetic.main.activity_my_info.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -33,7 +33,7 @@ class MyInfoActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_my_info)
+        setContentView(R.layout.activity_my_info)
 
         setupLargeTitle(R.string.PROFILE_MY_INFO_TITLE, R.font.circular_bold, R.drawable.ic_back) {
             onBackPressed()

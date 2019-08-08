@@ -8,12 +8,12 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.fragment_feedback.*
+import kotlinx.android.synthetic.main.activity_feedback.*
 
 class FeedbackActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_feedback)
+        setContentView(R.layout.activity_feedback)
 
         setupLargeTitle(R.string.PROFILE_FEEDBACK_TITLE, R.font.circular_bold, R.drawable.ic_back) {
             onBackPressed()
