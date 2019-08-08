@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.type.AuthState
-import com.hedvig.app.LoggedInActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.util.extensions.canOpenUri

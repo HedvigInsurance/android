@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.NestedScrollView
-import androidx.lifecycle.Observer
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -13,14 +12,19 @@ import com.hedvig.app.feature.chat.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
+import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
+import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
+import com.hedvig.app.feature.profile.ui.myhome.MyHomeActivity
+import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
+import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -38,7 +42,6 @@ class ProfileFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         populateData()
-        loadReferralFeature()
     }
 
     override fun onResume() {
@@ -46,28 +49,8 @@ class ProfileFragment : BaseTabFragment() {
         super.onResume()
     }
 
-    private fun loadReferralFeature() {
-        profileViewModel.remoteConfigData.observe(this) { remoteConfigData ->
-            remoteConfigData?.let { rcd ->
-                if (!rcd.referralsEnabled || rcd.newReferralsEnabled) {
-                    return@let
-                }
-
-                profileReferralRow.setHighlighted()
-                profileReferralRow.name = interpolateTextKey(
-                    resources.getString(R.string.PROFILE_ROW_REFERRAL_TITLE),
-                    "INCENTIVE" to rcd.referralsIncentiveAmount.toString()
-                )
-                profileReferralRow.setOnClickListener {
-                    navController.proxyNavigate(R.id.action_loggedInFragment_to_referralFragment)
-                }
-                profileReferralRow.show()
-            }
-        }
-    }
-
     private fun populateData() {
-        profileViewModel.data.observe(this, Observer { profileData ->
+        profileViewModel.data.observe(lifecycleOwner = this) { profileData ->
             loadingSpinner.remove()
             rowContainer.show()
             logout.show()
@@ -81,8 +64,8 @@ class ProfileFragment : BaseTabFragment() {
                 setupCertificateUrl(data)
             }
 
-            feedbackRow.setOnClickListener {
-                navController.proxyNavigate(R.id.action_loggedInFragment_to_feedbackFragment)
+            feedbackRow.setHapticClickListener {
+                startActivity(Intent(requireContext(), FeedbackActivity::class.java))
             }
             aboutAppRow.setOnClickListener {
                 startActivity(Intent(requireActivity(), AboutAppActivity::class.java))
@@ -96,22 +79,22 @@ class ProfileFragment : BaseTabFragment() {
                     requireActivity().triggerRestartActivity()
                 }
             }
-        })
+        }
     }
 
     private fun setupMyInfoRow(profileData: ProfileQuery.Data) {
         val firstName = profileData.member.firstName ?: ""
         val lastName = profileData.member.lastName ?: ""
         myInfoRow.description = "$firstName $lastName"
-        myInfoRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_myInfoFragment)
+        myInfoRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), MyInfoActivity::class.java))
         }
     }
 
     private fun setupMyHomeRow(profileData: ProfileQuery.Data) {
         myHomeRow.description = profileData.insurance.address
-        myHomeRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_myHomeFragment)
+        myHomeRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), MyHomeActivity::class.java))
         }
     }
 
@@ -127,8 +110,8 @@ class ProfileFragment : BaseTabFragment() {
             resources.getString(R.string.PROFILE_MY_COINSURED_ROW_SUBTITLE),
             "amountCoinsured" to "${personsInHousehold - 1}"
         )
-        coinsuredRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_coinsuredFragment)
+        coinsuredRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), CoinsuredActivity::class.java))
         }
         coinsuredRow.show()
     }
@@ -146,7 +129,7 @@ class ProfileFragment : BaseTabFragment() {
             "COST" to profileData.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
         )
         paymentRow.setOnClickListener {
-            navController.proxyNavigate(R.id.action_loggedInFragment_to_paymentFragment)
+            startActivity(Intent(requireContext(), PaymentActivity::class.java))
         }
     }
 

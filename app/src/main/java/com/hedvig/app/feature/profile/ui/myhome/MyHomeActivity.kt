@@ -1,13 +1,9 @@
 package com.hedvig.app.feature.profile.ui.myhome
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.findNavController
+import androidx.lifecycle.Observer
 import com.hedvig.android.owldroid.type.InsuranceType
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
@@ -16,35 +12,25 @@ import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import kotlinx.android.synthetic.main.fragment_my_home.*
+import kotlinx.android.synthetic.main.activity_my_home.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class MyHomeFragment : androidx.fragment.app.Fragment() {
-    val profileViewModel: ProfileViewModel by sharedViewModel()
+class MyHomeActivity : BaseActivity() {
+    val profileViewModel: ProfileViewModel by viewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_my_home, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_my_home)
 
         setupLargeTitle(R.string.PROFILE_MY_HOME_TITLE, R.font.circular_bold, R.drawable.ic_back) {
-            requireActivity().findNavController(R.id.loggedNavigationHost).popBackStack()
+            onBackPressed()
         }
-        sphere.drawable.compatSetTint(requireContext().compatColor(R.color.maroon))
+        sphere.drawable.compatSetTint(compatColor(R.color.maroon))
 
         changeHomeInformation.setOnClickListener {
-            fragmentManager?.let { fm ->
-                val changeHomeInformationDialog =
-                    ChangeHomeInfoDialog()
-                val transaction = fm.beginTransaction()
-                val prev = fm.findFragmentByTag("dialog")
-                prev?.let { transaction.remove(it) }
-                transaction.addToBackStack(null)
-                changeHomeInformationDialog.show(transaction, "dialog")
-            }
+            ChangeHomeInfoDialog().show(supportFragmentManager, ChangeHomeInfoDialog.TAG)
         }
 
         loadData()

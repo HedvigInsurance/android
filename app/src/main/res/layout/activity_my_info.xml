@@ -2,9 +2,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myInfoRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoFragment">
+    tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity">
 
     <include layout="@layout/app_bar" />
 

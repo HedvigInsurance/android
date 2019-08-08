@@ -2,20 +2,16 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.LoggedInActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
@@ -42,15 +38,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class LoggedInFragment : androidx.fragment.app.Fragment() {
-
-    private val claimsViewModel: ClaimsViewModel by sharedViewModel()
-    private val tabViewModel: BaseTabViewModel by sharedViewModel()
+class LoggedInActivity : BaseActivity() {
+    private val claimsViewModel: ClaimsViewModel by viewModel()
+    private val tabViewModel: BaseTabViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
-    private val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
 
     private val profileTracker: ProfileTracker by inject()
@@ -59,18 +53,10 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.logged_in_screen, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        setContentView(R.layout.logged_in_screen)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
-        tabContentContainer.adapter = TabPagerAdapter(childFragmentManager)
+        tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
             val id = LoggedInTabs.fromId(menuItem.itemId)
             tabContentContainer.setCurrentItem(id.ordinal, false)
@@ -79,26 +65,26 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
             true
         }
 
-        if (requireActivity().intent.getBooleanExtra(LoggedInActivity.EXTRA_IS_FROM_REFERRALS_NOTIFICATION, false)) {
+        if (intent.getBooleanExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION, false)) {
             bottomTabs.selectedItemId = R.id.referrals
-            requireActivity().intent.removeExtra(LoggedInActivity.EXTRA_IS_FROM_REFERRALS_NOTIFICATION)
+            intent.removeExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION)
         }
 
-        if (requireActivity().intent.getBooleanExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, false)) {
+        if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
             welcomeViewModel.fetch()
-            welcomeViewModel.data.observe(this) { data ->
+            welcomeViewModel.data.observe(lifecycleOwner = this) { data ->
                 if (data != null) {
-                    WelcomeDialog.newInstance(data).show(requireFragmentManager(), WelcomeDialog.TAG)
-                    view.postDelayed({
-                        view.show()
+                    WelcomeDialog.newInstance(data).show(supportFragmentManager, WelcomeDialog.TAG)
+                    loggedInRoot.postDelayed({
+                        loggedInRoot.show()
                     }, resources.getInteger(R.integer.slide_in_animation_duration).toLong())
                 } else {
-                    view.show()
+                    loggedInRoot.show()
                 }
             }
-            requireActivity().intent.removeExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING)
+            intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
         } else {
-            view.show()
+            loggedInRoot.show()
         }
 
         bindData()
@@ -110,17 +96,18 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
         LoggedInTabs.REFERRALS -> referralButton.show()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
             LoggedInTabs.CLAIMS,
             LoggedInTabs.PROFILE -> {
-                inflater.inflate(R.menu.base_tab_menu, menu)
+                menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
             LoggedInTabs.REFERRALS -> {
-                inflater.inflate(R.menu.referral_more_info_menu, menu)
+                menuInflater.inflate(R.menu.referral_more_info_menu, menu)
             }
         }
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -129,13 +116,13 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
             LoggedInTabs.CLAIMS,
             LoggedInTabs.PROFILE -> {
                 claimsViewModel.triggerFreeTextChat {
-                    requireActivity().startClosableChat()
+                    startClosableChat()
                 }
             }
             LoggedInTabs.REFERRALS -> {
                 (profileViewModel.data.value?.referralInformation?.campaign?.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
                     ?.toInt()?.toString()?.let { amount ->
-                        ReferralBottomSheet.newInstance(amount).show(childFragmentManager, ReferralBottomSheet.TAG)
+                        ReferralBottomSheet.newInstance(amount).show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
             }
         }
@@ -156,9 +143,7 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
                                 LoggedInTabs.REFERRALS.ordinal
                             ) as BottomNavigationItemView
 
-                        badge = LayoutInflater
-                            .from(requireContext())
-                            .inflate(R.layout.bottom_navigation_notification, itemView, true)
+                        badge = layoutInflater.inflate(R.layout.bottom_navigation_notification, itemView, true)
                     }
                 }
             }
@@ -171,7 +156,7 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
                     GlobalScope.launch(Dispatchers.IO) {
                         FirebaseInstanceId.getInstance().deleteInstanceId()
                     }
-                    WhatsNewDialog.newInstance(data.news).show(childFragmentManager, WhatsNewDialog.TAG)
+                    WhatsNewDialog.newInstance(data.news).show(supportFragmentManager, WhatsNewDialog.TAG)
                 }
             }
         }
@@ -188,7 +173,7 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
     private fun bindReferralsButton(incentive: Double, code: String) {
         referralButton.setHapticClickListener {
             profileTracker.clickReferral(incentive.toInt())
-            requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
+            showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                 intent.apply {
                     putExtra(
                         Intent.EXTRA_TEXT,
@@ -206,7 +191,7 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun setupAppBar(id: LoggedInTabs) {
-        activity?.invalidateOptionsMenu()
+        invalidateOptionsMenu()
         if (lastLoggedInTab != id) {
             appBarLayout.setExpanded(true, false)
         }
@@ -226,5 +211,9 @@ class LoggedInFragment : androidx.fragment.app.Fragment() {
         }
         lastLoggedInTab = id
     }
-}
 
+    companion object {
+        const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
+        const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
+    }
+}

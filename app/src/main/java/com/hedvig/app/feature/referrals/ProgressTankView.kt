@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.profile.ui.referral
+package com.hedvig.app.feature.referrals
 
 import android.content.Context
 import android.graphics.*
