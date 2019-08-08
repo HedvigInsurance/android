@@ -10,8 +10,7 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 class DashboardViewModel(
-    val dashboardRepository: DashboardRepository,
-    val chatRepository: ChatRepository
+    private val dashboardRepository: DashboardRepository
 ) : ViewModel() {
 
     val data = MutableLiveData<DashboardQuery.Data>()

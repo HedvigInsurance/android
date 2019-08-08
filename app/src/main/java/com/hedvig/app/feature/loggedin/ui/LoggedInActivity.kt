@@ -10,10 +10,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ReferralBottomSheet
@@ -46,6 +49,7 @@ class LoggedInActivity : BaseActivity() {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
+    private val dashboardViewModel: DashboardViewModel by viewModel()
 
     private val profileTracker: ProfileTracker by inject()
 
@@ -132,7 +136,7 @@ class LoggedInActivity : BaseActivity() {
     private fun bindData() {
         var badge: View? = null
 
-        tabViewModel.tabNotification.observe(this) { tab ->
+        tabViewModel.tabNotification.observe(lifecycleOwner = this) { tab ->
             if (tab == null) {
                 badge?.findViewById<ImageView>(R.id.notificationIcon)?.remove()
             } else {
@@ -149,7 +153,7 @@ class LoggedInActivity : BaseActivity() {
             }
         }
 
-        whatsNewViewModel.news.observe(this) { data ->
+        whatsNewViewModel.news.observe(lifecycleOwner = this) { data ->
             data?.let {
                 if (data.news.size > 0) {
                     // Yep, this is actually happening
@@ -161,13 +165,24 @@ class LoggedInActivity : BaseActivity() {
             }
         }
 
-        profileViewModel.data.observe(this) { data ->
+        profileViewModel.data.observe(lifecycleOwner = this) { data ->
             safeLet(
                 data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toDouble(),
                 data?.referralInformation?.campaign?.code
             ) { incentive, code -> bindReferralsButton(incentive, code) }
         }
         whatsNewViewModel.fetchNews()
+
+        dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
+            data?.insurance?.status?.let { insuranceStatus ->
+                if (insuranceStatus == InsuranceStatus.TERMINATED) {
+                    startActivity(Intent(this, LoggedInTerminatedActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                }
+            }
+        }
     }
 
     private fun bindReferralsButton(incentive: Double, code: String) {
