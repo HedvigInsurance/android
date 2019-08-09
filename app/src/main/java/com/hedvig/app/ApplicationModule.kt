@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.os.Build
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
@@ -59,6 +60,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -90,6 +92,13 @@ val applicationModule = module {
                 }
                 chain.proceed(builder.build())
             }
+            .addInterceptor {  chain ->
+                chain.proceed(chain
+                    .request()
+                    .newBuilder()
+                    .header("User-Agent", makeUserAgent())
+                    .build())
+            }
         if (isDebug()) {
             val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
@@ -105,6 +114,8 @@ val applicationModule = module {
         ApolloClientWrapper(get(), get(), get())
     }
 }
+
+fun makeUserAgent() = "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
