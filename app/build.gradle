@@ -182,10 +182,13 @@ dependencies {
         transitive = false
     }
 
-
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'
     implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    // ZXing
+
+    implementation 'com.google.zxing:core:3.4.0'
 
     // test
     testImplementation 'junit:junit:4.12'
@@ -209,7 +212,7 @@ textkeys {
 
 task updateSchema(type: Exec) {
     group = 'GraphQL'
-    description = 'Fetches the latest schema from our dev GraphQL-server'
+    description = 'Fetches the latest schema load our dev GraphQL-server'
 
     commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
 }

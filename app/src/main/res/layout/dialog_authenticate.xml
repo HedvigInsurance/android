@@ -23,6 +23,13 @@
         tools:text="@string/BANK_ID_NOT_INSTALLED" />
 
     <ImageView
+        android:id="@+id/qrCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        tools:visibility="gone" />
+
+    <ImageView
         android:id="@+id/authImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -218,7 +218,8 @@ class ChatAdapter(
         }
     }
 
-    override fun getItemId(position: Int) = messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong() ?: position.toLong()
+    override fun getItemId(position: Int) =
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong() ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
