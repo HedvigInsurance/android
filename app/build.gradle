@@ -212,7 +212,7 @@ textkeys {
 
 task updateSchema(type: Exec) {
     group = 'GraphQL'
-    description = 'Fetches the latest schema load our dev GraphQL-server'
+    description = 'Fetches the latest schema from our dev GraphQL-server'
 
     commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
 }
