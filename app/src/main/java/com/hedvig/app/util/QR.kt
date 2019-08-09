@@ -12,9 +12,9 @@ import com.hedvig.app.R
 class QR private constructor(
     context: Context
 ) {
-    private val qrSize = context.resources.getDimensionPixelSize(R.dimen.default_qr_code_size)
+    private val defaultQRSize = context.resources.getDimensionPixelSize(R.dimen.default_qr_code_size)
 
-    fun load(text: String, @Dimension width: Int = qrSize, @Dimension height: Int = qrSize): QRBitmap {
+    fun load(text: String, @Dimension width: Int = defaultQRSize, @Dimension height: Int = defaultQRSize): QRBitmap {
         val matrix = QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, width, height)
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
         for (x in 0 until width) {
