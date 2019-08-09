@@ -182,10 +182,13 @@ dependencies {
         transitive = false
     }
 
-
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'
     implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    // ZXing
+
+    implementation 'com.google.zxing:core:3.4.0'
 
     // test
     testImplementation 'junit:junit:4.12'
