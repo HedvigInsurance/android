@@ -1,16 +1,15 @@
 package com.hedvig.app.feature.dismissablepager
 
 import android.content.Context
-import androidx.viewpager.widget.ViewPager
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.hedvig.app.R
+import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.setScaleXY
-import com.hedvig.app.util.percentageFade
 import com.hedvig.app.util.safeLet
 
 class PagerIndicatorView : LinearLayout {
@@ -75,12 +74,12 @@ class PagerIndicatorView : LinearLayout {
     }
 
     private fun shrinkIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(percentageFade(purple, gray, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(purple, gray, percentage))
         indicator.setScaleXY(1.5f - percentage / 2)
     }
 
     private fun expandIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(percentageFade(gray, purple, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(gray, purple, percentage))
         indicator.setScaleXY(1.0f + percentage / 2)
     }
 }
