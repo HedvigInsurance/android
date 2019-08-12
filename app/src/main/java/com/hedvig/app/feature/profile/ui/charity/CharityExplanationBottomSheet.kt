@@ -19,6 +19,7 @@ class CharityExplanationBottomSheet : RoundedBottomSheetDialogFragment() {
     }
 
     companion object {
+        const val TAG = "charity_explanation_bottom_sheet"
 
         fun newInstance() = CharityExplanationBottomSheet()
     }

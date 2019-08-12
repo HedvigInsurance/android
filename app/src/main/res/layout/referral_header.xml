@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingBottom="1dp">
 
-    <com.hedvig.app.feature.profile.ui.referral.ProgressTankView
+    <com.hedvig.app.feature.referrals.ProgressTankView
         android:id="@+id/discountView"
         android:layout_width="match_parent"
         android:layout_height="200dp" />
@@ -93,12 +93,12 @@
         tools:text="HDVG87" />
 
     <include
-        android:visibility="gone"
-        layout="@layout/referral_small_header_row"/>
+        layout="@layout/referral_small_header_row"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/emptyStateRow"
-        android:visibility="gone"
-        layout="@layout/referral_invite_row"/>
+        layout="@layout/referral_invite_row"
+        android:visibility="gone" />
 
 </LinearLayout>

@@ -1,0 +1,81 @@
+query Profile {
+  member {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+  insurance {
+    address
+    postalNumber
+    type
+    certificateUrl
+    personsInHousehold
+    livingSpace
+    cost {
+      ... CostFragment
+      freeUntil
+    }
+  }
+  bankAccount {
+    bankName
+    descriptor
+  }
+  cashback {
+    ... CashbackFragment
+  }
+  cashbackOptions {
+    id
+    name
+    paragraph
+  }
+  referralInformation {
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            amount
+          }
+        }
+      }
+    }
+    referredBy {
+      __typename
+      ... on ActiveReferral {
+        name
+        discount {
+          amount
+        }
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on AcceptedReferral {
+        quantity
+      }
+    }
+    invitations {
+      __typename
+      ... on ActiveReferral {
+        name
+        discount {
+          amount
+        }
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on AcceptedReferral {
+        quantity
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.referral_more_info_bottom_sheet.*
 
 class ReferralBottomSheet : RoundedBottomSheetDialogFragment() {
 
-    override fun getTheme() = R.style.PerilBottomSheetDialogTheme
+    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)

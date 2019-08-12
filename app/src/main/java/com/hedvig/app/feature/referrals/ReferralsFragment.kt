@@ -7,7 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.profile.ui.referral.InvitesAdapter
 import com.hedvig.app.ui.decoration.BottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.safeLet

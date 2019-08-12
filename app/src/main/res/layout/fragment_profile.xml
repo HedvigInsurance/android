@@ -26,16 +26,6 @@
             tools:visibility="visible">
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/profileReferralRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/base_margin_triple"
-                android:visibility="gone"
-                app:description="@string/PROFILE_ROW_REFERRAL_DESCRIPTION"
-                app:iconImage="@drawable/icon_share"
-                tools:visibility="visible" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/myInfoRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,0 +1,11 @@
+fragment CostFragment on InsuranceCost {
+  monthlyDiscount {
+    amount
+  }
+  monthlyNet {
+    amount
+  }
+  monthlyGross {
+    amount
+  }
+}

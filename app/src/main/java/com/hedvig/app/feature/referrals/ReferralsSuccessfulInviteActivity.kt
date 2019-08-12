@@ -3,9 +3,8 @@ package com.hedvig.app.feature.referrals
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.LoggedInActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor

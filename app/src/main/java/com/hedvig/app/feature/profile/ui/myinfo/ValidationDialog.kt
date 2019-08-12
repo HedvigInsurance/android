@@ -27,9 +27,12 @@ class ValidationDialog : androidx.fragment.app.DialogFragment() {
     }
 
     companion object {
-        const val TITLE = "title"
-        const val PARAGRAPH = "paragraph"
-        const val DISMISS = "dismiss"
+        const val TAG = "validation_dialog"
+
+        private const val TITLE = "title"
+        private const val PARAGRAPH = "paragraph"
+        private const val DISMISS = "dismiss"
+
         fun newInstance(@StringRes title: Int, @StringRes paragraph: Int, @StringRes dismiss: Int): ValidationDialog {
             val dialog = ValidationDialog()
             val arguments = Bundle()

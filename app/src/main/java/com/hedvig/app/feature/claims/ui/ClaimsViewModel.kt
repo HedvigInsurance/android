@@ -3,7 +3,7 @@ package com.hedvig.app.feature.claims.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
-import com.hedvig.app.feature.chat.ChatRepository
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

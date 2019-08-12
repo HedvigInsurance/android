@@ -13,10 +13,11 @@ import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
-import com.hedvig.app.feature.chat.ChatActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
+import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
@@ -27,7 +28,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.percentageFade
 import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -161,7 +161,7 @@ class MarketingActivity : BaseActivity() {
                     marketing_hedvig_logo.alpha = opacity.animatedValue as Float
                     storyProgressIndicatorContainer.alpha = opacity.animatedValue as Float
 
-                    val backgroundColor = percentageFade(
+                    val backgroundColor = boundedColorLerp(
                         compatColor(R.color.transparent_white),
                         compatColor(R.color.blur_white),
                         opacity.animatedFraction
@@ -192,13 +192,13 @@ class MarketingActivity : BaseActivity() {
                             addUpdateListener { translation ->
                                 getHedvig.translationY = translation.animatedValue as Float
                                 val elapsed = translation.animatedFraction
-                                val backgroundColor = percentageFade(
+                                val backgroundColor = boundedColorLerp(
                                     compatColor(R.color.purple),
                                     compatColor(R.color.white),
                                     elapsed
                                 )
                                 getHedvig.background.compatSetTint(backgroundColor)
-                                val textColor = percentageFade(
+                                val textColor = boundedColorLerp(
                                     compatColor(R.color.white),
                                     compatColor(R.color.black),
                                     elapsed
@@ -208,7 +208,7 @@ class MarketingActivity : BaseActivity() {
                                 marketing_hedvig_logo.alpha = translation.animatedFraction
                                 storyProgressIndicatorContainer.alpha = translation.animatedFraction
 
-                                val blurBackgroundColor = percentageFade(
+                                val blurBackgroundColor = boundedColorLerp(
                                     compatColor(R.color.blur_white),
                                     compatColor(R.color.transparent_white),
                                     translation.animatedFraction
@@ -239,13 +239,13 @@ class MarketingActivity : BaseActivity() {
                 addUpdateListener { translation ->
                     getHedvig.translationY = translation.animatedValue as Float
                     val elapsed = translation.animatedFraction
-                    val backgroundColor = percentageFade(
+                    val backgroundColor = boundedColorLerp(
                         compatColor(R.color.white),
                         compatColor(R.color.purple),
                         elapsed
                     )
                     getHedvig.background.compatSetTint(backgroundColor)
-                    val textColor = percentageFade(
+                    val textColor = boundedColorLerp(
                         compatColor(R.color.black),
                         compatColor(R.color.white),
                         elapsed

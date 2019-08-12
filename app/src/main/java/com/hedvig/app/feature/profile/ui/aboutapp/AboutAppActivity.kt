@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.profile.ui.aboutapp
 
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import kotlinx.android.synthetic.main.fragment_about_app.*
+import kotlinx.android.synthetic.main.activity_about_app.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : BaseActivity() {
@@ -23,7 +23,7 @@ class AboutAppActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_about_app)
+        setContentView(R.layout.activity_about_app)
 
         setupLargeTitle(R.string.PROFILE_ABOUT_APP_TITLE, R.font.circular_bold, R.drawable.ic_back) {
             onBackPressed()

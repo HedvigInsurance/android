@@ -12,8 +12,8 @@ import androidx.fragment.app.DialogFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
-import com.hedvig.app.LoggedInActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe

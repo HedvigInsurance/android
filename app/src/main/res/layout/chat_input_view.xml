@@ -47,7 +47,7 @@
         Ignore RtlHardcoded
         Can't use drawableEnd instead of drawableRight because setCompoundDrawablesRelative is not called
         -->
-        <com.hedvig.app.feature.chat.ChatTextInput
+        <com.hedvig.app.feature.chat.ui.ChatTextInput
             android:id="@+id/inputText"
             style="@style/Body.Regular"
             android:layout_width="0dp"
@@ -86,7 +86,7 @@
         app:lottie_rawRes="@raw/hedvig_typing_animation_2"
         tools:visibility="visible" />
 
-    <com.hedvig.app.feature.chat.AudioRecorderView
+    <com.hedvig.app.feature.chat.ui.AudioRecorderView
         android:id="@+id/audioRecorder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

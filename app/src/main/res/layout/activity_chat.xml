@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/off_white"
-    tools:context=".feature.chat.ChatActivity">
+    tools:context=".feature.chat.ui.ChatActivity">
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -70,7 +70,7 @@
         app:reverseLayout="true"
         tools:listitem="@layout/chat_message_hedvig" />
 
-    <com.hedvig.app.feature.chat.ChatInputView
+    <com.hedvig.app.feature.chat.ui.ChatInputView
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

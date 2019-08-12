@@ -1,0 +1,31 @@
+query Offer {
+  insurance {
+    address
+    personsInHousehold
+    insuredAtOtherCompany
+    type
+    presaleInformationUrl
+    policyUrl
+    currentInsurerName
+
+    arrangedPerilCategories {
+      me {
+        ... PerilCategoryFragment
+      }
+      home {
+        ... PerilCategoryFragment
+      }
+      stuff {
+        ... PerilCategoryFragment
+      }
+    }
+
+    cost {
+      ... CostFragment
+    }
+  }
+
+  redeemedCampaigns {
+    ... IncentiveFragment
+  }
+}

@@ -9,7 +9,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:showIn="@layout/fragment_my_info"
+    tools:showIn="@layout/activity_my_info"
     tools:visibility="visible">
 
     <ImageView
@@ -25,12 +25,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:ellipsize="end"
         android:fontFamily="@font/soray_extrabold"
         android:gravity="center"
         android:maxLines="2"
-        android:textColor="@color/white"
         android:padding="@dimen/sphere_text_padding"
-        android:ellipsize="end"
+        android:textColor="@color/white"
         app:autoSizeMaxTextSize="@dimen/sphere_text_max_text_size"
         app:autoSizeMinTextSize="@dimen/sphere_text_min_text_size"
         app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"

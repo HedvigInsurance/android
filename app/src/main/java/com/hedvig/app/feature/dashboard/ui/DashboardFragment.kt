@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
@@ -14,11 +15,11 @@ import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.remove
@@ -105,9 +106,26 @@ class DashboardFragment : BaseTabFragment() {
 
         perilCategoryContainer.removeAllViews()
 
-        dashboardData.insurance.perilCategories?.forEach { category ->
-            val categoryView = makePerilCategoryRow(category.fragments.perilCategoryFragment)
-            perilCategoryContainer.addView(categoryView)
+        dashboardData.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let { me ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    me
+                )
+            )
+        }
+        dashboardData.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let { home ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    home
+                )
+            )
+        }
+        dashboardData.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let { stuff ->
+            perilCategoryContainer.addView(
+                makePerilCategoryRow(
+                    stuff
+                )
+            )
         }
 
         dashboardData.insurance.status.let { insuranceStatus ->
@@ -217,7 +235,7 @@ class DashboardFragment : BaseTabFragment() {
                 directDebitNeedsSetup.show()
                 directDebitConnectButton.setHapticClickListener {
                     tracker.setupDirectDebit()
-                    navController.proxyNavigate(R.id.action_dashboardFragment_to_trustlyFragment)
+                    startActivity(Intent(requireContext(), TrustlyActivity::class.java))
                 }
             }
         }

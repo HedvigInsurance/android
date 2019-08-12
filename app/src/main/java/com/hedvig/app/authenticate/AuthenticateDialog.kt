@@ -10,9 +10,10 @@ import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.type.AuthState
-import com.hedvig.app.LoggedInActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.UserViewModel
+import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.util.QR
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -39,7 +40,8 @@ class AuthenticateDialog : DialogFragment() {
 
         userViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
             data?.bankIdAuth?.autoStartToken?.let { autoStartToken ->
-                val bankIdUri = Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
+                val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
+                val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
                 if (requireContext().canOpenUri(bankIdUri)) {
                     startActivity(
                         Intent(
@@ -48,7 +50,10 @@ class AuthenticateDialog : DialogFragment() {
                         )
                     )
                 } else {
-                    dialog.authTitle.text = getString(R.string.BANK_ID_NOT_INSTALLED)
+                    QR
+                        .with(requireContext())
+                        .load(autoStartUrl)
+                        .into(dialog.qrCode)
                 }
             }
         }

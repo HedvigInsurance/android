@@ -8,3 +8,5 @@ fun boundedLerp(start: Float, stop: Float, amount: Float): Float {
     }
     return (1 - boundedAmount) * start + stop * boundedAmount
 }
+
+fun boundedLerp(start: Int, stop: Int, amount: Float) = boundedLerp(start.toFloat(), stop.toFloat(), amount).toInt()

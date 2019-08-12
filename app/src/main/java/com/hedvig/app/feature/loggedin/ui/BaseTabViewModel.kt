@@ -2,7 +2,7 @@ package com.hedvig.app.feature.loggedin.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hedvig.app.feature.chat.ChatRepository
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

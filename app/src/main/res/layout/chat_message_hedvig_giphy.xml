@@ -11,7 +11,7 @@
 
     <ImageView
         android:id="@+id/messageImage"
-        android:layout_width="@dimen/gif_image_size"
+        android:layout_width="@dimen/chat_image_size"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@null"

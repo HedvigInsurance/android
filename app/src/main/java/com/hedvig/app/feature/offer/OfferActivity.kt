@@ -120,12 +120,17 @@ class OfferActivity : BaseActivity() {
         homeSection.paragraph.text = getString(R.string.OFFER_APARTMENT_PROTECTION_DESCRIPTION)
         homeSection.hero.setImageDrawable(getDrawable(R.drawable.offer_house))
 
+        val quadrupleMargin = resources.getDimensionPixelSize(R.dimen.base_margin_quadruple)
+
         stuffSection.hero.setImageDrawable(getDrawable(R.drawable.offer_stuff))
         stuffSection.title.text = getString(R.string.OFFER_STUFF_PROTECTION_TITLE)
+        stuffSection.updatePadding(top = quadrupleMargin)
+
 
         meSection.hero.setImageDrawable(getDrawable(R.drawable.offer_me))
         meSection.title.text = getString(R.string.OFFER_PERSONAL_PROTECTION_TITLE)
         meSection.paragraph.text = getString(R.string.OFFER_PERSONAL_PROTECTION_DESCRIPTION)
+        meSection.updatePadding(top = quadrupleMargin)
 
         termsSection.privacyPolicy.setHapticClickListener {
             tracker.openTerms()
@@ -315,8 +320,11 @@ class OfferActivity : BaseActivity() {
 
     private fun bindHomeSection(data: OfferQuery.Data) {
         homeSection.title.text = data.insurance.address
-        data.insurance.perilCategories?.getOrNull(0)?.let { perils ->
-            addPerils(homeSection.perilsContainer, perils.fragments.perilCategoryFragment)
+        data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                homeSection.perilsContainer,
+                it
+            )
         }
     }
 
@@ -331,14 +339,20 @@ class OfferActivity : BaseActivity() {
                 }
             )
         }
-        data.insurance.perilCategories?.getOrNull(1)?.let { perils ->
-            addPerils(stuffSection.perilsContainer, perils.fragments.perilCategoryFragment)
+        data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                stuffSection.perilsContainer,
+                it
+            )
         }
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
-        data.insurance.perilCategories?.getOrNull(2)?.let { perils ->
-            addPerils(meSection.perilsContainer, perils.fragments.perilCategoryFragment)
+        data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let {
+            addPerils(
+                meSection.perilsContainer,
+                it
+            )
         }
     }
 

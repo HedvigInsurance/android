@@ -1,0 +1,27 @@
+query DashboardQuery {
+  insurance {
+    status
+    type
+    activeFrom
+
+    arrangedPerilCategories {
+      me {
+        ... PerilCategoryFragment
+      }
+      home {
+        ... PerilCategoryFragment
+      }
+      stuff {
+        ... PerilCategoryFragment
+      }
+    }
+
+  }
+
+  chatActions {
+    text
+    triggerUrl
+    enabled
+  }
+}
+

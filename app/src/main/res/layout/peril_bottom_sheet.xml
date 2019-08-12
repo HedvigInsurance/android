@@ -5,17 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="@dimen/base_margin_triple"
-    android:paddingTop="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin"
     android:paddingEnd="@dimen/base_margin_triple"
     android:paddingBottom="@dimen/peril_bottom_extra_spacing"
     tools:background="@drawable/peril_bottom_sheet_background">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/bottom_sheet_handle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/perilSubject"
         style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Testvägen 123" />
@@ -24,6 +33,7 @@
         android:id="@+id/perilIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
         android:contentDescription="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
