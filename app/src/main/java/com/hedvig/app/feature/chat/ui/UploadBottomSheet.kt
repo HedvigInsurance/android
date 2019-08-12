@@ -17,7 +17,9 @@ import kotlinx.android.synthetic.main.file_upload_dialog.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class UploadBottomSheet : RoundedBottomSheetDialogFragment() {
-    val chatViewModel: ChatViewModel by sharedViewModel()
+    private val chatViewModel: ChatViewModel by sharedViewModel()
+
+    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
