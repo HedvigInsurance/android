@@ -212,10 +212,10 @@ class DashboardFragment : BaseTabFragment() {
         content.totalCoverageFootnote.text = interpolateTextKey(
             resources.getString(R.string.DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE),
             "AMOUNT" to
-                if (isStudentInsurance(insuranceType)) resources.getString(R.string.two_hundred_thousand)
+                if (insuranceType.isStudentInsurance) resources.getString(R.string.two_hundred_thousand)
                 else resources.getString(R.string.one_million)
         )
-        if (isApartmentOwner(insuranceType)) {
+        if (insuranceType.isApartmentOwner) {
             content.ownerFootnote.show()
         }
 
