@@ -15,7 +15,6 @@ import androidx.annotation.FontRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -127,10 +126,7 @@ fun Activity.startClosableChat(restartable: Boolean = false) {
         intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
     }
 
-    val options =
-        ActivityOptionsCompat.makeCustomAnimation(this, R.anim.activity_slide_up_in, R.anim.stay_in_place)
-
-    ActivityCompat.startActivity(this, intent, options.toBundle())
+    startActivity(intent)
 }
 
 fun Activity.askForPermissions(permissions: Array<String>, requestCode: Int, shouldNotAskAction: (() -> Unit)? = null) {
