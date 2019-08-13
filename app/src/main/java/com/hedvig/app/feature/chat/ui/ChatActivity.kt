@@ -10,6 +10,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
+import android.view.View
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -30,8 +31,10 @@ import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
+import com.hedvig.app.util.extensions.view.activateEdgeToEdge
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.showRestartDialog
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -76,6 +79,22 @@ class ChatActivity : BaseActivity() {
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
         setContentView(R.layout.activity_chat)
+        chatRoot.activateEdgeToEdge()
+        input.setOnApplyWindowInsetsListener { v, insets ->
+            v.updateMargin(bottom = insets.systemWindowInsetBottom)
+            insets.replaceSystemWindowInsets(
+                insets.systemWindowInsetLeft,
+                insets.systemWindowInsetTop,
+                insets.systemWindowInsetRight,
+                0
+            )
+        }
+        chatTopBar.setOnApplyWindowInsetsListener { v, insets ->
+            v.updatePadding(top = insets.systemWindowInsetTop + v.paddingTop)
+            v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            messages.updatePadding(top = v.measuredHeight)
+            insets
+        }
 
         input.initialize(
             sendTextMessage = { message ->

@@ -8,6 +8,8 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V27" />
 
+    <style name="Hedvig.Theme.Chat" />
+
     <style name="Hedvig.Theme.Offer">
         <item name="android:statusBarColor">@color/dark_purple</item>
         <item name="android:windowLightStatusBar">false</item>

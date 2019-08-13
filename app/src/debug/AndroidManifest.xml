@@ -10,7 +10,7 @@
 
         <activity
             android:name=".feature.chat.ui.ChatActivity"
-            android:theme="@style/Hedvig.Theme">
+            android:theme="@style/Hedvig.Theme.Chat">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
