@@ -77,6 +77,7 @@ class ChatActivity : BaseActivity() {
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
         isKeyboardBreakPoint = resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
+        val baseMargin = resources.getDimensionPixelSize(R.dimen.base_margin)
 
         setContentView(R.layout.activity_chat)
         chatRoot.activateEdgeToEdge()
@@ -90,7 +91,7 @@ class ChatActivity : BaseActivity() {
             )
         }
         chatTopBar.setOnApplyWindowInsetsListener { v, insets ->
-            v.updatePadding(top = insets.systemWindowInsetTop + v.paddingTop)
+            v.updatePadding(top = insets.systemWindowInsetTop + baseMargin)
             v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             messages.updatePadding(top = v.measuredHeight)
             insets
