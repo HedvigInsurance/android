@@ -62,7 +62,6 @@ android {
             resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -77,7 +76,6 @@ android {
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
