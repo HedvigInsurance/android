@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,9 @@ import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
+import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.remove
@@ -137,7 +141,7 @@ class DashboardFragment : BaseTabFragment() {
         }
         dashboardData.insurance.type?.let { setupAdditionalInformationRow(it) }
 
-        setupDirectDebitStatus(directDebitData.directDebitStatus)
+        setupInfoBox(directDebitData.directDebitStatus, dashboardData.insurance.renewal)
     }
 
     private fun makePerilCategoryRow(category: PerilCategoryFragment): PerilCategoryView {
@@ -224,21 +228,40 @@ class DashboardFragment : BaseTabFragment() {
         perilCategoryContainer.addView(additionalInformation)
     }
 
-    private fun setupDirectDebitStatus(directDebitStatus: DirectDebitStatus) {
-        when (directDebitStatus) {
-            DirectDebitStatus.ACTIVE,
-            DirectDebitStatus.PENDING,
-            DirectDebitStatus.`$UNKNOWN` -> {
-                directDebitNeedsSetup.remove()
+    private fun setupInfoBox(directDebitStatus: DirectDebitStatus, renewal: DashboardQuery.Renewal?) {
+        if (directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
+            infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
+            infoBoxText.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
+            infoBoxButton.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
+            infoBox.show()
+            infoBoxButton.setHapticClickListener {
+                tracker.setupDirectDebit()
+                startActivity(Intent(requireContext(), TrustlyActivity::class.java))
             }
-            DirectDebitStatus.NEEDS_SETUP -> {
-                directDebitNeedsSetup.show()
-                directDebitConnectButton.setHapticClickListener {
-                    tracker.setupDirectDebit()
-                    startActivity(Intent(requireContext(), TrustlyActivity::class.java))
-                }
-            }
+            infoBoxClose.remove()
+            return
         }
+
+        if (renewal != null && !requireContext().hasDismissedRenewalInfoBox(renewal)) {
+            infoBoxTitle.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
+            infoBoxText.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY)
+            infoBoxButton.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+            infoBox.show()
+            infoBoxButton.setHapticClickListener {
+                tracker.readRenewalInsuranceLetter()
+                requireContext().setHasDismissedRenewalInfoBox(renewal)
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(renewal.certificateUrl)))
+            }
+            infoBoxClose.setHapticClickListener {
+                tracker.infoBoxClose()
+                requireContext().setHasDismissedRenewalInfoBox(renewal)
+                infoBox.remove()
+
+            }
+            infoBoxClose.show()
+            return
+        }
+        infoBox.remove()
     }
 
     private fun setupInsuranceStatusStatus(insurance: DashboardQuery.Insurance) {
@@ -346,5 +369,14 @@ class DashboardFragment : BaseTabFragment() {
             val d = viewBottomPos - bottomBreakPoint
             dashboardNestedScrollView.scrollY += d
         }
+    }
+
+    companion object {
+        private fun getRenewalKey(renewal: DashboardQuery.Renewal) = "renewal-${renewal.date}"
+        private fun Context.hasDismissedRenewalInfoBox(renewal: DashboardQuery.Renewal) =
+            getStoredBoolean(getRenewalKey(renewal))
+
+        private fun Context.setHasDismissedRenewalInfoBox(renewal: DashboardQuery.Renewal) =
+            storeBoolean(getRenewalKey(renewal), true)
     }
 }
