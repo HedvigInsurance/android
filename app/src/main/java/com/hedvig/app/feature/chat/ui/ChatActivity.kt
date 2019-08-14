@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import android.view.View
 import androidx.core.content.FileProvider
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
@@ -35,7 +36,6 @@ import com.hedvig.app.util.extensions.view.activateEdgeToEdge
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.showRestartDialog
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers

@@ -83,18 +83,6 @@ fun View.setHapticClickListener(onClickListener: (View) -> Unit) {
 
 fun View.performOnTapHapticFeedback() = performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
 
-fun View.updatePadding(
-    @Dimension start: Int? = null,
-    @Dimension top: Int? = null,
-    @Dimension end: Int? = null,
-    @Dimension bottom: Int? = null
-) = setPaddingRelative(
-    start ?: paddingStart,
-    top ?: paddingTop,
-    end ?: paddingEnd,
-    bottom ?: paddingBottom
-)
-
 fun View.updateMargin(
     @Dimension start: Int? = null,
     @Dimension top: Int? = null,

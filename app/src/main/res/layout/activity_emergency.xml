@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/emergencyRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.claims.ui.commonclaim.EmergencyActivity">
 
     <include layout="@layout/app_bar" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/emergencyContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/off_white"
@@ -115,6 +117,7 @@
             </com.hedvig.app.ui.view.HedvigCardView>
 
             <com.hedvig.app.ui.view.HedvigCardView
+                android:id="@+id/thirdEmergencyCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin"

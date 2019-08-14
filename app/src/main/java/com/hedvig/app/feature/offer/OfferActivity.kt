@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -37,7 +38,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isSigned
@@ -137,7 +137,6 @@ class OfferActivity : BaseActivity() {
         stuffSection.hero.setImageDrawable(getDrawable(R.drawable.offer_stuff))
         stuffSection.title.text = getString(R.string.OFFER_STUFF_PROTECTION_TITLE)
         stuffSection.updatePadding(top = quadrupleMargin)
-
 
         meSection.hero.setImageDrawable(getDrawable(R.drawable.offer_me))
         meSection.title.text = getString(R.string.OFFER_PERSONAL_PROTECTION_TITLE)

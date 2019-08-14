@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.view.updatePadding
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
@@ -13,9 +14,11 @@ import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdap
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.view.activateEdgeToEdge
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.lightenColor
 import com.hedvig.app.util.mappedColor
 import com.hedvig.app.util.svg.buildRequestBuilder
@@ -32,6 +35,20 @@ class CommonClaimActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_common_claim)
+        commonClaimRoot.activateEdgeToEdge()
+        appBarLayout.setOnApplyWindowInsetsListener { v, insets ->
+            v.updateMargin(top = insets.systemWindowInsetTop)
+            insets.replaceSystemWindowInsets(
+                insets.systemWindowInsetLeft,
+                0,
+                insets.systemWindowInsetRight,
+                insets.systemWindowInsetBottom
+            )
+        }
+        bulletPointsRecyclerView.setOnApplyWindowInsetsListener { v, insets ->
+            v.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets.consumeSystemWindowInsets()
+        }
 
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA)
 

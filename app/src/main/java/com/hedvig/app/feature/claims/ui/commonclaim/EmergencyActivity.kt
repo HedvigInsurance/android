@@ -19,7 +19,7 @@ import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.lightenColor
 import com.hedvig.app.util.mappedColor
 import com.hedvig.app.util.svg.buildRequestBuilder
@@ -40,9 +40,13 @@ class EmergencyActivity : BaseActivity() {
         setContentView(R.layout.activity_emergency)
         emergencyRoot.activateEdgeToEdge()
 
-        commonClaimFirstMessageContainer.setOnApplyWindowInsetsListener { v, insets ->
-            v.updatePadding(top = v.paddingTop + insets.systemWindowInsetTop)
-            insets.consumeSystemWindowInsets()
+        appBarLayout.setOnApplyWindowInsetsListener { v, insets ->
+            v.updateMargin(top = insets.systemWindowInsetTop)
+            insets
+        }
+        emergencyContent.setOnApplyWindowInsetsListener { v, insets ->
+            v.updateMargin(bottom = insets.systemWindowInsetBottom)
+            insets
         }
 
         val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)

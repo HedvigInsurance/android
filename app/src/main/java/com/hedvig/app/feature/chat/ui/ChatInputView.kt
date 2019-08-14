@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.children
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.chat.SingleSelect
 import com.hedvig.app.feature.chat.SingleSelectChoiceType
 import com.hedvig.app.feature.chat.TextInput
 import com.hedvig.app.feature.chat.service.ChatTracker
-import com.hedvig.app.util.extensions.children
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.fadeIn

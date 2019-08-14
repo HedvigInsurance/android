@@ -169,7 +169,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.Claim"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
@@ -177,7 +177,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.Claim"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.core.view.updatePaddingRelative
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -32,7 +33,6 @@ import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.app_bar.*
@@ -58,7 +58,7 @@ class LoggedInActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.logged_in_screen)
-        toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
+        toolbar.updatePaddingRelative(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
