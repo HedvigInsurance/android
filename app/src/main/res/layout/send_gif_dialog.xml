@@ -38,7 +38,7 @@
         android:id="@+id/emptyGifLabel"
         style="@style/Body.Regular"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/gif_image_size"
+        android:layout_height="@dimen/chat_image_size"
         android:gravity="center"
         tools:text="👋\nSök på något för att få upp GIFar!" />
 

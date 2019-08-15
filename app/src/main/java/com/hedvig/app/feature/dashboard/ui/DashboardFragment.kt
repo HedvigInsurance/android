@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +16,11 @@ import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.proxyNavigate
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.remove
@@ -40,6 +42,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -136,7 +139,7 @@ class DashboardFragment : BaseTabFragment() {
         }
         dashboardData.insurance.type?.let { setupAdditionalInformationRow(it) }
 
-        setupDirectDebitStatus(directDebitData.directDebitStatus)
+        setupInfoBox(directDebitData.directDebitStatus, dashboardData.insurance.renewal)
     }
 
     private fun makePerilCategoryRow(category: PerilCategoryFragment): PerilCategoryView {
@@ -211,10 +214,10 @@ class DashboardFragment : BaseTabFragment() {
         content.totalCoverageFootnote.text = interpolateTextKey(
             resources.getString(R.string.DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE),
             "AMOUNT" to
-                if (isStudentInsurance(insuranceType)) resources.getString(R.string.two_hundred_thousand)
+                if (insuranceType.isStudentInsurance) resources.getString(R.string.two_hundred_thousand)
                 else resources.getString(R.string.one_million)
         )
-        if (isApartmentOwner(insuranceType)) {
+        if (insuranceType.isApartmentOwner) {
             content.ownerFootnote.show()
         }
 
@@ -223,21 +226,36 @@ class DashboardFragment : BaseTabFragment() {
         perilCategoryContainer.addView(additionalInformation)
     }
 
-    private fun setupDirectDebitStatus(directDebitStatus: DirectDebitStatus) {
-        when (directDebitStatus) {
-            DirectDebitStatus.ACTIVE,
-            DirectDebitStatus.PENDING,
-            DirectDebitStatus.`$UNKNOWN` -> {
-                directDebitNeedsSetup.remove()
+    private fun setupInfoBox(directDebitStatus: DirectDebitStatus, renewal: DashboardQuery.Renewal?) {
+        if (directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
+            infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
+            infoBoxText.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
+            infoBoxButton.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
+            infoBox.show()
+            infoBoxButton.setHapticClickListener {
+                tracker.setupDirectDebit()
+                startActivity(Intent(requireContext(), TrustlyActivity::class.java))
             }
-            DirectDebitStatus.NEEDS_SETUP -> {
-                directDebitNeedsSetup.show()
-                directDebitConnectButton.setHapticClickListener {
-                    tracker.setupDirectDebit()
-                    navController.proxyNavigate(R.id.action_dashboardFragment_to_trustlyFragment)
-                }
-            }
+            return
         }
+
+        if (renewal != null) {
+            infoBoxTitle.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
+            val daysUntilRenewal =
+                Duration.between(LocalDate.now().atStartOfDay(), renewal.date.atStartOfDay()).toDays()
+            infoBoxText.text = interpolateTextKey(
+                getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY),
+                "DAYS_UNTIL_RENEWAL" to daysUntilRenewal
+            )
+            infoBoxButton.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+            infoBox.show()
+            infoBoxButton.setHapticClickListener {
+                tracker.readRenewalInsuranceLetter()
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(renewal.certificateUrl)))
+            }
+            return
+        }
+        infoBox.remove()
     }
 
     private fun setupInsuranceStatusStatus(insurance: DashboardQuery.Insurance) {

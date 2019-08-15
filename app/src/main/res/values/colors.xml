@@ -6,7 +6,6 @@
     <color name="colorAccentDark">#FFFFFF</color>
     <color name="colorText">@color/off_white</color>
     <color name="colorLight">#F6F6F7</color>
-    <color name="splashBackground">@color/white</color>
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="transparent_white">#00FFFFFF</color>
@@ -28,4 +27,6 @@
     <color name="yellow">#FFCC4D</color>
     <color name="referral_tank_lines">#9A6BFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="violet_100">#efe8ff</color>
+    <color name="violet_200">#c1a5ff</color>
 </resources>

@@ -2,15 +2,19 @@ package com.hedvig.app
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
-import com.hedvig.app.feature.chat.ChatActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
+import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 
@@ -66,6 +70,13 @@ class DevelopmentActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.openNativeOffer).setHapticClickListener {
             startActivity(Intent(this, OfferActivity::class.java))
+        }
+
+        findViewById<TextInputEditText>(R.id.token).setText(getAuthenticationToken())
+
+        findViewById<Button>(R.id.saveToken).setHapticClickListener {
+            setAuthenticationToken(findViewById<TextInputEditText>(R.id.token).text.toString())
+            makeToast("Token saved")
         }
     }
 }

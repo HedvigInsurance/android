@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.hedvig.app.R
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.cashback_option.view.*
 
@@ -37,7 +38,7 @@ class CharityAdapter(
             holder.itemView.resources.getString(R.string.PROFILE_CHARITY_SELECT_BUTTON),
             "CHARITY" to item.name
         )
-        holder.button.setOnClickListener {
+        holder.button.setHapticClickListener {
             item.id?.let { id ->
                 clickListener(id)
             }

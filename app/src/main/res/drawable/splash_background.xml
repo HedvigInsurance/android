@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
 
-    <item android:drawable="@color/splashBackground"/>
+    <item android:drawable="@color/off_white" />
 
-    <item><bitmap android:gravity="center" android:src="@drawable/shell_launch_background_image" /></item>
+    <item android:drawable="@drawable/hedvig_wordmark_splash" android:gravity="center" />
+
 
 </layer-list>

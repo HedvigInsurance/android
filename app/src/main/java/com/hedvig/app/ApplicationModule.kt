@@ -1,21 +1,23 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.os.Build
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.analytics.AnalyticsRepository
 import com.hedvig.app.data.debit.DirectDebitRepository
-import com.hedvig.app.feature.chat.ChatRepository
-import com.hedvig.app.feature.chat.ChatTracker
-import com.hedvig.app.feature.chat.ChatViewModel
-import com.hedvig.app.feature.chat.UserRepository
-import com.hedvig.app.feature.chat.UserViewModel
+import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -58,6 +60,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -66,7 +69,8 @@ val applicationModule = module {
     single {
         SimpleCache(
             File(get<Context>().cacheDir, "hedvig_story_video_cache"),
-            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong())
+            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong()),
+            ExoDatabaseProvider(get())
         )
     }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
@@ -88,8 +92,15 @@ val applicationModule = module {
                 }
                 chain.proceed(builder.build())
             }
+            .addInterceptor {  chain ->
+                chain.proceed(chain
+                    .request()
+                    .newBuilder()
+                    .header("User-Agent", makeUserAgent())
+                    .build())
+            }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
+            val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
                     Timber.tag("OkHttp").i(message)
                 }
@@ -104,12 +115,14 @@ val applicationModule = module {
     }
 }
 
+fun makeUserAgent() = "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
     viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { DirectDebitViewModel(get()) }
-    viewModel { DashboardViewModel(get(), get()) }
+    viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }

@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.ChatActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -62,9 +62,10 @@ class ReferralsReceiverActivity : BaseActivity() {
         const val EXTRA_REFERRAL_CODE = "extra_referral_code"
         const val EXTRA_REFERRAL_INCENTIVE = "extra_referral_incentive"
 
-        fun newInstance(context: Context, code: String, incentive: String) = Intent(context, ReferralsReceiverActivity::class.java).apply {
-            putExtra(EXTRA_REFERRAL_CODE, code)
-            putExtra(EXTRA_REFERRAL_INCENTIVE, incentive)
-        }
+        fun newInstance(context: Context, code: String, incentive: String) =
+            Intent(context, ReferralsReceiverActivity::class.java).apply {
+                putExtra(EXTRA_REFERRAL_CODE, code)
+                putExtra(EXTRA_REFERRAL_INCENTIVE, incentive)
+            }
     }
 }

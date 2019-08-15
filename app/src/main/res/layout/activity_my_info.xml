@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myInfoRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity">
+
+    <include layout="@layout/app_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/off_white"
+        android:configChanges="orientation"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize">
+
+            <include layout="@layout/loading_spinner" />
+
+            <include
+                android:id="@id/sphereContainer"
+                layout="@layout/sphere_container" />
+
+            <LinearLayout
+                android:id="@id/contactDetailsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sphereContainer">
+
+                <TextView
+                    style="@style/SectionHeader"
+                    android:text="@string/PROFILE_MY_INFO_SECTION_TITLE_CONTACT_DETAILS" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@id/emailInputContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="12dp"
+                    android:theme="@style/ProfileField"
+                    app:errorTextAppearance="@style/ProfileField.ValidationError">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@id/emailInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/PROFILE_MY_INFO_EMAIL_LABEL"
+                        android:inputType="textEmailAddress"
+                        tools:text="test@hedvig.com" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@id/phoneNumberInputContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="12dp"
+                    android:theme="@style/ProfileField"
+                    app:errorTextAppearance="@style/ProfileField.ValidationError">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@id/phoneNumberInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/PROFILE_MY_INFO_PHONE_NUMBER_LABEL"
+                        android:inputType="phone"
+                        tools:text="0701234567" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -5,10 +5,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.apollographql.android'
 
-import com.android.build.OutputFile
-
-def enableSeparateBuildPerCPUArchitecture = false
-
 apollo {
     useJavaBeansSemanticNaming = true
     generateModelBuilder = true
@@ -36,7 +32,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '3.0.1'
+        versionName '3.0.2'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -54,15 +50,6 @@ android {
         jvmTarget = "1.8"
     }
 
-    splits {
-        abi {
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk true
-            include 'armeabi-v7a', 'x86'
-        }
-    }
-
     buildTypes {
         release {
             applicationIdSuffix '.app'
@@ -75,7 +62,6 @@ android {
             resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -90,7 +76,6 @@ android {
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -108,22 +93,6 @@ android {
             debuggable true
         }
     }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def versionCodes = ['armeabi-v7a': 1, 'x86': 2]
-            def abi = output.getFilter(OutputFile.ABI)
-            if (abi != null) {
-                output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
-            }
-        }
-    }
-
-    configurations.all {
-        resolutionStrategy.force 'android.arch.lifecycle:livedata-core:1.1.0'
-        resolutionStrategy.force 'android.arch.core:runtime:1.1.0'
-        resolutionStrategy.force 'android.arch.core:common:1.1.0'
-    }
 }
 
 dependencies {
@@ -136,7 +105,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
 
     // Android support
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
     implementation 'androidx.media:media:1.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -183,10 +152,6 @@ dependencies {
 
     implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
 
-    implementation 'androidx.navigation:navigation-fragment:2.1.0-beta02'
-    implementation 'androidx.navigation:navigation-ui:2.1.0-beta02'
-    implementation 'androidx.navigation:navigation-runtime-ktx:2.1.0-beta02'
-
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
@@ -211,10 +176,17 @@ dependencies {
     // Glide
     implementation "com.github.bumptech.glide:glide:4.9.0"
     kapt 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
+        transitive = false
+    }
 
     //branch
     implementation 'io.branch.sdk.android:library:3.2.0'
     implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    // ZXing
+
+    implementation 'com.google.zxing:core:3.4.0'
 
     // test
     testImplementation 'junit:junit:4.12'

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/off_white"
+    tools:context="com.hedvig.app.feature.profile.ui.payment.TrustlyActivity">
+
+    <WebView
+        android:id="@id/trustlyContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/resultScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/resultIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            app:layout_constraintBottom_toTopOf="@id/resultTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:src="@drawable/icon_success" />
+
+        <TextView
+            android:id="@+id/resultTitle"
+            style="@style/TrustlyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/resultParagraph"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resultIcon"
+            tools:text="@string/PROFILE_TRUSTLY_SUCCESS_TITLE" />
+
+        <TextView
+            android:id="@+id/resultParagraph"
+            style="@style/TrustlyParagraph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:gravity="center"
+            android:paddingStart="@dimen/base_margin_triple"
+            android:paddingEnd="@dimen/base_margin_triple"
+            app:layout_constraintBottom_toTopOf="@id/resultClose"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resultTitle"
+            tools:text="@string/PROFILE_TRUSTLY_SUCCESS_DESCRIPTION" />
+
+        <Button
+            android:id="@+id/resultClose"
+            style="@style/HedvigButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:text="@string/PROFILE_TRUSTLY_CLOSE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resultParagraph"
+            tools:backgroundTint="@color/green" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        layout="@layout/loading_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+</FrameLayout>

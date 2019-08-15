@@ -138,5 +138,6 @@
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
     <dimen name="bottom_sheet_handle_width">32dp</dimen>
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
-    <dimen name="gif_image_size">240dp</dimen>
+    <dimen name="chat_image_size">240dp</dimen>
+    <dimen name="default_qr_code_size">150dp</dimen>
 </resources>

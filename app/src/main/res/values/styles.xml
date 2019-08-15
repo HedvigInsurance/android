@@ -98,6 +98,10 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="HedvigButton.Outlined">
+        <item name="android:background">@drawable/button_border_purple</item>
+    </style>
+
     <style name="HedvigButton.Negative">
         <item name="android:textColor">@color/off_black_dark</item>
     </style>
@@ -250,5 +254,6 @@
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
 
 </resources>

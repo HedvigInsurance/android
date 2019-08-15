@@ -1,10 +1,12 @@
 package com.hedvig.app.feature.offer
 
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -18,6 +20,9 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
 import com.hedvig.app.feature.dashboard.ui.PerilIcon
 import com.hedvig.app.feature.dashboard.ui.PerilView
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
+import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.displayMetrics
@@ -25,6 +30,7 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.hide
@@ -36,6 +42,7 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
+import com.hedvig.app.util.isSigned
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_offer.*
@@ -88,6 +95,14 @@ class OfferActivity : BaseActivity() {
 
         offerViewModel.data.observe(lifecycleOwner = this) { data ->
             data?.let { d ->
+                if (d.insurance.status.isSigned) {
+                    storeBoolean(IS_VIEWING_OFFER, false)
+                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                }
                 loadingSpinner.remove()
                 container.show()
                 bindToolbar(d)
@@ -216,9 +231,13 @@ class OfferActivity : BaseActivity() {
         discountBubble.hide()
         discountTitle.hide()
 
-        netPremium.setTextColor(compatColor(R.color.off_black_dark))
-        netPremium.text =
-            data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()?.toString()
+        if (lastAnimationHasCompleted) {
+            animatePremium(data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt())
+        } else {
+            netPremium.setTextColor(compatColor(R.color.off_black_dark))
+            netPremium.text =
+                data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()?.toString()
+        }
 
         if (data.redeemedCampaigns.size > 0) {
             when (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
@@ -233,7 +252,9 @@ class OfferActivity : BaseActivity() {
                     discount.text = getString(R.string.OFFER_SCREEN_INVITED_BUBBLE)
                     discount.updateMargin(top = 0)
 
-                    netPremium.setTextColor(compatColor(R.color.pink))
+                    if (!lastAnimationHasCompleted) {
+                        netPremium.setTextColor(compatColor(R.color.pink))
+                    }
                 }
                 is IncentiveFragment.AsFreeMonths -> {
                     discountBubble.show()
@@ -251,6 +272,28 @@ class OfferActivity : BaseActivity() {
         } else {
             discountBubble.scaleX = 0f
             discountBubble.scaleY = 0f
+        }
+    }
+
+    private fun animatePremium(newNetPremium: Int?) {
+        val prevNetPremium = netPremium.text.toString().toIntOrNull()
+        safeLet(prevNetPremium, newNetPremium) { p, n ->
+            if (p != n) {
+                val colors = if (p > n) {
+                    Pair(compatColor(R.color.off_black_dark), compatColor(R.color.pink))
+                } else {
+                    Pair(compatColor(R.color.pink), compatColor(R.color.off_black_dark))
+                }
+                ValueAnimator.ofInt(p, n).apply {
+                    duration = 1000
+                    interpolator = AccelerateDecelerateInterpolator()
+                    addUpdateListener { v ->
+                        netPremium.text = (v.animatedValue as? Int)?.toString()
+                        netPremium.setTextColor(boundedColorLerp(colors.first, colors.second, v.animatedFraction))
+                    }
+                    start()
+                }
+            }
         }
     }
 
@@ -304,7 +347,7 @@ class OfferActivity : BaseActivity() {
         }
 
         data.insurance.type?.let { t ->
-            brfOrTravel.text = if (isApartmentOwner(t)) {
+            brfOrTravel.text = if (t.isApartmentOwner) {
                 getString(R.string.OFFER_BUBBLES_OWNED_ADDON_TITLE)
             } else {
                 getString(R.string.OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE)
@@ -326,7 +369,7 @@ class OfferActivity : BaseActivity() {
         data.insurance.type?.let { insuranceType ->
             stuffSection.paragraph.text = interpolateTextKey(
                 getString(R.string.OFFER_STUFF_PROTECTION_DESCRIPTION),
-                "protectionAmount" to if (isStudentInsurance(insuranceType)) {
+                "protectionAmount" to if (insuranceType.isStudentInsurance) {
                     getString(R.string.STUFF_PROTECTION_AMOUNT_STUDENT)
                 } else {
                     getString(R.string.STUFF_PROTECTION_AMOUNT)
@@ -354,7 +397,7 @@ class OfferActivity : BaseActivity() {
         data.insurance.type?.let { insuranceType ->
             termsSection.maxCompensation.text = interpolateTextKey(
                 getString(R.string.OFFER_TERMS_MAX_COMPENSATION),
-                "MAX_COMPENSATION" to if (isStudentInsurance(insuranceType)) {
+                "MAX_COMPENSATION" to if (insuranceType.isStudentInsurance) {
                     "200 000 kr"
                 } else {
                     "1 000 000 kr"
