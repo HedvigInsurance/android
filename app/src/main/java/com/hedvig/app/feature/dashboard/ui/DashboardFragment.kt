@@ -235,7 +235,7 @@ class DashboardFragment : BaseTabFragment() {
                 directDebitNeedsSetup.show()
                 directDebitConnectButton.setHapticClickListener {
                     tracker.setupDirectDebit()
-                    startActivity(Intent(requireContext(), TrustlyActivity::class.java))
+                    startActivity(TrustlyActivity.newInstance(requireContext()))
                 }
             }
         }

@@ -7,6 +7,67 @@
     android:background="@color/off_white"
     tools:context="com.hedvig.app.feature.profile.ui.payment.TrustlyActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/explainerScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/explainerIllustration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            app:layout_constraintBottom_toTopOf="@id/explainerTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/connect_direct_debit_illustration" />
+
+        <TextView
+            android:id="@+id/explainerTitle"
+            style="@style/Header.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/explainerParagraph"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/explainerIllustration"
+            tools:layout_marginTop="60dp"
+            tools:text="Koppla ditt bankgiro" />
+
+        <TextView
+            android:id="@+id/explainerParagraph"
+            style="@style/Body.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:gravity="center"
+            android:paddingStart="@dimen/base_margin_double"
+            android:paddingEnd="@dimen/base_margin_double"
+            app:layout_constraintBottom_toTopOf="@id/explainerButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/explainerTitle"
+            tools:text="För att din försäkring ska gälla framöver behöver du koppla autogiro från din bank så att du kan betala och få utbetalt." />
+
+        <Button
+            android:id="@+id/explainerButton"
+            style="@style/HedvigButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:backgroundTint="@color/purple"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/explainerParagraph"
+            tools:text="Koppla autogiro" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <WebView
         android:id="@id/trustlyContainer"
         android:layout_width="match_parent"
@@ -18,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ImageView
             android:id="@+id/resultIcon"
@@ -67,11 +128,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_triple"
             android:text="@string/PROFILE_TRUSTLY_CLOSE"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/resultParagraph"
             tools:backgroundTint="@color/green" />
+
+        <Button
+            android:id="@+id/resultDoItLater"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:textAllCaps="false"
+            android:textColor="@color/pink"
+            android:theme="@style/Body.Small.Link.Caution"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resultClose"
+            tools:text="Gör det senare"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

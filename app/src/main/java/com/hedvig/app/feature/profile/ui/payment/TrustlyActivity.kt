@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.profile.ui.payment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -10,11 +11,13 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_trustly.*
@@ -40,6 +43,16 @@ class TrustlyActivity : BaseActivity() {
             useWideViewPort = true
         }
 
+        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+            loadingSpinner.remove()
+            explainerScreen.show()
+            explainerScreen.setHapticClickListener {
+                tracker.explainerConnect()
+                explainerScreen.remove()
+                loadingSpinner.show()
+                profileViewModel.startTrustlySession()
+            }
+        }
         loadUrl()
     }
 
@@ -87,6 +100,9 @@ class TrustlyActivity : BaseActivity() {
             }
             trustlyContainer.loadUrl(url)
         }
+        if (!intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+            return
+        }
         profileViewModel.startTrustlySession()
     }
 
@@ -97,9 +113,17 @@ class TrustlyActivity : BaseActivity() {
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
         resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
         resultClose.background.compatSetTint(compatColor(R.color.green))
-        resultClose.setOnClickListener {
+        resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
             directDebitViewModel.refreshDirectDebitStatus()
+            if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+                startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                    putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                })
+                return@setHapticClickListener
+            }
             onBackPressed()
         }
         resultScreen.show()
@@ -111,9 +135,32 @@ class TrustlyActivity : BaseActivity() {
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_TITLE)
         resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_DESCRIPTION)
         resultClose.background.compatSetTint(compatColor(R.color.pink))
-        resultClose.setOnClickListener {
+        resultDoItLater.show()
+        resultDoItLater.setHapticClickListener {
+            if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+                startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                    putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                })
+                return@setHapticClickListener
+            }
             onBackPressed()
         }
+        resultClose.setHapticClickListener {
+            loadingSpinner.show()
+            resultScreen.remove()
+            profileViewModel.startTrustlySession()
+        }
         resultScreen.show()
+    }
+
+    companion object {
+        private const val WITH_EXPLAINER = "with_explainer"
+
+        fun newInstance(context: Context, withExplainer: Boolean = false) =
+            Intent(context, TrustlyActivity::class.java).apply {
+                putExtra(WITH_EXPLAINER, withExplainer)
+            }
     }
 }

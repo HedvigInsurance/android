@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
@@ -105,7 +105,7 @@ class OfferSignDialog : DialogFragment() {
                             offerViewModel.data.value?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toDouble()
                                 ?: 0.0
                         )
-                        goToLoggedIn()
+                        goToDirectDebit()
                     }
                     else -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
@@ -117,11 +117,10 @@ class OfferSignDialog : DialogFragment() {
         }
     }
 
-    private fun goToLoggedIn() {
+    private fun goToDirectDebit() {
         requireContext().storeBoolean(IS_VIEWING_OFFER, false)
         handler.postDelayed({
-            startActivity(Intent(requireContext(), LoggedInActivity::class.java).apply {
-                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+            startActivity(TrustlyActivity.newInstance(requireContext(), true).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             })

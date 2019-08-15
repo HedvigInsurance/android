@@ -6,4 +6,5 @@ class TrustlyTracker(
     private val firebaseAnalytics: FirebaseAnalytics
 ) {
     fun addPaymentInfo() = firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO, null)
+    fun explainerConnect() {}
 }
