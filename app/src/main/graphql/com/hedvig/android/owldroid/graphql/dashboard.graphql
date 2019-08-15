@@ -4,6 +4,11 @@ query DashboardQuery {
     type
     activeFrom
 
+    renewal {
+      certificateUrl
+      date
+    }
+
     arrangedPerilCategories {
       me {
         ... PerilCategoryFragment
