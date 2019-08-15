@@ -17,7 +17,7 @@
             layout="@layout/loading_spinner"
             tools:visibility="gone" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/infoBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,31 +25,19 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="@drawable/rounded_corners_background_light_gray"
+            android:backgroundTint="@color/violet_100"
+            android:orientation="vertical"
             android:padding="@dimen/base_margin_double"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible">
-
-            <ImageButton
-                android:id="@+id/infoBoxClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/DASHBOARD_INFO_BOX_CLOSE_DESCRIPTION"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close"
-                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/infoBoxTitle"
                 style="@style/Headline.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_gravity="center_horizontal"
                 tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
 
             <TextView
@@ -57,28 +45,23 @@
                 style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin"
                 android:fontFamily="@font/circular_book"
                 android:gravity="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/infoBoxTitle"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
             <Button
                 android:id="@+id/infoBoxButton"
-                style="@style/HedvigButton"
+                style="@style/HedvigButton.Outlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:backgroundTint="@color/purple"
-                android:textColor="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/infoBoxText"
+                android:textColor="@color/purple"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/insuranceActive"

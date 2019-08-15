@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.dashboard.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
@@ -21,9 +20,7 @@ import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
-import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.remove
@@ -45,6 +42,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -238,27 +236,23 @@ class DashboardFragment : BaseTabFragment() {
                 tracker.setupDirectDebit()
                 startActivity(Intent(requireContext(), TrustlyActivity::class.java))
             }
-            infoBoxClose.remove()
             return
         }
 
-        if (renewal != null && !requireContext().hasDismissedRenewalInfoBox(renewal)) {
+        if (renewal != null) {
             infoBoxTitle.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-            infoBoxText.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY)
+            val daysUntilRenewal =
+                Duration.between(LocalDate.now().atStartOfDay(), renewal.date.atStartOfDay()).toDays()
+            infoBoxText.text = interpolateTextKey(
+                getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY),
+                "DAYS_UNTIL_RENEWAL" to daysUntilRenewal
+            )
             infoBoxButton.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.readRenewalInsuranceLetter()
-                requireContext().setHasDismissedRenewalInfoBox(renewal)
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(renewal.certificateUrl)))
             }
-            infoBoxClose.setHapticClickListener {
-                tracker.infoBoxClose()
-                requireContext().setHasDismissedRenewalInfoBox(renewal)
-                infoBox.remove()
-
-            }
-            infoBoxClose.show()
             return
         }
         infoBox.remove()
@@ -369,14 +363,5 @@ class DashboardFragment : BaseTabFragment() {
             val d = viewBottomPos - bottomBreakPoint
             dashboardNestedScrollView.scrollY += d
         }
-    }
-
-    companion object {
-        private fun getRenewalKey(renewal: DashboardQuery.Renewal) = "renewal-${renewal.date}"
-        private fun Context.hasDismissedRenewalInfoBox(renewal: DashboardQuery.Renewal) =
-            getStoredBoolean(getRenewalKey(renewal))
-
-        private fun Context.setHasDismissedRenewalInfoBox(renewal: DashboardQuery.Renewal) =
-            storeBoolean(getRenewalKey(renewal), true)
     }
 }
