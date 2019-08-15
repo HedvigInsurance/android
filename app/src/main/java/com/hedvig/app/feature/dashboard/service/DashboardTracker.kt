@@ -17,5 +17,4 @@ class DashboardTracker(
     fun expandInsurancePendingInfo() = firebaseAnalytics.logEvent("expand_insurance_pending_info", null)
     fun collapseInsurancePendingInfo() = firebaseAnalytics.logEvent("collapse_insurance_pending_info", null)
     fun readRenewalInsuranceLetter() = firebaseAnalytics.logEvent("DASHBOARD_RENEWAL_PROMPTER_CTA", null)
-    fun infoBoxClose() = firebaseAnalytics.logEvent("DASHBOARD_INFO_BOX_CLOSE_DESCRIPTION", null)
 }
