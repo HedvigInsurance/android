@@ -18,14 +18,14 @@
             tools:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/directDebitNeedsSetup"
+            android:id="@+id/infoBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="@drawable/rounded_corners_background_light_gray"
-            android:gravity="center"
+            android:backgroundTint="@color/violet_100"
             android:orientation="vertical"
             android:padding="@dimen/base_margin_double"
             android:visibility="gone"
@@ -33,24 +33,33 @@
             tools:visibility="visible">
 
             <TextView
+                android:id="@+id/infoBoxTitle"
+                style="@style/Headline.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
+
+            <TextView
+                android:id="@+id/infoBoxText"
                 style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin"
                 android:fontFamily="@font/circular_book"
                 android:gravity="center"
-                android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
+                tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
             <Button
-                android:id="@+id/directDebitConnectButton"
-                style="?android:attr/borderlessButtonStyle"
+                android:id="@+id/infoBoxButton"
+                style="@style/HedvigButton.Outlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:background="@drawable/button_border_purple"
-                android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL"
                 android:textColor="@color/purple"
-                android:theme="@style/HedvigButton" />
+                tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL" />
 
         </LinearLayout>
 
@@ -62,7 +71,7 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:gravity="center_vertical"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/directDebitNeedsSetup"
+            app:layout_constraintTop_toBottomOf="@id/infoBox"
             tools:ignore="UseCompoundDrawables"
             tools:visibility="visible">
 

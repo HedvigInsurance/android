@@ -27,4 +27,6 @@
     <color name="yellow">#FFCC4D</color>
     <color name="referral_tank_lines">#9A6BFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="violet_100">#efe8ff</color>
+    <color name="violet_200">#c1a5ff</color>
 </resources>
