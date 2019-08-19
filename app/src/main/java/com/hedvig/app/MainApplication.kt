@@ -14,7 +14,6 @@ import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
 import com.ice.restring.Restring
 import com.jakewharton.threetenabp.AndroidThreeTen
-import io.branch.referral.Branch
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import net.ypresto.timbertreeutils.CrashlyticsLogExceptionTree
@@ -25,7 +24,6 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 class MainApplication : Application() {
-
     val apolloClientWrapper: ApolloClientWrapper by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
 
@@ -70,8 +68,6 @@ class MainApplication : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         setupRestring()
-
-        Branch.getAutoInstance(this)
     }
 
     private fun acquireHedvigToken() {
