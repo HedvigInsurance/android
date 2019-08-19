@@ -46,7 +46,7 @@ class TrustlyActivity : BaseActivity() {
         if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
             loadingSpinner.remove()
             explainerScreen.show()
-            explainerScreen.setHapticClickListener {
+            explainerButton.setHapticClickListener {
                 tracker.explainerConnect()
                 explainerScreen.remove()
                 loadingSpinner.show()
@@ -100,7 +100,7 @@ class TrustlyActivity : BaseActivity() {
             }
             trustlyContainer.loadUrl(url)
         }
-        if (!intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
             return
         }
         profileViewModel.startTrustlySession()
