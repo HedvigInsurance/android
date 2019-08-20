@@ -13,8 +13,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.fadeIn
@@ -50,7 +48,7 @@ class TrustlyActivity : BaseActivity() {
             showConfirmCloseDialog()
         }
 
-        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+        if (isPostSignDD()) {
             loadingSpinner.remove()
             explainerScreen.show()
             explainerButton.setHapticClickListener {
@@ -74,7 +72,7 @@ class TrustlyActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+        if (isPostSignDD()) {
             showConfirmCloseDialog()
             return
         }
@@ -129,7 +127,7 @@ class TrustlyActivity : BaseActivity() {
             }
             trustlyContainer.loadUrl(url)
         }
-        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+        if (isPostSignDD()) {
             return
         }
         profileViewModel.startTrustlySession()
@@ -141,8 +139,11 @@ class TrustlyActivity : BaseActivity() {
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_success)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
-        resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
-        resultClose.background.compatSetTint(compatColor(R.color.green))
+        if (isPostSignDD()) {
+            resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_SUCCESS_CTA)
+        } else {
+            resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
+        }
         resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
             directDebitViewModel.refreshDirectDebitStatus()
@@ -154,13 +155,13 @@ class TrustlyActivity : BaseActivity() {
     fun showFailure() {
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_failure)
-        resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_TITLE)
-        resultParagraph.text = resources.getString(R.string.PROFILE_TRUSTLY_FAILURE_DESCRIPTION)
-        resultClose.background.compatSetTint(compatColor(R.color.pink))
+        resultTitle.text = resources.getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_HEADLINE)
+        resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_BODY)
         resultDoItLater.show()
         resultDoItLater.setHapticClickListener {
             close()
         }
+        resultClose.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY)
         resultClose.setHapticClickListener {
             loadingSpinner.show()
             resultScreen.remove()
@@ -170,7 +171,7 @@ class TrustlyActivity : BaseActivity() {
     }
 
     private fun close() {
-        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+        if (isPostSignDD()) {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -180,6 +181,8 @@ class TrustlyActivity : BaseActivity() {
         }
         super.onBackPressed()
     }
+
+    private fun isPostSignDD() = intent.getBooleanExtra(WITH_EXPLAINER, false)
 
     companion object {
         private const val WITH_EXPLAINER = "with_explainer"

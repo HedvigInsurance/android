@@ -179,12 +179,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
+                android:backgroundTint="@color/off_black_dark"
                 android:text="@string/PROFILE_TRUSTLY_CLOSE"
                 app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultParagraph"
-                tools:backgroundTint="@color/green" />
+                app:layout_constraintTop_toBottomOf="@id/resultParagraph" />
 
             <Button
                 android:id="@+id/resultDoItLater"
@@ -192,6 +192,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
+                android:text="@string/ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER"
                 android:textAllCaps="false"
                 android:textColor="@color/pink"
                 android:theme="@style/Body.Small.Link.Caution"
@@ -200,7 +201,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/resultClose"
-                tools:text="Gör det senare"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
