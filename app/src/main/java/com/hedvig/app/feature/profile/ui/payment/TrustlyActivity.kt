@@ -16,6 +16,9 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.fadeIn
+import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -43,14 +46,20 @@ class TrustlyActivity : BaseActivity() {
             useWideViewPort = true
         }
 
+        notNow.setHapticClickListener {
+            showConfirmCloseDialog()
+        }
+
         if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
             loadingSpinner.remove()
             explainerScreen.show()
             explainerButton.setHapticClickListener {
                 tracker.explainerConnect()
-                explainerScreen.remove()
-                loadingSpinner.show()
-                profileViewModel.startTrustlySession()
+                explainerScreen.fadeOut({
+                    toolbar.show()
+                    loadingSpinner.show()
+                    profileViewModel.startTrustlySession()
+                }, true)
             }
         }
         loadUrl()
@@ -64,8 +73,28 @@ class TrustlyActivity : BaseActivity() {
         super.onDestroy()
     }
 
+    override fun onBackPressed() {
+        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+            showConfirmCloseDialog()
+            return
+        }
+        close()
+    }
+
+    private fun showConfirmCloseDialog() {
+        showAlert(
+            title = R.string.TRUSTLY_ALERT_TITLE,
+            message = R.string.TRUSTLY_ALERT_BODY,
+            positiveLabel = R.string.TRUSTLY_ALERT_POSITIVE_ACTION,
+            negativeLabel = R.string.TRUSTLY_ALERT_NEGATIVE_ACTION,
+            positiveAction = {
+                close()
+            }
+        )
+    }
+
     private fun loadUrl() {
-        profileViewModel.trustlyUrl.observe(this) { url ->
+        profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
             trustlyContainer.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, loadedUrl: String?) {
                     super.onPageFinished(view, url)
@@ -74,7 +103,7 @@ class TrustlyActivity : BaseActivity() {
                     }
 
                     loadingSpinner.remove()
-                    trustlyContainer.show()
+                    trustlyContainer.fadeIn()
                 }
 
                 override fun onPageStarted(view: WebView?, requestedUrl: String, favicon: Bitmap?) {
@@ -104,6 +133,7 @@ class TrustlyActivity : BaseActivity() {
             return
         }
         profileViewModel.startTrustlySession()
+        toolbar.show()
     }
 
     fun showSuccess() {
@@ -116,15 +146,7 @@ class TrustlyActivity : BaseActivity() {
         resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
             directDebitViewModel.refreshDirectDebitStatus()
-            if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
-                startActivity(Intent(this, LoggedInActivity::class.java).apply {
-                    putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                })
-                return@setHapticClickListener
-            }
-            onBackPressed()
+            close()
         }
         resultScreen.show()
     }
@@ -137,15 +159,7 @@ class TrustlyActivity : BaseActivity() {
         resultClose.background.compatSetTint(compatColor(R.color.pink))
         resultDoItLater.show()
         resultDoItLater.setHapticClickListener {
-            if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
-                startActivity(Intent(this, LoggedInActivity::class.java).apply {
-                    putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                })
-                return@setHapticClickListener
-            }
-            onBackPressed()
+            close()
         }
         resultClose.setHapticClickListener {
             loadingSpinner.show()
@@ -153,6 +167,18 @@ class TrustlyActivity : BaseActivity() {
             profileViewModel.startTrustlySession()
         }
         resultScreen.show()
+    }
+
+    private fun close() {
+        if (intent.getBooleanExtra(WITH_EXPLAINER, false)) {
+            startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            })
+            return
+        }
+        super.onBackPressed()
     }
 
     companion object {

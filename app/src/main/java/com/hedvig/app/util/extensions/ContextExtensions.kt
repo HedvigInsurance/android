@@ -12,17 +12,17 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.appcompat.content.res.AppCompatResources
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import com.hedvig.app.SplashActivity
 import kotlin.system.exitProcess
 
@@ -46,10 +46,16 @@ fun Context.hideKeyboard(view: View) {
 
 fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {
     val startActivity = Intent(this, activity)
-    startActivity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+    startActivity.flags =
+        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
     val pendingIntentId = 56665 // Randomly chosen identifier, this number has no significance.
     val pendingIntent =
-        PendingIntent.getActivity(this.applicationContext, pendingIntentId, startActivity, PendingIntent.FLAG_CANCEL_CURRENT)
+        PendingIntent.getActivity(
+            this.applicationContext,
+            pendingIntentId,
+            startActivity,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
     val mgr = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
     exitProcess(0)
@@ -109,6 +115,8 @@ fun Context.showAlert(
         .show()
         .apply {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
+            getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
         }
 
 fun Context.copyToClipboard(
