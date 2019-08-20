@@ -45,6 +45,7 @@ class TrustlyActivity : BaseActivity() {
         }
 
         notNow.setHapticClickListener {
+            tracker.notNow()
             showConfirmCloseDialog()
         }
 
@@ -159,10 +160,12 @@ class TrustlyActivity : BaseActivity() {
         resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_BODY)
         resultDoItLater.show()
         resultDoItLater.setHapticClickListener {
+            tracker.doItLater()
             close()
         }
         resultClose.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY)
         resultClose.setHapticClickListener {
+            tracker.retry()
             loadingSpinner.show()
             resultScreen.remove()
             profileViewModel.startTrustlySession()
