@@ -89,6 +89,16 @@
             android:backgroundTint="@color/purple"
             android:text="Open referral notification" />
 
+        <Button
+            android:id="@+id/openPostSignDD"
+            style="@style/HedvigButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:backgroundTint="@color/purple"
+            android:text="Open Post-sign Direct Debit screen" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/ProfileField"
             android:layout_width="match_parent"

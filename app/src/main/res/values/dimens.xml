@@ -140,4 +140,5 @@
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
+    <dimen name="trustly_explainer_illustration_offset">60dp</dimen>
 </resources>

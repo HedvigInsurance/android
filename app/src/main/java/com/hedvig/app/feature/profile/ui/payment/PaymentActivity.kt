@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -30,7 +29,6 @@ import timber.log.Timber
 import java.util.Calendar
 
 class PaymentActivity : BaseActivity() {
-
     private val profileViewModel: ProfileViewModel by viewModel()
     private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
@@ -63,11 +61,11 @@ class PaymentActivity : BaseActivity() {
         )
 
         changeBankAccount.setHapticClickListener {
-            startActivity(Intent(this, TrustlyActivity::class.java))
+            startActivity(TrustlyActivity.newInstance(this))
         }
 
         connectBankAccount.setHapticClickListener {
-            startActivity(Intent(this, TrustlyActivity::class.java))
+            startActivity(TrustlyActivity.newInstance(this))
         }
 
         redeemCode.setHapticClickListener {
