@@ -11,7 +11,6 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
-import com.hedvig.app.data.analytics.AnalyticsRepository
 import com.hedvig.app.data.debit.DirectDebitRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
@@ -52,7 +51,6 @@ import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.TextKeys
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.viewmodel.AnalyticsViewModel
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -92,12 +90,14 @@ val applicationModule = module {
                 }
                 chain.proceed(builder.build())
             }
-            .addInterceptor {  chain ->
-                chain.proceed(chain
-                    .request()
-                    .newBuilder()
-                    .header("User-Agent", makeUserAgent())
-                    .build())
+            .addInterceptor { chain ->
+                chain.proceed(
+                    chain
+                        .request()
+                        .newBuilder()
+                        .header("User-Agent", makeUserAgent())
+                        .build()
+                )
             }
         if (isDebug()) {
             val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
@@ -115,7 +115,8 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent() = "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+fun makeUserAgent() =
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
@@ -139,7 +140,6 @@ val serviceModule = module {
     single { RemoteConfig() }
     single { TextKeys(get()) }
     single { TabNotificationService(get()) }
-    single { AnalyticsViewModel(get()) }
 }
 
 val repositoriesModule = module {
@@ -154,7 +154,6 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get()) }
     single { OfferRepository(get()) }
-    single { AnalyticsRepository(get()) }
 }
 
 val trackerModule = module {

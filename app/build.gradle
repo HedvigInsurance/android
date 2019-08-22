@@ -32,7 +32,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '3.0.2'
+        versionName '3.0.3'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -180,12 +180,7 @@ dependencies {
         transitive = false
     }
 
-    //branch
-    implementation 'io.branch.sdk.android:library:3.2.0'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
-
     // ZXing
-
     implementation 'com.google.zxing:core:3.4.0'
 
     // test

@@ -234,7 +234,7 @@ class DashboardFragment : BaseTabFragment() {
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.setupDirectDebit()
-                startActivity(Intent(requireContext(), TrustlyActivity::class.java))
+                startActivity(TrustlyActivity.newInstance(requireContext()))
             }
             return
         }

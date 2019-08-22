@@ -67,10 +67,10 @@ class ProfileFragment : BaseTabFragment() {
             feedbackRow.setHapticClickListener {
                 startActivity(Intent(requireContext(), FeedbackActivity::class.java))
             }
-            aboutAppRow.setOnClickListener {
+            aboutAppRow.setHapticClickListener {
                 startActivity(Intent(requireActivity(), AboutAppActivity::class.java))
             }
-            logout.setOnClickListener {
+            logout.setHapticClickListener {
                 userViewModel.logout {
                     requireContext().storeBoolean(IS_VIEWING_OFFER, false)
                     requireContext().setAuthenticationToken(null)
@@ -118,7 +118,7 @@ class ProfileFragment : BaseTabFragment() {
 
     private fun setupCharity(profileData: ProfileQuery.Data) {
         charityRow.description = profileData.cashback?.fragments?.cashbackFragment?.name
-        charityRow.setOnClickListener {
+        charityRow.setHapticClickListener {
             startActivity(Intent(requireContext(), CharityActivity::class.java))
         }
     }
@@ -128,7 +128,7 @@ class ProfileFragment : BaseTabFragment() {
             resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
             "COST" to profileData.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
         )
-        paymentRow.setOnClickListener {
+        paymentRow.setHapticClickListener {
             startActivity(Intent(requireContext(), PaymentActivity::class.java))
         }
     }
@@ -137,7 +137,7 @@ class ProfileFragment : BaseTabFragment() {
         profileData.insurance.certificateUrl?.let { policyUrl ->
             insuranceCertificateRow.show()
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(policyUrl))
-            insuranceCertificateRow.setOnClickListener {
+            insuranceCertificateRow.setHapticClickListener {
                 startActivity(intent)
             }
         }
