@@ -140,10 +140,12 @@ class TrustlyActivity : BaseActivity() {
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_success)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
+        resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
+        notNow.remove()
         if (isPostSignDD()) {
-            resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_SUCCESS_CTA)
+            resultClose.text = getString(R.string.ONBOARDING_CONNECT_DD_SUCCESS_CTA)
         } else {
-            resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
+            resultClose.text = getString(R.string.PROFILE_TRUSTLY_CLOSE)
         }
         resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
