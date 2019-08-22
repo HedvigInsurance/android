@@ -152,6 +152,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:gravity="center"
+                android:paddingStart="@dimen/base_margin_double"
+                android:paddingEnd="@dimen/base_margin_double"
                 app:layout_constraintBottom_toTopOf="@id/resultParagraph"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

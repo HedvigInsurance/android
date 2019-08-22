@@ -32,6 +32,7 @@ class TrustlyActivity : BaseActivity() {
     private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
     private val tracker: TrustlyTracker by inject()
+    private var hasSuccessfullyConnectedDirectDebit = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +74,7 @@ class TrustlyActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (isPostSignDD()) {
+        if (isPostSignDD() && !hasSuccessfullyConnectedDirectDebit) {
             showConfirmCloseDialog()
             return
         }
@@ -136,12 +137,14 @@ class TrustlyActivity : BaseActivity() {
     }
 
     fun showSuccess() {
+        hasSuccessfullyConnectedDirectDebit = true
         tracker.addPaymentInfo()
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.icon_success)
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
         resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
         notNow.remove()
+        resultDoItLater.remove()
         if (isPostSignDD()) {
             resultClose.text = getString(R.string.ONBOARDING_CONNECT_DD_SUCCESS_CTA)
         } else {
