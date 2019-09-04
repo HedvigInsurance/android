@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.profile.ui.payment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -15,6 +17,7 @@ import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.CustomTypefaceSpan
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.extensions.concat
+import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -66,6 +69,10 @@ class PaymentActivity : BaseActivity() {
 
         connectBankAccount.setHapticClickListener {
             startActivity(TrustlyActivity.newInstance(this))
+        }
+
+        connectBankAccountWithLink.setHapticClickListener {
+            connectDirectDebitWithLink()
         }
 
         redeemCode.setHapticClickListener {
@@ -135,11 +142,21 @@ class PaymentActivity : BaseActivity() {
         })
     }
 
+    private fun connectDirectDebitWithLink(){
+        profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(browserIntent)
+        }
+
+        profileViewModel.startTrustlySession()
+    }
+
     private fun resetViews() {
         connectBankAccountContainer.remove()
         changeBankAccount.remove()
         separator.remove()
         bankAccountUnderChangeParagraph.remove()
+        connectBankAccountWithLink.remove()
     }
 
     private fun bindBankAccountInformation() {
@@ -180,6 +197,7 @@ class PaymentActivity : BaseActivity() {
                 toggleAutogiro(false)
                 toggleBankInfo(false)
                 connectBankAccountContainer.show()
+                connectBankAccountWithLink.show()
             }
             else -> {
                 Timber.e("Payment fragment direct debit status UNKNOWN!")

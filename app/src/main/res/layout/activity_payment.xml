@@ -348,6 +348,18 @@
                 android:theme="@style/Body.Small.Link.Emphasized"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+            <Button
+                android:id="@+id/connectBankAccountWithLink"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_WITH_LINK_BUTTON"
+                android:textAllCaps="false"
+                android:theme="@style/Body.Small.Link.Emphasized"
+                android:visibility="gone"
+                tools:visibility="visible" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
