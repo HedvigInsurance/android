@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.hasPermissions
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -159,21 +160,25 @@ class AudioRecorderView : LinearLayout {
         stopRecording.show()
 
         player = MediaPlayer().apply {
-            val filePath = getFilePath() ?: run {
-                Timber.e("External cache dir is null")
-                return@triggerPlayback
-            }
+            try {
+                val filePath = getFilePath() ?: run {
+                    Timber.e("External cache dir is null")
+                    return@triggerPlayback
+                }
 
-            setDataSource(filePath)
-            setOnPreparedListener {
-                startStopwatch(R.string.AUDIO_INPUT_PLAYBACK_PROGRESS)
-                start()
+                setDataSource(filePath)
+                setOnPreparedListener {
+                    startStopwatch(R.string.AUDIO_INPUT_PLAYBACK_PROGRESS)
+                    start()
+                }
+                setOnCompletionListener {
+                    triggerStopRecording()
+                }
+                prepareAsync()
+            } catch (iOException: IOException) {
+                Timber.e(iOException,"IOException on trigger playback")
+                context.makeToast(R.string.CHAT_AUDIO__PLAYBACK_FAILED)
             }
-            setOnCompletionListener {
-                triggerStopRecording()
-            }
-            prepareAsync()
-
         }
     }
 
