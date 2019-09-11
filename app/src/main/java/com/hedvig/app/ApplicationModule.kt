@@ -2,6 +2,7 @@ package com.hedvig.app
 
 import android.content.Context
 import android.os.Build
+import android.os.LocaleList
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
@@ -99,6 +100,15 @@ val applicationModule = module {
                         .build()
                 )
             }
+            .addInterceptor { chain ->
+                chain.proceed(
+                    chain
+                        .request()
+                        .newBuilder()
+                        .header("Accept-Language", makeLocaleString())
+                        .build()
+                )
+            }
         if (isDebug()) {
             val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
@@ -117,6 +127,12 @@ val applicationModule = module {
 
 fun makeUserAgent() =
     "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+
+fun makeLocaleString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    LocaleList.getDefault().toLanguageTags()
+} else {
+    Locale.getDefault().toLanguageTag()
+}
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
