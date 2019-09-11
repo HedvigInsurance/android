@@ -58,8 +58,7 @@ class MainApplication : Application() {
             acquireHedvigToken()
         }
 
-        // TODO Remove this probably? Or figure out a better solve for the problem
-        if (BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app") {
+        if (isDebug()) {
             Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(CrashlyticsLogExceptionTree())
