@@ -10,6 +10,7 @@ query Profile {
     address
     postalNumber
     type
+    status
     certificateUrl
     personsInHousehold
     livingSpace
@@ -18,6 +19,21 @@ query Profile {
       freeUntil
     }
   }
+  balance {
+    failedCharges
+  }
+  chargeEstimation {
+    charge {
+      amount
+    }
+    discount {
+      amount
+    }
+    subscription {
+      amount
+    }
+  }
+  chargeDate
   bankAccount {
     bankName
     descriptor

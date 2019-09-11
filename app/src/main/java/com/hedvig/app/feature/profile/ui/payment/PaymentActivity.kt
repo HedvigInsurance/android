@@ -3,22 +3,21 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.AbsoluteSizeSpan
-import androidx.lifecycle.Observer
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
-import com.hedvig.app.util.CustomTypefaceSpan
-import com.hedvig.app.util.extensions.compatFont
-import com.hedvig.app.util.extensions.concat
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -45,6 +44,8 @@ class PaymentActivity : BaseActivity() {
             onBackPressed()
         }
 
+        nextPaymentGross.setStrikethrough(true)
+
         val today = Calendar.getInstance()
         val year = today.get(Calendar.YEAR).toString()
         val day = today.get(Calendar.DAY_OF_MONTH)
@@ -56,7 +57,7 @@ class PaymentActivity : BaseActivity() {
             }
         }.let { String.format("%02d", it) }
 
-        autogiroDate.text = interpolateTextKey(
+        nextPaymentDate.text = interpolateTextKey(
             resources.getString(R.string.PROFILE_PAYMENT_NEXT_CHARGE_DATE),
             "YEAR" to year,
             "MONTH" to month,
@@ -86,63 +87,60 @@ class PaymentActivity : BaseActivity() {
     }
 
     private fun loadData() {
-        profileViewModel.data.observe(this, Observer { profileData ->
+        profileViewModel.data.observe(lifecycleOwner = this) { profileData ->
             loadingSpinner.remove()
             resetViews()
-            sphereContainer.show()
 
-            val monthlyCost =
-                profileData?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
-            val amountPartOne = SpannableString("$monthlyCost\n")
-            val perMonthLabel = resources.getString(R.string.PROFILE_PAYMENT_PER_MONTH_LABEL)
-            val amountPartTwo = SpannableString(perMonthLabel)
-            amountPartTwo.setSpan(
-                CustomTypefaceSpan(compatFont(R.font.circular_book)),
-                0,
-                perMonthLabel.length,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            amountPartTwo.setSpan(
-                AbsoluteSizeSpan(20, true),
-                0,
-                perMonthLabel.length,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            profile_payment_amount.text = amountPartOne.concat(amountPartTwo)
-
-            profileData?.insurance?.cost?.freeUntil?.let {
-                freeUntilContainer.show()
-                freeUntilMessage.text = interpolateTextKey(
-                    getString(R.string.PROFILE_PAYMENT_FREE_UNTIL_MESSAGE),
-                    "FREE_UNTIL" to it
-                )
-            } ?: run {
-                freeUntilContainer.remove()
+            profileData?.let { pd ->
+                bindFailedPaymentsCard(pd.balance)
+                bindNextPaymentCard(pd)
             }
 
-            grossPremium.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_PRICE),
-                "PRICE" to profileData?.insurance?.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
-            )
-
-            discount.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_DISCOUNT),
-                "DISCOUNT" to (profileData?.insurance?.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt()?.unaryMinus())
-            )
-
-            netPremium.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_FINAL_COST),
-                "FINAL_COST" to profileData?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
-            )
-
             bindBankAccountInformation()
-        })
-        directDebitViewModel.data.observe(this, Observer {
+        }
+        directDebitViewModel.data.observe(lifecycleOwner = this) {
             bindBankAccountInformation()
-        })
+        }
     }
 
-    private fun connectDirectDebitWithLink(){
+    private fun bindFailedPaymentsCard(data: ProfileQuery.Balance) {
+        if (data.failedCharges != 0) {
+            failedPaymentsCard.show()
+            failedPaymentsParagraph.text = "${data.failedCharges}, $billingDate"
+        }
+    }
+
+    private fun bindNextPaymentCard(data: ProfileQuery.Data) {
+        nextPaymentAmount.text =
+            "${data.chargeEstimation.charge.amount.toBigDecimal().toInt()} kr"
+
+        val discount = data.chargeEstimation.discount.amount.toBigDecimal().toInt()
+        if (discount > 0) {
+            nextPaymentGross.show()
+            nextPaymentGross.text =
+                "${data.chargeEstimation.subscription.amount.toBigDecimal().toInt()} kr/mån"
+        }
+
+        when (data.insurance.status) {
+            InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+                nextPaymentDate.text = data.chargeDate.toString()
+            }
+            InsuranceStatus.INACTIVE -> {
+                nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
+                nextPaymentDate.text = "Startdatum ej satt"
+            }
+            else -> {
+                Timber.e("Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}")
+            }
+        }
+
+        (data.referralInformation.campaign.incentive as? IncentiveFragment.AsFreeMonths)?.let { fm ->
+            freeMonthsSphere.show()
+            freeMonths.text = fm.quantity.toString()
+        }
+    }
+
+    private fun connectDirectDebitWithLink() {
         profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)
@@ -152,6 +150,10 @@ class PaymentActivity : BaseActivity() {
     }
 
     private fun resetViews() {
+        failedPaymentsCard.remove()
+        nextPaymentGross.hide()
+        nextPaymentDate.background.setTintList(null)
+        freeMonthsSphere.remove()
         connectBankAccountContainer.remove()
         changeBankAccount.remove()
         separator.remove()
@@ -173,7 +175,6 @@ class PaymentActivity : BaseActivity() {
                     toggleBankInfo(true)
                 } ?: toggleBankInfo(false)
 
-                toggleAutogiro(true)
 
                 separator.show()
                 changeBankAccount.show()
@@ -183,18 +184,17 @@ class PaymentActivity : BaseActivity() {
 
                 profileData.bankAccount?.let { bankAccount ->
                     bankName.text = bankAccount.bankName
-                    accountNumber.text = resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
+                    accountNumber.text =
+                        resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
 
                     toggleBankInfo(true)
                 } ?: toggleBankInfo(false)
 
-                toggleAutogiro(false)
 
                 bankAccountUnderChangeParagraph.show()
             }
             DirectDebitStatus.NEEDS_SETUP -> {
                 paymentDetailsContainer.show()
-                toggleAutogiro(false)
                 toggleBankInfo(false)
                 connectBankAccountContainer.show()
                 connectBankAccountWithLink.show()
@@ -219,16 +219,6 @@ class PaymentActivity : BaseActivity() {
         }
     }
 
-    private fun toggleAutogiro(show: Boolean) {
-        if (show) {
-            autogiroTitle.show()
-            autogiroDate.show()
-        } else {
-            autogiroTitle.remove()
-            autogiroDate.remove()
-        }
-    }
-
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0 && profileData.insurance.cost?.freeUntil == null) {
             redeemCode.show()
@@ -237,5 +227,15 @@ class PaymentActivity : BaseActivity() {
 
     companion object {
         const val BILLING_DAY = 27
+
+        private val billingDate: String
+            get() = ""
+
+        private fun hasFreeMonthsCampaign(referralInformation: ProfileQuery.ReferralInformation): Boolean {
+            if (referralInformation.campaign.incentive !is IncentiveFragment.AsFreeMonths) {
+                return false
+            }
+            TODO("Implement")
+        }
     }
 }
