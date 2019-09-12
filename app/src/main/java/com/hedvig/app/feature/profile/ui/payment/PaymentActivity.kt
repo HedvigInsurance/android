@@ -21,14 +21,12 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.Calendar
 
 class PaymentActivity : BaseActivity() {
     private val profileViewModel: ProfileViewModel by viewModel()
@@ -45,24 +43,6 @@ class PaymentActivity : BaseActivity() {
         }
 
         nextPaymentGross.setStrikethrough(true)
-
-        val today = Calendar.getInstance()
-        val year = today.get(Calendar.YEAR).toString()
-        val day = today.get(Calendar.DAY_OF_MONTH)
-        val month = (today.get(Calendar.MONTH) + 1).let { month ->
-            if (day > BILLING_DAY) {
-                month + 1
-            } else {
-                month
-            }
-        }.let { String.format("%02d", it) }
-
-        nextPaymentDate.text = interpolateTextKey(
-            resources.getString(R.string.PROFILE_PAYMENT_NEXT_CHARGE_DATE),
-            "YEAR" to year,
-            "MONTH" to month,
-            "DAY" to BILLING_DAY.toString()
-        )
 
         seePaymentHistory.setHapticClickListener {
             startActivity(PaymentHistoryActivity.newInstance(this))
@@ -96,7 +76,7 @@ class PaymentActivity : BaseActivity() {
             resetViews()
 
             profileData?.let { pd ->
-                bindFailedPaymentsCard(pd.balance)
+                bindFailedPaymentsCard(pd)
                 bindNextPaymentCard(pd)
                 bindCampaignInformation(pd)
                 bindPaymentHistory(pd.chargeHistory)
@@ -109,10 +89,10 @@ class PaymentActivity : BaseActivity() {
         }
     }
 
-    private fun bindFailedPaymentsCard(data: ProfileQuery.Balance) {
-        if (data.failedCharges != 0) {
+    private fun bindFailedPaymentsCard(data: ProfileQuery.Data) {
+        if (data.balance.failedCharges != 0) {
             failedPaymentsCard.show()
-            failedPaymentsParagraph.text = "${data.failedCharges}, $billingDate"
+            failedPaymentsParagraph.text = "${data.balance.failedCharges}, ${data.nextChargeDate}"
         }
     }
 
@@ -289,12 +269,5 @@ class PaymentActivity : BaseActivity() {
         ) {
             redeemCode.show()
         }
-    }
-
-    companion object {
-        const val BILLING_DAY = 27
-
-        private val billingDate: String
-            get() = ""
     }
 }
