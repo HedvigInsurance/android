@@ -47,7 +47,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.service.Referrals
 import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.TextKeys
 import com.hedvig.app.terminated.TerminatedTracker
@@ -136,7 +135,7 @@ fun makeLocaleString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODE
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { DirectDebitViewModel(get()) }
     viewModel { DashboardViewModel(get()) }
@@ -152,7 +151,6 @@ val viewModelModule = module {
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
-    single { Referrals(get()) }
     single { RemoteConfig() }
     single { TextKeys(get()) }
     single { TabNotificationService(get()) }
