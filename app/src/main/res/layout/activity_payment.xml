@@ -30,7 +30,7 @@
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:visibility="gone"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,8 +56,6 @@
                 </LinearLayout>
 
             </com.hedvig.app.ui.view.HedvigCardView>
-
-            <!-- We need to prevent corner overlap here -->
 
             <com.hedvig.app.ui.view.HedvigCardView
                 android:id="@+id/nextPaymentCard"
@@ -176,7 +174,7 @@
 
             </com.hedvig.app.ui.view.HedvigCardView>
 
-            <com.google.android.material.card.MaterialCardView
+            <com.hedvig.app.ui.view.HedvigCardView
                 android:id="@id/connectBankAccountContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,8 +182,7 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin"
                 android:visibility="gone"
-                app:cardCornerRadius="@dimen/bottom_sheet_corner_radius_less"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -236,19 +233,51 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </com.hedvig.app.ui.view.HedvigCardView>
+
+            <LinearLayout
+                android:id="@+id/paymentHistoryContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    tools:text="Tidigare betalningar" />
+
+                <LinearLayout
+                    android:id="@+id/prevPaymentsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <com.hedvig.app.feature.profile.ui.ProfileMenuRow
+                    android:id="@+id/seePaymentHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:name="Se historik" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@id/paymentDetailsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginStart="@dimen/base_margin_double"
                 android:orientation="vertical"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sphereContainer"
                 tools:visibility="visible">
+
+                <TextView
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Betalningsmetod" />
 
                 <TextView
                     android:id="@+id/bankTitle"
@@ -293,7 +322,6 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:background="@color/light_gray"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/paymentDetailsContainer"
                 tools:visibility="visible" />
 
             <Button
@@ -307,9 +335,6 @@
                 android:textAllCaps="false"
                 android:theme="@style/Body.Small.Link.Emphasized"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator"
                 tools:visibility="visible" />
 
             <Button

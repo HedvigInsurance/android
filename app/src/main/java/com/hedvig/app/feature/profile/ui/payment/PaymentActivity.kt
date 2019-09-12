@@ -64,6 +64,10 @@ class PaymentActivity : BaseActivity() {
             "DAY" to BILLING_DAY.toString()
         )
 
+        seePaymentHistory.setHapticClickListener {
+            startActivity(PaymentHistoryActivity.newInstance(this))
+        }
+
         changeBankAccount.setHapticClickListener {
             startActivity(TrustlyActivity.newInstance(this))
         }
@@ -94,6 +98,7 @@ class PaymentActivity : BaseActivity() {
             profileData?.let { pd ->
                 bindFailedPaymentsCard(pd.balance)
                 bindNextPaymentCard(pd)
+                bindPaymentHistory(pd.chargeHistory)
             }
 
             bindBankAccountInformation()
@@ -123,14 +128,16 @@ class PaymentActivity : BaseActivity() {
 
         when (data.insurance.status) {
             InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                nextPaymentDate.text = data.chargeDate.toString()
+                nextPaymentDate.text = data.nextChargeDate.toString()
             }
             InsuranceStatus.INACTIVE -> {
                 nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
                 nextPaymentDate.text = "Startdatum ej satt"
             }
             else -> {
-                Timber.e("Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}")
+                Timber.e(
+                    "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+                )
             }
         }
 
@@ -138,6 +145,13 @@ class PaymentActivity : BaseActivity() {
             freeMonthsSphere.show()
             freeMonths.text = fm.quantity.toString()
         }
+    }
+
+    private fun bindPaymentHistory(paymentHistory: List<ProfileQuery.ChargeHistory>) {
+        if (paymentHistory.isEmpty() && false) {
+            return
+        }
+        paymentHistoryContainer.show()
     }
 
     private fun connectDirectDebitWithLink() {
@@ -151,9 +165,13 @@ class PaymentActivity : BaseActivity() {
 
     private fun resetViews() {
         failedPaymentsCard.remove()
+
         nextPaymentGross.hide()
-        nextPaymentDate.background.setTintList(null)
         freeMonthsSphere.remove()
+        nextPaymentDate.background.setTintList(null)
+
+        paymentHistoryContainer.remove()
+
         connectBankAccountContainer.remove()
         changeBankAccount.remove()
         separator.remove()
@@ -220,7 +238,10 @@ class PaymentActivity : BaseActivity() {
     }
 
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
-        if (profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0 && profileData.insurance.cost?.freeUntil == null) {
+        if (
+            profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
+            && profileData.insurance.cost?.freeUntil == null
+        ) {
             redeemCode.show()
         }
     }
@@ -230,12 +251,5 @@ class PaymentActivity : BaseActivity() {
 
         private val billingDate: String
             get() = ""
-
-        private fun hasFreeMonthsCampaign(referralInformation: ProfileQuery.ReferralInformation): Boolean {
-            if (referralInformation.campaign.incentive !is IncentiveFragment.AsFreeMonths) {
-                return false
-            }
-            TODO("Implement")
-        }
     }
 }

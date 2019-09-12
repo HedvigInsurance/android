@@ -33,7 +33,13 @@ query Profile {
       amount
     }
   }
-  chargeDate
+  nextChargeDate
+  chargeHistory {
+    amount {
+      amount
+    }
+    date
+  }
   bankAccount {
     bankName
     descriptor

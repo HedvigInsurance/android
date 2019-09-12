@@ -35,9 +35,11 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/APP_SCHEME" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -105,6 +107,14 @@
 
         <activity
             android:name=".feature.profile.ui.payment.PaymentActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.profile.ui.payment.PaymentHistoryActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -231,6 +241,7 @@
             </intent-filter>
         </service>
     </application>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
