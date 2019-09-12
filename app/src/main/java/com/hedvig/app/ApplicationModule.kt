@@ -35,6 +35,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
@@ -185,4 +186,5 @@ val trackerModule = module {
     single { ChatTracker(get()) }
     single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
+    single { PaymentTracker(get()) }
 }

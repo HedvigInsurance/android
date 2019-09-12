@@ -9,7 +9,6 @@ import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.compatColor
@@ -32,7 +31,7 @@ class PaymentActivity : BaseActivity() {
     private val profileViewModel: ProfileViewModel by viewModel()
     private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
-    private val tracker: ProfileTracker by inject()
+    private val tracker: PaymentTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
