@@ -35,8 +35,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.app_bar.*
-import kotlinx.android.synthetic.main.logged_in_screen.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -57,7 +57,7 @@ class LoggedInActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.logged_in_screen)
+        setContentView(R.layout.activity_logged_in)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
@@ -126,7 +126,8 @@ class LoggedInActivity : BaseActivity() {
             LoggedInTabs.REFERRALS -> {
                 (profileViewModel.data.value?.referralInformation?.campaign?.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
                     ?.toInt()?.toString()?.let { amount ->
-                        ReferralBottomSheet.newInstance(amount).show(supportFragmentManager, ReferralBottomSheet.TAG)
+                        ReferralBottomSheet.newInstance(amount)
+                            .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
             }
         }
@@ -147,7 +148,11 @@ class LoggedInActivity : BaseActivity() {
                                 LoggedInTabs.REFERRALS.ordinal
                             ) as BottomNavigationItemView
 
-                        badge = layoutInflater.inflate(R.layout.bottom_navigation_notification, itemView, true)
+                        badge = layoutInflater.inflate(
+                            R.layout.bottom_navigation_notification,
+                            itemView,
+                            true
+                        )
                     }
                 }
             }
@@ -160,7 +165,8 @@ class LoggedInActivity : BaseActivity() {
                     GlobalScope.launch(Dispatchers.IO) {
                         FirebaseInstanceId.getInstance().deleteInstanceId()
                     }
-                    WhatsNewDialog.newInstance(data.news).show(supportFragmentManager, WhatsNewDialog.TAG)
+                    WhatsNewDialog.newInstance(data.news)
+                        .show(supportFragmentManager, WhatsNewDialog.TAG)
                 }
             }
         }

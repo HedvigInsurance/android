@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_attach_file_height"
         android:layout_gravity="bottom"
-        android:background="@color/off_white"
         tools:ignore="UselessParent">
 
         <include layout="@layout/loading_spinner" />

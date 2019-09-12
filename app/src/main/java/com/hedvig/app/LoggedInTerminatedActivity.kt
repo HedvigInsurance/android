@@ -6,7 +6,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.logged_in_terminated_activity.*
+import kotlinx.android.synthetic.main.activity_logged_in_terminated.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -17,7 +17,7 @@ class LoggedInTerminatedActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.logged_in_terminated_activity)
+        setContentView(R.layout.activity_logged_in_terminated)
 
         terminatedOpenChatButton.setHapticClickListener {
             tracker.openChat()

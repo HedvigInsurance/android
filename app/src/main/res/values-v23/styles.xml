@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Hedvig.Theme.V23" parent="Hedvig.Theme.V21">
-        <item name="android:statusBarColor">@color/off_white</item>
+        <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 

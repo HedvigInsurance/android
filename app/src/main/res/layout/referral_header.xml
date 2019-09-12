@@ -83,7 +83,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_half"
         android:background="@drawable/background_very_rounded_corners"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/background"
         android:elevation="1dp"
         android:paddingStart="@dimen/base_margin_double"
         android:paddingTop="@dimen/base_margin_half"

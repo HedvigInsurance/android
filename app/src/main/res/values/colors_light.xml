@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="background" type="color">@color/off_white</item>
+    <item name="background_elevation_1" type="color">@color/off_white</item>
+    <item name="text_emphasized" type="color">@color/off_black_dark</item>
+    <item name="text_negative" type="color">@color/white</item>
+    <item name="bottom_sheet_handle" type="color">@color/semi_light_gray</item>
+    <item name="background_semi_transparent" type="color">@color/blur_white</item>
+</resources>

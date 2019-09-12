@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/referral_row_height"
-    android:background="@color/white">
+    android:background="@color/background_elevation_1">
 
     <FrameLayout
         android:id="@+id/avatarContainer"

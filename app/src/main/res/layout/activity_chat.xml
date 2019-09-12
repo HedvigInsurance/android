@@ -6,14 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/off_white"
     tools:context=".feature.chat.ui.ChatActivity">
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
-        android:background="@color/off_white"
+        android:background="@color/background_elevation_1"
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -61,7 +60,6 @@
         android:id="@+id/messages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/off_white"
         android:paddingBottom="@dimen/base_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/input"

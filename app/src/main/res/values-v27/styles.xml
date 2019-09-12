@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Hedvig.Theme.V27" parent="Hedvig.Theme.V23">
-        <item name="android:navigationBarColor">@color/off_white</item>
+        <item name="android:navigationBarColor">@color/background</item>
         <item name="android:windowLightNavigationBar">true</item>
     </style>
 
@@ -18,12 +18,12 @@
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
     </style>
 
     <style name="NoTitleBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="bottomSheetStyle">@style/NoTitleBottomSheet</item>
     </style>
@@ -32,7 +32,7 @@
         <item name="bottomSheetStyle">@style/PerilBottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
     </style>
 
     <style name="TransparentDialog" parent="TransparentDialog.V27" />

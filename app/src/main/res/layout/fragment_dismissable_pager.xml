@@ -5,7 +5,7 @@
     android:id="@+id/newsContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <FrameLayout

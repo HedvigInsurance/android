@@ -30,4 +30,6 @@
     <color name="violet_100">#efe8ff</color>
     <color name="violet_200">#c1a5ff</color>
     <color name="coral_500">#ff8a80</color>
+    <color name="dark_mode">#0a0d14</color>
+    <color name="dark_mode_semi_transparent">#e60a0d14</color>
 </resources>

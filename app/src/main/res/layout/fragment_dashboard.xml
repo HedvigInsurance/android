@@ -5,7 +5,6 @@
     android:id="@+id/dashboardNestedScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
     tools:context=".feature.dashboard.ui.DashboardFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -149,7 +148,7 @@
                     android:fontFamily="@font/soray_extrabold"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_MONTH"
-                    android:textColor="@color/off_black_dark"
+                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -171,7 +170,7 @@
                     android:fontFamily="@font/soray_extrabold"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_DAYS"
-                    android:textColor="@color/off_black_dark"
+                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -193,7 +192,7 @@
                     android:fontFamily="@font/soray_extrabold"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_HOURS"
-                    android:textColor="@color/off_black_dark"
+                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -215,7 +214,7 @@
                     android:fontFamily="@font/soray_extrabold"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_MINUTES"
-                    android:textColor="@color/off_black_dark"
+                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
             </LinearLayout>
