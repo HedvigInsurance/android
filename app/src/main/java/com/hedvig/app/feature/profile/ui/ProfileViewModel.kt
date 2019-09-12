@@ -7,7 +7,6 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.service.Referrals
 import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.RemoteConfigData
 import com.hedvig.app.util.LiveEvent
@@ -21,7 +20,6 @@ import timber.log.Timber
 
 class ProfileViewModel(
     private val profileRepository: ProfileRepository,
-    private val referrals: Referrals,
     private val remoteConfig: RemoteConfig,
     private val chatRepository: ChatRepository
 ) :
@@ -138,17 +136,6 @@ class ProfileViewModel(
             }, { error ->
                 Timber.e(error, "Failed to refresh bank account info")
             })
-    }
-
-    fun generateReferralLink(memberId: String) {
-        remoteConfigData.value?.let { data ->
-            disposables += referrals.generateFirebaseLink(memberId, data)
-                .subscribe({ uri ->
-                    firebaseLink.postValue(uri)
-                }, { error ->
-                    Timber.e(error)
-                })
-        }
     }
 
     fun triggerFreeTextChat(done: () -> Unit) {

@@ -39,7 +39,7 @@ class SplashActivity : BaseActivity() {
             .addOnSuccessListener { pendingDynamicLinkData ->
                 if (pendingDynamicLinkData != null && pendingDynamicLinkData.link != null) {
                     val link = pendingDynamicLinkData.link
-                    when (link.pathSegments[0]) {
+                    when (link?.pathSegments?.get(0)) {
                         "referrals" -> handleReferralsDeepLink(link, loginStatus)
                         "direct-debit" -> handleDirectDebitDeepLink(loginStatus)
                         else -> startDefaultActivity(loginStatus)
@@ -99,8 +99,8 @@ class SplashActivity : BaseActivity() {
                     .getLoginStatus()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ loginStatus ->
-                        startDefaultActivity(loginStatus)
+                    .subscribe({ lst ->
+                        startDefaultActivity(lst)
                     }, { Timber.e(it) })
             }
         }

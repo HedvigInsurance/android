@@ -45,8 +45,8 @@ class PushNotificationService : FirebaseMessagingService() {
             .enqueue()
     }
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage?) {
-        when (remoteMessage?.data?.get(NOTIFICATION_TYPE_KEY)) {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        when (remoteMessage.data[NOTIFICATION_TYPE_KEY]) {
             NOTIFICATION_TYPE_NEW_MESSAGE -> {
                 setupNotificationChannel(
                     NOTIFICATION_CHAT_CHANNEL_ID,
@@ -69,9 +69,9 @@ class PushNotificationService : FirebaseMessagingService() {
                     resources.getString(R.string.NOTIFICATION_CHANNEL_NAME),
                     resources.getString(R.string.NOTIFICATION_CHANNEL_DESCRIPTION)
                 )
-                val title = remoteMessage?.data?.get(DATA_MESSAGE_TITLE)
+                val title = remoteMessage.data[DATA_MESSAGE_TITLE]
                     ?: resources.getString(R.string.NOTIFICATION_CHAT_TITLE)
-                val body = remoteMessage?.data?.get(DATA_MESSAGE_BODY)
+                val body = remoteMessage.data[DATA_MESSAGE_BODY]
                     ?: resources.getString(R.string.NOTIFICATION_CHAT_BODY)
                 sendDefaultNotification(title, body)
             }
@@ -119,10 +119,10 @@ class PushNotificationService : FirebaseMessagingService() {
             .notify(NOTIFICATION_CHAT_ID, notification)
     }
 
-    private fun sendReferralsNotification(remoteMessage: RemoteMessage?) {
+    private fun sendReferralsNotification(remoteMessage: RemoteMessage) {
 
-        val referralName = remoteMessage?.data?.get(DATA_MESSAGE_REFERRED_SUCCESS_NAME)
-        val referralIncentive = remoteMessage?.data?.get(DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT)
+        val referralName = remoteMessage.data[DATA_MESSAGE_REFERRED_SUCCESS_NAME]
+        val referralIncentive = remoteMessage.data[DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT]
         val referralsIntent = safeLet(referralName, referralIncentive) { name, incentive ->
             ReferralsSuccessfulInviteActivity.newInstance(this, name, incentive)
         } ?: ReferralsSuccessfulInviteActivity.newInstance(this)
