@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/amount"
-        style="@style/Body.Regular"
+        style="@style/Body.Regular.Emphasized"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"

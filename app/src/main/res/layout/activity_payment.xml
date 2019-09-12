@@ -236,9 +236,77 @@
             </com.hedvig.app.ui.view.HedvigCardView>
 
             <LinearLayout
+                android:id="@+id/campaignInformationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/campaignInformationTitle"
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Aktuell kampanj" />
+
+                <TextView
+                    android:id="@+id/campaignInformationLabelOne"
+                    style="@style/Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    tools:text="Från" />
+
+                <TextView
+                    android:id="@+id/campaignInformationFieldOne"
+                    style="@style/Body.Regular.Emphasized"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    tools:text="Partner XYZ" />
+
+                <TextView
+                    android:id="@+id/lastFreeDayLabel"
+                    style="@style/Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:visibility="gone"
+                    tools:text="Sista gratisdatum"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/lastFreeDay"
+                    style="@style/Body.Regular.Emphasized"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:visibility="gone"
+                    tools:text="2019-06-28"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/willUpdateWhenStartDateIsSet"
+                    style="@style/Body.XSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:textColor="@color/gray"
+                    android:visibility="gone"
+                    tools:text="När din gamla försäkring är uppsagd och vi har ett startdatum för din försäkring hos Hedvig kommer denna sektion uppdateras."
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/paymentHistoryContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible">

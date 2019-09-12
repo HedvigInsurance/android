@@ -62,6 +62,9 @@ query Profile {
           }
         }
       }
+      owner {
+        displayName
+      }
     }
     referredBy {
       __typename

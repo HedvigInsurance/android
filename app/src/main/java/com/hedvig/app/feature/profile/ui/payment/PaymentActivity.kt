@@ -98,6 +98,7 @@ class PaymentActivity : BaseActivity() {
             profileData?.let { pd ->
                 bindFailedPaymentsCard(pd.balance)
                 bindNextPaymentCard(pd)
+                bindCampaignInformation(pd)
                 bindPaymentHistory(pd.chargeHistory)
             }
 
@@ -147,8 +148,47 @@ class PaymentActivity : BaseActivity() {
         }
     }
 
+    private fun bindCampaignInformation(data: ProfileQuery.Data) {
+        when (val incentive = data.referralInformation.campaign.incentive) {
+            is IncentiveFragment.AsFreeMonths -> {
+                campaignInformationTitle.text = "TODO"
+                campaignInformationLabelOne.text = "TODO"
+                data.referralInformation.campaign.owner?.displayName?.let { displayName ->
+                    campaignInformationFieldOne.text = displayName
+                }
+
+                when (data.insurance.status) {
+                    InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+                        data.insurance.cost?.freeUntil?.let { freeUntil ->
+                            lastFreeDay.text = freeUntil.toString()
+                        }
+                        lastFreeDay.show()
+                        lastFreeDayLabel.show()
+                    }
+                    InsuranceStatus.INACTIVE -> {
+                        willUpdateWhenStartDateIsSet.show()
+                    }
+                    else -> {
+                        Timber.e(
+                            "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+                        )
+                    }
+                }
+                campaignInformationContainer.show()
+            }
+            is IncentiveFragment.AsMonthlyCostDeduction -> {
+                campaignInformationTitle.text = "TODO"
+                campaignInformationLabelOne.text = "TODO"
+                incentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
+                    campaignInformationFieldOne.text = "-$amount kr"
+                }
+                campaignInformationContainer.show()
+            }
+        }
+    }
+
     private fun bindPaymentHistory(paymentHistory: List<ProfileQuery.ChargeHistory>) {
-        if (paymentHistory.isEmpty() && false) {
+        if (paymentHistory.isEmpty()) {
             return
         }
         paymentHistoryContainer.show()
@@ -169,6 +209,11 @@ class PaymentActivity : BaseActivity() {
         nextPaymentGross.hide()
         freeMonthsSphere.remove()
         nextPaymentDate.background.setTintList(null)
+
+        campaignInformationContainer.remove()
+        lastFreeDayLabel.remove()
+        lastFreeDay.remove()
+        willUpdateWhenStartDateIsSet.remove()
 
         paymentHistoryContainer.remove()
 
