@@ -54,14 +54,13 @@
 
     <Button
         android:id="@+id/bottomSheetAddPromotionCodeButton"
-        style="@style/HedvigButton"
+        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/purple"
         android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
 
     <TextView

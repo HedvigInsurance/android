@@ -36,11 +36,11 @@
                     android:layout_width="160dp"
                     android:layout_height="160dp"
                     android:contentDescription="@null"
+                    android:tint="@color/purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/sphere"
-                    tools:tint="@color/purple" />
+                    app:srcCompat="@drawable/sphere" />
 
                 <TextView
                     android:id="@id/sphereText"

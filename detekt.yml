@@ -5,6 +5,8 @@ complexity:
     thresholdInInterfaces: 25
     thresholdInObjects: 25
     thresholdInEnums: 25
+  LongParameterList:
+    ignoreDefaultParameters: true
 style:
   ReturnCount:
     active: false

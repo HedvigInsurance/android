@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
+    tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
 
     <include layout="@layout/app_bar" />
@@ -18,7 +19,7 @@
 
     <Button
         android:id="@+id/referralButton"
-        style="?android:attr/borderlessButtonStyle"
+        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
@@ -26,7 +27,6 @@
         android:background="@drawable/button_primary"
         android:backgroundTint="@color/purple"
         android:text="@string/REFERRAL_SHAREINVITE"
-        android:theme="@style/HedvigButton"
         android:visibility="gone" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
         android:layout_gravity="bottom"
-        app:itemIconSize="26dp"
+        app:itemIconSize="@dimen/tab_bar_icon_size"
         app:menu="@menu/logged_in_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

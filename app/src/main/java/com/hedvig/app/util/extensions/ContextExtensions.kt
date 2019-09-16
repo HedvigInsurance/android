@@ -9,6 +9,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -31,13 +32,15 @@ private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_
 
 private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
 const val SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN = "shared_preference_tried_migration_of_token"
-const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY = "shared_preference_asked_for_permission_prefix"
+const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
+    "shared_preference_asked_for_permission_prefix"
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 
-fun Context.compatDrawable(@DrawableRes drawable: Int) = AppCompatResources.getDrawable(this, drawable)
+fun Context.compatDrawable(@DrawableRes drawable: Int) =
+    AppCompatResources.getDrawable(this, drawable)
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -73,7 +76,8 @@ fun Context.setIsLoggedIn(isLoggedIn: Boolean) =
 fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
-private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+private fun Context.getSharedPreferences() =
+    this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 fun Context.showShareSheet(@StringRes title: Int, configureClosure: ((Intent) -> Unit)?) =
     showShareSheet(resources.getString(title), configureClosure)
@@ -146,11 +150,19 @@ fun Context.storeBoolean(key: String, value: Boolean): Boolean =
 
 fun Context.hasPermissions(vararg permissions: String): Boolean {
     for (permission in permissions) {
-        if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return false
         }
     }
     return true
 }
 
-fun Context.canOpenUri(uri: Uri) = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
+fun Context.canOpenUri(uri: Uri) =
+    Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
+
+val Context.isDarkThemeActive: Boolean
+    get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES

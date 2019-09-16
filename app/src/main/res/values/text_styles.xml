@@ -59,7 +59,7 @@
 
     <style name="Body">
         <item name="android:fontFamily">@font/circular_book</item>
-        <item name="android:textColor">@color/off_black</item>
+        <item name="android:textColor">@color/text_regular</item>
     </style>
 
     <style name="Body.Regular">
@@ -72,7 +72,7 @@
     </style>
 
     <style name="Body.Regular.Link">
-        <item name="android:textColor">@color/purple</item>
+        <item name="android:textColor">@color/link_purple</item>
     </style>
 
     <style name="Body.Regular.Link.Caution">
@@ -97,7 +97,7 @@
     </style>
 
     <style name="Body.Small.Link">
-        <item name="android:textColor">@color/purple</item>
+        <item name="android:textColor">@color/link_purple</item>
     </style>
 
     <style name="Body.Small.Link.Caution">

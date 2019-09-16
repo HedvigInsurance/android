@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
@@ -42,15 +40,13 @@
 
     <Button
         android:id="@+id/referralMoreInfoButton"
-        style="?android:attr/borderlessButtonStyle"
+        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="@dimen/base_margin_double"
         android:background="@drawable/button_primary"
+        android:backgroundTint="@color/light_gray"
         android:text="@string/REFERRAL_PROGRESS_MORE_INFO_CTA"
-        android:textColor="@color/off_black"
-        android:theme="@style/HedvigButton"
-        app:backgroundTint="@color/light_gray"
-        tools:backgroundTint="@color/light_gray" />
+        android:textColor="@color/off_black" />
 </LinearLayout>

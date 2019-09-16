@@ -141,4 +141,5 @@
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
     <dimen name="trustly_explainer_illustration_offset">60dp</dimen>
+    <dimen name="tab_bar_icon_size">26dp</dimen>
 </resources>

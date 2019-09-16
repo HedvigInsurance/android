@@ -18,8 +18,10 @@ import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
@@ -154,7 +156,9 @@ class DashboardFragment : BaseTabFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         categoryView.onAnimateExpand = { handleExpandShowEntireView(categoryView) }
-        category.perils?.let { categoryView.expandedContent = makePerilCategoryExpandContent(it, category) }
+        category.perils?.let {
+            categoryView.expandedContent = makePerilCategoryExpandContent(it, category)
+        }
 
         return categoryView
     }
@@ -181,18 +185,24 @@ class DashboardFragment : BaseTabFragment() {
         return expandedContent
     }
 
-    private fun makePeril(peril: PerilCategoryFragment.Peril, subject: PerilCategoryFragment) = PerilView.build(
-        requireContext(),
-        name = peril.title,
-        iconId = peril.id,
-        onClick = {
-            safeLet(subject.title, peril.id, peril.title, peril.description) { name, id, title, description ->
-                tracker.perilClick(id)
-                PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
-                    .show(childFragmentManager, PerilBottomSheet.TAG)
+    private fun makePeril(peril: PerilCategoryFragment.Peril, subject: PerilCategoryFragment) =
+        PerilView.build(
+            requireContext(),
+            name = peril.title,
+            iconId = peril.id,
+            onClick = {
+                safeLet(
+                    subject.title,
+                    peril.id,
+                    peril.title,
+                    peril.description
+                ) { name, id, title, description ->
+                    tracker.perilClick(id)
+                    PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
+                        .show(childFragmentManager, PerilBottomSheet.TAG)
+                }
             }
-        }
-    )
+        )
 
     private fun setupAdditionalInformationRow(insuranceType: InsuranceType) {
         val additionalInformation = PerilCategoryView.build(
@@ -200,8 +210,14 @@ class DashboardFragment : BaseTabFragment() {
             bottomMargin = tripleMargin
         )
 
-        additionalInformation.onAnimateExpand = { handleExpandShowEntireView(additionalInformation) }
-        additionalInformation.categoryIcon = requireContext().compatDrawable(R.drawable.ic_more_info)
+        additionalInformation.onAnimateExpand =
+            { handleExpandShowEntireView(additionalInformation) }
+        additionalInformation.categoryIcon =
+            requireContext().compatDrawable(R.drawable.ic_more_info)?.apply {
+                if (requireContext().isDarkThemeActive) {
+                    setTint(requireContext().compatColor(R.color.icon_tint))
+                }
+            }
         additionalInformation.title = resources.getString(R.string.DASHBOARD_MORE_INFO_TITLE)
         additionalInformation.subtitle = resources.getString(R.string.DASHBOARD_MORE_INFO_SUBTITLE)
 
@@ -226,11 +242,16 @@ class DashboardFragment : BaseTabFragment() {
         perilCategoryContainer.addView(additionalInformation)
     }
 
-    private fun setupInfoBox(directDebitStatus: DirectDebitStatus, renewal: DashboardQuery.Renewal?) {
+    private fun setupInfoBox(
+        directDebitStatus: DirectDebitStatus,
+        renewal: DashboardQuery.Renewal?
+    ) {
         if (directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
             infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
-            infoBoxText.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
-            infoBoxButton.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
+            infoBoxText.text =
+                getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
+            infoBoxButton.text =
+                getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.setupDirectDebit()
@@ -242,7 +263,8 @@ class DashboardFragment : BaseTabFragment() {
         if (renewal != null) {
             infoBoxTitle.text = getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
             val daysUntilRenewal =
-                Duration.between(LocalDate.now().atStartOfDay(), renewal.date.atStartOfDay()).toDays()
+                Duration.between(LocalDate.now().atStartOfDay(), renewal.date.atStartOfDay())
+                    .toDays()
             infoBoxText.text = interpolateTextKey(
                 getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY),
                 "DAYS_UNTIL_RENEWAL" to daysUntilRenewal
@@ -283,7 +305,8 @@ class DashboardFragment : BaseTabFragment() {
                     insurancePendingCountDownContainer.show()
 
                     setActivationFigures(localDate)
-                    val formattedString = localDate.format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
+                    val formattedString =
+                        localDate.format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
                     insurancePendingExplanation.text = interpolateTextKey(
                         getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_HAS_START_DATE_EXPLANATION),
                         "START_DATE" to formattedString

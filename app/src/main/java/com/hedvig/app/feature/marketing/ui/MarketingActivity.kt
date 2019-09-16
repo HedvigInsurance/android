@@ -29,8 +29,8 @@ import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import kotlinx.android.synthetic.main.marketing_activity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -59,7 +59,7 @@ class MarketingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.marketing_activity)
+        setContentView(R.layout.activity_marketing)
 
         setupSystemDecoration()
         observeMarketingStories()
@@ -199,41 +199,43 @@ class MarketingActivity : BaseActivity() {
                         marketing_hedvig_logo.show()
                         storyProgressIndicatorContainer.show()
 
-                        blurDismissAnimator = ValueAnimator.ofFloat(getHedvig.translationY, 0f).apply {
-                            duration =
-                                BLUR_ANIMATION_DISMISS_DURATION
-                            interpolator = FastOutSlowInInterpolator()
-                            addUpdateListener { translation ->
-                                getHedvig.translationY = translation.animatedValue as Float
-                                val elapsed = translation.animatedFraction
-                                val backgroundColor = boundedColorLerp(
-                                    compatColor(R.color.purple),
-                                    compatColor(R.color.white),
-                                    elapsed
-                                )
-                                getHedvig.background.compatSetTint(backgroundColor)
-                                val textColor = boundedColorLerp(
-                                    compatColor(R.color.white),
-                                    compatColor(R.color.black),
-                                    elapsed
-                                )
-                                getHedvig.setTextColor(textColor)
+                        blurDismissAnimator =
+                            ValueAnimator.ofFloat(getHedvig.translationY, 0f).apply {
+                                duration =
+                                    BLUR_ANIMATION_DISMISS_DURATION
+                                interpolator = FastOutSlowInInterpolator()
+                                addUpdateListener { translation ->
+                                    getHedvig.translationY = translation.animatedValue as Float
+                                    val elapsed = translation.animatedFraction
+                                    val backgroundColor = boundedColorLerp(
+                                        compatColor(R.color.purple),
+                                        compatColor(R.color.white),
+                                        elapsed
+                                    )
+                                    getHedvig.background.compatSetTint(backgroundColor)
+                                    val textColor = boundedColorLerp(
+                                        compatColor(R.color.white),
+                                        compatColor(R.color.black),
+                                        elapsed
+                                    )
+                                    getHedvig.setTextColor(textColor)
 
-                                marketing_hedvig_logo.alpha = translation.animatedFraction
-                                storyProgressIndicatorContainer.alpha = translation.animatedFraction
+                                    marketing_hedvig_logo.alpha = translation.animatedFraction
+                                    storyProgressIndicatorContainer.alpha =
+                                        translation.animatedFraction
 
-                                val blurBackgroundColor = boundedColorLerp(
-                                    compatColor(R.color.blur_white),
-                                    compatColor(R.color.transparent_white),
-                                    translation.animatedFraction
-                                )
-                                blurOverlay.setBackgroundColor(blurBackgroundColor)
+                                    val blurBackgroundColor = boundedColorLerp(
+                                        compatColor(R.color.blur_white),
+                                        compatColor(R.color.transparent_white),
+                                        translation.animatedFraction
+                                    )
+                                    blurOverlay.setBackgroundColor(blurBackgroundColor)
+                                }
+                                doOnEnd {
+                                    marketingStoriesViewModel.unblur()
+                                }
+                                start()
                             }
-                            doOnEnd {
-                                marketingStoriesViewModel.unblur()
-                            }
-                            start()
-                        }
                         true
                     }
                     else -> {

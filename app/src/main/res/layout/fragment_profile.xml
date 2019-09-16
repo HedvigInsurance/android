@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/light_gray" />
+                android:background="@color/separator" />
 
         </LinearLayout>
 

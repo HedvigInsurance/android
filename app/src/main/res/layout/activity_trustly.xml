@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
             android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
-            android:textColor="@color/purple"
+            android:textColor="@color/link_purple"
             app:layout_constraintBottom_toTopOf="@id/explainerTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,11 +66,10 @@
 
         <Button
             android:id="@+id/explainerButton"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_quintuple"
-            android:backgroundTint="@color/purple"
             android:text="@string/ONBOARDING_CONNECT_DD_CTA"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

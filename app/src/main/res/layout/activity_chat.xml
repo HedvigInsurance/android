@@ -29,16 +29,19 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
             android:padding="@dimen/base_margin"
+            android:tint="@color/icon_tint"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_close"
             tools:visibility="visible" />
 
+        <!-- TODO: Content Description -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/hedvig_logo_margin_top"
             android:contentDescription="@null"
+            android:tint="@color/icon_tint"
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
@@ -50,6 +53,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/CHAT_RESTART_CONTENT_DESCRIPTION"
             android:padding="@dimen/base_margin_half"
+            android:tint="@color/icon_tint"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_restart_gray"
             tools:visibility="visible" />

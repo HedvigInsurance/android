@@ -22,6 +22,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/NEWS_CLOSE_DESCRIPTION"
             android:padding="@dimen/base_margin_half"
+            android:tint="@color/icon_tint"
             app:srcCompat="@drawable/ic_close" />
 
         <TextView
@@ -49,13 +50,12 @@
 
     <Button
         android:id="@+id/proceed"
-        style="@style/HedvigButton"
+        style="@style/HedvigButton.Purple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
-        android:backgroundTint="@color/purple"
         tools:text="Nästa" />
 
 </LinearLayout>
