@@ -3,8 +3,11 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
+import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.service.TextKeys
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
@@ -23,7 +26,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
-class MainApplication : Application() {
+class HedvigApplication : Application() {
     val apolloClientWrapper: ApolloClientWrapper by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
 
@@ -33,11 +36,24 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .getString(
+                SettingsActivity.SETTING_THEME,
+                Theme.SYSTEM_DEFAULT.toString()
+            )?.let { themeSetting ->
+                Theme.from(
+                    themeSetting
+                )
+                    .apply()
+            }
+
         AndroidThreeTen.init(this)
 
         startKoin {
             androidLogger()
-            androidContext(this@MainApplication)
+            androidContext(this@HedvigApplication)
             modules(
                 listOf(
                     applicationModule,
@@ -49,7 +65,10 @@ class MainApplication : Application() {
             )
         }
 
-        if (getAuthenticationToken() == null && !getStoredBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN)) {
+        if (getAuthenticationToken() == null && !getStoredBoolean(
+                SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
+            )
+        ) {
             tryToMigrateTokenFromReactDB()
         }
 
@@ -100,7 +119,11 @@ class MainApplication : Application() {
         val versionSharedPreferences =
             getSharedPreferences(LAST_OPENED_VERSION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
         if (versionSharedPreferences.contains(LAST_OPENED_VERSION)) {
-            if (versionSharedPreferences.getInt(LAST_OPENED_VERSION, 0) != BuildConfig.VERSION_CODE) {
+            if (versionSharedPreferences.getInt(
+                    LAST_OPENED_VERSION,
+                    0
+                ) != BuildConfig.VERSION_CODE
+            ) {
                 getSharedPreferences("Restrings", Context.MODE_PRIVATE)
                     .edit()
                     .clear()

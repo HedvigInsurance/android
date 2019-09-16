@@ -20,6 +20,7 @@ import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ReferralBottomSheet
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
@@ -103,9 +104,11 @@ class LoggedInActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
-            LoggedInTabs.CLAIMS,
-            LoggedInTabs.PROFILE -> {
+            LoggedInTabs.CLAIMS -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+            }
+            LoggedInTabs.PROFILE -> {
+                menuInflater.inflate(R.menu.profile_settings_menu, menu)
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
@@ -117,11 +120,13 @@ class LoggedInActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
-            LoggedInTabs.CLAIMS,
-            LoggedInTabs.PROFILE -> {
+            LoggedInTabs.CLAIMS -> {
                 claimsViewModel.triggerFreeTextChat {
                     startClosableChat()
                 }
+            }
+            LoggedInTabs.PROFILE -> {
+                startActivity(SettingsActivity.newInstance(this))
             }
             LoggedInTabs.REFERRALS -> {
                 (profileViewModel.data.value?.referralInformation?.campaign?.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
