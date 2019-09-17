@@ -12,11 +12,11 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <!-- TODO: Content Description -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
+            android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
             android:src="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
