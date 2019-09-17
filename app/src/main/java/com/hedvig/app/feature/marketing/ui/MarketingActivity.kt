@@ -22,8 +22,6 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.hideStatusBar
-import com.hedvig.app.util.extensions.setDarkNavigationBar
-import com.hedvig.app.util.extensions.setLightNavigationBar
 import com.hedvig.app.util.extensions.showStatusBar
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
@@ -36,22 +34,9 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class MarketingActivity : BaseActivity() {
+    private val tracker: MarketingTracker by inject()
 
-    enum class MarketingResult {
-        ONBOARD,
-        LOGIN;
-
-        override fun toString(): String {
-            return when (this) {
-                ONBOARD -> "onboard"
-                LOGIN -> "login"
-            }
-        }
-    }
-
-    val tracker: MarketingTracker by inject()
-
-    val marketingStoriesViewModel: MarketingStoriesViewModel by viewModel()
+    private val marketingStoriesViewModel: MarketingStoriesViewModel by viewModel()
 
     private var buttonsAnimator: ValueAnimator? = null
     private var blurDismissAnimator: ValueAnimator? = null
@@ -305,12 +290,10 @@ class MarketingActivity : BaseActivity() {
 
     private fun setupSystemDecoration() {
         hideStatusBar()
-        setDarkNavigationBar()
     }
 
     private fun cleanupSystemDecoration() {
         showStatusBar()
-        setLightNavigationBar()
     }
 
     companion object {

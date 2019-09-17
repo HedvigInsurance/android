@@ -12,4 +12,5 @@
     <item name="hedvig_logo_weak_tint" type="color">@color/gray</item>
     <item name="link_purple" type="color">@color/purple</item>
     <item name="separator" type="color">@color/gray</item>
+    <item name="offer_background" type="color">@color/dark_purple</item>
 </resources>
