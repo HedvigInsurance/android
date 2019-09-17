@@ -39,7 +39,7 @@ class WhatsNewRepository(
 
     private fun latestSeenNews() = context
         .getSharedPreferences(WHATS_NEW_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        .getString(LAST_NEWS_SEEN, VERSION_BEFORE_NEWS_WERE_RELEASED)
+        .getString(LAST_NEWS_SEEN, VERSION_BEFORE_NEWS_WERE_RELEASED) as String
 
     companion object {
         private const val WHATS_NEW_SHARED_PREFERENCES = "whats_new"

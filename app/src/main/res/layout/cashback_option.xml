@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_triple"
+            android:layout_marginTop="@dimen/base_margin_double"
             android:theme="@style/Headline.Small"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

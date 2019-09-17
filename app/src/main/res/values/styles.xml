@@ -11,6 +11,8 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
+    <style name="Hedvig.Theme.Marketing" />
+
     <style name="Hedvig.Theme.Offer" />
 
     <style name="Hedvig.Theme.Splash">
@@ -99,7 +101,7 @@
     </style>
 
     <style name="HedvigButton.Purple">
-        <item name="android:backgroundTint">@color/purple</item>
+        <item name="android:backgroundTint">@color/link_purple</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
@@ -185,22 +187,29 @@
         <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
 
-    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
+    </style>
+
+    <style name="NoTitleBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
+        <item name="bottomSheetStyle">@style/NoTitleBottomSheet</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
+    </style>
+
+    <style name="PerilBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
+        <item name="bottomSheetStyle">@style/PerilBottomSheet</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
+    </style>
 
     <style name="CircularToolbarTheme" parent="AppTheme.PopupOverlay">
         <item name="android:fontFamily">@font/circular_medium</item>
     </style>
 
-    <style name="PerilBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
-        <item name="bottomSheetStyle">@style/PerilBottomSheet</item>
-    </style>
-
     <style name="PerilBottomSheet">
         <item name="android:background">@drawable/peril_bottom_sheet_background</item>
-    </style>
-
-    <style name="NoTitleBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
-        <item name="bottomSheetStyle">@style/NoTitleBottomSheet</item>
     </style>
 
     <style name="NoTitleBottomSheet">

@@ -40,33 +40,11 @@ allprojects {
         maven {
             url 'https://jitpack.io'
         }
+/*
         maven {
             url "https://dl.bintray.com/hedvig/restring"
         }
-    }
-}
-
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')) {
-            android {
-                compileSdkVersion 28
-                defaultConfig {
-                    targetSdkVersion 28
-                }
-                buildTypes {
-                    debug {
-
-                    }
-                    staging {
-
-                    }
-                    release {
-
-                    }
-                }
-            }
-        }
+*/
     }
 }
 

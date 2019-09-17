@@ -29,7 +29,7 @@
             android:layout_marginEnd="@dimen/base_margin"
             android:autoLink="web"
             android:background="@drawable/chat_message_hedvig"
-            android:backgroundTint="@color/purple"
+            android:backgroundTint="@color/link_purple"
             android:linksClickable="true"
             android:paddingStart="@dimen/base_margin_double"
             android:paddingTop="@dimen/base_margin"

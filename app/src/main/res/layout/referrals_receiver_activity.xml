@@ -46,20 +46,13 @@
 
         <Button
             android:id="@+id/referralReceiverContinueButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/referral_receiver_continue_button_height"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="@drawable/button_primary"
-            android:backgroundTint="@color/purple"
-            android:fontFamily="@font/circular_book"
             android:paddingLeft="@dimen/referral_receiver_continue_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_button_padding_edge"
             android:text="@string/REFERRAL_STARTSCREEN_BTN_CTA"
-            android:textAllCaps="false"
-            android:textColor="@color/off_white"
-            android:textSize="@dimen/text_medium"
             app:layout_constraintBottom_toTopOf="@id/login"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

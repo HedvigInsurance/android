@@ -127,7 +127,7 @@ fun Context.copyToClipboard(
     text: String
 ) {
     (getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
-        ?.primaryClip = ClipData.newPlainText(null, text)
+        ?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
 fun Context.makeToast(

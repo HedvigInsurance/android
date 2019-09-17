@@ -24,8 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/referrals_button_bottom_margin"
-        android:background="@drawable/button_primary"
-        android:backgroundTint="@color/purple"
         android:text="@string/REFERRAL_SHAREINVITE"
         android:visibility="gone" />
 
