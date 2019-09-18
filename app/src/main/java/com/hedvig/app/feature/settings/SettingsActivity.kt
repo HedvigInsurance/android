@@ -7,11 +7,15 @@ import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.preferenceContainer, PreferenceFragment())
