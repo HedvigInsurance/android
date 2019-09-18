@@ -77,6 +77,10 @@ class DevelopmentActivity : AppCompatActivity() {
             startActivity(TrustlyActivity.newInstance(this, true))
         }
 
+        findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {
+            startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+        }
+
         findViewById<TextInputEditText>(R.id.token).setText(getAuthenticationToken())
 
         findViewById<Button>(R.id.saveToken).setHapticClickListener {

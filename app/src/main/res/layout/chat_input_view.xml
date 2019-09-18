@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/base_margin"
         android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ImageView
             android:id="@+id/uploadFile"
@@ -73,15 +73,14 @@
         android:padding="@dimen/base_margin_double"
         android:visibility="gone" />
 
-    <com.airbnb.lottie.LottieAnimationView
+    <ImageView
         android:id="@+id/paragraphView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:contentDescription="@null"
         android:visibility="gone"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/hedvig_typing_animation_2"
+        app:srcCompat="@drawable/animation_typing"
         tools:visibility="visible" />
 
     <com.hedvig.app.feature.chat.ui.AudioRecorderView

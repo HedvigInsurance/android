@@ -13,4 +13,5 @@
     <item name="link_purple" type="color">@color/purple</item>
     <item name="separator" type="color">@color/gray</item>
     <item name="offer_background" type="color">@color/dark_purple</item>
+    <item name="foreground_gray" type="color">@color/semi_light_gray</item>
 </resources>
