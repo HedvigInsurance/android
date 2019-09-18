@@ -12,6 +12,7 @@ import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -79,6 +80,10 @@ class DevelopmentActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {
             startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.openSettings).setHapticClickListener {
+            startActivity(SettingsActivity.newInstance(this))
         }
 
         findViewById<TextInputEditText>(R.id.token).setText(getAuthenticationToken())

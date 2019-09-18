@@ -71,6 +71,16 @@ fun lightenColor(@ColorInt color: Int, factor: Float): Int {
     return ColorUtils.HSLToColor(hsl)
 }
 
+@ColorInt
+fun darkenColor(@ColorInt color: Int, factor: Float): Int {
+    val hsl = FloatArray(3)
+    ColorUtils.colorToHSL(color, hsl)
+    hsl[2] -= factor
+    hsl[2] = max(0f, min(hsl[2], 1f))
+
+    return ColorUtils.HSLToColor(hsl)
+}
+
 enum class LightClass {
     DARK,
     LIGHT

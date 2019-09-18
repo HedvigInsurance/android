@@ -16,7 +16,8 @@ class WelcomeDialog : DismissablePager() {
 
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissablePagerPage> by lazy {
-        arguments!!.getParcelableArrayList<DismissablePagerPage>(ITEMS)!!
+        arguments!!.getParcelableArrayList<DismissablePagerPage>(ITEMS)
+            ?: throw Error("Cannot create a WelcomeDialog without any items")
     }
 
     override fun onDismiss() {
