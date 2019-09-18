@@ -5,9 +5,10 @@
     android:id="@+id/referralSuccessRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_purple"
+    android:background="@color/offer_background"
     android:gravity="center_horizontal|bottom"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".feature.referrals.ReferralsSuccessfulInviteActivity">
 
     <ImageView
         android:id="@+id/referralSuccessImage"
@@ -21,7 +22,7 @@
 
     <TextView
         android:id="@+id/referralSuccessTitle"
-        style="@style/Headline.Large.Negative"
+        style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -29,19 +30,21 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:gravity="center"
+        android:textColor="@color/white"
         android:visibility="gone"
         tools:text="@string/REFERRAL_SUCCESS_HEADLINE"
         tools:visibility="visible" />
 
     <TextView
         android:id="@+id/referralSuccessBody"
-        style="@style/Body.Regular.Negative"
+        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:gravity="center"
+        android:textColor="@color/off_white"
         android:visibility="gone"
         tools:text="@string/REFERRAL_SUCCESS_BODY"
         tools:visibility="visible" />
@@ -58,7 +61,7 @@
 
     <TextView
         android:id="@+id/referralUltimateSuccessTitle"
-        style="@style/Headline.Large.Negative"
+        style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -66,18 +69,20 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:gravity="center"
+        android:textColor="@color/white"
         android:visibility="gone"
         tools:text="@string/REFERRAL_ULTIMATE_SUCCESS_TITLE" />
 
     <TextView
         android:id="@+id/referralUltimateSuccessBody"
-        style="@style/Body.Regular.Negative"
+        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:gravity="center"
+        android:textColor="@color/off_white"
         android:visibility="gone"
         tools:text="@string/REFERRAL_SUCCESS_BODY" />
 
@@ -98,6 +103,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/dark_purple"
+        android:backgroundTint="@color/offer_background"
         android:text="@string/REFERRAL_SUCCESS_BTN_CLOSE" />
 </LinearLayout>

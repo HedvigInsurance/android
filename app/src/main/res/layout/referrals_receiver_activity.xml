@@ -17,7 +17,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:src="@drawable/ic_hedvig_wordmark" />
+            android:src="@drawable/ic_hedvig_wordmark"
+            android:tint="@color/icon_tint" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -59,20 +60,17 @@
 
         <Button
             android:id="@+id/referralReceiverContinueWithoutButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/HedvigButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/referral_receiver_continue_without_button_height"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginBottom="@dimen/base_margin_quadruple"
-            android:background="@drawable/button_primary"
             android:backgroundTint="@color/light_gray"
-            android:fontFamily="@font/circular_book"
             android:paddingLeft="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:text="@string/REFERRAL_STARTSCREEN_BTN_SKIP"
-            android:textAllCaps="false"
-            android:textColor="@color/text_emphasized"
+            android:textColor="@color/off_black_dark"
             android:textSize="@dimen/text_medium" />
 
     </LinearLayout>
