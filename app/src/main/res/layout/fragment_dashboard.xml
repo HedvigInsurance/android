@@ -37,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:textColor="@color/off_black_dark"
                 tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
 
             <TextView
@@ -48,6 +49,7 @@
                 android:layout_marginTop="@dimen/base_margin"
                 android:fontFamily="@font/circular_book"
                 android:gravity="center"
+                android:textColor="@color/off_black"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
             <Button
