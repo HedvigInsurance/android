@@ -58,12 +58,13 @@
 
             <Button
                 android:id="@+id/offerToolbarSign"
-                style="@style/HedvigButton.Small.Negative"
+                style="@style/HedvigButton.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:drawableEnd="@drawable/ic_bank_id_small"
-                android:text="@string/OFFER_BANKID_SIGN_BUTTON" />
+                android:text="@string/OFFER_BANKID_SIGN_BUTTON"
+                android:textColor="@color/off_black_dark" />
 
             <ImageView
                 android:id="@+id/offerChatButton"

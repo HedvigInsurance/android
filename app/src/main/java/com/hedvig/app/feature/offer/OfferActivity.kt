@@ -284,9 +284,9 @@ class OfferActivity : BaseActivity() {
         safeLet(prevNetPremium, newNetPremium) { p, n ->
             if (p != n) {
                 val colors = if (p > n) {
-                    Pair(compatColor(R.color.off_black_dark), compatColor(R.color.pink))
+                    Pair(compatColor(R.color.text_emphasized), compatColor(R.color.pink))
                 } else {
-                    Pair(compatColor(R.color.pink), compatColor(R.color.off_black_dark))
+                    Pair(compatColor(R.color.pink), compatColor(R.color.text_emphasized))
                 }
                 ValueAnimator.ofInt(p, n).apply {
                     duration = 1000

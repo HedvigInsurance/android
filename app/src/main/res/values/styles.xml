@@ -245,6 +245,8 @@
         <item name="colorAccent">@color/link_purple</item>
         <item name="android:background">@drawable/background_rounded_corners</item>
         <item name="android:fontFamily">@font/circular_book</item>
+        <item name="android:textColor">@color/text_regular</item>
+        <item name="android:textColorPrimary">@color/text_regular</item>
     </style>
 
 
