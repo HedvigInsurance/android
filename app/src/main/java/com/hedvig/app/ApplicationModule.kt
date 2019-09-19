@@ -2,7 +2,6 @@ package com.hedvig.app
 
 import android.content.Context
 import android.os.Build
-import android.os.LocaleList
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
@@ -95,7 +94,7 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", makeUserAgent())
+                        .header("User-Agent", makeUserAgent(get()))
                         .build()
                 )
             }
@@ -104,7 +103,7 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("Accept-Language", makeLocaleString())
+                        .header("Accept-Language", makeLocaleString(get()))
                         .build()
                 )
             }
@@ -124,13 +123,16 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent() =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+fun makeUserAgent(context: Context) =
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(context).language})"
 
-fun makeLocaleString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    LocaleList.getDefault().toLanguageTags()
+fun makeLocaleString(context: Context): String =
+    getLocale(context).toLanguageTag()
+
+fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    context.resources.configuration.locales.get(0)
 } else {
-    Locale.getDefault().toLanguageTag()
+    context.resources.configuration.locale
 }
 
 val viewModelModule = module {
