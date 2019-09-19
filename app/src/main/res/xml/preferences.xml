@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/SETTINGS_DISPLAY_TITLE">
+
+        <ListPreference
+            app:dialogTitle="@string/SETTINGS_THEME_DIALOG_TITLE"
+            app:entries="@array/theme_settings"
+            app:entryValues="@array/theme_settings_values"
+            app:key="theme"
+            app:title="@string/SETTINGS_THEME_TITLE"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

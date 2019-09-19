@@ -46,30 +46,6 @@ allprojects {
     }
 }
 
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')) {
-            android {
-                compileSdkVersion 28
-                defaultConfig {
-                    targetSdkVersion 28
-                }
-                buildTypes {
-                    debug {
-
-                    }
-                    staging {
-
-                    }
-                    release {
-
-                    }
-                }
-            }
-        }
-    }
-}
-
 ext {
     defaultLanguage = "sv_SE"
     excludedLanguages = ["en_SE"]

@@ -12,7 +12,9 @@ import android.widget.FrameLayout
 import com.bumptech.glide.Glide
 import com.hedvig.app.R
 import com.hedvig.app.ui.view.HedvigCardView
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.show
@@ -79,7 +81,11 @@ class PerilCategoryView : HedvigCardView {
                 else -> R.drawable.ic_family
             }
 
-            catIcon.setImageDrawable(context.compatDrawable(icon))
+            catIcon.setImageDrawable(context.compatDrawable(icon)?.apply {
+                if (context.isDarkThemeActive) {
+                    setTint(context.compatColor(R.color.icon_tint))
+                }
+            })
         }
 
     var title: CharSequence? = null

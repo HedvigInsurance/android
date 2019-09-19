@@ -9,9 +9,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.CustomTypefaceSpan
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatFont
-import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.concat
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
@@ -28,11 +26,13 @@ class CoinsuredActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coinsured)
 
-        setupLargeTitle(R.string.PROFILE_COINSURED_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(
+            R.string.PROFILE_COINSURED_TITLE,
+            R.font.circular_bold,
+            R.drawable.ic_back
+        ) {
             onBackPressed()
         }
-
-        coinsuredSphere.drawable.compatSetTint(compatColor(R.color.purple))
 
         loadData()
     }
@@ -56,7 +56,12 @@ class CoinsuredActivity : BaseActivity() {
                     1,
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                 )
-                partTwo.setSpan(AbsoluteSizeSpan(16, true), 0, label.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                partTwo.setSpan(
+                    AbsoluteSizeSpan(16, true),
+                    0,
+                    label.length,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
 
                 sphereText.text = partOne.concat(partTwo)
             }

@@ -21,6 +21,9 @@ import com.hedvig.app.feature.chat.SingleSelect
 import com.hedvig.app.feature.chat.SingleSelectChoiceType
 import com.hedvig.app.feature.chat.TextInput
 import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.util.extensions.avdSetLooping
+import com.hedvig.app.util.extensions.avdStart
+import com.hedvig.app.util.extensions.avdStop
 import com.hedvig.app.util.extensions.children
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.dismissKeyboard
@@ -35,7 +38,11 @@ class ChatInputView : FrameLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(context, attributeSet, defStyle)
+    constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
+        context,
+        attributeSet,
+        defStyle
+    )
 
     private lateinit var tracker: ChatTracker
     private lateinit var sendTextMessage: ((String) -> Unit)
@@ -72,7 +79,11 @@ class ChatInputView : FrameLayout {
                 performTextMessageSend()
                 return@setOnEditorActionListener true
             }
-            if (actionId == EditorInfo.IME_NULL && event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+            if (
+                actionId == EditorInfo.IME_NULL
+                && event.action == KeyEvent.ACTION_UP
+                && event.keyCode == KeyEvent.KEYCODE_ENTER
+            ) {
                 performTextMessageSend()
                 return@setOnEditorActionListener true
             }
@@ -88,6 +99,7 @@ class ChatInputView : FrameLayout {
             inputText.clearFocus()
             openSendGif()
         }
+        paragraphView.avdSetLooping()
 
         hideAllViews()
     }
@@ -128,7 +140,12 @@ class ChatInputView : FrameLayout {
         when (currentlyDisplaying) {
             is TextInput -> textInputContainer.fadeOut(fadeIn)
             is SingleSelect -> singleSelectContainer.fadeOut(fadeIn)
-            is ParagraphInput -> paragraphView.fadeOut(fadeIn)
+            is ParagraphInput -> {
+                paragraphView.fadeOut(endAction = {
+                    paragraphView.avdStop()
+                    fadeIn()
+                })
+            }
             is Audio -> audioRecorder.fadeOut(fadeIn)
             is NullInput -> fadeIn()
         }
@@ -192,9 +209,17 @@ class ChatInputView : FrameLayout {
         }
     }
 
-    private fun inflateSingleSelectButton(label: String, value: String, type: SingleSelectChoiceType) {
+    private fun inflateSingleSelectButton(
+        label: String,
+        value: String,
+        type: SingleSelectChoiceType
+    ) {
         val singleSelectButton =
-            layoutInflater.inflate(R.layout.chat_single_select_button, singleSelectContainer, false) as TextView
+            layoutInflater.inflate(
+                R.layout.chat_single_select_button,
+                singleSelectContainer,
+                false
+            ) as TextView
         singleSelectButton.text = label
         singleSelectButton.setHapticClickListener {
             tracker.singleSelect(label)
@@ -217,11 +242,14 @@ class ChatInputView : FrameLayout {
     }
 
     private fun bindParagraphInput() {
-        paragraphView.playAnimation()
+        paragraphView.avdStart()
     }
 
     fun rotateFileUploadIcon(isOpening: Boolean) {
-        SpringAnimation(uploadFile, DynamicAnimation.ROTATION).animateToFinalPosition(if (isOpening) 135f else 0f)
+        SpringAnimation(
+            uploadFile,
+            DynamicAnimation.ROTATION
+        ).animateToFinalPosition(if (isOpening) 135f else 0f)
     }
 
     private fun performTextMessageSend() {

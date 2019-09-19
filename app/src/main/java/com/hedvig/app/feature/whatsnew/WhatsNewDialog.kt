@@ -29,7 +29,7 @@ class WhatsNewDialog : DismissablePager() {
 
     override val tracker: WhatsNewTracker by inject()
     override val items: List<DismissablePagerPage> by lazy {
-        arguments!!.getParcelableArrayList<DismissablePagerPage>(PAGES) // Enforced by newInstance()
+        arguments!!.getParcelableArrayList<DismissablePagerPage>(PAGES)!! // Enforced by newInstance()
     }
 
     override fun onDismiss() {

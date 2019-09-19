@@ -46,7 +46,11 @@ class InvitesAdapter(
         }
         REFERRED_BY_HEADER,
         INVITE_HEADER -> SmallHeaderViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.referral_small_header_row, parent, false)
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.referral_small_header_row,
+                parent,
+                false
+            )
         )
         REFERRED_BY_ITEM,
         INVITE_ITEM -> ItemViewHolder(
@@ -129,10 +133,12 @@ class InvitesAdapter(
                 if (shouldShowEmptyState()) {
                     avatar.setImageDrawable(avatar.context.compatDrawable(R.drawable.ic_ghost))
                     name.text = name.resources.getString(R.string.REFERRAL_INVITE_EMPTYSTATE_TITLE)
-                    statusText.text = statusText.resources.getString(R.string.REFERRAL_INVITE_EMPTYSTATE_DESCRIPTION)
+                    statusText.text =
+                        statusText.resources.getString(R.string.REFERRAL_INVITE_EMPTYSTATE_DESCRIPTION)
                     statusIconContainer.remove()
                     emptyStateRow.show()
-                    emptyStateTitle.text = emptyStateTitle.resources.getString(R.string.REFERRAL_INVITE_TITLE)
+                    emptyStateTitle.text =
+                        emptyStateTitle.resources.getString(R.string.REFERRAL_INVITE_TITLE)
                     emptyStateTitle.show()
                 } else {
                     emptyStateRow.remove()
@@ -140,7 +146,8 @@ class InvitesAdapter(
                 }
             }
             INVITE_HEADER -> (viewHolder as? SmallHeaderViewHolder)?.apply {
-                headerTextView.text = headerTextView.resources.getString(R.string.REFERRAL_INVITE_TITLE)
+                headerTextView.text =
+                    headerTextView.resources.getString(R.string.REFERRAL_INVITE_TITLE)
             }
             INVITE_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
                 data.invitations?.getOrNull(position - 2)?.let { invite ->
@@ -164,7 +171,8 @@ class InvitesAdapter(
 
             }
             REFERRED_BY_HEADER -> (viewHolder as? SmallHeaderViewHolder)?.apply {
-                headerTextView.text = headerTextView.resources.getString(R.string.REFERRAL_REFERRED_BY_TITLE)
+                headerTextView.text =
+                    headerTextView.resources.getString(R.string.REFERRAL_REFERRED_BY_TITLE)
             }
             REFERRED_BY_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
                 when (val referredBy = data.referredBy) {
@@ -198,9 +206,13 @@ class InvitesAdapter(
 
             name.text = nameString
             statusText.text =
-                if (referredBy) statusText.resources.getString(R.string.REFERRAL_INVITE_INVITEDYOUSTATE) else statusText.resources.getString(
-                    R.string.REFERRAL_INVITE_NEWSTATE
-                )
+                if (referredBy) {
+                    statusText.resources.getString(R.string.REFERRAL_INVITE_INVITEDYOUSTATE)
+                } else {
+                    statusText.resources.getString(
+                        R.string.REFERRAL_INVITE_NEWSTATE
+                    )
+                }
 
             statusIconContainer.setBackgroundResource(R.drawable.background_rounded_corners)
             statusIconContainer.background.setTint(
@@ -275,7 +287,9 @@ class InvitesAdapter(
             totalDiscount += it.discount.amount.toBigDecimal().toInt()
         }
         data.invitations?.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
-            ?.forEach { receiver -> totalDiscount += receiver.discount.amount.toBigDecimal().toInt() }
+            ?.forEach { receiver ->
+                totalDiscount += receiver.discount.amount.toBigDecimal().toInt()
+            }
         return min(totalDiscount, monthlyCost)
     }
 
@@ -312,9 +326,11 @@ class InvitesAdapter(
 
     inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val progressTankView: ProgressTankView = view.discountView
-        val referralProgressHighPremiumContainer: LinearLayout = view.referralProgressHighPremiumContainer
+        val referralProgressHighPremiumContainer: LinearLayout =
+            view.referralProgressHighPremiumContainer
         val referralProgressHighPremiumDiscount: TextView = view.referralProgressHighPremiumDiscount
-        val referralProgressHighPremiumCurrentPrice: TextView = view.referralProgressHighPremiumCurrentPrice
+        val referralProgressHighPremiumCurrentPrice: TextView =
+            view.referralProgressHighPremiumCurrentPrice
         val subtitle: TextView = view.subtitle
         val explainer: TextView = view.explainer
         val code: TextView = view.code

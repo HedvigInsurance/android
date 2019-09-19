@@ -26,6 +26,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".VectorDrawableGalleryActivity"
+            android:label="Vector Drawable Gallery"
+            android:theme="@style/Hedvig.Theme" />
+
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
             android:value="@string/BRANCH_KEY" />

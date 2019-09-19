@@ -34,8 +34,10 @@
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:background="@drawable/background_edit_text_rounded_corners"
+        android:fontFamily="@font/circular_book"
         android:hint="@string/REFERRAL_ADDCOUPON_INPUTPLACEHOLDER"
         android:imeOptions="actionDone"
+        android:importantForAutofill="no"
         android:inputType="textNoSuggestions"
         android:lines="1"
         android:padding="@dimen/base_margin_double"
@@ -54,14 +56,13 @@
 
     <Button
         android:id="@+id/bottomSheetAddPromotionCodeButton"
-        style="@style/HedvigButton"
+        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/purple"
         android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
 
     <TextView

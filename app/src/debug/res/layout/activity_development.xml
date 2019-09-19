@@ -2,13 +2,13 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:context=".DevelopmentActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".DevelopmentActivity"
         tools:ignore="HardcodedText">
 
         <TextView
@@ -21,83 +21,93 @@
 
         <Button
             android:id="@+id/openWhatsNew"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open What's new screen" />
 
         <Button
             android:id="@+id/openNativeChat"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open native chat screen" />
 
         <Button
             android:id="@+id/openNativeOffer"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open native offer screen" />
 
         <Button
             android:id="@+id/openAlert"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open an alert" />
 
         <Button
             android:id="@+id/openLoggedIn"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open an logged in with Welcome Screen" />
 
         <Button
             android:id="@+id/openReferralReceiver"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open referral receiver" />
 
         <Button
             android:id="@+id/openReferralNotification"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open referral notification" />
 
         <Button
             android:id="@+id/openPostSignDD"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Open Post-sign Direct Debit screen" />
+
+        <Button
+            android:id="@+id/openVectorDrawableGallery"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open vector drawable gallery" />
+
+        <Button
+            android:id="@+id/openSettings"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open settings" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/ProfileField"
@@ -115,12 +125,11 @@
 
         <Button
             android:id="@+id/saveToken"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:backgroundTint="@color/purple"
             android:text="Save token" />
 
     </LinearLayout>

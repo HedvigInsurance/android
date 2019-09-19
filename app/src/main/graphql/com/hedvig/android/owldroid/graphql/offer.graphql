@@ -3,11 +3,13 @@ query Offer {
     status
     address
     personsInHousehold
-    insuredAtOtherCompany
+    previousInsurer {
+      displayName
+      switchable
+    }
     type
     presaleInformationUrl
     policyUrl
-    currentInsurerName
 
     arrangedPerilCategories {
       me {

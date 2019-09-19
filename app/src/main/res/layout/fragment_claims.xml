@@ -74,15 +74,13 @@
 
                 <Button
                     android:id="@+id/commonClaimCreateClaimButton"
-                    style="@style/HedvigButton"
+                    style="@style/HedvigButton.Purple"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:background="@drawable/button_primary"
                     android:text="@string/CLAIMS_CREATE_CLAIM_BUTTON_LABEL"
-                    app:backgroundTint="@color/purple"
-                    tools:backgroundTint="@color/purple"
                     tools:visibility="visible" />
 
                 <TextView

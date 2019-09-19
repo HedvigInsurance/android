@@ -11,7 +11,6 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -45,40 +44,36 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_double"
                 android:text="@string/PROFILE_FEEDBACK_REPORT_BUG"
                 android:theme="@style/ProfileFieldLabel" />
 
             <TextView
                 android:id="@id/bugReportEmail"
+                style="@style/Body.Regular.Link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/circular_book"
-                android:text="@string/bug_report_mail"
-                android:textColor="@color/purple"
-                android:textSize="16sp" />
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:text="@string/bug_report_mail" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="32dp"
                 android:text="@string/PROFILE_FEEDBACK_RATE_APP"
                 android:theme="@style/ProfileFieldLabel" />
 
             <TextView
                 android:id="@id/playLink"
+                style="@style/Body.Regular.Link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/circular_book"
-                android:text="@string/rate_us_link"
-                android:textColor="@color/purple"
-                android:textSize="16sp" />
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:text="@string/rate_us_link" />
 
         </LinearLayout>
 

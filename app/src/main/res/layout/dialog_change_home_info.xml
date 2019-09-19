@@ -7,7 +7,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white_light"
         android:minWidth="@dimen/dialog_width"
         android:minHeight="@dimen/dialog_height"
         android:paddingTop="20dp"
