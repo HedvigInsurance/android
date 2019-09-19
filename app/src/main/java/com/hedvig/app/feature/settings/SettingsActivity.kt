@@ -31,7 +31,7 @@ class SettingsActivity : BaseActivity() {
                 if (tp.value == null) {
                     tp.value = Theme.SYSTEM_DEFAULT.toString()
                 }
-                tp.setOnPreferenceChangeListener { preference, newValue ->
+                tp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->
                         Theme
                             .from(v)
@@ -41,11 +41,28 @@ class SettingsActivity : BaseActivity() {
                     true
                 }
             }
+
+            val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
+            languagePreference?.let { lp ->
+                if (lp.value == null) {
+                    lp.value = Language.SWEDISH.toString()
+                }
+                lp.setOnPreferenceChangeListener { _, newValue ->
+                    (newValue as? String)?.let { v ->
+                        Language
+                            .from(v)
+                            .apply(requireContext())
+                    }
+                    true
+                }
+            }
         }
     }
 
     companion object {
         const val SETTING_THEME = "theme"
+        const val SETTING_LANGUAGE = "language"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
+
