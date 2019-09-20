@@ -47,7 +47,6 @@ class SettingsActivity : BaseActivity() {
 
     companion object {
         const val SETTING_THEME = "theme"
-        const val SETTING_LANGUAGE = "language"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
