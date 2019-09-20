@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -24,7 +25,23 @@ class DevelopmentActivity : AppCompatActivity() {
 
     private val newsItem = WhatsNewQuery.News(
         "News",
-        WhatsNewQuery.Illustration("Icon", "/app-content-service/referrals_bonus_rain.svg"),
+        WhatsNewQuery.Illustration(
+            "Icon", WhatsNewQuery.Variants(
+                "IconVariants", WhatsNewQuery.Variants.Fragments(
+                    IconVariantsFragment(
+                        "IconVariants",
+                        IconVariantsFragment.Dark(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward_dark.svg"
+                        ),
+                        IconVariantsFragment.Light(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward.svg"
+                        )
+                    )
+                )
+            )
+        ),
         "Bonusregn till folket!",
         "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
     )

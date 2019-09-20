@@ -59,7 +59,7 @@ abstract class DismissablePager : DialogFragment() {
             title.show()
         }
 
-        pager.adapter = DismissablePagerAdapter(childFragmentManager, items)
+        pager.adapter = DismissablePagerAdapter(childFragmentManager, items, requireContext())
         pagerIndicator.pager = pager
         proceed.text = if (items.size > 1) {
             resources.getString(proceedLabel)

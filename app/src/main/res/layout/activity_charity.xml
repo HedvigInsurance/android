@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:contentDescription="@null"
-                    app:srcCompat="@drawable/icon_charity" />
+                    app:srcCompat="@drawable/ic_charity" />
 
                 <TextView
                     android:id="@id/selectCharityExplainer"

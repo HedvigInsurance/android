@@ -32,7 +32,8 @@ class BulletPointsAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val bulletPoint = bulletPoints[position]
         viewHolder.apply {
-            requestBuilder.load(Uri.parse(baseUrl + bulletPoint.iconUrl)).into(bulletPointIcon)
+            requestBuilder.load(Uri.parse(baseUrl + bulletPoint.iconUrls.iconByTheme(bulletPointIcon.context)))
+                .into(bulletPointIcon)
             bulletPointTitle.text = bulletPoint.title
             bulletPointDescription.text = bulletPoint.description
         }
