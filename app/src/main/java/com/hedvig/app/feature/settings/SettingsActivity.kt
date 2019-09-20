@@ -7,6 +7,7 @@ import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.SplashActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
@@ -31,7 +32,7 @@ class SettingsActivity : BaseActivity() {
                 if (tp.value == null) {
                     tp.value = Theme.SYSTEM_DEFAULT.toString()
                 }
-                tp.setOnPreferenceChangeListener { preference, newValue ->
+                tp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->
                         Theme
                             .from(v)
@@ -49,3 +50,4 @@ class SettingsActivity : BaseActivity() {
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
+

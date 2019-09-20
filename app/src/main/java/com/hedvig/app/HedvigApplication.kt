@@ -1,7 +1,6 @@
 package com.hedvig.app
 
 import android.app.Application
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo.rx2.Rx2Apollo
@@ -9,13 +8,11 @@ import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.service.TextKeys
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
-import com.ice.restring.Restring
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -31,8 +28,6 @@ class HedvigApplication : Application() {
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     private val disposables = CompositeDisposable()
-
-    private val textKeys: TextKeys by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -84,8 +79,6 @@ class HedvigApplication : Application() {
         }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
-        setupRestring()
     }
 
     private fun acquireHedvigToken() {
@@ -113,38 +106,5 @@ class HedvigApplication : Application() {
         instance.clearAndCloseDatabase()
         // Let's only try this once
         storeBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN, true)
-    }
-
-    private fun setupRestring() {
-        val versionSharedPreferences =
-            getSharedPreferences(LAST_OPENED_VERSION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        if (versionSharedPreferences.contains(LAST_OPENED_VERSION)) {
-            if (versionSharedPreferences.getInt(
-                    LAST_OPENED_VERSION,
-                    0
-                ) != BuildConfig.VERSION_CODE
-            ) {
-                getSharedPreferences("Restrings", Context.MODE_PRIVATE)
-                    .edit()
-                    .clear()
-                    .apply()
-            }
-        } else {
-            versionSharedPreferences
-                .edit()
-                .putInt(LAST_OPENED_VERSION, BuildConfig.VERSION_CODE)
-                .apply()
-        }
-        Restring.init(this)
-        try {
-            textKeys.refreshTextKeys()
-        } catch (exception: Exception) {
-            Timber.e(exception)
-        }
-    }
-
-    companion object {
-        private const val LAST_OPENED_VERSION_SHARED_PREFERENCES = "last_opened_version_prefs"
-        private const val LAST_OPENED_VERSION = "Last_opened_version"
     }
 }

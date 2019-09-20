@@ -59,11 +59,15 @@ class DashboardFragment : BaseTabFragment() {
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
     private val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
 
-    private val bottomNavigationHeight: Int by lazy { resources.getDimensionPixelSize(R.dimen.bottom_navigation_height) }
+    private val bottomNavigationHeight: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.bottom_navigation_height)
+    }
     private val halfMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_half) }
     private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
     private val tripleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_triple) }
-    private val perilTotalWidth: Int by lazy { resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2) }
+    private val perilTotalWidth: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2)
+    }
     private val rowWidth: Int by lazy {
         var margin = tripleMargin * 2 // perilCategoryView margin
         margin += halfMargin * 2 // strange padding in perilCategoryView
