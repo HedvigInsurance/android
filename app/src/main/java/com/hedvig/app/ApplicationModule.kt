@@ -168,7 +168,7 @@ val repositoriesModule = module {
     single { ReferralRepository(get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
-    single { WelcomeRepository(get()) }
+    single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
 }
 
