@@ -7,6 +7,7 @@ import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.SplashActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
@@ -37,21 +38,6 @@ class SettingsActivity : BaseActivity() {
                             .from(v)
                             .apply()
 
-                    }
-                    true
-                }
-            }
-
-            val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
-            languagePreference?.let { lp ->
-                if (lp.value == null) {
-                    lp.value = Language.SWEDISH.toString()
-                }
-                lp.setOnPreferenceChangeListener { _, newValue ->
-                    (newValue as? String)?.let { v ->
-                        Language
-                            .from(v)
-                            .apply(requireContext())
                     }
                     true
                 }

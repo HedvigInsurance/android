@@ -1,8 +1,8 @@
-query CommonClaim {
+query CommonClaim($locale: Locale!) {
   insurance {
     status
   }
-  commonClaims(locale: sv_SE) {
+  commonClaims(locale: $locale) {
     title
     icon {
       svgUrl

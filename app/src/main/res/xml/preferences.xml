@@ -13,14 +13,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/SETTINGS_LANGUAGE_TITLE">
-
-        <ListPreference
-            app:entries="@array/language_settings"
-            app:entryValues="@array/language_settings_values"
-            app:useSimpleSummaryProvider="true"
-            app:key="language" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>

@@ -47,7 +47,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.RemoteConfig
-import com.hedvig.app.service.TextKeys
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
@@ -124,7 +123,9 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(context).language})"
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
+        context
+    ).language})"
 
 fun makeLocaleString(context: Context): String =
     getLocale(context).toLanguageTag()
@@ -154,14 +155,13 @@ val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
     single { RemoteConfig() }
-    single { TextKeys(get()) }
     single { TabNotificationService(get()) }
 }
 
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { DirectDebitRepository(get()) }
-    single { ClaimsRepository(get()) }
+    single { ClaimsRepository(get(), get()) }
     single { DashboardRepository(get()) }
     single { MarketingStoriesRepository(get(), get(), get()) }
     single { ProfileRepository(get()) }
