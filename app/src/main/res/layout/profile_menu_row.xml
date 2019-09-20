@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/icon_my_home" />
+        tools:src="@drawable/ic_my_home" />
 
     <LinearLayout
         android:layout_width="wrap_content"

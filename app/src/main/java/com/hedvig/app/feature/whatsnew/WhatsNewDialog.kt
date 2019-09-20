@@ -12,6 +12,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissablepager.DismissablePager
 import com.hedvig.app.feature.dismissablepager.DismissablePagerPage
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.screenWidth
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -45,11 +46,11 @@ class WhatsNewDialog : DismissablePager() {
             arguments = Bundle().apply {
                 putParcelableArrayList(
                     PAGES,
-                    ArrayList(pages.map {
+                    ArrayList(pages.map { page ->
                         DismissablePagerPage(
-                            it.illustration.svgUrl,
-                            it.title,
-                            it.paragraph
+                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                            page.title,
+                            page.paragraph
                         )
                     })
                 )

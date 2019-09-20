@@ -16,7 +16,7 @@
         android:layout_height="@dimen/common_claim_icon_size"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:contentDescription="@null"
-        tools:src="@drawable/icon_charity" />
+        tools:src="@drawable/ic_charity" />
 
     <TextView
         android:id="@+id/commonClaimFirstMessage"

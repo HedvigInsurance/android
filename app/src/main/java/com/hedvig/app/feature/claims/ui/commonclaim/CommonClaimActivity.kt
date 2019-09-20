@@ -48,7 +48,7 @@ class CommonClaimActivity : BaseActivity() {
         appBarLayout.setExpanded(false, false)
 
         requestBuilder
-            .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrl))
+            .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrls.iconByTheme(this)))
             .into(commonClaimFirstMessageIcon)
 
         commonClaimFirstMessageContainer.setBackgroundColor(backgroundColor)
