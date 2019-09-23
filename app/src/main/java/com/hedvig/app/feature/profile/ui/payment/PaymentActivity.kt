@@ -20,6 +20,7 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -96,14 +97,21 @@ class PaymentActivity : BaseActivity() {
     }
 
     private fun bindNextPaymentCard(data: ProfileQuery.Data) {
+
         nextPaymentAmount.text =
-            "${data.chargeEstimation.charge.amount.toBigDecimal().toInt()} kr"
+            interpolateTextKey(
+                getString(R.string.PAYMENTS_CURRENT_PREMIUM),
+                "CURRENT_PREMIUM" to data.chargeEstimation.charge.amount.toBigDecimal().toInt()
+            )
 
         val discount = data.chargeEstimation.discount.amount.toBigDecimal().toInt()
         if (discount > 0) {
             nextPaymentGross.show()
             nextPaymentGross.text =
-                "${data.chargeEstimation.subscription.amount.toBigDecimal().toInt()} kr/mån"
+                interpolateTextKey(
+                    getString(R.string.PAYMENTS_FULL_PREMIUM),
+                    "FULL_PREMIUM" to data.chargeEstimation.subscription.amount.toBigDecimal().toInt()
+                )
         }
 
         when (data.insurance.status) {
@@ -112,7 +120,7 @@ class PaymentActivity : BaseActivity() {
             }
             InsuranceStatus.INACTIVE -> {
                 nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
-                nextPaymentDate.text = "Startdatum ej satt"
+                nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
             }
             else -> {
                 Timber.e(

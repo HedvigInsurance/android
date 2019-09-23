@@ -82,11 +82,12 @@
 
                         <TextView
                             android:id="@+id/nextPaymentLabel"
-                            style="@style/Body.Small.Negative"
+                            style="@style/Body.Small"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Nästa betalning" />
+                            android:text="@string/PAYMENTS_CARD_TITLE"
+                            android:textColor="@color/off_white"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
                             android:id="@+id/nextPaymentAmount"
@@ -99,9 +100,10 @@
 
                         <TextView
                             android:id="@+id/nextPaymentGross"
-                            style="@style/Body.Small.Negative"
+                            style="@style/Body.Small"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/off_white"
                             android:visibility="invisible"
                             app:layout_constraintTop_toBottomOf="@id/nextPaymentAmount"
                             tools:text="179 kr/mån"
@@ -146,7 +148,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/base_margin_double"
-                            tools:text="Datum" />
+                            android:text="@string/PAYMENTS_CARD_DATE" />
 
                         <View
                             android:layout_width="0dp"
@@ -169,7 +171,6 @@
                     </LinearLayout>
 
                 </LinearLayout>
-
 
             </com.hedvig.app.ui.view.HedvigCardView>
 
