@@ -2,7 +2,6 @@ package com.hedvig.app
 
 import android.content.Context
 import android.os.Build
-import android.os.LocaleList
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
@@ -49,7 +48,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.RemoteConfig
-import com.hedvig.app.service.TextKeys
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
@@ -96,7 +94,7 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", makeUserAgent())
+                        .header("User-Agent", makeUserAgent(get()))
                         .build()
                 )
             }
@@ -105,7 +103,7 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("Accept-Language", makeLocaleString())
+                        .header("Accept-Language", makeLocaleString(get()))
                         .build()
                 )
             }
@@ -125,13 +123,18 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent() =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+fun makeUserAgent(context: Context) =
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
+        context
+    ).language})"
 
-fun makeLocaleString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    LocaleList.getDefault().toLanguageTags()
+fun makeLocaleString(context: Context): String =
+    getLocale(context).toLanguageTag()
+
+fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    context.resources.configuration.locales.get(0)
 } else {
-    Locale.getDefault().toLanguageTag()
+    context.resources.configuration.locale
 }
 
 val viewModelModule = module {
@@ -153,21 +156,20 @@ val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
     single { RemoteConfig() }
-    single { TextKeys(get()) }
     single { TabNotificationService(get()) }
 }
 
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { DirectDebitRepository(get()) }
-    single { ClaimsRepository(get()) }
+    single { ClaimsRepository(get(), get()) }
     single { DashboardRepository(get()) }
     single { MarketingStoriesRepository(get(), get(), get()) }
     single { ProfileRepository(get()) }
     single { ReferralRepository(get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
-    single { WelcomeRepository(get()) }
+    single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
 }
 

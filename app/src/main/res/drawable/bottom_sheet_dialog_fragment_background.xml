@@ -5,12 +5,12 @@
             <corners
                 android:topLeftRadius="@dimen/bottom_sheet_corner_radius"
                 android:topRightRadius="@dimen/bottom_sheet_corner_radius" />
-            <solid android:color="@color/off_white" />
+            <solid android:color="@color/background_elevation_1" />
         </shape>
     </item>
     <item android:top="@dimen/bottom_sheet_dialog_fragment_title_height">
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
+            <solid android:color="@color/background_elevation_1" />
         </shape>
     </item>
 </layer-list>

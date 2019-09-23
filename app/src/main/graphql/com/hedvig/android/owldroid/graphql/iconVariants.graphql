@@ -1,0 +1,8 @@
+fragment IconVariantsFragment on IconVariants {
+  dark {
+    svgUrl
+  }
+  light {
+    svgUrl
+  }
+}

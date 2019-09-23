@@ -10,7 +10,9 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.util.darkenColor
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.startClosableChat
@@ -39,14 +41,24 @@ class EmergencyActivity : BaseActivity() {
 
         val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)
 
-        val backgroundColor = lightenColor(compatColor(data.color.mappedColor()), 0.3f)
+        val backgroundColor = if (isDarkThemeActive) {
+            darkenColor(compatColor(data.color.mappedColor()), 0.3f)
+        } else {
+            lightenColor(compatColor(data.color.mappedColor()), 0.3f)
+        }
         setupLargeTitle(data.title, R.font.circular_bold, R.drawable.ic_back, backgroundColor) {
             onBackPressed()
         }
         appBarLayout.setExpanded(false, false)
 
         requestBuilder
-            .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrl))
+            .load(
+                Uri.parse(
+                    BuildConfig.BASE_URL + data.iconUrls.iconByTheme(
+                        commonClaimFirstMessageIcon.context
+                    )
+                )
+            )
             .into(commonClaimFirstMessageIcon)
 
         commonClaimFirstMessageContainer.setBackgroundColor(backgroundColor)
@@ -91,9 +103,10 @@ class EmergencyActivity : BaseActivity() {
         private val GLOBAL_ASSISTANCE_URI = Uri.parse("tel:+4538489461")
         private const val EMERGENCY_DATA = "emergency_data"
 
-        fun newInstance(context: Context, data: EmergencyData) = Intent(context, EmergencyActivity::class.java).apply {
-            putExtra(EMERGENCY_DATA, data)
-        }
+        fun newInstance(context: Context, data: EmergencyData) =
+            Intent(context, EmergencyActivity::class.java).apply {
+                putExtra(EMERGENCY_DATA, data)
+            }
     }
 }
 

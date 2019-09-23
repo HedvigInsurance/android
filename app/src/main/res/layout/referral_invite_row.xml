@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/referral_row_height"
-    android:background="@color/white">
+    android:background="@color/background_elevation_1">
 
     <FrameLayout
         android:id="@+id/avatarContainer"
@@ -78,6 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin"
+            android:textColor="@color/off_black"
             tools:text="-10 kr" />
 
         <ImageView

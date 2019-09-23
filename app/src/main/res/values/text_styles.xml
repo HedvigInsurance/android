@@ -14,7 +14,7 @@
 
     <style name="Header">
         <item name="android:fontFamily">@font/soray_extrabold</item>
-        <item name="android:textColor">@color/off_black_dark</item>
+        <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
     <style name="Header.Large">
@@ -31,7 +31,7 @@
 
     <style name="Headline">
         <item name="android:fontFamily">@font/circular_bold</item>
-        <item name="android:textColor">@color/off_black_dark</item>
+        <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
     <style name="Headline.Large">
@@ -40,7 +40,7 @@
     </style>
 
     <style name="Headline.Large.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="Headline.Medium">
@@ -49,7 +49,7 @@
     </style>
 
     <style name="Headline.Medium.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="Headline.Small">
@@ -58,12 +58,12 @@
     </style>
 
     <style name="Headline.Small.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="Body">
         <item name="android:fontFamily">@font/circular_book</item>
-        <item name="android:textColor">@color/off_black</item>
+        <item name="android:textColor">@color/text_regular</item>
     </style>
 
     <style name="Body.Regular">
@@ -72,11 +72,11 @@
     </style>
 
     <style name="Body.Regular.Emphasized">
-        <item name="android:textColor">@color/off_black_dark</item>
+        <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
     <style name="Body.Regular.Link">
-        <item name="android:textColor">@color/purple</item>
+        <item name="android:textColor">@color/link_purple</item>
     </style>
 
     <style name="Body.Regular.Link.Caution">
@@ -92,7 +92,7 @@
     </style>
 
     <style name="Body.Regular.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="Body.Small">
@@ -101,7 +101,7 @@
     </style>
 
     <style name="Body.Small.Link">
-        <item name="android:textColor">@color/purple</item>
+        <item name="android:textColor">@color/link_purple</item>
     </style>
 
     <style name="Body.Small.Link.Caution">
@@ -117,7 +117,7 @@
     </style>
 
     <style name="Body.Small.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="Body.XSmall">
@@ -126,7 +126,7 @@
     </style>
 
     <style name="Body.XSmall.Negative">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_negative</item>
     </style>
 
     <style name="TabBar">

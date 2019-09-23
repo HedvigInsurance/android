@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/icon_my_home" />
+        tools:src="@drawable/ic_my_home" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -29,20 +29,16 @@
 
         <TextView
             android:id="@id/profile_menu_row_name"
+            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/circular_bold"
-            android:textColor="@color/black"
-            android:textSize="16sp"
             tools:text="Mitt hem" />
 
         <TextView
             android:id="@id/profile_menu_row_description"
+            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/circular_book"
-            android:textColor="@color/off_black"
-            android:textSize="14sp"
             tools:text="109 kr/månad - Betalas via autogiro" />
     </LinearLayout>
 

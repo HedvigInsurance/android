@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -12,6 +13,7 @@ import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -23,7 +25,23 @@ class DevelopmentActivity : AppCompatActivity() {
 
     private val newsItem = WhatsNewQuery.News(
         "News",
-        WhatsNewQuery.Illustration("Icon", "/app-content-service/referrals_bonus_rain.svg"),
+        WhatsNewQuery.Illustration(
+            "Icon", WhatsNewQuery.Variants(
+                "IconVariants", WhatsNewQuery.Variants.Fragments(
+                    IconVariantsFragment(
+                        "IconVariants",
+                        IconVariantsFragment.Dark(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward_dark.svg"
+                        ),
+                        IconVariantsFragment.Light(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward.svg"
+                        )
+                    )
+                )
+            )
+        ),
         "Bonusregn till folket!",
         "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
     )
@@ -75,6 +93,14 @@ class DevelopmentActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.openPostSignDD).setHapticClickListener {
             startActivity(TrustlyActivity.newInstance(this, true))
+        }
+
+        findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {
+            startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.openSettings).setHapticClickListener {
+            startActivity(SettingsActivity.newInstance(this))
         }
 
         findViewById<TextInputEditText>(R.id.token).setText(getAuthenticationToken())

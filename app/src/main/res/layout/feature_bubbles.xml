@@ -26,10 +26,11 @@
 
         <TextView
             android:id="@+id/deductibleBubbleTitle"
-            style="@style/Headline.Small.Negative"
+            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_TITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/deductibleBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,13 +39,14 @@
 
         <TextView
             android:id="@+id/deductibleBubbleText"
-            style="@style/Body.Small.Negative"
+            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
             android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,10 +72,11 @@
 
         <TextView
             android:id="@+id/bindingPeriodBubbleTitle"
-            style="@style/Headline.Small.Negative"
+            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_TITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/bindingPeriodBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,13 +85,14 @@
 
         <TextView
             android:id="@+id/bindingPeriodBubbleText"
-            style="@style/Body.Small.Negative"
+            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
             android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,12 +118,13 @@
 
         <TextView
             android:id="@+id/brfOrTravel"
-            style="@style/Body.Small.Negative"
+            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
+            android:textColor="@color/white"
             tools:text="Bostadsrätts-\ntillägg ingår" />
     </FrameLayout>
 
@@ -141,10 +146,11 @@
 
         <TextView
             android:id="@+id/startDateBubbleTitle"
-            style="@style/Headline.Small.Negative"
+            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_START_DATE_TITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/startDateBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -153,7 +159,7 @@
 
         <TextView
             android:id="@+id/startDateBubbleText"
-            style="@style/Body.Small.Negative"
+            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -161,6 +167,7 @@
             android:lineSpacingExtra="2sp"
             android:paddingStart="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -187,10 +194,11 @@
 
         <TextView
             android:id="@+id/amountInsuredBubbleTitle"
-            style="@style/Headline.Small.Negative"
+            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_INSURED_TITLE"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/amountInsuredBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -199,12 +207,13 @@
 
         <TextView
             android:id="@+id/amountInsuredBubbleText"
-            style="@style/Body.Small.Negative"
+            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -215,12 +224,12 @@
 
     <Button
         android:id="@+id/discountButton"
-        style="@style/SmallButton"
+        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/button_shadow_offset"
-        android:backgroundTint="@color/dark_purple"
+        android:backgroundTint="@color/offer_background"
         android:textColor="@color/off_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

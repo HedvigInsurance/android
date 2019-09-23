@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
     tools:context="com.hedvig.app.feature.profile.ui.payment.TrustlyActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
             android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
-            android:textColor="@color/purple"
+            android:textColor="@color/link_purple"
             app:layout_constraintBottom_toTopOf="@id/explainerTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,11 +66,10 @@
 
         <Button
             android:id="@+id/explainerButton"
-            style="@style/HedvigButton"
+            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_quintuple"
-            android:backgroundTint="@color/purple"
             android:text="@string/ONBOARDING_CONNECT_DD_CTA"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -181,7 +179,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:backgroundTint="@color/off_black_dark"
+                android:backgroundTint="@color/background_elevation_1"
                 android:text="@string/PROFILE_TRUSTLY_CLOSE"
                 app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
                 app:layout_constraintEnd_toEndOf="parent"
