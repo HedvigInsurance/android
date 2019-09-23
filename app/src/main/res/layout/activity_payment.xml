@@ -123,12 +123,14 @@
 
                             <TextView
                                 android:id="@+id/freeMonths"
-                                style="@style/Body.XSmall.Negative"
+                                style="@style/Body.XSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
+                                android:fontFamily="@font/circular_bold"
                                 android:gravity="center"
                                 android:lineSpacingExtra="0sp"
+                                android:textColor="@color/off_white"
                                 tools:text="3\nGratis\nmånader" />
 
 
@@ -244,7 +246,7 @@
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <TextView
                     android:id="@+id/campaignInformationTitle"
@@ -275,8 +277,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/PAYMENTS_CAMPAIGN_LFD"
                     android:visibility="gone"
-                    tools:text="Sista gratisdatum"
                     tools:visibility="visible" />
 
                 <TextView
@@ -295,9 +297,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/PAYMENTS_NO_STARTDATE_HELP_MESSAGE"
                     android:textColor="@color/gray"
                     android:visibility="gone"
-                    tools:text="När din gamla försäkring är uppsagd och vi har ett startdatum för din försäkring hos Hedvig kommer denna sektion uppdateras."
                     tools:visibility="visible" />
 
             </LinearLayout>
@@ -309,14 +311,14 @@
                 android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <TextView
                     style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/base_margin_double"
-                    tools:text="Tidigare betalningar" />
+                    android:text="@string/PAYMENTS_SUBTITLE_PREVIOUS_PAYMENTS" />
 
                 <LinearLayout
                     android:id="@+id/prevPaymentsList"
@@ -328,15 +330,16 @@
                     android:id="@+id/seePaymentHistory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:name="Se historik" />
+                    app:name="@string/PAYMENTS_BTN_HISTORY" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@id/paymentDetailsContainer"
+                android:id="@+id/paymentDetailsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible">
@@ -345,34 +348,41 @@
                     style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Betalningsmetod" />
+                    android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD" />
 
                 <TextView
-                    android:id="@+id/bankTitle"
-                    style="@style/Headline.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_BANK_LABEL" />
-
-                <TextView
-                    android:id="@id/bankName"
                     style="@style/Body.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    tools:text="SEB" />
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    android:text="@string/PAYMENTS_DIRECT_DEBIT" />
 
                 <TextView
-                    android:id="@id/accountNumber"
+                    android:id="@+id/directDebitStatus"
                     style="@style/Body.Regular.Emphasized"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin"
-                    tools:text="**** 8347" />
+                    tools:text="Aktivt" />
 
                 <TextView
-                    android:id="@id/bankAccountUnderChangeParagraph"
+                    android:id="@+id/accountNumberLabel"
+                    style="@style/Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:text="@string/PAYMENTS_SUBTITLE_ACCOUNT" />
+
+                <TextView
+                    android:id="@+id/accountNumber"
+                    style="@style/Body.Regular.Emphasized"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    tools:text="SEB **** 8347" />
+
+                <TextView
+                    android:id="@+id/bankAccountUnderChangeParagraph"
                     style="@style/Body.XSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -384,7 +394,7 @@
             </LinearLayout>
 
             <View
-                android:id="@id/separator"
+                android:id="@+id/separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
@@ -393,7 +403,7 @@
                 tools:visibility="visible" />
 
             <Button
-                android:id="@id/changeBankAccount"
+                android:id="@+id/changeBankAccount"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

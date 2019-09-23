@@ -52,6 +52,12 @@ query Profile {
     name
     paragraph
   }
+  redeemedCampaigns {
+    ... IncentiveFragment
+    owner {
+      displayName
+    }
+  }
   referralInformation {
     campaign {
       code
@@ -61,9 +67,6 @@ query Profile {
             amount
           }
         }
-      }
-      owner {
-        displayName
       }
     }
     referredBy {

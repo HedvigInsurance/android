@@ -30,11 +30,6 @@
     <item name="profile_payment_header" type="id" />
     <item name="sphere" type="id" />
     <item name="priceSphere" type="id" />
-    <item name="paymentDetailsContainer" type="id" />
-    <item name="bankContainer" type="id" />
-    <item name="bankName" type="id" />
-    <item name="accountNumber" type="id" />
-    <item name="changeBankAccount" type="id" />
     <item name="profile_payment_deductible_sphere" type="id" />
     <item name="profile_menu_row" type="id" />
     <item name="profile_menu_row_icon" type="id" />
@@ -72,7 +67,6 @@
     <item name="cashbackOptionParagraph" type="id" />
     <item name="cashbackOptions" type="id" />
     <item name="cashbackSelect" type="id" />
-    <item name="separator" type="id" />
     <item name="loadingAnimation" type="id" />
     <item name="aboutAppRow" type="id" />
     <item name="versionNumber" type="id" />
@@ -102,7 +96,6 @@
     <item name="licenseList" type="id" />
     <item name="emailInputContainer" type="id" />
     <item name="phoneNumberInputContainer" type="id" />
-    <item name="bankAccountUnderChangeParagraph" type="id" />
     <item name="profileReferralRow" type="id" />
     <item name="iconNavigateNext" type="id" />
     <item name="spring_scale_x" type="id" />

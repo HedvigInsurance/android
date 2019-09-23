@@ -3,6 +3,9 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
@@ -13,6 +16,7 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.concat
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -92,12 +96,15 @@ class PaymentActivity : BaseActivity() {
     private fun bindFailedPaymentsCard(data: ProfileQuery.Data) {
         if (data.balance.failedCharges != 0) {
             failedPaymentsCard.show()
-            failedPaymentsParagraph.text = "${data.balance.failedCharges}, ${data.nextChargeDate}"
+            failedPaymentsParagraph.text = interpolateTextKey(
+                getString(R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE),
+                "MONTHS_LATE" to data.balance.failedCharges,
+                "NEXT_PAYMENT_DATE" to data.nextChargeDate
+            )
         }
     }
 
     private fun bindNextPaymentCard(data: ProfileQuery.Data) {
-
         nextPaymentAmount.text =
             interpolateTextKey(
                 getString(R.string.PAYMENTS_CURRENT_PREMIUM),
@@ -129,18 +136,34 @@ class PaymentActivity : BaseActivity() {
             }
         }
 
-        (data.referralInformation.campaign.incentive as? IncentiveFragment.AsFreeMonths)?.let { fm ->
+        (
+            (data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+                as? IncentiveFragment.AsFreeMonths
+                )?.quantity)?.let { fm ->
+            val amount = SpannableString("$fm\n")
+            amount.setSpan(
+                AbsoluteSizeSpan(20, true),
+                0, fm.toString().length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            val label = SpannableString(
+                if (fm > 1) {
+                    getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                } else {
+                    getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                }
+            )
+            freeMonths.text = amount.concat(label)
             freeMonthsSphere.show()
-            freeMonths.text = fm.quantity.toString()
         }
     }
 
     private fun bindCampaignInformation(data: ProfileQuery.Data) {
-        when (val incentive = data.referralInformation.campaign.incentive) {
+        when (val incentive =
+            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
             is IncentiveFragment.AsFreeMonths -> {
-                campaignInformationTitle.text = "TODO"
-                campaignInformationLabelOne.text = "TODO"
-                data.referralInformation.campaign.owner?.displayName?.let { displayName ->
+                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
+                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_CAMPAIGN_OWNER)
+                data.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
                     campaignInformationFieldOne.text = displayName
                 }
 
@@ -164,10 +187,13 @@ class PaymentActivity : BaseActivity() {
                 campaignInformationContainer.show()
             }
             is IncentiveFragment.AsMonthlyCostDeduction -> {
-                campaignInformationTitle.text = "TODO"
-                campaignInformationLabelOne.text = "TODO"
+                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
+                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
                 incentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
-                    campaignInformationFieldOne.text = "-$amount kr"
+                    campaignInformationFieldOne.text = interpolateTextKey(
+                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
+                        "DISCOUNT" to amount
+                    )
                 }
                 campaignInformationContainer.show()
             }
@@ -217,10 +243,10 @@ class PaymentActivity : BaseActivity() {
         when (directDebitViewModel.data.value?.directDebitStatus ?: return) {
             DirectDebitStatus.ACTIVE -> {
                 paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
 
                 profileData.bankAccount?.let { bankAccount ->
-                    bankName.text = bankAccount.bankName
-                    accountNumber.text = bankAccount.descriptor
+                    accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
 
                     toggleBankInfo(true)
                 } ?: toggleBankInfo(false)
@@ -232,8 +258,7 @@ class PaymentActivity : BaseActivity() {
             DirectDebitStatus.PENDING -> {
                 paymentDetailsContainer.show()
 
-                profileData.bankAccount?.let { bankAccount ->
-                    bankName.text = bankAccount.bankName
+                profileData.bankAccount?.let {
                     accountNumber.text =
                         resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
 
@@ -259,12 +284,10 @@ class PaymentActivity : BaseActivity() {
 
     private fun toggleBankInfo(show: Boolean) {
         if (show) {
-            bankTitle.show()
-            bankName.show()
+            accountNumberLabel.show()
             accountNumber.show()
         } else {
-            bankTitle.remove()
-            bankName.remove()
+            accountNumberLabel.remove()
             accountNumber.remove()
         }
     }
