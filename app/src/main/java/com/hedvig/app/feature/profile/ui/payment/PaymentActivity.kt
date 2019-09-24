@@ -27,9 +27,16 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_payment.*
+import kotlinx.android.synthetic.main.campaign_information_section.*
+import kotlinx.android.synthetic.main.connect_bank_account_card.*
+import kotlinx.android.synthetic.main.failed_payments_card.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import kotlinx.android.synthetic.main.next_payment_card.*
+import kotlinx.android.synthetic.main.payment_details_section.*
+import kotlinx.android.synthetic.main.payment_history_section.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 
 class PaymentActivity : BaseActivity() {
@@ -86,10 +93,10 @@ class PaymentActivity : BaseActivity() {
                 bindPaymentHistory(pd.chargeHistory)
             }
 
-            bindBankAccountInformation()
+            bindPaymentDetails()
         }
         directDebitViewModel.data.observe(lifecycleOwner = this) {
-            bindBankAccountInformation()
+            bindPaymentDetails()
         }
     }
 
@@ -99,7 +106,7 @@ class PaymentActivity : BaseActivity() {
             failedPaymentsParagraph.text = interpolateTextKey(
                 getString(R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE),
                 "MONTHS_LATE" to data.balance.failedCharges,
-                "NEXT_PAYMENT_DATE" to data.nextChargeDate
+                "NEXT_PAYMENT_DATE" to data.nextChargeDate?.format(DATE_FORMAT)
             )
         }
     }
@@ -123,7 +130,7 @@ class PaymentActivity : BaseActivity() {
 
         when (data.insurance.status) {
             InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                nextPaymentDate.text = data.nextChargeDate.toString()
+                nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
             }
             InsuranceStatus.INACTIVE -> {
                 nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
@@ -170,7 +177,7 @@ class PaymentActivity : BaseActivity() {
                 when (data.insurance.status) {
                     InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
                         data.insurance.cost?.freeUntil?.let { freeUntil ->
-                            lastFreeDay.text = freeUntil.toString()
+                            lastFreeDay.text = freeUntil.format(DATE_FORMAT)
                         }
                         lastFreeDay.show()
                         lastFreeDayLabel.show()
@@ -185,6 +192,7 @@ class PaymentActivity : BaseActivity() {
                     }
                 }
                 campaignInformationContainer.show()
+                campaignInformationSeparator.show()
             }
             is IncentiveFragment.AsMonthlyCostDeduction -> {
                 campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
@@ -196,6 +204,7 @@ class PaymentActivity : BaseActivity() {
                     )
                 }
                 campaignInformationContainer.show()
+                campaignInformationSeparator.show()
             }
         }
     }
@@ -204,7 +213,80 @@ class PaymentActivity : BaseActivity() {
         if (paymentHistory.isEmpty()) {
             return
         }
+
+        paymentHistory.getOrNull(0)?.let { lastMonthsCharge ->
+            lastChargeDate.text = lastMonthsCharge.date.format(DATE_FORMAT)
+            lastChargeAmount.text = interpolateTextKey(
+                getString(R.string.PAYMENT_HISTORY_AMOUNT),
+                "AMOUNT" to lastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            )
+            lastChargeDate.show()
+            lastChargeAmount.show()
+        }
+
+        paymentHistory.getOrNull(1)?.let { prevLastMonthsCharge ->
+            prevLastChargeDate.text = prevLastMonthsCharge.date.format(DATE_FORMAT)
+            prevLastChargeAmount.text = interpolateTextKey(
+                getString(R.string.PAYMENT_HISTORY_AMOUNT),
+                "AMOUNT" to prevLastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            )
+
+            prevLastChargeDate.show()
+            prevLastChargeAmount.show()
+        }
+
         paymentHistoryContainer.show()
+
+        paymentHistorySeparator.show()
+    }
+
+    private fun bindPaymentDetails() {
+        val profileData = profileViewModel.data.value ?: return
+
+        when (directDebitViewModel.data.value?.directDebitStatus ?: return) {
+            DirectDebitStatus.ACTIVE -> {
+                paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
+
+                profileData.bankAccount?.let { bankAccount ->
+                    accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
+
+                    toggleBankInfo(true)
+                } ?: toggleBankInfo(false)
+
+
+                endSeparator.show()
+                changeBankAccount.show()
+            }
+            DirectDebitStatus.PENDING -> {
+                paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
+
+                profileData.bankAccount?.let {
+                    accountNumber.text =
+                        resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
+
+                    toggleBankInfo(true)
+                } ?: toggleBankInfo(false)
+
+
+                bankAccountUnderChangeParagraph.show()
+            }
+            DirectDebitStatus.NEEDS_SETUP -> {
+                paymentDetailsContainer.show()
+
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+
+                toggleBankInfo(false)
+                connectBankAccountCard.show()
+                connectBankAccountWithLink.show()
+            }
+            else -> {
+                Timber.e("Payment fragment direct debit status UNKNOWN!")
+            }
+        }
+
+        showRedeemCodeOnNoDiscount(profileData)
     }
 
     private fun connectDirectDebitWithLink() {
@@ -227,59 +309,20 @@ class PaymentActivity : BaseActivity() {
         lastFreeDayLabel.remove()
         lastFreeDay.remove()
         willUpdateWhenStartDateIsSet.remove()
+        campaignInformationSeparator.remove()
 
         paymentHistoryContainer.remove()
+        lastChargeDate.remove()
+        lastChargeAmount.remove()
+        prevLastChargeDate.remove()
+        prevLastChargeAmount.remove()
+        paymentHistorySeparator.remove()
 
-        connectBankAccountContainer.remove()
+        connectBankAccountCard.remove()
         changeBankAccount.remove()
-        separator.remove()
+        endSeparator.remove()
         bankAccountUnderChangeParagraph.remove()
         connectBankAccountWithLink.remove()
-    }
-
-    private fun bindBankAccountInformation() {
-        val profileData = profileViewModel.data.value ?: return
-
-        when (directDebitViewModel.data.value?.directDebitStatus ?: return) {
-            DirectDebitStatus.ACTIVE -> {
-                paymentDetailsContainer.show()
-                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
-
-                profileData.bankAccount?.let { bankAccount ->
-                    accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
-
-                    toggleBankInfo(true)
-                } ?: toggleBankInfo(false)
-
-
-                separator.show()
-                changeBankAccount.show()
-            }
-            DirectDebitStatus.PENDING -> {
-                paymentDetailsContainer.show()
-
-                profileData.bankAccount?.let {
-                    accountNumber.text =
-                        resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
-
-                    toggleBankInfo(true)
-                } ?: toggleBankInfo(false)
-
-
-                bankAccountUnderChangeParagraph.show()
-            }
-            DirectDebitStatus.NEEDS_SETUP -> {
-                paymentDetailsContainer.show()
-                toggleBankInfo(false)
-                connectBankAccountContainer.show()
-                connectBankAccountWithLink.show()
-            }
-            else -> {
-                Timber.e("Payment fragment direct debit status UNKNOWN!")
-            }
-        }
-
-        showRedeemCodeOnNoDiscount(profileData)
     }
 
     private fun toggleBankInfo(show: Boolean) {
@@ -299,5 +342,9 @@ class PaymentActivity : BaseActivity() {
         ) {
             redeemCode.show()
         }
+    }
+
+    companion object {
+        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL YYYY")
     }
 }

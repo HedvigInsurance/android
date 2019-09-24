@@ -53,6 +53,8 @@ class HedvigApplication : Application() {
                 listOf(
                     applicationModule,
                     viewModelModule,
+                    profileModule,
+                    directDebitModule,
                     serviceModule,
                     repositoriesModule,
                     trackerModule

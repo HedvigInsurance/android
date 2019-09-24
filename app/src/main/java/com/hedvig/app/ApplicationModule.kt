@@ -34,6 +34,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
@@ -51,6 +52,7 @@ import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
+import com.hedvig.app.viewmodel.DirectDebitViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -139,9 +141,7 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { DirectDebitViewModel(get()) }
     viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
@@ -150,6 +150,14 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { OfferViewModel(get()) }
+}
+
+val profileModule = module {
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+}
+
+val directDebitModule = module {
+    viewModel<DirectDebitViewModel> { DirectDebitViewModelImpl(get()) }
 }
 
 val serviceModule = module {

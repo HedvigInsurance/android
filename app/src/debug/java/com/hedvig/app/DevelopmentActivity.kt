@@ -1,8 +1,10 @@
 package com.hedvig.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
@@ -20,6 +22,8 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
 
 class DevelopmentActivity : AppCompatActivity() {
 
@@ -50,6 +54,11 @@ class DevelopmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_development)
 
+        initializeButtons()
+        initializeCheckboxes()
+    }
+
+    private fun initializeButtons() {
         findViewById<Button>(R.id.openWhatsNew).setHapticClickListener {
             WhatsNewDialog.newInstance(
                 listOf(
@@ -109,5 +118,32 @@ class DevelopmentActivity : AppCompatActivity() {
             setAuthenticationToken(findViewById<TextInputEditText>(R.id.token).text.toString())
             makeToast("Token saved")
         }
+    }
+
+    private fun initializeCheckboxes() {
+        val checkbox = findViewById<CheckBox>(R.id.useMockData)
+        checkbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                unloadKoinModules(REAL_MODULES)
+                loadKoinModules(mockProfileModule)
+                getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("useMockData", true)
+                    .apply()
+            } else {
+                unloadKoinModules(mockProfileModule)
+                loadKoinModules(REAL_MODULES)
+                getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("useMockData", false)
+                    .apply()
+            }
+        }
+        checkbox.isChecked = getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+            .getBoolean("useMockData", false)
+    }
+
+    companion object {
+        private val REAL_MODULES = listOf(profileModule, directDebitModule)
     }
 }

@@ -8,6 +8,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.setupLargeTitle
 import kotlinx.android.synthetic.main.activity_payment_history.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -17,6 +18,14 @@ class PaymentHistoryActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_history)
+
+        setupLargeTitle(
+            R.string.PAYMENT_HISTORY_TITLE,
+            R.font.circular_bold,
+            R.drawable.ic_back,
+            backAction = {
+                onBackPressed()
+            })
 
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
             data?.chargeHistory?.let { chargeHistory ->
@@ -48,9 +57,4 @@ class PaymentHistoryActivity : BaseActivity() {
             return res
         }
     }
-}
-
-sealed class ChargeWrapper {
-    data class Header(val year: Int) : ChargeWrapper()
-    data class Item(val charge: ProfileQuery.ChargeHistory) : ChargeWrapper()
 }
