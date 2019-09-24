@@ -10,6 +10,7 @@ query Profile {
     address
     postalNumber
     type
+    status
     certificateUrl
     personsInHousehold
     livingSpace
@@ -17,6 +18,27 @@ query Profile {
       ... CostFragment
       freeUntil
     }
+  }
+  balance {
+    failedCharges
+  }
+  chargeEstimation {
+    charge {
+      amount
+    }
+    discount {
+      amount
+    }
+    subscription {
+      amount
+    }
+  }
+  nextChargeDate
+  chargeHistory {
+    amount {
+      amount
+    }
+    date
   }
   bankAccount {
     bankName
@@ -29,6 +51,12 @@ query Profile {
     id
     name
     paragraph
+  }
+  redeemedCampaigns {
+    ... IncentiveFragment
+    owner {
+      displayName
+    }
   }
   referralInformation {
     campaign {

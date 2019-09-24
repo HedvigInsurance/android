@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/failedPaymentsCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_double"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_rounded_corners"
+        android:backgroundTint="@color/coral_200"
+        android:orientation="horizontal"
+        android:padding="@dimen/base_margin_double">
+
+        <ImageView
+            android:layout_width="@dimen/icon_failure_small_size"
+            android:layout_height="@dimen/icon_failure_small_size"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/icon_failure" />
+
+        <TextView
+            android:id="@+id/failedPaymentsParagraph"
+            style="@style/Body.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin"
+            android:textColor="@color/off_black"
+            tools:text="Du ligger 3 månader efter med dina betalningar. Vi kommer att dra mer pengar än din ordinarie premie den 21 juni, 2019." />
+
+    </LinearLayout>
+
+</com.hedvig.app.ui.view.HedvigCardView>

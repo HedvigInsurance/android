@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/campaignInformationContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_quadruple"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <TextView
+        android:id="@+id/campaignInformationTitle"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Aktuell kampanj" />
+
+    <TextView
+        android:id="@+id/campaignInformationLabelOne"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        tools:text="Från" />
+
+    <TextView
+        android:id="@+id/campaignInformationFieldOne"
+        style="@style/Body.Regular.Emphasized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        tools:text="Partner XYZ" />
+
+    <TextView
+        android:id="@+id/lastFreeDayLabel"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:text="@string/PAYMENTS_CAMPAIGN_LFD"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/lastFreeDay"
+        style="@style/Body.Regular.Emphasized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:visibility="gone"
+        tools:text="2019-06-28"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/willUpdateWhenStartDateIsSet"
+        style="@style/Body.XSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:text="@string/PAYMENTS_NO_STARTDATE_HELP_MESSAGE"
+        android:textColor="@color/gray"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

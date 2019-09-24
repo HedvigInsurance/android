@@ -31,6 +31,8 @@
     <color name="violet_100">#efe8ff</color>
     <color name="violet_200">#c1a5ff</color>
     <color name="coral_500">#ff8a80</color>
+    <color name="coral_200">#ffd0cc</color>
+    <color name="sunflower_300">#fbe356</color>
     <color name="dark_mode">#0a0d14</color>
     <color name="dark_mode_elevation_1">#24272e</color>
     <color name="dark_mode_semi_transparent">#e624272e</color>

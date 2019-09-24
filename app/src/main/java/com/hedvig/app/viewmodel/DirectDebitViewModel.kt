@@ -7,10 +7,15 @@ import com.hedvig.app.data.debit.DirectDebitRepository
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
-class DirectDebitViewModel(
+abstract class DirectDebitViewModel: ViewModel() {
+    abstract val data: MutableLiveData<DirectDebitQuery.Data>
+    abstract fun refreshDirectDebitStatus()
+}
+
+class DirectDebitViewModelImpl(
     private val directDebitRepository: DirectDebitRepository
-) : ViewModel() {
-    val data: MutableLiveData<DirectDebitQuery.Data> = MutableLiveData()
+) : DirectDebitViewModel() {
+    override val data: MutableLiveData<DirectDebitQuery.Data> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -32,7 +37,7 @@ class DirectDebitViewModel(
         disposables.add(disposable)
     }
 
-    fun refreshDirectDebitStatus() {
+    override fun refreshDirectDebitStatus() {
         val disposable = directDebitRepository.refreshDirectdebitStatus()
             .subscribe({ response ->
                 response.data()?.let { data ->

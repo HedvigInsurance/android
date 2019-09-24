@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/paymentDetailsContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_quadruple"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <TextView
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD" />
+
+    <TextView
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/PAYMENTS_DIRECT_DEBIT" />
+
+    <TextView
+        android:id="@+id/directDebitStatus"
+        style="@style/Body.Regular.Emphasized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        tools:text="Aktivt" />
+
+    <TextView
+        android:id="@+id/accountNumberLabel"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/PAYMENTS_SUBTITLE_ACCOUNT" />
+
+    <TextView
+        android:id="@+id/accountNumber"
+        style="@style/Body.Regular.Emphasized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        tools:text="SEB **** 8347" />
+
+    <TextView
+        android:id="@+id/bankAccountUnderChangeParagraph"
+        style="@style/Body.XSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
+        android:visibility="gone"
+        tools:visibility="visible" />
+</LinearLayout>
