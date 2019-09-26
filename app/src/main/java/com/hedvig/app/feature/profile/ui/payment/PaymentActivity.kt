@@ -119,7 +119,7 @@ class PaymentActivity : BaseActivity() {
             )
 
         val discount = data.chargeEstimation.discount.amount.toBigDecimal().toInt()
-        if (discount > 0) {
+        if (discount > 0 && data.balance.failedCharges == 0) {
             nextPaymentGross.show()
             nextPaymentGross.text =
                 interpolateTextKey(
