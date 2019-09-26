@@ -8,6 +8,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:alertDialogTheme">@style/AlertDialog</item>
         <item name="android:statusBarColor">@color/black</item>
+        <item name="android:fontFamily">@font/circular_book</item>
     </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />

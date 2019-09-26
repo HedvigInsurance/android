@@ -23,7 +23,7 @@ class WhatsNewRepository(
         )
 
     fun removeNewsForNewUser() {
-        if (latestSeenNews() == VERSION_BEFORE_NEWS_WERE_RELEASED) {
+        if (latestSeenNews() == NEWS_BASELINE_VERSION) {
             hasSeenNews(BuildConfig.VERSION_NAME)
         }
     }
@@ -38,12 +38,12 @@ class WhatsNewRepository(
 
     private fun latestSeenNews() = context
         .getSharedPreferences(WHATS_NEW_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        .getString(LAST_NEWS_SEEN, VERSION_BEFORE_NEWS_WERE_RELEASED) as String
+        .getString(LAST_NEWS_SEEN, NEWS_BASELINE_VERSION) as String
 
     companion object {
         private const val WHATS_NEW_SHARED_PREFERENCES = "whats_new"
         private const val LAST_NEWS_SEEN = "last_news_seen"
 
-        private const val VERSION_BEFORE_NEWS_WERE_RELEASED = "2.7.3"
+        private const val NEWS_BASELINE_VERSION = "3.0.0"
     }
 }
