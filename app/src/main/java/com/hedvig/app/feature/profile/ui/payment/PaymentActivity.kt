@@ -124,7 +124,7 @@ class PaymentActivity : BaseActivity() {
             nextPaymentGross.text =
                 interpolateTextKey(
                     getString(R.string.PAYMENTS_FULL_PREMIUM),
-                    "FULL_PREMIUM" to data.chargeEstimation.subscription.amount.toBigDecimal().toInt()
+                    "FULL_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
                 )
         }
 
@@ -257,6 +257,7 @@ class PaymentActivity : BaseActivity() {
 
                 endSeparator.show()
                 changeBankAccount.show()
+                connectBankAccountCard.remove()
             }
             DirectDebitStatus.PENDING -> {
                 paymentDetailsContainer.show()
@@ -270,6 +271,7 @@ class PaymentActivity : BaseActivity() {
                 } ?: toggleBankInfo(false)
 
 
+                connectBankAccountCard.remove()
                 bankAccountUnderChangeParagraph.show()
             }
             DirectDebitStatus.NEEDS_SETUP -> {
