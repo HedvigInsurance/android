@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginBottom="@dimen/base_margin_half"
         android:text="@string/CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL" />
 
 </LinearLayout>

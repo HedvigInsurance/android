@@ -101,7 +101,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin"
-                    android:clipToPadding="false" />
+                    android:layout_marginBottom="@dimen/base_margin"
+                    android:clipToPadding="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/claim_bulletpoint_row" />
 
             </LinearLayout>
         </FrameLayout>

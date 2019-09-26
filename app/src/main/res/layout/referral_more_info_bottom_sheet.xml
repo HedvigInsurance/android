@@ -45,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_half"
         android:background="@drawable/button_primary"
         android:backgroundTint="@color/light_gray"
         android:text="@string/REFERRAL_PROGRESS_MORE_INFO_CTA"
