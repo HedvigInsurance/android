@@ -181,14 +181,16 @@
 
     <Button
         android:id="@+id/signButton"
-        style="@style/HedvigButton.Negative"
+        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/base_margin_triple"
+        android:backgroundTint="@color/white"
         android:drawableEnd="@drawable/ic_bank_id"
         android:drawablePadding="@dimen/base_margin"
         android:text="@string/OFFER_SIGN_BUTTON"
+        android:textColor="@color/off_black_dark"
         android:translationY="@dimen/offer_sign_button_off_screen_translation"
         android:visibility="visible"
         tools:translationY="0dp" />

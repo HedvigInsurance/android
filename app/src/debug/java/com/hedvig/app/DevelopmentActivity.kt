@@ -125,13 +125,13 @@ class DevelopmentActivity : AppCompatActivity() {
         checkbox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 unloadKoinModules(REAL_MODULES)
-                loadKoinModules(mockProfileModule)
+                loadKoinModules(mockModule)
                 getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
                     .edit()
                     .putBoolean("useMockData", true)
                     .apply()
             } else {
-                unloadKoinModules(mockProfileModule)
+                unloadKoinModules(mockModule)
                 loadKoinModules(REAL_MODULES)
                 getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
                     .edit()
@@ -144,6 +144,6 @@ class DevelopmentActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val REAL_MODULES = listOf(profileModule, directDebitModule)
+        private val REAL_MODULES = listOf(offerModule, profileModule, directDebitModule)
     }
 }

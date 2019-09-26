@@ -10,13 +10,26 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
-class OfferViewModel(
+abstract class OfferViewModel: ViewModel() {
+    abstract val data: MutableLiveData<OfferQuery.Data>
+    abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
+    abstract val signStatus: MutableLiveData<SignStatusFragment>
+    abstract val signError: MutableLiveData<Boolean>
+    abstract fun removeDiscount()
+    abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
+    abstract fun triggerOpenChat(done: () -> Unit)
+    abstract fun startSign()
+    abstract fun clearPreviousErrors()
+    abstract fun manuallyRecheckSignStatus()
+}
+
+class OfferViewModelImpl(
     private val offerRepository: OfferRepository
-) : ViewModel() {
-    val data = MutableLiveData<OfferQuery.Data>()
-    val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
-    val signStatus = MutableLiveData<SignStatusFragment>()
-    val signError = MutableLiveData<Boolean>()
+) : OfferViewModel() {
+    override val data = MutableLiveData<OfferQuery.Data>()
+    override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
+    override val signStatus = MutableLiveData<SignStatusFragment>()
+    override val signError = MutableLiveData<Boolean>()
 
     private val disposables = CompositeDisposable()
     private val signStatusSubscriptionHandle = CompositeDisposable()
@@ -44,7 +57,7 @@ class OfferViewModel(
         signStatusSubscriptionHandle.clear()
     }
 
-    fun removeDiscount() {
+    override fun removeDiscount() {
         disposables += offerRepository
             .removeDiscount()
             .subscribe({ response ->
@@ -61,15 +74,16 @@ class OfferViewModel(
         offerRepository.removeDiscountFromCache()
     }
 
-    fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = offerRepository.writeDiscountToCache(data)
+    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
+        = offerRepository.writeDiscountToCache(data)
 
-    fun triggerOpenChat(done: () -> Unit) {
+    override fun triggerOpenChat(done: () -> Unit) {
         disposables += offerRepository
             .triggerOpenChatFromOffer()
             .subscribe({ done() }, { Timber.e(it) })
     }
 
-    fun startSign() {
+    override fun startSign() {
         if (signStatusSubscriptionHandle.size() == 0) {
             signStatusSubscriptionHandle += offerRepository
                 .subscribeSignStatus()
@@ -96,11 +110,11 @@ class OfferViewModel(
             }, { Timber.e(it) })
     }
 
-    fun clearPreviousErrors() {
+    override fun clearPreviousErrors() {
         signError.value = false
     }
 
-    fun manuallyRecheckSignStatus() {
+    override fun manuallyRecheckSignStatus() {
         disposables += offerRepository
             .fetchSignStatus()
             .subscribe({ response ->
