@@ -31,6 +31,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -149,7 +150,10 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { OfferViewModel(get()) }
+}
+
+val offerModule = module {
+    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
 }
 
 val profileModule = module {
