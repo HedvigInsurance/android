@@ -2,14 +2,21 @@
 <resources>
 
     <style name="Hedvig.Theme.V27" parent="Hedvig.Theme.V23">
-        <item name="android:navigationBarColor">@color/off_white</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
     </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V27" />
 
     <style name="Hedvig.Theme.Offer">
-        <item name="android:statusBarColor">@color/dark_purple</item>
+        <item name="android:statusBarColor">@color/offer_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Hedvig.Theme.Marketing">
+        <item name="android:statusBarColor">@color/black</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/black</item>
         <item name="android:windowLightNavigationBar">false</item>
@@ -17,27 +24,28 @@
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
     </style>
 
     <style name="NoTitleBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
         <item name="bottomSheetStyle">@style/NoTitleBottomSheet</item>
     </style>
 
     <style name="PerilBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="bottomSheetStyle">@style/PerilBottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
+        <item name="android:navigationBarColor">@color/background_elevation_1</item>
     </style>
 
     <style name="TransparentDialog" parent="TransparentDialog.V27" />
 
     <style name="TransparentDialog.V27" parent="TransparentDialog.V21">
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
     </style>
+
 </resources>

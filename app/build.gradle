@@ -24,15 +24,15 @@ android {
     androidExtensions {
         experimental = true
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
-        targetSdkVersion 28
+        targetSdkVersion 29
         applicationId 'com.hedvig'
 
         minSdkVersion 21
         versionCode 43
-        versionName '3.0.4'
+        versionName '3.1.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -96,30 +96,27 @@ android {
 }
 
 dependencies {
-
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'nl.littlerobots.rxlint:rxlint:1.7.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.google.android.material:material:1.0.0'
-
-    // Android support
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    // AndroidX
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
-    implementation 'androidx.media:media:1.0.1'
+    implementation 'androidx.media:media:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
+    implementation "androidx.preference:preference-ktx:1.1.0"
 
     // Android lifecycle
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
-
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
 
     // WorkManager
-    def workmanager_version = "2.1.0"
+    def workmanager_version = "2.2.0"
     implementation "androidx.work:work-runtime:$workmanager_version"
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
@@ -135,15 +132,14 @@ dependencies {
     androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
 
     // Firebase
-    implementation 'com.google.android.gms:play-services-base:17.0.0'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
     releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
-    implementation "com.google.firebase:firebase-core:17.0.1"
-    implementation "com.google.firebase:firebase-dynamic-links:18.0.0"
-    implementation "com.google.firebase:firebase-firestore:20.2.0"
-    implementation 'com.google.firebase:firebase-config:18.0.0'
-    implementation "com.google.firebase:firebase-messaging:19.0.1"
+    implementation "com.google.firebase:firebase-core:17.2.0"
+    implementation "com.google.firebase:firebase-dynamic-links:19.0.0"
+    implementation 'com.google.firebase:firebase-config:19.0.1'
+    implementation "com.google.firebase:firebase-messaging:20.0.0"
 
     // Koin
     def koin_version = "2.0.1"
@@ -168,10 +164,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
 
     // Svg
-    implementation 'com.caverock:androidsvg-aar:1.3'
-
-    // Restring
-    implementation 'com.hedvig.restring:restring:0.0.1'
+    implementation 'com.caverock:androidsvg-aar:1.4'
 
     // Glide
     implementation "com.github.bumptech.glide:glide:4.9.0"
@@ -186,8 +179,7 @@ dependencies {
     // test
     testImplementation 'junit:junit:4.12'
 
-    debugApi 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-    releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 }
 
 apply plugin: 'com.google.gms.google-services'

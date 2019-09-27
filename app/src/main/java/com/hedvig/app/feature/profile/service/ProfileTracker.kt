@@ -14,5 +14,4 @@ class ProfileTracker(
     )
 
     fun howDoesItWorkClick() = firebaseAnalytics.logEvent("click_charity_how_does_it_work", null)
-    fun clickRedeemCode() = firebaseAnalytics.logEvent("REFERRAL_ADDCOUPON_HEADLINE", null)
 }

@@ -98,7 +98,6 @@ class ClaimsFragment : BaseTabFragment() {
         }
 
         // setup common claims
-        commonClaimsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         commonClaimsRecyclerView.adapter =
             CommonClaimsAdapter(
                 commonClaims = commonClaimsData.commonClaims,

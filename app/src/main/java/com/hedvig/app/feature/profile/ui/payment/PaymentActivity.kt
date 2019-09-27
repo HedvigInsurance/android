@@ -6,36 +6,44 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
-import androidx.lifecycle.Observer
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
-import com.hedvig.app.util.CustomTypefaceSpan
-import com.hedvig.app.util.extensions.compatFont
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.concat
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_payment.*
+import kotlinx.android.synthetic.main.campaign_information_section.*
+import kotlinx.android.synthetic.main.connect_bank_account_card.*
+import kotlinx.android.synthetic.main.failed_payments_card.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import kotlinx.android.synthetic.main.next_payment_card.*
+import kotlinx.android.synthetic.main.payment_details_section.*
+import kotlinx.android.synthetic.main.payment_history_section.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.util.Calendar
 
 class PaymentActivity : BaseActivity() {
     private val profileViewModel: ProfileViewModel by viewModel()
     private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
-    private val tracker: ProfileTracker by inject()
+    private val tracker: PaymentTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +53,11 @@ class PaymentActivity : BaseActivity() {
             onBackPressed()
         }
 
-        val today = Calendar.getInstance()
-        val year = today.get(Calendar.YEAR).toString()
-        val day = today.get(Calendar.DAY_OF_MONTH)
-        val month = (today.get(Calendar.MONTH) + 1).let { month ->
-            if (day > BILLING_DAY) {
-                month + 1
-            } else {
-                month
-            }
-        }.let { String.format("%02d", it) }
+        nextPaymentGross.setStrikethrough(true)
 
-        autogiroDate.text = interpolateTextKey(
-            resources.getString(R.string.PROFILE_PAYMENT_NEXT_CHARGE_DATE),
-            "YEAR" to year,
-            "MONTH" to month,
-            "DAY" to BILLING_DAY.toString()
-        )
+        seePaymentHistory.setHapticClickListener {
+            startActivity(PaymentHistoryActivity.newInstance(this))
+        }
 
         changeBankAccount.setHapticClickListener {
             startActivity(TrustlyActivity.newInstance(this))
@@ -86,117 +82,205 @@ class PaymentActivity : BaseActivity() {
     }
 
     private fun loadData() {
-        profileViewModel.data.observe(this, Observer { profileData ->
+        profileViewModel.data.observe(lifecycleOwner = this) { profileData ->
             loadingSpinner.remove()
             resetViews()
-            sphereContainer.show()
 
-            val monthlyCost =
-                profileData?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
-            val amountPartOne = SpannableString("$monthlyCost\n")
-            val perMonthLabel = resources.getString(R.string.PROFILE_PAYMENT_PER_MONTH_LABEL)
-            val amountPartTwo = SpannableString(perMonthLabel)
-            amountPartTwo.setSpan(
-                CustomTypefaceSpan(compatFont(R.font.circular_book)),
-                0,
-                perMonthLabel.length,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            amountPartTwo.setSpan(
-                AbsoluteSizeSpan(20, true),
-                0,
-                perMonthLabel.length,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            profile_payment_amount.text = amountPartOne.concat(amountPartTwo)
-
-            profileData?.insurance?.cost?.freeUntil?.let {
-                freeUntilContainer.show()
-                freeUntilMessage.text = interpolateTextKey(
-                    getString(R.string.PROFILE_PAYMENT_FREE_UNTIL_MESSAGE),
-                    "FREE_UNTIL" to it
-                )
-            } ?: run {
-                freeUntilContainer.remove()
+            profileData?.let { pd ->
+                bindFailedPaymentsCard(pd)
+                bindNextPaymentCard(pd)
+                bindCampaignInformation(pd)
+                bindPaymentHistory(pd.chargeHistory)
             }
 
-            grossPremium.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_PRICE),
-                "PRICE" to profileData?.insurance?.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
-            )
-
-            discount.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_DISCOUNT),
-                "DISCOUNT" to (profileData?.insurance?.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt()?.unaryMinus())
-            )
-
-            netPremium.text = interpolateTextKey(
-                resources.getString(R.string.PROFILE_PAYMENT_FINAL_COST),
-                "FINAL_COST" to profileData?.insurance?.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
-            )
-
-            bindBankAccountInformation()
-        })
-        directDebitViewModel.data.observe(this, Observer {
-            bindBankAccountInformation()
-        })
+            bindPaymentDetails()
+        }
+        directDebitViewModel.data.observe(lifecycleOwner = this) {
+            bindPaymentDetails()
+        }
     }
 
-    private fun connectDirectDebitWithLink(){
-        profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(browserIntent)
+    private fun bindFailedPaymentsCard(data: ProfileQuery.Data) {
+        if (data.balance.failedCharges != 0) {
+            failedPaymentsCard.show()
+            failedPaymentsParagraph.text = interpolateTextKey(
+                getString(R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE),
+                "MONTHS_LATE" to data.balance.failedCharges,
+                "NEXT_PAYMENT_DATE" to data.nextChargeDate?.format(DATE_FORMAT)
+            )
+        }
+    }
+
+    private fun bindNextPaymentCard(data: ProfileQuery.Data) {
+        nextPaymentAmount.text =
+            interpolateTextKey(
+                getString(R.string.PAYMENTS_CURRENT_PREMIUM),
+                "CURRENT_PREMIUM" to data.chargeEstimation.charge.amount.toBigDecimal().toInt()
+            )
+
+        val discount = data.chargeEstimation.discount.amount.toBigDecimal().toInt()
+        if (discount > 0 && data.balance.failedCharges == 0) {
+            nextPaymentGross.show()
+            nextPaymentGross.text =
+                interpolateTextKey(
+                    getString(R.string.PAYMENTS_FULL_PREMIUM),
+                    "FULL_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                )
         }
 
-        profileViewModel.startTrustlySession()
+        when (data.insurance.status) {
+            InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+                nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
+            }
+            InsuranceStatus.INACTIVE -> {
+                nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
+                nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
+            }
+            else -> {
+                Timber.e(
+                    "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+                )
+            }
+        }
+
+        (
+            (data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+                as? IncentiveFragment.AsFreeMonths
+                )?.quantity)?.let { fm ->
+            val amount = SpannableString("$fm\n")
+            amount.setSpan(
+                AbsoluteSizeSpan(20, true),
+                0, fm.toString().length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            val label = SpannableString(
+                if (fm > 1) {
+                    getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                } else {
+                    getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                }
+            )
+            freeMonths.text = amount.concat(label)
+            freeMonthsSphere.show()
+        }
     }
 
-    private fun resetViews() {
-        connectBankAccountContainer.remove()
-        changeBankAccount.remove()
-        separator.remove()
-        bankAccountUnderChangeParagraph.remove()
-        connectBankAccountWithLink.remove()
+    private fun bindCampaignInformation(data: ProfileQuery.Data) {
+        when (val incentive =
+            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
+            is IncentiveFragment.AsFreeMonths -> {
+                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
+                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_CAMPAIGN_OWNER)
+                data.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
+                    campaignInformationFieldOne.text = displayName
+                }
+
+                when (data.insurance.status) {
+                    InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+                        data.insurance.cost?.freeUntil?.let { freeUntil ->
+                            lastFreeDay.text = freeUntil.format(DATE_FORMAT)
+                        }
+                        lastFreeDay.show()
+                        lastFreeDayLabel.show()
+                    }
+                    InsuranceStatus.INACTIVE -> {
+                        willUpdateWhenStartDateIsSet.show()
+                    }
+                    else -> {
+                        Timber.e(
+                            "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+                        )
+                    }
+                }
+                campaignInformationContainer.show()
+                campaignInformationSeparator.show()
+            }
+            is IncentiveFragment.AsMonthlyCostDeduction -> {
+                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
+                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
+                incentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
+                    campaignInformationFieldOne.text = interpolateTextKey(
+                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
+                        "DISCOUNT" to amount
+                    )
+                }
+                campaignInformationContainer.show()
+                campaignInformationSeparator.show()
+            }
+        }
     }
 
-    private fun bindBankAccountInformation() {
+    private fun bindPaymentHistory(paymentHistory: List<ProfileQuery.ChargeHistory>) {
+        if (paymentHistory.isEmpty()) {
+            return
+        }
+
+        paymentHistory.getOrNull(0)?.let { lastMonthsCharge ->
+            lastChargeDate.text = lastMonthsCharge.date.format(DATE_FORMAT)
+            lastChargeAmount.text = interpolateTextKey(
+                getString(R.string.PAYMENT_HISTORY_AMOUNT),
+                "AMOUNT" to lastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            )
+            lastChargeDate.show()
+            lastChargeAmount.show()
+        }
+
+        paymentHistory.getOrNull(1)?.let { prevLastMonthsCharge ->
+            prevLastChargeDate.text = prevLastMonthsCharge.date.format(DATE_FORMAT)
+            prevLastChargeAmount.text = interpolateTextKey(
+                getString(R.string.PAYMENT_HISTORY_AMOUNT),
+                "AMOUNT" to prevLastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            )
+
+            prevLastChargeDate.show()
+            prevLastChargeAmount.show()
+        }
+
+        paymentHistoryContainer.show()
+
+        paymentHistorySeparator.show()
+    }
+
+    private fun bindPaymentDetails() {
         val profileData = profileViewModel.data.value ?: return
 
         when (directDebitViewModel.data.value?.directDebitStatus ?: return) {
             DirectDebitStatus.ACTIVE -> {
                 paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
 
                 profileData.bankAccount?.let { bankAccount ->
-                    bankName.text = bankAccount.bankName
-                    accountNumber.text = bankAccount.descriptor
+                    accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
 
                     toggleBankInfo(true)
                 } ?: toggleBankInfo(false)
 
-                toggleAutogiro(true)
 
-                separator.show()
+                endSeparator.show()
                 changeBankAccount.show()
+                connectBankAccountCard.remove()
             }
             DirectDebitStatus.PENDING -> {
                 paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
 
-                profileData.bankAccount?.let { bankAccount ->
-                    bankName.text = bankAccount.bankName
-                    accountNumber.text = resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
+                profileData.bankAccount?.let {
+                    accountNumber.text =
+                        resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
 
                     toggleBankInfo(true)
                 } ?: toggleBankInfo(false)
 
-                toggleAutogiro(false)
 
+                connectBankAccountCard.remove()
                 bankAccountUnderChangeParagraph.show()
             }
             DirectDebitStatus.NEEDS_SETUP -> {
                 paymentDetailsContainer.show()
-                toggleAutogiro(false)
+
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+
                 toggleBankInfo(false)
-                connectBankAccountContainer.show()
+                connectBankAccountCard.show()
                 connectBankAccountWithLink.show()
             }
             else -> {
@@ -207,35 +291,62 @@ class PaymentActivity : BaseActivity() {
         showRedeemCodeOnNoDiscount(profileData)
     }
 
+    private fun connectDirectDebitWithLink() {
+        profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(browserIntent)
+        }
+
+        profileViewModel.startTrustlySession()
+    }
+
+    private fun resetViews() {
+        failedPaymentsCard.remove()
+
+        nextPaymentGross.hide()
+        freeMonthsSphere.remove()
+        nextPaymentDate.background.setTintList(null)
+
+        campaignInformationContainer.remove()
+        lastFreeDayLabel.remove()
+        lastFreeDay.remove()
+        willUpdateWhenStartDateIsSet.remove()
+        campaignInformationSeparator.remove()
+
+        paymentHistoryContainer.remove()
+        lastChargeDate.remove()
+        lastChargeAmount.remove()
+        prevLastChargeDate.remove()
+        prevLastChargeAmount.remove()
+        paymentHistorySeparator.remove()
+
+        connectBankAccountCard.remove()
+        changeBankAccount.remove()
+        endSeparator.remove()
+        bankAccountUnderChangeParagraph.remove()
+        connectBankAccountWithLink.remove()
+    }
+
     private fun toggleBankInfo(show: Boolean) {
         if (show) {
-            bankTitle.show()
-            bankName.show()
+            accountNumberLabel.show()
             accountNumber.show()
         } else {
-            bankTitle.remove()
-            bankName.remove()
+            accountNumberLabel.remove()
             accountNumber.remove()
         }
     }
 
-    private fun toggleAutogiro(show: Boolean) {
-        if (show) {
-            autogiroTitle.show()
-            autogiroDate.show()
-        } else {
-            autogiroTitle.remove()
-            autogiroDate.remove()
-        }
-    }
-
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
-        if (profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0 && profileData.insurance.cost?.freeUntil == null) {
+        if (
+            profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
+            && profileData.insurance.cost?.freeUntil == null
+        ) {
             redeemCode.show()
         }
     }
 
     companion object {
-        const val BILLING_DAY = 27
+        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL YYYY")
     }
 }

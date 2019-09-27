@@ -11,7 +11,6 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +24,7 @@
                 android:id="@id/sphereContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -37,11 +36,11 @@
                     android:layout_width="160dp"
                     android:layout_height="160dp"
                     android:contentDescription="@null"
+                    android:tint="@color/link_purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/sphere"
-                    tools:tint="@color/purple" />
+                    app:srcCompat="@drawable/sphere" />
 
                 <TextView
                     android:id="@id/sphereText"
@@ -66,7 +65,7 @@
                 android:id="@id/loadingAnimation"
                 android:layout_width="189dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
                 android:scaleType="centerInside"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,9 +79,9 @@
                 android:id="@id/textContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginEnd="@dimen/base_margin_triple"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -91,18 +90,15 @@
                 tools:visibility="visible">
 
                 <TextView
+                    style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/circular_bold"
-                    android:text="@string/PROFILE_COINSURED_MORE_TO_COME_TITLE"
-                    android:textColor="@color/off_black_dark"
-                    android:textSize="16sp" />
+                    android:text="@string/PROFILE_COINSURED_MORE_TO_COME_TITLE" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/circular_book"
+                    android:layout_marginTop="@dimen/base_margin"
                     android:text="@string/PROFILE_COINSURED_MORE_TO_COME_DESCRIPTION"
                     android:theme="@style/Body.Small" />
 

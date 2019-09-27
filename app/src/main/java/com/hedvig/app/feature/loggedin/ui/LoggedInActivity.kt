@@ -20,6 +20,7 @@ import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ReferralBottomSheet
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
@@ -35,8 +36,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.app_bar.*
-import kotlinx.android.synthetic.main.logged_in_screen.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -57,7 +58,7 @@ class LoggedInActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.logged_in_screen)
+        setContentView(R.layout.activity_logged_in)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
@@ -103,9 +104,11 @@ class LoggedInActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
-            LoggedInTabs.CLAIMS,
-            LoggedInTabs.PROFILE -> {
+            LoggedInTabs.CLAIMS -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+            }
+            LoggedInTabs.PROFILE -> {
+                menuInflater.inflate(R.menu.profile_settings_menu, menu)
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
@@ -117,16 +120,19 @@ class LoggedInActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
-            LoggedInTabs.CLAIMS,
-            LoggedInTabs.PROFILE -> {
+            LoggedInTabs.CLAIMS -> {
                 claimsViewModel.triggerFreeTextChat {
                     startClosableChat()
                 }
             }
+            LoggedInTabs.PROFILE -> {
+                startActivity(SettingsActivity.newInstance(this))
+            }
             LoggedInTabs.REFERRALS -> {
                 (profileViewModel.data.value?.referralInformation?.campaign?.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
                     ?.toInt()?.toString()?.let { amount ->
-                        ReferralBottomSheet.newInstance(amount).show(supportFragmentManager, ReferralBottomSheet.TAG)
+                        ReferralBottomSheet.newInstance(amount)
+                            .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
             }
         }
@@ -147,7 +153,11 @@ class LoggedInActivity : BaseActivity() {
                                 LoggedInTabs.REFERRALS.ordinal
                             ) as BottomNavigationItemView
 
-                        badge = layoutInflater.inflate(R.layout.bottom_navigation_notification, itemView, true)
+                        badge = layoutInflater.inflate(
+                            R.layout.bottom_navigation_notification,
+                            itemView,
+                            true
+                        )
                     }
                 }
             }
@@ -160,7 +170,8 @@ class LoggedInActivity : BaseActivity() {
                     GlobalScope.launch(Dispatchers.IO) {
                         FirebaseInstanceId.getInstance().deleteInstanceId()
                     }
-                    WhatsNewDialog.newInstance(data.news).show(supportFragmentManager, WhatsNewDialog.TAG)
+                    WhatsNewDialog.newInstance(data.news)
+                        .show(supportFragmentManager, WhatsNewDialog.TAG)
                 }
             }
         }

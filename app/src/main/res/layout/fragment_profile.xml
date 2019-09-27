@@ -29,14 +29,14 @@
                 android:id="@id/myInfoRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/icon_my_info"
+                app:iconImage="@drawable/ic_my_info"
                 app:name="@string/PROFILE_ROW_MY_INFO_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/myHomeRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/icon_my_home"
+                app:iconImage="@drawable/ic_my_home"
                 app:name="@string/PROFILE_ROW_MY_HOME_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:iconImage="@drawable/icon_coinsured"
+                app:iconImage="@drawable/ic_coinsured"
                 app:name="@string/PROFILE_ROW_COINSURED_TITLE"
                 tools:visibility="visible" />
 
@@ -52,14 +52,14 @@
                 android:id="@id/charityRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/icon_charity"
+                app:iconImage="@drawable/ic_charity"
                 app:name="@string/PROFILE_ROW_CHARITY_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/paymentRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/icon_payment"
+                app:iconImage="@drawable/ic_payment"
                 app:name="@string/PROFILE_ROW_PAYMENT_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:description="@string/PROFILE_ROW_INSURANCE_LETTER_DESCRIPTION"
-                app:iconImage="@drawable/icon_insurance_certificate"
+                app:iconImage="@drawable/ic_insurance_certificate"
                 app:name="@string/PROFILE_ROW_INSURANCE_LETTER_TITLE"
                 tools:visibility="visible" />
 
@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:description="@string/PROFILE_ROW_FEEDBACK_DESCRIPTION"
-                app:iconImage="@drawable/icon_feedback"
+                app:iconImage="@drawable/ic_feedback"
                 app:name="@string/PROFILE_ROW_FEEDBACK_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/light_gray" />
+                android:background="@color/separator" />
 
         </LinearLayout>
 

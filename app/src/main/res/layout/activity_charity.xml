@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hedvig.app.feature.profile.ui.charity.CharityFragment">
+    tools:context="com.hedvig.app.feature.profile.ui.charity.CharityActivity">
 
     <include layout="@layout/app_bar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,20 +26,21 @@
                 android:id="@id/selectedCharityContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="@dimen/base_margin_sextuple"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone">
 
                 <ImageView
                     android:id="@id/selectedCharityBanner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="@dimen/base_margin_triple"
+                    android:layout_marginEnd="@dimen/base_margin_triple"
                     android:contentDescription="@null" />
 
                 <com.hedvig.app.ui.view.HedvigCardView
@@ -58,27 +58,24 @@
 
                         <TextView
                             android:id="@id/selectedCharityCardTitle"
+                            style="@style/Headline.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="22dp"
-                            android:layout_marginEnd="20dp"
-                            android:fontFamily="@font/circular_bold"
-                            android:textColor="@color/off_black_dark"
-                            android:textSize="16sp" />
+                            android:layout_marginStart="@dimen/base_margin_double"
+                            android:layout_marginTop="@dimen/base_margin_double"
+                            android:layout_marginEnd="@dimen/base_margin_double"
+                            tools:text="SOS Barnbyar" />
 
                         <TextView
                             android:id="@id/selectedCharityCardParagraph"
+                            style="@style/Body.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="22dp"
-                            android:fontFamily="@font/circular_book"
-                            android:lineSpacingExtra="6dp"
-                            android:textColor="@color/off_black"
-                            android:textSize="14sp" />
+                            android:layout_marginStart="@dimen/base_margin_double"
+                            android:layout_marginTop="@dimen/base_margin"
+                            android:layout_marginEnd="@dimen/base_margin_double"
+                            android:layout_marginBottom="@dimen/base_margin_double"
+                            tools:text="För att bli en trygg vuxen krävs en trygg barndom. Därför arbetar SOS Barnbyar med långsiktiga insatser för att inte ett enda barn ska behöva växa upp ensamt" />
 
                     </LinearLayout>
 
@@ -107,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:contentDescription="@null"
-                    app:srcCompat="@drawable/icon_charity" />
+                    app:srcCompat="@drawable/ic_charity" />
 
                 <TextView
                     android:id="@id/selectCharityExplainer"
@@ -140,7 +137,6 @@
                     android:layout_marginTop="@dimen/base_margin_triple" />
 
             </LinearLayout>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

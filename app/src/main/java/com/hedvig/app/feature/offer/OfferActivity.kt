@@ -62,7 +62,9 @@ class OfferActivity : BaseActivity() {
     private val tracker: OfferTracker by inject()
 
     private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
-    private val perilTotalWidth: Int by lazy { resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2) }
+    private val perilTotalWidth: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2)
+    }
     private val rowWidth: Int by lazy {
         displayMetrics.widthPixels - (doubleMargin * 2)
     }
@@ -221,7 +223,8 @@ class OfferActivity : BaseActivity() {
                 )
             } else {
                 tracker.addDiscount()
-                OfferRedeemCodeDialog.newInstance().show(supportFragmentManager, OfferRedeemCodeDialog.TAG)
+                OfferRedeemCodeDialog.newInstance()
+                    .show(supportFragmentManager, OfferRedeemCodeDialog.TAG)
             }
         }
     }
@@ -234,9 +237,10 @@ class OfferActivity : BaseActivity() {
         if (lastAnimationHasCompleted) {
             animatePremium(data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt())
         } else {
-            netPremium.setTextColor(compatColor(R.color.off_black_dark))
+            netPremium.setTextColor(compatColor(R.color.text_emphasized))
             netPremium.text =
-                data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()?.toString()
+                data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                    ?.toInt()?.toString()
         }
 
         if (data.redeemedCampaigns.size > 0) {
@@ -280,16 +284,22 @@ class OfferActivity : BaseActivity() {
         safeLet(prevNetPremium, newNetPremium) { p, n ->
             if (p != n) {
                 val colors = if (p > n) {
-                    Pair(compatColor(R.color.off_black_dark), compatColor(R.color.pink))
+                    Pair(compatColor(R.color.text_emphasized), compatColor(R.color.pink))
                 } else {
-                    Pair(compatColor(R.color.pink), compatColor(R.color.off_black_dark))
+                    Pair(compatColor(R.color.pink), compatColor(R.color.text_emphasized))
                 }
                 ValueAnimator.ofInt(p, n).apply {
                     duration = 1000
                     interpolator = AccelerateDecelerateInterpolator()
                     addUpdateListener { v ->
                         netPremium.text = (v.animatedValue as? Int)?.toString()
-                        netPremium.setTextColor(boundedColorLerp(colors.first, colors.second, v.animatedFraction))
+                        netPremium.setTextColor(
+                            boundedColorLerp(
+                                colors.first,
+                                colors.second,
+                                v.animatedFraction
+                            )
+                        )
                     }
                     start()
                 }
@@ -340,8 +350,9 @@ class OfferActivity : BaseActivity() {
             "personsInHousehold" to data.insurance.personsInHousehold
         )
 
-        if (data.insurance.insuredAtOtherCompany == true) {
-            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
+        if (data.insurance.previousInsurer != null) {
+            startDateBubbleText.text =
+                getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
         } else {
             startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)
         }
@@ -423,55 +434,20 @@ class OfferActivity : BaseActivity() {
     }
 
     private fun bindSwitchSection(data: OfferQuery.Data) {
-        if (data.insurance.insuredAtOtherCompany == true) {
+        data.insurance.previousInsurer?.let { previousInsurer ->
             switchSection.show()
 
-            val insurerDisplayName = when (data.insurance.currentInsurerName) {
-                "LANSFORSAKRINGAR" -> {
-                    "Länsförsäkringar"
-                }
-                "IF" -> {
-                    "If"
-                }
-                "FOLKSAM" -> {
-                    "Folksam"
-                }
-                "TRYGG_HANSA" -> {
-                    "Trygg-Hansa"
-                }
-                "MODERNA" -> {
-                    getString(R.string.MODERNA_FORSAKRING_APP)
-                }
-                "ICA" -> {
-                    getString(R.string.ICA_FORSAKRING_APP)
-                }
-                "GJENSIDIGE" -> {
-                    "Gjensidige"
-                }
-                "VARDIA" -> {
-                    "Vardia"
-                }
-                "TRE_KRONOR" -> {
-                    "Tre Kronor"
-                }
-                "OTHER" -> {
-                    getString(R.string.OTHER_INSURER_OPTION_APP)
-                }
-                else -> {
-                    getString(R.string.OTHER_INSURER_OPTION_APP)
-                }
-            }
-            if (isSwitchableInsurer(data.insurance.currentInsurerName)) {
+            if (previousInsurer.isSwitchable) {
                 switchTitle.text = interpolateTextKey(
                     getString(R.string.OFFER_SWITCH_TITLE_APP),
-                    "INSURER" to insurerDisplayName
+                    "INSURER" to previousInsurer.displayName
                 )
                 switchParagraphTwo.text = getString(R.string.OFFER_SWITCH_COL_PARAGRAPH_ONE_APP)
             } else {
                 switchTitle.text = getString(R.string.OFFER_SWITCH_TITLE_NON_SWITCHABLE_APP)
                 switchParagraphTwo.text = getString(R.string.OFFER_NON_SWITCHABLE_PARAGRAPH_ONE_APP)
             }
-        } else {
+        } ?: run {
             switchSection.remove()
         }
     }
@@ -504,17 +480,23 @@ class OfferActivity : BaseActivity() {
         super.onPause()
     }
 
-    private fun makePeril(peril: PerilCategoryFragment.Peril, category: PerilCategoryFragment) = PerilView.build(
-        this,
-        name = peril.title,
-        iconId = peril.id,
-        onClick = {
-            safeLet(category.title, peril.id, peril.title, peril.description) { name, id, title, description ->
-                PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
-                    .show(supportFragmentManager, PerilBottomSheet.TAG)
+    private fun makePeril(peril: PerilCategoryFragment.Peril, category: PerilCategoryFragment) =
+        PerilView.build(
+            this,
+            name = peril.title,
+            iconId = peril.id,
+            onClick = {
+                safeLet(
+                    category.title,
+                    peril.id,
+                    peril.title,
+                    peril.description
+                ) { name, id, title, description ->
+                    PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
+                        .show(supportFragmentManager, PerilBottomSheet.TAG)
+                }
             }
-        }
-    )
+        )
 
     companion object {
         private const val BASE_BUBBLE_ANIMATION_DELAY = 650L
@@ -538,11 +520,6 @@ class OfferActivity : BaseActivity() {
                 }
             }
             handle.animateToFinalPosition(1f)
-        }
-
-        private fun isSwitchableInsurer(insurerName: String?) = when (insurerName) {
-            "ICA", "FOLKSAM", "TRYGG_HANSA", "TRE_KRONOR" -> true
-            else -> false
         }
     }
 }

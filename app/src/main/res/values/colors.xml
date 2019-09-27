@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/purple</color>
     <color name="colorPrimaryDark">@color/dark_purple</color>
-    <color name="colorAccentLight">#1b73b4</color>
+    <color name="colorAccentLight">@color/violet_200</color>
     <color name="colorAccentDark">#FFFFFF</color>
     <color name="colorText">@color/off_white</color>
     <color name="colorLight">#F6F6F7</color>
@@ -12,6 +12,7 @@
     <color name="blur_white">#e6ffffff</color>
     <color name="white">#ffffff</color>
     <color name="purple">#651eff</color>
+    <color name="violet_300">#9361ff</color>
     <color name="gray">#9b9baa</color>
     <color name="semi_light_gray">#d7d7dc</color>
     <color name="light_gray">#e9ecef</color>
@@ -30,4 +31,9 @@
     <color name="violet_100">#efe8ff</color>
     <color name="violet_200">#c1a5ff</color>
     <color name="coral_500">#ff8a80</color>
+    <color name="coral_200">#ffd0cc</color>
+    <color name="sunflower_300">#fbe356</color>
+    <color name="dark_mode">#0a0d14</color>
+    <color name="dark_mode_elevation_1">#24272e</color>
+    <color name="dark_mode_semi_transparent">#e624272e</color>
 </resources>

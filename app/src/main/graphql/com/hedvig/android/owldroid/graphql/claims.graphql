@@ -1,11 +1,13 @@
-query CommonClaim {
+query CommonClaim($locale: Locale!) {
   insurance {
     status
   }
-  commonClaims(locale: sv_SE) {
+  commonClaims(locale: $locale) {
     title
     icon {
-      svgUrl
+      variants {
+        ... IconVariantsFragment
+      }
     }
     layout {
       ... on TitleAndBulletPoints {
@@ -13,7 +15,9 @@ query CommonClaim {
           title
           description
           icon {
-            svgUrl
+            variants {
+              ... IconVariantsFragment
+            }
           }
         }
         buttonTitle

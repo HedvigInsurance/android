@@ -72,11 +72,32 @@ class ChatActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
-        isKeyboardBreakPoint = resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
+        isKeyboardBreakPoint =
+            resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
         setContentView(R.layout.activity_chat)
 
+        initializeToolbarButtons()
+        initializeMessages()
+        initializeInput()
+        intializeKeyboardVisibilityHandler()
+        observeData()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
+        forceScrollToBottom = true
+    }
+
+    override fun onPause() {
+        storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
+        super.onPause()
+    }
+
+    private fun initializeInput() {
         input.initialize(
             sendTextMessage = { message ->
                 scrollToBottom(true)
@@ -119,7 +140,9 @@ class ChatActivity : BaseActivity() {
             },
             tracker = tracker
         )
+    }
 
+    private fun initializeMessages() {
         messages.setHasFixedSize(false)
         val adapter = ChatAdapter(this, onPressEdit = {
             showAlert(
@@ -134,8 +157,48 @@ class ChatActivity : BaseActivity() {
         adapter.setHasStableIds(true)
         messages.addOnScrollListener(adapter.recyclerViewPreloader)
         messages.adapter = adapter
+    }
 
+    private fun initializeToolbarButtons() {
+        resetChatButton.setHapticClickListener {
+            tracker.restartChat()
+            showRestartDialog {
+                storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+                setAuthenticationToken(null)
+                userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+            }
+        }
 
+        closeChatButton.setHapticClickListener {
+            tracker.closeChat()
+            onBackPressed()
+        }
+
+        if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
+            resetChatButton.show()
+        }
+
+        if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
+            closeChatButton.show()
+        }
+    }
+
+    private fun intializeKeyboardVisibilityHandler() {
+        chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
+            val heightDiff = chatRoot.calculateNonFullscreenHeightDiff()
+            if (heightDiff > isKeyboardBreakPoint) {
+                if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
+                this.keyboardHeight = heightDiff - systemNavHeight
+                isKeyboardShown = true
+                scrollToBottom(true)
+            } else {
+                systemNavHeight = heightDiff
+                isKeyboardShown = false
+            }
+        }
+    }
+
+    private fun observeData() {
         chatViewModel.messages.observe(lifecycleOwner = this) { data ->
             data?.let { bindData(it, forceScrollToBottom) }
         }
@@ -150,14 +213,6 @@ class ChatActivity : BaseActivity() {
             currentPhotoPath?.let { File(it).delete() }
         }
 
-        resetChatButton.setHapticClickListener {
-            tracker.restartChat()
-            showRestartDialog {
-                storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                setAuthenticationToken(null)
-                userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
-            }
-        }
 
         chatViewModel.networkError.observe(lifecycleOwner = this) { networkError ->
             if (networkError == true) {
@@ -176,47 +231,15 @@ class ChatActivity : BaseActivity() {
         chatViewModel.subscribe()
         chatViewModel.load()
 
-        chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
-            val heightDiff = chatRoot.calculateNonFullscreenHeightDiff()
-            if (heightDiff > isKeyboardBreakPoint) {
-                if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
-                this.keyboardHeight = heightDiff - systemNavHeight
-                isKeyboardShown = true
-                scrollToBottom(true)
-            } else {
-                systemNavHeight = heightDiff
-                isKeyboardShown = false
-            }
-        }
-
-        closeChatButton.setHapticClickListener {
-            tracker.closeChat()
-            onBackPressed()
-        }
-
-        if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
-            resetChatButton.show()
-        }
-
-        if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-            closeChatButton.show()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
-        forceScrollToBottom = true
-    }
-
-    override fun onPause() {
-        storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
-        super.onPause()
     }
 
     private fun scrollToBottom(smooth: Boolean) {
         if (smooth) {
-            (messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(messages, null, 0)
+            (messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(
+                messages,
+                null,
+                0
+            )
         } else {
             (messages.layoutManager as LinearLayoutManager).scrollToPosition(0)
         }
@@ -389,7 +412,11 @@ class ChatActivity : BaseActivity() {
         listOfAllImages
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_WRITE_PERMISSION ->
                 if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))

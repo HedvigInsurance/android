@@ -11,5 +11,5 @@
     android:paddingTop="@dimen/base_margin"
     android:paddingEnd="@dimen/base_margin_double"
     android:paddingBottom="@dimen/base_margin"
-    android:textColor="@color/purple"
+    android:textColor="@color/link_purple"
     tools:text="Select" />

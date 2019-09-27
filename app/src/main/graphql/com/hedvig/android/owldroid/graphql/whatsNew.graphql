@@ -8,7 +8,9 @@ query WhatsNewQuery(
     sinceVersion: $sinceVersion
   ) {
     illustration {
-      svgUrl
+      variants {
+        ... IconVariantsFragment
+      }
     }
     title
     paragraph

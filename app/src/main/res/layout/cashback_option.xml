@@ -14,8 +14,8 @@
             android:id="@id/cashbackOptionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="22dp"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
             android:theme="@style/Headline.Small"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -23,22 +23,23 @@
 
         <TextView
             android:id="@id/cashbackOptionParagraph"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginEnd="@dimen/base_margin_double"
             android:theme="@style/Body.Small"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cashbackOptionTitle"
             tools:text="För att bli en trygg vuxen krävs en trygg barndom. Därför arbetar SOS Barnbyar med långsiktiga insatser för att inte ett enda barn ska behöva växa upp ensamt." />
 
         <View
-            android:id="@id/separator"
+            android:id="@id/endSeparator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/light_gray"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:background="@color/separator"
             app:layout_constraintTop_toBottomOf="@id/cashbackOptionParagraph" />
 
         <Button
@@ -46,12 +47,12 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="@dimen/base_margin_double"
             android:gravity="center_vertical|end"
             android:theme="@style/DialogButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/separator"
+            app:layout_constraintTop_toBottomOf="@id/endSeparator"
             tools:text="Välj SOS Barnbyar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

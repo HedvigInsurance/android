@@ -2,7 +2,7 @@ package com.hedvig.app.feature.welcome
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.owldroid.graphql.WelcomeQuery
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.feature.dismissablepager.DismissablePagerPage
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -27,8 +27,12 @@ class WelcomeViewModel(
             .subscribe({
                 it?.let { response ->
                     data.postValue(
-                        response.welcome.map {
-                            DismissablePagerPage(it.illustration.svgUrl, it.title, it.paragraph)
+                        response.welcome.map { page ->
+                            DismissablePagerPage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph
+                            )
                         })
                 } ?: Timber.e("No welcome data")
             }, { Timber.e(it) })

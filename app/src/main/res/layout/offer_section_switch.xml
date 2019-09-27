@@ -5,7 +5,7 @@
     android:id="@+id/switchSection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@color/background"
     android:orientation="vertical"
     android:paddingTop="@dimen/base_margin_quadruple"
     android:paddingBottom="@dimen/base_margin_quadruple"
@@ -35,14 +35,15 @@
 
     <TextView
         android:id="@+id/bulletOne"
-        style="@style/Headline.Medium.Negative"
+        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/purple"
+        android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_one"
+        android:textColor="@color/off_white"
         app:layout_constraintBaseline_toBaselineOf="@id/switchParagraphOne"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -60,14 +61,15 @@
 
     <TextView
         android:id="@+id/bulletTwo"
-        style="@style/Headline.Medium.Negative"
+        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/purple"
+        android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_two"
+        android:textColor="@color/off_white"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphTwo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/switchParagraphTwo" />
@@ -87,15 +89,16 @@
 
     <TextView
         android:id="@+id/bulletThree"
-        style="@style/Headline.Medium.Negative"
+        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/purple"
+        android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_three"
+        android:textColor="@color/off_white"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphThree"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/switchParagraphThree" />

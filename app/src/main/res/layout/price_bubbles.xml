@@ -13,7 +13,7 @@
         android:layout_width="@dimen/price_bubble_size"
         android:layout_height="@dimen/price_bubble_size"
         android:background="@drawable/sphere"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/background_elevation_1"
         android:scaleX="0"
         android:scaleY="0"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,12 +88,13 @@
 
         <TextView
             android:id="@+id/discount"
-            style="@style/Headline.Medium.Negative"
+            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="0sp"
+            android:textColor="@color/white"
             tools:text="Inbjuden!" />
     </FrameLayout>
 

@@ -23,7 +23,7 @@
             android:paddingTop="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin_double"
             android:paddingBottom="@dimen/base_margin"
-            android:textColorLink="@color/purple"
+            android:textColorLink="@color/link_purple"
             tools:text="Hej! Jag heter Hedvig 👋\nhttps://www.hedvig.com" />
 
     </FrameLayout>

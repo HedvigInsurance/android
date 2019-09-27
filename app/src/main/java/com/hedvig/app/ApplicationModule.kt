@@ -31,9 +31,12 @@ import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
+import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
@@ -46,12 +49,11 @@ import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.service.Referrals
 import com.hedvig.app.service.RemoteConfig
-import com.hedvig.app.service.TextKeys
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
+import com.hedvig.app.viewmodel.DirectDebitViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -95,7 +97,16 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", makeUserAgent())
+                        .header("User-Agent", makeUserAgent(get()))
+                        .build()
+                )
+            }
+            .addInterceptor { chain ->
+                chain.proceed(
+                    chain
+                        .request()
+                        .newBuilder()
+                        .header("Accept-Language", makeLocaleString(get()))
                         .build()
                 )
             }
@@ -115,14 +126,23 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent() =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${Locale.getDefault().language})"
+fun makeUserAgent(context: Context) =
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
+        context
+    ).language})"
+
+fun makeLocaleString(context: Context): String =
+    getLocale(context).toLanguageTag()
+
+fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    context.resources.configuration.locales.get(0)
+} else {
+    context.resources.configuration.locale
+}
 
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { DirectDebitViewModel(get()) }
     viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
@@ -130,29 +150,38 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { OfferViewModel(get()) }
+}
+
+val offerModule = module {
+    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
+}
+
+val profileModule = module {
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+}
+
+val directDebitModule = module {
+    viewModel<DirectDebitViewModel> { DirectDebitViewModelImpl(get()) }
 }
 
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
-    single { Referrals(get()) }
     single { RemoteConfig() }
-    single { TextKeys(get()) }
     single { TabNotificationService(get()) }
 }
 
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { DirectDebitRepository(get()) }
-    single { ClaimsRepository(get()) }
+    single { ClaimsRepository(get(), get()) }
     single { DashboardRepository(get()) }
     single { MarketingStoriesRepository(get(), get(), get()) }
     single { ProfileRepository(get()) }
     single { ReferralRepository(get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
-    single { WelcomeRepository(get()) }
+    single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
 }
 
@@ -169,4 +198,5 @@ val trackerModule = module {
     single { ChatTracker(get()) }
     single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
+    single { PaymentTracker(get()) }
 }

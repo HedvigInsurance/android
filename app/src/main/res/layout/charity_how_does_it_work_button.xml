@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:contentDescription="@null"
+        android:tint="@color/link_purple"
         app:srcCompat="@drawable/ic_info_purple" />
 
     <TextView

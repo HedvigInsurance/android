@@ -6,7 +6,6 @@ fragment IncentiveFragment on Campaign {
     ... on MonthlyCostDeduction {
       amount {
         amount
-        currency
       }
     }
   }

@@ -25,7 +25,11 @@ class AboutAppActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about_app)
 
-        setupLargeTitle(R.string.PROFILE_ABOUT_APP_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(
+            R.string.PROFILE_ABOUT_APP_TITLE,
+            R.font.circular_bold,
+            R.drawable.ic_back
+        ) {
             onBackPressed()
         }
 
@@ -38,7 +42,8 @@ class AboutAppActivity : BaseActivity() {
             data?.let {
                 whatsNew.show()
                 whatsNew.setOnClickListener {
-                    WhatsNewDialog.newInstance(data.news).show(supportFragmentManager, WhatsNewDialog.TAG)
+                    WhatsNewDialog.newInstance(data.news)
+                        .show(supportFragmentManager, WhatsNewDialog.TAG)
                 }
             }
         }
@@ -59,6 +64,6 @@ class AboutAppActivity : BaseActivity() {
     }
 
     companion object {
-        private const val NEWS_BASE_VERSION = "2.8.1"
+        private const val NEWS_BASE_VERSION = "3.0.0"
     }
 }

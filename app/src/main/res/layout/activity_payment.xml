@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.profile.ui.payment.PaymentActivity">
 
     <include layout="@layout/app_bar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -21,320 +21,55 @@
 
             <include layout="@layout/loading_spinner" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@id/sphereContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:visibility="gone"
-                tools:visibility="visible">
+            <include layout="@layout/failed_payments_card" />
 
-                <ImageView
-                    android:id="@id/priceSphere"
-                    android:layout_width="@dimen/profile_sphere_side_length"
-                    android:layout_height="@dimen/profile_sphere_side_length"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentEnd="true"
-                    android:contentDescription="@null"
-                    android:tint="@color/green"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/sphere" />
+            <include layout="@layout/next_payment_card" />
 
-                <TextView
-                    android:id="@+id/profile_payment_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/soray_extrabold"
-                    android:gravity="center_horizontal"
-                    android:lines="2"
-                    android:textColor="@color/off_black_dark"
-                    android:textSize="48sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="129" />
+            <include layout="@layout/connect_bank_account_card" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/sub_sphere_offset"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <ImageView
-                        android:id="@id/deductibleSphere"
-                        android:layout_width="@dimen/sub_sphere_size"
-                        android:layout_height="@dimen/sub_sphere_size"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentEnd="true"
-                        android:contentDescription="@null"
-                        android:tint="@color/dark_green"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/sphere" />
-
-                    <TextView
-                        style="@style/Body.Small.Negative"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:gravity="center_horizontal"
-                        android:lineSpacingExtra="0sp"
-                        android:lines="2"
-                        android:text="@string/PROFILE_PAYMENT_DEDUCTIBLE_BUBBLE"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <LinearLayout
-                android:id="@+id/freeUntilContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginEnd="@dimen/base_margin"
-                android:background="@drawable/background_rounded_corners_pink"
-                android:orientation="vertical"
-                android:padding="@dimen/base_margin_double">
-
-                <TextView
-                    android:id="@+id/freeUntilText"
-                    style="@style/Headline.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/PROFILE_PAYMENT_FREE_UNTIL_LABEL" />
-
-                <TextView
-                    android:id="@+id/freeUntilMessage"
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/base_margin_half"
-                    android:gravity="center"
-                    tools:text="@string/PROFILE_PAYMENT_FREE_UNTIL_MESSAGE" />
-
-            </LinearLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@id/connectBankAccountContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginEnd="@dimen/base_margin"
-                android:visibility="gone"
-                app:cardCornerRadius="@dimen/bottom_sheet_corner_radius_less"
-                tools:visibility="visible">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@id/cardTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/base_margin_triple"
-                        android:layout_marginTop="@dimen/base_margin_triple"
-                        android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE"
-                        android:theme="@style/Headline.Small"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@id/cardParagraph"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="@dimen/base_margin"
-                        android:layout_marginEnd="20dp"
-                        android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_DESCRIPTION"
-                        android:theme="@style/Body.Small"
-                        app:layout_constraintTop_toBottomOf="@id/cardTitle" />
-
-                    <View
-                        android:id="@id/cardSeparator"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/base_margin_triple"
-                        android:background="@color/light_gray"
-                        app:layout_constraintTop_toBottomOf="@id/cardParagraph" />
-
-                    <Button
-                        android:id="@id/connectBankAccount"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/base_margin_double"
-                        android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON"
-                        android:theme="@style/DialogButton"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/cardSeparator" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:id="@id/paymentDetailsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sphereContainer"
-                tools:visibility="visible">
-
-                <TextView
-                    style="@style/Headline.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="@string/PROFILE_PAYMENT_SECTION_TITLE" />
-
-                <TextView
-                    android:id="@+id/autogiroTitle"
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_double"
-                    android:text="@string/PROFILE_PAYMENT_DIRECT_DEBIT_LABEL" />
-
-                <TextView
-                    android:id="@id/autogiroDate"
-                    style="@style/Body.Regular.Emphasized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
-                    tools:text="Nästa dras 2019-02-27" />
-
-                <TextView
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_PRICE_LABEL" />
-
-                <TextView
-                    android:id="@+id/grossPremium"
-                    style="@style/Body.Regular.Emphasized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
-                    tools:text="179 kr/mån" />
-
-                <TextView
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_DISCOUNT_LABEL" />
-
-                <TextView
-                    android:id="@+id/discount"
-                    style="@style/Body.Regular.Emphasized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
-                    tools:text="-30 kr/mån" />
-
-                <TextView
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_FINAL_COST_LABEL" />
-
-                <TextView
-                    android:id="@+id/netPremium"
-                    style="@style/Body.Regular.Emphasized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
-                    tools:text="149 kr/mån" />
-
-                <TextView
-                    android:id="@+id/bankTitle"
-                    style="@style/Headline.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_BANK_LABEL" />
-
-                <TextView
-                    android:id="@id/bankName"
-                    style="@style/Body.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    tools:text="SEB" />
-
-                <TextView
-                    android:id="@id/accountNumber"
-                    style="@style/Body.Regular.Emphasized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
-                    tools:text="**** 8347" />
-
-                <TextView
-                    android:id="@id/bankAccountUnderChangeParagraph"
-                    style="@style/Body.XSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_double"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-            </LinearLayout>
+            <include layout="@layout/campaign_information_section" />
 
             <View
-                android:id="@id/separator"
+                android:id="@+id/campaignInformationSeparator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/light_gray"
+                android:background="@color/separator"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/paymentDetailsContainer"
+                tools:visibility="visible" />
+
+            <include layout="@layout/payment_history_section" />
+
+            <View
+                android:id="@+id/paymentHistorySeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/separator"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <include layout="@layout/payment_details_section" />
+
+            <View
+                android:id="@+id/endSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:background="@color/separator"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <Button
-                android:id="@id/changeBankAccount"
+                android:id="@+id/changeBankAccount"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_double"
                 android:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
                 android:textAllCaps="false"
                 android:theme="@style/Body.Small.Link.Emphasized"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator"
                 tools:visibility="visible" />
 
             <Button
@@ -343,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
                 android:textAllCaps="false"
                 android:theme="@style/Body.Small.Link.Emphasized"
@@ -355,6 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_WITH_LINK_BUTTON"
                 android:textAllCaps="false"
                 android:theme="@style/Body.Small.Link.Emphasized"

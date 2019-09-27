@@ -2,15 +2,16 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.R
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.synthetic.main.claims_common_claim_cell.view.*
 import org.jetbrains.annotations.NotNull
 import timber.log.Timber
@@ -21,7 +22,7 @@ class CommonClaimsAdapter(
     private val baseUrl: String,
     private val navigateToCommonClaimFragment: (CommonClaimQuery.CommonClaim) -> Unit,
     private val navigateToEmergencyFragment: (CommonClaimQuery.CommonClaim) -> Unit
-) : androidx.recyclerview.widget.RecyclerView.Adapter<CommonClaimsAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<CommonClaimsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(
@@ -47,12 +48,18 @@ class CommonClaimsAdapter(
                     view.setOnClickListener { Timber.i("Not a recognized view") }
             }
 
-            requestBuilder.load(Uri.parse(baseUrl + commonClaim.icon.svgUrl)).into(commonClaimIcon)
+            requestBuilder.load(
+                Uri.parse(
+                    baseUrl + ThemedIconUrls.from(commonClaim.icon.variants.fragments.iconVariantsFragment).iconByTheme(
+                        commonClaimIcon.context
+                    )
+                )
+            ).into(commonClaimIcon)
             commonClaimLabel.text = commonClaim.title
         }
     }
 
-    inner class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val view = itemView
         val commonClaimIcon: ImageView = itemView.commonClaimCellIcon
         val commonClaimLabel: TextView = itemView.commonClaimCellLabel

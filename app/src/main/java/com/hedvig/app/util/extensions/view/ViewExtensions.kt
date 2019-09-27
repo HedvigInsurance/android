@@ -3,12 +3,6 @@ package com.hedvig.app.util.extensions.view
 import android.app.Activity
 import android.graphics.Rect
 import android.os.Build
-import androidx.annotation.ColorInt
-import androidx.annotation.Dimension
-import androidx.annotation.DrawableRes
-import androidx.annotation.FontRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.appcompat.app.AppCompatActivity
 import android.view.HapticFeedbackConstants
 import android.view.TouchDelegate
 import android.view.View
@@ -16,9 +10,18 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
+import androidx.annotation.ColorInt
+import androidx.annotation.Dimension
+import androidx.annotation.DrawableRes
+import androidx.annotation.FontRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.hedvig.app.R
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatFont
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.app_bar.view.*
 
 fun View.show(): View {
@@ -157,12 +160,23 @@ fun View.setupLargeTitle(
         collapsingToolbar.setBackgroundColor(color)
         whenApiVersion(Build.VERSION_CODES.M) {
             val flags = activity.window.decorView.systemUiVisibility
-            activity.window.decorView.systemUiVisibility = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            activity.window.decorView.systemUiVisibility =
+                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             activity.window.statusBarColor = backgroundColor
         }
     }
 
-    icon?.let { toolbar.setNavigationIcon(it) }
+    icon?.let {
+        toolbar.navigationIcon = toolbar.context.compatDrawable(it)?.apply {
+            if (context.isDarkThemeActive) {
+                setTint(
+                    context.compatColor(
+                        R.color.icon_tint
+                    )
+                )
+            }
+        }
+    }
     backAction?.let { toolbar.setNavigationOnClickListener { it() } }
 }
 
@@ -194,4 +208,7 @@ fun View.dismissKeyboard() =
     )
 
 fun View.openKeyboard() =
-    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(this, 0)
+    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
+        this,
+        0
+    )

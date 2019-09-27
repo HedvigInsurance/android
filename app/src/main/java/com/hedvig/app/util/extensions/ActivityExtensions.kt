@@ -69,11 +69,6 @@ fun Activity.hideStatusBar() {
     window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 }
 
-fun Activity.setLightStatusBarText() {
-    val flags = window.decorView.systemUiVisibility
-    window.decorView.systemUiVisibility = flags xor View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-}
-
 val Activity.displayMetrics: DisplayMetrics
     get() {
         val metrics = DisplayMetrics()
@@ -117,8 +112,6 @@ fun AppCompatActivity.setupLargeTitle(
     )
 }
 
-val Activity.localBroadcastManager get() = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this)
-
 fun Activity.startClosableChat(restartable: Boolean = false) {
     val intent = Intent(this, ChatActivity::class.java)
     intent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
@@ -128,12 +121,20 @@ fun Activity.startClosableChat(restartable: Boolean = false) {
     }
 
     val options =
-        ActivityOptionsCompat.makeCustomAnimation(this, R.anim.activity_slide_up_in, R.anim.stay_in_place)
+        ActivityOptionsCompat.makeCustomAnimation(
+            this,
+            R.anim.activity_slide_up_in,
+            R.anim.stay_in_place
+        )
 
     ActivityCompat.startActivity(this, intent, options.toBundle())
 }
 
-fun Activity.askForPermissions(permissions: Array<String>, requestCode: Int, shouldNotAskAction: (() -> Unit)? = null) {
+fun Activity.askForPermissions(
+    permissions: Array<String>,
+    requestCode: Int,
+    shouldNotAskAction: (() -> Unit)? = null
+) {
     permissions.forEach {
         if (ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_DENIED) {
             when {

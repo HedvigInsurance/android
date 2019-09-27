@@ -10,7 +10,6 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/off_white"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -54,16 +53,12 @@
 
                     <Button
                         android:id="@+id/firstEmergencyButton"
-                        style="?android:attr/borderlessButtonStyle"
+                        style="@style/HedvigButton.Purple"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginTop="@dimen/base_margin_double"
-                        android:background="@drawable/button_primary"
                         android:text="@string/CLAIMS_EMERGENCY_FIRST_BOX_BUTTON_LABEL"
-                        android:theme="@style/HedvigButton"
-                        app:backgroundTint="@color/purple"
-                        tools:backgroundTint="@color/purple"
                         tools:visibility="visible" />
                 </LinearLayout>
             </com.hedvig.app.ui.view.HedvigCardView>
@@ -99,16 +94,12 @@
 
                     <Button
                         android:id="@+id/secondEmergencyButton"
-                        style="?android:attr/borderlessButtonStyle"
+                        style="@style/HedvigButton.Purple"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginTop="@dimen/base_margin_double"
-                        android:background="@drawable/button_primary"
                         android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_BUTTON_LABEL"
-                        android:theme="@style/HedvigButton"
-                        app:backgroundTint="@color/purple"
-                        tools:backgroundTint="@color/purple"
                         tools:visibility="visible" />
                 </LinearLayout>
             </com.hedvig.app.ui.view.HedvigCardView>
@@ -144,17 +135,14 @@
 
                     <Button
                         android:id="@+id/thirdEmergencyButton"
-                        style="?android:attr/borderlessButtonStyle"
+                        style="@style/HedvigButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginTop="@dimen/base_margin_double"
-                        android:background="@drawable/button_primary"
+                        android:backgroundTint="@color/light_gray"
                         android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_BUTTON_LABEL"
                         android:textColor="@color/off_black"
-                        android:theme="@style/HedvigButton"
-                        app:backgroundTint="@color/light_gray"
-                        tools:backgroundTint="@color/light_gray"
                         tools:visibility="visible" />
                 </LinearLayout>
 

@@ -1,12 +1,11 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
-import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.util.apollo.defaultLocale
 
 class WhatsNewRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -17,14 +16,14 @@ class WhatsNewRepository(
             apolloClientWrapper.apolloClient.query(
                 WhatsNewQuery
                     .builder()
-                    .locale(Locale.SV_SE)
+                    .locale(defaultLocale(context))
                     .sinceVersion(sinceVersion ?: latestSeenNews())
                     .build()
             )
         )
 
     fun removeNewsForNewUser() {
-        if (latestSeenNews() == VERSION_BEFORE_NEWS_WERE_RELEASED) {
+        if (latestSeenNews() == NEWS_BASELINE_VERSION) {
             hasSeenNews(BuildConfig.VERSION_NAME)
         }
     }
@@ -39,12 +38,12 @@ class WhatsNewRepository(
 
     private fun latestSeenNews() = context
         .getSharedPreferences(WHATS_NEW_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        .getString(LAST_NEWS_SEEN, VERSION_BEFORE_NEWS_WERE_RELEASED)
+        .getString(LAST_NEWS_SEEN, NEWS_BASELINE_VERSION) as String
 
     companion object {
         private const val WHATS_NEW_SHARED_PREFERENCES = "whats_new"
         private const val LAST_NEWS_SEEN = "last_news_seen"
 
-        private const val VERSION_BEFORE_NEWS_WERE_RELEASED = "2.7.3"
+        private const val NEWS_BASELINE_VERSION = "3.0.0"
     }
 }
