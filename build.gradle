@@ -47,6 +47,6 @@ allprojects {
 }
 
 ext {
-    defaultLanguage = "sv_SE"
+    defaultLanguage = "en_SE"
     excludedLanguages = []
 }
