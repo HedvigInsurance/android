@@ -28,6 +28,7 @@
             style="@style/Header.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/off_black_dark"
             android:textSize="@dimen/referral_current_discount_huge_text"
             tools:text="-10kr" />
 
