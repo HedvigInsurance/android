@@ -15,17 +15,13 @@ import com.hedvig.app.util.safeLet
 class PagerIndicatorView : LinearLayout {
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
-        context,
-        attributeSet,
-        defStyle
-    )
+    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(context, attributeSet, defStyle)
 
     init {
         gravity = Gravity.CENTER
     }
 
-    private val purple = context.compatColor(R.color.link_purple)
+    private val purple = context.compatColor(R.color.purple)
     private val gray = context.compatColor(R.color.gray)
 
     var pager: androidx.viewpager.widget.ViewPager? = null
@@ -39,8 +35,7 @@ class PagerIndicatorView : LinearLayout {
                         if (isPositionLast(i, count)) {
                             LayoutInflater.from(context).inflate(R.layout.hedvig_logo, this, true)
                         } else {
-                            LayoutInflater.from(context)
-                                .inflate(R.layout.pager_indicator_view, this, true)
+                            LayoutInflater.from(context).inflate(R.layout.pager_indicator_view, this, true)
                         }
                     }
                 }
@@ -51,42 +46,19 @@ class PagerIndicatorView : LinearLayout {
         override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
-            safeLet<Int, Int, Unit>(
-                pager?.currentItem,
-                pager?.adapter?.count
-            ) { currentItem, count ->
+            safeLet<Int, Int, Unit>(pager?.currentItem, pager?.adapter?.count) { currentItem, count ->
                 if (position == currentItem) {
                     if (!isPositionNextToLast(position, count)) {
-                        (getChildAt(position + 1) as? ImageView)?.let {
-                            expandIndicator(
-                                it,
-                                offsetPercentage
-                            )
-                        }
+                        (getChildAt(position + 1) as? ImageView)?.let { expandIndicator(it, offsetPercentage) }
                     }
                     if (!isPositionLast(position, count)) {
-                        (getChildAt(position) as? ImageView)?.let {
-                            shrinkIndicator(
-                                it,
-                                offsetPercentage
-                            )
-                        }
+                        (getChildAt(position) as? ImageView)?.let { shrinkIndicator(it, offsetPercentage) }
                     }
                 } else {
                     if (!isPositionNextToLast(position, count)) {
-                        (getChildAt(position + 1) as? ImageView)?.let {
-                            shrinkIndicator(
-                                it,
-                                1.0f - offsetPercentage
-                            )
-                        }
+                        (getChildAt(position + 1) as? ImageView)?.let { shrinkIndicator(it, 1.0f - offsetPercentage) }
                     }
-                    (getChildAt(position) as? ImageView?)?.let {
-                        expandIndicator(
-                            it,
-                            1.0f - offsetPercentage
-                        )
-                    }
+                    (getChildAt(position) as? ImageView?)?.let { expandIndicator(it, 1.0f - offsetPercentage) }
                 }
             }
         }

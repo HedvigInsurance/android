@@ -9,6 +9,9 @@ import io.reactivex.Observable
 class DashboardRepository(
     val apolloClientWrapper: ApolloClientWrapper
 ) {
-    fun fetchDashboard(): Observable<Response<DashboardQuery.Data>> =
-        Rx2Apollo.from(apolloClientWrapper.apolloClient.query(DashboardQuery()))
+    fun fetchDashboard(): Observable<Response<DashboardQuery.Data>> {
+        val dashboardQuery = DashboardQuery.builder().build()
+
+        return Rx2Apollo.from(apolloClientWrapper.apolloClient.query(dashboardQuery))
+    }
 }

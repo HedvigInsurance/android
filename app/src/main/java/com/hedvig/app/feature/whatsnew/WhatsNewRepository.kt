@@ -14,10 +14,11 @@ class WhatsNewRepository(
     fun fetchWhatsNew(sinceVersion: String? = null) =
         Rx2Apollo.from(
             apolloClientWrapper.apolloClient.query(
-                WhatsNewQuery(
-                    locale = defaultLocale(context),
-                    sinceVersion = sinceVersion ?: latestSeenNews()
-                )
+                WhatsNewQuery
+                    .builder()
+                    .locale(defaultLocale(context))
+                    .sinceVersion(sinceVersion ?: latestSeenNews())
+                    .build()
             )
         )
 

@@ -1,7 +1,7 @@
 package com.hedvig.app.util
 
-import type.InsuranceStatus
-import type.InsuranceType
+import com.hedvig.android.owldroid.type.InsuranceStatus
+import com.hedvig.android.owldroid.type.InsuranceType
 
 val InsuranceType.isStudentInsurance: Boolean
     get() = when (this) {
@@ -9,7 +9,7 @@ val InsuranceType.isStudentInsurance: Boolean
         InsuranceType.STUDENT_BRF -> true
         InsuranceType.RENT,
         InsuranceType.BRF,
-        InsuranceType.UNKNOWN__ -> false
+        InsuranceType.`$UNKNOWN` -> false
     }
 
 val InsuranceType.isApartmentOwner: Boolean
@@ -18,7 +18,7 @@ val InsuranceType.isApartmentOwner: Boolean
         InsuranceType.STUDENT_BRF -> true
         InsuranceType.RENT,
         InsuranceType.STUDENT_RENT,
-        InsuranceType.UNKNOWN__ -> false
+        InsuranceType.`$UNKNOWN` -> false
     }
 
 val InsuranceStatus.isSigned: Boolean

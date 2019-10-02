@@ -2,6 +2,7 @@ package com.hedvig.app.feature.profile.ui.myhome
 
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -15,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_my_home.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
-import type.InsuranceType
 
 class MyHomeActivity : BaseActivity() {
     val profileViewModel: ProfileViewModel by viewModel()

@@ -70,8 +70,8 @@ class InvitesAdapter(
 
     override fun getItemCount(): Int {
         var count = 1 //start of with header
-        data.invitations.let { count += it.size + 1 } //add title
-        data.referredBy.let { count += 2 } //add title and item
+        data.invitations?.let { count += it.size + 1 } //add title
+        data.referredBy?.let { count += 2 } //add title and item
 
         return count
     }
@@ -150,7 +150,7 @@ class InvitesAdapter(
                     headerTextView.resources.getString(R.string.REFERRAL_INVITE_TITLE)
             }
             INVITE_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
-                data.invitations.getOrNull(position - 2)?.inlineFragment?.let { invite ->
+                data.invitations?.getOrNull(position - 2)?.let { invite ->
                     when (invite) {
                         is ProfileQuery.AsActiveReferral1 -> bindActiveRow(
                             this,
@@ -175,7 +175,7 @@ class InvitesAdapter(
                     headerTextView.resources.getString(R.string.REFERRAL_REFERRED_BY_TITLE)
             }
             REFERRED_BY_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
-                when (val referredBy = data.referredBy?.inlineFragment) {
+                when (val referredBy = data.referredBy) {
                     is ProfileQuery.AsActiveReferral -> bindActiveRow(
                         this,
                         referredBy.name,
@@ -286,8 +286,8 @@ class InvitesAdapter(
         (data.referredBy as? ProfileQuery.AsActiveReferral?)?.let {
             totalDiscount += it.discount.amount.toBigDecimal().toInt()
         }
-        data.invitations.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
-            .forEach { receiver ->
+        data.invitations?.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
+            ?.forEach { receiver ->
                 totalDiscount += receiver.discount.amount.toBigDecimal().toInt()
             }
         return min(totalDiscount, monthlyCost)
@@ -297,8 +297,7 @@ class InvitesAdapter(
     private fun calculateInvitesLeftToFree(): Int {
         val amount = monthlyCost - calculateDiscount()
         val incentive =
-            (data.campaign.incentive?.inlineFragment
-                as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()?.toDouble()
+            (data.campaign.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()?.toDouble()
                 ?: 0.0
         return ceil((amount / incentive)).toInt()
     }

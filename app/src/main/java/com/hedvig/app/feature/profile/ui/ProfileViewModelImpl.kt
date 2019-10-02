@@ -35,7 +35,7 @@ class ProfileViewModelImpl(
         disposables += profileRepository
             .startTrustlySession()
             .subscribe({ url ->
-                trustlyUrl.postValue(url.startDirectDebitRegistration.toString())
+                trustlyUrl.postValue(url.startDirectDebitRegistration)
             }, { error ->
                 Timber.e(error)
             })

@@ -4,8 +4,8 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.graphics.ColorUtils
+import com.hedvig.android.owldroid.type.HedvigColor
 import com.hedvig.app.R
-import type.HedvigColor
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -44,7 +44,7 @@ fun HedvigColor.mappedColor(): Int = when (this) {
     HedvigColor.PINK -> R.color.pink
     HedvigColor.BLACKPURPLE -> R.color.off_black_dark
     HedvigColor.YELLOW -> R.color.yellow
-    HedvigColor.UNKNOWN__ -> R.color.purple
+    HedvigColor.`$UNKNOWN` -> R.color.purple
 }
 
 val colorArray = arrayOf(

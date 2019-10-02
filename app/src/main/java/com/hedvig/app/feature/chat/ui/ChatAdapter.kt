@@ -17,6 +17,7 @@ import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.util.ViewPreloadSizeProvider
+import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -26,7 +27,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.interpolateTextKey
-import fragment.ChatMessageFragment
 import kotlinx.android.synthetic.main.chat_message_file_upload.view.*
 import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
 import kotlinx.android.synthetic.main.chat_message_user.view.*
@@ -44,12 +44,7 @@ class ChatAdapter(
     private val baseMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin)
 
     val recyclerViewPreloader =
-        RecyclerViewPreloader(
-            Glide.with(context),
-            ChatPreloadModelProvider(),
-            ViewPreloadSizeProvider(),
-            10
-        )
+        RecyclerViewPreloader(Glide.with(context), ChatPreloadModelProvider(), ViewPreloadSizeProvider(), 10)
 
     var messages: List<ChatMessagesQuery.Message> = listOf()
         set(value) {
@@ -59,10 +54,7 @@ class ChatAdapter(
 
             val diff =
                 DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                    override fun areItemsTheSame(
-                        oldItemPosition: Int,
-                        newItemPosition: Int
-                    ): Boolean =
+                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
                         oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
                             value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
 
@@ -70,10 +62,7 @@ class ChatAdapter(
 
                     override fun getNewListSize(): Int = value.size
 
-                    override fun areContentsTheSame(
-                        oldItemPosition: Int,
-                        newItemPosition: Int
-                    ): Boolean =
+                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
                         oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
                             value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
                 })
@@ -141,17 +130,17 @@ class ChatAdapter(
     override fun getItemCount() = messages.size
 
     override fun getItemViewType(position: Int) =
-        messages.getOrNull(position)?.fragments?.chatMessageFragment?.header?.fromMyself?.let { isFromMyself ->
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.header?.isFromMyself?.let { isFromMyself ->
             if (isFromMyself) {
                 when {
                     isImageUploadMessage(messages[position].fragments.chatMessageFragment.body) -> FROM_ME_IMAGE_UPLOAD
                     isFileUploadMessage((messages[position].fragments.chatMessageFragment.body)) -> FROM_ME_FILE_UPLOAD
-                    isGiphyMessage(messages[position].bodyCore?.text) -> FROM_ME_GIPHY
-                    isImageMessage(messages[position].bodyCore?.text) -> FROM_ME_IMAGE
+                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_GIPHY
+                    isImageMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_IMAGE
                     else -> FROM_ME_TEXT
                 }
             } else {
-                if (isGiphyMessage(messages[position].bodyCore?.text)) {
+                if (isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text)) {
                     FROM_HEDVIG_GIPHY
                 } else {
                     FROM_HEDVIG
@@ -165,26 +154,26 @@ class ChatAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (viewHolder.itemViewType) {
             FROM_HEDVIG -> {
-                (viewHolder as? HedvigMessage)?.apply { bind(messages[position].bodyCore?.text) }
+                (viewHolder as? HedvigMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_HEDVIG_GIPHY -> {
-                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].bodyCore?.text) }
+                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_TEXT -> {
                 (viewHolder as? UserMessage)?.apply {
                     bind(
-                        messages[position].bodyCore?.text,
+                        messages[position].fragments.chatMessageFragment.body?.text,
                         position,
                         messages[position].fragments.chatMessageFragment.header.statusMessage,
-                        messages[position].fragments.chatMessageFragment.header.editAllowed
+                        messages[position].fragments.chatMessageFragment.header.isEditAllowed
                     )
                 }
             }
             FROM_ME_GIPHY -> {
-                (viewHolder as? GiphyUserMessage)?.apply { bind(messages[position].bodyCore?.text) }
+                (viewHolder as? GiphyUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_IMAGE -> {
-                (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].bodyCore?.text) }
+                (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
             }
             FROM_ME_IMAGE_UPLOAD -> {
                 (viewHolder as? ImageUploadUserMessage)?.apply {
@@ -230,8 +219,7 @@ class ChatAdapter(
     }
 
     override fun getItemId(position: Int) =
-        messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong()
-            ?: position.toLong()
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong() ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
@@ -354,25 +342,20 @@ class ChatAdapter(
 
     inner class NullMessage(view: View) : RecyclerView.ViewHolder(view)
 
-    inner class ChatPreloadModelProvider :
-        ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
+    inner class ChatPreloadModelProvider : ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
         override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
             messages.getOrNull(position)?.let { message ->
                 when {
-                    isGiphyMessage(message.bodyCore?.text) -> listOf(
-                        message
-                    )
-                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(
-                        message
-                    )
+                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(message)
+                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(message)
                     else -> emptyList()
                 }
             } ?: emptyList()
 
         override fun getPreloadRequestBuilder(item: ChatMessagesQuery.Message): RequestBuilder<*>? {
             val url = when {
-                isGiphyMessage(item.bodyCore?.text) -> item.bodyCore?.text
-                isImageUploadMessage(item.fragments.chatMessageFragment.body) -> (item.fragments.chatMessageFragment.body?.inlineFragment as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
+                isGiphyMessage(item.fragments.chatMessageFragment.body?.text) -> item.fragments.chatMessageFragment.body?.text
+                isImageUploadMessage(item.fragments.chatMessageFragment.body) -> (item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
                 else -> null
             }
             return Glide
@@ -405,24 +388,19 @@ class ChatAdapter(
         }
 
         private fun isImageUploadMessage(body: ChatMessageFragment.Body?): Boolean {
-            val asUpload =
-                (body?.inlineFragment as? ChatMessageFragment.AsMessageBodyFile) ?: return false
+            val asUpload = (body as? ChatMessageFragment.AsMessageBodyFile) ?: return false
 
             return isImageMessage(asUpload.file.signedUrl)
         }
 
         private fun isFileUploadMessage(body: ChatMessageFragment.Body?): Boolean {
-            val asUpload =
-                (body?.inlineFragment as? ChatMessageFragment.AsMessageBodyFile) ?: return false
+            val asUpload = (body as? ChatMessageFragment.AsMessageBodyFile) ?: return false
 
             return !isImageMessage(asUpload.file.signedUrl)
         }
 
         private fun getFileUrl(body: ChatMessageFragment.Body?) =
-            (body?.inlineFragment as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
-
-        private val ChatMessagesQuery.Message.bodyCore
-            get() = fragments.chatMessageFragment.body?.inlineFragment as? ChatMessageFragment.AsMessageBodyCore
+            (body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
     }
 }
 

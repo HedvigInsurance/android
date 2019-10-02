@@ -85,6 +85,7 @@ class ChatActivity : BaseActivity() {
         observeData()
     }
 
+
     override fun onResume() {
         super.onResume()
         storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
@@ -229,6 +230,7 @@ class ChatActivity : BaseActivity() {
 
         chatViewModel.subscribe()
         chatViewModel.load()
+
     }
 
     private fun scrollToBottom(smooth: Boolean) {
@@ -254,8 +256,8 @@ class ChatActivity : BaseActivity() {
         if (firstMessage is ParagraphInput) {
             triggerScrollToBottom = true
         }
-        (messages.adapter as? ChatAdapter)?.let { adapter ->
-            adapter.messages = data.messages.mapNotNull { it }
+        (messages.adapter as? ChatAdapter)?.let {
+            it.messages = data.messages
             val layoutManager = messages.layoutManager as LinearLayoutManager
             val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
             if (pos == 0) {

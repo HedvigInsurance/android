@@ -74,7 +74,7 @@ abstract class DismissablePager : DialogFragment() {
     }
 
     inner class PageChangeListener : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(p0: Int) = Unit
+        override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
             pager.adapter?.count?.let { count ->

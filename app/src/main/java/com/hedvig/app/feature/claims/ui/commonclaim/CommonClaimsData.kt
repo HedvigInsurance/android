@@ -2,10 +2,10 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
+import com.hedvig.android.owldroid.type.HedvigColor
+import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.parcel.Parcelize
-import type.HedvigColor
-import type.InsuranceStatus
 
 @Parcelize
 data class CommonClaimsData(
@@ -22,8 +22,7 @@ data class CommonClaimsData(
             data: CommonClaimQuery.CommonClaim,
             insuranceStatus: InsuranceStatus
         ): CommonClaimsData? {
-            val layout = (data.layout?.inlineFragment as? CommonClaimQuery.AsTitleAndBulletPoint)
-                ?: return null
+            val layout = (data.layout as? CommonClaimQuery.AsTitleAndBulletPoints) ?: return null
             return CommonClaimsData(
                 ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
                 data.title,

@@ -8,7 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.type.InsuranceStatus
+import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
@@ -29,7 +33,6 @@ import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.viewmodel.DirectDebitViewModel
-import fragment.PerilCategoryFragment
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -45,9 +48,6 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import type.DirectDebitStatus
-import type.InsuranceStatus
-import type.InsuranceType
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
@@ -160,9 +160,8 @@ class DashboardFragment : BaseTabFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         categoryView.onAnimateExpand = { handleExpandShowEntireView(categoryView) }
-        category.perils?.let { perils ->
-            categoryView.expandedContent =
-                makePerilCategoryExpandContent(perils.mapNotNull { it }, category)
+        category.perils?.let {
+            categoryView.expandedContent = makePerilCategoryExpandContent(it, category)
         }
 
         return categoryView
@@ -175,7 +174,7 @@ class DashboardFragment : BaseTabFragment() {
         val expandedContent = LinearLayout(requireContext())
         val maxPerilsPerRow = rowWidth / perilTotalWidth
         if (perils.size > maxPerilsPerRow) {
-            for (row in perils.indices step maxPerilsPerRow) {
+            for (row in 0 until perils.size step maxPerilsPerRow) {
                 expandedContent.orientation = LinearLayout.VERTICAL
                 val rowView = LinearLayout(requireContext())
                 val rowPerils = perils.subList(row, min(row + maxPerilsPerRow, perils.size))
@@ -320,7 +319,7 @@ class DashboardFragment : BaseTabFragment() {
 
                 setupInsurancePendingMoreInfo()
             }
-            InsuranceStatus.UNKNOWN__,
+            InsuranceStatus.`$UNKNOWN`,
             InsuranceStatus.PENDING,
             InsuranceStatus.TERMINATED -> {
             }

@@ -9,18 +9,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
+import com.hedvig.android.owldroid.fragment.SignStatusFragment
+import com.hedvig.android.owldroid.type.BankIdStatus
+import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
-import fragment.SignStatusFragment
 import kotlinx.android.synthetic.main.dialog_sign.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import type.BankIdStatus
-import type.SignState
 
 class OfferSignDialog : DialogFragment() {
     private val offerViewModel: OfferViewModel by sharedViewModel()
@@ -75,7 +75,7 @@ class OfferSignDialog : DialogFragment() {
     private fun bindStatus(d: SignStatusFragment) {
         when (d.collectStatus?.status) {
             BankIdStatus.PENDING -> {
-                when (d.collectStatus.code) {
+                when (d.collectStatus?.code) {
                     "noClient" -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
                     }
@@ -85,7 +85,7 @@ class OfferSignDialog : DialogFragment() {
                 }
             }
             BankIdStatus.FAILED -> {
-                when (d.collectStatus.code) {
+                when (d.collectStatus?.code) {
                     "userCancel", "cancelled" -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_CANCELED)
                     }

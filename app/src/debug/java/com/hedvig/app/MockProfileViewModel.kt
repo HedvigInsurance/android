@@ -1,15 +1,15 @@
 package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.owldroid.type.InsuranceStatus
+import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
-import fragment.CostFragment
-import fragment.IncentiveFragment
 import org.threeten.bp.LocalDate
-import type.InsuranceStatus
-import type.InsuranceType
 
 class MockProfileViewModel : ProfileViewModel() {
     override val data =
@@ -123,12 +123,9 @@ class MockProfileViewModel : ProfileViewModel() {
                         ProfileQuery.RedeemedCampaign.Fragments(
                             IncentiveFragment(
                                 "Incentive",
-                                IncentiveFragment.Incentive(
-                                    __typename = "FreeMonths",
-                                    inlineFragment = IncentiveFragment.AsFreeMonth(
-                                        "FreeMonths",
-                                        3
-                                    )
+                                IncentiveFragment.AsFreeMonths(
+                                    "FreeMonths",
+                                    3
                                 )
                             )
                         )

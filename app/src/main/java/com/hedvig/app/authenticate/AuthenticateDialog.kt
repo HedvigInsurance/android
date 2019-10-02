@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.iid.FirebaseInstanceId
+import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,7 +23,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import type.AuthState
 
 class AuthenticateDialog : DialogFragment() {
 
@@ -72,7 +72,7 @@ class AuthenticateDialog : DialogFragment() {
         AuthState.IN_PROGRESS -> {
             dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
-        AuthState.UNKNOWN__,
+        AuthState.`$UNKNOWN`,
         AuthState.FAILED -> {
             dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)

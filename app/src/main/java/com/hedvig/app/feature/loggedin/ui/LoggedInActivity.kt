@@ -10,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.LoggedInTerminatedActivity
@@ -42,7 +43,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import type.InsuranceStatus
 
 class LoggedInActivity : BaseActivity() {
     private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -129,8 +129,7 @@ class LoggedInActivity : BaseActivity() {
                 startActivity(SettingsActivity.newInstance(this))
             }
             LoggedInTabs.REFERRALS -> {
-                (profileViewModel.data.value?.referralInformation?.campaign?.incentive?.inlineFragment
-                    as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
+                (profileViewModel.data.value?.referralInformation?.campaign?.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()
                     ?.toInt()?.toString()?.let { amount ->
                         ReferralBottomSheet.newInstance(amount)
                             .show(supportFragmentManager, ReferralBottomSheet.TAG)

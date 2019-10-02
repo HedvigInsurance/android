@@ -3,6 +3,7 @@ package com.hedvig.app.feature.marketing.data
 import android.content.Context
 import android.net.Uri
 import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import com.bumptech.glide.Glide
@@ -29,7 +30,8 @@ class MarketingStoriesRepository(
 ) {
 
     fun fetchMarketingStories(completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit) {
-        val marketingStoriesQuery = MarketingStoriesQuery()
+        val marketingStoriesQuery = MarketingStoriesQuery.builder()
+            .build()
 
         apolloClientWrapper.apolloClient
             .query(marketingStoriesQuery)
@@ -45,9 +47,7 @@ class MarketingStoriesRepository(
 
                 override fun onResponse(response: Response<MarketingStoriesQuery.Data>) {
                     val data = response.data()?.marketingStories
-                    data?.let { assets ->
-                        cacheAssets(assets.mapNotNull { it }, completion)
-                    } ?: handleNoMarketingStories()
+                    data?.let { cacheAssets(it, completion) } ?: handleNoMarketingStories()
                 }
             })
     }
@@ -65,10 +65,7 @@ class MarketingStoriesRepository(
 
     private fun handleNoMarketingStories() = Timber.e("No Marketing Stories")
 
-    private suspend fun cacheAsset(
-        asset: MarketingStoriesQuery.Asset,
-        onEnd: (() -> Unit)? = null
-    ) =
+    private suspend fun cacheAsset(asset: MarketingStoriesQuery.Asset, onEnd: (() -> Unit)? = null) =
         withContext(Dispatchers.IO) {
             try {
                 val mimeType = asset.mimeType

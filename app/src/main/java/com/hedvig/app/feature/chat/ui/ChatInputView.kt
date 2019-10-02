@@ -10,6 +10,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
+import com.hedvig.android.owldroid.fragment.ChatMessageFragment
+import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.Audio
 import com.hedvig.app.feature.chat.ChatInputType
@@ -30,9 +32,7 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import fragment.ChatMessageFragment
 import kotlinx.android.synthetic.main.chat_input_view.view.*
-import type.KeyboardType
 
 class ChatInputView : FrameLayout {
 
@@ -189,20 +189,20 @@ class ChatInputView : FrameLayout {
     private fun bindSingleSelect(input: SingleSelect) {
         singleSelectContainer.removeAllViews()
         input.options.forEach {
-            when (val data = it?.inlineFragment) {
+            when (it) {
                 is ChatMessageFragment.AsMessageBodyChoicesSelection ->
                     inflateSingleSelectButton(
-                        data.text, data.value,
+                        it.text, it.value,
                         SingleSelectChoiceType.SELECTION
                     )
                 is ChatMessageFragment.AsMessageBodyChoicesLink ->
                     inflateSingleSelectButton(
-                        data.text, data.value,
+                        it.text, it.value,
                         SingleSelectChoiceType.LINK
                     )
                 is ChatMessageFragment.AsMessageBodyChoicesUndefined ->
                     inflateSingleSelectButton(
-                        data.text, data.value,
+                        it.text, it.value,
                         SingleSelectChoiceType.UNDEFINED
                     )
             }
