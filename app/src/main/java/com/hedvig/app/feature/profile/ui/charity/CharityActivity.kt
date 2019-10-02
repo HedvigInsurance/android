@@ -5,7 +5,6 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -15,6 +14,7 @@ import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import fragment.CashbackFragment
 import kotlinx.android.synthetic.main.activity_charity.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -42,7 +42,7 @@ class CharityActivity : BaseActivity() {
 
             profileData?.let { data ->
                 data.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
-                    ?: showCharityPicker(data.cashbackOptions)
+                    ?: showCharityPicker(data.cashbackOptions.mapNotNull { it })
             }
         })
     }

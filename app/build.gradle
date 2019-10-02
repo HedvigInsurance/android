@@ -7,7 +7,8 @@ apply plugin: 'com.apollographql.android'
 
 apollo {
     useJavaBeansSemanticNaming = true
-    generateModelBuilder = true
+    generateKotlinModels = true
+    outputPackageName = "com.hedvig.android.owldroid.graphql"
     customTypeMapping = [
             "URL"      : "java.lang.String",
             "LocalDate": "org.threeten.bp.LocalDate",
@@ -138,7 +139,7 @@ dependencies {
 
     implementation "com.google.firebase:firebase-core:17.2.0"
     implementation "com.google.firebase:firebase-dynamic-links:19.0.0"
-    implementation 'com.google.firebase:firebase-config:19.0.1'
+    implementation 'com.google.firebase:firebase-config:19.0.2'
     implementation "com.google.firebase:firebase-messaging:20.0.0"
 
     // Koin
@@ -183,9 +184,6 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
-googleServices {
-    disableVersionCheck = true
-}
 
 apply plugin: 'com.hedvig.textkeys'
 
@@ -199,5 +197,5 @@ task updateSchema(type: Exec) {
     group = 'GraphQL'
     description = 'Fetches the latest schema from our dev GraphQL-server'
 
-    commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
+    commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/schema.json"
 }

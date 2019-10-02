@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -26,6 +23,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.viewmodel.DirectDebitViewModel
+import fragment.IncentiveFragment
 import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.campaign_information_section.*
 import kotlinx.android.synthetic.main.connect_bank_account_card.*
@@ -38,6 +36,8 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
+import type.DirectDebitStatus
+import type.InsuranceStatus
 
 class PaymentActivity : BaseActivity() {
     private val profileViewModel: ProfileViewModel by viewModel()
@@ -144,8 +144,8 @@ class PaymentActivity : BaseActivity() {
         }
 
         (
-            (data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
-                as? IncentiveFragment.AsFreeMonths
+            (data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive?.inlineFragment
+                as? IncentiveFragment.AsFreeMonth
                 )?.quantity)?.let { fm ->
             val amount = SpannableString("$fm\n")
             amount.setSpan(
@@ -166,8 +166,8 @@ class PaymentActivity : BaseActivity() {
 
     private fun bindCampaignInformation(data: ProfileQuery.Data) {
         when (val incentive =
-            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
-            is IncentiveFragment.AsFreeMonths -> {
+            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive?.inlineFragment) {
+            is IncentiveFragment.AsFreeMonth -> {
                 campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
                 campaignInformationLabelOne.text = getString(R.string.PAYMENTS_CAMPAIGN_OWNER)
                 data.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
@@ -340,7 +340,7 @@ class PaymentActivity : BaseActivity() {
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
             profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
-            && profileData.insurance.cost?.freeUntil == null
+            && profileData.insurance.cost.freeUntil == null
         ) {
             redeemCode.show()
         }

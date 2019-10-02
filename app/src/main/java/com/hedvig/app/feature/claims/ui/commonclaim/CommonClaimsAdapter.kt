@@ -13,11 +13,10 @@ import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.synthetic.main.claims_common_claim_cell.view.*
-import org.jetbrains.annotations.NotNull
 import timber.log.Timber
 
 class CommonClaimsAdapter(
-    private val commonClaims: @NotNull MutableList<CommonClaimQuery.CommonClaim>,
+    private val commonClaims: List<CommonClaimQuery.CommonClaim>,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val baseUrl: String,
     private val navigateToCommonClaimFragment: (CommonClaimQuery.CommonClaim) -> Unit,
@@ -39,8 +38,8 @@ class CommonClaimsAdapter(
         viewHolder.apply {
             val commonClaim = commonClaims[position]
 
-            when (commonClaim.layout) {
-                is CommonClaimQuery.AsTitleAndBulletPoints ->
+            when (commonClaim.layout?.inlineFragment) {
+                is CommonClaimQuery.AsTitleAndBulletPoint ->
                     view.setOnClickListener { navigateToCommonClaimFragment.invoke(commonClaim) }
                 is CommonClaimQuery.AsEmergency ->
                     view.setOnClickListener { navigateToEmergencyFragment.invoke(commonClaim) }
