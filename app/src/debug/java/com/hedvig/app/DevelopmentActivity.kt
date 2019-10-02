@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,6 +21,7 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import fragment.IconVariantsFragment
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
@@ -30,8 +30,8 @@ class DevelopmentActivity : AppCompatActivity() {
     private val newsItem = WhatsNewQuery.News(
         "News",
         WhatsNewQuery.Illustration(
-            "Icon", WhatsNewQuery.Variants(
-                "IconVariants", WhatsNewQuery.Variants.Fragments(
+            "Icon", WhatsNewQuery.Variant(
+                "IconVariants", WhatsNewQuery.Variant.Fragments(
                     IconVariantsFragment(
                         "IconVariants",
                         IconVariantsFragment.Dark(

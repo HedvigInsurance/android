@@ -12,8 +12,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -45,6 +43,8 @@ import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isSigned
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
+import fragment.IncentiveFragment
+import fragment.PerilCategoryFragment
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.feature_bubbles.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -243,8 +243,8 @@ class OfferActivity : BaseActivity() {
                     ?.toInt()?.toString()
         }
 
-        if (data.redeemedCampaigns.size > 0) {
-            when (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
+        if (data.redeemedCampaigns.isNotEmpty()) {
+            when (val incentive = data.redeemedCampaigns[0].fragments.incentiveFragment.incentive?.inlineFragment) {
                 is IncentiveFragment.AsMonthlyCostDeduction -> {
                     grossPremium.show()
                     grossPremium.text = interpolateTextKey(
@@ -260,12 +260,12 @@ class OfferActivity : BaseActivity() {
                         netPremium.setTextColor(compatColor(R.color.pink))
                     }
                 }
-                is IncentiveFragment.AsFreeMonths -> {
+                is IncentiveFragment.AsFreeMonth -> {
                     discountBubble.show()
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
-                        "free_month" to (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive as IncentiveFragment.AsFreeMonths).quantity
+                        "free_month" to incentive.quantity
                     )
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
@@ -437,7 +437,7 @@ class OfferActivity : BaseActivity() {
         data.insurance.previousInsurer?.let { previousInsurer ->
             switchSection.show()
 
-            if (previousInsurer.isSwitchable) {
+            if (previousInsurer.switchable) {
                 switchTitle.text = interpolateTextKey(
                     getString(R.string.OFFER_SWITCH_TITLE_APP),
                     "INSURER" to previousInsurer.displayName
@@ -458,15 +458,15 @@ class OfferActivity : BaseActivity() {
             val maxPerilsPerRow = rowWidth / perilTotalWidth
             if (perils.size < maxPerilsPerRow) {
                 container.orientation = LinearLayout.HORIZONTAL
-                perils.forEach { peril ->
+                perils.mapNotNull { it }.forEach { peril ->
                     container.addView(makePeril(peril, category))
                 }
             } else {
                 container.orientation = LinearLayout.VERTICAL
-                for (row in 0 until perils.size step maxPerilsPerRow) {
+                for (row in perils.indices step maxPerilsPerRow) {
                     val rowView = LinearLayout(this)
                     val rowPerils = perils.subList(row, min(row + maxPerilsPerRow, perils.size))
-                    rowPerils.forEach { peril ->
+                    rowPerils.mapNotNull { it }.forEach { peril ->
                         rowView.addView(makePeril(peril, category))
                     }
                     container.addView(rowView)

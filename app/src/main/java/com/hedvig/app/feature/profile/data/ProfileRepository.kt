@@ -17,9 +17,7 @@ import io.reactivex.Observable
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     private lateinit var profileQuery: ProfileQuery
     fun fetchProfile(): Observable<ProfileQuery.Data?> {
-        profileQuery = ProfileQuery
-            .builder()
-            .build()
+        profileQuery = ProfileQuery()
 
         return Rx2Apollo
             .from(apolloClientWrapper.apolloClient.query(profileQuery).watcher())
@@ -31,25 +29,12 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         fetchProfile()
     }
 
-    fun updateEmail(input: String): Observable<Response<UpdateEmailMutation.Data>> {
-        val updateEmailMutation = UpdateEmailMutation
-            .builder()
-            .input(input)
-            .build()
+    fun updateEmail(input: String): Observable<Response<UpdateEmailMutation.Data>> = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(UpdateEmailMutation(input = input)))
 
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(updateEmailMutation))
-    }
-
-    fun updatePhoneNumber(input: String): Observable<Response<UpdatePhoneNumberMutation.Data>> {
-        val updatePhoneNumberMutation = UpdatePhoneNumberMutation
-            .builder()
-            .input(input)
-            .build()
-
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(updatePhoneNumberMutation))
-    }
+    fun updatePhoneNumber(input: String): Observable<Response<UpdatePhoneNumberMutation.Data>> =
+        Rx2Apollo
+            .from(apolloClientWrapper.apolloClient.mutate(UpdatePhoneNumberMutation(input = input)))
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClientWrapper.apolloClient
@@ -58,15 +43,9 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
         val newMemberBuilder = cachedData
             .member
-            .toBuilder()
+            .copy(email = email, phoneNumber = phoneNumber)
 
-        email?.let { newMemberBuilder.email(it) }
-        phoneNumber?.let { newMemberBuilder.phoneNumber(it) }
-
-        val newData = cachedData
-            .toBuilder()
-            .member(newMemberBuilder.build())
-            .build()
+        val newData = cachedData.copy(member = newMemberBuilder)
 
         apolloClientWrapper.apolloClient
             .apolloStore()
@@ -74,15 +53,8 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    fun selectCashback(id: String): Observable<Response<SelectCashbackMutation.Data>> {
-        val selectCashbackMutation = SelectCashbackMutation
-            .builder()
-            .id(id)
-            .build()
-
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(selectCashbackMutation))
-    }
+    fun selectCashback(id: String): Observable<Response<SelectCashbackMutation.Data>> = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(SelectCashbackMutation(id = id)))
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClientWrapper.apolloClient
@@ -90,18 +62,14 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .read(profileQuery)
             .execute()
 
-        val newData = cachedData
-            .toBuilder()
-            .cashback(
-                ProfileQuery.Cashback.builder().fragments(
-                    ProfileQuery.Cashback.Fragments.builder().cashbackFragment(
-                        cashback.fragments.cashbackFragment
-                    ).build()
+        val newData = cachedData.copy(
+            cashback = ProfileQuery.Cashback(
+                __typename = cashback.__typename,
+                fragments = ProfileQuery.Cashback.Fragments(
+                    cashbackFragment = cashback.fragments.cashbackFragment
                 )
-                    .__typename(cashback.__typename)
-                    .build()
             )
-            .build()
+        )
 
         apolloClientWrapper.apolloClient
             .apolloStore()
@@ -117,15 +85,15 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
         val costFragment = data.redeemCode.cost.fragments.costFragment
 
-        val newCost = cachedData.insurance.cost?.toBuilder()
-            ?.fragments(ProfileQuery.Cost.Fragments.builder().costFragment(costFragment).build())?.build()
+        val newCost = cachedData.insurance.cost?.copy(
+            fragments = ProfileQuery.Cost.Fragments(costFragment = costFragment)
+        )
 
-        val newData = cachedData
-            .toBuilder()
-            .insurance(
-                cachedData.insurance.toBuilder().cost(newCost).build()
+        val newData = cachedData.copy(
+            insurance = cachedData.insurance.copy(
+                cost = newCost
             )
-            .build()
+        )
 
         apolloClientWrapper.apolloClient
             .apolloStore()
@@ -133,28 +101,18 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    fun startTrustlySession(): Observable<StartDirectDebitRegistrationMutation.Data> {
-        val startDirectDebitRegistrationMutation = StartDirectDebitRegistrationMutation
-            .builder()
-            .build()
-
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(startDirectDebitRegistrationMutation))
+    fun startTrustlySession(): Observable<StartDirectDebitRegistrationMutation.Data> =
+        Rx2Apollo
+            .from(apolloClientWrapper.apolloClient.mutate(StartDirectDebitRegistrationMutation()))
             .map { it.data() }
-    }
 
-    fun refreshBankAccountInfo(): Observable<Response<BankAccountQuery.Data>> {
-        val bankAccountQuery = BankAccountQuery
-            .builder()
-            .build()
-
-        return Rx2Apollo
+    fun refreshBankAccountInfo(): Observable<Response<BankAccountQuery.Data>> =
+        Rx2Apollo
             .from(
                 apolloClientWrapper.apolloClient
-                    .query(bankAccountQuery)
+                    .query(BankAccountQuery())
                     .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             )
-    }
 
     fun writeBankAccountInfoToCache(bankAccount: BankAccountQuery.BankAccount) {
         val cachedData = apolloClientWrapper.apolloClient
@@ -162,17 +120,15 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .read(profileQuery)
             .execute()
 
-        val newBankAccount = ProfileQuery.BankAccount
-            .builder()
-            .__typename(bankAccount.__typename)
-            .bankName(bankAccount.bankName)
-            .descriptor(bankAccount.descriptor)
-            .build()
+        val newBankAccount = ProfileQuery.BankAccount(
+            __typename = bankAccount.__typename,
+            bankName = bankAccount.bankName,
+            descriptor = bankAccount.descriptor
+        )
 
-        val newData = cachedData
-            .toBuilder()
-            .bankAccount(newBankAccount)
-            .build()
+        val newData = cachedData.copy(
+            bankAccount = newBankAccount
+        )
 
         apolloClientWrapper.apolloClient
             .apolloStore()

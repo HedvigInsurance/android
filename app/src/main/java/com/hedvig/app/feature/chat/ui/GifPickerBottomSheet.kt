@@ -32,12 +32,18 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setContentView(LayoutInflater.from(requireContext()).inflate(R.layout.send_gif_dialog, null))
+        dialog.setContentView(
+            LayoutInflater.from(requireContext()).inflate(
+                R.layout.send_gif_dialog,
+                null
+            )
+        )
         dialog.makeKeyboardAware()
 
         val emptyText = "\uD83D\uDC4B\n${getString(R.string.CHAT_GIPHY_PICKER_TEXT)}"
         dialog.emptyGifLabel.text = emptyText
-        val noGifsText = "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
+        val noGifsText =
+            "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
 
         disposables += Observable.create<String> { emitter ->
             dialog.gifSearchField.onChange { emitter.onNext(it) }
@@ -58,7 +64,7 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
 
         chatViewModel.gifs.observe(lifecycleOwner = this) { data ->
             data?.gifs?.let { gifs ->
-                (dialog.gifRecyclerView.adapter as? GifAdapter)?.items = gifs
+                (dialog.gifRecyclerView.adapter as? GifAdapter)?.items = gifs.mapNotNull { it }
                 if (gifs.isEmpty()) {
                     dialog.gifRecyclerView.remove()
                     dialog.emptyGifLabel.show()

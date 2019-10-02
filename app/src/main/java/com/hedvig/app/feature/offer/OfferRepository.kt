@@ -31,27 +31,23 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val newCost = cachedData.insurance.cost?.toBuilder()
-            ?.fragments(OfferQuery.Cost.Fragments.builder().costFragment(data.redeemCode.cost.fragments.costFragment).build())
-            ?.build()
+        val newCost = cachedData.insurance.cost?.copy(
+            fragments = OfferQuery.Cost.Fragments(
+                costFragment = data.redeemCode.cost.fragments.costFragment
+            )
+        )
 
-        val newData = cachedData
-            .toBuilder()
-            .insurance(cachedData.insurance.toBuilder().cost(newCost).build())
-            .redeemedCampaigns(
-                listOf(
-                    OfferQuery.RedeemedCampaign
-                        .builder()
-                        .fragments(
-                            OfferQuery.RedeemedCampaign.Fragments.builder().incentiveFragment(
-                                data.redeemCode.campaigns[0].fragments.incentiveFragment
-                            ).build()
-                        )
-                        .__typename("RedeemedCampaign")
-                        .build()
+        val newData = cachedData.copy(
+            insurance = cachedData.insurance.copy(cost = newCost),
+            redeemedCampaigns = listOf(
+                OfferQuery.RedeemedCampaign(
+                    __typename = "RedeemedCampaign",
+                    fragments = OfferQuery.RedeemedCampaign.Fragments(
+                        incentiveFragment = data.redeemCode.campaigns[0].fragments.incentiveFragment
+                    )
                 )
             )
-            .build()
+        )
 
         apolloClientWrapper
             .apolloClient
@@ -72,25 +68,19 @@ class OfferRepository(
             .execute()
 
         val oldCostFragment = cachedData.insurance.cost?.fragments?.costFragment ?: return
-        val newCostFragment = oldCostFragment
-            .toBuilder()
-            .monthlyDiscount(oldCostFragment.monthlyDiscount.toBuilder().amount("0.00").build())
-            .monthlyNet(oldCostFragment.monthlyNet.toBuilder().amount(oldCostFragment.monthlyGross.amount).build())
-            .build()
+        val newCostFragment = oldCostFragment.copy(
+            monthlyDiscount = oldCostFragment.monthlyDiscount.copy(amount = "0.00"),
+            monthlyNet = oldCostFragment.monthlyNet.copy(amount = oldCostFragment.monthlyGross.amount)
+        )
 
-        val newData = cachedData
-            .toBuilder()
-            .insurance(
-                cachedData.insurance.toBuilder().cost(
-                    cachedData.insurance.cost?.toBuilder()?.fragments(
-                        OfferQuery.Cost.Fragments.builder().costFragment(
-                            newCostFragment
-                        ).build()
-                    )?.build()
-                ).build()
-            )
-            .redeemedCampaigns(listOf())
-            .build()
+        val newData = cachedData.copy(
+            insurance = cachedData.insurance.copy(
+                cost = cachedData.insurance.cost.copy(
+                    fragments = OfferQuery.Cost.Fragments(costFragment = newCostFragment)
+                )
+            ),
+            redeemedCampaigns = listOf()
+        )
 
         apolloClientWrapper
             .apolloClient
@@ -117,5 +107,9 @@ class OfferRepository(
         )
 
     fun fetchSignStatus() = Rx2Apollo
-        .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
+        .from(
+            apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(
+                HttpCachePolicy.NETWORK_ONLY
+            )
+        )
 }

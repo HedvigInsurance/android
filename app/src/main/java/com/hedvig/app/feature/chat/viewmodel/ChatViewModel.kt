@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
+import fragment.ChatMessageFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -103,7 +104,8 @@ class ChatViewModel(
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
-        response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.type == "paragraph"
+        (response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.inlineFragment
+            as? ChatMessageFragment.AsMessageBodyCore)?.type == "paragraph"
 
     private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
         response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
@@ -176,10 +178,10 @@ class ChatViewModel(
             .sendChatMessage(getLastId(), message)
             .subscribe({ response ->
                 isSendingMessage = false
-                if (response.data()?.isSendChatTextResponse == true) {
+                if (response.data()?.sendChatTextResponse == true) {
                     load()
                 }
-                sendMessageResponse.postValue(response.data()?.isSendChatTextResponse)
+                sendMessageResponse.postValue(response.data()?.sendChatTextResponse)
             }, {
                 isSendingMessage = false
                 Timber.e(it)
@@ -196,7 +198,7 @@ class ChatViewModel(
             .sendFileResponse(getLastId(), key, uri)
             .subscribe({ response ->
                 isSendingMessage = false
-                if (response.data()?.isSendChatFileResponse == true) {
+                if (response.data()?.sendChatFileResponse == true) {
                     load()
                 }
             }, {
@@ -215,7 +217,7 @@ class ChatViewModel(
             .sendSingleSelect(getLastId(), value)
             .subscribe({ response ->
                 isSendingMessage = false
-                if (response.data()?.isSendChatSingleSelectResponse == true) {
+                if (response.data()?.sendChatSingleSelectResponse == true) {
                     load()
                 }
             }, {

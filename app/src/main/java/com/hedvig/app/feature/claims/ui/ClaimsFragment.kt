@@ -4,11 +4,9 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
@@ -31,6 +29,7 @@ import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
+import type.InsuranceStatus
 
 class ClaimsFragment : BaseTabFragment() {
 
@@ -104,9 +103,10 @@ class ClaimsFragment : BaseTabFragment() {
                 baseUrl = BuildConfig.BASE_URL,
                 requestBuilder = requestBuilder,
                 navigateToCommonClaimFragment = { commonClaim ->
-                    CommonClaimsData.from(commonClaim, commonClaimsData.insurance.status)?.let { ccd ->
-                        startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
-                    }
+                    CommonClaimsData.from(commonClaim, commonClaimsData.insurance.status)
+                        ?.let { ccd ->
+                            startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
+                        }
                 },
                 navigateToEmergencyFragment = { commonClaim ->
                     EmergencyData.from(commonClaim, commonClaimsData.insurance.status)?.let { ed ->

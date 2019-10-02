@@ -3,14 +3,13 @@ package com.hedvig.app.service
 import android.content.Context
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.InsuranceStatusQuery
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import io.reactivex.Observable
-import timber.log.Timber
+import type.InsuranceStatus
 
 class LoginStatusService(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -43,7 +42,7 @@ class LoginStatusService(
                             LoginStatus.LOGGED_IN_TERMINATED
                         }
                         InsuranceStatus.PENDING,
-                        InsuranceStatus.`$UNKNOWN` -> {
+                        InsuranceStatus.UNKNOWN__ -> {
                             context.setIsLoggedIn(false)
                             LoginStatus.ONBOARDING
                         }
