@@ -145,7 +145,8 @@
                 android:id="@+id/meSection"
                 layout="@layout/offer_peril_section"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/base_margin_quadruple" />
 
             <include
                 android:id="@+id/termsSection"

@@ -26,4 +26,7 @@ class OfferTracker(
             })
         }
     }
+    fun openPeril(id: String?) = firebaseAnalytics.logEvent("OFFER_PERIL", Bundle().apply {
+        putString("id", id)
+    })
 }

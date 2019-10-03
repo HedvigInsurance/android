@@ -3,12 +3,12 @@ package com.hedvig.app.feature.dashboard.ui
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
 import com.hedvig.app.R
 import com.hedvig.app.ui.view.HedvigCardView
@@ -103,8 +103,8 @@ class PerilCategoryView : HedvigCardView {
     var expandedContent: View? = null
         set(value) {
             field = value
-            perilsContainer.removeAllViews()
-            perilsContainer.addView(value)
+            perils.removeAllViews()
+            perils.addView(value)
 
             expandedContentMeasuredHeight = field?.measuredHeight
 
@@ -117,7 +117,7 @@ class PerilCategoryView : HedvigCardView {
 
     private var expandedContentMeasuredHeight: Int? = null
 
-    val expandedContentContainer: FrameLayout by lazy { perilsContainer }
+    val expandedContentContainer: FrameLayout by lazy { perils }
 
     private var toggled: Boolean = false
 

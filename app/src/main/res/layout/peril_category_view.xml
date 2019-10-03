@@ -14,7 +14,7 @@
             android:layout_width="@dimen/peril_category_icon_size"
             android:layout_height="@dimen/peril_category_icon_size"
             android:contentDescription="@null"
-            app:layout_constraintBottom_toTopOf="@id/perilsContainer"
+            app:layout_constraintBottom_toTopOf="@id/perils"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_profile" />
@@ -27,7 +27,7 @@
             android:gravity="center_vertical"
             android:orientation="vertical"
             app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toTopOf="@id/perilsContainer"
+            app:layout_constraintBottom_toTopOf="@id/perils"
             app:layout_constraintEnd_toStartOf="@id/expandCollapse"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/catIcon"
@@ -59,13 +59,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
-            app:layout_constraintBottom_toTopOf="@id/perilsContainer"
+            app:layout_constraintBottom_toTopOf="@id/perils"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_expand" />
 
         <FrameLayout
-            android:id="@+id/perilsContainer"
+            android:id="@+id/perils"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:visibility="invisible"

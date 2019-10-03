@@ -7,19 +7,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
-import com.hedvig.app.feature.dashboard.ui.PerilIcon
-import com.hedvig.app.feature.dashboard.ui.PerilView
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
@@ -54,20 +50,11 @@ import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import kotlin.math.min
 
-class OfferActivity : BaseActivity() {
-
+class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
-    private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
-    private val perilTotalWidth: Int by lazy {
-        resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2)
-    }
-    private val rowWidth: Int by lazy {
-        displayMetrics.widthPixels - (doubleMargin * 2)
-    }
     private val halfScreenHeight by lazy {
         displayMetrics.heightPixels / 2
     }
@@ -84,7 +71,6 @@ class OfferActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_offer)
 
         offerChatButton.setHapticClickListener {
             tracker.openChat()
@@ -128,19 +114,14 @@ class OfferActivity : BaseActivity() {
     private fun bindStaticData() {
         setSupportActionBar(offerToolbar)
 
-        homeSection.paragraph.text = getString(R.string.OFFER_APARTMENT_PROTECTION_DESCRIPTION)
-        homeSection.hero.setImageDrawable(getDrawable(R.drawable.offer_house))
-
         val quadrupleMargin = resources.getDimensionPixelSize(R.dimen.base_margin_quadruple)
 
-        stuffSection.hero.setImageDrawable(getDrawable(R.drawable.offer_stuff))
+        homeSection.title.text = "Your home"
+
         stuffSection.title.text = getString(R.string.OFFER_STUFF_PROTECTION_TITLE)
         stuffSection.updatePadding(top = quadrupleMargin)
 
-
-        meSection.hero.setImageDrawable(getDrawable(R.drawable.offer_me))
         meSection.title.text = getString(R.string.OFFER_PERSONAL_PROTECTION_TITLE)
-        meSection.paragraph.text = getString(R.string.OFFER_PERSONAL_PROTECTION_DESCRIPTION)
         meSection.updatePadding(top = quadrupleMargin)
 
         termsSection.privacyPolicy.setHapticClickListener {
@@ -244,7 +225,7 @@ class OfferActivity : BaseActivity() {
         }
 
         if (data.redeemedCampaigns.size > 0) {
-            when (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
+            when (val incentive = data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
                 is IncentiveFragment.AsMonthlyCostDeduction -> {
                     grossPremium.show()
                     grossPremium.text = interpolateTextKey(
@@ -265,7 +246,7 @@ class OfferActivity : BaseActivity() {
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
-                        "free_month" to (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive as IncentiveFragment.AsFreeMonths).quantity
+                        "free_month" to incentive.quantity
                     )
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
@@ -367,40 +348,20 @@ class OfferActivity : BaseActivity() {
     }
 
     private fun bindHomeSection(data: OfferQuery.Data) {
-        homeSection.title.text = data.insurance.address
         data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                homeSection.perilsContainer,
-                it
-            )
+            homeSection.perils.adapter = PerilAdapter(it, tracker, supportFragmentManager)
         }
     }
 
     private fun bindStuffSection(data: OfferQuery.Data) {
-        data.insurance.type?.let { insuranceType ->
-            stuffSection.paragraph.text = interpolateTextKey(
-                getString(R.string.OFFER_STUFF_PROTECTION_DESCRIPTION),
-                "protectionAmount" to if (insuranceType.isStudentInsurance) {
-                    getString(R.string.STUFF_PROTECTION_AMOUNT_STUDENT)
-                } else {
-                    getString(R.string.STUFF_PROTECTION_AMOUNT)
-                }
-            )
-        }
         data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                stuffSection.perilsContainer,
-                it
-            )
+            stuffSection.perils.adapter = PerilAdapter(it, tracker, supportFragmentManager)
         }
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
         data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                meSection.perilsContainer,
-                it
-            )
+            meSection.perils.adapter = PerilAdapter(it, tracker, supportFragmentManager)
         }
     }
 
@@ -452,51 +413,10 @@ class OfferActivity : BaseActivity() {
         }
     }
 
-    private fun addPerils(container: LinearLayout, category: PerilCategoryFragment) {
-        container.removeAllViews()
-        category.perils?.let { perils ->
-            val maxPerilsPerRow = rowWidth / perilTotalWidth
-            if (perils.size < maxPerilsPerRow) {
-                container.orientation = LinearLayout.HORIZONTAL
-                perils.forEach { peril ->
-                    container.addView(makePeril(peril, category))
-                }
-            } else {
-                container.orientation = LinearLayout.VERTICAL
-                for (row in 0 until perils.size step maxPerilsPerRow) {
-                    val rowView = LinearLayout(this)
-                    val rowPerils = perils.subList(row, min(row + maxPerilsPerRow, perils.size))
-                    rowPerils.forEach { peril ->
-                        rowView.addView(makePeril(peril, category))
-                    }
-                    container.addView(rowView)
-                }
-            }
-        }
-    }
-
     override fun onPause() {
         animationHandler.removeCallbacksAndMessages(null)
         super.onPause()
     }
-
-    private fun makePeril(peril: PerilCategoryFragment.Peril, category: PerilCategoryFragment) =
-        PerilView.build(
-            this,
-            name = peril.title,
-            iconId = peril.id,
-            onClick = {
-                safeLet(
-                    category.title,
-                    peril.id,
-                    peril.title,
-                    peril.description
-                ) { name, id, title, description ->
-                    PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
-                        .show(supportFragmentManager, PerilBottomSheet.TAG)
-                }
-            }
-        )
 
     companion object {
         private const val BASE_BUBBLE_ANIMATION_DELAY = 650L
