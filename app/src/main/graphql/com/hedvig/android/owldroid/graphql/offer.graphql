@@ -7,9 +7,20 @@ query Offer {
       displayName
       switchable
     }
+    livingSpace
     type
     presaleInformationUrl
     policyUrl
+    ancillaryArea
+    yearOfConstruction
+    numberOfBathrooms
+    extraBuildings {
+      ... on ExtraBuildingCore {
+        area
+        hasWaterConnected
+      }
+    }
+    isSubleted
 
     arrangedPerilCategories {
       me {

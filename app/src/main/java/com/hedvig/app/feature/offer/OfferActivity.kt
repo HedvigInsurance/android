@@ -21,6 +21,7 @@ import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
 import com.hedvig.app.feature.dashboard.ui.PerilIcon
 import com.hedvig.app.feature.dashboard.ui.PerilView
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.binders.FactAreaBinder
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
@@ -82,6 +83,8 @@ class OfferActivity : BaseActivity() {
     private var hasTriggeredAnimations = false
     private var lastAnimationHasCompleted = false
 
+    private lateinit var factAreaBinder: FactAreaBinder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_offer)
@@ -92,6 +95,8 @@ class OfferActivity : BaseActivity() {
                 startClosableChat(true)
             }
         }
+
+        factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
 
         bindStaticData()
 
@@ -110,6 +115,7 @@ class OfferActivity : BaseActivity() {
                 bindToolbar(d)
                 bindPriceBubbles(d)
                 bindDiscountButton(d)
+                factAreaBinder.bind(d.insurance)
                 bindHomeSection(d)
                 bindStuffSection(d)
                 bindMeSection(d)

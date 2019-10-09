@@ -17,4 +17,11 @@
     <declare-styleable name="PagerIndicatorView">
         <attr name="pager" format="reference" />
     </declare-styleable>
+    <declare-styleable name="HedvigCardView">
+        <attr name="android:elevation" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="BezierView">
+        <attr name="topColor" format="color" />
+        <attr name="bottomColor" format="color" />
+    </declare-styleable>
 </resources>

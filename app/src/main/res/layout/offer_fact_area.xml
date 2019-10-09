@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/midnight_700"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/address"
+        style="@style/Headline.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:fontFamily="@font/circular_bold"
+        android:gravity="center_horizontal"
+        android:textColor="@color/violet_200"
+        tools:text="Testvägen 1" />
+
+    <TextView
+        style="@style/Body.Regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:gravity="center_horizontal"
+        android:text="@string/OFFER_HOUSE_SUMMARY_DESC"
+        android:textColor="@color/white" />
+
+    <com.hedvig.app.ui.view.ExpandableContentView
+        android:id="@+id/expandableContentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:paddingStart="@dimen/base_margin"
+        android:paddingEnd="@dimen/base_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_BOYTA" />
+
+            <TextView
+                android:id="@+id/livingSpace"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                tools:text="150 square meters" />
+
+            <TextView
+                android:id="@+id/ancillarySpaceLabel"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_BIYTA"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/ancillarySpace"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                tools:text="150 kvadratmeter" />
+
+            <TextView
+                android:id="@+id/yearOfConstructionLabel"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_YEAR_BUILT"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/yearOfConstruction"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:visibility="gone"
+                tools:text="1987"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/bathroomsLabel"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_BATHROOM"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/bathrooms"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:visibility="gone"
+                tools:text="2"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/subletedLabel"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_RENTED"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/subleted"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:visibility="gone"
+                tools:text="Nej"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/coinsuredLabel"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_COINSURED" />
+
+            <TextView
+                android:id="@+id/coinsured"
+                style="@style/Body.Regular.Emphasized"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                tools:text="4" />
+
+            <View
+                android:id="@+id/additionalBuildingsSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:background="@color/separator_elevation_1"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/additionalBuildingsTitle"
+                style="@style/Headline.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:text="@string/HOUSE_INFO_EXTRABUILDINGS"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/additionalBuildingsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:background="@color/separator_elevation_1" />
+
+            <TextView
+                android:id="@+id/offerExpirationDate"
+                style="@style/Body.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:gravity="center"
+                android:paddingBottom="@dimen/base_margin_quadruple"
+                tools:text="@string/OFFER_INFO_OFFER_EXPIRES" />
+
+        </LinearLayout>
+
+    </com.hedvig.app.ui.view.ExpandableContentView>
+
+</LinearLayout>

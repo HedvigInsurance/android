@@ -117,17 +117,22 @@
                 android:contentDescription="@null"
                 app:srcCompat="@drawable/ic_arrow" />
 
-            <TextView
-                style="@style/Headline.Medium"
+            <com.hedvig.app.ui.view.BezierView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:background="@color/link_purple"
-                android:gravity="center"
-                android:paddingTop="@dimen/base_margin_double"
-                android:paddingBottom="@dimen/base_margin_double"
-                android:text="@string/OFFER_SCROLL_HEADER"
-                android:textColor="@color/white" />
+                app:bottomColor="@color/midnight_700"
+                app:topColor="@color/transparent" />
+
+
+            <include
+                android:id="@+id/offerFactBox"
+                layout="@layout/offer_fact_area" />
+
+            <com.hedvig.app.ui.view.BezierView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:bottomColor="#E7EBF4"
+                app:topColor="@color/midnight_700" />
 
             <include
                 android:id="@+id/homeSection"
@@ -154,13 +159,14 @@
             <include layout="@layout/offer_section_switch" />
 
             <TextView
-                style="@style/Headline.Medium.Negative"
+                style="@style/Headline.Medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:background="@color/offer_background"
                 android:gravity="center"
-                android:text="@string/OFFER_GET_HEDVIG_TITLE" />
+                android:text="@string/OFFER_GET_HEDVIG_TITLE"
+                android:textColor="@color/off_white_light" />
 
             <TextView
                 style="@style/Body.Regular"

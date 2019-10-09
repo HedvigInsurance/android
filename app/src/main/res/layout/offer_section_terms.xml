@@ -10,12 +10,15 @@
 
     <ImageView
         android:id="@+id/offer_legal_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="162dp"
+        android:layout_height="162dp"
         android:adjustViewBounds="true"
         android:contentDescription="@null"
+        android:tint="@color/icon_tint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/offer_legal" />
+        app:srcCompat="@drawable/backed_stamp" />
 
     <TextView
         android:id="@+id/header"
@@ -23,27 +26,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/OFFER_TERMS_TITLE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/offer_legal_image" />
-
-    <TextView
-        android:id="@+id/noBindingPeriod"
-        style="@style/Body.Small"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:drawableStart="@drawable/ic_filled_checkmark_small"
-        android:drawablePadding="@dimen/base_margin_double"
-        android:gravity="center_vertical|start"
-        android:text="@string/OFFER_TERMS_NO_BINDING_PERIOD"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
 
     <TextView
         android:id="@+id/noLimit"
@@ -56,10 +43,10 @@
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
-        android:text="@string/OFFER_TERMS_NO_COVERAGE_LIMIT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:text="@string/OFFER_TERMS_NO_COVERAGE_LIMIT" />
 
     <TextView
         android:id="@+id/maxCompensation"
@@ -94,6 +81,34 @@
         tools:text="@string/OFFER_TERMS_DEDUCTIBLE" />
 
     <TextView
+        android:id="@+id/deductibleExceptions"
+        style="@style/Body.XSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_half"
+        app:layout_constraintEnd_toEndOf="@id/deductible"
+        app:layout_constraintStart_toStartOf="@id/deductible"
+        app:layout_constraintTop_toBottomOf="@id/deductible"
+        tools:text="För vissa skador gäller en förhöjd självrisk, t.ex. översvämning och frysskador. Se våra villkor eller chatta med oss vid frågor." />
+
+    <TextView
+        android:id="@+id/noBindingPeriod"
+        style="@style/Body.Small"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:drawableStart="@drawable/ic_filled_checkmark_small"
+        android:drawablePadding="@dimen/base_margin_double"
+        android:gravity="center_vertical|start"
+        android:text="@string/OFFER_TERMS_NO_BINDING_PERIOD"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductibleExceptions" />
+
+    <TextView
         android:id="@+id/presaleInformation"
         style="@style/Body"
         android:layout_width="@dimen/terms_icon_size"
@@ -109,7 +124,7 @@
         app:autoSizeMinTextSize="@dimen/text_small"
         app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deductible" />
+        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
 
     <TextView
         android:id="@+id/terms"
@@ -127,7 +142,7 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deductible" />
+        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
 
     <TextView
         android:id="@+id/privacyPolicy"
@@ -146,6 +161,6 @@
         app:autoSizeMinTextSize="@dimen/text_xxsmall"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deductible" />
+        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
