@@ -87,10 +87,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginTop="@dimen/base_margin_half"
+        android:text="@string/OFFER_TRUST_INCREASED_DEDUCTIBLE"
         app:layout_constraintEnd_toEndOf="@id/deductible"
         app:layout_constraintStart_toStartOf="@id/deductible"
-        app:layout_constraintTop_toBottomOf="@id/deductible"
-        tools:text="För vissa skador gäller en förhöjd självrisk, t.ex. översvämning och frysskador. Se våra villkor eller chatta med oss vid frågor." />
+        app:layout_constraintTop_toBottomOf="@id/deductible" />
 
     <TextView
         android:id="@+id/noBindingPeriod"

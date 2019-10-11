@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.binders
 
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
@@ -8,6 +9,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isHouse
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
+import kotlinx.android.synthetic.main.offer_fact_area_additional_building_row.view.*
 import org.threeten.bp.LocalDate
 
 class FactAreaBinder(
@@ -47,6 +49,32 @@ class FactAreaBinder(
                 resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
             } else {
                 resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
+            }
+
+            data.extraBuildings?.let { extraBuildings ->
+                additionalBuildingsTitle.show()
+
+                extraBuildings.forEach { extraBuilding ->
+                    val row = LayoutInflater
+                        .from(additionalBuildingsContainer.context)
+                        .inflate(R.layout.offer_fact_area_additional_building_row, additionalBuildingsContainer, false)
+                    row.title.text = extraBuilding.displayName
+
+                    var bodyText = interpolateTextKey(
+                        resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
+                        "HOUSE_INFO_AMOUNT_BOYTA" to extraBuilding.area
+                    )
+                    if (extraBuilding.isHasWaterConnected) {
+                        bodyText += ", " + resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                    }
+                    row.body.text = bodyText
+                    additionalBuildingsContainer.addView(row)
+                }
+
+                additionalBuildingsContainer.show()
+            } ?: run {
+                additionalBuildingsTitle.remove()
+                additionalBuildingsContainer.remove()
             }
         } else {
             ancillarySpaceLabel.remove()
