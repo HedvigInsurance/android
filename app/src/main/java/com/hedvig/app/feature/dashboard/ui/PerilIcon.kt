@@ -10,34 +10,43 @@ object PerilIcon {
         "ME.ASSAULT" -> R.drawable.ic_assault
         "ME.TRAVEL.SICK" -> R.drawable.ic_illness
         "ME.TRAVEL.LUGGAGE.DELAY" -> R.drawable.ic_luggage_delay
+        "HOUSE.HOUSE.FIRE",
         "HOUSE.BRF.FIRE",
         "HOUSE.RENT.FIRE",
         "HOUSE.SUBLET.BRF.FIRE",
         "HOUSE.SUBLET.RENT.FIRE" -> R.drawable.ic_fire_red
+        "HOUSE.HOUSE.APPLIANCES",
         "HOUSE.BRF.APPLIANCES",
         "HOUSE.RENT.APPLIANCES",
         "HOUSE.SUBLET.BRF.APPLIANCES" -> R.drawable.ic_appliances
+        "HOUSE.HOUSE.NATURE",
         "HOUSE.BRF.WEATHER",
         "HOUSE.RENT.WEATHER",
         "HOUSE.SUBLET.BRF.WEATHER",
         "HOUSE.SUBLET.RENT.WEATHER" -> R.drawable.ic_weather_red
+        "HOUSE.HOUSE.WATER",
         "HOUSE.BRF.WATER",
         "HOUSE.RENT.WATER",
         "HOUSE.SUBLET.BRF.WATER",
         "HOUSE.SUBLET.RENT.WATER" -> R.drawable.ic_water_red
         "HOUSE.BREAK-IN" -> R.drawable.ic_break_in
         "HOUSE.DAMAGE" -> R.drawable.ic_vandalism_red
+        "HOUSE.HOUSE.VERMIN" -> R.drawable.ic_vermin
+        "HOUSE.HOUSE.REBUILDING" -> R.drawable.ic_vermin
         "STUFF.CARELESS" -> R.drawable.ic_accidental_damage
         "STUFF.THEFT" -> R.drawable.ic_theft
         "STUFF.DAMAGE" -> R.drawable.ic_vandalism_green
+        "STUFF.HOUSE.FIRE",
         "STUFF.BRF.FIRE",
         "STUFF.RENT.FIRE",
         "STUFF.SUBLET.BRF.FIRE",
         "STUFF.SUBLET.RENT.FIRE" -> R.drawable.ic_fire_green
+        "STUFF.HOUSE.WATER",
         "STUFF.BRF.WATER",
         "STUFF.RENT.WATER",
         "STUFF.SUBLET.BRF.WATER",
         "STUFF.SUBLET.RENT.WATER" -> R.drawable.ic_water_green
+        "STUFF.HOUSE.WEATHER",
         "STUFF.BRF.WEATHER" -> R.drawable.ic_weather_green
         else -> R.drawable.ic_vandalism_green
     }
