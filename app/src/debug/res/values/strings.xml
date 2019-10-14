@@ -9,4 +9,6 @@
 
     <string name="alert_title" translatable="false">Title</string>
     <string name="alert_message" translatable="false">Message</string>
+
+    <string name="mock_personas_prompt" translatable="false">Mock Persona</string>
 </resources>

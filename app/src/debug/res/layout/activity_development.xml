@@ -27,6 +27,15 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Use Mock Data" />
 
+        <Spinner
+            android:id="@+id/mockPersona"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin"
+            android:entries="@array/mock_personas"
+            android:prompt="@string/mock_personas_prompt" />
+
         <Button
             android:id="@+id/openWhatsNew"
             style="@style/HedvigButton.Purple"

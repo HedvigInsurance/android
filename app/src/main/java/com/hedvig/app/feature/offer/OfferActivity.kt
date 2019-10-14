@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -21,6 +22,8 @@ import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
 import com.hedvig.app.feature.dashboard.ui.PerilIcon
 import com.hedvig.app.feature.dashboard.ui.PerilView
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.binders.FactAreaBinder
+import com.hedvig.app.feature.offer.binders.TermsBinder
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
@@ -82,6 +85,9 @@ class OfferActivity : BaseActivity() {
     private var hasTriggeredAnimations = false
     private var lastAnimationHasCompleted = false
 
+    private lateinit var factAreaBinder: FactAreaBinder
+    private lateinit var termsBinder: TermsBinder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_offer)
@@ -92,6 +98,9 @@ class OfferActivity : BaseActivity() {
                 startClosableChat(true)
             }
         }
+
+        factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
+        termsBinder = TermsBinder(termsSection as ConstraintLayout)
 
         bindStaticData()
 
@@ -110,10 +119,11 @@ class OfferActivity : BaseActivity() {
                 bindToolbar(d)
                 bindPriceBubbles(d)
                 bindDiscountButton(d)
+                factAreaBinder.bind(d.insurance)
                 bindHomeSection(d)
                 bindStuffSection(d)
                 bindMeSection(d)
-                bindTerms(d)
+                termsBinder.bind(d.insurance)
                 bindSwitchSection(d)
                 bindFeatureBubbles(d)
                 animateBubbles(d)
@@ -401,35 +411,6 @@ class OfferActivity : BaseActivity() {
                 meSection.perilsContainer,
                 it
             )
-        }
-    }
-
-    private fun bindTerms(data: OfferQuery.Data) {
-        data.insurance.type?.let { insuranceType ->
-            termsSection.maxCompensation.text = interpolateTextKey(
-                getString(R.string.OFFER_TERMS_MAX_COMPENSATION),
-                "MAX_COMPENSATION" to if (insuranceType.isStudentInsurance) {
-                    "200 000 kr"
-                } else {
-                    "1 000 000 kr"
-                }
-            )
-            termsSection.deductible.text = interpolateTextKey(
-                getString(R.string.OFFER_TERMS_DEDUCTIBLE),
-                "DEDUCTIBLE" to "1 500 kr"
-            )
-        }
-        data.insurance.presaleInformationUrl?.let { piu ->
-            termsSection.presaleInformation.setHapticClickListener {
-                tracker.presaleInformation()
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(piu)))
-            }
-        }
-        data.insurance.policyUrl?.let { pu ->
-            termsSection.terms.setHapticClickListener {
-                tracker.terms()
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pu)))
-            }
         }
     }
 

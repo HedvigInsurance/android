@@ -9,6 +9,7 @@ val InsuranceType.isStudentInsurance: Boolean
         InsuranceType.STUDENT_BRF -> true
         InsuranceType.RENT,
         InsuranceType.BRF,
+        InsuranceType.HOUSE,
         InsuranceType.`$UNKNOWN` -> false
     }
 
@@ -18,7 +19,14 @@ val InsuranceType.isApartmentOwner: Boolean
         InsuranceType.STUDENT_BRF -> true
         InsuranceType.RENT,
         InsuranceType.STUDENT_RENT,
+        InsuranceType.HOUSE,
         InsuranceType.`$UNKNOWN` -> false
+    }
+
+val InsuranceType.isHouse: Boolean
+    get() = when (this) {
+        InsuranceType.HOUSE -> true
+        else -> false
     }
 
 val InsuranceStatus.isSigned: Boolean
