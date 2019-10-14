@@ -30,6 +30,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
+import com.hedvig.app.util.isHouse
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.viewmodel.DirectDebitViewModel
@@ -232,13 +233,21 @@ class DashboardFragment : BaseTabFragment() {
         )
 
         content.totalCoverageFootnote.text = interpolateTextKey(
-            resources.getString(R.string.DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE),
+            resources.getString(R.string.DASHBOARD_INSURANCE_AMOUNT_VTWO),
             "AMOUNT" to
-                if (insuranceType.isStudentInsurance) resources.getString(R.string.two_hundred_thousand)
-                else resources.getString(R.string.one_million)
+                when {
+                    insuranceType.isStudentInsurance -> resources.getString(R.string.MAX_COMPENSATION_STUDENT)
+                    insuranceType.isHouse -> resources.getString(R.string.HOUSE_INFO_COMPENSATION_GADGETS)
+                    else -> resources.getString(R.string.MAX_COMPENSATION)
+                }
         )
         if (insuranceType.isApartmentOwner) {
             content.ownerFootnote.show()
+        }
+        if (insuranceType.isHouse) {
+            content.ownerFootnoteText.text = getString(R.string.OFFER_HOUSE_TRUST_HOUSE)
+            content.ownerFootnote.show()
+            content.deductibleExceptions.show()
         }
 
         additionalInformation.expandedContent = content

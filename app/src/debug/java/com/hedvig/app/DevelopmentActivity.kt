@@ -3,8 +3,11 @@ package com.hedvig.app
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
@@ -25,7 +28,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
-class DevelopmentActivity : AppCompatActivity() {
+class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
     private val newsItem = WhatsNewQuery.News(
         "News",
@@ -52,10 +55,29 @@ class DevelopmentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_development)
 
         initializeButtons()
         initializeCheckboxes()
+        initializeSpinners()
+    }
+
+    private fun initializeSpinners() {
+        findViewById<Spinner>(R.id.mockPersona).onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+                        .edit()
+                        .putInt("mockPersona", position)
+                        .apply()
+                }
+            }
     }
 
     private fun initializeButtons() {
@@ -126,24 +148,25 @@ class DevelopmentActivity : AppCompatActivity() {
             if (isChecked) {
                 unloadKoinModules(REAL_MODULES)
                 loadKoinModules(mockModule)
-                getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+                getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
                     .edit()
                     .putBoolean("useMockData", true)
                     .apply()
             } else {
                 unloadKoinModules(mockModule)
                 loadKoinModules(REAL_MODULES)
-                getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+                getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
                     .edit()
                     .putBoolean("useMockData", false)
                     .apply()
             }
         }
-        checkbox.isChecked = getSharedPreferences("DevelopmentPreferences", Context.MODE_PRIVATE)
+        checkbox.isChecked = getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getBoolean("useMockData", false)
     }
 
     companion object {
+        const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES = listOf(offerModule, profileModule, directDebitModule)
     }
 }

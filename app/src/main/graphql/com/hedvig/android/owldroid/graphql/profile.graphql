@@ -14,10 +14,21 @@ query Profile {
     certificateUrl
     personsInHousehold
     livingSpace
+    ancillaryArea
+    yearOfConstruction
+    numberOfBathrooms
     cost {
       ... CostFragment
       freeUntil
     }
+    extraBuildings {
+      ... on ExtraBuildingCore {
+        area
+        displayName
+        hasWaterConnected
+      }
+    }
+    isSubleted
   }
   balance {
     failedCharges

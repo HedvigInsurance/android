@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.hedvig.app.ui.view.HedvigCardView
+        android:id="@+id/expandableContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple"
+        android:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/bottomFadeOut"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expandable_content_view_bottom_fade_out_height"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
+        app:srcCompat="@drawable/fade_out_gradient" />
+
+    <Button
+        android:id="@+id/expandableContentToggle"
+        style="@style/HedvigButton.Purple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="100dp"
+        android:text="@string/OFFER_HOUSE_SUMMARY_BUTTON_EXPAND"
+        app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/expandableContentContainer" />
+
+</merge>

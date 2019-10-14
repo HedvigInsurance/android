@@ -36,7 +36,7 @@
     <dimen name="dashboard_need_setup_container_height">120dp</dimen>
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
     <dimen name="peril_icon">48dp</dimen>
-    <dimen name="peril_width">50dp</dimen>
+    <dimen name="peril_width">72dp</dimen>
     <dimen name="peril_bottom_sheet_title_height">88dp</dimen>
     <dimen name="peril_title_extra_spacing">40dp</dimen>
     <dimen name="peril_bottom_extra_spacing">48dp</dimen>
@@ -144,4 +144,6 @@
     <dimen name="icon_failure_small_size">16dp</dimen>
     <dimen name="tab_bar_icon_size">26dp</dimen>
     <dimen name="progress_tank_view_height">200dp</dimen>
+    <dimen name="expandable_content_view_collapsed_height">200dp</dimen>
+    <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
 </resources>

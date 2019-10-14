@@ -44,7 +44,12 @@ class ChatAdapter(
     private val baseMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin)
 
     val recyclerViewPreloader =
-        RecyclerViewPreloader(Glide.with(context), ChatPreloadModelProvider(), ViewPreloadSizeProvider(), 10)
+        RecyclerViewPreloader(
+            Glide.with(context),
+            ChatPreloadModelProvider(),
+            ViewPreloadSizeProvider(),
+            10
+        )
 
     var messages: List<ChatMessagesQuery.Message> = listOf()
         set(value) {
@@ -54,7 +59,10 @@ class ChatAdapter(
 
             val diff =
                 DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean =
                         oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
                             value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
 
@@ -62,7 +70,10 @@ class ChatAdapter(
 
                     override fun getNewListSize(): Int = value.size
 
-                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean =
                         oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
                             value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
                 })
@@ -140,10 +151,10 @@ class ChatAdapter(
                     else -> FROM_ME_TEXT
                 }
             } else {
-                if (isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text)) {
-                    FROM_HEDVIG_GIPHY
-                } else {
-                    FROM_HEDVIG
+                when {
+                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_HEDVIG_GIPHY
+                    isAudioMessage(messages[position].fragments.chatMessageFragment.body) -> NULL_RENDER // This message sucks. Lets kill it
+                    else -> FROM_HEDVIG
                 }
             }
         } ?: run {
@@ -219,7 +230,8 @@ class ChatAdapter(
     }
 
     override fun getItemId(position: Int) =
-        messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong() ?: position.toLong()
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.globalId?.toLong()
+            ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         val message: TextView = view.hedvigMessage
@@ -342,12 +354,17 @@ class ChatAdapter(
 
     inner class NullMessage(view: View) : RecyclerView.ViewHolder(view)
 
-    inner class ChatPreloadModelProvider : ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
+    inner class ChatPreloadModelProvider :
+        ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
         override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
             messages.getOrNull(position)?.let { message ->
                 when {
-                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(message)
-                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(message)
+                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(
+                        message
+                    )
+                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(
+                        message
+                    )
                     else -> emptyList()
                 }
             } ?: emptyList()
@@ -398,6 +415,9 @@ class ChatAdapter(
 
             return !isImageMessage(asUpload.file.signedUrl)
         }
+
+        private fun isAudioMessage(body: ChatMessageFragment.Body?) =
+            body is ChatMessageFragment.AsMessageBodyAudio
 
         private fun getFileUrl(body: ChatMessageFragment.Body?) =
             (body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
