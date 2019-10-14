@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -85,6 +87,10 @@ class OfferActivity : BaseActivity() {
     private var hasTriggeredAnimations = false
     private var lastAnimationHasCompleted = false
 
+    private val perilWidth by lazy {
+        resources.getDimensionPixelSize(R.dimen.peril_width)
+    }
+
     private lateinit var factAreaBinder: FactAreaBinder
     private lateinit var termsBinder: TermsBinder
 
@@ -100,7 +106,7 @@ class OfferActivity : BaseActivity() {
         }
 
         factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
-        termsBinder = TermsBinder(termsSection as ConstraintLayout)
+        termsBinder = TermsBinder(termsSection as ConstraintLayout, tracker)
 
         bindStaticData()
 
@@ -464,6 +470,7 @@ class OfferActivity : BaseActivity() {
     private fun makePeril(peril: PerilCategoryFragment.Peril, category: PerilCategoryFragment) =
         PerilView.build(
             this,
+            width = perilWidth,
             name = peril.title,
             iconId = peril.id,
             onClick = {

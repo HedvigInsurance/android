@@ -17,11 +17,11 @@
     <TextView
         android:id="@+id/text"
         style="@style/Body.XSmall"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/peril_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
+        android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:maxWidth="@dimen/peril_width"
         app:autoSizeMaxTextSize="@dimen/text_xsmall"
         app:autoSizeMinTextSize="@dimen/text_xxsmall"
         app:autoSizeTextType="uniform"
