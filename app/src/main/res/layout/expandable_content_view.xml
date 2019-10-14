@@ -16,7 +16,7 @@
     <ImageView
         android:id="@+id/bottomFadeOut"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/expandable_content_view_bottom_fade_out_height"
         android:contentDescription="@null"
         app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
         app:srcCompat="@drawable/fade_out_gradient" />

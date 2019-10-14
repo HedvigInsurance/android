@@ -72,9 +72,9 @@ class BezierView : View {
         path.reset()
         path.moveTo(0f, fDesiredHeight)
         path.cubicTo(
-            fWidth * 0.5f,
+            fWidth * HALF,
             fDesiredHeight,
-            fWidth * 0.6f,
+            fWidth * SIXTY_PERCENT,
             0f,
             fWidth,
             fDesiredHeight
@@ -86,7 +86,7 @@ class BezierView : View {
 
         path.reset()
         path.moveTo(0f, fDesiredHeight)
-        path.cubicTo(fWidth * 0.5f, fDesiredHeight, fWidth * 0.6f, 0f, fWidth, fDesiredHeight)
+        path.cubicTo(fWidth * HALF, fDesiredHeight, fWidth * SIXTY_PERCENT, 0f, fWidth, fDesiredHeight)
         path.lineTo(0f, fDesiredHeight)
         canvas?.drawPath(path, bottomPaint)
     }
@@ -107,6 +107,8 @@ class BezierView : View {
     }
 
     companion object {
+        private const val HALF = 0.5f
+        private const val SIXTY_PERCENT = 0.6f
         const val DESIRED_HEIGHT = 200
     }
 }
