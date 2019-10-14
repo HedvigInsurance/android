@@ -93,7 +93,7 @@
         app:layout_constraintTop_toBottomOf="@id/deductible" />
 
     <TextView
-        android:id="@+id/noBindingPeriod"
+        android:id="@+id/backedBy"
         style="@style/Body.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
-        android:text="@string/OFFER_TERMS_NO_BINDING_PERIOD"
+        android:text="@string/OFFER_HOUSE_TRUST_HDI"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/deductibleExceptions" />
@@ -124,7 +124,7 @@
         app:autoSizeMinTextSize="@dimen/text_small"
         app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
+        app:layout_constraintTop_toBottomOf="@id/backedBy" />
 
     <TextView
         android:id="@+id/terms"
@@ -142,7 +142,7 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
+        app:layout_constraintTop_toBottomOf="@id/backedBy" />
 
     <TextView
         android:id="@+id/privacyPolicy"
@@ -161,6 +161,6 @@
         app:autoSizeMinTextSize="@dimen/text_xxsmall"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/noBindingPeriod" />
+        app:layout_constraintTop_toBottomOf="@id/backedBy" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
