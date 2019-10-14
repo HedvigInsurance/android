@@ -22,12 +22,13 @@
 
     <TextView
         android:id="@+id/header"
-        style="@style/Headline.Medium"
+        style="@style/Header.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/OFFER_TERMS_TITLE"
+        android:fontFamily="@font/circular_bold"
+        android:text="@string/OFFER_TITLE_SAFE_WITH_US"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/offer_legal_image" />
@@ -38,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
