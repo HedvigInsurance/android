@@ -23,7 +23,11 @@ class PerilView : LinearLayout {
         this.attributeSet = attributeSet
     }
 
-    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(context, attributeSet, defStyle) {
+    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
+        context,
+        attributeSet,
+        defStyle
+    ) {
         this.attributeSet = attributeSet
         this.defStyle = defStyle
     }
