@@ -32,7 +32,7 @@ object PerilIcon {
         "HOUSE.BREAK-IN" -> R.drawable.ic_break_in
         "HOUSE.DAMAGE" -> R.drawable.ic_vandalism_red
         "HOUSE.HOUSE.VERMIN" -> R.drawable.ic_vermin
-        "HOUSE.HOUSE.REBUILDING" -> R.drawable.ic_vermin
+        "HOUSE.HOUSE.REBUILDING" -> R.drawable.ic_construction
         "STUFF.CARELESS" -> R.drawable.ic_accidental_damage
         "STUFF.THEFT" -> R.drawable.ic_theft
         "STUFF.DAMAGE" -> R.drawable.ic_vandalism_green

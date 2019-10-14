@@ -53,6 +53,7 @@ class FactAreaBinder(
 
             data.extraBuildings?.let { extraBuildings ->
                 additionalBuildingsTitle.show()
+                additionalBuildingsSeparator.show()
 
                 extraBuildings.forEach { extraBuilding ->
                     val row = LayoutInflater
