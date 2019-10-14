@@ -37,6 +37,9 @@ class MockProfileViewModel : ProfileViewModel() {
                     "http://www.africau.edu/images/default/sample.pdf",
                     2,
                     50,
+                    null,
+                    null,
+                    null,
                     ProfileQuery.Cost(
                         "InsuranceCost",
                         //null,
@@ -58,7 +61,9 @@ class MockProfileViewModel : ProfileViewModel() {
                                 )
                             )
                         )
-                    )
+                    ),
+                    null,
+                    null
                 ),
                 ProfileQuery.Balance(
                     "Balance",

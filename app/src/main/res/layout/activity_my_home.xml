@@ -41,6 +41,21 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/PROFILE_MY_HOME_ADDRESS_LABEL"
+                    android:theme="@style/ProfileFieldLabel" />
+
+                <TextView
+                    android:id="@id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:theme="@style/ProfileField"
+                    tools:text="Älgvägen 11" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
                     android:text="@string/PROFILE_MY_HOME_POSTAL_CODE_LABEL"
                     android:theme="@style/ProfileFieldLabel" />
 
@@ -81,6 +96,96 @@
                     android:layout_marginTop="@dimen/base_margin"
                     android:theme="@style/ProfileField"
                     tools:text="63 m²" />
+
+                <TextView
+                    android:id="@+id/ancillaryAreaLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/HOUSE_INFO_BIYTA"
+                    android:theme="@style/ProfileFieldLabel" />
+
+                <TextView
+                    android:id="@+id/ancillaryArea"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:theme="@style/ProfileField"
+                    tools:text="63 m²" />
+
+                <TextView
+                    android:id="@+id/yearOfConstructionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/HOUSE_INFO_YEAR_BUILT"
+                    android:theme="@style/ProfileFieldLabel" />
+
+                <TextView
+                    android:id="@+id/yearOfConstruction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:theme="@style/ProfileField"
+                    tools:text="1930" />
+
+                <TextView
+                    android:id="@+id/bathroomsLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/HOUSE_INFO_BATHROOM"
+                    android:theme="@style/ProfileFieldLabel" />
+
+                <TextView
+                    android:id="@+id/bathrooms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:theme="@style/ProfileField"
+                    tools:text="2" />
+                <View
+                    android:id="@+id/houseSeparator"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintTop_toBottomOf="@id/infoContainer" />
+
+                <TextView
+                    android:id="@+id/subletedLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:text="@string/HOUSE_INFO_BATHROOM"
+                    android:theme="@style/ProfileFieldLabel" />
+
+                <TextView
+                    android:id="@+id/subleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:theme="@style/ProfileField"
+                    tools:text="No" />
+
+                <TextView
+                    android:id="@+id/additionalBuildingsTitle"
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/HOUSE_INFO_EXTRABUILDINGS"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/additionalBuildingsContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
             </LinearLayout>
 

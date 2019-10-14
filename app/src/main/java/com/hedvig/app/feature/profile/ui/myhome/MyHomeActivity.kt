@@ -1,6 +1,9 @@
 package com.hedvig.app.feature.profile.ui.myhome
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.BaseActivity
@@ -13,6 +16,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.activity_my_home.*
+import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -57,7 +61,50 @@ class MyHomeActivity : BaseActivity() {
                     "SQUARE_METER" to insuranceData.livingSpace.toString()
                 )
                 infoContainer.show()
+                bindOrHide(profileData.insurance.ancillaryArea?.toString(), ancillaryAreaLabel, ancillaryArea)
+                bindOrHide(profileData.insurance.yearOfConstruction?.toString(), yearOfConstructionLabel, yearOfConstruction)
+                bindOrHide(profileData.insurance.numberOfBathrooms?.toString(), bathroomsLabel, bathrooms)
+                bindOrHide(profileData.insurance.isSubleted?.let {
+                    if (it) resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE) else resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
+                }, subletedLabel, subleted)
+
+                profileData.insurance.extraBuildings?.let { extraBuildings ->
+                    additionalBuildingsTitle.show()
+
+                    extraBuildings.forEach { extraBuilding ->
+                        val row = LayoutInflater
+                            .from(additionalBuildingsContainer.context)
+                            .inflate(R.layout.additional_buildings_row, additionalBuildingsContainer, false)
+                        row.title.text = extraBuilding.displayName
+
+                        var bodyText = interpolateTextKey(
+                            resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
+                            "HOUSE_INFO_AMOUNT_BOYTA" to extraBuilding.area
+                        )
+                        if (extraBuilding.isHasWaterConnected) {
+                            bodyText += ", " + resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                        }
+                        row.body.text = bodyText
+                        additionalBuildingsContainer.addView(row)
+                    }
+
+                    additionalBuildingsContainer.show()
+                } ?: run {
+                    additionalBuildingsTitle.remove()
+                    additionalBuildingsContainer.remove()
+                }
             }
         })
+    }
+
+    private fun bindOrHide(text: String?, label: View, body: TextView) {
+        text?.let {
+            label.show()
+            body.text = it
+            body.show()
+        } ?: run {
+            label.remove()
+            body.remove()
+        }
     }
 }

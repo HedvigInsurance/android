@@ -9,7 +9,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isHouse
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
-import kotlinx.android.synthetic.main.offer_fact_area_additional_building_row.view.*
+import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import org.threeten.bp.LocalDate
 
 class FactAreaBinder(
@@ -58,7 +58,7 @@ class FactAreaBinder(
                 extraBuildings.forEach { extraBuilding ->
                     val row = LayoutInflater
                         .from(additionalBuildingsContainer.context)
-                        .inflate(R.layout.offer_fact_area_additional_building_row, additionalBuildingsContainer, false)
+                        .inflate(R.layout.additional_buildings_row, additionalBuildingsContainer, false)
                     row.title.text = extraBuilding.displayName
 
                     var bodyText = interpolateTextKey(
