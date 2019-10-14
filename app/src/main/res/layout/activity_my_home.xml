@@ -19,18 +19,15 @@
 
             <include layout="@layout/loading_spinner" />
 
-
             <include
-                android:id="@id/sphereContainer"
+                android:id="@+id/sphereContainer"
                 layout="@layout/sphere_container" />
 
             <LinearLayout
-                android:id="@id/infoContainer"
+                android:id="@+id/infoContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -41,51 +38,65 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/PROFILE_MY_HOME_ADDRESS_LABEL"
                     android:theme="@style/ProfileFieldLabel" />
 
                 <TextView
-                    android:id="@id/address"
+                    android:id="@+id/address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="Älgvägen 11" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/PROFILE_MY_HOME_POSTAL_CODE_LABEL"
                     android:theme="@style/ProfileFieldLabel" />
 
                 <TextView
-                    android:id="@id/postalNumber"
+                    android:id="@+id/postalNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="12345" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/PROFILE_MY_HOME_INSURANCE_TYPE_LABEL"
                     android:theme="@style/ProfileFieldLabel" />
 
                 <TextView
-                    android:id="@id/insuranceType"
+                    android:id="@+id/insuranceType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="Bostadsrätt" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/PROFILE_MY_HOME_LIVING_SPACE_LABEL"
                     android:theme="@style/ProfileFieldLabel" />
 
@@ -93,7 +104,9 @@
                     android:id="@+id/livingSpace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="63 m²" />
 
@@ -101,7 +114,9 @@
                     android:id="@+id/ancillaryAreaLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/HOUSE_INFO_BIYTA"
                     android:theme="@style/ProfileFieldLabel" />
 
@@ -109,7 +124,9 @@
                     android:id="@+id/ancillaryArea"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="63 m²" />
 
@@ -117,7 +134,9 @@
                     android:id="@+id/yearOfConstructionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/HOUSE_INFO_YEAR_BUILT"
                     android:theme="@style/ProfileFieldLabel" />
 
@@ -125,7 +144,9 @@
                     android:id="@+id/yearOfConstruction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="1930" />
 
@@ -133,7 +154,9 @@
                     android:id="@+id/bathroomsLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/HOUSE_INFO_BATHROOM"
                     android:theme="@style/ProfileFieldLabel" />
 
@@ -141,30 +164,29 @@
                     android:id="@+id/bathrooms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="2" />
-                <View
-                    android:id="@+id/houseSeparator"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@color/light_gray"
-                    app:layout_constraintTop_toBottomOf="@id/infoContainer" />
 
                 <TextView
                     android:id="@+id/subletedLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin_quadruple"
-                    android:text="@string/HOUSE_INFO_BATHROOM"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/HOUSE_INFO_RENTED"
                     android:theme="@style/ProfileFieldLabel" />
 
                 <TextView
                     android:id="@+id/subleted"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
                     android:theme="@style/ProfileField"
                     tools:text="No" />
 
@@ -173,6 +195,7 @@
                     style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
                     android:layout_marginEnd="@dimen/base_margin_double"
                     android:text="@string/HOUSE_INFO_EXTRABUILDINGS"
@@ -198,7 +221,7 @@
                 app:layout_constraintTop_toBottomOf="@id/infoContainer" />
 
             <Button
-                android:id="@id/changeHomeInformation"
+                android:id="@+id/changeHomeInformation"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
