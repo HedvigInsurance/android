@@ -7,6 +7,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isHouse
+import com.hedvig.app.util.isStudentInsurance
 import kotlinx.android.synthetic.main.offer_section_terms.view.*
 
 class TermsBinder(
@@ -30,7 +31,11 @@ class TermsBinder(
                 noLimit.text = resources.getString(R.string.OFFER_TERMS_NO_COVERAGE_LIMIT)
                 maxCompensation.text = interpolateTextKey(
                     resources.getString(R.string.OFFER_TERMS_MAX_COMPENSATION),
-                    "MAX_COMPENSATION" to resources.getString(R.string.MAX_COMPENSATION)
+                    "MAX_COMPENSATION" to if (insuranceType.isStudentInsurance) {
+                        resources.getString(R.string.MAX_COMPENSATION_STUDENT)
+                    } else {
+                        resources.getString(R.string.MAX_COMPENSATION)
+                    }
                 )
                 deductibleExceptions.remove()
             }
