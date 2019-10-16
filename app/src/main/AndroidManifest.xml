@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.hedvig.app">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,12 +21,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
-        android:largeHeap="true"
-        tools:replace="android:label">
+        android:largeHeap="true">
 
         <activity
             android:name=".feature.chat.ui.ChatActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -35,7 +33,7 @@
 
         <activity
             android:name=".SplashActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -89,7 +87,7 @@
         </activity>
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -97,7 +95,7 @@
 
         <activity
             android:name=".feature.profile.ui.charity.CharityActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -105,7 +103,7 @@
 
         <activity
             android:name=".feature.profile.ui.feedback.FeedbackActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -113,7 +111,7 @@
 
         <activity
             android:name=".feature.profile.ui.myinfo.MyInfoActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -121,7 +119,7 @@
 
         <activity
             android:name=".feature.profile.ui.payment.PaymentActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -129,7 +127,7 @@
 
         <activity
             android:name=".feature.profile.ui.payment.PaymentHistoryActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -137,7 +135,7 @@
 
         <activity
             android:name=".feature.profile.ui.payment.TrustlyActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -145,7 +143,7 @@
 
         <activity
             android:name=".feature.profile.ui.myhome.MyHomeActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -153,7 +151,7 @@
 
         <activity
             android:name=".feature.profile.ui.coinsured.CoinsuredActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -161,7 +159,7 @@
 
         <activity
             android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -169,7 +167,7 @@
 
         <activity
             android:name=".feature.profile.ui.aboutapp.LicensesActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -177,7 +175,7 @@
 
         <activity
             android:name=".feature.claims.ui.commonclaim.CommonClaimActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -185,7 +183,7 @@
 
         <activity
             android:name=".feature.claims.ui.commonclaim.EmergencyActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -193,21 +191,21 @@
 
         <activity
             android:name=".feature.marketing.ui.MarketingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.offer.OfferActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.Offer"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.referrals.ReferralsReceiverActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -215,7 +213,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.referrals.ReferralsSuccessfulInviteActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:noHistory="true"
             android:parentActivityName=".SplashActivity"
@@ -225,7 +223,7 @@
 
         <activity
             android:name=".LoggedInTerminatedActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
@@ -233,7 +231,7 @@
 
         <activity
             android:name=".feature.settings.SettingsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"

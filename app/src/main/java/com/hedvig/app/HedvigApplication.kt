@@ -1,11 +1,11 @@
 package com.hedvig.app
 
 import android.app.Application
+import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
-import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
@@ -29,20 +29,21 @@ class HedvigApplication : Application() {
 
     private val disposables = CompositeDisposable()
 
+    override fun attachBaseContext(base: Context?) {
+        Language.DefaultLocale.initialize()
+        super.attachBaseContext(Language.fromSettings(base)?.apply(base))
+    }
+
     override fun onCreate() {
         super.onCreate()
 
-        PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .getString(
-                SettingsActivity.SETTING_THEME,
-                Theme.SYSTEM_DEFAULT.toString()
-            )?.let { themeSetting ->
-                Theme.from(
-                    themeSetting
-                )
-                    .apply()
-            }
+        Language
+            .fromSettings(this)
+            ?.apply(this)
+
+        Theme
+            .fromSettings(this)
+            ?.apply()
 
         AndroidThreeTen.init(this)
 

@@ -11,6 +11,13 @@
             app:title="@string/SETTINGS_THEME_TITLE"
             app:useSimpleSummaryProvider="true" />
 
+        <ListPreference
+            app:entries="@array/language_settings"
+            app:entryValues="@array/language_settings_values"
+            app:key="language"
+            app:title="@string/SETTINGS_LANGUAGE_TITLE"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

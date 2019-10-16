@@ -41,6 +41,7 @@ import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
+import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -135,9 +136,11 @@ fun makeLocaleString(context: Context): String =
     getLocale(context).toLanguageTag()
 
 fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    context.resources.configuration.locales.get(0)
+    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locales.get(
+        0
+    )
 } else {
-    context.resources.configuration.locale
+    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locale
 }
 
 val viewModelModule = module {

@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.settings
 
+import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 
 enum class Theme {
     LIGHT,
@@ -34,6 +36,20 @@ enum class Theme {
             "dark" -> DARK
             "system_default" -> SYSTEM_DEFAULT
             else -> throw RuntimeException("Invalid theme value: $value")
+        }
+
+        fun fromSettings(context: Context?): Theme? {
+            if (context == null) {
+                return null
+            }
+
+
+            return from(
+                PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getString("theme", "system_default")
+                    ?: "system_default"
+            )
         }
     }
 }
