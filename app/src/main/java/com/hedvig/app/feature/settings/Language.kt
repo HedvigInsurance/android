@@ -22,6 +22,7 @@ enum class Language {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private fun applyV21(context: Context?, locale: LocaleWrapper): Context? {
         if (locale !is LocaleWrapper.SingleLocale) {
             throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")
