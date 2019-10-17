@@ -65,24 +65,26 @@ enum class Language {
     }
 
     private fun into(): LocaleWrapper = when (this) {
-        SV_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag("sv-SE"))
-        EN_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag("en-SE"))
-        SYSTEM_DEFAULT -> {
-            DefaultLocale.get()
-        }
+        SV_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_SV_SE))
+        EN_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_SE))
+        SYSTEM_DEFAULT -> DefaultLocale.get()
     }
 
     override fun toString() = when (this) {
-        SYSTEM_DEFAULT -> "system_default"
-        SV_SE -> "sv-SE"
-        EN_SE -> "en-SE"
+        SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
+        SV_SE -> SETTING_SV_SE
+        EN_SE -> SETTING_EN_SE
     }
 
     companion object {
+        const val SETTING_SYSTEM_DEFAULT = "system_default"
+        const val SETTING_SV_SE = "sv-SE"
+        const val SETTING_EN_SE = "en-SE"
+
         fun from(value: String) = when (value) {
-            "system_default" -> SYSTEM_DEFAULT
-            "sv-SE" -> SV_SE
-            "en-SE" -> EN_SE
+            SETTING_SYSTEM_DEFAULT -> SYSTEM_DEFAULT
+            SETTING_SV_SE -> SV_SE
+            SETTING_EN_SE -> EN_SE
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
@@ -94,8 +96,8 @@ enum class Language {
             return from(
                 PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getString("language", "system_default")
-                    ?: "system_default"
+                    .getString("language", SETTING_SYSTEM_DEFAULT)
+                    ?: SETTING_SYSTEM_DEFAULT
             )
         }
     }
