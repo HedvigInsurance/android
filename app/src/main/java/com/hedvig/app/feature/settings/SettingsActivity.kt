@@ -3,11 +3,11 @@ package com.hedvig.app.feature.settings
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.SplashActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
@@ -42,11 +42,30 @@ class SettingsActivity : BaseActivity() {
                     true
                 }
             }
+
+            val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
+            languagePreference?.let { lp ->
+                if (lp.value == null) {
+                    lp.value = Language.SYSTEM_DEFAULT.toString()
+                }
+                lp.setOnPreferenceChangeListener { _, newValue ->
+                    (newValue as? String)?.let { v ->
+                        Language
+                            .from(v)
+                            .apply(requireContext())
+                        LocalBroadcastManager
+                            .getInstance(requireContext())
+                            .sendBroadcast(Intent(LOCALE_BROADCAST))
+                    }
+                    true
+                }
+            }
         }
     }
 
     companion object {
         const val SETTING_THEME = "theme"
+        const val SETTING_LANGUAGE = "language"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }

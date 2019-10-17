@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.settings
 
+import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 
 enum class Theme {
     LIGHT,
@@ -23,17 +25,35 @@ enum class Theme {
     }
 
     override fun toString() = when (this) {
-        LIGHT -> "light"
-        DARK -> "dark"
-        SYSTEM_DEFAULT -> "system_default"
+        LIGHT -> SETTING_LIGHT
+        DARK -> SETTING_DARK
+        SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
     }
 
     companion object {
+        const val SETTING_SYSTEM_DEFAULT = "system_default"
+        const val SETTING_LIGHT = "light"
+        const val SETTING_DARK = "dark"
+
         fun from(value: String) = when (value) {
-            "light" -> LIGHT
-            "dark" -> DARK
-            "system_default" -> SYSTEM_DEFAULT
+            SETTING_LIGHT -> LIGHT
+            SETTING_DARK -> DARK
+            SETTING_SYSTEM_DEFAULT -> SYSTEM_DEFAULT
             else -> throw RuntimeException("Invalid theme value: $value")
+        }
+
+        fun fromSettings(context: Context?): Theme? {
+            if (context == null) {
+                return null
+            }
+
+
+            return from(
+                PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getString("theme", SETTING_SYSTEM_DEFAULT)
+                    ?: SETTING_SYSTEM_DEFAULT
+            )
         }
     }
 }
