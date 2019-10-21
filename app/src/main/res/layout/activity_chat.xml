@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/closeChatButton"
+            android:id="@+id/closeOrRestart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
@@ -29,9 +29,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
             android:padding="@dimen/base_margin"
-            android:tint="@color/icon_tint"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_close"
+            tools:srcCompat="@drawable/ic_close"
+            tools:tint="@color/icon_tint"
             tools:visibility="visible" />
 
         <ImageView
@@ -44,17 +44,17 @@
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
-            android:id="@+id/resetChatButton"
+            android:id="@+id/settings"
             android:layout_width="@dimen/chat_top_bar_button_size"
             android:layout_height="@dimen/chat_top_bar_button_size"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/CHAT_RESTART_CONTENT_DESCRIPTION"
+            android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
             android:padding="@dimen/base_margin_half"
             android:tint="@color/icon_tint"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_restart_gray"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_settings"
             tools:visibility="visible" />
 
     </FrameLayout>
