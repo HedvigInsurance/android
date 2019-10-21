@@ -126,6 +126,15 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open settings" />
 
+        <Button
+            android:id="@+id/openRatingsDialog"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open ratings dialog" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/ProfileField"
             android:layout_width="match_parent"
