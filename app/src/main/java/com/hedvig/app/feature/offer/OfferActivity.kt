@@ -5,9 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -26,6 +24,7 @@ import com.hedvig.app.feature.dashboard.ui.PerilView
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
 import com.hedvig.app.feature.offer.binders.TermsBinder
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
@@ -36,8 +35,6 @@ import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.view.fadeIn
-import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -61,7 +58,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import kotlin.math.min
 
-class OfferActivity : BaseActivity() {
+class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
@@ -73,15 +70,6 @@ class OfferActivity : BaseActivity() {
     private val rowWidth: Int by lazy {
         displayMetrics.widthPixels - (doubleMargin * 2)
     }
-    private val halfScreenHeight by lazy {
-        displayMetrics.heightPixels / 2
-    }
-    private val signButtonOffScreenTranslation by lazy {
-        resources.getDimension(R.dimen.offer_sign_button_off_screen_translation)
-    }
-
-    private var isShowingToolbarSign = true
-    private var isShowingFloatingSign = false
 
     private val animationHandler = Handler()
     private var hasTriggeredAnimations = false
@@ -96,7 +84,6 @@ class OfferActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_offer)
 
         offerChatButton.setHapticClickListener {
             tracker.openChat()
@@ -164,6 +151,10 @@ class OfferActivity : BaseActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, PRIVACY_POLICY_URL))
         }
 
+        settings.setHapticClickListener {
+            startActivity(SettingsActivity.newInstance(this))
+        }
+
         grossPremium.setStrikethrough(true)
 
         setupButtons()
@@ -175,44 +166,10 @@ class OfferActivity : BaseActivity() {
             tracker.floatingSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
-        offerToolbarSign.setHapticClickListener {
-            tracker.toolbarSign()
-            OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
-        }
     }
 
     private fun setupScrollListeners() {
         offerScroll.setOnScrollChangeListener { _: NestedScrollView, _, scrollY, _, _ ->
-            if (scrollY > halfScreenHeight) {
-                if (isShowingToolbarSign) {
-                    isShowingToolbarSign = false
-                    offerToolbarSign.fadeOut()
-                }
-                if (!isShowingFloatingSign) {
-                    isShowingFloatingSign = true
-                    signButton
-                        .spring(
-                            DynamicAnimation.TRANSLATION_Y,
-                            damping = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-                        )
-                        .animateToFinalPosition(0f)
-                }
-            } else {
-                if (!isShowingToolbarSign) {
-                    isShowingToolbarSign = true
-                    offerToolbarSign.fadeIn()
-                }
-                if (isShowingFloatingSign) {
-                    isShowingFloatingSign = false
-                    signButton
-                        .spring(
-                            DynamicAnimation.TRANSLATION_Y,
-                            damping = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
-                        )
-                        .animateToFinalPosition(signButtonOffScreenTranslation)
-                }
-            }
-
             parallaxContainer.translationY = scrollY / 1.25f
             arrow.alpha = boundedLerp(1f, 0f, scrollY / 200f)
         }
@@ -347,6 +304,14 @@ class OfferActivity : BaseActivity() {
                 lastAnimationHasCompleted = true
             }
         }, BASE_BUBBLE_ANIMATION_DELAY + 200)
+        animationHandler.postDelayed({
+            signButton
+                .spring(
+                    DynamicAnimation.TRANSLATION_Y,
+                    damping = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+                )
+                .animateToFinalPosition(0f)
+        }, BASE_BUBBLE_ANIMATION_DELAY + 300)
     }
 
     private fun animateDiscountBubble(withDelay: Long = 0) {

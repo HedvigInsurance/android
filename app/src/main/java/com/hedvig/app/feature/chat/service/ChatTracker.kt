@@ -16,4 +16,5 @@ class ChatTracker(
     fun singleSelect(label: String) = firebaseAnalytics.logEvent("chat_single_select", Bundle().apply {
         putString("label", label)
     })
+    fun settings() = firebaseAnalytics.logEvent("SETTINGS_ACCESSIBILITY_HINT", null)
 }
