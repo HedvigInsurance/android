@@ -23,6 +23,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
@@ -202,4 +203,5 @@ val trackerModule = module {
     single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
+    single { LanguageSelectionTracker(get()) }
 }
