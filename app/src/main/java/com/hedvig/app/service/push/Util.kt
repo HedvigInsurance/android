@@ -10,7 +10,7 @@ fun setupNotificationChannel(
     context: Context,
     channelId: String,
     channelName: String,
-    channelDescription: String
+    channelDescription: String?
 ) =
     whenApiVersion(Build.VERSION_CODES.O) {
         val notificationManager =
@@ -20,6 +20,8 @@ fun setupNotificationChannel(
                 channelId,
                 channelName,
                 NotificationManager.IMPORTANCE_HIGH
-            ).apply { description = channelDescription }
+            ).apply {
+                channelDescription?.let { description = it }
+            }
         )
     }

@@ -133,7 +133,7 @@ object PaymentNotificationManager {
         setupNotificationChannel(
             context,
             PAYMENTS_CHANNEL_ID,
-            "TODO COPY",
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
             "TODO COPY"
         )
     }
