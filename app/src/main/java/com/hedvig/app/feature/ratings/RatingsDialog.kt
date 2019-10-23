@@ -42,13 +42,12 @@ class RatingsDialog : DialogFragment() {
             if (choice == null) {
                 tracker.doNotLikeApp()
                 choice = RatingsChoice.NO
-                paragraph.text =
-                    "Ok, tråkigt att höra! Skulle du kunna tänka dig att ge oss feedback på vad som inte varit bra för dig?"
+                paragraph.text = getString(R.string.RATINGS_DIALOG_BODY_FEEDBACK)
                 return@setHapticClickListener
             }
             when (choice) {
-                RatingsChoice.YES -> tracker.noToFeedback()
-                RatingsChoice.NO -> tracker.doNotRate()
+                RatingsChoice.YES -> tracker.doNotRate()
+                RatingsChoice.NO -> tracker.noToFeedback()
             }
             dialog?.dismiss()
         }
@@ -68,7 +67,7 @@ class RatingsDialog : DialogFragment() {
                     dialog?.dismiss()
                 }
                 RatingsChoice.NO -> {
-                    tracker.doNotRate()
+                    tracker.yesToFeedback()
                     startActivity(Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:android@hedvig.com?subject=Feedback")
                     })
