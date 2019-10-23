@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@drawable/background_rounded_corners"
+    android:minWidth="@dimen/ratings_dialog_minimum_width"
     android:orientation="vertical"
     android:padding="@dimen/base_margin_quadruple">
 
