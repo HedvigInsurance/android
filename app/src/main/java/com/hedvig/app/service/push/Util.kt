@@ -10,7 +10,7 @@ fun setupNotificationChannel(
     context: Context,
     channelId: String,
     channelName: String,
-    channelDescription: String?
+    channelDescription: String? = null
 ) =
     whenApiVersion(Build.VERSION_CODES.O) {
         val notificationManager =

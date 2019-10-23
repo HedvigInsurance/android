@@ -59,7 +59,7 @@ object ReferralsNotificationManager {
             .notify(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
     }
 
-    private fun createChannel(context: Context) {
+    fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
             REFERRAL_CHANNEL_ID,

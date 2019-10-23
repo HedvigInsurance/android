@@ -15,8 +15,6 @@ import com.hedvig.app.service.push.setupNotificationChannel
 
 object PaymentNotificationManager {
     fun sendDirectDebitNotification(context: Context) {
-        createChannel(context)
-
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -55,8 +53,6 @@ object PaymentNotificationManager {
     }
 
     fun sendPaymentFailedNotification(context: Context) {
-        createChannel(context)
-
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -95,8 +91,6 @@ object PaymentNotificationManager {
     }
 
     fun sendClaimPaidNotification(context: Context, remoteMessage: RemoteMessage) {
-        createChannel(context)
-
         // TODO: Extract parameters from remoteMessage to display more specifically how much money was paid etc
         val pendingIntent = TaskStackBuilder
             .create(context)
@@ -129,12 +123,12 @@ object PaymentNotificationManager {
             .notify(CLAIM_PAID_NOTIFICATION_ID, notification)
     }
 
-    private fun createChannel(context: Context) {
+    fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
             PAYMENTS_CHANNEL_ID,
             context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-            "TODO COPY"
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION)
         )
     }
 

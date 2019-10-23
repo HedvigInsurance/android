@@ -14,8 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 object GenericNotificationManager {
     fun sendGenericNotification(context: Context, remoteMessage: RemoteMessage) {
-        createChannel(context)
-
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -49,12 +47,11 @@ object GenericNotificationManager {
             )
     }
 
-    private fun createChannel(context: Context) {
+    fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
             GENERIC_CHANNEL_ID,
-            "TODO Copy",
-            "TODO Copy"
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE)
         )
     }
 

@@ -16,6 +16,15 @@ import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
 
+    override fun onCreate() {
+        super.onCreate()
+
+        ChatNotificationManager.createChannel(this)
+        ReferralsNotificationManager.createChannel(this)
+        PaymentNotificationManager.createChannel(this)
+        GenericNotificationManager.createChannel(this)
+    }
+
     override fun onNewToken(token: String) {
         Timber.i("Got new token: $token")
         val work = OneTimeWorkRequest
@@ -43,12 +52,14 @@ class PushNotificationService : FirebaseMessagingService() {
                 .sendDirectDebitNotification(this)
             NOTIFICATION_TYPE_PAYMENT_FAILED -> PaymentNotificationManager
                 .sendPaymentFailedNotification(this)
+/*
             NOTIFICATION_TYPE_CLAIM_PAID -> PaymentNotificationManager
                 .sendClaimPaidNotification(this, remoteMessage)
             NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED -> InsurancePolicyNotificationManager
                 .sendInsurancePolicyUpdatedNotification(this)
             NOTIFICATION_TYPE_INSURANCE_RENEWED -> InsurancePolicyNotificationManager
                 .sendInsuranceRenewedNotification(this)
+*/
             NOTIFICATION_TYPE_GENERIC_COMMUNICATION -> GenericNotificationManager
                 .sendGenericNotification(this, remoteMessage)
             else -> ChatNotificationManager
@@ -65,9 +76,11 @@ class PushNotificationService : FirebaseMessagingService() {
         const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
         const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
-        const val NOTIFICATION_TYPE_CLAIM_PAID = "CLAIM_PAID"
-        const val NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED = "INSURANCE_POLICY_UPDATED"
-        const val NOTIFICATION_TYPE_INSURANCE_RENEWED = "INSURANCE_RENEWED"
+        /*
+                const val NOTIFICATION_TYPE_CLAIM_PAID = "CLAIM_PAID"
+                const val NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED = "INSURANCE_POLICY_UPDATED"
+                const val NOTIFICATION_TYPE_INSURANCE_RENEWED = "INSURANCE_RENEWED"
+        */
         const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
 
         const val DATA_MESSAGE_REFERRED_SUCCESS_NAME = "DATA_MESSAGE_REFERRED_SUCCESS_NAME"

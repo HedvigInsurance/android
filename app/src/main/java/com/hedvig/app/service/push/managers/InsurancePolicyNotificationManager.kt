@@ -79,7 +79,7 @@ object InsurancePolicyNotificationManager {
             .notify(INSURANCE_RENEWED_NOTIFICATION_ID, notification)
     }
 
-    private fun createChannel(context: Context) {
+    fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
             INSURANCE_POLICY_CHANNEL_ID,

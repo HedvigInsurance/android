@@ -85,7 +85,7 @@ object ChatNotificationManager {
             .notify(PushNotificationService.NOTIFICATION_ID, notification)
     }
 
-    private fun createChannel(context: Context) {
+    fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
             CHAT_CHANNEL_ID,
