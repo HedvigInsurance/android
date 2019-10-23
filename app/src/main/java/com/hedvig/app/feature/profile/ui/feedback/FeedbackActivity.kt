@@ -2,12 +2,11 @@ package com.hedvig.app.feature.profile.ui.feedback
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.ratings.openPlayStore
 import com.hedvig.app.util.extensions.setupLargeTitle
-import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.activity_feedback.*
 
 class FeedbackActivity : BaseActivity() {
@@ -21,17 +20,13 @@ class FeedbackActivity : BaseActivity() {
 
         bugReportEmail.setOnClickListener {
             startActivity(Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:${getString(R.string.bug_report_mail)}?subject=Buggrapport")
+                data =
+                    Uri.parse("mailto:${getString(R.string.bug_report_mail)}?subject=Buggrapport")
             })
         }
 
         playLink.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
-            var flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-            whenApiVersion(Build.VERSION_CODES.LOLLIPOP) {
-                flags = flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-            }
-            startActivity(intent)
+            openPlayStore()
         }
     }
 }

@@ -39,6 +39,7 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
+import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
@@ -204,4 +205,5 @@ val trackerModule = module {
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
     single { LanguageSelectionTracker(get()) }
+    single { RatingsTracker(get()) }
 }
