@@ -15,6 +15,8 @@ import com.hedvig.app.util.safeLet
 
 object ReferralsNotificationManager {
     fun sendReferralNotification(context: Context, remoteMessage: RemoteMessage) {
+        createChannel(context)
+
         val referralName =
             remoteMessage.data[PushNotificationService.DATA_MESSAGE_REFERRED_SUCCESS_NAME]
         val referralIncentive =

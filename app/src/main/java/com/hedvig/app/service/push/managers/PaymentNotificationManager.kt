@@ -15,6 +15,8 @@ import com.hedvig.app.service.push.setupNotificationChannel
 
 object PaymentNotificationManager {
     fun sendDirectDebitNotification(context: Context) {
+        createChannel(context)
+
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -39,8 +41,8 @@ object PaymentNotificationManager {
                 PAYMENTS_CHANNEL_ID
             )
             .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
-            .setContentTitle("TODO Copy")
-            .setContentText("TODO Copy")
+            .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
+            .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true)
             .setChannelId(PAYMENTS_CHANNEL_ID)
@@ -53,6 +55,8 @@ object PaymentNotificationManager {
     }
 
     fun sendPaymentFailedNotification(context: Context) {
+        createChannel(context)
+
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -77,8 +81,8 @@ object PaymentNotificationManager {
                 PAYMENTS_CHANNEL_ID
             )
             .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
-            .setContentTitle("TODO Copy")
-            .setContentText("TODO Copy")
+            .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
+            .setContentText(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true)
             .setChannelId(PAYMENTS_CHANNEL_ID)
@@ -91,6 +95,8 @@ object PaymentNotificationManager {
     }
 
     fun sendClaimPaidNotification(context: Context, remoteMessage: RemoteMessage) {
+        createChannel(context)
+
         // TODO: Extract parameters from remoteMessage to display more specifically how much money was paid etc
         val pendingIntent = TaskStackBuilder
             .create(context)
