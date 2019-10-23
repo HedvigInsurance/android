@@ -20,9 +20,12 @@ import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.observe
@@ -45,7 +48,7 @@ import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
-class ChatActivity : BaseActivity() {
+class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private val chatViewModel: ChatViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
@@ -76,15 +79,12 @@ class ChatActivity : BaseActivity() {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
-        setContentView(R.layout.activity_chat)
-
         initializeToolbarButtons()
         initializeMessages()
         initializeInput()
         intializeKeyboardVisibilityHandler()
         observeData()
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -160,26 +160,40 @@ class ChatActivity : BaseActivity() {
     }
 
     private fun initializeToolbarButtons() {
-        resetChatButton.setHapticClickListener {
-            tracker.restartChat()
-            showRestartDialog {
-                storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                setAuthenticationToken(null)
-                userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+        settings.setHapticClickListener {
+            tracker.settings()
+            startActivity(SettingsActivity.newInstance(this))
+        }
+
+        closeOrRestart.setHapticClickListener {
+            if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
+                tracker.restartChat()
+                showRestartDialog {
+                    storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+                    setAuthenticationToken(null)
+                    userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+                }
+            }
+            if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
+                tracker.closeChat()
+                onBackPressed()
             }
         }
 
-        closeChatButton.setHapticClickListener {
-            tracker.closeChat()
-            onBackPressed()
-        }
-
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
-            resetChatButton.show()
+            closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_restart_gray).apply {
+                this?.setTint(compatColor(R.color.icon_tint))
+            })
+            closeOrRestart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
+            closeOrRestart.show()
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-            closeChatButton.show()
+            closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_close).apply {
+                this?.setTint(compatColor(R.color.icon_tint))
+            })
+            closeOrRestart.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
+            closeOrRestart.show()
         }
     }
 
@@ -230,7 +244,6 @@ class ChatActivity : BaseActivity() {
 
         chatViewModel.subscribe()
         chatViewModel.load()
-
     }
 
     private fun scrollToBottom(smooth: Boolean) {
