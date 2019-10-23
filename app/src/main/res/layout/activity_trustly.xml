@@ -116,7 +116,7 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <WebView
+        <com.hedvig.app.ui.view.SafeWebView
             android:id="@id/trustlyContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
