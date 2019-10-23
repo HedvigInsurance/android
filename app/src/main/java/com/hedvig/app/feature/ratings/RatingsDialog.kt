@@ -56,8 +56,9 @@ class RatingsDialog : DialogFragment() {
             if (choice == null) {
                 tracker.likeApp()
                 choice = RatingsChoice.YES
-                paragraph.text =
-                    "Ok, kul att höra! Skulle du kunna tänka dig att betygsätta oss på Google Play?"
+                paragraph.text = getString(R.string.RATINGS_DIALOG_BODY_RATE)
+                yes.text = getString(R.string.RATINGS_DIALOG_BODY_RATE_YES)
+                no.text = getString(R.string.RATINGS_DIALOG_BODY_RATE_NO)
                 return@setHapticClickListener
             }
             when (choice) {

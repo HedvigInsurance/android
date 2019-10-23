@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Feedback" />
+        android:text="@string/RATINGS_DIALOG_TITLE" />
 
     <TextView
         android:id="@+id/paragraph"
@@ -23,7 +23,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin"
         android:gravity="center"
-        android:text="Är du nöjd med Hedvig-appen?" />
+        android:text="@string/RATINGS_DIALOG_BODY" />
 
     <LinearLayout
         android:id="@+id/yesNoContainer"
@@ -42,7 +42,7 @@
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_weight="0.5"
             android:backgroundTint="@color/gray"
-            android:text="Nej"
+            android:text="@string/RATINGS_DIALOG_NO"
             android:textColor="@color/off_white" />
 
         <Button
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_weight="0.5"
-            android:text="Ja" />
+            android:text="@string/RATINGS_DIALOG_YES" />
 
     </LinearLayout>
 
