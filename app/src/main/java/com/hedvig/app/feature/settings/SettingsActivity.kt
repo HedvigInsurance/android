@@ -2,9 +2,13 @@ package com.hedvig.app.feature.settings
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -60,12 +64,31 @@ class SettingsActivity : BaseActivity() {
                     true
                 }
             }
+
+            val notificationsPreference = findPreference<Preference>(SETTING_NOTIFICATIONS)
+            notificationsPreference?.let { np ->
+                np.setOnPreferenceClickListener {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                        })
+                    } else {
+                        startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            data = Uri.fromParts("package", requireContext().packageName, null)
+                        })
+                    }
+                    true
+                }
+            }
         }
     }
 
     companion object {
         const val SETTING_THEME = "theme"
         const val SETTING_LANGUAGE = "language"
+        const val SETTING_NOTIFICATIONS = "notifications"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
