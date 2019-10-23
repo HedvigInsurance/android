@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.ratings
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -49,7 +50,7 @@ class RatingsDialog : DialogFragment() {
                 RatingsChoice.YES -> tracker.doNotRate()
                 RatingsChoice.NO -> tracker.noToFeedback()
             }
-            dialog?.dismiss()
+            dismissAndStore()
         }
         yes.setHapticClickListener {
             if (choice == null) {
@@ -64,20 +65,31 @@ class RatingsDialog : DialogFragment() {
                 RatingsChoice.YES -> {
                     tracker.rate()
                     requireContext().openPlayStore()
-                    dialog?.dismiss()
+                    dismissAndStore()
                 }
                 RatingsChoice.NO -> {
                     tracker.yesToFeedback()
                     startActivity(Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:android@hedvig.com?subject=Feedback")
                     })
-                    dialog?.dismiss()
+                    dismissAndStore()
                 }
             }
         }
     }
 
+    private fun dismissAndStore() {
+        requireContext()
+            .getSharedPreferences(RATINGS_PREFERENCE, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(HAS_SEEN_RATINGS_DIALOG, true)
+            .apply()
+        dialog?.dismiss()
+    }
+
     companion object {
+        const val RATINGS_PREFERENCE = "ratings_preferences"
+        const val HAS_SEEN_RATINGS_DIALOG = "has_seen_ratings_dialog"
         const val TAG = "RatingsDialog"
         fun newInstance() = RatingsDialog()
     }
