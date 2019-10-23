@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/background_rounded_corners"
+    android:minWidth="@dimen/ratings_dialog_minimum_width"
+    android:orientation="vertical"
+    android:padding="@dimen/base_margin_quadruple">
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/RATINGS_DIALOG_TITLE" />
+
+    <TextView
+        android:id="@+id/paragraph"
+        style="@style/Body.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin"
+        android:gravity="center"
+        android:text="@string/RATINGS_DIALOG_BODY" />
+
+    <LinearLayout
+        android:id="@+id/yesNoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/base_margin">
+
+        <Button
+            android:id="@+id/no"
+            style="@style/HedvigButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/base_margin_half"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/gray"
+            android:text="@string/RATINGS_DIALOG_NO"
+            android:textColor="@color/off_white" />
+
+        <Button
+            android:id="@+id/yes"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_half"
+            android:layout_weight="0.5"
+            android:text="@string/RATINGS_DIALOG_YES" />
+
+    </LinearLayout>
+
+</LinearLayout>

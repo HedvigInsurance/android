@@ -147,4 +147,5 @@
     <dimen name="expandable_content_view_collapsed_height">200dp</dimen>
     <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
     <dimen name="settings_custom_offset">11dp</dimen>
+    <dimen name="ratings_dialog_minimum_width">250dp</dimen>
 </resources>
