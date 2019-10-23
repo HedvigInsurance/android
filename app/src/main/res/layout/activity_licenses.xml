@@ -11,12 +11,12 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <WebView
+        <com.hedvig.app.ui.view.SafeWebView
             android:id="@+id/webView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </WebView>
+        </com.hedvig.app.ui.view.SafeWebView>
 
     </androidx.core.widget.NestedScrollView>
 
