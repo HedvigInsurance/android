@@ -10,6 +10,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.service.push.DATA_MESSAGE_BODY
+import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.PushNotificationService
 import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -97,6 +99,4 @@ object ChatNotificationManager {
     private const val CHAT_CHANNEL_ID = "hedvig-chat"
     private const val CHAT_NOTIFICATION_ID = 1
 
-    private const val DATA_MESSAGE_TITLE = "DATA_MESSAGE_TITLE"
-    private const val DATA_MESSAGE_BODY = "DATA_MESSAGE_BODY"
 }

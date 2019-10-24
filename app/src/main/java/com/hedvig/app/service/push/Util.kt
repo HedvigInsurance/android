@@ -25,3 +25,5 @@ fun setupNotificationChannel(
             }
         )
     }
+const val DATA_MESSAGE_TITLE = "DATA_MESSAGE_TITLE"
+const val DATA_MESSAGE_BODY = "DATA_MESSAGE_BODY"

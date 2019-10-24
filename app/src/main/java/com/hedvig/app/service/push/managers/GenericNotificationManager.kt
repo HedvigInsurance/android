@@ -9,11 +9,15 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.service.push.DATA_MESSAGE_BODY
+import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.setupNotificationChannel
 import java.util.concurrent.atomic.AtomicInteger
 
 object GenericNotificationManager {
     fun sendGenericNotification(context: Context, remoteMessage: RemoteMessage) {
+        val title = remoteMessage.data[DATA_MESSAGE_TITLE]
+        val body = remoteMessage.data[DATA_MESSAGE_BODY]
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -31,8 +35,8 @@ object GenericNotificationManager {
                 GENERIC_CHANNEL_ID
             )
             .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
-            .setContentTitle("TODO Copy")
-            .setContentText("TODO Copy")
+            .setContentTitle(title)
+            .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setChannelId(GENERIC_CHANNEL_ID)
