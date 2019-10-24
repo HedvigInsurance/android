@@ -42,8 +42,8 @@ class HedvigApplication : Application() {
             ?.apply(this)
 
         Theme
-            .fromSettings(this)
-            ?.apply()
+           .fromSettings(this)
+           ?.apply()
 
         AndroidThreeTen.init(this)
 
