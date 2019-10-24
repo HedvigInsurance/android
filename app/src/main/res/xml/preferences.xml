@@ -18,6 +18,10 @@
             app:title="@string/SETTINGS_LANGUAGE_TITLE"
             app:useSimpleSummaryProvider="true" />
 
+        <Preference
+            app:key="notifications"
+            app:title="@string/SETTINGS_NOTIFICATIONS_TITLE" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

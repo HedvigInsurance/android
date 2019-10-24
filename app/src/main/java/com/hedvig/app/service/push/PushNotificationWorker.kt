@@ -1,9 +1,8 @@
-package com.hedvig.app.service
+package com.hedvig.app.service.push
 
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
@@ -55,7 +54,10 @@ class PushNotificationWorker(
             .from(apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation))
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e("Failed to handleExpandWithKeyboard push token: %s", response.errors().toString())
+                    Timber.e(
+                        "Failed to handleExpandWithKeyboard push token: %s",
+                        response.errors().toString()
+                    )
                     return@subscribe
                 }
                 Timber.i("Successfully registered push token")

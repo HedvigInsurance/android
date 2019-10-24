@@ -260,7 +260,7 @@
         </provider>
 
         <service
-            android:name="com.hedvig.app.service.PushNotificationService"
+            android:name="com.hedvig.app.service.push.PushNotificationService"
             android:exported="false"
             android:icon="@drawable/ic_hedvig_symbol_android">
             <intent-filter>
