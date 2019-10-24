@@ -28,6 +28,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
@@ -82,7 +83,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         initializeToolbarButtons()
         initializeMessages()
         initializeInput()
-        intializeKeyboardVisibilityHandler()
+        initializeKeyboardVisibilityHandler()
         observeData()
     }
 
@@ -182,7 +183,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
             closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_restart_gray).apply {
-                this?.setTint(compatColor(R.color.icon_tint))
+                if (isDarkThemeActive) {
+                    this?.setTint(compatColor(R.color.icon_tint))
+                }
             })
             closeOrRestart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
             closeOrRestart.show()
@@ -190,14 +193,16 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
             closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_close).apply {
-                this?.setTint(compatColor(R.color.icon_tint))
+                if (isDarkThemeActive) {
+                    this?.setTint(compatColor(R.color.icon_tint))
+                }
             })
             closeOrRestart.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
             closeOrRestart.show()
         }
     }
 
-    private fun intializeKeyboardVisibilityHandler() {
+    private fun initializeKeyboardVisibilityHandler() {
         chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
             val heightDiff = chatRoot.calculateNonFullscreenHeightDiff()
             if (heightDiff > isKeyboardBreakPoint) {
