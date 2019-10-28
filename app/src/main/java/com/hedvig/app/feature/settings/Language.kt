@@ -16,14 +16,14 @@ enum class Language {
     fun apply(context: Context?): Context? {
         val locale = into()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            applyV24(context, locale)
+            apply(context, locale)
         } else {
-            applyV21(context, locale)
+            applySingleLocale(context, locale)
         }
     }
 
     @SuppressWarnings("deprecation")
-    private fun applyV21(context: Context?, locale: LocaleWrapper): Context? {
+    private fun applySingleLocale(context: Context?, locale: LocaleWrapper): Context? {
         if (locale !is LocaleWrapper.SingleLocale) {
             throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")
         }
@@ -40,10 +40,10 @@ enum class Language {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    private fun applyV24(context: Context?, locale: LocaleWrapper): Context? {
+    private fun apply(context: Context?, locale: LocaleWrapper): Context? {
         when (locale) {
             is LocaleWrapper.SingleLocale -> {
-                return applyV21(context, locale)
+                return applySingleLocale(context, locale)
             }
             is LocaleWrapper.MultipleLocales -> {
                 val locales = locale.locales

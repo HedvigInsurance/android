@@ -85,12 +85,6 @@ class HedvigApplication : Application() {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
-//
-//    override fun onConfigurationChanged(newConfig: Configuration) {
-//        super.onConfigurationChanged(newConfig)
-//
-//        Language.fromSettings(this)?.apply(this)
-//    }
 
     private fun acquireHedvigToken() {
         disposables += Rx2Apollo
