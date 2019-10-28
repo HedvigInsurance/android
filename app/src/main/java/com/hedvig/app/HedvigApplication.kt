@@ -2,6 +2,7 @@ package com.hedvig.app
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
@@ -84,6 +85,12 @@ class HedvigApplication : Application() {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
+//
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//
+//        Language.fromSettings(this)?.apply(this)
+//    }
 
     private fun acquireHedvigToken() {
         disposables += Rx2Apollo

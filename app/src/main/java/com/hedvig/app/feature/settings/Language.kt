@@ -43,14 +43,7 @@ enum class Language {
     private fun applyV24(context: Context?, locale: LocaleWrapper): Context? {
         when (locale) {
             is LocaleWrapper.SingleLocale -> {
-                val unwrappedLocale = locale.locale
-                Locale.setDefault(unwrappedLocale)
-                if (context == null) {
-                    return null
-                }
-                val config = Configuration(context.resources.configuration)
-                config.setLocale(unwrappedLocale)
-                return context.createConfigurationContext(config)
+                return applyV21(context, locale)
             }
             is LocaleWrapper.MultipleLocales -> {
                 val locales = locale.locales
