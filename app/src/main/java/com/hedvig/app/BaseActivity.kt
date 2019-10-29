@@ -36,6 +36,7 @@ abstract class BaseActivity : AppCompatActivity {
         LocalBroadcastManager
             .getInstance(this)
             .registerReceiver(localeListener, IntentFilter().apply { addAction(LOCALE_BROADCAST) })
+        Language.fromSettings(this)?.apply(this)
     }
 
     companion object {
