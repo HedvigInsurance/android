@@ -73,7 +73,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private var forceScrollToBottom = true
 
-    override val preventRecreation = false
+    override val preventRecreation = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
