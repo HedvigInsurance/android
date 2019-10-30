@@ -15,6 +15,8 @@ abstract class BaseActivity : AppCompatActivity {
     constructor() : super()
     constructor(@LayoutRes layout: Int) : super(layout)
 
+    open val preventRecreation = false
+
     val disposables = CompositeDisposable()
 
     override fun onDestroy() {
@@ -45,7 +47,7 @@ abstract class BaseActivity : AppCompatActivity {
 
     inner class LocaleListener : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            recreate()
+            if (!preventRecreation) recreate()
         }
     }
 }

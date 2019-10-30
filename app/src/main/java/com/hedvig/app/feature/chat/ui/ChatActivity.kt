@@ -73,6 +73,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private var forceScrollToBottom = true
 
+    override val preventRecreation = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
