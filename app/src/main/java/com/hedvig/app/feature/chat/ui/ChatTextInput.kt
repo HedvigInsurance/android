@@ -14,7 +14,11 @@ class ChatTextInput : EditText {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
     private var sendIsDisabled = true
 
@@ -43,15 +47,30 @@ class ChatTextInput : EditText {
         disableSendIcon()
     }
 
-    override fun setCompoundDrawables(left: Drawable?, top: Drawable?, right: Drawable?, bottom: Drawable?) {
+    override fun setCompoundDrawables(
+        left: Drawable?,
+        top: Drawable?,
+        right: Drawable?,
+        bottom: Drawable?
+    ) {
         right?.let { rightDrawable ->
             val gravityDrawable = BottomRightCompoundDrawableWrapper(
                 rightDrawable,
                 this.paddingEnd,
                 this.paddingBottom
             )
-            rightDrawable.setBounds(0, 0, rightDrawable.intrinsicWidth, rightDrawable.intrinsicHeight)
-            gravityDrawable.setBounds(0, 0, rightDrawable.intrinsicWidth, rightDrawable.intrinsicHeight)
+            rightDrawable.setBounds(
+                0,
+                0,
+                rightDrawable.intrinsicWidth,
+                rightDrawable.intrinsicHeight
+            )
+            gravityDrawable.setBounds(
+                0,
+                0,
+                rightDrawable.intrinsicWidth,
+                rightDrawable.intrinsicHeight
+            )
 
             return super.setCompoundDrawables(left, top, gravityDrawable, bottom)
         }

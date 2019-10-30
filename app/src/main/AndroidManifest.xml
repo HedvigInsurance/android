@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.hedvig.app">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,8 +21,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
-        android:largeHeap="true"
-        tools:replace="android:label">
+        android:largeHeap="true">
 
         <activity
             android:name=".feature.chat.ui.ChatActivity"
@@ -239,6 +237,14 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".feature.language.LanguageSelectionActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_symbol_android" />
@@ -254,7 +260,7 @@
         </provider>
 
         <service
-            android:name="com.hedvig.app.service.PushNotificationService"
+            android:name="com.hedvig.app.service.push.PushNotificationService"
             android:exported="false"
             android:icon="@drawable/ic_hedvig_symbol_android">
             <intent-filter>

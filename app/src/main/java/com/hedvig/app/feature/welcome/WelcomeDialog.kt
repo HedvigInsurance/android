@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissablepager.DismissablePager
 import com.hedvig.app.feature.dismissablepager.DismissablePagerPage
+import com.hedvig.app.feature.ratings.RatingsDialog
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -21,7 +22,9 @@ class WelcomeDialog : DismissablePager() {
     }
 
     override fun onDismiss() {
-        Timber.i("Dismissed!")
+        RatingsDialog
+            .newInstance()
+            .show(requireFragmentManager(), RatingsDialog.TAG)
     }
 
     companion object {

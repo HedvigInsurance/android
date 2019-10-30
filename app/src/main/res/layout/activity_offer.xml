@@ -56,16 +56,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/offerToolbarSign"
-                style="@style/HedvigButton.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:drawableEnd="@drawable/ic_bank_id_small"
-                android:text="@string/OFFER_BANKID_SIGN_BUTTON"
-                android:textColor="@color/off_black_dark" />
-
             <ImageView
                 android:id="@+id/offerChatButton"
                 android:layout_width="wrap_content"
@@ -78,6 +68,18 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/OFFER_CHAT_ACCESSIBILITY_HINT"
                 app:srcCompat="@drawable/ic_chat_white" />
+
+            <ImageView
+                android:id="@+id/settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/settings_custom_offset"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginBottom="@dimen/base_margin"
+                android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_settings" />
+
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
