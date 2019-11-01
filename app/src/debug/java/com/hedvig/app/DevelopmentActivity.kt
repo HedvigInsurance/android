@@ -21,6 +21,7 @@ import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.travel.TravelActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -102,6 +103,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     makeToast("Negative action activated")
                 }
             )
+        }
+
+        findViewById<Button>(R.id.openTravel).setHapticClickListener {
+            startActivity(TravelActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {

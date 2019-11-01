@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.travel.TravelActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#009175"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/base_margin_quadruple">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4db29e"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Header.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:lineSpacingExtra="14dp"
+                android:text="Välkommen till\nThailand"
+                android:textColor="@color/off_white" />
+
+            <com.hedvig.app.ui.view.HedvigCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_rounded_corners"
+                    android:backgroundTint="#009175">
+
+                    <TextView
+                        android:id="@+id/travelInsuranceCardTitle"
+                        style="@style/Headline.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:layout_marginTop="@dimen/base_margin_double"
+                        android:text="Din reseförsäkring"
+                        android:textColor="@color/off_white_light"
+                        app:layout_constraintBottom_toTopOf="@id/travelInsuranceCardParagraph"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed" />
+
+                    <TextView
+                        android:id="@+id/travelInsuranceCardParagraph"
+                        style="@style/Body.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:layout_marginTop="@dimen/base_margin"
+                        android:layout_marginBottom="@dimen/base_margin_double"
+                        android:text="Giltig i 45 dagar ifrån utresa"
+                        android:textColor="@color/off_white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/travelInsuranceCardTitle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.hedvig.app.ui.view.HedvigCardView>
+        </LinearLayout>
+
+        <com.hedvig.app.ui.view.BezierView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bottomColor="#009175"
+            app:topColor="#4db29e" />
+
+        <com.hedvig.app.ui.view.HedvigCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_double">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_rounded_corners"
+                android:backgroundTint="@color/off_white_light"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="Viktiga telefonnummer"
+                    android:textColor="@color/off_black_dark" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_half"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:background="@color/light_gray" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/Body.Regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:text="Tourist Police"
+                        android:textColor="@color/off_black" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        style="@style/Body.Regular.Emphasized"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/base_margin_double"
+                        android:text="1155"
+                        android:textColor="@color/off_black" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_half"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:background="@color/light_gray" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/Body.Regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:text="Police"
+                        android:textColor="@color/off_black" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        style="@style/Body.Regular.Emphasized"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/base_margin_double"
+                        android:text="191"
+                        android:textColor="@color/off_black" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_half"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:background="@color/light_gray" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/base_margin_double"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/Body.Regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:text="Ambulance and Rescue"
+                        android:textColor="@color/off_black" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        style="@style/Body.Regular.Emphasized"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/base_margin_double"
+                        android:text="1155"
+                        android:textColor="@color/off_black" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.hedvig.app.ui.view.HedvigCardView>
+
+        <com.hedvig.app.ui.view.HedvigCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_double">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_rounded_corners"
+                android:backgroundTint="#FAD80E"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="UD Avråder"
+                    android:textColor="@color/off_black_dark" />
+
+                <TextView
+                    style="@style/Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="Med anledning av säkerhetsläget i södra Thailand avråder Utrikesdepartementet tills vidare från icke nödvändiga resor till de fyra provinserna Narathiwat, Yala, Pattani och Songkhla."
+                    android:textColor="@color/off_black" />
+
+                <com.hedvig.app.ui.view.BezierView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:bottomColor="#DCBE0C"
+                    app:topColor="#FAD80E" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_bottom_rounded_corners"
+                    android:backgroundTint="#DCBE0C">
+
+                    <Button
+                        style="@style/HedvigButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:layout_marginTop="@dimen/base_margin_double"
+                        android:layout_marginBottom="@dimen/base_margin_double"
+                        android:backgroundTint="#141033"
+                        android:text="Läs mer"
+                        android:textColor="@color/off_white" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </com.hedvig.app.ui.view.HedvigCardView>
+
+        <com.hedvig.app.ui.view.HedvigCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_double">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_rounded_corners"
+                android:backgroundTint="#141033"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Headline.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="Försenat bagage?"
+                    android:textColor="@color/off_white_light" />
+
+                <TextView
+                    style="@style/Body.Regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="Du kan få ersättning för inköp efter 6 timmars försening."
+                    android:textColor="@color/off_white" />
+
+                <com.hedvig.app.ui.view.BezierView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:bottomColor="#FFDCD9"
+                    app:topColor="#141033" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_bottom_rounded_corners"
+                    android:backgroundTint="#FFDCD9">
+
+                    <Button
+                        android:id="@+id/makeLuggageClaim"
+                        style="@style/HedvigButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/base_margin_double"
+                        android:layout_marginTop="@dimen/base_margin_double"
+                        android:layout_marginBottom="@dimen/base_margin_double"
+                        android:backgroundTint="#141033"
+                        android:text="Anmäl här"
+                        android:textColor="@color/off_white" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </com.hedvig.app.ui.view.HedvigCardView>
+
+    </LinearLayout>
+
+</ScrollView>

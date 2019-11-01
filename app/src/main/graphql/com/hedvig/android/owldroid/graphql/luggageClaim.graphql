@@ -1,0 +1,3 @@
+mutation LuggageClaim($input: CreateLuggageClaimInput!) {
+  createLuggageClaim(input: $input)
+}

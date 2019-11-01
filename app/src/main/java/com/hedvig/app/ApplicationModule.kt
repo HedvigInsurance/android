@@ -44,6 +44,8 @@ import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.travel.TravelRepository
+import com.hedvig.app.feature.travel.TravelViewModel
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -155,6 +157,7 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
+    viewModel { TravelViewModel(get()) }
 }
 
 val offerModule = module {
@@ -188,6 +191,7 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
+    single { TravelRepository(get()) }
 }
 
 val trackerModule = module {
