@@ -44,6 +44,7 @@ class TrustlyActivity : BaseActivity() {
             loadWithOverviewMode = true
             useWideViewPort = true
         }
+        trustlyContainer.addJavascriptInterface(TrustlyJavascriptInterface(this), TrustlyJavascriptInterface.NAME)
 
         notNow.setHapticClickListener {
             tracker.notNow()
