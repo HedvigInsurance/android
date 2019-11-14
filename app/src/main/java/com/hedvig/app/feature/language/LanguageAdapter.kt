@@ -16,12 +16,14 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.language_item.view.*
 
 class LanguageAdapter(
-    private val tracker: LanguageSelectionTracker
+    private val tracker: LanguageSelectionTracker,
+    private val languageViewModel: LanguageViewModel
 ) : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
         LayoutInflater.from(parent.context)
@@ -38,7 +40,7 @@ class LanguageAdapter(
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_global))
                 parent.setHapticClickListener {
                     tracker.selectLanguage("system_default")
-                    parent.context.setLanguage(Language.SYSTEM_DEFAULT)
+                    parent.context.setLanguage(Language.SYSTEM_DEFAULT, languageViewModel)
                     parent.context.goToMarketingActivity()
                 }
             }
@@ -47,7 +49,7 @@ class LanguageAdapter(
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
                 parent.setHapticClickListener {
                     tracker.selectLanguage("se")
-                    parent.context.setLanguage(Language.SV_SE)
+                    parent.context.setLanguage(Language.SV_SE, languageViewModel)
                     parent.context.goToMarketingActivity()
                 }
             }
@@ -56,7 +58,7 @@ class LanguageAdapter(
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_en))
                 parent.setHapticClickListener {
                     tracker.selectLanguage("en")
-                    parent.context.setLanguage(Language.EN_SE)
+                    parent.context.setLanguage(Language.EN_SE, languageViewModel)
                     parent.context.goToMarketingActivity()
                 }
             }
@@ -75,14 +77,16 @@ class LanguageAdapter(
         private const val EN_SE = 2
 
         @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-        private fun Context.setLanguage(language: Language) {
+        private fun Context.setLanguage(language: Language, languageViewModel: LanguageViewModel) {
             PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .edit()
                 .putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
                 .commit()
 
-            language.apply(this)
+            language.apply(this)?.let { newContext ->
+                languageViewModel.updateLanguage(makeLocaleString(newContext))
+            }
 
             LocalBroadcastManager
                 .getInstance(this)

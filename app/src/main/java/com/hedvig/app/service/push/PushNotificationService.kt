@@ -1,20 +1,24 @@
 package com.hedvig.app.service.push
 
+import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.service.push.managers.ChatNotificationManager
 import com.hedvig.app.service.push.managers.GenericNotificationManager
-import com.hedvig.app.service.push.managers.InsurancePolicyNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(Language.fromSettings(base)?.apply(base))
+    }
 
     override fun onCreate() {
         super.onCreate()
