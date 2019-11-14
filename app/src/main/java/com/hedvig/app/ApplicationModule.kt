@@ -23,7 +23,9 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
+import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
@@ -155,6 +157,7 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
+    viewModel { LanguageViewModel(get()) }
 }
 
 val offerModule = module {
@@ -188,6 +191,7 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
+    single { LanguageRepository(get()) }
 }
 
 val trackerModule = module {
