@@ -1,0 +1,3 @@
+mutation UpdateLanguage($input: String!) {
+  updateLanguage(input: $input)
+}

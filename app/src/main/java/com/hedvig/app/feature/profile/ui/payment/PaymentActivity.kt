@@ -134,6 +134,7 @@ class PaymentActivity : BaseActivity() {
             }
             InsuranceStatus.INACTIVE -> {
                 nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
+                nextPaymentDate.setTextColor(compatColor(R.color.off_black))
                 nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
             }
             else -> {
@@ -306,6 +307,7 @@ class PaymentActivity : BaseActivity() {
         nextPaymentGross.hide()
         freeMonthsSphere.remove()
         nextPaymentDate.background.setTintList(null)
+        nextPaymentDate.setTextColor(compatColor(R.color.text_regular))
 
         campaignInformationContainer.remove()
         lastFreeDayLabel.remove()
