@@ -33,7 +33,13 @@ class MarketingStoriesRepository(
 
     fun fetchMarketingStories(completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit) {
         val marketingStoriesQuery = MarketingStoriesQuery.builder()
-            .environment(if (BuildConfig.DEBUG) Environment.STAGING else Environment.PRODUCTION)
+            .environment(
+                if (BuildConfig.APPLICATION_ID.endsWith(".dev.app") ||
+                    BuildConfig.APPLICATION_ID.endsWith(".test.app")) {
+                    Environment.STAGING
+                } else {
+                    Environment.PRODUCTION
+                })
             .languageCode(defaultLocale(context).rawValue())
             .build()
 
