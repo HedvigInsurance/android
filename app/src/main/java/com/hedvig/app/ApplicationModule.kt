@@ -199,7 +199,7 @@ val trackerModule = module {
     single { ReferralsTracker(get()) }
     single { TerminatedTracker(get()) }
     single { WelcomeTracker(get()) }
-    single { OfferTracker(get()) }
+    single { OfferTracker(get(), get()) }
     single { ChatTracker(get()) }
     single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }

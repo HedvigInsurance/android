@@ -173,6 +173,9 @@ dependencies {
         transitive = false
     }
 
+    //facebook
+    implementation 'com.facebook.android:facebook-android-sdk:[5,13)'
+
     // ZXing
     implementation 'com.google.zxing:core:3.4.0'
 

@@ -1,10 +1,14 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Bundle
+import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
+import java.math.BigDecimal
+import java.util.*
 
 class OfferTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics: FirebaseAnalytics,
+    private val facebookAnalytics: AppEventsLogger
 ) {
 
     private var hasSigned = false
@@ -24,6 +28,10 @@ class OfferTracker(
                 putDouble(FirebaseAnalytics.Param.VALUE, price)
                 putString(FirebaseAnalytics.Param.CURRENCY, "SEK")
             })
+            facebookAnalytics.logPurchase(
+                BigDecimal(price),
+                Currency.getInstance("SEK")
+            )
         }
     }
 }

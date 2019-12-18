@@ -11,4 +11,6 @@
     <string name="alert_message" translatable="false">Message</string>
 
     <string name="mock_personas_prompt" translatable="false">Mock Persona</string>
+
+    <string name="facebook_app_id" translatable="false">295996994493099</string>
 </resources>
