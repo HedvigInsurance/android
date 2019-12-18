@@ -13,8 +13,10 @@ import com.google.android.exoplayer2.upstream.cache.CacheUtil
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
+import com.hedvig.android.owldroid.type.Environment
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.head
 import com.hedvig.app.util.extensions.tail
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,8 @@ class MarketingStoriesRepository(
 
     fun fetchMarketingStories(completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit) {
         val marketingStoriesQuery = MarketingStoriesQuery.builder()
+            .environment(if (BuildConfig.DEBUG) Environment.STAGING else Environment.PRODUCTION)
+            .languageCode(defaultLocale(context).rawValue())
             .build()
 
         apolloClientWrapper.apolloClient
@@ -56,11 +60,15 @@ class MarketingStoriesRepository(
         data: List<MarketingStoriesQuery.MarketingStory>,
         completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit
     ) {
-        data.tail.forEach { story ->
-            story.asset?.let { GlobalScope.launch { cacheAsset(it) } }
-        }
+        if (data.isNotEmpty()) {
+            data.tail.forEach { story ->
+                story.asset?.let { GlobalScope.launch { cacheAsset(it) } }
+            }
 
-        data.head.asset?.let { GlobalScope.launch { cacheAsset(it) { completion(data) } } }
+            data.head.asset?.let { GlobalScope.launch { cacheAsset(it) { completion(data) } } }
+        } else {
+            completion(data)
+        }
     }
 
     private fun handleNoMarketingStories() = Timber.e("No Marketing Stories")

@@ -1,5 +1,12 @@
-query MarketingStories {
-  marketingStories(orderBy: importance_ASC) {
+query MarketingStories($languageCode: String!, $environment: Environment!) {
+  marketingStories(
+    orderBy: importance_ASC,
+    where: {
+      language: { code: $languageCode },
+      environment: $environment
+    }
+  ) {
+    id
     asset {
       mimeType
       url

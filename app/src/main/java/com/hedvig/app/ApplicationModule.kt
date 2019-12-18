@@ -6,6 +6,7 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
@@ -71,6 +72,7 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
     single { FirebaseAnalytics.getInstance(get()) }
+    single { AppEventsLogger.newLogger(get()) }
     single {
         SimpleCache(
             File(get<Context>().cacheDir, "hedvig_story_video_cache"),
@@ -203,7 +205,7 @@ val trackerModule = module {
     single { ReferralsTracker(get()) }
     single { TerminatedTracker(get()) }
     single { WelcomeTracker(get()) }
-    single { OfferTracker(get()) }
+    single { OfferTracker(get(), get()) }
     single { ChatTracker(get()) }
     single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
