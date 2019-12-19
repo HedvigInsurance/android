@@ -66,14 +66,16 @@ class MarketingStoriesRepository(
         data: List<MarketingStoriesQuery.MarketingStory>,
         completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit
     ) {
-        if (data.isNotEmpty()) {
-            data.tail.forEach { story ->
-                story.asset?.let { GlobalScope.launch { cacheAsset(it) } }
-            }
+        when {
+            data.size == 1 -> data[0].asset?.let { GlobalScope.launch { cacheAsset(it) { completion(data) } } }
+            data.isNotEmpty() -> {
+                data.tail.forEach { story ->
+                    story.asset?.let { GlobalScope.launch { cacheAsset(it) } }
+                }
 
-            data.head.asset?.let { GlobalScope.launch { cacheAsset(it) { completion(data) } } }
-        } else {
-            completion(data)
+                data.head.asset?.let { GlobalScope.launch { cacheAsset(it) { completion(data) } } }
+            }
+            else -> completion(data)
         }
     }
 
