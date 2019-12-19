@@ -168,8 +168,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             startActivity(SettingsActivity.newInstance(this))
         }
 
-        closeOrRestart.setHapticClickListener {
-            if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
+        if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
+            restart.setOnClickListener {
                 tracker.restartChat()
                 showRestartDialog {
                     storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
@@ -177,30 +177,17 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
                 }
             }
-            if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-                tracker.closeChat()
-                onBackPressed()
-            }
-        }
-
-        if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
-            closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_restart_gray).apply {
-                if (isDarkThemeActive) {
-                    this?.setTint(compatColor(R.color.icon_tint))
-                }
-            })
-            closeOrRestart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
-            closeOrRestart.show()
+            restart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
+            restart.show()
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-            closeOrRestart.setImageDrawable(compatDrawable(R.drawable.ic_close).apply {
-                if (isDarkThemeActive) {
-                    this?.setTint(compatColor(R.color.icon_tint))
-                }
-            })
-            closeOrRestart.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
-            closeOrRestart.show()
+            close.setOnClickListener {
+                tracker.closeChat()
+                onBackPressed()
+            }
+            close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
+            close.show()
         }
     }
 
