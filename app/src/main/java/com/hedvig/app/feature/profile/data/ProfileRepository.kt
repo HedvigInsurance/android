@@ -13,6 +13,7 @@ import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
 import io.reactivex.Observable
+import java.lang.RuntimeException
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     private lateinit var profileQuery: ProfileQuery
@@ -21,9 +22,12 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .builder()
             .build()
 
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.query(profileQuery).watcher())
-            .map { it.data() }
+//        return Rx2Apollo
+//            .from(apolloClientWrapper.apolloClient.query(profileQuery).watcher())
+//            .map { it.data() }
+
+        return Observable.error(RuntimeException("Error"))
+
     }
 
     fun refreshProfile() {
