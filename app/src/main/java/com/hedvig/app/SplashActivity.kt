@@ -37,7 +37,7 @@ class SplashActivity : BaseActivity() {
             isBirthdayData.observe(lifecycleOwner = this@SplashActivity) { data ->
                 isBirthday = data!!
             }
-            isBirthday()
+            getBirthDay()
         }
 
         disposables += loggedInService

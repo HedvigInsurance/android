@@ -13,14 +13,14 @@ class BirthdayViewModel(
     private val birthdayRepository: BirthdayRepository
 ) : ViewModel() {
 
-    private val birthDate = birthdayRepository.getBirthDate()
+    private lateinit var birthDate: String
 
     val isBirthdayData: MutableLiveData<Boolean> = MutableLiveData()
     private val disposables = CompositeDisposable()
 
 
 
-    fun isBirthday() {
+    private fun isBirthday(): Boolean {
 
         val birthMonth = birthDate.substring(4, birthDate.length - 6).toInt()
         val birthDay = birthDate.substring(6, birthDate.length - 4).toInt()
@@ -31,17 +31,29 @@ class BirthdayViewModel(
 
         Timber.d("current date: $currentMonth/$currentDay Birth date $birthMonth/$birthDay")
 
-        if (currentDay == birthDay && currentMonth == birthMonth) {
-            isBirthdayData.postValue(true)
+        return if (currentDay == birthDay && currentMonth == birthMonth) {
             Timber.d("bday True")
+            true
         } else {
             Timber.d("bday False")
-            isBirthdayData.postValue(false)
+            false
         }
     }
 
     fun getBirthDay() {
-        disposables += birthdayRepository.getBirthDate()
-            .subscribe()
+        disposables += birthdayRepository.fetchBirthDate()
+            .subscribe({
+                birthDate = it
+                isBirthdayData.postValue(isBirthday())
+            }, {
+                error ->
+                isBirthdayData.postValue(false)
+                Timber.d("Error ${error.localizedMessage}")
+            })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 }

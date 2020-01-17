@@ -5,7 +5,7 @@ import io.reactivex.Observable
 class BirthdayRepository {
 
 
-    fun getBirthDate(): Observable<String> {
+    fun fetchBirthDate(): Observable<String> {
         return Observable.just("199701171234")
     }
 }
