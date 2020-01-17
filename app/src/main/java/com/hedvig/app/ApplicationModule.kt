@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.feature.birthday.data.BirthdayRepository
+import com.hedvig.app.feature.birthday.viewmodel.BirthdayViewModel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -160,6 +162,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+    viewModel { BirthdayViewModel(get()) }
 }
 
 val offerModule = module {
@@ -194,6 +197,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
+    single { BirthdayRepository() }
 }
 
 val trackerModule = module {

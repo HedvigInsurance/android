@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.birthday.BirthdayActivity
+import com.hedvig.app.feature.birthday.viewmodel.BirthdayViewModel
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -13,25 +14,38 @@ import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.observe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
 
 
 class SplashActivity : BaseActivity() {
     private val loggedInService: LoginStatusService by inject()
+    private val birthdayViewModel: BirthdayViewModel by viewModel()
+
+    private var isBirthday: Boolean = false
 
     override fun onStart() {
         super.onStart()
+
+        birthdayViewModel.apply {
+            isBirthdayData.observe(lifecycleOwner = this@SplashActivity) { data ->
+                isBirthday = data!!
+            }
+            isBirthday()
+        }
 
         disposables += loggedInService
             .getLoginStatus()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ navigateToActivity(it) }, { Timber.e(it) })
+
 
     }
 
@@ -147,8 +161,7 @@ class SplashActivity : BaseActivity() {
             LoginStatus.IN_OFFER -> startActivity(Intent(this, OfferActivity::class.java))
             LoginStatus.LOGGED_IN -> {
 
-                //TODO get birthday data
-                if (isBirthday()) {
+                if (isBirthday) {
                     startBirthdayActivity()
                 } else {
                     startActivity(Intent(this, LoggedInActivity::class.java))
@@ -183,7 +196,7 @@ class SplashActivity : BaseActivity() {
     override fun finish() {
         super.finish()
 
-        if (isBirthday()) {
+        if (isBirthday) {
             overridePendingTransition(0, 0)
         }
     }
