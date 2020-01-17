@@ -1,12 +1,70 @@
 package com.hedvig.app.feature.birthday
 
-import androidx.appcompat.app.AppCompatActivity
+import android.animation.Animator
+import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.show
+import kotlinx.android.synthetic.main.activity_birthday.*
+import timber.log.Timber
+
 
 class BirthdayActivity : AppCompatActivity() {
+
+    private var animationDuration = 900
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_birthday)
+
+        overridePendingTransition(0, 0)
+        happyBirthdayText.hide()
+        fromText.hide()
+
+        //Birthday animation
+        confetti_animation_view.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationEnd(animation: Animator) {
+                Timber.d("end")
+                confetti_animation_view.hide()
+                startActivity(Intent(applicationContext, LoggedInActivity::class.java))
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                Timber.d("cancel")
+            }
+
+            override fun onAnimationStart(p0: Animator?) {
+                Timber.d("start")
+
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+                Timber.d("repeat")
+            }
+        })
+
+        animateText()
+
+        confetti_animation_view.setMaxFrame(63)
+        confetti_animation_view.playAnimation()
+    }
+
+    private fun animateText() {
+        happyBirthdayText.apply {
+            alpha = 0f
+            show()
+
+            animate().alpha(1f).duration = animationDuration.toLong()
+        }
+
+        fromText.apply {
+            alpha = 0f
+            show()
+
+            animate().alpha(1f).duration = animationDuration.toLong()
+        }
     }
 }

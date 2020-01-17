@@ -22,11 +22,9 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .builder()
             .build()
 
-//        return Rx2Apollo
-//            .from(apolloClientWrapper.apolloClient.query(profileQuery).watcher())
-//            .map { it.data() }
-
-        return Observable.error(RuntimeException("Error"))
+        return Rx2Apollo
+            .from(apolloClientWrapper.apolloClient.query(profileQuery).watcher())
+            .map { it.data() }
 
     }
 
