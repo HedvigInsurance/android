@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.rxkotlin.plusAssign
 import java.util.*
 
 
@@ -17,13 +18,15 @@ class BirthdayViewModel(
 
     private val birthDate = prfileRepository.getBirthDate()
 
-    private val isBirthday = MutableLiveData<Boolean>()
+//    private val isBirthday = MutableLiveData<Boolean>()
+//
+//    private lateinit var observable: Observable<Boolean>
+//    lateinit var observer: Observer
 
-    private lateinit var observable: Observable<Boolean>
-    lateinit var observer: Observer
+    private val isBirthdayData: MutableLiveData<Boolean> = MutableLiveData()
+    private val disposables = CompositeDisposable()
 
-
-    fun isBirthday(): Boolean {
+    fun isBirthday() {
 
         val birthMonth = birthDate.substring(4, birthDate.length - 6).toInt()
         val birthDay = birthDate.substring(6, birthDate.length - 4).toInt()
@@ -32,36 +35,10 @@ class BirthdayViewModel(
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
 
-
-        observable = Observable.just(currentDay == birthDay && currentMonth == birthMonth)
-
-        observer = object : io.reactivex.Observer<Boolean>, Observer {
-            override fun onComplete() {
-
-            }
-
-            override fun onSubscribe(d: Disposable) {
-
-            }
-
-            override fun onNext(t: Boolean) {
-
-            }
-
-            override fun onError(e: Throwable) {
-
-            }
-
-            override fun update(p0: java.util.Observable?, p1: Any?) {
-
-            }
-
+        if (currentDay == birthDay && currentMonth == birthMonth) {
+            isBirthdayData.postValue(true)
+        } else {
+            isBirthdayData.postValue(false)
         }
-
-        return currentDay == birthDay && currentMonth == birthMonth
-
     }
-
-
-
 }
