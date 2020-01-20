@@ -13,8 +13,11 @@ import kotlinx.android.synthetic.main.activity_birthday.*
 
 class BirthdayActivity : AppCompatActivity(R.layout.activity_birthday) {
 
-    private var animationDuration = 900
     private val animationEndFrame = 63
+
+    companion object {
+        private const val animationDuration = 900L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,14 +58,14 @@ class BirthdayActivity : AppCompatActivity(R.layout.activity_birthday) {
             alpha = 0f
             show()
 
-            animate().alpha(1f).duration = animationDuration.toLong()
+            animate().alpha(1f).duration = animationDuration
         }
 
         fromText.apply {
             alpha = 0f
             show()
 
-            animate().alpha(1f).duration = animationDuration.toLong()
+            animate().alpha(1f).duration = animationDuration
         }
     }
 }
