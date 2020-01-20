@@ -34,16 +34,14 @@ class SplashActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
 
-        birthdayViewModel.apply {
-            isBirthdayData.observe(lifecycleOwner = this@SplashActivity) { data ->
-                if (data != null) {
-                    isBirthday = data
-                } else {
-                    isBirthday = false
-                }
+        birthdayViewModel.isBirthdayData.observe(lifecycleOwner = this@SplashActivity) { data ->
+            if (data != null) {
+                isBirthday = data
+            } else {
+                isBirthday = false
             }
-            getBirthDay()
         }
+
 
 
         disposables += loggedInService

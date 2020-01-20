@@ -33,7 +33,7 @@ class BirthdayViewModel(
         return currentDay == birthDay && currentMonth == birthMonth
     }
 
-    fun getBirthDay() {
+    private fun getBirthDay() {
         disposables += birthdayRepository.fetchBirthDate()
             .subscribe({
                 birthDate = it
@@ -43,8 +43,13 @@ class BirthdayViewModel(
             })
     }
 
+    init {
+        getBirthDay()
+    }
+
     override fun onCleared() {
         super.onCleared()
+
         disposables.clear()
     }
 }
