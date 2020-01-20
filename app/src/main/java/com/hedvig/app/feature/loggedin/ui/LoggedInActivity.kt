@@ -39,7 +39,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 
 class LoggedInActivity : BaseActivity() {
@@ -58,7 +57,6 @@ class LoggedInActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logged_in)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
-
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->

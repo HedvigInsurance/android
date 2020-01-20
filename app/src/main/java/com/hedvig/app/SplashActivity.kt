@@ -35,7 +35,11 @@ class SplashActivity : BaseActivity() {
 
         birthdayViewModel.apply {
             isBirthdayData.observe(lifecycleOwner = this@SplashActivity) { data ->
-                isBirthday = data!!
+                if (data != null) {
+                    isBirthday = data
+                } else {
+                    isBirthday = false
+                }
             }
             getBirthDay()
         }
@@ -105,22 +109,6 @@ class SplashActivity : BaseActivity() {
 
     private fun startBirthdayActivity(){
         startActivity(Intent(this, BirthdayActivity::class.java))
-    }
-
-    private fun isBirthday(): Boolean {
-        val socialSecurityNumber = "199701174617"
-
-        val birthMonth = socialSecurityNumber.substring(4, socialSecurityNumber.length - 6).toInt()
-        val birthDay = socialSecurityNumber.substring(6, socialSecurityNumber.length - 4).toInt()
-
-
-        val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-
-
-
-        return currentDay == birthDay && currentMonth == birthMonth
-
     }
 
 

@@ -15,6 +15,7 @@ import timber.log.Timber
 class BirthdayActivity : AppCompatActivity() {
 
     private var animationDuration = 900
+    private val animationEndFrame = 63
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,28 +28,27 @@ class BirthdayActivity : AppCompatActivity() {
         //Birthday animation
         confetti_animation_view.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
-                Timber.d("end")
                 confetti_animation_view.hide()
                 startActivity(Intent(applicationContext, LoggedInActivity::class.java))
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                Timber.d("cancel")
+
             }
 
             override fun onAnimationStart(p0: Animator?) {
-                Timber.d("start")
+
 
             }
 
             override fun onAnimationRepeat(animation: Animator) {
-                Timber.d("repeat")
+
             }
         })
 
         animateText()
 
-        confetti_animation_view.setMaxFrame(63)
+        confetti_animation_view.setMaxFrame(animationEndFrame)
         confetti_animation_view.playAnimation()
     }
 

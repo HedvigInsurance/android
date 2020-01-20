@@ -7,13 +7,12 @@
     tools:context="com.hedvig.app.feature.birthday.BirthdayActivity">
 
     <TextView
+        style="@style/Header"
         android:id="@+id/happyBirthdayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/circular_bold"
-        android:text="Happy Birthday"
-        android:textColor="#0D0066"
-        android:textSize="36sp"
+        android:text="@string/happy_birthday"
+        android:textSize="@dimen/text_xxlarge"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,13 +20,12 @@
         android:layout_marginBottom="200dp"/>
 
     <TextView
+        style="@style/Header"
         android:id="@+id/fromText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/circular_bold"
-        android:text="From"
-        android:textColor="#0D0066"
-        android:textSize="26dp"
+        android:text="@string/from"
+        android:textSize="@dimen/text_xlarge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/happyBirthdayText" />

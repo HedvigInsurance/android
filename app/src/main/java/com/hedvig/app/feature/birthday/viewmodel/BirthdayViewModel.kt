@@ -25,19 +25,12 @@ class BirthdayViewModel(
         val birthMonth = birthDate.substring(4, birthDate.length - 6).toInt()
         val birthDay = birthDate.substring(6, birthDate.length - 4).toInt()
 
+        val calendar = Calendar.getInstance()
 
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-        val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        val currentMonth = calendar.get(Calendar.MONTH) + 1
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
 
-        Timber.d("current date: $currentMonth/$currentDay Birth date $birthMonth/$birthDay")
-
-        return if (currentDay == birthDay && currentMonth == birthMonth) {
-            Timber.d("bday True")
-            true
-        } else {
-            Timber.d("bday False")
-            false
-        }
+        return currentDay == birthDay && currentMonth == birthMonth
     }
 
     fun getBirthDay() {
@@ -46,9 +39,7 @@ class BirthdayViewModel(
                 birthDate = it
                 isBirthdayData.postValue(isBirthday())
             }, {
-                error ->
                 isBirthdayData.postValue(false)
-                Timber.d("Error ${error.localizedMessage}")
             })
     }
 
