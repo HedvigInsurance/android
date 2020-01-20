@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.app.feature.birthday.data.BirthdayRepository
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 
 
 class BirthdayViewModel(
@@ -22,8 +21,8 @@ class BirthdayViewModel(
 
     private fun isBirthday(): Boolean {
 
-        val birthMonth = birthDate.substring(4, birthDate.length - 6).toInt()
-        val birthDay = birthDate.substring(6, birthDate.length - 4).toInt()
+        val birthMonth = birthDate.substring(4, 6).toInt()
+        val birthDay = birthDate.substring(6, 8).toInt()
 
         val calendar = Calendar.getInstance()
 

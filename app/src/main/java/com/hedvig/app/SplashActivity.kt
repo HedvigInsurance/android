@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
 
 class SplashActivity : BaseActivity() {

@@ -10,7 +10,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.activity_birthday.*
 
-
 class BirthdayActivity : AppCompatActivity(R.layout.activity_birthday) {
 
     private val animationEndFrame = 63
