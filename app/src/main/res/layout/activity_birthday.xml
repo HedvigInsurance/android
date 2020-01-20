@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@id/happyBirthdayText" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/confetti_animation_view"
+        android:id="@+id/confetti_animation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
