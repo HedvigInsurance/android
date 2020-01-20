@@ -58,6 +58,7 @@
     <dimen name="bottom_navigation_height">60dp</dimen>
     <dimen name="common_claims_cell_height">90dp</dimen>
 
+    <dimen name="happy_birthday_spacing">200dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="dialog_background_radius">20dp</dimen>
