@@ -45,8 +45,6 @@ class SplashActivity : BaseActivity() {
             getBirthDay()
         }
 
-        Timber.d(this.hasBeenCelebrated().toString())
-
 
         disposables += loggedInService
             .getLoginStatus()
