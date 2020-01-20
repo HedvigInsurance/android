@@ -11,14 +11,13 @@ import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.activity_birthday.*
 
 
-class BirthdayActivity : AppCompatActivity() {
+class BirthdayActivity : AppCompatActivity(R.layout.activity_birthday) {
 
     private var animationDuration = 900
     private val animationEndFrame = 63
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_birthday)
 
         overridePendingTransition(0, 0)
         happyBirthdayText.hide()
