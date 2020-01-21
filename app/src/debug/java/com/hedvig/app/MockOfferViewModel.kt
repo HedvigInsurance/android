@@ -2,6 +2,8 @@ package com.hedvig.app
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -66,9 +68,43 @@ class MockOfferViewModel(
                     null,
                     null
                 ),
-                null
+                OfferQuery.Cost(
+                    "InsuranceCost",
+                    OfferQuery.Cost.Fragments(
+                        CostFragment(
+                            "InsuranceCost",
+                            CostFragment.MonthlyDiscount(
+                                "MonetaryAmountV2",
+                                "50.0"
+                            ),
+                            CostFragment.MonthlyNet(
+                                "MonetaryAmountV2",
+                                "50.0"
+                            ),
+                            CostFragment.MonthlyGross(
+                                "MonetaryAmountV2",
+                                "100.0"
+                            )
+                        )
+                    )
+
+                )
             ),
-            listOf()
+            listOf(
+                OfferQuery.RedeemedCampaign(
+                    "Campaign",
+                    OfferQuery.RedeemedCampaign.Fragments(
+                        IncentiveFragment(
+                            "Campaign",
+                            IncentiveFragment.AsPercentageDiscountMonths(
+                                "PercentageDiscountMonths",
+                                50.0,
+                                3
+                            )
+                        )
+                    )
+                )
+            )
         )
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
