@@ -242,6 +242,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
                 is IncentiveFragment.AsPercentageDiscountMonths -> {
+                    grossPremium.show()
+                    grossPremium.text = interpolateTextKey(
+                        getString(R.string.OFFER_GROSS_PREMIUM),
+                        "GROSS_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                    )
                     discountBubble.show()
                     discountTitle.text =
                         getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
