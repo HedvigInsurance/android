@@ -15,16 +15,18 @@ class BirthdayViewModel(
     val isBirthdayData: MutableLiveData<Boolean> = MutableLiveData()
     private val disposables = CompositeDisposable()
 
-    private fun isBirthday(birthDate: String): Boolean {
-        val birthMonth = birthDate.substring(4, 6).toInt()
-        val birthDay = birthDate.substring(6, 8).toInt()
+    companion object{
+        private fun isBirthday(birthDate: String): Boolean {
+            val birthMonth = birthDate.substring(4, 6).toInt()
+            val birthDay = birthDate.substring(6, 8).toInt()
 
-        val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance()
 
-        val currentMonth = calendar.get(Calendar.MONTH) + 1
-        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+            val currentMonth = calendar.get(Calendar.MONTH) + 1
+            val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
 
-        return currentDay == birthDay && currentMonth == birthMonth
+            return currentDay == birthDay && currentMonth == birthMonth
+        }
     }
 
     private fun getBirthDay() {
