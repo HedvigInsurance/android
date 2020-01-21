@@ -217,7 +217,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
 
         if (data.redeemedCampaigns.size > 0) {
-            when (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
+            when (val incentive = data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
                 is IncentiveFragment.AsMonthlyCostDeduction -> {
                     grossPremium.show()
                     grossPremium.text = interpolateTextKey(
@@ -227,7 +227,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
                     discountBubble.show()
                     discount.text = getString(R.string.OFFER_SCREEN_INVITED_BUBBLE)
-                    discount.updateMargin(top = 0)
 
                     if (!lastAnimationHasCompleted) {
                         netPremium.setTextColor(compatColor(R.color.pink))
@@ -238,9 +237,30 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     discountTitle.show()
                     discount.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
-                        "free_month" to (data.redeemedCampaigns[0].fragments.incentiveFragment.incentive as IncentiveFragment.AsFreeMonths).quantity
+                        "free_month" to incentive.quantity
                     )
                     discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
+                }
+                is IncentiveFragment.AsPercentageDiscountMonths -> {
+                    discountBubble.show()
+                    discountTitle.text =
+                        getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
+                    discountTitle.show()
+                    discount.text = if (incentive.pdmQuantity == 1) {
+                        interpolateTextKey(
+                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
+                            "percentage" to incentive.percentageDiscount.toInt()
+                        )
+                    } else {
+                        interpolateTextKey(
+                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
+                            "months" to incentive.pdmQuantity,
+                            "percentage" to incentive.percentageDiscount.toInt()
+                        )
+                    }
+                    if (!lastAnimationHasCompleted) {
+                        netPremium.setTextColor(compatColor(R.color.pink))
+                    }
                 }
             }
             if (lastAnimationHasCompleted) {
