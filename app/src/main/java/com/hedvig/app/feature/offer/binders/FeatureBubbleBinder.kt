@@ -3,8 +3,11 @@ package com.hedvig.app.feature.offer.binders
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
+import androidx.fragment.app.FragmentManager
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.offer.ChangeDateBottomSheet
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import kotlinx.android.synthetic.main.feature_bubbles.view.*
@@ -12,7 +15,7 @@ import kotlinx.android.synthetic.main.feature_bubbles.view.*
 class FeatureBubbleBinder(
     private val root: ConstraintLayout
 ) {
-    fun bind(data: OfferQuery.Insurance) = root.apply {
+    fun bind(data: OfferQuery.Insurance, fragmentManager: FragmentManager) = root.apply {
         amountInsuredBubbleText.text = interpolateTextKey(
             resources.getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
             "personsInHousehold" to data.personsInHousehold
@@ -33,6 +36,13 @@ class FeatureBubbleBinder(
                 resources.getString(R.string.OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE)
             }
         }
+
+        dateButton.setHapticClickListener {
+            ChangeDateBottomSheet.newInstance()
+                .show(fragmentManager, ChangeDateBottomSheet.TAG)
+
+        }
+
         bindChooseStartDateButton()
     }
 

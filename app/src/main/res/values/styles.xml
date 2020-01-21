@@ -92,6 +92,12 @@
         <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
+    <style name="PickDateField">
+        <item name="android:background">@drawable/background_pick_date</item>
+        <item name="android:textColor">@color/semi_light_gray</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="HedvigButton">
         <item name="android:background">@drawable/button_primary</item>
         <item name="android:fontFamily">@font/circular_book</item>
