@@ -40,7 +40,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
@@ -205,7 +204,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun bindPriceBubbles(data: OfferQuery.Data) {
         grossPremium.hide()
         discountBubble.hide()
-        discountTitle.hide()
+        discountTitle.remove()
 
         if (lastAnimationHasCompleted) {
             animatePremium(data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt())
@@ -239,7 +238,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
                         "free_month" to incentive.quantity
                     )
-                    discount.updateMargin(top = resources.getDimensionPixelSize(R.dimen.base_margin_half))
                 }
                 is IncentiveFragment.AsPercentageDiscountMonths -> {
                     grossPremium.show()
