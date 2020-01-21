@@ -73,12 +73,13 @@
 
         <TextView
             android:id="@+id/discountTitle"
-            style="@style/Body.XSmall.Negative"
+            style="@style/Body.XSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/base_margin"
             android:text="@string/OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE"
+            android:textColor="@color/white"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/discount"
             app:layout_constraintEnd_toEndOf="parent"

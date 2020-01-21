@@ -3,9 +3,8 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.AbsoluteSizeSpan
+import androidx.core.text.buildSpannedString
+import androidx.core.text.scale
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
@@ -16,7 +15,6 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
-import com.hedvig.app.util.extensions.concat
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -144,24 +142,40 @@ class PaymentActivity : BaseActivity() {
             }
         }
 
-        (
-            (data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
-                as? IncentiveFragment.AsFreeMonths
-                )?.quantity)?.let { fm ->
-            val amount = SpannableString("$fm\n")
-            amount.setSpan(
-                AbsoluteSizeSpan(20, true),
-                0, fm.toString().length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            val label = SpannableString(
-                if (fm > 1) {
-                    getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
-                } else {
-                    getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+        when (val incentive =
+            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
+            is IncentiveFragment.AsFreeMonths -> {
+                incentive.quantity?.let { quantity ->
+                    discountSphereText.text = buildSpannedString {
+                        scale(20f / 12f) {
+                            append("$quantity\n")
+                        }
+                        append(
+                            if (quantity > 1) {
+                                getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                            } else {
+                                getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                            }
+                        )
+                    }
+                    discountSphere.show()
                 }
-            )
-            freeMonths.text = amount.concat(label)
-            freeMonthsSphere.show()
+            }
+            is IncentiveFragment.AsPercentageDiscountMonths -> {
+                discountSphereText.text = if (incentive.pdmQuantity > 1) {
+                    interpolateTextKey(
+                        "{percentage}% rabatt i {months} månader",
+                        "percentage" to incentive.percentageDiscount.toInt(),
+                        "months" to incentive.pdmQuantity
+                    )
+                } else {
+                    interpolateTextKey(
+                        "{percentage}% rabatt i en månad",
+                        "percentage" to incentive.percentageDiscount.toInt()
+                    )
+                }
+                discountSphere.show()
+            }
         }
     }
 
@@ -305,7 +319,7 @@ class PaymentActivity : BaseActivity() {
         failedPaymentsCard.remove()
 
         nextPaymentGross.hide()
-        freeMonthsSphere.remove()
+        discountSphere.remove()
         nextPaymentDate.background.setTintList(null)
         nextPaymentDate.setTextColor(compatColor(R.color.text_regular))
 

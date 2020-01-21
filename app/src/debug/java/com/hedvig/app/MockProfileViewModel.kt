@@ -121,19 +121,19 @@ class MockProfileViewModel : ProfileViewModel() {
                 listOf(
                     ProfileQuery.RedeemedCampaign(
                         "Campaign",
-                        ProfileQuery.Owner(
-                            "CampaignOwner",
-                            "Test campaign"
-                        ),
-                        ProfileQuery.RedeemedCampaign.Fragments(
-                            IncentiveFragment(
-                                "Incentive",
-                                IncentiveFragment.AsFreeMonths(
-                                    "FreeMonths",
-                                    3
-                                )
-                            )
-                        )
+                        // ProfileQuery.Owner(
+                        //     "CampaignOwner",
+                        //     "Test campaign"
+                        // ),
+                        // ProfileQuery.RedeemedCampaign.Fragments(
+                        //     IncentiveFragment(
+                        //         "Incentive",
+                        //         IncentiveFragment.AsFreeMonths(
+                        //             "FreeMonths",
+                        //             3
+                        //         )
+                        //     )
+                        // )
                         // null,
                         // ProfileQuery.RedeemedCampaign.Fragments(
                         //     IncentiveFragment(
@@ -147,6 +147,17 @@ class MockProfileViewModel : ProfileViewModel() {
                         //         )
                         //     )
                         // )
+                        null,
+                        ProfileQuery.RedeemedCampaign.Fragments(
+                            IncentiveFragment(
+                                "Incentive",
+                                IncentiveFragment.AsPercentageDiscountMonths(
+                                    "PercentageDiscountMonths",
+                                    20.0,
+                                    1
+                                )
+                            )
+                        )
                     )
                 ),
                 ProfileQuery.ReferralInformation(

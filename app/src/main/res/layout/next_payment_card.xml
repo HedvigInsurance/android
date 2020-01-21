@@ -56,7 +56,7 @@
                 tools:visibility="visible" />
 
             <FrameLayout
-                android:id="@+id/freeMonthsSphere"
+                android:id="@+id/discountSphere"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/sphere"
@@ -68,11 +68,13 @@
                 tools:visibility="visible">
 
                 <TextView
-                    android:id="@+id/freeMonths"
+                    android:id="@+id/discountSphereText"
                     style="@style/Body.XSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/base_margin_half"
+                    android:layout_marginEnd="@dimen/base_margin_half"
                     android:fontFamily="@font/circular_bold"
                     android:gravity="center"
                     android:lineSpacingExtra="0sp"
