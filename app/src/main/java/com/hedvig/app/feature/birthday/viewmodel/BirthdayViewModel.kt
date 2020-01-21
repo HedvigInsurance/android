@@ -12,15 +12,10 @@ class BirthdayViewModel(
     private val birthdayRepository: BirthdayRepository
 ) : ViewModel() {
 
-    private lateinit var birthDate: String
-
     val isBirthdayData: MutableLiveData<Boolean> = MutableLiveData()
     private val disposables = CompositeDisposable()
 
-
-
-    private fun isBirthday(): Boolean {
-
+    private fun isBirthday(birthDate: String): Boolean {
         val birthMonth = birthDate.substring(4, 6).toInt()
         val birthDay = birthDate.substring(6, 8).toInt()
 
@@ -35,8 +30,7 @@ class BirthdayViewModel(
     private fun getBirthDay() {
         disposables += birthdayRepository.fetchBirthDate()
             .subscribe({
-                birthDate = it
-                isBirthdayData.postValue(isBirthday())
+                isBirthdayData.postValue(isBirthday(it))
             }, {
                 isBirthdayData.postValue(false)
             })

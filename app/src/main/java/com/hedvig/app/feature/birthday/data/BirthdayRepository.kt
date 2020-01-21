@@ -6,6 +6,6 @@ class BirthdayRepository {
 
 
     fun fetchBirthDate(): Observable<String> {
-        return Observable.just("199701201234")
+        return Observable.just("199701211234")
     }
 }
