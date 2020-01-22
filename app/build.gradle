@@ -176,7 +176,7 @@ dependencies {
     }
 
     //facebook
-    implementation 'com.facebook.android:facebook-android-sdk:[5,13)'
+    implementation 'com.facebook.android:facebook-android-sdk:5.13.0'
 
     // ZXing
     implementation 'com.google.zxing:core:3.4.0'
