@@ -32,7 +32,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '3.1.5'
+        versionName '3.1.6'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -110,6 +110,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
     implementation "androidx.preference:preference-ktx:1.1.0"
+    implementation "androidx.core:core-ktx:1.1.0"
+
 
     // Android lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
