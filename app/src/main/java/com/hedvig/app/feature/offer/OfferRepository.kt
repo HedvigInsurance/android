@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.rx2.Rx2Apollo
+import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -12,6 +13,7 @@ import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import io.reactivex.Observable
+import org.threeten.bp.LocalDate
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper
@@ -118,4 +120,35 @@ class OfferRepository(
 
     fun fetchSignStatus() = Rx2Apollo
         .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
+
+    fun chooseStartDate(date: LocalDate) = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation("todo", date)))
+
+    fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(offerQuery)
+            .execute()
+
+        val newDate = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.startDate
+
+        (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
+            val newData = cachedData
+                .toBuilder()
+                .lastQuoteOfMember(
+                    lastQuoteOfMember
+                        .toBuilder()
+                        .startDate(newDate)
+                        .build()
+                )
+                .build()
+
+            apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .writeAndPublish(offerQuery, newData)
+                .execute()
+        }
+    }
 }

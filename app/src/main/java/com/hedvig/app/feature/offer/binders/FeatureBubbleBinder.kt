@@ -11,17 +11,18 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import kotlinx.android.synthetic.main.feature_bubbles.view.*
+import org.threeten.bp.LocalDate
 
 class FeatureBubbleBinder(
     private val root: ConstraintLayout
 ) {
-    fun bind(data: OfferQuery.Insurance, fragmentManager: FragmentManager) = root.apply {
+    fun bind(data: OfferQuery.Data, fragmentManager: FragmentManager) = root.apply {
         amountInsuredBubbleText.text = interpolateTextKey(
             resources.getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
-            "personsInHousehold" to data.personsInHousehold
+            "personsInHousehold" to data.insurance.personsInHousehold
         )
 
-        if (data.previousInsurer != null) {
+        if (data.insurance.previousInsurer != null) {
             startDateBubbleText.text =
                 resources.getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
         } else {
@@ -29,7 +30,7 @@ class FeatureBubbleBinder(
                 resources.getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)
         }
 
-        data.type?.let { t ->
+        data.insurance.type?.let { t ->
             brfOrTravel.text = if (t.isApartmentOwner) {
                 resources.getString(R.string.OFFER_BUBBLES_OWNED_ADDON_TITLE)
             } else {
@@ -43,14 +44,14 @@ class FeatureBubbleBinder(
 
         }
 
-        bindChooseStartDateButton()
+        bindChooseStartDateButton((data.lastQuoteOfMember as OfferQuery.AsCompleteQuote).startDate)
     }
 
-    private fun bindChooseStartDateButton() = root.apply {
+    private fun bindChooseStartDateButton(startDate: LocalDate?) = root.apply {
         root.dateButton.text = buildSpannedString {
             append(resources.getString(R.string.OFFER_START_DATE))
             append(" ")
-            bold { append(resources.getString(R.string.OFFER_START_DATE_TODAY)) }
+            bold { append(startDate.toString()) }
         }
     }
 }

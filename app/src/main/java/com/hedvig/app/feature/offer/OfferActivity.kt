@@ -120,7 +120,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 bindMeSection(d)
                 termsBinder.bind(d.insurance)
                 bindSwitchSection(d)
-                featureBubbleBinder.bind(d.insurance, supportFragmentManager)
+                featureBubbleBinder.bind(d, supportFragmentManager)
                 animateBubbles(d)
             }
         }

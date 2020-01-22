@@ -1,0 +1,10 @@
+mutation ChooseStartDate($id: ID!, $startDate: LocalDate!) {
+  editQuote(input: {
+    id: $id,
+    startDate: $startDate
+  }) {
+    ... on CompleteQuote {
+      startDate
+    }
+  }
+}
