@@ -48,6 +48,9 @@ query Offer {
     ... on CompleteQuote {
       startDate
       id
+      currentInsurer{
+        id
+      }
     }
   }
 }

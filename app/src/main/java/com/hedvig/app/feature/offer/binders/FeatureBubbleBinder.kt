@@ -44,17 +44,29 @@ class FeatureBubbleBinder(
 
         }
 
-        bindChooseStartDateButton((data.lastQuoteOfMember as OfferQuery.AsCompleteQuote).startDate)
+        val previousInsurer = data.insurance.previousInsurer
+        bindChooseStartDateButton(
+            (data.lastQuoteOfMember as OfferQuery.AsCompleteQuote).startDate,
+            previousInsurer
+        )
     }
 
-    private fun bindChooseStartDateButton(startDate: LocalDate?) = root.apply {
+    private fun bindChooseStartDateButton(
+        startDate: LocalDate?,
+        previousInsurer: OfferQuery.PreviousInsurer?
+    ) = root.apply {
         root.dateButton.text = buildSpannedString {
             append(resources.getString(R.string.OFFER_START_DATE))
             append(" ")
             if (startDate == null || startDate == LocalDate.now()) {
-                bold { append(resources.getString(R.string.OFFER_START_DATE_TODAY)) }
+                if (previousInsurer == null) {
+                    bold { append(resources.getString(R.string.OFFER_START_DATE_TODAY)) }
+                } else {
+                    bold { append("När min bindningstid går ut") }
+                }
             } else {
-                bold { append(startDate.toString()) }
+                val month = startDate.month.toString().substring(0, 3).toLowerCase()
+                bold { append("${startDate.dayOfMonth} $month ${startDate.year}") }
             }
         }
     }

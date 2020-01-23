@@ -8,15 +8,16 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.show
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
-import timber.log.Timber
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
@@ -26,8 +27,9 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
     private lateinit var dateText: TextView
     private lateinit var dateHint: TextView
+    private lateinit var autoSetDateTextView: TextView
 
-    private lateinit var date: String
+    private var isDatePicked = false
     private lateinit var localDate: LocalDate
 
     override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
@@ -38,9 +40,10 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
         dateText = dialog.findViewById(R.id.dateText)
         dateHint = dialog.findViewById(R.id.dateHint)
+        autoSetDateTextView = dialog.findViewById(R.id.autoSetDateText)
+
 
         dialog.findViewById<View>(R.id.datePickButton).setOnClickListener {
-            animateHintMove()
             showDatePickerDialog()
         }
 
@@ -48,21 +51,28 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             d?.let { data ->
                 data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
                     dialog.findViewById<Button>(R.id.chooseDateButton).setOnClickListener {
-                        AlertDialog.Builder(context)
-                            .setTitle("Är du säker?")
-                            .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
-                            .setPositiveButton(
-                                "Ja, välj datum"
-                            ) { dialog, which ->
-                                offerViewModel.chooseStartDate(id, localDate)
-                                Timber.d("Ja, välj datum $localDate")
-                            }
-                            .setNegativeButton("Ångra", null)
-                            .show()
+                        if (isDatePicked) {
+                            AlertDialog.Builder(context)
+                                .setTitle("Är du säker?")
+                                .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
+                                .setPositiveButton(
+                                    "Ja, välj datum"
+                                ) { dialog, which ->
+                                    offerViewModel.chooseStartDate(id, localDate)
+                                }
+                                .setNegativeButton("Ångra", null)
+                                .show()
+                        } else {
+                            context?.makeToast("you have to pick a date", Toast.LENGTH_SHORT)
+                        }
                     }
                 }
+                if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                    autoSetDateTextView.text = "Activate today"
+                } else {
+                    autoSetDateTextView.text = "Aktivera när min gamla försäkring går ut"
+                }
             }
-
         }
 
         return dialog
@@ -80,9 +90,12 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
                 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
                 localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                date = DateFormatSymbols().months[monthOfYear].capitalize()
+                val month= DateFormatSymbols().months[monthOfYear].capitalize()
 
-                dateText.text = "$dayOfMonth $date $year"
+                isDatePicked = true
+
+                dateText.text = "$dayOfMonth $month $year"
+                animateHintMove()
                 dateText.show()
             },
             year,

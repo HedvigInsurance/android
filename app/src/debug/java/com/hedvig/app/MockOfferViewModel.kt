@@ -74,7 +74,11 @@ class MockOfferViewModel(
             OfferQuery.AsCompleteQuote(
                 "CompleteQuote",
                 LocalDate.of(2020, 2, 1),
-                "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                OfferQuery.CurrentInsurer(
+                    "CurrentInsurer",
+                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                )
             )
         )
 
@@ -110,7 +114,11 @@ class MockOfferViewModel(
             OfferQuery.AsCompleteQuote(
                 "CompleteQuote",
                 LocalDate.of(2020, 2, 1),
-                "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                OfferQuery.CurrentInsurer(
+                    "CurrentInsurer",
+                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                )
             )
         )
     }
