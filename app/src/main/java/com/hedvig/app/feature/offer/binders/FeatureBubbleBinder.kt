@@ -51,7 +51,11 @@ class FeatureBubbleBinder(
         root.dateButton.text = buildSpannedString {
             append(resources.getString(R.string.OFFER_START_DATE))
             append(" ")
-            bold { append(startDate.toString()) }
+            if (startDate == null || startDate == LocalDate.now()) {
+                bold { append(resources.getString(R.string.OFFER_START_DATE_TODAY)) }
+            } else {
+                bold { append(startDate.toString()) }
+            }
         }
     }
 }
