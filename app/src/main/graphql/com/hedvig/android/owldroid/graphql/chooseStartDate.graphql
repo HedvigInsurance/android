@@ -4,6 +4,7 @@ mutation ChooseStartDate($id: ID!, $startDate: LocalDate!) {
     startDate: $startDate
   }) {
     ... on CompleteQuote {
+      id
       startDate
     }
   }

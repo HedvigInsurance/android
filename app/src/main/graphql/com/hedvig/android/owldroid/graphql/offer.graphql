@@ -47,6 +47,7 @@ query Offer {
   lastQuoteOfMember {
     ... on CompleteQuote {
       startDate
+      id
     }
   }
 }

@@ -14,6 +14,7 @@ import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper
@@ -121,8 +122,8 @@ class OfferRepository(
     fun fetchSignStatus() = Rx2Apollo
         .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
 
-    fun chooseStartDate(date: LocalDate) = Rx2Apollo
-        .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation("todo", date)))
+    fun chooseStartDate(id: String, date: LocalDate) = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation(id, date)))
 
     fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
         val cachedData = apolloClientWrapper
@@ -132,6 +133,11 @@ class OfferRepository(
             .execute()
 
         val newDate = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.startDate
+        val newId = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.id
+        if (newId == null) {
+            Timber.e("Id is null")
+            return
+        }
 
         (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
             val newData = cachedData
@@ -139,6 +145,7 @@ class OfferRepository(
                 .lastQuoteOfMember(
                     lastQuoteOfMember
                         .toBuilder()
+                        .id(newId)
                         .startDate(newDate)
                         .build()
                 )

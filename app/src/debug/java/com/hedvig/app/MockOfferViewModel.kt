@@ -39,7 +39,7 @@ class MockOfferViewModel(
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(date: LocalDate) = Unit
+    override fun chooseStartDate(id: String, date: LocalDate) = Unit
 
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
@@ -73,7 +73,8 @@ class MockOfferViewModel(
             listOf(),
             OfferQuery.AsCompleteQuote(
                 "CompleteQuote",
-                LocalDate.of(2020, 2, 1)
+                LocalDate.of(2020, 2, 1),
+                "ea656f5f-40b2-4953-85d9-752b33e69e38"
             )
         )
 
@@ -108,7 +109,8 @@ class MockOfferViewModel(
             listOf(),
             OfferQuery.AsCompleteQuote(
                 "CompleteQuote",
-                LocalDate.of(2020, 2, 1)
+                LocalDate.of(2020, 2, 1),
+                "ea656f5f-40b2-4953-85d9-752b33e69e38"
             )
         )
     }

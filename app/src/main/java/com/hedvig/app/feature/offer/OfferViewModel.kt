@@ -11,7 +11,7 @@ import io.reactivex.rxkotlin.plusAssign
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
-abstract class OfferViewModel: ViewModel() {
+abstract class OfferViewModel : ViewModel() {
     abstract val data: MutableLiveData<OfferQuery.Data>
     abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
     abstract val signStatus: MutableLiveData<SignStatusFragment>
@@ -22,7 +22,7 @@ abstract class OfferViewModel: ViewModel() {
     abstract fun startSign()
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
-    abstract fun chooseStartDate(date: LocalDate)
+    abstract fun chooseStartDate(id: String, date: LocalDate)
 }
 
 class OfferViewModelImpl(
@@ -76,8 +76,8 @@ class OfferViewModelImpl(
         offerRepository.removeDiscountFromCache()
     }
 
-    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
-        = offerRepository.writeDiscountToCache(data)
+    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) =
+        offerRepository.writeDiscountToCache(data)
 
     override fun triggerOpenChat(done: () -> Unit) {
         disposables += offerRepository
@@ -129,20 +129,19 @@ class OfferViewModelImpl(
             }, { Timber.e(it) })
     }
 
-    override fun chooseStartDate(date: LocalDate) {
-        Timber.d("kom hit")
+    override fun chooseStartDate(id: String, date: LocalDate) {
         disposables += offerRepository
-            .chooseStartDate(date)
+            .chooseStartDate(id, date)
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e("Error")
+                    Timber.e("${response.errors()}")
                 }
                 response.data()?.let { data ->
                     offerRepository.writeStartDateToCache(data)
                 } ?: run {
                     Timber.e("Missing data when choosing start date")
                 }
-            },{
+            }, {
 
             })
     }

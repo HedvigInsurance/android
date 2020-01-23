@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
+import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.show
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
@@ -42,19 +44,27 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             showDatePickerDialog()
         }
 
-        dialog.findViewById<Button>(R.id.chooseDateButton).setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle("Är du säker?")
-                .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
-                .setPositiveButton(
-                    "Ja, välj datum"
-                ) { dialog, which ->
-                    offerViewModel.chooseStartDate(localDate)
-                    Timber.d("Ja, välj datum " + localDate)
+        offerViewModel.data.observe(this) { d ->
+            d?.let { data ->
+                data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
+                    dialog.findViewById<Button>(R.id.chooseDateButton).setOnClickListener {
+                        AlertDialog.Builder(context)
+                            .setTitle("Är du säker?")
+                            .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
+                            .setPositiveButton(
+                                "Ja, välj datum"
+                            ) { dialog, which ->
+                                offerViewModel.chooseStartDate(id, localDate)
+                                Timber.d("Ja, välj datum $localDate")
+                            }
+                            .setNegativeButton("Ångra", null)
+                            .show()
+                    }
                 }
-                .setNegativeButton("Ångra", null)
-                .show()
+            }
+
         }
+
         return dialog
     }
 
@@ -98,5 +108,8 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         fun newInstance(): ChangeDateBottomSheet {
             return ChangeDateBottomSheet()
         }
+
+        val OfferQuery.LastQuoteOfMember.completeQuote: OfferQuery.AsCompleteQuote?
+            get() = (this as? OfferQuery.AsCompleteQuote)
     }
 }
