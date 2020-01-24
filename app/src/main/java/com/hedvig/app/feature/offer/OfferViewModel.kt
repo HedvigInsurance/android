@@ -23,6 +23,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
     abstract fun chooseStartDate(id: String, date: LocalDate)
+    abstract fun removeStartDate(id: String)
 }
 
 class OfferViewModelImpl(
@@ -144,5 +145,19 @@ class OfferViewModelImpl(
             }, {
 
             })
+    }
+
+    override fun removeStartDate(id: String) {
+        disposables += offerRepository
+            .removeStartDate(id)
+            .subscribe({ response ->
+                if (response.hasErrors()) {
+                    Timber.e(response.errors().toString())
+                    return@subscribe
+                }
+                response.data()?.let {data ->
+                    offerRepository.removeStartDateFromCache(data)
+                }
+            }, { Timber.e(it) })
     }
 }

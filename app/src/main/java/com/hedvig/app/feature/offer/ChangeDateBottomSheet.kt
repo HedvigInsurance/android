@@ -67,21 +67,24 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                             context?.makeToast("you have to pick a date", Toast.LENGTH_SHORT)
                         }
                     }
-                }
-                if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                    if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                        buttonText = "Activate today"
+                        autoSetDateTextView.text = buttonText
 
-                    buttonText = "Activate today"
-                    autoSetDateTextView.text = buttonText
-                } else {
-
-                    buttonText = "Aktivera när min gamla försäkring går ut"
-                    autoSetDateTextView.text = buttonText
+                        autoSetDateTextView.setOnClickListener {
+                            offerViewModel.chooseStartDate(id, LocalDate.now())
+                            dialog.hide()
+                        }
+                    } else {
+                        buttonText = "Aktivera när min gamla försäkring går ut"
+                        autoSetDateTextView.text = buttonText
+                        autoSetDateTextView.setOnClickListener {
+                            offerViewModel.removeStartDate(id)
+                            dialog.hide()
+                        }
+                    }
                 }
 
-                autoSetDateTextView.setOnClickListener {
-                    //TODO
-                    dialog.hide()
-                }
             }
         }
 

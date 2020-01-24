@@ -40,6 +40,8 @@ class MockOfferViewModel(
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) = Unit
+    override fun removeStartDate(id: String) {
+    }
 
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
