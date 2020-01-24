@@ -42,13 +42,13 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         dateHint = dialog.findViewById(R.id.dateHint)
         autoSetDateTextView = dialog.findViewById(R.id.autoSetDateText)
 
-
         dialog.findViewById<View>(R.id.datePickButton).setOnClickListener {
             showDatePickerDialog()
         }
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
+                lateinit var buttonText: String
                 data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
                     dialog.findViewById<Button>(R.id.chooseDateButton).setOnClickListener {
                         if (isDatePicked) {
@@ -59,6 +59,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                                     "Ja, välj datum"
                                 ) { dialog, which ->
                                     offerViewModel.chooseStartDate(id, localDate)
+                                    this.dialog?.hide()
                                 }
                                 .setNegativeButton("Ångra", null)
                                 .show()
@@ -68,9 +69,18 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                     }
                 }
                 if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
-                    autoSetDateTextView.text = "Activate today"
+
+                    buttonText = "Activate today"
+                    autoSetDateTextView.text = buttonText
                 } else {
-                    autoSetDateTextView.text = "Aktivera när min gamla försäkring går ut"
+
+                    buttonText = "Aktivera när min gamla försäkring går ut"
+                    autoSetDateTextView.text = buttonText
+                }
+
+                autoSetDateTextView.setOnClickListener {
+                    //TODO
+                    dialog.hide()
                 }
             }
         }
