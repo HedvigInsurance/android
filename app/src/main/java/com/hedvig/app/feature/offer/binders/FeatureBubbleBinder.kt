@@ -12,7 +12,6 @@ import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import kotlinx.android.synthetic.main.feature_bubbles.view.*
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 class FeatureBubbleBinder(
     private val root: ConstraintLayout
@@ -49,8 +48,6 @@ class FeatureBubbleBinder(
     }
 
     private fun bindChooseStartDateButton(data: OfferQuery.Data) = root.apply {
-        Timber.d(data.insurance.previousInsurer.toString())
-        Timber.d(data.lastQuoteOfMember.toString())
         val startDate = (data.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.startDate
         val previousInsurer = data.insurance.previousInsurer
 
@@ -59,7 +56,7 @@ class FeatureBubbleBinder(
             append(" ")
 
             if (startDate == null || startDate == LocalDate.now()) {
-                bold { append(resources.getString(R.string.OFFER_START_DATE_TODAY)) }
+                bold { append(resources.getString(R.string.START_DATE_TODAY)) }
             } else {
                 val month = startDate.month.toString().substring(0, 3).toLowerCase()
                 bold { append("${startDate.dayOfMonth} $month ${startDate.year}") }
@@ -69,6 +66,7 @@ class FeatureBubbleBinder(
                 clear()
                 append(resources.getString(R.string.OFFER_START_DATE))
                 append(" ")
+                //TODO
                 bold { append("När min bindningstid går ut") }
             }
         }

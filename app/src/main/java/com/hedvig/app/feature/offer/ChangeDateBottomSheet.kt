@@ -55,21 +55,28 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                     dialog.findViewById<Button>(R.id.chooseDateButton).setOnClickListener {
                         if (isDatePicked) {
                             AlertDialog.Builder(context)
+                                //TODO
                                 .setTitle("Är du säker?")
+                                //TODO
                                 .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
+                                //TODO
                                 .setPositiveButton(
+                                    //TODO
                                     "Ja, välj datum"
                                 ) { dialog, which ->
                                     offerViewModel.chooseStartDate(id, localDate)
                                     this.dialog?.hide()
                                 }
+                                //TODO
                                 .setNegativeButton("Ångra", null)
                                 .show()
                         } else {
+                            //TODO
                             context?.makeToast("you have to pick a date", Toast.LENGTH_SHORT)
                         }
                     }
                     if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                        //TODO
                         buttonText = "Activate today"
                         autoSetDateTextView.text = buttonText
 
@@ -78,6 +85,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                             dialog.hide()
                         }
                     } else {
+                        //TODO
                         buttonText = "Aktivera när min gamla försäkring går ut"
                         autoSetDateTextView.text = buttonText
                         autoSetDateTextView.setOnClickListener {

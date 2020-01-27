@@ -17,6 +17,7 @@
         android:contentDescription="@null"
         android:src="@drawable/bottom_sheet_handle" />
 
+    <!--TODO-->
     <TextView
         style="@style/Header.Large"
         android:layout_width="wrap_content"
@@ -25,6 +26,7 @@
         android:layout_marginTop="@dimen/base_margin_double"
         />
 
+    <!--TODO-->
     <TextView
         android:id="@+id/info"
         style="@style/Body.Regular"
@@ -37,7 +39,7 @@
     <include
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/base_margin_sextuple"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         layout="@layout/date_pick_layout"
         />
@@ -49,9 +51,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="Välj datum"
+        android:text="@string/CHOOSE_DATE_BTN"
         />
 
+    <!--TODO-->
     <TextView
         android:id="@+id/autoSetDateText"
         style="@style/Body.Regular.Link"

@@ -17,6 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!--TODO-->
         <TextView
             android:id="@+id/dateText"
             style="@style/Body.Regular"
@@ -29,6 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <!--TODO-->
         <TextView
             android:id="@+id/dateHint"
             style="@style/Body"
@@ -52,13 +54,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!--TODO-->
     <TextView
         android:id="@+id/dateHintTop"
         style="@style/Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:background="#ffffff"
+        android:background="@color/white"
         android:visibility="gone"
         android:text="Datum"
         app:layout_constraintBottom_toTopOf="@id/constraintLayout"
