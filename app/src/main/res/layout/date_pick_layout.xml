@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dateContainer"
-    android:layout_height="80dp"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -29,6 +29,18 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <TextView
+            android:id="@+id/dateHint"
+            style="@style/Body"
+            android:textColor="@color/off_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:text="Datum"
+            app:layout_constraintBottom_toBottomOf="@id/constraintLayout"
+            app:layout_constraintStart_toStartOf="@id/constraintLayout"
+            app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,15 +51,17 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
-        android:id="@+id/dateHint"
+        android:id="@+id/dateHintTop"
         style="@style/Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:text="Datum"
         android:background="#ffffff"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+        android:visibility="gone"
+        android:text="Datum"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayout"
         app:layout_constraintStart_toStartOf="@id/constraintLayout"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

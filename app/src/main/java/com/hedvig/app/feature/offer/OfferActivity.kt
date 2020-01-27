@@ -56,6 +56,7 @@ import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.threeten.bp.LocalDate
 import kotlin.math.min
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
@@ -86,6 +87,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        var isFirstFetch = true
+
         offerChatButton.setHapticClickListener {
             tracker.openChat()
             offerViewModel.triggerOpenChat {
@@ -108,6 +111,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
+                }
+                (d.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let {lastQuoteOfMember ->
+                    val id = lastQuoteOfMember.id
+                    if (isFirstFetch && lastQuoteOfMember.currentInsurer == null) {
+                        offerViewModel.chooseStartDate(id, LocalDate.now())
+                        isFirstFetch = false
+                    }
                 }
                 loadingSpinner.remove()
                 container.show()

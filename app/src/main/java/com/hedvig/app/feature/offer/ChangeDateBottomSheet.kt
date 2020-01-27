@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -14,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.show
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
@@ -27,6 +27,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
     private lateinit var dateText: TextView
     private lateinit var dateHint: TextView
+    private lateinit var dateHintTop: TextView
     private lateinit var autoSetDateTextView: TextView
 
     private var isDatePicked = false
@@ -40,6 +41,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
         dateText = dialog.findViewById(R.id.dateText)
         dateHint = dialog.findViewById(R.id.dateHint)
+        dateHintTop = dialog.findViewById(R.id.dateHintTop)
         autoSetDateTextView = dialog.findViewById(R.id.autoSetDateText)
 
         dialog.findViewById<View>(R.id.datePickButton).setOnClickListener {
@@ -121,10 +123,8 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
     }
 
     private fun animateHintMove() {
-        ObjectAnimator.ofFloat(dateHint, "translationY", -65f).apply {
-            duration = 100
-            start()
-        }
+        dateHint.hide()
+        dateHintTop.show()
     }
 
     companion object {

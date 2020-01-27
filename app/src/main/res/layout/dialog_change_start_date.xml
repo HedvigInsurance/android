@@ -37,7 +37,7 @@
     <include
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         layout="@layout/date_pick_layout"
         />
