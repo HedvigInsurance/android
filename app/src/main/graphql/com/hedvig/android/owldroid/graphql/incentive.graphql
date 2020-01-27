@@ -8,5 +8,9 @@ fragment IncentiveFragment on Campaign {
         amount
       }
     }
+    ... on PercentageDiscountMonths {
+      percentageDiscount
+      pdmQuantity: quantity
+    }
   }
 }
