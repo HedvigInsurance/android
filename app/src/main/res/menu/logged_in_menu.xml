@@ -10,6 +10,12 @@
         android:icon="@drawable/ic_claims"
         android:title="@string/TAB_TITLE_CLAIM" />
 
+    <!-- TODO: Text Key -->
+    <item
+        android:id="@+id/key_gear"
+        android:icon="@drawable/ic_claims"
+        android:title="Prylbanken" />
+
     <item
         android:id="@+id/referrals"
         android:icon="@drawable/ic_referrals"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:layout_height="200dp"
+    tools:layout_width="160dp">
+
+    <ImageView
+        android:id="@+id/itemPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:contentDescription="@null"
+        tools:src="@drawable/ic_fire_green" />
+
+    <TextView
+        android:id="@+id/itemCategory"
+        style="@style/Body.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:textColor="@color/white"
+        tools:text="Mobiltelefon"
+        tools:textColor="@color/black" />
+
+</FrameLayout>
