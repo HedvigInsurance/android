@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.os.Bundle
-import com.airbnb.paris.extensions.style
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
@@ -37,6 +37,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         }
 
         dialog.chooseDateButton.isEnabled = false
+        dialog.chooseDateButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.semi_light_gray))
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
@@ -109,7 +110,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                 dialog?.dateText?.show()
 
                 dialog?.chooseDateButton?.isEnabled = true
-                dialog?.chooseDateButton?.style(R.style.HedvigButton_Purple)
+                dialog?.chooseDateButton?.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.purple))
             },
             year,
             month,

@@ -107,6 +107,8 @@ class MockOfferViewModel(
                             )
                         )
                     )
+                )
+            ),
             OfferQuery.AsCompleteQuote(
                 "CompleteQuote",
                 LocalDate.of(2020, 2, 1),
