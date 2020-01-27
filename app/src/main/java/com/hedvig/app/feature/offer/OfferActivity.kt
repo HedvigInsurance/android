@@ -56,7 +56,6 @@ import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.LocalDate
 import kotlin.math.min
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
@@ -87,8 +86,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var isFirstFetch = true
-
         offerChatButton.setHapticClickListener {
             tracker.openChat()
             offerViewModel.triggerOpenChat {
@@ -96,7 +93,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         }
 
-        featureBubbleBinder = FeatureBubbleBinder(featureBubbles as ConstraintLayout)
+        featureBubbleBinder = FeatureBubbleBinder(featureBubbles as ConstraintLayout, supportFragmentManager)
         factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
         termsBinder = TermsBinder(termsSection as ConstraintLayout, tracker)
 
@@ -112,13 +109,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
                 }
-                (d.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let {lastQuoteOfMember ->
-                    val id = lastQuoteOfMember.id
-                    if (isFirstFetch && lastQuoteOfMember.currentInsurer == null) {
-                        offerViewModel.chooseStartDate(id, LocalDate.now())
-                        isFirstFetch = false
-                    }
-                }
                 loadingSpinner.remove()
                 container.show()
                 bindToolbar(d)
@@ -130,7 +120,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 bindMeSection(d)
                 termsBinder.bind(d.insurance)
                 bindSwitchSection(d)
-                featureBubbleBinder.bind(d, supportFragmentManager)
+                featureBubbleBinder.bind(d)
                 animateBubbles(d)
             }
         }

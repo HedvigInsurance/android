@@ -6,17 +6,17 @@
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
             <solid android:color="@color/link_purple" />
-            <corners android:radius="112dp" />
+            <corners android:radius="@dimen/button_border_white_corner_radius" />
         </shape>
     </item>
     <item android:id="@android:id/background">
         <shape
-            android:padding="10dp"
+            android:padding="@dimen/button_border_white_padding"
             android:shape="rectangle">
             <stroke
                 android:width="1dp"
                 android:color="@color/white" />
-            <corners android:radius="112dp" />
+            <corners android:radius="@dimen/button_border_white_corner_radius" />
         </shape>
     </item>
 </ripple>

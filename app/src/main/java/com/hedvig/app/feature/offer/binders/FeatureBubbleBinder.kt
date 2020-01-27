@@ -14,10 +14,18 @@ import kotlinx.android.synthetic.main.feature_bubbles.view.*
 import org.threeten.bp.LocalDate
 
 class FeatureBubbleBinder(
-    private val root: ConstraintLayout
+    private val root: ConstraintLayout,
+    fragmentManager: FragmentManager
 ) {
 
-    fun bind(data: OfferQuery.Data, fragmentManager: FragmentManager) = root.apply {
+    init {
+        root.dateButton.setHapticClickListener {
+            ChangeDateBottomSheet.newInstance()
+                .show(fragmentManager, ChangeDateBottomSheet.TAG)
+        }
+    }
+
+    fun bind(data: OfferQuery.Data) = root.apply {
         amountInsuredBubbleText.text = interpolateTextKey(
             resources.getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
             "personsInHousehold" to data.insurance.personsInHousehold
@@ -37,13 +45,6 @@ class FeatureBubbleBinder(
                 resources.getString(R.string.OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE)
             }
         }
-
-        dateButton.setHapticClickListener {
-            ChangeDateBottomSheet.newInstance()
-                .show(fragmentManager, ChangeDateBottomSheet.TAG)
-
-        }
-
         bindChooseStartDateButton(data)
     }
 

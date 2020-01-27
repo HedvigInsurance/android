@@ -224,19 +224,18 @@
 
     <Button
         android:id="@+id/dateButton"
-        style="@style/HedvigButton.Outlined.Negative"
+        style="@style/HedvigButton.Outlined.White"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
-        android:textColor="@color/off_white"
         app:layout_constraintBottom_toTopOf="@id/discountButton"
         app:layout_constraintTop_toBottomOf="@id/deductibleBubble"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="startar idag"
         android:drawablePadding="@dimen/base_margin"
-        android:drawableEnd="@drawable/ic_expand"
+        android:drawableEnd="@drawable/ic_expand_white"
         />
 
     <Button

@@ -6,13 +6,12 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/datePickLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/base_margin_sextuple"
         android:background="@drawable/background_pick_date"
+        android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -30,19 +29,6 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <!--TODO-->
-        <TextView
-            android:id="@+id/dateHint"
-            style="@style/Body"
-            android:textColor="@color/off_black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:text="Datum"
-            app:layout_constraintBottom_toBottomOf="@id/constraintLayout"
-            app:layout_constraintStart_toStartOf="@id/constraintLayout"
-            app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,21 +36,24 @@
             android:src="@drawable/ic_arrow_drop_down"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@null" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--TODO-->
     <TextView
-        android:id="@+id/dateHintTop"
+        android:id="@+id/dateHint"
         style="@style/Body"
+        android:textColor="@color/off_black"
+        android:layout_gravity="center_vertical"
+        android:background="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:background="@color/white"
-        android:visibility="gone"
         android:text="Datum"
-        app:layout_constraintBottom_toTopOf="@id/constraintLayout"
-        app:layout_constraintStart_toStartOf="@id/constraintLayout"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
+        app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
+        app:layout_constraintStart_toStartOf="@id/datePickLayout"
+        app:layout_constraintTop_toTopOf="@+id/datePickLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

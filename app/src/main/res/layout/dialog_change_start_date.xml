@@ -39,14 +39,14 @@
     <include
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/base_margin_sextuple"
+        android:layout_height="@dimen/date_pick_button_height"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         layout="@layout/date_pick_layout"
         />
 
     <Button
         android:id="@+id/chooseDateButton"
-        style="@style/HedvigButton.Purple"
+        style="@style/HedvigButton.Purple.inactive"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
