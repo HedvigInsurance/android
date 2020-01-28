@@ -8,6 +8,7 @@ import android.os.Bundle
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.date_pick_layout.*
@@ -37,7 +38,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         }
 
         dialog.chooseDateButton.isEnabled = false
-        dialog.chooseDateButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.semi_light_gray))
+        dialog.chooseDateButton.backgroundTintList = ColorStateList.valueOf(requireContext().compatColor(R.color.semi_light_gray))
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
@@ -110,7 +111,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                 dialog?.dateText?.show()
 
                 dialog?.chooseDateButton?.isEnabled = true
-                dialog?.chooseDateButton?.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.purple))
+                dialog?.chooseDateButton?.backgroundTintList = ColorStateList.valueOf(requireContext().compatColor(R.color.purple))
             },
             year,
             month,
