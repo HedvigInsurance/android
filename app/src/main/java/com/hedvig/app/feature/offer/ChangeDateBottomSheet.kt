@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.res.ColorStateList
@@ -10,6 +9,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.date_pick_layout.*
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
@@ -23,7 +23,6 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
     private val offerViewModel: OfferViewModel by viewModel()
 
-    private var isDatePicked = false
     private lateinit var localDate: LocalDate
 
     override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
@@ -38,30 +37,29 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         }
 
         dialog.chooseDateButton.isEnabled = false
-        dialog.chooseDateButton.backgroundTintList = ColorStateList.valueOf(requireContext().compatColor(R.color.semi_light_gray))
+        dialog.chooseDateButton.backgroundTintList =
+            ColorStateList.valueOf(requireContext().compatColor(R.color.semi_light_gray))
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
                 lateinit var buttonText: String
                 data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
-                    dialog.chooseDateButton.setOnClickListener {
-                        if (isDatePicked) {
-                            AlertDialog.Builder(context)
-                                //TODO
-                                .setTitle("Är du säker?")
-                                //TODO
-                                .setMessage("Om du väljer ditt eget startdatum behöver du själv säga upp din gamla försäkring så att allt går rätt till.")
-                                //TODO
-                                .setPositiveButton(
-                                    //TODO
-                                    "Ja, välj datum"
-                                ) { dialog, which ->
+                    if (data.insurance.previousInsurer != null) {
+                        dialog.chooseDateButton.setOnClickListener {
+                            //TODO fix correct text resources
+                            requireContext().showAlert(R.string.alert_title,
+                                R.string.alert_title,
+                                R.string.alert_title,
+                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                                {
                                     offerViewModel.chooseStartDate(id, localDate)
-                                    this.dialog?.hide()
-                                }
-                                //TODO
-                                .setNegativeButton("Ångra", null)
-                                .show()
+                                    dialog.hide()
+                                })
+                        }
+                    } else {
+                        dialog.chooseDateButton.setOnClickListener {
+                            offerViewModel.chooseStartDate(id, localDate)
+                            dialog.hide()
                         }
                     }
                     if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
@@ -102,16 +100,15 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
                 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
                 localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                val month= DateFormatSymbols().months[monthOfYear].capitalize()
-
-                isDatePicked = true
+                val month = DateFormatSymbols().months[monthOfYear].capitalize()
 
                 dialog?.dateText?.text = "$dayOfMonth $month $year"
                 animateHintMove()
                 dialog?.dateText?.show()
 
                 dialog?.chooseDateButton?.isEnabled = true
-                dialog?.chooseDateButton?.backgroundTintList = ColorStateList.valueOf(requireContext().compatColor(R.color.purple))
+                dialog?.chooseDateButton?.backgroundTintList =
+                    ColorStateList.valueOf(requireContext().compatColor(R.color.purple))
             },
             year,
             month,
@@ -128,8 +125,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             ?.toFloat() ?: return
 
         dialog?.dateHint?.let { dateHint ->
-            dateHint.
-                animate()
+            dateHint.animate()
                 .translationY(-animateDistance)
                 .setDuration(100)
                 .start()
