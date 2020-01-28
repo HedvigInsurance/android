@@ -23,6 +23,7 @@ import com.hedvig.app.feature.dashboard.ui.PerilIcon
 import com.hedvig.app.feature.dashboard.ui.PerilView
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
+import com.hedvig.app.feature.offer.binders.FeatureBubbleBinder
 import com.hedvig.app.feature.offer.binders.TermsBinder
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
@@ -42,7 +43,6 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isSigned
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
@@ -78,6 +78,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         resources.getDimensionPixelSize(R.dimen.peril_width)
     }
 
+    private lateinit var featureBubbleBinder: FeatureBubbleBinder
     private lateinit var factAreaBinder: FactAreaBinder
     private lateinit var termsBinder: TermsBinder
 
@@ -91,6 +92,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         }
 
+        featureBubbleBinder = FeatureBubbleBinder(featureBubbles as ConstraintLayout, supportFragmentManager)
         factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
         termsBinder = TermsBinder(termsSection as ConstraintLayout, tracker)
 
@@ -117,7 +119,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 bindMeSection(d)
                 termsBinder.bind(d.insurance)
                 bindSwitchSection(d)
-                bindFeatureBubbles(d)
+                featureBubbleBinder.bind(d)
                 animateBubbles(d)
             }
         }
@@ -345,28 +347,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             animationHandler.postDelayed({ action() }, withDelay)
         } else {
             action()
-        }
-    }
-
-    private fun bindFeatureBubbles(data: OfferQuery.Data) {
-        amountInsuredBubbleText.text = interpolateTextKey(
-            getString(R.string.OFFER_BUBBLES_INSURED_SUBTITLE),
-            "personsInHousehold" to data.insurance.personsInHousehold
-        )
-
-        if (data.insurance.previousInsurer != null) {
-            startDateBubbleText.text =
-                getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER)
-        } else {
-            startDateBubbleText.text = getString(R.string.OFFER_BUBBLES_START_DATE_SUBTITLE_NEW)
-        }
-
-        data.insurance.type?.let { t ->
-            brfOrTravel.text = if (t.isApartmentOwner) {
-                getString(R.string.OFFER_BUBBLES_OWNED_ADDON_TITLE)
-            } else {
-                getString(R.string.OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE)
-            }
         }
     }
 
