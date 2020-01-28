@@ -51,7 +51,6 @@ class FeatureBubbleBinder(
     private fun bindChooseStartDateButton(data: OfferQuery.Data) = root.apply {
         val startDate = (data.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.startDate
         val previousInsurer = data.insurance.previousInsurer
-
         root.dateButton.text = buildSpannedString {
             append(resources.getString(R.string.OFFER_START_DATE))
             append(" ")

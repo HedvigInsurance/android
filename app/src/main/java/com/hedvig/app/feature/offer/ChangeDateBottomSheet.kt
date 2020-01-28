@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
@@ -11,6 +12,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.spring
 import kotlinx.android.synthetic.main.date_pick_layout.*
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -125,10 +127,8 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             ?.toFloat() ?: return
 
         dialog?.dateHint?.let { dateHint ->
-            dateHint.animate()
-                .translationY(-animateDistance)
-                .setDuration(100)
-                .start()
+            dateHint.spring(SpringAnimation.TRANSLATION_Y, stiffness = 1200f)
+                .animateToFinalPosition(-animateDistance)
         }
     }
 
