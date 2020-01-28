@@ -16,6 +16,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.spring
 import kotlinx.android.synthetic.main.date_pick_layout.*
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
@@ -25,6 +26,7 @@ import java.util.Calendar
 class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
     private val offerViewModel: OfferViewModel by viewModel()
+    private val tracker: OfferTracker by inject()
 
     private lateinit var localDate: LocalDate
 
@@ -54,17 +56,20 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                                 R.string.ALERT_CONTINUE,
                                 R.string.ALERT_CANCEL,
                                 {
+                                    tracker.changeDateContinue()
                                     offerViewModel.chooseStartDate(id, localDate)
                                     dialog.hide()
                                 })
                         }
                     } else {
                         dialog.chooseDateButton.setOnClickListener {
+                            tracker.chooseDate()
                             offerViewModel.chooseStartDate(id, localDate)
                             dialog.hide()
                         }
                     }
                     if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                        tracker.activateToday()
                         buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
                         dialog.autoSetDateText.text = buttonText
 
@@ -73,8 +78,10 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                             dialog.hide()
                         }
                     } else {
+                        tracker.activateOnInsuranceEnd()
                         buttonText = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
                         dialog.autoSetDateText.text = buttonText
+
                         dialog.autoSetDateText.setOnClickListener {
                             offerViewModel.removeStartDate(id)
                             dialog.hide()

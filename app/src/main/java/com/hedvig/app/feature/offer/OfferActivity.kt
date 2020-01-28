@@ -92,7 +92,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         }
 
-        featureBubbleBinder = FeatureBubbleBinder(featureBubbles as ConstraintLayout, supportFragmentManager)
+        featureBubbleBinder = FeatureBubbleBinder(featureBubbles as ConstraintLayout, tracker, supportFragmentManager)
         factAreaBinder = FactAreaBinder(offerFactBox as LinearLayout)
         termsBinder = TermsBinder(termsSection as ConstraintLayout, tracker)
 

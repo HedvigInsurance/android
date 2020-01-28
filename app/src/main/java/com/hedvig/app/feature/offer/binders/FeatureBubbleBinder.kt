@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
@@ -15,11 +16,13 @@ import org.threeten.bp.LocalDate
 
 class FeatureBubbleBinder(
     private val root: ConstraintLayout,
+    private val tracker: OfferTracker,
     fragmentManager: FragmentManager
 ) {
 
     init {
         root.dateButton.setHapticClickListener {
+            tracker.chooseStartDate()
             ChangeDateBottomSheet.newInstance()
                 .show(fragmentManager, ChangeDateBottomSheet.TAG)
         }
