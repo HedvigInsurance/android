@@ -125,7 +125,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             ?.toFloat() ?: return
 
         dialog?.dateHint?.let { dateHint ->
-            dateHint.spring(SpringAnimation.TRANSLATION_Y, stiffness = 1200f)
+            dateHint.spring(SpringAnimation.TRANSLATION_Y, SpringForce.DAMPING_RATIO_LOW_BOUNCY, SpringForce.STIFFNESS_MEDIUM)
                 .animateToFinalPosition(-animateDistance)
         }
     }
