@@ -17,22 +17,20 @@
         android:contentDescription="@null"
         android:src="@drawable/bottom_sheet_handle" />
 
-    <!--TODO-->
     <TextView
         style="@style/Header.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ändra startdatum"
+        android:text="@string/DRAGGABLE_STARTDATE_TITLE"
         android:layout_marginTop="@dimen/base_margin_double"
         />
 
-    <!--TODO-->
     <TextView
         android:id="@+id/info"
         style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vilket datum vill du att din försäkring aktiveras?"
+        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION"
         android:layout_marginTop="@dimen/base_margin"
         />
 
@@ -54,7 +52,6 @@
         android:text="@string/CHOOSE_DATE_BTN"
         />
 
-    <!--TODO-->
     <TextView
         android:id="@+id/autoSetDateText"
         style="@style/Body.Regular.Link"
@@ -62,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_double"
-        tool:text="Aktivera när min gamla försäkring går ut"
+        tool:text="@string/ACTIVATE_INSURANCE_END_BTN"
         android:textStyle="bold" />
 
 

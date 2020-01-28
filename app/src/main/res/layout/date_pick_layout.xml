@@ -16,7 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!--TODO-->
         <TextView
             android:id="@+id/dateText"
             style="@style/Body.Regular"
@@ -41,7 +40,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--TODO-->
     <TextView
         android:id="@+id/dateHint"
         style="@style/Body"
@@ -50,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:text="Datum"
+        android:text="@string/DATE_BTN_PLACEHOLDER"
         app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
         app:layout_constraintStart_toStartOf="@id/datePickLayout"
         app:layout_constraintTop_toTopOf="@+id/datePickLayout" />

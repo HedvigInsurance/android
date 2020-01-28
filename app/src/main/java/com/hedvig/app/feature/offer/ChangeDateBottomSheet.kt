@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
@@ -48,11 +49,10 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                 data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
                     if (data.insurance.previousInsurer != null) {
                         dialog.chooseDateButton.setOnClickListener {
-                            //TODO fix correct text resources
-                            requireContext().showAlert(R.string.alert_title,
-                                R.string.alert_title,
-                                R.string.alert_title,
-                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                            requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
+                                R.string.ALERT_DESCRIPTION_STARTDATE,
+                                R.string.ALERT_CONTINUE,
+                                R.string.ALERT_CANCEL,
                                 {
                                     offerViewModel.chooseStartDate(id, localDate)
                                     dialog.hide()
@@ -65,8 +65,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                         }
                     }
                     if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
-                        //TODO
-                        buttonText = "Activate today"
+                        buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
                         dialog.autoSetDateText.text = buttonText
 
                         dialog.autoSetDateText.setOnClickListener {
@@ -74,8 +73,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                             dialog.hide()
                         }
                     } else {
-                        //TODO
-                        buttonText = "Aktivera när min gamla försäkring går ut"
+                        buttonText = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
                         dialog.autoSetDateText.text = buttonText
                         dialog.autoSetDateText.setOnClickListener {
                             offerViewModel.removeStartDate(id)

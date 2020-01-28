@@ -52,7 +52,7 @@ class FeatureBubbleBinder(
         val startDate = (data.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.startDate
         val previousInsurer = data.insurance.previousInsurer
         root.dateButton.text = buildSpannedString {
-            append(resources.getString(R.string.OFFER_START_DATE))
+            append(resources.getString(R.string.START_DATE_BTN))
             append(" ")
 
             if (startDate == null || startDate == LocalDate.now()) {
@@ -64,10 +64,9 @@ class FeatureBubbleBinder(
 
             if (previousInsurer != null && startDate == null) {
                 clear()
-                append(resources.getString(R.string.OFFER_START_DATE))
+                append(resources.getString(R.string.START_DATE_BTN))
                 append(" ")
-                //TODO
-                bold { append("När min bindningstid går ut") }
+                bold { append(resources.getString(R.string.START_DATE_EXPIRES)) }
             }
         }
     }
