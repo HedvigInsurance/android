@@ -45,9 +45,8 @@
     <TextView
         android:id="@+id/dateHint"
         style="@style/Body"
-        android:textColor="@color/off_black"
         android:layout_gravity="center_vertical"
-        android:background="@color/white"
+        android:background="@color/background_elevation_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
