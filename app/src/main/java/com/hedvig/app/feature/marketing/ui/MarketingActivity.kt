@@ -25,7 +25,7 @@ import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_marketing.*
@@ -49,10 +49,16 @@ class MarketingActivity : BaseActivity() {
 
         activity_marketing.useEdgeToEdge()
 
+        marketing_hedvig_logo.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
+        }
+
+        storyProgressIndicatorContainer.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
+        }
+
         login.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-            )
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
         observeMarketingStories()
