@@ -42,7 +42,8 @@ class KeyGearItemsAdapter : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.NewItem -> {
-                holder.root.setHapticClickListener {
+                holder.root.setHapticClickListener { v ->
+                    v.context.startActivity(CreateKeyGearItemActivity.newInstance(v.context))
                 }
             }
             is ViewHolder.Item -> {
