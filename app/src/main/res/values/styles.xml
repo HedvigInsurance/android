@@ -13,7 +13,11 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
-    <style name="Hedvig.Theme.Marketing" />
+    <style name="Hedvig.Theme.Marketing" >
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Optional, if drawing behind the status bar too -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
     <style name="Hedvig.Theme.Offer" />
 

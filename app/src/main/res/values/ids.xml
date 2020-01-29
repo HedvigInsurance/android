@@ -12,7 +12,6 @@
     <item name="storyProgressIndicatorContainer" type="id" />
     <item name="hedvigFaceAnimation" type="id" />
     <item name="login" type="id" />
-    <item name="activity_marketing" type="id" />
     <item name="loadingSpinner" type="id" />
     <item name="profile_charity_image" type="id" />
     <item name="myInfoRow" type="id" />
