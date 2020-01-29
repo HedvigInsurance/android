@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class LoggedInActivity : BaseActivity() {
+class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val tabViewModel: BaseTabViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
@@ -58,7 +58,6 @@ class LoggedInActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_logged_in)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
@@ -97,8 +96,8 @@ class LoggedInActivity : BaseActivity() {
     }
 
     private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
-        LoggedInTabs.DASHBOARD, LoggedInTabs.CLAIMS, LoggedInTabs.PROFILE -> referralButton.remove()
         LoggedInTabs.REFERRALS -> referralButton.show()
+        else -> referralButton.remove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -112,6 +111,9 @@ class LoggedInActivity : BaseActivity() {
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
+            }
+            LoggedInTabs.KEY_GEAR -> {
+                // TODO
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -134,6 +136,9 @@ class LoggedInActivity : BaseActivity() {
                         ReferralBottomSheet.newInstance(amount)
                             .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
+            }
+            LoggedInTabs.KEY_GEAR -> {
+                // TODO
             }
         }
         return true

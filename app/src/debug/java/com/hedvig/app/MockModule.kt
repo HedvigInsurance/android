@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import com.hedvig.app.feature.keygear.KeyGearViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.viewmodel.DirectDebitViewModel
@@ -10,4 +11,5 @@ val mockModule = module {
     viewModel<OfferViewModel> { MockOfferViewModel(get()) }
     viewModel<ProfileViewModel> { MockProfileViewModel() }
     viewModel<DirectDebitViewModel> { MockDirectDebitViewModel() }
+    viewModel<KeyGearViewModel> { MockKeyGearViewModel() }
 }

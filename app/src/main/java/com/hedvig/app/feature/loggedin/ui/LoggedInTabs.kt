@@ -6,6 +6,7 @@ import com.hedvig.app.R
 enum class LoggedInTabs {
     DASHBOARD,
     CLAIMS,
+    KEY_GEAR,
     REFERRALS,
     PROFILE;
 
@@ -13,6 +14,7 @@ enum class LoggedInTabs {
         fun fromId(@IdRes id: Int) = when (id) {
             R.id.dashboard -> DASHBOARD
             R.id.claims -> CLAIMS
+            R.id.key_gear -> KEY_GEAR
             R.id.referrals -> REFERRALS
             R.id.profile -> PROFILE
             else -> throw Error("Invalid Menu ID")
