@@ -2,6 +2,7 @@ package com.hedvig.app.feature.keygear
 
 import android.os.Bundle
 import android.view.View
+import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
@@ -22,7 +23,7 @@ class KeyGearFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         items.adapter = KeyGearItemsAdapter()
-        items.addItemDecoration(GridSpacingItemDecoration(8.dp))
+        items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN.dp))
 
         viewModel.data.observe(this) { d ->
             d?.let { data ->
