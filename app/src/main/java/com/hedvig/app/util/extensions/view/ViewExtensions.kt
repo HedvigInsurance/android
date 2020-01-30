@@ -109,10 +109,10 @@ fun View.updateMargin(
         ?: return
 
     lp.setMargins(
-        left ?: lp.leftMargin,
+        start ?: lp.marginStart,
         top ?: lp.topMargin,
-        right ?: lp.rightMargin,
-        bottom ?: lp.rightMargin
+        end ?: lp.marginEnd,
+        bottom ?: lp.bottomMargin
     )
 
     layoutParams = lp
