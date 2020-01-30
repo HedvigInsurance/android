@@ -85,7 +85,7 @@
         android:id="@+id/messages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingBottom="@dimen/base_margin"
+        android:paddingBottom="@dimen/base_margin_sextuple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -32,7 +32,7 @@ import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
-import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -113,11 +113,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         messages.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
                 top = initialState.paddings.top + frameLayout.measuredHeight,
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measuredHeight
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.textInputContainer.measuredHeight
             )
         }
 
-        input.textInputContainer.hide()
+        input.textInputContainer.remove()
 
 
 
