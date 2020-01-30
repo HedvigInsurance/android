@@ -88,6 +88,8 @@ fun View.setHapticClickListener(onClickListener: (View) -> Unit) {
 }
 
 fun View.performOnTapHapticFeedback() = performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+fun View.performOnLongPressHapticFeedback() =
+    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
 fun View.updatePadding(
     @Dimension start: Int? = null,

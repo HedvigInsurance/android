@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.keygear
+package com.hedvig.app.feature.keygear.ui.createitem
 
 import android.Manifest
 import android.content.Context
@@ -7,14 +7,20 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.Gravity
 import androidx.core.content.FileProvider
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.ui.animator.SlideInItemAnimator
+import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.spring
+import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -29,15 +35,25 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        photos.adapter = PhotosAdapter(
-            { takePhoto() },
-            {
-                askForPermissions(
-                    arrayOf(Manifest.permission.CAMERA),
-                    PHOTO_PERMISSION_REQUEST_CODE
-                )
-            }
-        )
+
+        photos.adapter =
+            PhotosAdapter(
+                { takePhoto() },
+                {
+                    askForPermissions(
+                        arrayOf(Manifest.permission.CAMERA),
+                        PHOTO_PERMISSION_REQUEST_CODE
+                    )
+                },
+                model::deletePhoto
+            )
+        photos.addItemDecoration(CenterItemDecoration())
+        photos.itemAnimator = SlideInItemAnimator(Gravity.START)
+        PagerSnapHelper().attachToRecyclerView(photos)
+
+        save.setHapticClickListener {
+            makeToast("TODO: Save item, animate, show Item Detail Screen")
+        }
 
         model.photos.observe(this) { photos ->
             photos?.let { bind(it) }
@@ -46,7 +62,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     private fun bind(data: List<Photo>) {
         (photos.adapter as? PhotosAdapter)?.photos = data
-        photos.adapter?.notifyDataSetChanged()
+        photos.scrollToPosition(data.size - 1)
 
         save.show()
         save

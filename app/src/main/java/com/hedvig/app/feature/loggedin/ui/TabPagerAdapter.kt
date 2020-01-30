@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.hedvig.app.feature.claims.ui.ClaimsFragment
 import com.hedvig.app.feature.dashboard.ui.DashboardFragment
-import com.hedvig.app.feature.keygear.KeyGearFragment
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
 import com.hedvig.app.feature.profile.ui.ProfileFragment
 import com.hedvig.app.feature.referrals.ReferralsFragment
 import com.hedvig.app.util.extensions.byOrdinal

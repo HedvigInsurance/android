@@ -253,7 +253,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.keygear.CreateKeyGearItemActivity"
+            android:name=".feature.keygear.ui.createitem.CreateKeyGearItemActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

@@ -24,9 +24,9 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import com.hedvig.app.feature.keygear.CreateKeyGearViewModel
-import com.hedvig.app.feature.keygear.KeyGearViewModel
-import com.hedvig.app.feature.keygear.KeyGearViewModelImpl
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearViewModel
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.language.LanguageViewModel
