@@ -3,15 +3,19 @@ package com.hedvig.app.feature.offer
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.rx2.Rx2Apollo
+import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
+import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import io.reactivex.Observable
+import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper
@@ -118,4 +122,78 @@ class OfferRepository(
 
     fun fetchSignStatus() = Rx2Apollo
         .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
+
+    fun chooseStartDate(id: String, date: LocalDate) = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation(id, date)))
+
+    fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(offerQuery)
+            .execute()
+
+        val newDate = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.startDate
+        val newId = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.id
+        if (newId == null) {
+            Timber.e("Id is null")
+            return
+        }
+
+        (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
+            val newData = cachedData
+                .toBuilder()
+                .lastQuoteOfMember(
+                    lastQuoteOfMember
+                        .toBuilder()
+                        .id(newId)
+                        .startDate(newDate)
+                        .build()
+                )
+                .build()
+
+            apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .writeAndPublish(offerQuery, newData)
+                .execute()
+        }
+    }
+
+    fun removeStartDate(id: String) = Rx2Apollo
+        .from(apolloClientWrapper.apolloClient.mutate(RemoveStartDateMutation(id)))
+
+    fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(offerQuery)
+            .execute()
+
+        val newDate = (data.removeStartDate as? RemoveStartDateMutation.AsCompleteQuote)?.startDate
+        val newId = (data.removeStartDate as? RemoveStartDateMutation.AsCompleteQuote)?.id
+        if (newId == null) {
+            Timber.e("Id is null")
+            return
+        }
+
+        (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
+            val newData = cachedData
+                .toBuilder()
+                .lastQuoteOfMember(
+                    lastQuoteOfMember
+                        .toBuilder()
+                        .id(newId)
+                        .startDate(newDate)
+                        .build()
+                )
+                .build()
+
+            apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .writeAndPublish(offerQuery, newData)
+                .execute()
+        }
+    }
 }
