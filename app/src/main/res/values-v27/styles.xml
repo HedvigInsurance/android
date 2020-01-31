@@ -22,6 +22,12 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
+    <style name="Hedvig.Theme.Chat">
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
     <style name="Hedvig.Theme.Marketing">
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowTranslucentStatus">true</item>
