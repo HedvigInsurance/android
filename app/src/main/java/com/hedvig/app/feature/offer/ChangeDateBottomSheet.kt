@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.spring
+import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.date_pick_layout.*
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.ext.android.inject
@@ -132,7 +132,11 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             ?.toFloat() ?: return
 
         dialog?.dateHint?.let { dateHint ->
-            dateHint.spring(SpringAnimation.TRANSLATION_Y, SpringForce.DAMPING_RATIO_LOW_BOUNCY, SpringForce.STIFFNESS_MEDIUM)
+            dateHint.spring(
+                SpringAnimation.TRANSLATION_Y,
+                SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+                SpringForce.STIFFNESS_MEDIUM
+            )
                 .animateToFinalPosition(-animateDistance)
         }
     }
