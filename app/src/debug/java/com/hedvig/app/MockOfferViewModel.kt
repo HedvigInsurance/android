@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.feature.offer.OfferViewModel
+import org.threeten.bp.LocalDate
 
 class MockOfferViewModel(
     private val context: Context
@@ -40,6 +41,9 @@ class MockOfferViewModel(
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
+    override fun chooseStartDate(id: String, date: LocalDate) = Unit
+    override fun removeStartDate(id: String) {
+    }
 
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
@@ -104,6 +108,15 @@ class MockOfferViewModel(
                         )
                     )
                 )
+            ),
+            OfferQuery.AsCompleteQuote(
+                "CompleteQuote",
+                LocalDate.of(2020, 2, 1),
+                "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                OfferQuery.CurrentInsurer(
+                    "CurrentInsurer",
+                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                )
             )
         )
 
@@ -135,7 +148,16 @@ class MockOfferViewModel(
                 ),
                 null
             ),
-            listOf()
+            listOf(),
+            OfferQuery.AsCompleteQuote(
+                "CompleteQuote",
+                LocalDate.of(2020, 2, 1),
+                "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                OfferQuery.CurrentInsurer(
+                    "CurrentInsurer",
+                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                )
+            )
         )
     }
 }

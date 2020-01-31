@@ -150,4 +150,9 @@
     <dimen name="ratings_dialog_minimum_width">250dp</dimen>
     <dimen name="key_gear_card_height">200dp</dimen>
     <dimen name="create_key_gear_add_photo_height">250dp</dimen>
+    <dimen name="pick_date_button_corner_radius">12dp</dimen>
+    <dimen name="button_border_white_padding">10dp</dimen>
+    <dimen name="button_border_white_corner_radius">120dp</dimen>
+    <dimen name="date_pick_button_height">60dp</dimen>
+
 </resources>

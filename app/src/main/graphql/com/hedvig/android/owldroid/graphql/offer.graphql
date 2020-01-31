@@ -43,4 +43,14 @@ query Offer {
   redeemedCampaigns {
     ... IncentiveFragment
   }
+
+  lastQuoteOfMember {
+    ... on CompleteQuote {
+      startDate
+      id
+      currentInsurer{
+        id
+      }
+    }
+  }
 }
