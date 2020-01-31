@@ -3,22 +3,23 @@ package com.hedvig.app.feature.keygear.ui.createitem
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel
+import com.hedvig.app.feature.keygear.service.ItemCategoryService
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearItemCategory
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class CreateKeyGearViewModel : ViewModel() {
+class CreateKeyGearViewModel(
+    private val itemCategoryService: ItemCategoryService
+) : ViewModel() {
     val photos: MutableLiveData<List<Photo>> = MutableLiveData()
     val categories: MutableLiveData<List<Category>> = MutableLiveData()
+    val suggestedCategory: MutableLiveData<List<FirebaseVisionImageLabel>> = MutableLiveData()
     val dirty: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
-        categories.value = listOf(
-            Category(KeyGearItemCategory.COMPUTER),
-            Category(KeyGearItemCategory.PHONE),
-            Category(KeyGearItemCategory.TV),
-            Category(KeyGearItemCategory.JEWELRY),
-            Category(KeyGearItemCategory.SOUND_SYSTEM)
-        )
+        categories.value = KeyGearItemCategory.values().map { Category(it) }
     }
 
     fun addPhotoUri(uri: Uri) {
@@ -35,6 +36,10 @@ class CreateKeyGearViewModel : ViewModel() {
             add(Photo(uri))
         }
         dirty.value = true
+
+        viewModelScope.launch {
+            suggestedCategory.postValue(itemCategoryService.categorizeImage(uri))
+        }
     }
 
     fun deletePhoto(photo: Photo) {

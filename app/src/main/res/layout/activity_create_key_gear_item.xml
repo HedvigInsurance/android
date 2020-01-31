@@ -37,9 +37,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginEnd="@dimen/base_margin_double"
                 android:text="Typ av pryl" />
 
-            <!-- TODO, Another task: Tag View -->
+            <TextView
+                android:id="@+id/suggestedCategory"
+                style="@style/Body.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                android:visibility="gone"
+                tools:text="Mobile phone: 0.77"
+                tools:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categories"

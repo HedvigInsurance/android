@@ -24,6 +24,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.keygear.service.ItemCategoryService
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
@@ -163,7 +164,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
-    viewModel { CreateKeyGearViewModel() }
+    viewModel { CreateKeyGearViewModel(get()) }
 }
 
 val offerModule = module {
@@ -187,6 +188,7 @@ val serviceModule = module {
     single { LoginStatusService(get(), get()) }
     single { RemoteConfig() }
     single { TabNotificationService(get()) }
+    single { ItemCategoryService(get()) }
 }
 
 val repositoriesModule = module {

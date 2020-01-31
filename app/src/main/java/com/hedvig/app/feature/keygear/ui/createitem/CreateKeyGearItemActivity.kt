@@ -83,6 +83,14 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         model.dirty.observe(this) { d ->
             d?.let { dirty = it }
         }
+
+        model.suggestedCategory.observe(this) { sc ->
+            sc?.let {
+                suggestedCategory.text =
+                    sc.joinToString("\n") { "${it.text}: ${it.confidence}" }
+                suggestedCategory.show()
+            }
+        }
     }
 
     private fun bind(data: List<Photo>) {
