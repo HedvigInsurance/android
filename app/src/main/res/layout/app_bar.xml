@@ -2,6 +2,7 @@
 <com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/appBarLayout"
+    android:background="@color/background_semi_transparent"
     android:layout_width="match_parent"
     android:layout_height="@dimen/app_bar_height"
     android:theme="@style/AppTheme.AppBarOverlay">
