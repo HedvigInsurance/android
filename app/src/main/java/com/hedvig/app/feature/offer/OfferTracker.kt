@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import java.math.BigDecimal
-import java.util.*
+import java.util.Currency
 
 class OfferTracker(
     private val firebaseAnalytics: FirebaseAnalytics,
@@ -34,4 +34,9 @@ class OfferTracker(
             )
         }
     }
+    fun chooseStartDate() = firebaseAnalytics.logEvent("START_DATE_BTN", null)
+    fun activateToday() = firebaseAnalytics.logEvent("ACTIVATE_TODAY_BTN", null)
+    fun activateOnInsuranceEnd() = firebaseAnalytics.logEvent("ACTIVATE_INSURANCE_END_BTN", null)
+    fun chooseDate() = firebaseAnalytics.logEvent("CHOOSE_DATE_BTN", null)
+    fun changeDateContinue() = firebaseAnalytics.logEvent("ALERT_CONTINUE", null)
 }
