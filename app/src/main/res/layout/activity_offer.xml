@@ -106,7 +106,9 @@
 
                 <include layout="@layout/price_bubbles" />
 
-                <include layout="@layout/feature_bubbles" />
+                <include
+                    android:id="@+id/featureBubbles"
+                    layout="@layout/feature_bubbles" />
 
             </LinearLayout>
 
