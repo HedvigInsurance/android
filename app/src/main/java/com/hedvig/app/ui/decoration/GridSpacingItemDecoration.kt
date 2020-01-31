@@ -17,5 +17,6 @@ class GridSpacingItemDecoration(
         outRect.top = spacing
         outRect.left = spacing
         outRect.right = spacing
+        outRect.bottom = spacing
     }
 }

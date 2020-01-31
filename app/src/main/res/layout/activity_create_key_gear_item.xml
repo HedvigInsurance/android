@@ -35,11 +35,23 @@
                 style="@style/Body.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:text="Typ av pryl" />
 
             <!-- TODO, Another task: Tag View -->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="12dp"
+                android:orientation="horizontal"
+                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/create_key_gear_item_category" />
 
         </LinearLayout>
 
