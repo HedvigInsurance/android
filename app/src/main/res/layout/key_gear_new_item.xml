@@ -23,14 +23,13 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:srcCompat="@drawable/ic_chat_attach_file" />
 
-    <!-- TODO: Text Key -->
     <TextView
         android:id="@+id/createNewItemLabel"
         style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="Lägg till en pryl"
+        android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE"
         android:textColor="@color/link_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
