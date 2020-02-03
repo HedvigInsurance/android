@@ -233,6 +233,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.CLAIMS -> {
                 setupLargeTitle(R.string.CLAIMS_TITLE, R.font.circular_bold)
             }
+            LoggedInTabs.KEY_GEAR -> {
+                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE), R.font.circular_bold)
+            }
             LoggedInTabs.REFERRALS -> {
                 setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE, R.font.circular_bold)
             }

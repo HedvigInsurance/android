@@ -7,7 +7,8 @@
     android:background="@drawable/background_rounded_corners_ripple"
     android:backgroundTint="@color/violet_100"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:transitionName="addItemRoot">
 
     <ImageView
         android:id="@+id/addPhotoIcon"
@@ -28,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON"
-        android:textColor="@color/purple"
+        android:textColor="@color/link_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

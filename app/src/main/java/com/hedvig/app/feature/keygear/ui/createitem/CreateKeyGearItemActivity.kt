@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.Gravity
 import androidx.core.content.FileProvider
+import androidx.core.view.doOnNextLayout
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.app.BASE_MARGIN_HALF
@@ -22,6 +23,7 @@ import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
@@ -39,6 +41,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportPostponeEnterTransition()
 
         setupLargeTitle(
             "Add Item",
@@ -67,6 +71,9 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         )
 
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF.dp))
+        categories.doOnNextLayout {
+            supportStartPostponedEnterTransition()
+        }
 
         save.setHapticClickListener {
             makeToast("TODO: Save item, animate, show Item Detail Screen")
@@ -163,7 +170,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     override fun onBackPressed() {
         if (dirty) {
             makeToast("Should show an alert allowing user to verify that they want to discard data")
-            super.onBackPressed()
+            showAlert(
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
+                positiveAction = {},
+                negativeAction = {
+                    super.onBackPressed()
+                }
+            )
         } else {
             super.onBackPressed()
         }
