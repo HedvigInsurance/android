@@ -8,11 +8,8 @@
     </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V27">
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:navigationBarColor">@color/com_facebook_blue</item>
-        <item name="android:statusBarColor">@color/com_facebook_blue</item>
+        <item name="android:navigationBarColor">@color/background_semi_transparent</item>
+        <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
     <style name="Hedvig.Theme.Offer">
@@ -23,9 +20,8 @@
     </style>
 
     <style name="Hedvig.Theme.Chat">
-        <item name="android:windowLightNavigationBar">false</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@color/background_semi_transparent</item>
+        <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
     <style name="Hedvig.Theme.Marketing">
