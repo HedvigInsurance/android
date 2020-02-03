@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.hedvig.app">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -25,7 +24,6 @@
         android:largeHeap="true">
 
         <activity
-            tools:replace="android:theme"
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"

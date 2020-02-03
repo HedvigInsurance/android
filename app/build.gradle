@@ -182,7 +182,6 @@ dependencies {
 
     // insetter
     implementation "dev.chrisbanes:insetter:0.2.0"
-    implementation "dev.chrisbanes:insetter-widgets:0.2.0"
     implementation "dev.chrisbanes:insetter-ktx:0.2.0"
 
     // test
