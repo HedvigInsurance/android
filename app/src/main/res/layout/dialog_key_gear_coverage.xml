@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -20,33 +21,38 @@
             android:src="@drawable/bottom_sheet_handle" />
 
         <ImageView
+            android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:src="@drawable/ic_accidental_damage" />
+            tools:src="@drawable/ic_accidental_damage" />
 
         <TextView
+            android:id="@+id/title"
             style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:textAlignment="center"
-            android:text="Om du tappar den i marken" />
+            tools:text="Om du tappar den i marken"
+            android:textAlignment="center" />
 
         <TextView
+            android:id="@+id/description"
             style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:lineSpacingExtra="0dp"
-            android:textAlignment="center"
-            android:text="Vi försöker reparera i första hand, men om din mobiltelefon skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med 70% av vad du köpte den för." />
+            tools:text="Vi försöker reparera i första hand, men om din mobiltelefon skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med 70% av vad du köpte den för."
+            android:textAlignment="center" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bulletPointsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:itemCount="4"
-            tools:listitem="@layout/coverage_info_layout"/>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/coverage_info_layout" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
