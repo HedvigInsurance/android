@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.keygear.ui.createitem.CreateKeyGearItemActivity">
 
     <include layout="@layout/app_bar" />
 
@@ -63,7 +64,7 @@
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/purple"
+        android:backgroundTint="@color/link_purple"
         android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
         android:textColor="@color/white"
         android:translationY="140dp"

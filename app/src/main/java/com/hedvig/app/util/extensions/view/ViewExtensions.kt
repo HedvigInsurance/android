@@ -214,3 +214,9 @@ fun View.openKeyboard() =
         this,
         0
     )
+
+val View.centerX: Int
+    get() = (x + width / 2).toInt()
+
+val View.centerY: Int
+    get() = (y + height / 2).toInt()

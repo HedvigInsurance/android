@@ -3,8 +3,6 @@ package com.hedvig.app.feature.keygear.ui.tab
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
-import androidx.core.view.ViewCompat
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
@@ -14,6 +12,7 @@ import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.transitionPair
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -50,9 +49,5 @@ class KeyGearFragment : BaseTabFragment() {
         (items.adapter as? KeyGearItemsAdapter)?.items = data.items
         items.adapter?.notifyDataSetChanged()
         items.show()
-    }
-
-    companion object {
-        fun transitionPair(view: View) = Pair(view, ViewCompat.getTransitionName(view)!!)
     }
 }

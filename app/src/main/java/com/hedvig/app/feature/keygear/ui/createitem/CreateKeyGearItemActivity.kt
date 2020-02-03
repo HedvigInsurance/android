@@ -15,15 +15,17 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.dp
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.centerX
+import com.hedvig.app.util.extensions.view.centerY
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
@@ -76,7 +78,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
 
         save.setHapticClickListener {
-            makeToast("TODO: Save item, animate, show Item Detail Screen")
+            startActivity(
+                KeyGearItemDetailActivity.newInstanceFromCreate(
+                    this,
+                    save.centerX,
+                    save.centerY
+                ),
+                null
+            )
+
+            overridePendingTransition(0, 0)
         }
 
         model.photos.observe(this) { photos ->
@@ -169,14 +180,12 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     override fun onBackPressed() {
         if (dirty) {
-            makeToast("Should show an alert allowing user to verify that they want to discard data")
             showAlert(
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
-                positiveAction = {},
-                negativeAction = {
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+                positiveAction = {
                     super.onBackPressed()
                 }
             )
