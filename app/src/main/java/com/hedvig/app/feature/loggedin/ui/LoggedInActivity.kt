@@ -36,11 +36,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.app_bar.*
-import kotlinx.android.synthetic.main.app_bar.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -97,11 +94,6 @@ class LoggedInActivity : BaseActivity() {
 
         bindData()
         setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
-
-        loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
-        loggedInRoot.appBarLayout.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
     }
 
     private fun setupFloatingButton(id: LoggedInTabs) = when (id) {

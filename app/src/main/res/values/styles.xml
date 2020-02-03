@@ -11,11 +11,7 @@
         <item name="android:fontFamily">@font/circular_book</item>
     </style>
 
-    <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" >
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="colorPrimary">@color/transparent</item>
-    </style>
+    <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
     <style name="Hedvig.Theme.Chat" >
         <item name="android:navigationBarColor">@color/background_semi_transparent</item>
