@@ -50,6 +50,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    aaptOptions {
+        noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
+    }
+
     buildTypes {
         release {
             applicationIdSuffix '.app'
@@ -143,7 +147,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-config:19.0.2'
     implementation "com.google.firebase:firebase-messaging:20.0.0"
     implementation 'com.google.firebase:firebase-ml-vision:24.0.1'
-    implementation 'com.google.firebase:firebase-ml-vision-image-label-model:19.0.0'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.1'
 
 
     // Koin
