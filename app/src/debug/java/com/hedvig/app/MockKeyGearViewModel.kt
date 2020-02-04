@@ -1,11 +1,11 @@
 package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.app.feature.keygear.File
-import com.hedvig.app.feature.keygear.KeyGearData
-import com.hedvig.app.feature.keygear.KeyGearItem
-import com.hedvig.app.feature.keygear.KeyGearItemCategory
-import com.hedvig.app.feature.keygear.KeyGearViewModel
+import com.hedvig.app.feature.keygear.ui.tab.File
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearData
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearItem
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearItemCategory
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 
 class MockKeyGearViewModel : KeyGearViewModel() {
     override val data = MutableLiveData<KeyGearData>()

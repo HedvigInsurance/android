@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.keygear
+package com.hedvig.app.feature.keygear.ui.tab
 
 import android.os.Bundle
 import android.view.View
@@ -22,7 +22,8 @@ class KeyGearFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        items.adapter = KeyGearItemsAdapter()
+        items.adapter =
+            KeyGearItemsAdapter()
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN.dp))
 
         viewModel.data.observe(this) { d ->

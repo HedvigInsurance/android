@@ -6,10 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
-import androidx.dynamicanimation.animation.FloatPropertyCompat
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.app.R
 
 fun View.animateExpand(
     duration: Long = 200,
@@ -63,31 +59,5 @@ fun View.animateCollapse(
         this.interpolator = interpolator
         this.duration = duration
         start()
-    }
-}
-
-fun View.spring(
-    property: FloatPropertyCompat<View>,
-    damping: Float = SpringForce.DAMPING_RATIO_NO_BOUNCY,
-    stiffness: Float = 500f
-): SpringAnimation {
-    val key = getKey(property)
-    return getTag(key) as? SpringAnimation ?: {
-        val anim = SpringAnimation(this, property)
-        setTag(key, anim)
-        anim.spring = SpringForce().apply {
-            dampingRatio = damping
-            this.stiffness = stiffness
-        }
-        anim
-    }()
-}
-
-private fun getKey(property: FloatPropertyCompat<View>) = when (property) {
-    SpringAnimation.SCALE_X -> R.id.spring_scale_x
-    SpringAnimation.SCALE_Y -> R.id.spring_scale_y
-    SpringAnimation.TRANSLATION_Y -> R.id.spring_translation_y
-    else -> {
-        throw RuntimeException("No key for ViewProperty $property")
     }
 }

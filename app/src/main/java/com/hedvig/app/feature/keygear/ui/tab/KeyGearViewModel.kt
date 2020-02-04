@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.keygear
+package com.hedvig.app.feature.keygear.ui.tab
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
