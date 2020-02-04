@@ -17,17 +17,15 @@ class CoverageInfoAdapter(
 ) :
     RecyclerView.Adapter<CoverageInfoAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.coverage_info_layout,
-                parent,
-                false
-            )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.coverage_info_layout,
+            parent,
+            false
         )
-    }
+    )
 
-    override fun getItemCount(): Int = data.size
+    override fun getItemCount() = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val bulletPoint = data[position]
@@ -41,7 +39,7 @@ class CoverageInfoAdapter(
         }
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val bulletPointIcon: ImageView = itemView.bulletPointIcon
         val bulletPointTitle: TextView = itemView.bulletPointTitle
         val bulletPointDescription: TextView = itemView.bulletPointDescription

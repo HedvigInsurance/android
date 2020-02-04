@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,43 +8,40 @@
     android:layout_marginTop="@dimen/base_margin"
     android:layout_marginEnd="@dimen/base_margin">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
-        android:layout_marginBottom="@dimen/base_margin_double"
-        android:orientation="horizontal">
+        android:layout_marginBottom="@dimen/base_margin_double">
 
         <ImageView
             android:id="@+id/bulletPointIcon"
             android:layout_width="@dimen/claim_bullet_point_row_icon"
             android:layout_height="@dimen/claim_bullet_point_row_icon"
-            android:src="@drawable/icon_failure" />
+            android:src="@drawable/icon_failure"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/bulletPointTitle"
+            style="@style/Headline.Medium"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
-            android:orientation="vertical">
+            app:layout_constraintStart_toEndOf="@id/bulletPointIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Ersättning" />
 
-            <TextView
-                android:id="@+id/bulletPointTitle"
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Ersättning" />
-
-            <TextView
-                android:id="@+id/bulletPointDescription"
-                style="@style/Body.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
-                android:lineSpacingExtra="0dp"
-                tools:text="Hedvig täcker hela kostnaden för en reparation minus självrisk (1 500 kr) eller det uppskattade värdet på telefonen minus självrisk om den inte går att reparera" />
-        </LinearLayout>
-
-    </LinearLayout>
+        <TextView
+            android:id="@+id/bulletPointDescription"
+            style="@style/Body.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin"
+            app:layout_constraintStart_toEndOf="@id/bulletPointIcon"
+            app:layout_constraintTop_toBottomOf="@id/bulletPointTitle"
+            tools:text="Hedvig täcker hela kostnaden för en reparation minus självrisk (1 500 kr) eller det uppskattade värdet på telefonen minus självrisk om den inte går att reparera" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.hedvig.app.ui.view.HedvigCardView>

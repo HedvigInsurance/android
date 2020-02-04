@@ -9,6 +9,7 @@ import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.svg.buildRequestBuilder
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.dialog_key_gear_coverage.*
+import timber.log.Timber
 
 class KeyGearCoverageBottomSheet : RoundedBottomSheetDialogFragment() {
 
@@ -20,14 +21,16 @@ class KeyGearCoverageBottomSheet : RoundedBottomSheetDialogFragment() {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.setContentView(R.layout.dialog_key_gear_coverage)
 
-        requestBuilder.load(mock.icon.iconByTheme(requireContext()))
-            .into(dialog.icon)
+        arguments?.getParcelable<KeyGearItemCoverage>(DATA)?.let { data ->
+            requestBuilder.load(data.icon.iconByTheme(requireContext()))
+                .into(dialog.icon)
 
-        dialog.title.text = mock.title
-        dialog.description.text = mock.description
+            dialog.title.text = data.title
+            dialog.description.text = data.description
 
-        dialog.bulletPointsRecyclerView.adapter =
-            CoverageInfoAdapter(mock.boxes, requestBuilder)
+            dialog.bulletPointsRecyclerView.adapter =
+                CoverageInfoAdapter(data.boxes, requestBuilder)
+        } ?: Timber.e("No data provided")
 
         return dialog
     }
@@ -35,8 +38,12 @@ class KeyGearCoverageBottomSheet : RoundedBottomSheetDialogFragment() {
     companion object {
         const val TAG = "coverageBottomSheet"
 
-        fun newInstance(): KeyGearCoverageBottomSheet {
-            return KeyGearCoverageBottomSheet()
+        private const val DATA = "DATA"
+
+        fun newInstance(data: KeyGearItemCoverage) = KeyGearCoverageBottomSheet().apply {
+            arguments = Bundle().also { b ->
+                b.putParcelable(DATA, data)
+            }
         }
     }
 }
