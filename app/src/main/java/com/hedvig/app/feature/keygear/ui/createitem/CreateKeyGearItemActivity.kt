@@ -45,7 +45,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         supportPostponeEnterTransition()
 
         setupLargeTitle(
-            "Add Item",
+            R.string.KEY_GEAR_ADD_ITEM_PAGE_TITLE,
             R.font.circular_bold,
             R.drawable.ic_back,
             backAction = this::onBackPressed
