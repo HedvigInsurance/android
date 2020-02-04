@@ -73,13 +73,22 @@
             android:text="Open an alert" />
 
         <Button
-            android:id="@+id/openLoggedIn"
+            android:id="@+id/openLoggedInWithWelcome"
             style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open an logged in with Welcome Screen" />
+
+        <Button
+            android:id="@+id/openLoggedInWithoutWelcome"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open an logged in without Welcome Screen" />
 
         <Button
             android:id="@+id/openReferralReceiver"

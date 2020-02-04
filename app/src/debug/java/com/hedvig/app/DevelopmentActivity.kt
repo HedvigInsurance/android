@@ -104,10 +104,14 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {
+        findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
             })
+        }
+
+        findViewById<Button>(R.id.openLoggedInWithoutWelcome).setHapticClickListener {
+            startActivity(Intent(this, LoggedInActivity::class.java))
         }
         findViewById<Button>(R.id.openReferralReceiver).setHapticClickListener {
             startActivity(ReferralsReceiverActivity.newInstance(this, "CODE12", "10.00"))
