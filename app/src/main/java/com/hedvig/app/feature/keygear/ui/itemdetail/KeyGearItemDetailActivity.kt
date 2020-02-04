@@ -3,14 +3,18 @@ package com.hedvig.app.feature.keygear.ui.itemdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewAnimationUtils
-import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
+import androidx.core.animation.doOnEnd
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.dp
+import com.hedvig.app.util.extensions.view.doOnGlobalLayout
+import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import kotlin.math.max
 
@@ -43,6 +47,19 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         ).apply {
             duration = 400
             interpolator = DecelerateInterpolator()
+            doOnEnd {
+                // TODO: This should be entirely driven by the AVD I think
+                createdAnimation.fadeIn()
+
+                createdLabel.show()
+                createdLabel.alpha = 0f
+
+                createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                    .addUpdateListener { animation, value, velocity ->
+                        createdLabel.alpha = 1 - (value / 24.dp)
+                    }
+                    .animateToFinalPosition(0f)
+            }
             start()
         }
     }
@@ -66,14 +83,3 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 }
 
-inline fun View.doOnGlobalLayout(crossinline action: () -> Unit) {
-    if (viewTreeObserver.isAlive) {
-        viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                action()
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-    }
-}
