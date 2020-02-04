@@ -33,7 +33,6 @@ import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -41,7 +40,6 @@ import com.hedvig.app.util.showRestartDialog
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_chat.*
-import kotlinx.android.synthetic.main.chat_input_view.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -102,7 +100,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         messages.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
                 top = initialState.paddings.top + getViewHeight(frameLayout),
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + getViewHeightAndRemove(input.textInputContainer)
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
             )
         }
 
@@ -130,17 +128,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
         return view.measuredHeight
-    }
-
-    private fun getViewHeightAndRemove(view: View): Int {
-        view.show()
-        view.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        val height = view.measuredHeight
-        view.remove()
-        return height
     }
 
     private fun initializeInput() {
