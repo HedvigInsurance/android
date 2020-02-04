@@ -7,9 +7,30 @@
     android:orientation="vertical"
     tools:context=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/photos"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="450dp" />
+        android:layout_height="wrap_content">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/photos"
+            android:layout_width="match_parent"
+            android:layout_height="480dp" />
+
+        <com.hedvig.app.ui.view.PagerIndicatorView
+            android:id="@+id/pagerIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="@dimen/base_margin_double" />
+
+    </FrameLayout>
+
+    <TextView
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" />
 
 </LinearLayout>

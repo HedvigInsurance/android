@@ -216,16 +216,7 @@ val View.centerX: Int
 val View.centerY: Int
     get() = (y + height / 2).toInt()
 
-inline fun View.doOnGlobalLayout(crossinline action: () -> Unit) {
-    if (viewTreeObserver.isAlive) {
-        viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                action()
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-    }
 fun View.useEdgeToEdge() {
-    systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    systemUiVisibility =
+        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 }
