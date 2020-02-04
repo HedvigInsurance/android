@@ -180,6 +180,10 @@ dependencies {
     // ZXing
     implementation 'com.google.zxing:core:3.4.0'
 
+    // insetter
+    implementation "dev.chrisbanes:insetter:0.2.0"
+    implementation "dev.chrisbanes:insetter-ktx:0.2.0"
+
     // test
     testImplementation 'junit:junit:4.12'
 
