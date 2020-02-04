@@ -155,5 +155,6 @@
     <dimen name="button_border_white_padding">10dp</dimen>
     <dimen name="button_border_white_corner_radius">120dp</dimen>
     <dimen name="date_pick_button_height">60dp</dimen>
+    <dimen name="base_margin_sesqui">12dp</dimen>
 
 </resources>
