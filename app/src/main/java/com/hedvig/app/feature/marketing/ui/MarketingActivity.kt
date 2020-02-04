@@ -21,12 +21,13 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
-import com.hedvig.app.util.extensions.hideStatusBar
-import com.hedvig.app.util.extensions.showStatusBar
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -46,7 +47,20 @@ class MarketingActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
 
-        setupSystemDecoration()
+        activity_marketing.useEdgeToEdge()
+
+        marketing_hedvig_logo.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
+        }
+
+        storyProgressIndicatorContainer.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
+        }
+
+        login.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
+
         observeMarketingStories()
     }
 
@@ -58,11 +72,6 @@ class MarketingActivity : BaseActivity() {
         blurDismissAnimator?.cancel()
         topHideAnimation?.removeAllListeners()
         topHideAnimation?.cancel()
-    }
-
-    override fun onDestroy() {
-        cleanupSystemDecoration()
-        super.onDestroy()
     }
 
     private fun observeMarketingStories() {
@@ -286,14 +295,6 @@ class MarketingActivity : BaseActivity() {
             intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
             startActivity(intent)
         }
-    }
-
-    private fun setupSystemDecoration() {
-        hideStatusBar()
-    }
-
-    private fun cleanupSystemDecoration() {
-        showStatusBar()
     }
 
     companion object {
