@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.key_gear_new_item.view.*
+import kotlinx.android.synthetic.main.key_gear_add_item.view.*
 
-class KeyGearItemsAdapter : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
+class KeyGearItemsAdapter(
+    private val createItem: (view: View) -> Unit
+) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
     var items: List<KeyGearItem> = listOf()
 
     override fun getItemViewType(position: Int) = when (position) {
@@ -22,7 +23,7 @@ class KeyGearItemsAdapter : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>
         NEW_ITEM -> {
             ViewHolder.NewItem(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.key_gear_new_item,
+                    R.layout.key_gear_add_item,
                     parent,
                     false
                 )
@@ -44,7 +45,7 @@ class KeyGearItemsAdapter : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>
         when (holder) {
             is ViewHolder.NewItem -> {
                 holder.root.setHapticClickListener { v ->
-                    v.context.startActivity(CreateKeyGearItemActivity.newInstance(v.context))
+                    createItem(v)
                 }
             }
             is ViewHolder.Item -> {

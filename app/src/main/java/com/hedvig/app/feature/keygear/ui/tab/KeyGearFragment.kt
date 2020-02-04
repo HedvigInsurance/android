@@ -2,8 +2,12 @@ package com.hedvig.app.feature.keygear.ui.tab
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
+import androidx.core.view.ViewCompat
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.dp
@@ -23,7 +27,15 @@ class KeyGearFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         items.adapter =
-            KeyGearItemsAdapter()
+            KeyGearItemsAdapter { v ->
+                startActivity(
+                    CreateKeyGearItemActivity.newInstance(requireContext()),
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        requireActivity(),
+                        transitionPair(v)
+                    ).toBundle()
+                )
+            }
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN.dp))
 
         viewModel.data.observe(this) { d ->
@@ -38,5 +50,9 @@ class KeyGearFragment : BaseTabFragment() {
         (items.adapter as? KeyGearItemsAdapter)?.items = data.items
         items.adapter?.notifyDataSetChanged()
         items.show()
+    }
+
+    companion object {
+        fun transitionPair(view: View) = Pair(view, ViewCompat.getTransitionName(view)!!)
     }
 }

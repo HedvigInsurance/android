@@ -30,22 +30,30 @@
                 tools:itemCount="2"
                 tools:listitem="@layout/create_key_gear_item_photo" />
 
-            <!-- TODO: Text Key -->
             <TextView
                 style="@style/Body.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
-                android:text="Typ av pryl" />
+                android:text="@string/KEY_GEAR_ADD_ITEM_TYPE_HEADLINE" />
 
-            <!-- TODO, Another task: Tag View -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_sesqui"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_sesqui"
+                android:orientation="horizontal"
+                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/create_key_gear_item_category" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- TODO: Text Key -->
     <Button
         android:id="@+id/save"
         style="@style/HedvigButton"
@@ -56,7 +64,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:backgroundTint="@color/purple"
-        android:text="Spara"
+        android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
         android:textColor="@color/white"
         android:translationY="140dp"
         android:visibility="gone"

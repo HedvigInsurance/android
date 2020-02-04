@@ -9,32 +9,34 @@
     android:background="@drawable/background_rounded_corners_ripple"
     android:backgroundTint="@color/violet_100"
     android:orientation="vertical"
+    android:transitionName="addItemRoot"
     tools:layout_width="160dp">
 
     <ImageView
-        android:id="@+id/createNewItemIcon"
+        android:id="@+id/addItemIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toTopOf="@id/createNewItemLabel"
+        android:transitionName="addItemIcon"
+        app:layout_constraintBottom_toTopOf="@id/addItemLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:srcCompat="@drawable/ic_chat_attach_file" />
 
-    <!-- TODO: Text Key -->
     <TextView
-        android:id="@+id/createNewItemLabel"
+        android:id="@+id/addItemLabel"
         style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="Lägg till en pryl"
-        android:textColor="@color/purple"
+        android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE"
+        android:textColor="@color/link_purple"
+        android:transitionName="addItemLabel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/createNewItemIcon" />
+        app:layout_constraintTop_toBottomOf="@id/addItemIcon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
