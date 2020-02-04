@@ -8,13 +8,11 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -23,7 +21,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
         android:largeHeap="true">
-
+        <activity
+            android:name=".feature.keygear.ui.ReceiptActivity"
+            android:theme="@style/Hedvig.Theme" />
         <activity
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -31,7 +31,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -50,7 +49,6 @@
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="@string/APP_SCHEME" />
@@ -99,7 +97,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.charity.CharityActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -107,7 +104,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.feedback.FeedbackActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -115,7 +111,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.myinfo.MyInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -123,7 +118,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.payment.PaymentActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -131,7 +125,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.payment.PaymentHistoryActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -139,7 +132,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.payment.TrustlyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -147,7 +139,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.myhome.MyHomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -155,7 +146,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.coinsured.CoinsuredActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -163,7 +153,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -171,7 +160,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.profile.ui.aboutapp.LicensesActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -179,7 +167,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.claims.ui.commonclaim.CommonClaimActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -187,7 +174,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.claims.ui.commonclaim.EmergencyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -195,7 +181,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.marketing.ui.MarketingActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -227,7 +212,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".LoggedInTerminatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -235,7 +219,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.settings.SettingsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -243,7 +226,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.language.LanguageSelectionActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -251,7 +233,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.keygear.ui.createitem.CreateKeyGearItemActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -263,7 +244,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_symbol_android" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -279,7 +259,7 @@
         </provider>
 
         <service
-            android:name="com.hedvig.app.service.push.PushNotificationService"
+            android:name=".service.push.PushNotificationService"
             android:exported="false"
             android:icon="@drawable/ic_hedvig_symbol_android">
             <intent-filter>

@@ -15,4 +15,5 @@
     <item name="separator_elevation_1" type="color">@color/off_black</item>
     <item name="offer_background" type="color">@color/background</item>
     <item name="foreground_gray" type="color">@color/light_gray</item>
+    <item name="icon_color" type="color">@color/white</item>
 </resources>
