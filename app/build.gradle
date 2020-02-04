@@ -111,6 +111,7 @@ dependencies {
     implementation "androidx.preference:preference-ktx:1.1.0"
     implementation "androidx.core:core-ktx:1.1.0"
     implementation 'com.google.android:flexbox:2.0.1'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
 
     // Android lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
