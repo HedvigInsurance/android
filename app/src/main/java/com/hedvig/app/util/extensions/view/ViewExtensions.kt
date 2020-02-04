@@ -9,13 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
-import android.widget.RelativeLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
@@ -102,25 +100,22 @@ fun View.updatePadding(
 )
 
 fun View.updateMargin(
-    @Dimension start: Int? = null,
-    @Dimension top: Int? = null,
-    @Dimension end: Int? = null,
-    @Dimension bottom: Int? = null
+    start: Int? = null,
+    top: Int? = null,
+    end: Int? = null,
+    bottom: Int? = null
 ) {
-    val prevLayoutParams = layoutParams as? ViewGroup.MarginLayoutParams
-    when (parent) {
-        is ConstraintLayout -> ConstraintLayout.LayoutParams(
-            layoutParams.width,
-            layoutParams.height
-        )
-        is RelativeLayout -> RelativeLayout.LayoutParams(layoutParams.width, layoutParams.height)
-        else -> ViewGroup.MarginLayoutParams(layoutParams.width, layoutParams.height)
-    }.apply {
-        (start ?: prevLayoutParams?.marginStart)?.let { marginStart = it }
-        (top ?: prevLayoutParams?.topMargin)?.let { topMargin = it }
-        (end ?: prevLayoutParams?.marginEnd)?.let { marginEnd = it }
-        (bottom ?: prevLayoutParams?.bottomMargin)?.let { bottomMargin = it }
-    }
+    val lp = layoutParams as? ViewGroup.MarginLayoutParams
+        ?: return
+
+    lp.setMargins(
+        start ?: lp.marginStart,
+        top ?: lp.topMargin,
+        end ?: lp.marginEnd,
+        bottom ?: lp.bottomMargin
+    )
+
+    layoutParams = lp
 }
 
 inline fun <reified T : ViewGroup.LayoutParams> View.setSize(
@@ -212,3 +207,7 @@ fun View.openKeyboard() =
         this,
         0
     )
+
+fun View.useEdgeToEdge() {
+    systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+}
