@@ -34,12 +34,12 @@
         android:layout_marginTop="@dimen/base_margin"
         />
 
-    <include
+
+    <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
         android:layout_height="@dimen/date_pick_button_height"
         android:layout_marginTop="@dimen/base_margin_sextuple"
-        layout="@layout/date_pick_layout"
         />
 
     <Button

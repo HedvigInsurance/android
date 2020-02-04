@@ -13,7 +13,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.keygear.KeyGearCoverageBottomSheet
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -107,8 +106,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         openCoverageSheet.setHapticClickListener {
-            KeyGearCoverageBottomSheet.newInstance()
-                .show(supportFragmentManager, KeyGearCoverageBottomSheet.TAG)
+
         }
 
         findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {
