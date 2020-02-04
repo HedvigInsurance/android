@@ -7,41 +7,58 @@
     android:orientation="vertical"
     tools:context="com.hedvig.app.feature.keygear.ui.ReceiptActivity">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
         android:background="@color/background_elevation_1"
         android:elevation="2dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingStart="@dimen/base_margin"
         android:paddingEnd="@dimen/base_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--TODO fix text resource-->
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/base_margin"
             android:tint="@color/icon_tint"
-            app:srcCompat="@drawable/ic_close" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_close"
+            android:contentDescription="Close" />
 
+        <!--TODO fix text resource-->
+        <TextView
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:id="@+id/textView"
+            style="@style/Headline.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kvitto"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/close"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--TODO fix text resource-->
         <ImageView
             android:id="@+id/share"
             android:layout_width="@dimen/chat_top_bar_button_size"
             android:layout_height="@dimen/chat_top_bar_button_size"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="@dimen/base_margin_double"
             android:padding="@dimen/base_margin_half"
             android:tint="@color/icon_tint"
-            app:srcCompat="@drawable/ic_share" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_share"
+            android:contentDescription="Share" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@+id/receipt"
