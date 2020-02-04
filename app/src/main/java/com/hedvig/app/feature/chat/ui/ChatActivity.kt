@@ -10,6 +10,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -92,18 +93,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             )
         }
 
-        input.textInputContainer.show()
-
-        input.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        frameLayout.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-
         frameLayout.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
                 top = initialState.paddings.top + insets.systemWindowInsetTop
@@ -112,15 +101,10 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         messages.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
-                top = initialState.paddings.top + frameLayout.measuredHeight,
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.textInputContainer.measuredHeight
+                top = initialState.paddings.top + getViewHeight(frameLayout),
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + getViewHeightAndRemove(input.textInputContainer)
             )
         }
-
-        input.textInputContainer.remove()
-
-
-
 
         initializeToolbarButtons()
         initializeMessages()
@@ -138,6 +122,25 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     override fun onPause() {
         storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
         super.onPause()
+    }
+
+    private fun getViewHeight(view: View): Int {
+        view.measure(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        return view.measuredHeight
+    }
+
+    private fun getViewHeightAndRemove(view: View): Int {
+        view.show()
+        view.measure(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        val height = view.measuredHeight
+        view.remove()
+        return height
     }
 
     private fun initializeInput() {
