@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewAnimationUtils
-import android.view.animation.DecelerateInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.dynamicanimation.animation.SpringAnimation
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.view.doOnGlobalLayout
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
@@ -46,7 +46,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             finalRadius
         ).apply {
             duration = 400
-            interpolator = DecelerateInterpolator()
+            interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
                 // TODO: This should be entirely driven by the AVD I think
                 createdAnimation.fadeIn()
@@ -55,8 +55,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
                 createdLabel.alpha = 0f
 
                 createdLabel.spring(SpringAnimation.TRANSLATION_Y)
-                    .addUpdateListener { animation, value, velocity ->
-                        createdLabel.alpha = 1 - (value / 24.dp)
+                    .addUpdateListener { _, value, _ ->
+                        createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
                     }
                     .animateToFinalPosition(0f)
             }

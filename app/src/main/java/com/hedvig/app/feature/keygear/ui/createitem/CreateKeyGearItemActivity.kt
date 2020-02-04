@@ -20,7 +20,6 @@ import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
@@ -72,7 +71,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             model::setActiveCategory
         )
 
-        categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF.dp))
+        categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
         categories.doOnNextLayout {
             supportStartPostponedEnterTransition()
         }
