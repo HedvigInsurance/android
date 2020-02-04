@@ -8,11 +8,6 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
-    <style name="Hedvig.Theme.Transparent">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
     <style name="Hedvig.Theme.Offer">
         <item name="android:statusBarColor">@color/dark_purple</item>
         <item name="android:windowLightStatusBar">false</item>

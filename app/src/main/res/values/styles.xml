@@ -13,11 +13,6 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
-    <style name="Hedvig.Theme.Transparent">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
     <style name="Hedvig.Theme.Marketing" />
 
     <style name="Hedvig.Theme.Offer" />

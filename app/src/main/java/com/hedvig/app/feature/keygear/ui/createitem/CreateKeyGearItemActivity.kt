@@ -6,13 +6,18 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.Gravity
+import android.view.ViewAnimationUtils
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.app.BASE_MARGIN_HALF
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
@@ -20,25 +25,30 @@ import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.centerX
 import com.hedvig.app.util.extensions.view.centerY
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
+import kotlinx.android.synthetic.main.app_bar.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
     private val model: CreateKeyGearViewModel by viewModel()
 
     private lateinit var tempPhotoPath: String
     private var dirty = false
+    private var isShowingPostCreateAnimation = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,16 +87,17 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
 
         save.setHapticClickListener {
-            startActivity(
-                KeyGearItemDetailActivity.newInstanceFromCreate(
-                    this,
-                    save.centerX,
-                    save.centerY
-                ),
-                null
-            )
+            showCreatedAnimation()
+            //startActivity(
+            //    KeyGearItemDetailActivity.newInstanceFromCreate(
+            //        this,
+            //        save.centerX,
+            //        save.centerY
+            //    ),
+            //    null
+            //)
 
-            overridePendingTransition(0, 0)
+            //overridePendingTransition(0, 0)
         }
 
         model.photos.observe(this) { photos ->
@@ -115,6 +126,53 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             save
                 .spring(SpringAnimation.TRANSLATION_Y)
                 .animateToFinalPosition(0f)
+        }
+    }
+
+    private fun showCreatedAnimation() {
+        isShowingPostCreateAnimation = true
+        postCreate.show()
+
+        val finalRadius = max(root.width, root.height).toFloat() * 1.1f
+        ViewAnimationUtils.createCircularReveal(
+            postCreate,
+            save.centerX,
+            save.centerY,
+            0f,
+            finalRadius
+        ).apply {
+            duration = 400
+            interpolator = AccelerateDecelerateInterpolator()
+            doOnEnd {
+                appBarLayout.remove()
+                scrollView.remove()
+
+                createdAnimation.show()
+                createdLabel.show()
+                createdLabel.alpha = 0f
+
+                Handler().postDelayed({
+                    createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                        .addUpdateListener { _, value, _ ->
+                            createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                        }
+                        .animateToFinalPosition(0f)
+
+                    Handler().postDelayed({
+                        finish()
+                        startActivity(
+                            KeyGearItemDetailActivity.newInstance(this@CreateKeyGearItemActivity),
+                            ActivityOptionsCompat.makeCustomAnimation(
+                                this@CreateKeyGearItemActivity,
+                                0,
+                                R.anim.fade_out
+                            ).toBundle()
+                        )
+                    }, 400)
+                }, 150)
+
+            }
+            start()
         }
     }
 
@@ -178,6 +236,11 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
 
     override fun onBackPressed() {
+        if (isShowingPostCreateAnimation) {
+            // TODO Prevent back presses here
+            super.onBackPressed()
+            return
+        }
         if (dirty) {
             showAlert(
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
