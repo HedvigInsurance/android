@@ -14,6 +14,7 @@ import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.keygear.ui.ReceiptActivity
+import com.hedvig.app.feature.keygear.ui.mockReceipt
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -107,7 +108,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         openReceipt.setHapticClickListener {
-            startActivity(Intent(this, ReceiptActivity::class.java))
+            val intent = Intent(this, ReceiptActivity::class.java)
+            intent.putExtra("RECEIPT_DATA", mockReceipt)
+            startActivity(intent)
         }
 
         findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {

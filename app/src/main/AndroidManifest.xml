@@ -23,7 +23,11 @@
         android:largeHeap="true">
         <activity
             android:name=".feature.keygear.ui.ReceiptActivity"
-            android:theme="@style/Hedvig.Theme" />
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

@@ -8,11 +8,11 @@
     tools:context="com.hedvig.app.feature.keygear.ui.ReceiptActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
         android:background="@color/background_elevation_1"
-        android:elevation="2dp"
+        android:elevation="@dimen/top_bar_elevation"
         android:paddingStart="@dimen/base_margin"
         android:paddingEnd="@dimen/base_margin"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,16 +31,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_close"
-            android:contentDescription="Close" />
+            android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION" />
 
-        <!--TODO fix text resource-->
         <TextView
             android:layout_marginStart="@dimen/base_margin_triple"
-            android:id="@+id/textView"
+            android:id="@+id/receipt_title"
             style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kvitto"
+            android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/close"
             app:layout_constraintTop_toTopOf="parent" />
@@ -67,5 +66,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frameLayout" />
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 </androidx.constraintlayout.widget.ConstraintLayout>
