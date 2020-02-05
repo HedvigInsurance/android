@@ -37,15 +37,6 @@
             android:prompt="@string/mock_personas_prompt" />
 
         <Button
-            android:id="@+id/openWhatsNew"
-            style="@style/HedvigButton.Purple"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open What's new screen" />
-
-        <Button
             android:id="@+id/openNativeChat"
             style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
@@ -62,6 +53,15 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open native offer screen" />
+
+        <Button
+            android:id="@+id/openLoggedInWithoutWelcome"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open an logged in without Welcome Screen" />
 
         <Button
             android:id="@+id/openAlert"
@@ -82,13 +82,13 @@
             android:text="Open an logged in with Welcome Screen" />
 
         <Button
-            android:id="@+id/openLoggedInWithoutWelcome"
+            android:id="@+id/openWhatsNew"
             style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open an logged in without Welcome Screen" />
+            android:text="Open What's new screen" />
 
         <Button
             android:id="@+id/openReferralReceiver"
