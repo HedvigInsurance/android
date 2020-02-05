@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
@@ -9,23 +10,25 @@ class MockKeyGearViewModel : KeyGearViewModel() {
     override val data = MutableLiveData<KeyGearItemsQuery.Data>()
 
     init {
-        data.postValue(
-            KeyGearItemsQuery.Data(
-                listOf(
-                    KeyGearItemsQuery.KeyGearItemsSimple(
-                        "KeyGearItem",
-                        "123",
-                        listOf(),
-                        KeyGearItemCategory.PHONE
-                    ),
-                    KeyGearItemsQuery.KeyGearItemsSimple(
-                        "KeyGearItem",
-                        "123",
-                        listOf(),
-                        KeyGearItemCategory.PHONE
+        Handler().postDelayed({
+            data.postValue(
+                KeyGearItemsQuery.Data(
+                    listOf(
+                        KeyGearItemsQuery.KeyGearItemsSimple(
+                            "KeyGearItem",
+                            "123",
+                            listOf(),
+                            KeyGearItemCategory.PHONE
+                        ),
+                        KeyGearItemsQuery.KeyGearItemsSimple(
+                            "KeyGearItem",
+                            "123",
+                            listOf(),
+                            KeyGearItemCategory.PHONE
+                        )
                     )
                 )
             )
-        )
+        }, 1000)
     }
 }
