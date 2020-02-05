@@ -31,7 +31,6 @@ class DateInputView @JvmOverloads constructor(
 
             dateText.show()
             this.dateText.text = text
-
         }
 
     init {
