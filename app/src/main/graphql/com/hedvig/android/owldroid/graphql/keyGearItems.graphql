@@ -1,0 +1,12 @@
+query KeyGearItems {
+  keyGearItemsSimple {
+    id
+    photos {
+      file {
+        key
+      }
+    }
+    category
+
+  }
+}

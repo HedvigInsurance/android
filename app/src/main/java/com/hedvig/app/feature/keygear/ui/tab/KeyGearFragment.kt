@@ -3,9 +3,12 @@ package com.hedvig.app.feature.keygear.ui.tab
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
+import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
@@ -25,7 +28,7 @@ class KeyGearFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         items.adapter =
-            KeyGearItemsAdapter { v ->
+            KeyGearItemsAdapter({ v ->
                 startActivity(
                     CreateKeyGearItemActivity.newInstance(requireContext()),
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -33,7 +36,15 @@ class KeyGearFragment : BaseTabFragment() {
                         transitionPair(v)
                     ).toBundle()
                 )
-            }
+            }, { v ->
+                startActivity(
+                    KeyGearItemDetailActivity.newInstance(requireContext()),
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        requireActivity(),
+                        Pair(v, ITEM_TRANSITION_NAME)
+                    ).toBundle()
+                )
+            })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
 
         viewModel.data.observe(this) { d ->
@@ -43,10 +54,14 @@ class KeyGearFragment : BaseTabFragment() {
         }
     }
 
-    fun bind(data: KeyGearData) {
+    fun bind(data: KeyGearItemsQuery.Data) {
         loadingSpinner.remove()
-        (items.adapter as? KeyGearItemsAdapter)?.items = data.items
+        (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItemsSimple
         items.adapter?.notifyDataSetChanged()
         items.show()
+    }
+
+    companion object {
+        const val ITEM_TRANSITION_NAME = "itemPhoto"
     }
 }

@@ -24,6 +24,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
@@ -202,6 +203,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
+    single { KeyGearItemsRepository(get()) }
 }
 
 val trackerModule = module {

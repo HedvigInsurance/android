@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
 import kotlinx.android.synthetic.main.key_gear_item_detail_photo.view.*
 
 class PhotosAdapter(
@@ -28,6 +29,10 @@ class PhotosAdapter(
             .load(photos[position].url)
             .transform(CenterCrop())
             .into(holder.photo)
+
+        if (position == 0) {
+            holder.photo.transitionName = KeyGearFragment.ITEM_TRANSITION_NAME
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -76,28 +76,18 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         photos.addItemDecoration(CenterItemDecoration())
         photos.itemAnimator = SlideInItemAnimator(Gravity.START)
         PagerSnapHelper().attachToRecyclerView(photos)
+        photos.doOnNextLayout {
+            supportStartPostponedEnterTransition()
+        }
 
         categories.adapter = CategoryAdapter(
             model::setActiveCategory
         )
 
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
-        categories.doOnNextLayout {
-            supportStartPostponedEnterTransition()
-        }
 
         save.setHapticClickListener {
             showCreatedAnimation()
-            //startActivity(
-            //    KeyGearItemDetailActivity.newInstanceFromCreate(
-            //        this,
-            //        save.centerX,
-            //        save.centerY
-            //    ),
-            //    null
-            //)
-
-            //overridePendingTransition(0, 0)
         }
 
         model.photos.observe(this) { photos ->
