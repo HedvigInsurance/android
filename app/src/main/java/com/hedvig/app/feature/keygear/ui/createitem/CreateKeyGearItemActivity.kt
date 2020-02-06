@@ -131,13 +131,15 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             0f,
             finalRadius
         ).apply {
-            duration = 400
+            duration = POST_CREATE_REVEAL_DURATION
             interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
                 appBarLayout.remove()
                 scrollView.remove()
 
+                // TODO: Put the right animation asset into this view based on category, and animate it
                 createdAnimation.show()
+
                 createdLabel.show()
                 createdLabel.alpha = 0f
 
@@ -148,6 +150,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                         }
                         .animateToFinalPosition(0f)
 
+                    // TODO: Replace this call with an onEnd-listener on the animation asset that we will have later
                     Handler().postDelayed({
                         finish()
                         startActivity(
@@ -159,7 +162,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                             ).toBundle()
                         )
                     }, 400)
-                }, 150)
+                }, POST_CREATE_LABEL_REVEAL_DELAY)
 
             }
             start()
@@ -247,6 +250,9 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     companion object {
         private const val PHOTO_REQUEST_CODE = 9876
         private const val PHOTO_PERMISSION_REQUEST_CODE = 9875
+
+        private const val POST_CREATE_REVEAL_DURATION = 400L
+        private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
 
         fun newInstance(context: Context) = Intent(context, CreateKeyGearItemActivity::class.java)
     }
