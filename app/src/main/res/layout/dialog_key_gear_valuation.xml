@@ -33,6 +33,7 @@
         android:textAlignment="center"/>
 
     <com.hedvig.app.ui.view.DateInputView
+        android:id="@+id/dateInput"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
