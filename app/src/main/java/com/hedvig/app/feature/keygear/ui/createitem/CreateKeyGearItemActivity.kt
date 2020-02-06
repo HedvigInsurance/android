@@ -227,8 +227,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     override fun onBackPressed() {
         if (isShowingPostCreateAnimation) {
-            // TODO Prevent back presses here
-            super.onBackPressed()
             return
         }
         if (dirty) {
