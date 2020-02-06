@@ -68,13 +68,15 @@ class KeyGearItemsAdapter(
                     openItem(holder.image)
                 }
                 item.photos.getOrNull(0)?.let { photo ->
-                    // TODO: Load the file proper
-                    // Glide
-                    //     .with(holder.image)
-                    //     .load(TODO SOMETHING BASED ON THE PHOTO PROPER)
-                    //     .transform(RoundedCorners(BASE_MARGIN))
-                    //     .into(holder.image)
+                    Glide
+                        .with(holder.image)
+                        .load(photo.file.preSignedUrl)
+                        .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
+                        .transition(withCrossFade())
+                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
+                        .into(holder.image)
                 } ?: run {
+                    // TODO: Replace with generic image based on Category
                     Glide
                         .with(holder.image)
                         .load("https://images.unsplash.com/photo-1505156868547-9b49f4df4e04")

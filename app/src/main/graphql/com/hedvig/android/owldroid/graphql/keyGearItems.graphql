@@ -3,7 +3,7 @@ query KeyGearItems {
     id
     photos {
       file {
-        key
+        preSignedUrl
       }
     }
     category
