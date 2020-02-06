@@ -21,8 +21,6 @@ import java.io.FileOutputStream
 
 class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
-    private var tempPhotoPath = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,76 +29,77 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
         val fileUrl = data.file.key
 
-        Glide.with(this)
-            .asBitmap()
-            .load(fileUrl)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap>?
-                ) {
-                    saveImage(resource, "receipt")
-                }
-            })
-
         close.setHapticClickListener {
             onBackPressed()
         }
 
         share.setHapticClickListener {
-            val sendIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                type = "image/jpeg"
 
-                this.data = FileProvider.getUriForFile(
-                    applicationContext,
-                    getString(R.string.file_provider_authority),
-                    File(tempPhotoPath)
-                )
+            Glide.with(this)
+                .asBitmap()
+                .load(fileUrl)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
 
-                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        val filePath = saveImage(resource, "receipt")
 
-                putExtra(
-                    Intent.EXTRA_STREAM,
-                    FileProvider.getUriForFile(
-                        applicationContext,
-                        getString(R.string.file_provider_authority),
-                        File(tempPhotoPath)
-                    )
-                )
-            }
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
+                        val sendIntent = Intent().apply {
+
+                            action = Intent.ACTION_SEND
+                            type = "image/jpg"
+
+                            this.data = FileProvider.getUriForFile(
+                                applicationContext,
+                                getString(R.string.file_provider_authority),
+                                File(filePath)
+                            )
+
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            putExtra(
+                                Intent.EXTRA_STREAM,
+                                FileProvider.getUriForFile(
+                                    applicationContext,
+                                    getString(R.string.file_provider_authority),
+                                    File(filePath)
+                                )
+                            )
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(shareIntent)
+                    }
+                })
+
         }
-
-
         Glide.with(this)
             .load(fileUrl)
             .transform(CenterCrop())
             .into(receipt)
     }
 
-    private fun saveImage(finalBitmap: Bitmap, image_name: String) {
+    private fun saveImage(finalBitmap: Bitmap, image_name: String): String {
         val root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()
         val myDir = File(root)
         myDir.mkdirs()
 
-        val fname = "Image-$image_name.jpg"
-        val file = File(myDir, fname)
-
-        tempPhotoPath = file.absolutePath
+        val fName = "Image-$image_name.jpg"
+        val file = File(myDir, fName)
 
         if (file.exists()) file.delete()
-        try {
+
+        return try {
             val out = FileOutputStream(file)
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
             out.flush()
             out.close()
+            file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
+            ""
         }
     }
 }
