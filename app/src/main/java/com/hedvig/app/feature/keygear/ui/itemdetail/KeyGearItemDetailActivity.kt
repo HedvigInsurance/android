@@ -8,8 +8,11 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
+
+    private val model: KeyGearItemDetailViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
