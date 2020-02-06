@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/photos"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="480dp" />
-
-        <com.hedvig.app.ui.view.PagerIndicatorView
-            android:id="@+id/pagerIndicator"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="@dimen/base_margin_double" />
+            android:orientation="vertical"
+            tools:context=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity">
 
-    </FrameLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    <TextView
-        style="@style/Headline.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" />
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/photos"
+                    android:layout_width="match_parent"
+                    android:layout_height="480dp" />
 
-</LinearLayout>
+                <com.hedvig.app.ui.view.PagerIndicatorView
+                    android:id="@+id/pagerIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:layout_marginBottom="@dimen/base_margin_double" />
+
+            </FrameLayout>
+
+            <TextView
+                style="@style/Headline.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:paddingBottom="1500dp"
+                android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</FrameLayout>
