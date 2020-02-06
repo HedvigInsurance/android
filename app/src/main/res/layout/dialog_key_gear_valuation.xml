@@ -32,11 +32,12 @@
         android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY"
         android:textAlignment="center"/>
 
+    <!--TODO Fix correct height in source DateInputView-->
     <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/dateInput"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="@dimen/date_pick_button_height"/>
 
     <Button
         android:layout_marginTop="@dimen/base_margin_triple"
