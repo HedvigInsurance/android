@@ -19,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!--TODO fix text resource-->
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
@@ -31,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_close"
-            android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION" />
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON" />
 
         <TextView
             android:layout_marginStart="@dimen/base_margin_triple"
@@ -44,7 +43,6 @@
             app:layout_constraintStart_toEndOf="@+id/close"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--TODO fix text resource-->
         <ImageView
             android:id="@+id/share"
             android:layout_width="@dimen/chat_top_bar_button_size"
@@ -55,7 +53,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_share"
-            android:contentDescription="Share" />
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_SHARE_BUTTON" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
