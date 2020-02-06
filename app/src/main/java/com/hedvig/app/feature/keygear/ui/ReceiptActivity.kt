@@ -100,8 +100,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             out.close()
             file.absolutePath
         } catch (e: Exception) {
-            e.printStackTrace()
-            Timber.e("Error saving image")
+            Timber.e("Error saving image", e)
             null
         }
     }
