@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.keygear.ui.createitem.CreateKeyGearItemActivity">
 
     <include layout="@layout/app_bar" />
 
@@ -63,12 +64,54 @@
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/purple"
+        android:backgroundTint="@color/link_purple"
         android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
         android:textColor="@color/white"
         android:translationY="140dp"
         android:visibility="gone"
         tools:translationY="0dp"
         tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/postCreate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/link_purple"
+        android:translationZ="@dimen/post_create_z_translation"
+        android:visibility="gone">
+
+        <!-- TODO: Use animation assets when available -->
+        <ImageView
+            android:id="@+id/createdAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/base_margin_octuple"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/createdLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:src="@drawable/ic_fire_green"
+            tools:visibility="visible" />
+
+        <!-- TODO: Use text key in code when available -->
+        <TextView
+            android:id="@+id/createdLabel"
+            style="@style/Headline.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:translationY="@dimen/base_margin_triple"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/createdAnimation"
+            tools:text="@string/KEY_GEAR_ADD_ITEM_SUCCESS"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

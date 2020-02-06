@@ -214,3 +214,21 @@ fun View.openKeyboard() =
         this,
         0
     )
+
+val View.centerX: Int
+    get() = (x + width / 2).toInt()
+
+val View.centerY: Int
+    get() = (y + height / 2).toInt()
+
+inline fun View.doOnGlobalLayout(crossinline action: () -> Unit) {
+    if (viewTreeObserver.isAlive) {
+        viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                action()
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+    }
+}
