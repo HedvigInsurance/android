@@ -77,9 +77,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/link_purple"
-        android:translationZ="7dp"
+        android:translationZ="@dimen/post_create_z_translation"
         android:visibility="gone">
 
+        <!-- TODO: Use animation assets when available -->
         <ImageView
             android:id="@+id/createdAnimation"
             android:layout_width="wrap_content"
@@ -92,15 +93,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/ic_fire_green"
+            tools:src="@drawable/ic_fire_green"
             tools:visibility="visible" />
 
+        <!-- TODO: Use text key in code when available -->
         <TextView
             android:id="@+id/createdLabel"
             style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/KEY_GEAR_ADD_ITEM_SUCCESS"
             android:textColor="@color/white"
             android:translationY="@dimen/base_margin_triple"
             android:visibility="gone"
@@ -108,6 +109,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/createdAnimation"
+            tools:text="@string/KEY_GEAR_ADD_ITEM_SUCCESS"
             tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

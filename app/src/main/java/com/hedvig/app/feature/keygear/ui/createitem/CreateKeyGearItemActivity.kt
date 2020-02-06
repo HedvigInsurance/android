@@ -88,16 +88,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         save.setHapticClickListener {
             showCreatedAnimation()
-            //startActivity(
-            //    KeyGearItemDetailActivity.newInstanceFromCreate(
-            //        this,
-            //        save.centerX,
-            //        save.centerY
-            //    ),
-            //    null
-            //)
-
-            //overridePendingTransition(0, 0)
         }
 
         model.photos.observe(this) { photos ->
@@ -237,8 +227,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     override fun onBackPressed() {
         if (isShowingPostCreateAnimation) {
-            // TODO Prevent back presses here
-            super.onBackPressed()
             return
         }
         if (dirty) {
