@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,9 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
@@ -86,24 +81,6 @@ class KeyGearItemsAdapter(
                         .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
                         .transition(withCrossFade())
                         .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                        .addListener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ) = false
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                            }
-                        })
                         .into(holder.image)
 
                 }
