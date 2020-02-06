@@ -105,7 +105,7 @@ class PhotosAdapter(
                 Glide
                     .with(photo)
                     .load(data.uri)
-                    .transform(CenterCrop(), RoundedCorners(BASE_MARGIN.dp))
+                    .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
                     .into(photo)
 
                 photo.setOnCreateContextMenuListener { menu, v, menuInfo ->

@@ -6,38 +6,49 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.Gravity
+import android.view.ViewAnimationUtils
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.app.BASE_MARGIN_HALF
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
-import com.hedvig.app.util.extensions.dp
-import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.centerX
+import com.hedvig.app.util.extensions.view.centerY
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
+import kotlinx.android.synthetic.main.app_bar.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
     private val model: CreateKeyGearViewModel by viewModel()
 
     private lateinit var tempPhotoPath: String
     private var dirty = false
+    private var isShowingPostCreateAnimation = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,13 +81,13 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             model::setActiveCategory
         )
 
-        categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF.dp))
+        categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
         categories.doOnNextLayout {
             supportStartPostponedEnterTransition()
         }
 
         save.setHapticClickListener {
-            makeToast("TODO: Save item, animate, show Item Detail Screen")
+            showCreatedAnimation()
         }
 
         model.photos.observe(this) { photos ->
@@ -105,6 +116,56 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             save
                 .spring(SpringAnimation.TRANSLATION_Y)
                 .animateToFinalPosition(0f)
+        }
+    }
+
+    private fun showCreatedAnimation() {
+        isShowingPostCreateAnimation = true
+        postCreate.show()
+
+        val finalRadius = max(root.width, root.height).toFloat() * 1.1f
+        ViewAnimationUtils.createCircularReveal(
+            postCreate,
+            save.centerX,
+            save.centerY,
+            0f,
+            finalRadius
+        ).apply {
+            duration = POST_CREATE_REVEAL_DURATION
+            interpolator = AccelerateDecelerateInterpolator()
+            doOnEnd {
+                appBarLayout.remove()
+                scrollView.remove()
+
+                // TODO: Put the right animation asset into this view based on category, and animate it
+                createdAnimation.show()
+
+                createdLabel.show()
+                createdLabel.alpha = 0f
+
+                Handler().postDelayed({
+                    createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                        .addUpdateListener { _, value, _ ->
+                            createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                        }
+                        .animateToFinalPosition(0f)
+
+                    // TODO: Replace this call with an onEnd-listener on the animation asset that we will have later
+                    Handler().postDelayed({
+                        finish()
+                        startActivity(
+                            KeyGearItemDetailActivity.newInstance(this@CreateKeyGearItemActivity),
+                            ActivityOptionsCompat.makeCustomAnimation(
+                                this@CreateKeyGearItemActivity,
+                                0,
+                                R.anim.fade_out
+                            ).toBundle()
+                        )
+                    }, 400)
+                }, POST_CREATE_LABEL_REVEAL_DELAY)
+
+            }
+            start()
         }
     }
 
@@ -168,15 +229,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
 
     override fun onBackPressed() {
+        if (isShowingPostCreateAnimation) {
+            return
+        }
         if (dirty) {
-            makeToast("Should show an alert allowing user to verify that they want to discard data")
             showAlert(
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
-                positiveAction = {},
-                negativeAction = {
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+                positiveAction = {
                     super.onBackPressed()
                 }
             )
@@ -188,6 +250,9 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     companion object {
         private const val PHOTO_REQUEST_CODE = 9876
         private const val PHOTO_PERMISSION_REQUEST_CODE = 9875
+
+        private const val POST_CREATE_REVEAL_DURATION = 400L
+        private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
 
         fun newInstance(context: Context) = Intent(context, CreateKeyGearItemActivity::class.java)
     }
