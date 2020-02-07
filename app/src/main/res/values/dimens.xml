@@ -160,5 +160,6 @@
     <dimen name="base_margin_sesqui">12dp</dimen>
     <dimen name="top_bar_elevation">2dp</dimen>
     <dimen name="post_create_z_translation">7dp</dimen>
+    <dimen name="key_gear_item_elevation">2dp</dimen>
 
 </resources>

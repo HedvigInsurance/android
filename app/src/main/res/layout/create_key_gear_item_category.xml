@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/background_create_key_gear_item_category"
     android:clickable="true"
-    android:elevation="2dp"
+    android:elevation="@dimen/key_gear_item_elevation"
     android:focusable="true"
     android:paddingStart="@dimen/base_margin_triple"
     android:paddingTop="@dimen/base_margin_double"
