@@ -24,7 +24,6 @@ abstract class YearMonthPickerDialog : DialogFragment() {
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_year_month_picker, null)
         val today = Calendar.getInstance()
 
-        //TODO show current month
         view.month.apply {
             minValue = 1
             maxValue = 12
