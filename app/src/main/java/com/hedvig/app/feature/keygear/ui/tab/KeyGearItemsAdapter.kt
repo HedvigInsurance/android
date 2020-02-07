@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
+import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.createitem.label
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.key_gear_item.view.*
 
 class KeyGearItemsAdapter(
     private val createItem: (view: View) -> Unit,
-    private val openItem: (view: View) -> Unit
+    private val openItem: (view: View, photoUrl: String?, category: KeyGearItemCategory) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
     var items: List<KeyGearItemsQuery.KeyGearItemsSimple> = listOf()
 
@@ -65,7 +66,11 @@ class KeyGearItemsAdapter(
             is ViewHolder.Item -> {
                 val item = items[position - 1]
                 holder.root.setHapticClickListener {
-                    openItem(holder.image)
+                    openItem(
+                        holder.image,
+                        item.photos.getOrNull(0)?.file?.preSignedUrl,
+                        item.category
+                    )
                 }
                 item.photos.getOrNull(0)?.let { photo ->
                     Glide
