@@ -37,13 +37,13 @@
             android:prompt="@string/mock_personas_prompt" />
 
         <Button
-            android:id="@+id/openCoverageSheet"
+            android:id="@+id/openReceipt"
             style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open coverage sheet" />
+            android:text="Open receipt" />
 
         <Button
             android:id="@+id/openWhatsNew"
