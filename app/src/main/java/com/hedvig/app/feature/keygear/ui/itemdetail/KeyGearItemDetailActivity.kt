@@ -7,7 +7,8 @@ import android.os.Bundle
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
-import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
+import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -33,13 +34,14 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         initializeToolbar()
         initializePhotos(
             intent.getStringExtra(FIRST_PHOTO_URL),
-            intent.getSerializableExtra(
-                FIRST_PHOTO_CATEGORY
-            ) as? KeyGearItemCategory
+            intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
         )
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }
+        }
+        intent.getStringExtra(ID)?.let { id ->
+            model.loadItem(id)
         }
     }
 
@@ -83,22 +85,24 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         }
     }
 
-    private fun bind(data: KeyGearItemsQuery.KeyGearItemsSimple) {
-        (photos.adapter as? PhotosAdapter)?.photoUrls = data.photos.map { it.file.preSignedUrl }
+    private fun bind(data: KeyGearItemQuery.KeyGearItem) {
+        (photos.adapter as? PhotosAdapter)?.photoUrls =
+            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
     }
 
     companion object {
         private const val FIRST_PHOTO_URL = "FIRST_PHOTO_URL"
-        private const val FIRST_PHOTO_CATEGORY = "FIRST_PHOTO_CATEGORY"
+        private const val CATEGORY = "CATEGORY"
+        private const val ID = "ID"
 
         fun newInstance(
             context: Context,
-            photoUrl: String? = null,
-            category: KeyGearItemCategory? = null
+            item: KeyGearItemFragment
         ) =
             Intent(context, KeyGearItemDetailActivity::class.java).apply {
-                photoUrl?.let { putExtra(FIRST_PHOTO_URL, it) }
-                category?.let { putExtra(FIRST_PHOTO_CATEGORY, it) }
+                item.photos.getOrNull(0)?.file?.preSignedUrl?.let { putExtra(FIRST_PHOTO_URL, it) }
+                putExtra(CATEGORY, item.category)
+                putExtra(ID, item.id)
             }
     }
 }

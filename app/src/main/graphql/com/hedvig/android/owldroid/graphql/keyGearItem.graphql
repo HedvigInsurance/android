@@ -1,0 +1,5 @@
+query KeyGearItem ($id: ID!) {
+  keyGearItem(id: $id) {
+    ... KeyGearItemFragment
+  }
+}

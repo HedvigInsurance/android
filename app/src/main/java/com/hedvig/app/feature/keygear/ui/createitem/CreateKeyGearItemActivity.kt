@@ -16,6 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.PagerSnapHelper
+import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
@@ -44,7 +45,7 @@ import java.io.IOException
 import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
-    private val model: CreateKeyGearViewModel by viewModel()
+    private val model: CreateKeyGearItemViewModel by viewModel()
 
     private lateinit var tempPhotoPath: String
     private var dirty = false
@@ -87,7 +88,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
         save.setHapticClickListener {
-            showCreatedAnimation()
+            // TODO: This may take time. We need a transitionary state
+            model.createItem()
         }
 
         model.photos.observe(this) { photos ->
@@ -100,6 +102,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         model.dirty.observe(this) { d ->
             d?.let { dirty = it }
+        }
+
+        model.createResult.observe(this) { cr ->
+            cr?.let { showCreatedAnimation(it) }
         }
     }
 
@@ -119,7 +125,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
     }
 
-    private fun showCreatedAnimation() {
+    private fun showCreatedAnimation(data: CreateKeyGearItemMutation.Data) {
         isShowingPostCreateAnimation = true
         postCreate.show()
 
@@ -154,7 +160,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                     Handler().postDelayed({
                         finish()
                         startActivity(
-                            KeyGearItemDetailActivity.newInstance(this@CreateKeyGearItemActivity),
+                            KeyGearItemDetailActivity.newInstance(
+                                this@CreateKeyGearItemActivity,
+                                data.createKeyGearItem.fragments.keyGearItemFragment
+                            ),
                             ActivityOptionsCompat.makeCustomAnimation(
                                 this@CreateKeyGearItemActivity,
                                 0,

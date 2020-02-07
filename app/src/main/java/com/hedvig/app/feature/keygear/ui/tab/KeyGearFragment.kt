@@ -36,12 +36,11 @@ class KeyGearFragment : BaseTabFragment() {
                         transitionPair(v)
                     ).toBundle()
                 )
-            }, { v, firstPhotoUrl, category ->
+            }, { v, item ->
                 startActivity(
                     KeyGearItemDetailActivity.newInstance(
                         requireContext(),
-                        firstPhotoUrl,
-                        category
+                        item.fragments.keyGearItemFragment
                     ),
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                         requireActivity(),

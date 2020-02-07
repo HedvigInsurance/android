@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
@@ -14,31 +15,41 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                 listOf(
                     KeyGearItemsQuery.KeyGearItemsSimple(
                         "KeyGearItem",
-                        "123",
-                        listOf(
-                            KeyGearItemsQuery.Photo(
-                                "KeyGearItemPhoto",
-                                KeyGearItemsQuery.File(
-                                    "S3File",
-                                    "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
-                                )
+                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                            KeyGearItemFragment(
+                                "KeyGearItem",
+                                "123",
+                                listOf(
+                                    KeyGearItemFragment.Photo(
+                                        "KeyGearItemPhoto",
+                                        KeyGearItemFragment.File(
+                                            "S3File",
+                                            "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
+                                        )
+                                    )
+                                ),
+                                KeyGearItemCategory.PHONE
                             )
-                        ),
-                        KeyGearItemCategory.PHONE
+                        )
                     ),
                     KeyGearItemsQuery.KeyGearItemsSimple(
                         "KeyGearItem",
-                        "123",
-                        listOf(
-                            KeyGearItemsQuery.Photo(
-                                "KeyGearItemPhoto",
-                                KeyGearItemsQuery.File(
-                                    "S3File",
-                                    "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?"
-                                )
+                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                            KeyGearItemFragment(
+                                "KeyGearItem",
+                                "234",
+                                listOf(
+                                    KeyGearItemFragment.Photo(
+                                        "KeyGearItemPhoto",
+                                        KeyGearItemFragment.File(
+                                            "S3File",
+                                            "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
+                                        )
+                                    )
+                                ),
+                                KeyGearItemCategory.COMPUTER
                             )
-                        ),
-                        KeyGearItemCategory.COMPUTER
+                        )
                     )
                 )
             )

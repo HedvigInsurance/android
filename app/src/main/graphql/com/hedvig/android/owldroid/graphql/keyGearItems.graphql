@@ -1,12 +1,5 @@
 query KeyGearItems {
   keyGearItemsSimple {
-    id
-    photos {
-      file {
-        preSignedUrl
-      }
-    }
-    category
-
+    ... KeyGearItemFragment
   }
 }
