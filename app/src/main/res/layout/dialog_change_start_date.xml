@@ -58,9 +58,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin_double"
-        tool:text="@string/ACTIVATE_INSURANCE_END_BTN"
-        android:textStyle="bold" />
+        android:layout_marginTop="@dimen/auto_set_date_text_size"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        tool:text="@string/ACTIVATE_INSURANCE_END_BTN" />
 
 
 </LinearLayout>

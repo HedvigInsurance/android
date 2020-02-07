@@ -171,7 +171,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun setupScrollListeners() {
         offerScroll.setOnScrollChangeListener { _: NestedScrollView, _, scrollY, _, _ ->
-            parallaxContainer.translationY = scrollY / 1.25f
+            parallaxContainer.translationY = scrollY / 7.0f
             arrow.alpha = boundedLerp(1f, 0f, scrollY / 200f)
         }
     }
