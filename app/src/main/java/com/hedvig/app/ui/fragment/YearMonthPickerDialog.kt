@@ -28,7 +28,7 @@ abstract class YearMonthPickerDialog : DialogFragment() {
         view.month.apply {
             minValue = 1
             maxValue = 12
-            value = savedInstanceState?.getInt(MONTH) ?: today.get(Calendar.MONTH)
+            value = savedInstanceState?.getInt(MONTH) ?: today.get(Calendar.MONTH)+1
             displayedValues = DateFormatSymbols().months
             wrapSelectorWheel = false
         }

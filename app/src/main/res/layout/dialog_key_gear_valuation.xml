@@ -40,6 +40,7 @@
         android:layout_height="@dimen/date_pick_button_height"/>
 
     <Button
+        android:id="@+id/continueButton"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

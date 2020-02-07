@@ -31,11 +31,14 @@ class KeyGearValuationBottomSheet : RoundedBottomSheetDialogFragment() {
 
         model.purchaseDate.observe(this) { yearMonth ->
             yearMonth?.let {
-                // FIXME crashes when january is picked
-                Timber.d("value ${yearMonth.month.value}")
+                Timber.d("Hejsan")
                 dialog.dateInput.text =
-                    "${DateFormatSymbols().months[yearMonth.month.value-1]} ${yearMonth.year}"
+                    "${DateFormatSymbols().months[yearMonth.month.value - 1]} ${yearMonth.year}"
             }
+        }
+
+        dialog.continueButton.setOnClickListener {
+            dialog.dateInput.noAnimation()
         }
 
 
