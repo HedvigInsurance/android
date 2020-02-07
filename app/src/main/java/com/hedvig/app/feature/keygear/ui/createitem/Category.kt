@@ -7,6 +7,7 @@ data class Category(
     val selected: Boolean = false
 )
 
+// TODO: Add translations when available
 val KeyGearItemCategory.label: String
     get() =
         when (this) {
