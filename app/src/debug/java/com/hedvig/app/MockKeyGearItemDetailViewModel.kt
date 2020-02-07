@@ -36,6 +36,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                             )
                         )
                     ),
+                    listOf(),
                     KeyGearItemCategory.PHONE
                 ),
             "234" to
@@ -51,6 +52,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                             )
                         )
                     ),
+                    listOf(),
                     KeyGearItemCategory.COMPUTER
                 )
         )
