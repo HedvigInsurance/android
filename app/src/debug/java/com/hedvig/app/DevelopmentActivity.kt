@@ -13,8 +13,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.keygear.ui.ReceiptActivity
-import com.hedvig.app.feature.keygear.ui.mockReceipt
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -29,7 +27,6 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
@@ -107,16 +104,14 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openReceipt.setHapticClickListener {
-            val intent = Intent(this, ReceiptActivity::class.java)
-            intent.putExtra("RECEIPT_DATA", mockReceipt)
-            startActivity(intent)
-        }
-
-        findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {
+        findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
             })
+        }
+
+        findViewById<Button>(R.id.openLoggedInWithoutWelcome).setHapticClickListener {
+            startActivity(Intent(this, LoggedInActivity::class.java))
         }
         findViewById<Button>(R.id.openReferralReceiver).setHapticClickListener {
             startActivity(ReferralsReceiverActivity.newInstance(this, "CODE12", "10.00"))

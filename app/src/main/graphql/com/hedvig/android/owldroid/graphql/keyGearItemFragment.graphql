@@ -1,0 +1,9 @@
+fragment KeyGearItemFragment on KeyGearItem {
+  id
+  photos {
+    file {
+      preSignedUrl
+    }
+  }
+  category
+}

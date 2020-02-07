@@ -24,7 +24,11 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearViewModel
+import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageRepository
@@ -163,7 +167,6 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
-    viewModel { CreateKeyGearViewModel() }
 }
 
 val offerModule = module {
@@ -180,6 +183,8 @@ val directDebitModule = module {
 
 val keyGearModule = module {
     viewModel<KeyGearViewModel> { KeyGearViewModelImpl() }
+    viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl() }
+    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl() }
 }
 
 val serviceModule = module {
@@ -202,6 +207,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
+    single { KeyGearItemsRepository(get()) }
 }
 
 val trackerModule = module {

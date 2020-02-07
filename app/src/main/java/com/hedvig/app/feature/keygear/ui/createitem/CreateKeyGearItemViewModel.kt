@@ -1,24 +1,30 @@
 package com.hedvig.app.feature.keygear.ui.createitem
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
+import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import timber.log.Timber
 
-class CreateKeyGearViewModel : ViewModel() {
-    val photos: MutableLiveData<List<Photo>> = MutableLiveData()
-    val categories: MutableLiveData<List<Category>> = MutableLiveData()
-    val dirty: MutableLiveData<Boolean> = MutableLiveData()
+abstract class CreateKeyGearItemViewModel : ViewModel() {
+    abstract val createResult: LiveData<CreateKeyGearItemMutation.Data>
+
+    abstract fun createItem()
+
+    val photos = MutableLiveData<List<Photo>>()
+    val categories = MutableLiveData<List<Category>>()
+    val dirty = MutableLiveData<Boolean>()
+
+    protected val activeCategory: KeyGearItemCategory?
+        get() = categories.value?.find { it.selected }?.category
 
     init {
-        categories.value = listOf(
-            Category(KeyGearItemCategory.COMPUTER),
-            Category(KeyGearItemCategory.PHONE),
-            Category(KeyGearItemCategory.TV),
-            Category(KeyGearItemCategory.JEWELRY),
-            Category(KeyGearItemCategory.SOUND_SYSTEM)
-        )
+        categories.value = KeyGearItemCategory
+            .values()
+            .filter { it != KeyGearItemCategory.`$UNKNOWN` }
+            .map { Category(it) }
     }
 
     fun addPhotoUri(uri: Uri) {
@@ -66,5 +72,13 @@ class CreateKeyGearViewModel : ViewModel() {
         if (photos.value?.isEmpty() == true && categories.value?.any { c -> c.selected } == false) {
             dirty.value = false
         }
+    }
+}
+
+class CreateKeyGearItemViewModelImpl : CreateKeyGearItemViewModel() {
+    override val createResult = MutableLiveData<CreateKeyGearItemMutation.Data>()
+
+    override fun createItem() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -2,8 +2,7 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/photo"
-    android:layout_width="@dimen/create_key_gear_add_photo_height"
-    android:layout_height="@dimen/create_key_gear_add_photo_height"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:contentDescription="@null"
-    android:elevation="@dimen/key_gear_item_elevation"
     tools:src="@drawable/ic_fire_green" />
