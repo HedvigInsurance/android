@@ -34,7 +34,7 @@ class KeyGearValuationBottomSheet : RoundedBottomSheetDialogFragment() {
                 // FIXME crashes when january is picked
                 Timber.d("value ${yearMonth.month.value}")
                 dialog.dateInput.text =
-                    "${DateFormatSymbols().months[yearMonth.month.value]} ${yearMonth.year}"
+                    "${DateFormatSymbols().months[yearMonth.month.value-1]} ${yearMonth.year}"
             }
         }
 
