@@ -9,7 +9,6 @@ import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.observe
 import kotlinx.android.synthetic.main.dialog_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 import java.text.DateFormatSymbols
 
 class KeyGearValuationBottomSheet : RoundedBottomSheetDialogFragment() {
@@ -31,16 +30,10 @@ class KeyGearValuationBottomSheet : RoundedBottomSheetDialogFragment() {
 
         model.purchaseDate.observe(this) { yearMonth ->
             yearMonth?.let {
-                Timber.d("Hejsan")
                 dialog.dateInput.text =
                     "${DateFormatSymbols().months[yearMonth.month.value - 1]} ${yearMonth.year}"
             }
         }
-
-        dialog.continueButton.setOnClickListener {
-            dialog.dateInput.noAnimation()
-        }
-
 
         return dialog
     }

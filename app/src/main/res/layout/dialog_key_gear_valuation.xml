@@ -17,34 +17,34 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_marginTop="@dimen/base_margin"
+        style="@style/Header.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Header.Regular"
+        android:layout_marginTop="@dimen/base_margin"
         android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
-        android:textAlignment="center"/>
+        android:textAlignment="center" />
 
     <TextView
-        android:layout_marginTop="@dimen/base_margin_triple"
         style="@style/Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY"
-        android:textAlignment="center"/>
+        android:textAlignment="center" />
 
     <!--TODO Fix correct height in source DateInputView-->
     <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/dateInput"
-        android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/date_pick_button_height"/>
+        android:layout_height="@dimen/date_pick_button_height"
+        android:layout_marginTop="@dimen/base_margin_triple" />
 
     <Button
         android:id="@+id/continueButton"
-        android:layout_marginTop="@dimen/base_margin_triple"
+        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/HedvigButton.Purple"
-        android:text="Fortsätt"/>
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="Fortsätt" />
 
 </LinearLayout>

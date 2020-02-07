@@ -9,17 +9,12 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.date_pick_layout.view.*
-import timber.log.Timber
 
 class DateInputView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle) {
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        Timber.d("inflated ${dateText.text}")
-    }
 
     var text: String? = null
         set(value) {
@@ -29,24 +24,23 @@ class DateInputView @JvmOverloads constructor(
             dateText.text = text
         }
 
-    fun noAnimation() {
-        val animateDistance = this
-            .height.div(2.5)
-            .toFloat()
-
-        dateHint.translationY = -animateDistance
-    }
-
     private fun animateHint() {
-        val animateDistance = this
-            .height.div(2.5)
-            .toFloat()
+        val animateDistance =
+            getViewHeight()
+                .div(2.0)
+                .toFloat()
 
         dateHint.spring(
             SpringAnimation.TRANSLATION_Y,
             10000.0f,
             1.0f
         ).animateToFinalPosition(-animateDistance)
+    }
+
+    private fun getViewHeight(): Int {
+        this.show()
+        this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+        return this.measuredHeight
     }
 
     init {
