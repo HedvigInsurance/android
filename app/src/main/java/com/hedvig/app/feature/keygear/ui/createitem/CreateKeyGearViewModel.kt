@@ -3,7 +3,7 @@ package com.hedvig.app.feature.keygear.ui.createitem
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearItemCategory
+import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import timber.log.Timber
 
 class CreateKeyGearViewModel : ViewModel() {

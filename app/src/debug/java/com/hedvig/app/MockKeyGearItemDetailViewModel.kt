@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
+
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun loadItem(id: String) {

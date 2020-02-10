@@ -27,8 +27,10 @@ import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelIml
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageRepository
@@ -168,7 +170,8 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
     viewModel { CreateKeyGearViewModel() }
-    viewModel { KeyGearItemDetailViewModel() }
+    viewModel { KeyGearItemDetailViewModelImpl() }
+    viewModel { KeyGearValuationViewModelIml() }
 
 }
 

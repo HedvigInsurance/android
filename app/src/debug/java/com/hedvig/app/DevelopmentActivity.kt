@@ -106,6 +106,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
+        openValuation.setHapticClickListener {
+            startActivity(Intent(this, KeyGearValuationActivity::class.java))
+        }
+
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
