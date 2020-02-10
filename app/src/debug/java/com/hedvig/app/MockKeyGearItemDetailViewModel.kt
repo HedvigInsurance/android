@@ -1,14 +1,17 @@
 package com.hedvig.app
 
+import android.net.Uri
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
+import com.hedvig.app.util.LiveEvent
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
+    override val isUploading = LiveEvent<Boolean>()
 
     override fun loadItem(id: String) {
         Handler().postDelayed({
@@ -19,6 +22,32 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 )
             )
         }, 250)
+    }
+
+    override fun uploadReceipt(uri: Uri) {
+        val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
+        isUploading.value = true
+        Handler().postDelayed({
+            data.postValue(
+                KeyGearItemQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemQuery.KeyGearItem.Fragments(
+                        items[id]!!.toBuilder().receipts(
+                            listOf(
+                                KeyGearItemFragment.Receipt(
+                                    "KeyGearItemReceipt",
+                                    KeyGearItemFragment.File1(
+                                        "S3File",
+                                        "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
+                                    )
+                                )
+                            )
+                        ).build()
+                    )
+                )
+            )
+            isUploading.postValue(false)
+        }, 2000)
     }
 
     companion object {
@@ -36,6 +65,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                             )
                         )
                     ),
+                    listOf(),
                     KeyGearItemCategory.PHONE
                 ),
             "234" to
@@ -51,6 +81,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                             )
                         )
                     ),
+                    listOf(),
                     KeyGearItemCategory.COMPUTER
                 )
         )

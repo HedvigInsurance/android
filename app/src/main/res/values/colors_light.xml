@@ -2,6 +2,7 @@
 <resources>
     <item name="background" type="color">@color/off_white</item>
     <item name="background_elevation_1" type="color">@color/white</item>
+    <item name="translucent_background" type="color">@color/translucent_off_white</item>
     <item name="text_emphasized" type="color">@color/off_black_dark</item>
     <item name="text_regular" type="color">@color/off_black</item>
     <item name="text_negative" type="color">@color/white</item>
