@@ -16,7 +16,6 @@ import com.hedvig.app.feature.keygear.ui.ReceiptActivity
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
@@ -101,7 +100,9 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         } ?: run {
             addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
             addOrViewReceipt.setHapticClickListener {
-                makeToast("TODO: Open a File/Photo sheet")
+                ReceiptFileUploadBottomSheet
+                    .newInstance()
+                    .show(supportFragmentManager, ReceiptFileUploadBottomSheet.TAG)
             }
         }
     }

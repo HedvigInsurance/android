@@ -1,32 +1,34 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.app.ui.fragment
 
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import androidx.annotation.StringRes
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
-import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.file_upload_dialog.*
-import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class UploadBottomSheet : RoundedBottomSheetDialogFragment() {
-    private val chatViewModel: ChatViewModel by sharedViewModel()
+abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
+    abstract fun onFileChosen(uri: Uri)
 
-    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
+    @get:StringRes
+    abstract val title: Int
+
+    override fun getTheme() =
+        R.style.NoTitleBottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater
-            .from(requireContext())
+        val view = LayoutInflater.from(requireContext())
             .inflate(R.layout.file_upload_dialog, null)
+
         dialog.setContentView(view)
+
+        dialog.header.text = requireContext().getString(title)
 
         dialog.uploadImageOrVideo.setHapticClickListener {
             selectImageFromLibrary()
@@ -36,35 +38,15 @@ class UploadBottomSheet : RoundedBottomSheetDialogFragment() {
             selectFile()
         }
 
-        setupSubscriptions()
         return dialog
-    }
-
-    private fun setupSubscriptions() {
-        chatViewModel.isUploading.observe(lifecycleOwner = this) { isUploading ->
-            isUploading?.let { iu ->
-                if (iu) {
-                    dialog?.header?.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
-                    dialog?.loadingSpinner?.playAnimation()
-                    dialog?.loadingSpinner?.show()
-                    dialog?.uploadImageOrVideo?.remove()
-                    dialog?.uploadFile?.remove()
-                    isCancelable = false
-                }
-            }
-        }
-
-        chatViewModel.uploadBottomSheetResponse.observe(lifecycleOwner = this) { data ->
-            data?.uploadFile?.key?.let {
-                isCancelable = true
-                dismiss()
-            }
-        }
     }
 
     private fun selectImageFromLibrary() {
         startActivityForResult(
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
+            Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            ),
             SELECT_IMAGE_REQUEST_CODE
         )
     }
@@ -84,14 +66,14 @@ class UploadBottomSheet : RoundedBottomSheetDialogFragment() {
             SELECT_FILE_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     resultData?.data?.let { uri ->
-                        chatViewModel.uploadFileFromProvider(uri)
+                        onFileChosen(uri)
                     }
                 }
             }
             SELECT_IMAGE_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     resultData?.data?.let { uri ->
-                        chatViewModel.uploadFileFromProvider(uri)
+                        onFileChosen(uri)
                     }
                 }
             }

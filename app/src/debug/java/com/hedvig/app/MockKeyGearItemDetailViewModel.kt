@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.net.Uri
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
@@ -16,6 +17,30 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 KeyGearItemQuery.KeyGearItem(
                     "KeyGearItem",
                     KeyGearItemQuery.KeyGearItem.Fragments(items[id]!!)
+                )
+            )
+        }, 250)
+    }
+
+    override fun uploadReceipt(uri: Uri) {
+        val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
+        Handler().postDelayed({
+            data.postValue(
+                KeyGearItemQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemQuery.KeyGearItem.Fragments(
+                        items[id]!!.toBuilder().receipts(
+                            listOf(
+                                KeyGearItemFragment.Receipt(
+                                    "KeyGearItemReceipt",
+                                    KeyGearItemFragment.File1(
+                                        "S3File",
+                                        "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
+                                    )
+                                )
+                            )
+                        ).build()
+                    )
                 )
             )
         }, 250)
