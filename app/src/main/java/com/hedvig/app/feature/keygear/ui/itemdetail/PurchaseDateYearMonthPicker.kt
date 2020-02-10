@@ -6,7 +6,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.threeten.bp.YearMonth
 
 class PurchaseDateYearMonthPicker : YearMonthPickerDialog() {
-    private val model: KeyGearValuationViewModelIml by sharedViewModel()
+    private val model: KeyGearValuationViewModelImpl by sharedViewModel()
 
     override val title: String
         get() = requireArguments().getString(TITLE, "")

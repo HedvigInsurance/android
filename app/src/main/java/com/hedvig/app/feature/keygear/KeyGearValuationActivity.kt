@@ -2,7 +2,7 @@ package com.hedvig.app.feature.keygear
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelIml
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.extensions.observe
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
@@ -11,7 +11,7 @@ import java.text.DateFormatSymbols
 
 class KeyGearValuationActivity : AppCompatActivity() {
 
-    private val model: KeyGearValuationViewModelIml by viewModel()
+    private val model: KeyGearValuationViewModelImpl by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +27,7 @@ class KeyGearValuationActivity : AppCompatActivity() {
         }
 
         continueButton.setOnClickListener {
+            model.submit()
             onBackPressed()
         }
 
