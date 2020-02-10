@@ -210,6 +210,13 @@ fun View.openKeyboard() =
         0
     )
 
+val View.centerX: Int
+    get() = (x + width / 2).toInt()
+
+val View.centerY: Int
+    get() = (y + height / 2).toInt()
+
 fun View.useEdgeToEdge() {
-    systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    systemUiVisibility =
+        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 }

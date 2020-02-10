@@ -7,6 +7,7 @@
     android:background="@drawable/background_rounded_corners_ripple"
     android:backgroundTint="@color/violet_100"
     android:clickable="true"
+    android:elevation="@dimen/key_gear_item_elevation"
     android:focusable="true"
     android:transitionName="addItemRoot">
 

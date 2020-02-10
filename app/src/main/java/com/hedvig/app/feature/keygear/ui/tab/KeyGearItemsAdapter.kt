@@ -1,18 +1,32 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
+import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.label
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.key_gear_add_item.view.*
+import kotlinx.android.synthetic.main.key_gear_item.view.*
 
 class KeyGearItemsAdapter(
-    private val createItem: (view: View) -> Unit
+    private val createItem: (view: View) -> Unit,
+    private val openItem: (view: View, item: KeyGearItemsQuery.KeyGearItemsSimple) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
-    var items: List<KeyGearItem> = listOf()
+    var items: List<KeyGearItemsQuery.KeyGearItemsSimple> = listOf()
 
     override fun getItemViewType(position: Int) = when (position) {
         0 -> NEW_ITEM
@@ -49,7 +63,33 @@ class KeyGearItemsAdapter(
                 }
             }
             is ViewHolder.Item -> {
+                val item = items[position - 1]
+                holder.root.setHapticClickListener {
+                    openItem(
+                        holder.image,
+                        item
+                    )
+                }
+                item.fragments.keyGearItemFragment.photos.getOrNull(0)?.let { photo ->
+                    Glide
+                        .with(holder.image)
+                        .load(photo.file.preSignedUrl)
+                        .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
+                        .transition(withCrossFade())
+                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
+                        .into(holder.image)
+                } ?: run {
+                    // TODO: Replace with generic image based on Category
+                    Glide
+                        .with(holder.image)
+                        .load("https://images.unsplash.com/photo-1505156868547-9b49f4df4e04")
+                        .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
+                        .transition(withCrossFade())
+                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
+                        .into(holder.image)
 
+                }
+                holder.category.text = item.fragments.keyGearItemFragment.category.label
             }
         }
     }
@@ -64,6 +104,10 @@ class KeyGearItemsAdapter(
             val root: ConstraintLayout = view.root
         }
 
-        class Item(view: View) : ViewHolder(view)
+        class Item(view: View) : ViewHolder(view) {
+            val root: FrameLayout = view.keyGearItemRoot
+            val image: ImageView = view.itemPhoto
+            val category: TextView = view.itemCategory
+        }
     }
 }

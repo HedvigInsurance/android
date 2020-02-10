@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearItemCategory
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.create_key_gear_item_category.view.*
@@ -39,7 +38,7 @@ class CategoryAdapter(
         private val text: TextView = view.text
 
         fun bind(data: Category, setActiveCategory: (Category) -> Unit) {
-            text.text = data.label
+            text.text = data.category.label
             if (data.selected) {
                 text.setTextColor(text.context.compatColor(R.color.link_purple))
                 text.isActivated = true
@@ -67,20 +66,4 @@ class CategoryDiffCallback(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
         old[oldItemPosition] == new[newItemPosition]
-}
-
-data class Category(
-    val category: KeyGearItemCategory,
-    val selected: Boolean = false
-) {
-    // TODO: Text Key
-    val label: String
-        get() =
-            when (category) {
-                KeyGearItemCategory.COMPUTER -> "Dator"
-                KeyGearItemCategory.PHONE -> "Mobiltelefon"
-                KeyGearItemCategory.TV -> "TV"
-                KeyGearItemCategory.JEWELRY -> "Smycke"
-                KeyGearItemCategory.SOUND_SYSTEM -> "Ljudanläggning"
-            }
 }

@@ -22,12 +22,21 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true">
         <activity
+            android:name=".feature.keygear.ui.ReceiptActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+      
+        <activity
             android:name=".feature.keygear.KeyGearValuationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
+      
         <activity
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -239,6 +248,14 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.keygear.ui.createitem.CreateKeyGearItemActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

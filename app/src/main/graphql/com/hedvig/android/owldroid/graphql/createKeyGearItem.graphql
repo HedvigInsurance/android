@@ -1,0 +1,8 @@
+mutation CreateKeyGearItem(
+  $category: KeyGearItemCategory!
+  $photos: [S3FileInput!]!
+) {
+  createKeyGearItem(input: { photos: $photos, category: $category }) {
+    ...KeyGearItemFragment
+  }
+}
