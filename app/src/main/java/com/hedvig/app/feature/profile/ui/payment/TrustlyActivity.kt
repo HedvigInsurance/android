@@ -43,8 +43,14 @@ class TrustlyActivity : BaseActivity() {
             javaScriptEnabled = true
             loadWithOverviewMode = true
             useWideViewPort = true
+            domStorageEnabled = true
+            setSupportMultipleWindows(true)
         }
-        trustlyContainer.addJavascriptInterface(TrustlyJavascriptInterface(this), TrustlyJavascriptInterface.NAME)
+        trustlyContainer.webChromeClient = TrustlyWebChromeClient()
+        trustlyContainer.addJavascriptInterface(
+            TrustlyJavascriptInterface(this),
+            TrustlyJavascriptInterface.NAME
+        )
 
         notNow.setHapticClickListener {
             tracker.notNow()
