@@ -2,6 +2,7 @@ package com.hedvig.app.feature.keygear
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.extensions.observe
@@ -18,7 +19,7 @@ class KeyGearValuationActivity : AppCompatActivity() {
         setContentView(com.hedvig.app.R.layout.activity_key_gear_valuation)
 
         dateInput.setOnClickListener {
-            PurchaseDateYearMonthPicker.newInstance("title")
+            PurchaseDateYearMonthPicker.newInstance(resources.getString(R.string.KEY_GEAR_YEARMONTH_PICKER_TITLE))
                 .show(supportFragmentManager, PurchaseDateYearMonthPicker.TAG)
         }
 
