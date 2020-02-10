@@ -108,7 +108,7 @@ class PhotosAdapter(
                     .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
                     .into(photo)
 
-                photo.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                photo.setOnCreateContextMenuListener { _, v, _ ->
                     v.performOnLongPressHapticFeedback()
                     val popup = PopupMenu(v.context, v)
                     popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)

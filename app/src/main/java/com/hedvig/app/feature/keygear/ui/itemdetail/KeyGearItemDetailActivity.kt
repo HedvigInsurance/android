@@ -12,10 +12,12 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.ReceiptActivity
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
@@ -78,7 +80,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             toolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
-                    compatColor(R.color.background_elevation_1),
+                    compatColor(R.color.translucent_background),
                     percentage
                 )
             )
@@ -88,6 +90,21 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
         (photos.adapter as? PhotosAdapter)?.photoUrls =
             data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
+
+        data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
+            // TODO: Acquire a text key for this
+            addOrViewReceipt.text = "Show"
+            addOrViewReceipt.setHapticClickListener {
+                startActivity(ReceiptActivity.newInstance(this, receipt.file.preSignedUrl))
+            }
+        } ?: run {
+            addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
+            addOrViewReceipt.setHapticClickListener {
+                ReceiptFileUploadBottomSheet
+                    .newInstance()
+                    .show(supportFragmentManager, ReceiptFileUploadBottomSheet.TAG)
+            }
+        }
     }
 
     companion object {

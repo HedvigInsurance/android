@@ -38,7 +38,7 @@ class CategoryAdapter(
         private val text: TextView = view.text
 
         fun bind(data: Category, setActiveCategory: (Category) -> Unit) {
-            text.text = data.category.label
+            text.text = text.resources.getString(data.category.label)
             if (data.selected) {
                 text.setTextColor(text.context.compatColor(R.color.link_purple))
                 text.isActivated = true

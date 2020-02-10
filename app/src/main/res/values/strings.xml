@@ -12,4 +12,7 @@
     <string name="numeric_three" translatable="false">3</string>
     <string name="select_language_title" translatable="false">Pick language</string>
     <string name="select_language_paragraph" translatable="false">You can change this later in settings.</string>
+
+    <!-- TODO: Replace with proper translation -->
+    <string name="receipt_bottom_sheet_title" translatable="false">Choose receipt</string>
 </resources>
