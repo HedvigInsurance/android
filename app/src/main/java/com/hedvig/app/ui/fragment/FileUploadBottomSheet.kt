@@ -9,7 +9,9 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import androidx.annotation.StringRes
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.file_upload_dialog.*
 
 abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
@@ -39,6 +41,17 @@ abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
         }
 
         return dialog
+    }
+
+    protected fun uploadStarted() {
+        dialog?.apply {
+            header.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
+            loadingSpinner.playAnimation()
+            loadingSpinner.show()
+            uploadImageOrVideo.remove()
+            uploadFile.remove()
+            isCancelable = false
+        }
     }
 
     private fun selectImageFromLibrary() {

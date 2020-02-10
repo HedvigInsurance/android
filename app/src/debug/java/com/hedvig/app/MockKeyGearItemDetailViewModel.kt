@@ -7,9 +7,11 @@ import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
+import com.hedvig.app.util.LiveEvent
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
+    override val isUploading = LiveEvent<Boolean>()
 
     override fun loadItem(id: String) {
         Handler().postDelayed({
@@ -24,6 +26,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
 
     override fun uploadReceipt(uri: Uri) {
         val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
+        isUploading.value = true
         Handler().postDelayed({
             data.postValue(
                 KeyGearItemQuery.KeyGearItem(
@@ -43,7 +46,8 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     )
                 )
             )
-        }, 250)
+            isUploading.postValue(false)
+        }, 2000)
     }
 
     companion object {

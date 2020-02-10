@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -61,16 +62,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_quintuple">
 
-                <!-- TODO: Replace with proper icon -->
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/base_margin_triple"
                     android:contentDescription="@null"
-                    tools:layout_height="24dp"
-                    tools:layout_width="24dp"
-                    tools:src="@drawable/ic_fire_green" />
+                    app:srcCompat="@drawable/ic_receipt" />
 
                 <TextView
                     style="@style/Body.Regular"

@@ -7,9 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
-import kotlinx.android.synthetic.main.file_upload_dialog.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class ChatFileUploadBottomSheet : FileUploadBottomSheet() {
@@ -32,12 +29,7 @@ class ChatFileUploadBottomSheet : FileUploadBottomSheet() {
         chatViewModel.isUploading.observe(lifecycleOwner = this) { isUploading ->
             isUploading?.let { iu ->
                 if (iu) {
-                    dialog?.header?.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
-                    dialog?.loadingSpinner?.playAnimation()
-                    dialog?.loadingSpinner?.show()
-                    dialog?.uploadImageOrVideo?.remove()
-                    dialog?.uploadFile?.remove()
-                    isCancelable = false
+                    uploadStarted()
                 }
             }
         }
