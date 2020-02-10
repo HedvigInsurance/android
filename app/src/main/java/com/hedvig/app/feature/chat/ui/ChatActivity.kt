@@ -320,7 +320,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
             },
             showUploadBottomSheetCallback = {
-                UploadBottomSheet().show(supportFragmentManager, "FileUploadOverlay")
+                ChatFileUploadBottomSheet
+                    .newInstance()
+                    .show(
+                        supportFragmentManager,
+                        ChatFileUploadBottomSheet.TAG
+                    )
             },
             dismissCallback = { motionEvent ->
 

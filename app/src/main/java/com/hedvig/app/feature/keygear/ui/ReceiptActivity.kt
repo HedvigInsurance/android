@@ -1,12 +1,13 @@
 package com.hedvig.app.feature.keygear.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
-import android.os.Parcelable
 import androidx.core.content.FileProvider
+import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.target.CustomTarget
@@ -14,7 +15,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.parcel.Parcelize
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_receipt.*
 import timber.log.Timber
 import java.io.File
@@ -25,10 +27,13 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = intent
-        val data = intent.getParcelableExtra<Receipt>("RECEIPT_DATA")
+        root.useEdgeToEdge()
 
-        val fileUrl = data.file.key
+        topBar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
+        }
+
+        val fileUrl = intent.getStringExtra(RECEIPT_URL)
 
         close.setHapticClickListener {
             onBackPressed()
@@ -47,7 +52,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                         resource: Bitmap,
                         transition: Transition<in Bitmap>?
                     ) {
-                        saveImage(resource, "receipt")?.let { filePath ->
+                        saveImage(resource)?.let { filePath ->
 
                             val sendIntent = Intent().apply {
 
@@ -75,20 +80,24 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                         }
                     }
                 })
-
         }
+
+        loadImage(fileUrl)
+    }
+
+    private fun loadImage(fileUrl: String) {
         Glide.with(this)
             .load(fileUrl)
             .transform(CenterCrop())
             .into(receipt)
     }
 
-    private fun saveImage(finalBitmap: Bitmap, image_name: String): String? {
+    private fun saveImage(finalBitmap: Bitmap): String? {
         val root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()
         val myDir = File(root)
         myDir.mkdirs()
 
-        val fName = "Image-$image_name.jpg"
+        val fName = "Image-receipt.jpg"
         val file = File(myDir, fName)
 
         if (file.exists()) file.delete()
@@ -100,28 +109,17 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             out.close()
             file.absolutePath
         } catch (e: Exception) {
-            Timber.e("Error saving image", e)
+            Timber.e(e, "Error saving image")
             null
         }
     }
+
+    companion object {
+        private const val RECEIPT_URL = "RECEIPT_URL"
+
+        fun newInstance(context: Context, receiptUrl: String) =
+            Intent(context, ReceiptActivity::class.java).apply {
+                putExtra(RECEIPT_URL, receiptUrl)
+            }
+    }
 }
-
-@Parcelize
-data class Receipt(
-    val id: String,
-    val file: S3File
-) : Parcelable
-
-@Parcelize
-data class S3File(
-    val bucket: String,
-    val key: String
-) : Parcelable
-
-val mockReceipt = Receipt(
-    "123",
-    S3File(
-        "123",
-        "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
-    )
-)

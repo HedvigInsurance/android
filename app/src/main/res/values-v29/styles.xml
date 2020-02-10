@@ -13,4 +13,9 @@
         <item name="android:navigationBarColor">@color/background_semi_transparent</item>
         <item name="android:statusBarColor">@color/transparent</item>
     </style>
+
+    <style name="Hedvig.Theme.Receipt">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

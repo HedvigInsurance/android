@@ -89,7 +89,8 @@ class KeyGearItemsAdapter(
                         .into(holder.image)
 
                 }
-                holder.category.text = item.fragments.keyGearItemFragment.category.label
+                holder.category.text =
+                    holder.category.resources.getString(item.fragments.keyGearItemFragment.category.label)
             }
         }
     }

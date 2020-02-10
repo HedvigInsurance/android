@@ -5,5 +5,10 @@ fragment KeyGearItemFragment on KeyGearItem {
       preSignedUrl
     }
   }
+  receipts {
+    file {
+      preSignedUrl
+    }
+  }
   category
 }
