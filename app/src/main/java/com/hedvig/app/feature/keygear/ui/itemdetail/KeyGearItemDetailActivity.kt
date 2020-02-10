@@ -80,7 +80,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             toolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
-                    compatColor(R.color.background_elevation_1),
+                    compatColor(R.color.translucent_background),
                     percentage
                 )
             )

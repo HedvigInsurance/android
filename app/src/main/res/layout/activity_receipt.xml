@@ -12,7 +12,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_elevation_1"
+        android:background="@color/background"
         android:elevation="@dimen/top_bar_elevation"
         android:padding="@dimen/base_margin">
 

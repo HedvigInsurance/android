@@ -2,6 +2,7 @@
 <resources>
     <item name="background" type="color">@color/dark_mode</item>
     <item name="background_elevation_1" type="color">@color/dark_mode_elevation_1</item>
+    <item name="translucent_background" type="color">@color/translucent_dark_mode</item>
     <item name="text_emphasized" type="color">@color/off_white</item>
     <item name="text_regular" type="color">@color/semi_light_gray</item>
     <item name="text_negative" type="color">@color/off_black_dark</item>
