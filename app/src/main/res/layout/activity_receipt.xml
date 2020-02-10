@@ -1,68 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.hedvig.app.feature.keygear.ui.ReceiptActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chat_top_bar_height"
+        android:layout_height="wrap_content"
         android:background="@color/background_elevation_1"
         android:elevation="@dimen/top_bar_elevation"
-        android:paddingStart="@dimen/base_margin"
-        android:paddingEnd="@dimen/base_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="@dimen/base_margin">
 
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
             android:padding="@dimen/base_margin"
             android:tint="@color/icon_tint"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_close"
-            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON" />
+            app:srcCompat="@drawable/ic_close" />
 
         <TextView
-            android:layout_marginStart="@dimen/base_margin_triple"
             android:id="@+id/receipt_title"
             style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/close"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/share"
             android:layout_width="@dimen/chat_top_bar_button_size"
             android:layout_height="@dimen/chat_top_bar_button_size"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_SHARE_BUTTON"
             android:padding="@dimen/base_margin_half"
             android:tint="@color/icon_tint"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_share"
-            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_SHARE_BUTTON" />
+            app:srcCompat="@drawable/ic_share" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/receipt"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_weight="1"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null" />
+
+</LinearLayout>

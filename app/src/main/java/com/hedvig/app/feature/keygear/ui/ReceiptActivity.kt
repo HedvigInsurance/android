@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.content.FileProvider
+import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.target.CustomTarget
@@ -14,6 +15,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_receipt.*
 import timber.log.Timber
 import java.io.File
@@ -23,6 +26,12 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        root.useEdgeToEdge()
+
+        topBar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
+        }
 
         val fileUrl = intent.getStringExtra(RECEIPT_URL)
 
@@ -71,8 +80,12 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                         }
                     }
                 })
-
         }
+
+        loadImage(fileUrl)
+    }
+
+    private fun loadImage(fileUrl: String) {
         Glide.with(this)
             .load(fileUrl)
             .transform(CenterCrop())
