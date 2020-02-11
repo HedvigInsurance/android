@@ -17,7 +17,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO Edge to edge
 
         dateInput.setHapticClickListener {
             PurchaseDateYearMonthPicker.newInstance(resources.getString(R.string.KEY_GEAR_YEARMONTH_PICKER_TITLE))
