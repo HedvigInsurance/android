@@ -23,11 +23,7 @@
             android:layout_marginEnd="@dimen/base_margin_double"
             android:background="@null"
             android:inputType="numberDecimal"
-            android:singleLine="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:singleLine="true"/>
 
     </FrameLayout>
 
@@ -38,9 +34,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
-        app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
-        app:layout_constraintStart_toStartOf="@id/datePickLayout"
-        app:layout_constraintTop_toTopOf="@+id/datePickLayout"
         tools:text="Hint"/>
 
 </merge>

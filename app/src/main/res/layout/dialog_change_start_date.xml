@@ -37,7 +37,7 @@
     <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/date_pick_button_height"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         app:dateHintBackground="@color/background_elevation_1"/>
 
