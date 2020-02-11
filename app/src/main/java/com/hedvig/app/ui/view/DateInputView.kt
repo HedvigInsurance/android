@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
@@ -51,8 +52,8 @@ class DateInputView @JvmOverloads constructor(
 
         dateHint.spring(
             SpringAnimation.TRANSLATION_Y,
-            10000.0f,
-            1.0f
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
         ).animateToFinalPosition(-animateDistance)
     }
 
