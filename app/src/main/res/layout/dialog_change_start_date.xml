@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tool="http://schemas.android.com/tools"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
     android:paddingStart="@dimen/base_margin_triple"
@@ -21,36 +22,33 @@
         style="@style/Header.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/DRAGGABLE_STARTDATE_TITLE"
         android:layout_marginTop="@dimen/base_margin_double"
-        />
+        android:text="@string/DRAGGABLE_STARTDATE_TITLE" />
 
     <TextView
         android:id="@+id/info"
         style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION"
         android:layout_marginTop="@dimen/base_margin"
-        />
+        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION" />
 
-    <include
+
+    <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/datePickButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/date_pick_button_height"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_sextuple"
-        layout="@layout/date_pick_layout"
-        />
+        app:dateHintBackground="@color/background_elevation_1"/>
 
     <Button
         android:id="@+id/chooseDateButton"
         style="@style/HedvigButton.Purple"
-        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/CHOOSE_DATE_BTN"
-        />
+        android:text="@string/CHOOSE_DATE_BTN" />
 
     <TextView
         android:id="@+id/autoSetDateText"

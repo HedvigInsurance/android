@@ -14,7 +14,6 @@
         android:layout_gravity="center"
         android:contentDescription="@null"
         tools:src="@drawable/ic_fire_green" />
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
