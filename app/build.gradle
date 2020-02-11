@@ -185,6 +185,9 @@ dependencies {
     implementation "dev.chrisbanes:insetter:0.2.0"
     implementation "dev.chrisbanes:insetter-ktx:0.2.0"
 
+    // markwon
+    implementation "io.noties.markwon:core:4.2.1"
+
     // test
     testImplementation 'junit:junit:4.12'
 
