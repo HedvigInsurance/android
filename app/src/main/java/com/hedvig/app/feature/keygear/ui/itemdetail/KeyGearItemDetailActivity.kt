@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import androidx.core.view.doOnNextLayout
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
@@ -12,20 +13,26 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.ui.ReceiptActivity
+import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
+import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
+import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ValuationBinder
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
+import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
 
     private val model: KeyGearItemDetailViewModel by viewModel()
+
+    private lateinit var photosBinder: PhotosBinder
+    private lateinit var valuationBinder: ValuationBinder
+    private lateinit var receiptBinder: ReceiptBinder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,24 +41,20 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         root.useEdgeToEdge()
         initializeToolbar()
-        initializePhotos(
+
+        photosBinder = PhotosBinder(
+            photosSection as FrameLayout,
             intent.getStringExtra(FIRST_PHOTO_URL),
             intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
-        )
+        ) { supportStartPostponedEnterTransition() }
+        valuationBinder = ValuationBinder(valuationSection as LinearLayout)
+        receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }
         }
         intent.getStringExtra(ID)?.let { id ->
             model.loadItem(id)
-        }
-    }
-
-    private fun initializePhotos(photoUrl: String?, category: KeyGearItemCategory?) {
-        photos.adapter = PhotosAdapter(photoUrl, category)
-        pagerIndicator.pager = photos
-        photos.doOnNextLayout {
-            supportStartPostponedEnterTransition()
         }
     }
 
@@ -69,7 +72,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
             val positionInSpan =
-                scrollY - (photos.height - (toolbar.height * 2.0f))
+                scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
             val percentage = positionInSpan / toolbar.height
 
             // Avoid some unnecessary background color updates
@@ -88,23 +91,9 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        (photos.adapter as? PhotosAdapter)?.photoUrls =
-            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
-
-        data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
-            // TODO: Acquire a text key for this
-            addOrViewReceipt.text = "Show"
-            addOrViewReceipt.setHapticClickListener {
-                startActivity(ReceiptActivity.newInstance(this, receipt.file.preSignedUrl))
-            }
-        } ?: run {
-            addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
-            addOrViewReceipt.setHapticClickListener {
-                ReceiptFileUploadBottomSheet
-                    .newInstance()
-                    .show(supportFragmentManager, ReceiptFileUploadBottomSheet.TAG)
-            }
-        }
+        photosBinder.bind(data)
+        valuationBinder.bind(data)
+        receiptBinder.bind(data)
     }
 
     companion object {
