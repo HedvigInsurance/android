@@ -35,6 +35,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!--TODO customizable hint background-->
     <TextView
         android:id="@+id/dateHint"
         style="@style/Body"
@@ -42,7 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:background="@color/background"
         android:text="@string/DATE_BTN_PLACEHOLDER"
         app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
         app:layout_constraintStart_toStartOf="@id/datePickLayout"

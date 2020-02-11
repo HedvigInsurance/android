@@ -24,4 +24,10 @@
         <attr name="topColor" format="color" />
         <attr name="bottomColor" format="color" />
     </declare-styleable>
+    <declare-styleable name="DateInputView">
+        <attr name="dateHintBackground" format="color" />
+    </declare-styleable>
+    <declare-styleable name="HedvigEditText">
+        <attr name="hintBackground" format="color"/>
+    </declare-styleable>
 </resources>

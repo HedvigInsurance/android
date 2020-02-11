@@ -37,7 +37,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:background="@color/background"
         android:text="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE"
         app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
         app:layout_constraintStart_toStartOf="@id/datePickLayout"

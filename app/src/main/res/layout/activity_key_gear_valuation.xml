@@ -62,7 +62,8 @@
         android:layout_height="@dimen/date_pick_button_height"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple" />
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        app:hintBackground="@color/background" />
 
     <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/dateInput"
@@ -70,7 +71,8 @@
         android:layout_height="@dimen/date_pick_button_height"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple" />
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        app:dateHintBackground="@color/background" />
 
     <Button
         android:id="@+id/continueButton"

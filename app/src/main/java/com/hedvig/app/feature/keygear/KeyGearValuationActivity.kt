@@ -16,7 +16,7 @@ class KeyGearValuationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.hedvig.app.R.layout.activity_key_gear_valuation)
+        setContentView(R.layout.activity_key_gear_valuation)
 
         dateInput.setOnClickListener {
             PurchaseDateYearMonthPicker.newInstance(resources.getString(R.string.KEY_GEAR_YEARMONTH_PICKER_TITLE))

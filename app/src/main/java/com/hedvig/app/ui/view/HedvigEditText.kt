@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.hedvig_edit_text.view.*
@@ -17,6 +18,19 @@ class HedvigEditText  @JvmOverloads constructor(
     attributeSet: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle) {
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.hedvig_edit_text, this, true)
+
+        val typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.HedvigEditText)
+
+        val color = typedArray.getColor(
+            R.styleable.HedvigEditText_hintBackground,
+            context.compatColor(R.color.com_facebook_blue)
+        )
+        setHintBackgroundColor(color)
+        typedArray.recycle()
+    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -30,6 +44,10 @@ class HedvigEditText  @JvmOverloads constructor(
                 animateHint()
             }
         }
+    }
+
+    private fun setHintBackgroundColor(backgroundColorId: Int) {
+        textHint.setBackgroundColor(backgroundColorId)
     }
 
     private fun animateHint() {
@@ -49,9 +67,5 @@ class HedvigEditText  @JvmOverloads constructor(
         this.show()
         this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
         return this.measuredHeight
-    }
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.hedvig_edit_text, this, true)
     }
 }
