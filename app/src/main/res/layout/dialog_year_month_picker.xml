@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
-        android:text="@android:string/cancel"
+        android:text="@string/KEY_GEAR_YEARMONTH_PICKER_NEG_ACTION"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ok" />
@@ -62,7 +62,7 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
         android:layout_marginBottom="@dimen/base_margin_double"
-        android:text="@android:string/ok"
+        android:text="@string/KEY_GEAR_YEARMONTH_PICKER_POS_ACTION"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

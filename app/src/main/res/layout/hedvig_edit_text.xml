@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:id="@+id/datePickLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/base_margin_sextuple"
@@ -13,14 +14,14 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <EditText
-            style="@style/Body.Regular"
             android:id="@+id/textInput"
+            style="@style/Body.Regular"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:background="@null"
-            android:imeOptions="actionDone"
             android:inputType="numberDecimal"
             android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -28,18 +29,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textHint"
-        style="@style/Body"
+        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:text="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE"
         app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
         app:layout_constraintStart_toStartOf="@id/datePickLayout"
-        app:layout_constraintTop_toTopOf="@+id/datePickLayout" />
+        app:layout_constraintTop_toTopOf="@+id/datePickLayout"
+        tools:text="Hint"/>
 
 </merge>

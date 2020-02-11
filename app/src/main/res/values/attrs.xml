@@ -28,6 +28,9 @@
         <attr name="dateHintBackground" format="color" />
     </declare-styleable>
     <declare-styleable name="HedvigEditText">
-        <attr name="hintBackground" format="color"/>
+        <attr name="hintBackground" format="color" />
+        <attr name="android:imeOptions" format="flags" />
+        <attr name="android:inputType" format="flags" />
+        <attr name="hintText" format="string" />
     </declare-styleable>
 </resources>

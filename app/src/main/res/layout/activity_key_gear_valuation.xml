@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/peril_bottom_extra_spacing">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/topBar"
@@ -16,10 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="@dimen/base_margin"
-        android:paddingEnd="@dimen/base_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingEnd="@dimen/base_margin">
 
         <ImageView
             android:id="@+id/close"
@@ -29,21 +25,14 @@
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
             android:padding="@dimen/base_margin"
             android:tint="@color/icon_tint"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_close" />
 
         <TextView
-            android:id="@+id/receipt_title"
             style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
-            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/close"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE" />
     </LinearLayout>
 
     <TextView
@@ -63,7 +52,10 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        app:hintBackground="@color/background" />
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        app:hintBackground="@color/background"
+        app:hintText="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE" />
 
     <com.hedvig.app.ui.view.DateInputView
         android:id="@+id/dateInput"

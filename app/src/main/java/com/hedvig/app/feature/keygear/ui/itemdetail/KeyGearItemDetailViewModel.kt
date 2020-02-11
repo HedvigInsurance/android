@@ -1,4 +1,3 @@
-
 package com.hedvig.app.feature.keygear.ui.itemdetail
 
 import android.net.Uri

@@ -5,15 +5,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.hedvig_edit_text.view.*
 
-
-
-class HedvigEditText  @JvmOverloads constructor(
+class HedvigEditText @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyle: Int = 0
@@ -26,14 +24,17 @@ class HedvigEditText  @JvmOverloads constructor(
 
         val color = typedArray.getColor(
             R.styleable.HedvigEditText_hintBackground,
-            context.compatColor(R.color.com_facebook_blue)
+            context.compatColor(R.color.background)
         )
-        setHintBackgroundColor(color)
-        typedArray.recycle()
-    }
+        val inputType = typedArray.getInt(R.styleable.HedvigEditText_android_inputType, 0)
+        val imeOption = typedArray.getInt(R.styleable.HedvigEditText_android_imeOptions, 0)
+        val hintText = typedArray.getString(R.styleable.HedvigEditText_hintText)
+        textInput.inputType = inputType
+        textInput.imeOptions = imeOption
+        textHint.setBackgroundColor(color)
+        textHint.text = hintText
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
+        typedArray.recycle()
 
         textInput.setOnClickListener {
             animateHint()
@@ -46,10 +47,6 @@ class HedvigEditText  @JvmOverloads constructor(
         }
     }
 
-    private fun setHintBackgroundColor(backgroundColorId: Int) {
-        textHint.setBackgroundColor(backgroundColorId)
-    }
-
     private fun animateHint() {
         val animateDistance =
             getViewHeight()
@@ -58,13 +55,12 @@ class HedvigEditText  @JvmOverloads constructor(
 
         textHint.spring(
             SpringAnimation.TRANSLATION_Y,
-            10000.0f,
-            1.0f
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
         ).animateToFinalPosition(-animateDistance)
     }
 
     private fun getViewHeight(): Int {
-        this.show()
         this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
         return this.measuredHeight
     }
