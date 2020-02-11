@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -27,6 +28,12 @@ class KeyGearItemsAdapter(
     private val openItem: (view: View, item: KeyGearItemsQuery.KeyGearItemsSimple) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
     var items: List<KeyGearItemsQuery.KeyGearItemsSimple> = listOf()
+        set(value) {
+            val callback = KeyGearItemsDiffCallback(field, value)
+            val result = DiffUtil.calculateDiff(callback)
+            field = value
+            result.dispatchUpdatesTo(this)
+        }
 
     override fun getItemViewType(position: Int) = when (position) {
         0 -> NEW_ITEM

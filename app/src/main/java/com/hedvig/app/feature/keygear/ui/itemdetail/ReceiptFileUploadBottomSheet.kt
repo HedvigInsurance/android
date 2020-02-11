@@ -11,8 +11,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class ReceiptFileUploadBottomSheet : FileUploadBottomSheet() {
     private val model: KeyGearItemDetailViewModel by sharedViewModel()
 
-    // TODO: Replace with translation
-    override val title = R.string.receipt_bottom_sheet_title
+    override val title = R.string.KEY_GEAR_RECEIPT_UPLOAD_SHEET_TITLE
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)

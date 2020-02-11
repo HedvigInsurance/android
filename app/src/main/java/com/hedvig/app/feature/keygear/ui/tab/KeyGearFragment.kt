@@ -60,8 +60,17 @@ class KeyGearFragment : BaseTabFragment() {
     fun bind(data: KeyGearItemsQuery.Data) {
         loadingSpinner.remove()
         (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItemsSimple
-        items.adapter?.notifyDataSetChanged()
         items.show()
+
+        if (data.keyGearItemsSimple.isEmpty()) {
+            illustration.show()
+            title.show()
+            description.show()
+        } else {
+            illustration.remove()
+            title.remove()
+            description.remove()
+        }
     }
 
     companion object {
