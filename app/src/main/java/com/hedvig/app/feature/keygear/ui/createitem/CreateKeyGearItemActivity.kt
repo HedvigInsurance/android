@@ -88,7 +88,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
         save.setHapticClickListener {
-            // TODO: This may take time. We need a transitionary state
+            /* TODO: This may take time. We need a transitionary state.
+               We need design for it, though, so we cant implement it right now */
             model.createItem()
         }
 

@@ -1,0 +1,7 @@
+mutation UploadFiles($files: [Upload!]!) {
+  uploadFiles(files: $files) {
+    signedUrl
+    key
+    bucket
+  }
+}

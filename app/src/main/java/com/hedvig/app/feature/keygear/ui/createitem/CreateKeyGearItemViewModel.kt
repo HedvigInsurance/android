@@ -4,8 +4,12 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.type.S3FileInput
+import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class CreateKeyGearItemViewModel : ViewModel() {
@@ -75,10 +79,23 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
     }
 }
 
-class CreateKeyGearItemViewModelImpl : CreateKeyGearItemViewModel() {
+class CreateKeyGearItemViewModelImpl(
+    private val keyGearItemsRepository: KeyGearItemsRepository
+) : CreateKeyGearItemViewModel() {
     override val createResult = MutableLiveData<CreateKeyGearItemMutation.Data>()
 
     override fun createItem() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        viewModelScope.launch {
+            val category = activeCategory ?: return@launch
+            val photos = photos.value?.map { it.uri } ?: return@launch
+            val uploadsResponse =
+                keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
+            val uploads = uploadsResponse.data()?.uploadFiles?.map {
+                S3FileInput.builder().bucket(it.bucket).key(it.key).build()
+            } ?: return@launch
+            val result = keyGearItemsRepository.createKeyGearItemAsync(category, uploads).await()
+
+            createResult.postValue(result.data())
+        }
     }
 }
