@@ -75,6 +75,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private var forceScrollToBottom = true
 
+    private var initialChatPadding = 0
+
     override val preventRecreation = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,6 +99,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             view.updatePadding(
                 top = initialState.paddings.top + insets.systemWindowInsetTop
             )
+            initialChatPadding = initialState.paddings.top + insets.systemWindowInsetTop
         }
 
         messages.doOnApplyWindowInsets { view, insets, initialState ->
@@ -173,7 +176,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
             },
-            tracker = tracker
+            tracker = tracker,
+            chatRecorderView = messages,
+            chatRecorderViewInitialPadding = initialChatPadding
         )
     }
 

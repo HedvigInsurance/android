@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
@@ -33,6 +34,7 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.chat_input_view.view.*
 
 class ChatInputView : FrameLayout {
@@ -45,6 +47,8 @@ class ChatInputView : FrameLayout {
         defStyle
     )
 
+    private var chatRecyclerViewInitialPadding = 0
+    private lateinit var chatRecyclerView: RecyclerView
     private lateinit var tracker: ChatTracker
     private lateinit var sendTextMessage: ((String) -> Unit)
     private lateinit var sendSingleSelect: ((String) -> Unit)
@@ -120,7 +124,9 @@ class ChatInputView : FrameLayout {
         requestAudioPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
         tracker: ChatTracker,
-        openSendGif: () -> Unit
+        openSendGif: () -> Unit,
+        chatRecorderView: RecyclerView,
+        chatRecorderViewInitialPadding: Int
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -129,6 +135,8 @@ class ChatInputView : FrameLayout {
         audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.tracker = tracker
         this.openSendGif = openSendGif
+        this.chatRecyclerView = chatRecorderView
+        this.chatRecyclerViewInitialPadding = chatRecorderViewInitialPadding
     }
 
     fun clearInput() {
@@ -245,12 +253,14 @@ class ChatInputView : FrameLayout {
             }
 
         }
-
         singleSelectContainer.addView(singleSelectButton)
+
+        chatRecyclerView.updatePadding(bottom = chatRecyclerView.paddingBottom + this.measureTextInput())
     }
 
     private fun disableSingleButtons() {
         singleSelectContainer.children.forEach { it.isEnabled = false }
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
     }
 
     private fun bindParagraphInput() {
