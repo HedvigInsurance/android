@@ -10,8 +10,6 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
-import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -37,8 +35,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.showRestartDialog
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -83,27 +79,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
-        chatRoot.setEdgeToEdgeSystemUiFlags(true)
-
-        input.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-            )
-        }
-
-        frameLayout.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                top = initialState.paddings.top + insets.systemWindowInsetTop
-            )
-        }
-
-        messages.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                top = initialState.paddings.top + getViewHeight(frameLayout),
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
-            )
-        }
-
         initializeToolbarButtons()
         initializeMessages()
         initializeInput()
@@ -120,14 +95,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     override fun onPause() {
         storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
         super.onPause()
-    }
-
-    private fun getViewHeight(view: View): Int {
-        view.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        return view.measuredHeight
     }
 
     private fun initializeInput() {
