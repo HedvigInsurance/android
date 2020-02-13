@@ -11,6 +11,7 @@ import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import android.view.View
+import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,6 +84,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         chatRoot.setEdgeToEdgeSystemUiFlags(true)
 
         input.doOnApplyWindowInsets { view, insets, initialState ->
