@@ -48,7 +48,7 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .read(keyGearItemQuery)
                 .execute()
-        
+
 
         cachedData.keyGearItem?.let { keyGearItem ->
             val newData = cachedData
