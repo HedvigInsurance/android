@@ -1,10 +1,9 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail
 
-import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.graphql.UpdateTimeOfPurchaseForKeyGearItemMutation
+import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.app.ApolloClientWrapper
 import io.reactivex.Observable
 
@@ -22,17 +21,17 @@ class KeyGearValuationRepository(
             .from(apolloClientWrapper.apolloClient.query(keyGearItemQuery).watcher())
     }
 
-    fun updateTimeOfPurchase(id: String, date: Input<Any>) = Rx2Apollo
-        .from(
-            apolloClientWrapper.apolloClient.mutate(
-                UpdateTimeOfPurchaseForKeyGearItemMutation(
-                    id,
-                    date
-                )
-            )
-        )
+    // fun updateTimeOfPurchase(id: String, date: Input<Any>) = Rx2Apollo
+    //     .from(
+    //         apolloClientWrapper.apolloClient.mutate(
+    //             UpdateTimeOfPurchaseForKeyGearItemMutation(
+    //                 id,
+    //                 date
+    //             )
+    //         )
+    //     )
 
-    fun writeTimeOfPurchaseToCache(data: UpdateTimeOfPurchaseForKeyGearItemMutation.Data) {
+    fun writeTimeOfPurchaseToCache(data: UpdateKeyGearPriceAndDateMutation.Data) {
         val cachedData = apolloClientWrapper
             .apolloClient
             .apolloStore()
@@ -40,6 +39,5 @@ class KeyGearValuationRepository(
             .execute()
 
         val newDate = data.updateTimeOfPurchaseForKeyGearItem.timeOfPurchase
-
     }
 }

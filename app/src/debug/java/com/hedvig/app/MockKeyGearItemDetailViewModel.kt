@@ -8,12 +8,12 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.LiveEvent
+import org.threeten.bp.YearMonth
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
-
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
-    override val isUploading = LiveEvent<Boolean>()
 
+    override val isUploading = LiveEvent<Boolean>()
     override fun loadItem(id: String) {
         Handler().postDelayed({
             data.postValue(
@@ -51,6 +51,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
         }, 2000)
     }
 
+    override fun updatePurchaseDate(yearMonth: YearMonth) {
+    }
+
     companion object {
         val items = hashMapOf(
             "123" to
@@ -67,7 +70,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
-                    KeyGearItemCategory.PHONE
+                    KeyGearItemCategory.PHONE,
+                    null,
+                    null
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -83,7 +88,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
-                    KeyGearItemCategory.COMPUTER
+                    KeyGearItemCategory.COMPUTER,
+                    null,
+                    null
                 )
         )
     }

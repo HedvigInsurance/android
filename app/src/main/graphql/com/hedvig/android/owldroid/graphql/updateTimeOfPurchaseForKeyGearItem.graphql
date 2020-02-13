@@ -1,6 +1,0 @@
-mutation UpdateTimeOfPurchaseForKeyGearItem($id: ID!, $newTimeOfPurchase: YearMonth){
-  updateTimeOfPurchaseForKeyGearItem(id: $id, newTimeOfPurchase: $newTimeOfPurchase){
-    id
-    timeOfPurchase
-  }
-}

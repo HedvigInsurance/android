@@ -168,8 +168,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
-    viewModel { KeyGearItemDetailViewModelImpl() }
-    viewModel { KeyGearValuationViewModelImpl() }
+    viewModel { KeyGearValuationViewModelImpl(get()) }
 
 }
 
@@ -187,7 +186,7 @@ val directDebitModule = module {
 
 val keyGearModule = module {
     viewModel<KeyGearViewModel> { KeyGearViewModelImpl() }
-    viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl() }
+    viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl() }
 }
 

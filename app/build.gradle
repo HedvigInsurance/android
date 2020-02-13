@@ -114,8 +114,9 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
     // Android lifecycle
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 
     // WorkManager
     def workmanager_version = "2.2.0"
@@ -131,7 +132,9 @@ dependencies {
     implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
     implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
     implementation "com.apollographql.apollo:apollo-rx2-support:$apollo_version"
+    implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
     androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
+
 
     // Firebase
     implementation 'com.google.android.gms:play-services-base:17.1.0'

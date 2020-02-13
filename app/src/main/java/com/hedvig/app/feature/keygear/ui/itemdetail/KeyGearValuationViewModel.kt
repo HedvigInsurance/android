@@ -2,9 +2,10 @@ package com.hedvig.app.feature.keygear.ui.itemdetail
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import org.threeten.bp.YearMonth
 
-abstract class KeyGearValuationViewModel: ViewModel() {
+abstract class KeyGearValuationViewModel : ViewModel() {
     val purchaseDate = MutableLiveData<YearMonth>()
 
     fun choosePurchaseDate(yearMonth: YearMonth) {
@@ -14,8 +15,8 @@ abstract class KeyGearValuationViewModel: ViewModel() {
     abstract fun submit()
 }
 
-class KeyGearValuationViewModelImpl : KeyGearValuationViewModel() {
+class KeyGearValuationViewModelImpl(keyGearItemsRepository: KeyGearItemsRepository) :
+    KeyGearValuationViewModel() {
     override fun submit() {
-        TODO("implement some network calls") //To change body of created functions use File | Settings | File Templates.
     }
 }

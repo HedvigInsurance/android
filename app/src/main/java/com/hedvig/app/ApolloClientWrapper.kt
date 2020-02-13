@@ -8,19 +8,25 @@ import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
+import com.hedvig.app.util.apollo.YearMonthAdapter
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import okhttp3.OkHttpClient
 
-class ApolloClientWrapper(val okHttpClient: OkHttpClient,
-                          val context: Context,
-                          val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>) {
+class ApolloClientWrapper(
+    val okHttpClient: OkHttpClient,
+    val context: Context,
+    val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
+) {
 
     val apolloClient: ApolloClient
         get() {
             return nullableApolloClient
-                ?: createNewApolloClientInstance(okHttpClient, context.getAuthenticationToken(), normalizedCacheFactory)
+                ?: createNewApolloClientInstance(
+                    okHttpClient,
+                    context.getAuthenticationToken(),
+                    normalizedCacheFactory
+                )
         }
-
 
     private var nullableApolloClient: ApolloClient? = null
 
@@ -29,14 +35,17 @@ class ApolloClientWrapper(val okHttpClient: OkHttpClient,
         nullableApolloClient = null
     }
 
-    private fun createNewApolloClientInstance(okHttpClient: OkHttpClient,
-                                              authToken: String?,
-                                              normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>): ApolloClient {
+    private fun createNewApolloClientInstance(
+        okHttpClient: OkHttpClient,
+        authToken: String?,
+        normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
+    ): ApolloClient {
         val builder = ApolloClient
             .builder()
             .serverUrl(BuildConfig.GRAPHQL_URL)
             .okHttpClient(okHttpClient)
             .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
+            .addCustomTypeAdapter(CustomType.YEARMONTH, YearMonthAdapter())
             .subscriptionConnectionParams(mapOf("Authorization" to authToken))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
