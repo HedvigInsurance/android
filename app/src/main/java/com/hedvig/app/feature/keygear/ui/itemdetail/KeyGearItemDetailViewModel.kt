@@ -19,7 +19,11 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
 
     abstract fun loadItem(id: String)
     abstract fun uploadReceipt(uri: Uri)
-    abstract fun updatePurchaseDate(id: String, yearMonth: YearMonth, price: MonetaryAmountV2Input)
+    abstract fun updatePurchaseDateAndPrice(
+        id: String,
+        yearMonth: YearMonth,
+        price: MonetaryAmountV2Input
+    )
 }
 
 class KeyGearItemDetailViewModelImpl(private val repository: KeyGearItemsRepository) :
@@ -28,7 +32,7 @@ class KeyGearItemDetailViewModelImpl(private val repository: KeyGearItemsReposit
 
     override val isUploading = LiveEvent<Boolean>()
 
-    override fun updatePurchaseDate(
+    override fun updatePurchaseDateAndPrice(
         id: String,
         yearMonth: YearMonth,
         price: MonetaryAmountV2Input

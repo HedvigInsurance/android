@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.LiveEvent
 import org.threeten.bp.YearMonth
@@ -14,6 +15,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override val isUploading = LiveEvent<Boolean>()
+
     override fun loadItem(id: String) {
         Handler().postDelayed({
             data.postValue(
@@ -51,7 +53,12 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
         }, 2000)
     }
 
-    override fun updatePurchaseDate(yearMonth: YearMonth) {
+    override fun updatePurchaseDateAndPrice(
+        id: String,
+        yearMonth: YearMonth,
+        price: MonetaryAmountV2Input
+    ) {
+        TODO()
     }
 
     companion object {

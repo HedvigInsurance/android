@@ -54,6 +54,8 @@ class HedvigEditText @JvmOverloads constructor(
         }
     }
 
+    fun getText() = textInput.text.toString()
+
     private fun animateHint() {
         val animateDistance =
             (getViewHeight() - BASE_MARGIN) / 2f
