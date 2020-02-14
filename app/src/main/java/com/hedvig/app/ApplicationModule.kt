@@ -186,7 +186,7 @@ val directDebitModule = module {
 }
 
 val keyGearModule = module {
-    viewModel<KeyGearViewModel> { KeyGearViewModelImpl() }
+    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get()) }
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl() }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
 }

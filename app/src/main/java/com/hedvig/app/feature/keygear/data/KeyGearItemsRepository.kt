@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.toChannel
 import com.apollographql.apollo.coroutines.toDeferred
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
@@ -23,12 +23,12 @@ class KeyGearItemsRepository(
     private val fileService: FileService,
     private val context: Context
 ) {
-    fun keyGearItems() = Rx2Apollo.from(
+    fun keyGearItems() =
         apolloClientWrapper
             .apolloClient
             .query(KeyGearItemsQuery())
             .watcher()
-    )
+            .toChannel()
 
     fun uploadPhotosForNewKeyGearItemAsync(photos: List<Uri>): Deferred<Response<UploadFilesMutation.Data>> {
         val files = photos.map { photo ->
