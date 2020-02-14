@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.keygear
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
@@ -27,6 +29,7 @@ class KeyGearValuationActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val id = intent.getStringExtra(ITEM_ID)
         var date: YearMonth? = null
 
         continueButton.isEnabled = false
@@ -47,7 +50,7 @@ class KeyGearValuationActivity :
             date?.let { date ->
                 val monetaryValue =
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
-                itemModel.updatePurchaseDateAndPrice("123", date, monetaryValue)
+                itemModel.updatePurchaseDateAndPrice(id, date, monetaryValue)
                 onBackPressed()
             }
         }
@@ -77,5 +80,15 @@ class KeyGearValuationActivity :
             continueButton.backgroundTintList =
                 ColorStateList.valueOf(this.compatColor(R.color.semi_light_gray))
         }
+    }
+
+    companion object {
+
+        private const val ITEM_ID = "ITEM_ID"
+
+        fun newInstance(context: Context, id: String) =
+            Intent(context, KeyGearValuationActivity::class.java).apply {
+                putExtra(ITEM_ID, id)
+            }
     }
 }
