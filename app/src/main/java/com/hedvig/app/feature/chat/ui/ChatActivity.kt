@@ -99,7 +99,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             view.updatePadding(
                 top = initialState.paddings.top + insets.systemWindowInsetTop
             )
-            initialChatPadding = initialState.paddings.top + insets.systemWindowInsetTop
         }
 
         messages.doOnApplyWindowInsets { view, insets, initialState ->
@@ -107,11 +106,13 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 top = initialState.paddings.top + getViewHeight(frameLayout),
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
             )
+            initialChatPadding =
+                initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput() + 50
+            initializeInput()
         }
 
         initializeToolbarButtons()
         initializeMessages()
-        initializeInput()
         initializeKeyboardVisibilityHandler()
         observeData()
     }

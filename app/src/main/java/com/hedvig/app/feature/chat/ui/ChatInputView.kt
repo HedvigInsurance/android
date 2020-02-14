@@ -255,7 +255,8 @@ class ChatInputView : FrameLayout {
         }
         singleSelectContainer.addView(singleSelectButton)
 
-        chatRecyclerView.updatePadding(bottom = chatRecyclerView.paddingBottom + this.measureTextInput())
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + this.measureTextInput())
     }
 
     private fun disableSingleButtons() {
