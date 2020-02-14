@@ -67,4 +67,3 @@ class CategoryDiffCallback(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
         old[oldItemPosition] == new[newItemPosition]
 }
-

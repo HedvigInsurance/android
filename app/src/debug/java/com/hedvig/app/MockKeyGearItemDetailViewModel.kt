@@ -10,6 +10,7 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.LiveEvent
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
+
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
     override val isUploading = LiveEvent<Boolean>()
 

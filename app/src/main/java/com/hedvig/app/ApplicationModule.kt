@@ -29,6 +29,7 @@ import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageRepository
@@ -167,6 +168,9 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+    viewModel { KeyGearItemDetailViewModelImpl() }
+    viewModel { KeyGearValuationViewModelImpl() }
+
 }
 
 val offerModule = module {
@@ -182,9 +186,9 @@ val directDebitModule = module {
 }
 
 val keyGearModule = module {
-    viewModel<KeyGearViewModel> { KeyGearViewModelImpl() }
+    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get()) }
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl() }
-    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl() }
+    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
 }
 
 val serviceModule = module {
@@ -207,7 +211,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
-    single { KeyGearItemsRepository(get()) }
+    single { KeyGearItemsRepository(get(), get(), get()) }
 }
 
 val trackerModule = module {
