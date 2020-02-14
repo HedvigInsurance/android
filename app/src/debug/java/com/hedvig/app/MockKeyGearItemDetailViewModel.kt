@@ -58,7 +58,24 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
         yearMonth: YearMonth,
         price: MonetaryAmountV2Input
     ) {
-        TODO()
+        val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
+        Handler().postDelayed({
+            data.postValue(
+                KeyGearItemQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemQuery.KeyGearItem.Fragments(
+                        items[id]!!.toBuilder().timeOfPurchase(YearMonth.now())
+                            .purchasePrice(
+                                KeyGearItemFragment.PurchasePrice(
+                                    "MonetaryAmountV2",
+                                    "123"
+                                )
+                            )
+                            .build()
+                    )
+                )
+            )
+        }, 2000)
     }
 
     companion object {
