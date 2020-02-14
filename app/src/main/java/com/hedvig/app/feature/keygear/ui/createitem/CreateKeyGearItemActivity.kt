@@ -132,7 +132,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
         ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
             interpolator = AccelerateDecelerateInterpolator()
-            duration = 200
+            duration = SAVE_BUTTON_TRANSITION_DURATION
             addUpdateListener { va ->
                 saveContainer.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     width = va.animatedValue as Int
@@ -303,6 +303,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
 
         private val BUTTON_CORNER_RADIUS = 112.dp.toFloat()
+
+        private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 
         fun newInstance(context: Context) = Intent(context, CreateKeyGearItemActivity::class.java)
     }
