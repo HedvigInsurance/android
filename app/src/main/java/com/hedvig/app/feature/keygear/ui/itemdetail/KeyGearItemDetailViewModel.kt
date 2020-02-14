@@ -17,9 +17,6 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
 
     abstract val isUploading: LiveEvent<Boolean>
 
-    val purchaseDate = MutableLiveData<YearMonth>()
-
-    abstract fun choosePurchaseDate(yearMonth: YearMonth)
     abstract fun loadItem(id: String)
     abstract fun uploadReceipt(uri: Uri)
     abstract fun updatePurchaseDateAndPrice(
@@ -34,10 +31,6 @@ class KeyGearItemDetailViewModelImpl(private val repository: KeyGearItemsReposit
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override val isUploading = LiveEvent<Boolean>()
-
-    override fun choosePurchaseDate(yearMonth: YearMonth) {
-        purchaseDate.value = yearMonth
-    }
 
     override fun updatePurchaseDateAndPrice(
         id: String,

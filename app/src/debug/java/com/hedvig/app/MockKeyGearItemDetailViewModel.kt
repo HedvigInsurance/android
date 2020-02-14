@@ -27,10 +27,6 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
         }, 250)
     }
 
-    override fun choosePurchaseDate(yearMonth: YearMonth) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun uploadReceipt(uri: Uri) {
         val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
         isUploading.value = true
