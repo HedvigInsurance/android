@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
@@ -23,8 +22,7 @@ import java.text.DateFormatSymbols
 class KeyGearValuationActivity :
     BaseActivity(R.layout.activity_key_gear_valuation) {
 
-    private val itemModel: KeyGearItemDetailViewModel by viewModel()
-    private val valuationModel: KeyGearValuationViewModelImpl by viewModel()
+    private val model: KeyGearItemDetailViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +48,9 @@ class KeyGearValuationActivity :
             date?.let { date ->
                 val monetaryValue =
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
-                itemModel.updatePurchaseDateAndPrice(id, date, monetaryValue)
+                id?.let {
+                    model.updatePurchaseDateAndPrice(id, date, monetaryValue)
+                }
                 onBackPressed()
             }
         }
@@ -59,7 +59,7 @@ class KeyGearValuationActivity :
             setButtonState(text.isNotEmpty(), date != null)
         }
 
-        valuationModel.purchaseDate.observe(this) { yearMonth ->
+        model.purchaseDate.observe(this) { yearMonth ->
             setButtonState(priceInput.getText().isNotEmpty(), yearMonth != null)
             yearMonth?.let {
                 date = yearMonth
