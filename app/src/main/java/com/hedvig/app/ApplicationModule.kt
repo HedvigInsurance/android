@@ -188,7 +188,7 @@ val directDebitModule = module {
 val keyGearModule = module {
     viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get()) }
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl() }
-    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl() }
+    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
 }
 
 val serviceModule = module {
@@ -211,7 +211,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
-    single { KeyGearItemsRepository(get()) }
+    single { KeyGearItemsRepository(get(), get(), get()) }
 }
 
 val trackerModule = module {
