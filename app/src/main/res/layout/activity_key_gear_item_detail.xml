@@ -20,19 +20,33 @@
                 android:id="@+id/photosSection"
                 layout="@layout/key_gear_item_detail_photos_section" />
 
-            <include
-                android:id="@+id/valuationSection"
-                layout="@layout/key_gear_item_detail_valuation_section" />
-
-            <View
+            <LinearLayout
+                android:id="@+id/postPhotosSections"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/horizontal_line_height"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@color/separator" />
+                android:layout_height="wrap_content"
+                android:alpha="0"
+                android:orientation="vertical"
+                android:translationY="50dp"
+                android:visibility="gone"
+                tools:alpha="1"
+                tools:translationY="0dp"
+                tools:visibility="visible">
 
-            <include
-                android:id="@+id/receiptSection"
-                layout="@layout/key_gear_item_detail_receipt_section" />
+                <include
+                    android:id="@+id/valuationSection"
+                    layout="@layout/key_gear_item_detail_valuation_section" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/receiptSection"
+                    layout="@layout/key_gear_item_detail_receipt_section" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

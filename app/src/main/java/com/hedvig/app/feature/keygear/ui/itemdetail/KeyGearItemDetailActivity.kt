@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
@@ -17,10 +18,13 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ValuationBinder
 import com.hedvig.app.util.boundedColorLerp
+import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
@@ -33,6 +37,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private lateinit var photosBinder: PhotosBinder
     private lateinit var valuationBinder: ValuationBinder
     private lateinit var receiptBinder: ReceiptBinder
+
+    private var isFirstLoad = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +100,24 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         photosBinder.bind(data)
         valuationBinder.bind(data)
         receiptBinder.bind(data)
+
+        if (isFirstLoad) {
+            revealWithAnimation()
+            isFirstLoad = false
+        }
+    }
+
+    private fun revealWithAnimation() {
+        postPhotosSections.show()
+        val initialTranslation = postPhotosSections.translationY
+
+        postPhotosSections
+            .spring(SpringAnimation.TRANSLATION_Y)
+            .addUpdateListener { _, value, _ ->
+                val progress = boundedProgress(initialTranslation, 0f, value)
+                postPhotosSections.alpha = progress
+            }
+            .animateToFinalPosition(0f)
     }
 
     companion object {
