@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
@@ -9,33 +10,35 @@ class MockCreateKeyGearItemViewModel : CreateKeyGearItemViewModel() {
     override val createResult = MutableLiveData<CreateKeyGearItemMutation.Data>()
 
     override fun createItem() {
-        when (activeCategory) {
-            KeyGearItemCategory.PHONE -> {
-                createResult.postValue(
-                    CreateKeyGearItemMutation.Data(
-                        CreateKeyGearItemMutation.CreateKeyGearItem(
-                            "KeyGearItem",
-                            CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
-                                MockKeyGearItemDetailViewModel.items["123"]!!
+        Handler().postDelayed({
+            when (activeCategory) {
+                KeyGearItemCategory.PHONE -> {
+                    createResult.postValue(
+                        CreateKeyGearItemMutation.Data(
+                            CreateKeyGearItemMutation.CreateKeyGearItem(
+                                "KeyGearItem",
+                                CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
+                                    MockKeyGearItemDetailViewModel.items["123"]!!
+                                )
                             )
                         )
                     )
-                )
-            }
-            KeyGearItemCategory.COMPUTER -> {
-                createResult.postValue(
-                    CreateKeyGearItemMutation.Data(
-                        CreateKeyGearItemMutation.CreateKeyGearItem(
-                            "KeyGearItem",
-                            CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
-                                MockKeyGearItemDetailViewModel.items["234"]!!
+                }
+                KeyGearItemCategory.COMPUTER -> {
+                    createResult.postValue(
+                        CreateKeyGearItemMutation.Data(
+                            CreateKeyGearItemMutation.CreateKeyGearItem(
+                                "KeyGearItem",
+                                CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
+                                    MockKeyGearItemDetailViewModel.items["234"]!!
+                                )
                             )
                         )
                     )
-                )
+                }
+                else -> {
+                }
             }
-            else -> {
-            }
-        }
+        }, 3000)
     }
 }

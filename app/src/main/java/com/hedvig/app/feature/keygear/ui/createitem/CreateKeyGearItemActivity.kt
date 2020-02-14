@@ -1,9 +1,13 @@
 package com.hedvig.app.feature.keygear.ui.createitem
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -11,9 +15,11 @@ import android.provider.MediaStore
 import android.view.Gravity
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
@@ -25,8 +31,10 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
+import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
@@ -50,6 +58,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     private lateinit var tempPhotoPath: String
     private var dirty = false
     private var isShowingPostCreateAnimation = false
+    private var isUploading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,8 +97,11 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
         save.setHapticClickListener {
-            /* TODO: This may take time. We need a transitionary state.
-               We need design for it, though, so we cant implement it right now */
+            if (isUploading) {
+                return@setHapticClickListener
+            }
+            isUploading = true
+            transitionToUploading()
             model.createItem()
         }
 
@@ -110,6 +122,32 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
     }
 
+    private fun transitionToUploading() {
+        loadingIndicator.show()
+        loadingIndicator.alpha = 0f
+        val startCornerRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ((saveContainer.background as RippleDrawable).getDrawable(0) as GradientDrawable).cornerRadius
+        } else {
+            BUTTON_CORNER_RADIUS
+        }
+        ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
+            interpolator = AccelerateDecelerateInterpolator()
+            duration = SAVE_BUTTON_TRANSITION_DURATION
+            addUpdateListener { va ->
+                saveContainer.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                    width = va.animatedValue as Int
+                }
+                save.alpha = 1 - va.animatedFraction
+                loadingIndicator.alpha = va.animatedFraction
+                val backgroundShape =
+                    ((saveContainer.background as? RippleDrawable)?.getDrawable(0) as? GradientDrawable)?.mutate() as? GradientDrawable
+                backgroundShape?.cornerRadius =
+                    boundedLerp(startCornerRadius, saveContainer.height / 2f, va.animatedFraction)
+            }
+            start()
+        }
+    }
+
     private fun bind(data: List<Photo>) {
         (photos.adapter as? PhotosAdapter)?.photos = data
         photos.scrollToPosition(data.size - 1)
@@ -119,8 +157,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         (categories.adapter as? CategoryAdapter)?.categories = data
 
         if (data.any { c -> c.selected }) {
-            save.show()
-            save
+            saveContainer.show()
+            saveContainer
                 .spring(SpringAnimation.TRANSLATION_Y)
                 .animateToFinalPosition(0f)
         }
@@ -133,8 +171,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         val finalRadius = max(root.width, root.height).toFloat() * 1.1f
         ViewAnimationUtils.createCircularReveal(
             postCreate,
-            save.centerX,
-            save.centerY,
+            saveContainer.centerX,
+            saveContainer.centerY,
             0f,
             finalRadius
         ).apply {
@@ -263,6 +301,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         private const val POST_CREATE_REVEAL_DURATION = 400L
         private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
+
+        private val BUTTON_CORNER_RADIUS = 112.dp.toFloat()
+
+        private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 
         fun newInstance(context: Context) = Intent(context, CreateKeyGearItemActivity::class.java)
     }
