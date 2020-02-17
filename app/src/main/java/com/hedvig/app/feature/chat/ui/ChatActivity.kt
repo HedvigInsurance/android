@@ -106,9 +106,10 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 top = initialState.paddings.top + getViewHeight(frameLayout),
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
             )
-            //TODO change from "+ 50"
+            
+            val extraPadding = 50
             initialChatPadding =
-                initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput() + 50
+                initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput() + extraPadding
             initializeInput()
         }
 
