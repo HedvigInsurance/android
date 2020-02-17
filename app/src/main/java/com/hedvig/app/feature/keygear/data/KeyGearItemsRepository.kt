@@ -7,11 +7,14 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.toChannel
 import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
+import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
+import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
@@ -22,7 +25,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.YearMonth
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -106,4 +109,56 @@ class KeyGearItemsRepository(
                 files
             )
         ).toDeferred()
+
+    suspend fun uploadReceipt(itemId: String, file: Uri) {
+        val mimeType = fileService.getMimeType(file)
+        val uploadFile = File(
+            context.cacheDir,
+            fileService.getFileName(file)
+                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(file.toString())}"
+        )
+        context.contentResolver.openInputStream(file)?.into(uploadFile)
+        val uploadResult = apolloClientWrapper
+            .apolloClient
+            .mutate(UploadFileMutation(FileUpload(mimeType, uploadFile)))
+            .toDeferred()
+            .await()
+
+        val uploadData = uploadResult.data() ?: return
+
+        val s3file = S3FileInput.builder()
+            .bucket(uploadData.uploadFile.bucket)
+            .key(uploadData.uploadFile.key)
+            .build()
+
+        val addReceiptResult = apolloClientWrapper
+            .apolloClient
+            .mutate(AddReceiptToKeyGearItemMutation(AddReceiptToKeyGearItemInput.builder().itemId(itemId).file(s3file).build()))
+            .toDeferred()
+            .await()
+
+        val addReceiptData = addReceiptResult.data() ?: return
+
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(keyGearItemQuery)
+            .execute()
+
+        cachedData?.keyGearItem?.let { keyGearItem ->
+            val newData = cachedData
+                .toBuilder()
+                .keyGearItem(
+                    keyGearItem
+                        .toBuilder()
+                        .fragments(KeyGearItemQuery.KeyGearItem.Fragments(addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment))
+                        .build()).build()
+
+            apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .writeAndPublish(keyGearItemQuery, newData)
+                .execute()
+        }
+    }
 }
