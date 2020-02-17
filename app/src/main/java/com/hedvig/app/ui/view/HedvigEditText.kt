@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -12,6 +11,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.hedvig_edit_text.view.*
 
@@ -57,7 +57,11 @@ class HedvigEditText @JvmOverloads constructor(
 
     fun getText() = textInput.text.toString()
 
-    fun getEditText(): EditText = textInput
+    fun setOnChangeListener(action: () -> Unit) {
+        textInput.onChange {
+            action()
+        }
+    }
 
     private fun animateHint() {
         val animateDistance =

@@ -9,7 +9,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
@@ -51,7 +50,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             }
         }
 
-        priceInput.getEditText().onChange { text ->
+        priceInput.setOnChangeListener {
+            val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
         }
 
