@@ -36,7 +36,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         initializeToolbar()
         initializePhotos(
             intent.getStringExtra(FIRST_PHOTO_URL),
-            intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
+            intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         )
 
         model.data.observe(this) { data ->
@@ -47,11 +47,20 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         }
     }
 
-    private fun initializePhotos(photoUrl: String?, category: KeyGearItemCategory?) {
-        photos.adapter = PhotosAdapter(photoUrl, category)
+    private fun initializePhotos(photoUrl: String?, category: KeyGearItemCategory) {
+        var firstPhotoDidLoad = false
+        photos.adapter = PhotosAdapter(photoUrl, category) {
+            if (!firstPhotoDidLoad && photoUrl != null) {
+                firstPhotoDidLoad = true
+                supportStartPostponedEnterTransition()
+            }
+        }
         pagerIndicator.pager = photos
         photos.doOnNextLayout {
-            supportStartPostponedEnterTransition()
+            if (photoUrl == null) {
+                firstPhotoDidLoad = true
+                supportStartPostponedEnterTransition()
+            }
         }
     }
 
@@ -88,8 +97,11 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        (photos.adapter as? PhotosAdapter)?.photoUrls =
-            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
+        val newPhotos: MutableList<String?> = data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
+        if (newPhotos.isEmpty()) {
+            newPhotos.add(intent.getStringExtra(FIRST_PHOTO_URL))
+        }
+        (photos.adapter as? PhotosAdapter)?.photoUrls = newPhotos
 
         data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
             addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)

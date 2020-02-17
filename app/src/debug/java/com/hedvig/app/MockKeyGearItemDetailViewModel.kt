@@ -84,6 +84,14 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     ),
                     listOf(),
                     KeyGearItemCategory.COMPUTER
+                ),
+            "345" to
+                KeyGearItemFragment(
+                    "KeyGearItem",
+                    "345",
+                    listOf(),
+                    listOf(),
+                    KeyGearItemCategory.JEWELRY
                 )
         )
     }

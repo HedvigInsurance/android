@@ -52,6 +52,19 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 KeyGearItemCategory.COMPUTER
                             )
                         )
+                    ),
+
+                    KeyGearItemsQuery.KeyGearItemsSimple(
+                        "KeyGearItem",
+                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                            KeyGearItemFragment(
+                                "KeyGearItem",
+                                "345",
+                                listOf(),
+                                listOf(),
+                                KeyGearItemCategory.JEWELRY
+                            )
+                        )
                     )
                 )
             )
