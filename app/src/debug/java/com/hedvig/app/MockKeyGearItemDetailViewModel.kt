@@ -6,10 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.LiveEvent
-import org.threeten.bp.YearMonth
 
 class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
@@ -50,31 +48,6 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 )
             )
             isUploading.postValue(false)
-        }, 2000)
-    }
-
-    override fun updatePurchaseDateAndPrice(
-        id: String,
-        yearMonth: YearMonth,
-        price: MonetaryAmountV2Input
-    ) {
-        val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
-        Handler().postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    "KeyGearItem",
-                    KeyGearItemQuery.KeyGearItem.Fragments(
-                        items[id]!!.toBuilder().timeOfPurchase(YearMonth.now())
-                            .purchasePrice(
-                                KeyGearItemFragment.PurchasePrice(
-                                    "MonetaryAmountV2",
-                                    "123"
-                                )
-                            )
-                            .build()
-                    )
-                )
-            )
         }, 2000)
     }
 

@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -14,21 +13,19 @@ import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.YearMonth
-import timber.log.Timber
 import java.text.DateFormatSymbols
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
 
-    private val model: KeyGearItemDetailViewModel by viewModel()
-    private val valuationModel: KeyGearValuationViewModel by viewModel()
+    private val model: KeyGearValuationViewModel by viewModel()
+
+    private var date: YearMonth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         val id = intent.getStringExtra(ITEM_ID)
-        var date: YearMonth? = null
-
-        continueButton.isEnabled = false
 
         dateInput.setHapticClickListener {
             PurchaseDateYearMonthPicker.newInstance(resources.getString(R.string.KEY_GEAR_YEARMONTH_PICKER_TITLE))
@@ -46,6 +43,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 val monetaryValue =
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
+                //TODO
                 onBackPressed()
             }
         }
@@ -55,13 +53,12 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             setButtonState(text.isNotEmpty(), date != null)
         }
 
-        valuationModel.purchaseDate.observe(this) { yearMonth ->
+        model.purchaseDate.observe(this) { yearMonth ->
             setButtonState(priceInput.getText().isNotEmpty(), yearMonth != null)
             yearMonth?.let {
                 date = yearMonth
                 dateInput.text =
                     "${DateFormatSymbols().months[yearMonth.month.value - 1]} ${yearMonth.year}"
-                Timber.d(yearMonth.toString())
             }
         }
     }
