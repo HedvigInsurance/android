@@ -148,7 +148,10 @@ class ChatInputView : FrameLayout {
     private fun fadeOutCurrent(fadeIn: () -> Unit) {
         when (currentlyDisplaying) {
             is TextInput -> textInputContainer.fadeOut(fadeIn)
-            is SingleSelect -> singleSelectContainer.fadeOut(fadeIn)
+            is SingleSelect -> {
+                singleSelectContainer.fadeOut(fadeIn)
+                chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
+            }
             is ParagraphInput -> {
                 paragraphView.fadeOut(endAction = {
                     paragraphView.avdStop()
@@ -261,7 +264,6 @@ class ChatInputView : FrameLayout {
 
     private fun disableSingleButtons() {
         singleSelectContainer.children.forEach { it.isEnabled = false }
-        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
     }
 
     private fun bindParagraphInput() {
