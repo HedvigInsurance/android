@@ -11,6 +11,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.hedvig_edit_text.view.*
 
@@ -51,6 +52,14 @@ class HedvigEditText @JvmOverloads constructor(
             if (hasFocus) {
                 animateHint()
             }
+        }
+    }
+
+    fun getText() = textInput.text.toString()
+
+    fun setOnChangeListener(action: () -> Unit) {
+        textInput.onChange {
+            action()
         }
     }
 

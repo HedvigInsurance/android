@@ -106,7 +106,7 @@
     </style>
 
     <style name="HedvigButton.Purple">
-        <item name="android:backgroundTint">@color/link_purple</item>
+        <item name="android:backgroundTint">@color/hedvig_button_state</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

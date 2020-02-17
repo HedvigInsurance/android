@@ -135,6 +135,7 @@ dependencies {
     implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
     androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
 
+
     // Firebase
     implementation 'com.google.android.gms:play-services-base:17.1.0'
     releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
