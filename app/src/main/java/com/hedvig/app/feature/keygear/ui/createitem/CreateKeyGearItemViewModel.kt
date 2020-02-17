@@ -87,12 +87,16 @@ class CreateKeyGearItemViewModelImpl(
     override fun createItem() {
         viewModelScope.launch {
             val category = activeCategory ?: return@launch
-            val photos = photos.value?.map { it.uri } ?: return@launch
-            val uploadsResponse =
-                keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
-            val uploads = uploadsResponse.data()?.uploadFiles?.map {
-                S3FileInput.builder().bucket(it.bucket).key(it.key).build()
-            } ?: return@launch
+            val photos = photos.value?.map { it.uri } ?: listOf()
+            val uploads = if (photos.isNotEmpty()) {
+                val uploadsResponse =
+                    keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
+                    uploadsResponse.data()?.uploadFiles?.map {
+                        S3FileInput.builder().bucket(it.bucket).key(it.key).build()
+                    } ?: return@launch
+            } else {
+                emptyList()
+            }
             val result = keyGearItemsRepository.createKeyGearItemAsync(category, uploads).await()
 
             createResult.postValue(result.data())
