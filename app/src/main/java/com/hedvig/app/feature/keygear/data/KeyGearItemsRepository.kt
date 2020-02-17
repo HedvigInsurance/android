@@ -21,6 +21,7 @@ import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
+import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.YearMonth
@@ -124,7 +125,11 @@ class KeyGearItemsRepository(
             .toDeferred()
             .await()
 
-        val uploadData = uploadResult.data() ?: return
+        val uploadData = uploadResult.data()
+        if (uploadData == null) {
+            e { "Failed to upload photo" }
+            return
+        }
 
         val s3file = S3FileInput.builder()
             .bucket(uploadData.uploadFile.bucket)
@@ -137,7 +142,11 @@ class KeyGearItemsRepository(
             .toDeferred()
             .await()
 
-        val addReceiptData = addReceiptResult.data() ?: return
+        val addReceiptData = addReceiptResult.data()
+        if (addReceiptData == null) {
+            e { "Failed to add receipt" }
+            return
+        }
 
         val cachedData = apolloClientWrapper
             .apolloClient
