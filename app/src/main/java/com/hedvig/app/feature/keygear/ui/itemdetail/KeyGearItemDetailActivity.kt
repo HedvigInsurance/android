@@ -92,8 +92,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
 
         data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
-            // TODO: Acquire a text key for this
-            addOrViewReceipt.text = "Show"
+            addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
             addOrViewReceipt.setHapticClickListener {
                 startActivity(ReceiptActivity.newInstance(this, receipt.file.preSignedUrl))
             }

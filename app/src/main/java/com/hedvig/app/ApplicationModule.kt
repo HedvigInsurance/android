@@ -169,6 +169,8 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+    viewModel { KeyGearItemDetailViewModelImpl(get()) }
+    viewModel { KeyGearValuationViewModelImpl() }
 
 }
 
@@ -185,9 +187,9 @@ val directDebitModule = module {
 }
 
 val keyGearModule = module {
-    viewModel<KeyGearViewModel> { KeyGearViewModelImpl() }
+    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get()) }
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
-    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl() }
+    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl() }
 }
 
@@ -211,7 +213,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
-    single { KeyGearItemsRepository(get()) }
+    single { KeyGearItemsRepository(get(), get(), get()) }
 }
 
 val trackerModule = module {
