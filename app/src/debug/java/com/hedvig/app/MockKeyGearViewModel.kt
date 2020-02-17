@@ -29,7 +29,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                KeyGearItemCategory.PHONE
+                                KeyGearItemCategory.PHONE,
+                                null,
+                                null
                             )
                         )
                     ),
@@ -49,7 +51,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                KeyGearItemCategory.COMPUTER
+                                KeyGearItemCategory.COMPUTER,
+                                null,
+                                null
                             )
                         )
                     )
