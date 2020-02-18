@@ -9,20 +9,33 @@ import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
 
 class PhotosBinder(
     private val root: FrameLayout,
-    firstUrl: String?,
-    firstCategory: KeyGearItemCategory?,
+    private val firstUrl: String?,
+    firstCategory: KeyGearItemCategory,
     startPostponedTransition: () -> Unit
 ) {
     init {
-        root.photos.adapter = PhotosAdapter(firstUrl, firstCategory)
+        var firstPhotoDidLoad = false
+        root.photos.adapter = PhotosAdapter(firstUrl, firstCategory) {
+            if (!firstPhotoDidLoad && firstUrl != null) {
+                firstPhotoDidLoad = true
+                startPostponedTransition()
+            }
+        }
         root.pagerIndicator.pager = root.photos
         root.photos.doOnNextLayout {
-            startPostponedTransition()
+            if (firstUrl == null) {
+                firstPhotoDidLoad = true
+                startPostponedTransition()
+            }
         }
     }
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        (root.photos.adapter as? PhotosAdapter)?.photoUrls =
-            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
+        val newPhotos: MutableList<String?> = data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
+        if (newPhotos.isEmpty()) {
+            newPhotos.add(firstUrl)
+        }
+        (root.photos.adapter as? PhotosAdapter)?.photoUrls = newPhotos
+
     }
 }

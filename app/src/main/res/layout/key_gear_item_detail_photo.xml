@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/photo"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/photoBackground"
+    android:background="@color/dark_purple"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:contentDescription="@null"
-    tools:src="@drawable/ic_fire_green" />
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        tools:src="@drawable/illustration_phone" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/key_gear_item_photo_gradient"
+        android:rotation="180" />
+
+</FrameLayout>

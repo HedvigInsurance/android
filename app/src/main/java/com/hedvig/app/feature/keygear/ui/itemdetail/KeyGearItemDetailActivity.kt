@@ -51,7 +51,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         photosBinder = PhotosBinder(
             photosSection as FrameLayout,
             intent.getStringExtra(FIRST_PHOTO_URL),
-            intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
+            intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         ) { supportStartPostponedEnterTransition() }
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)

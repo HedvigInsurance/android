@@ -107,7 +107,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         openValuation.setHapticClickListener {
-            startActivity(Intent(this, KeyGearValuationActivity::class.java))
+            startActivity(KeyGearValuationActivity.newInstance(this, "123"))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {

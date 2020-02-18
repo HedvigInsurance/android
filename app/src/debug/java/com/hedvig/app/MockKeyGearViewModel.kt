@@ -29,7 +29,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                KeyGearItemCategory.PHONE
+                                KeyGearItemCategory.PHONE,
+                                null,
+                                null
                             )
                         )
                     ),
@@ -49,7 +51,24 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                KeyGearItemCategory.COMPUTER
+                                KeyGearItemCategory.COMPUTER,
+                                null,
+                                null
+                            )
+                        )
+                    ),
+
+                    KeyGearItemsQuery.KeyGearItemsSimple(
+                        "KeyGearItem",
+                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                            KeyGearItemFragment(
+                                "KeyGearItem",
+                                "345",
+                                listOf(),
+                                listOf(),
+                                KeyGearItemCategory.JEWELRY,
+                                null,
+                                null
                             )
                         )
                     )

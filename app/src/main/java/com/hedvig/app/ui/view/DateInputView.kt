@@ -45,7 +45,7 @@ class DateInputView @JvmOverloads constructor(
             dateText.show()
             dateText.text = text
         }
-
+    
     private fun animateHint() {
         val animateDistance =
             (getViewHeight() - BASE_MARGIN) / 2f

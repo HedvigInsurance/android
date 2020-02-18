@@ -9,6 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:paddingBottom="@dimen/bottom_navigation_height"
         android:layout_height="wrap_content">
 
         <include layout="@layout/loading_spinner" />
@@ -26,7 +27,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/claims_illustration"
+            app:srcCompat="@drawable/illustration_key_gear"
             tools:visibility="visible" />
 
         <TextView

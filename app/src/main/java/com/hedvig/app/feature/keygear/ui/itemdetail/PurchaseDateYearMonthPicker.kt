@@ -1,12 +1,13 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail
 
 import android.os.Bundle
+import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.ui.fragment.YearMonthPickerDialog
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.threeten.bp.YearMonth
 
 class PurchaseDateYearMonthPicker : YearMonthPickerDialog() {
-    private val model: KeyGearValuationViewModelImpl by sharedViewModel()
+    private val model: KeyGearValuationViewModel by sharedViewModel()
 
     override val title: String
         get() = requireArguments().getString(TITLE, "")
