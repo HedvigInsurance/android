@@ -24,7 +24,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
             //TODO get all data
             data?.let {
                 val category = data.fragments.keyGearItemFragment.category.toString()
-                val purchasePrice = data.fragments.keyGearItemFragment.purchasePrice.toString()
+                val purchasePrice = data.fragments.keyGearItemFragment.purchasePrice?.amount
 
                 setPercentage(47)
                 body.setMarkdownText(

@@ -36,7 +36,7 @@ class MockKeyGearValuationInfoViewModel : KeyGearValuationInfoViewModel() {
             ),
             listOf(),
             KeyGearItemCategory.PHONE,
-            null,
+            KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", "1234"),
             null
         )
     }
