@@ -7,9 +7,9 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
@@ -31,12 +31,13 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     private val model: KeyGearValuationViewModel by viewModel()
     private var isUploading = false
     private var date: YearMonth? = null
-    lateinit var id: String
+    var id: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         id = intent.getStringExtra(ITEM_ID)
+
         saveContainer.show()
 
         dateInput.setHapticClickListener {
@@ -61,17 +62,18 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
 
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
-                Handler().postDelayed(
-                    {
-                        startActivity(
-                            KeyGearValuationInfoActivity.newInstance(
-                                applicationContext,
-                                id
+                model.finishedUploading.observe(this) { finishedUploading ->
+                    finishedUploading?.let {
+                        if (finishedUploading) {
+                            startActivity(
+                                KeyGearValuationInfoActivity.newInstance(
+                                    applicationContext,
+                                    id
+                                )
                             )
-                        )
-                    },
-                    500L
-                )
+                        }
+                    }
+                }
 
             }
         }
@@ -119,10 +121,12 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     private fun setButtonState(hasPrice: Boolean, hasDate: Boolean) {
         if (hasPrice && hasDate) {
             save.isEnabled = true
-            saveContainer.backgroundTintList = resources.getColorStateList(R.color.link_purple)
+            saveContainer.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.link_purple)
         } else {
             save.isEnabled = false
-            saveContainer.backgroundTintList = resources.getColorStateList(R.color.semi_light_gray)
+            saveContainer.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.semi_light_gray)
         }
     }
 
