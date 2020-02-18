@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -66,15 +67,42 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         app:dateHintBackground="@color/background" />
 
-    <Button
-        android:id="@+id/continueButton"
-        style="@style/HedvigButton.Purple"
-        android:enabled="false"
-        android:layout_width="wrap_content"
+
+    <FrameLayout
+        android:id="@+id/saveContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BUTTON" />
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:background="@drawable/button_primary"
+        android:backgroundTint="@color/semi_light_gray"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/save"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+    </FrameLayout>
 
 </LinearLayout>

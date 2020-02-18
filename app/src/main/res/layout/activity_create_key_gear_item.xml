@@ -71,6 +71,7 @@
         tools:visibility="visible">
 
         <ProgressBar
+            android:alpha="0"
             android:id="@+id/loadingIndicator"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"

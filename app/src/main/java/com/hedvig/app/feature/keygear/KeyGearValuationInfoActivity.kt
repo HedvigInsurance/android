@@ -7,6 +7,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setMarkdownText
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.activity_key_gear_valuation_info.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -19,6 +20,10 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         super.onCreate(savedInstanceState)
 
         val id = intent.getStringExtra(ITEM_ID)
+
+        close.setHapticClickListener {
+            onBackPressed()
+        }
 
         model.data.observe(this) { data ->
             //TODO get all data

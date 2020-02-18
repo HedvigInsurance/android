@@ -10,6 +10,7 @@ import org.threeten.bp.YearMonth
 
 abstract class KeyGearValuationViewModel : ViewModel() {
     val purchaseDate = MutableLiveData<YearMonth>()
+    val finishedUploading = MutableLiveData<Boolean>()
 
     fun choosePurchaseDate(yearMonth: YearMonth) {
         purchaseDate.value = yearMonth

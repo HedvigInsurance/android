@@ -124,7 +124,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     private fun transitionToUploading() {
         loadingIndicator.show()
-        loadingIndicator.alpha = 0f
         val startCornerRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ((saveContainer.background as RippleDrawable).getDrawable(0) as GradientDrawable).cornerRadius
         } else {
