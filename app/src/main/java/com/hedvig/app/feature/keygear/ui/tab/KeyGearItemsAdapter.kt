@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,15 +19,17 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.key_gear_add_item.view.*
 import kotlinx.android.synthetic.main.key_gear_item.view.*
 
 class KeyGearItemsAdapter(
     private val createItem: (view: View) -> Unit,
-    private val openItem: (view: View, item: KeyGearItemsQuery.KeyGearItemsSimple) -> Unit
+    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItemsSimple) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
     var items: List<KeyGearItemsQuery.KeyGearItemsSimple> = listOf()
         set(value) {
@@ -73,29 +77,33 @@ class KeyGearItemsAdapter(
                 val item = items[position - 1]
                 holder.root.setHapticClickListener {
                     openItem(
-                        holder.image,
+                        holder.root,
                         item
                     )
                 }
-                item.fragments.keyGearItemFragment.photos.getOrNull(0)?.let { photo ->
+                val photoUrl =  item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
+                if (photoUrl != null) {
+                    holder.root.setBackgroundColor(Color.TRANSPARENT)
+                    holder.image.updateLayoutParams {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
                     Glide
                         .with(holder.image)
-                        .load(photo.file.preSignedUrl)
+                        .load(photoUrl)
                         .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
                         .transition(withCrossFade())
                         .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
                         .into(holder.image)
-                } ?: run {
-                    // TODO: Replace with generic image based on Category
-                    Glide
-                        .with(holder.image)
-                        .load("https://images.unsplash.com/photo-1505156868547-9b49f4df4e04")
-                        .placeholder(ColorDrawable(holder.image.context.compatColor(R.color.background_elevation_1)))
-                        .transition(withCrossFade())
-                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                        .into(holder.image)
-
+                } else {
+                    holder.root.setBackgroundResource(R.drawable.background_rounded_corners)
+                    holder.image.updateLayoutParams {
+                        width = ViewGroup.LayoutParams.WRAP_CONTENT
+                        height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                    holder.image.setImageDrawable(holder.image.context.compatDrawable(item.fragments.keyGearItemFragment.category.illustration))
                 }
+
                 holder.category.text =
                     holder.category.resources.getString(item.fragments.keyGearItemFragment.category.label)
             }

@@ -1,24 +1,34 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail
 
-import android.graphics.drawable.ColorDrawable
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
 import kotlinx.android.synthetic.main.key_gear_item_detail_photo.view.*
 
 class PhotosAdapter(
     firstPhotoUrl: String?,
-    private val category: KeyGearItemCategory?
+    private val category: KeyGearItemCategory,
+    private val photoDidLoad: () -> Unit
 ) :
     RecyclerView.Adapter<PhotosAdapter.ViewHolder>() {
     var photoUrls: List<String?> = listOf(firstPhotoUrl)
@@ -37,24 +47,53 @@ class PhotosAdapter(
         )
     )
 
-    override fun getItemCount() = photoUrls.size
+    override fun getItemCount() = if (photoUrls.isNotEmpty()) { photoUrls.size } else { 1 }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // TODO: Add fallback based on category-mapped asset
-        Glide.with(holder.photo)
-            .load(photoUrls[position])
-            .placeholder(ColorDrawable(holder.photo.context.compatColor(R.color.background_elevation_1)))
-            .transition(withCrossFade())
-            .transform(CenterCrop())
-            .into(holder.photo)
+        val photoUrl = photoUrls.getOrNull(position)
+        if (photoUrl != null) {
+            holder.background.setBackgroundColor(Color.TRANSPARENT)
+            holder.photo.updateLayoutParams {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            Glide.with(holder.photo)
+                .load(photoUrls[position])
+                .transform(CenterCrop())
+                .addListener(object: RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        photoDidLoad()
+                        return false
+                    }
 
+                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        photoDidLoad()
+                        return false
+                    }
 
-        if (position == 0) {
-            holder.photo.transitionName = KeyGearFragment.ITEM_TRANSITION_NAME
+                })
+                .into(holder.photo)
+            if (position == 0) {
+                holder.background.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
+            }
+        } else {
+            holder.background.setBackgroundResource(R.drawable.background_rounded_corners)
+            holder.background.backgroundTintList = ColorStateList.valueOf(holder.background.context.compatColor(R.color.dark_purple))
+            holder.photo.updateLayoutParams {
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            holder.photo.setImageDrawable(holder.photo.context.compatDrawable(category.illustration))
+            if (position == 0) {
+                holder.background.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
+            }
         }
+
+
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val photo: ImageView = view.photo
+        val background: FrameLayout = view.photoBackground
     }
 }

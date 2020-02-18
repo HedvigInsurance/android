@@ -36,7 +36,7 @@ class KeyGearFragment : BaseTabFragment() {
                         transitionPair(v)
                     ).toBundle()
                 )
-            }, { v, item ->
+            }, { root, item ->
                 startActivity(
                     KeyGearItemDetailActivity.newInstance(
                         requireContext(),
@@ -44,7 +44,7 @@ class KeyGearFragment : BaseTabFragment() {
                     ),
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                         requireActivity(),
-                        Pair(v, ITEM_TRANSITION_NAME)
+                        Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
                     ).toBundle()
                 )
             })
@@ -74,6 +74,6 @@ class KeyGearFragment : BaseTabFragment() {
     }
 
     companion object {
-        const val ITEM_TRANSITION_NAME = "itemPhoto"
+        const val ITEM_BACKGROUND_TRANSITION_NAME = "itemBackground"
     }
 }

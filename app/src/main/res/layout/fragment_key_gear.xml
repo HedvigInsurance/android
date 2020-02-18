@@ -9,6 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:paddingBottom="@dimen/bottom_navigation_height"
         android:layout_height="wrap_content">
 
         <include layout="@layout/loading_spinner" />
