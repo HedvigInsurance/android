@@ -34,7 +34,10 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            ).apply {
+                datePicker.maxDate = LocalDate.now().toEpochDay()
+                show()
+            }
         }
 
         close.setHapticClickListener {
