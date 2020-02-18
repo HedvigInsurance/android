@@ -19,8 +19,9 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
     abstract fun uploadReceipt(uri: Uri)
 }
 
-class KeyGearItemDetailViewModelImpl(private val repository: KeyGearItemsRepository) :
-    KeyGearItemDetailViewModel() {
+class KeyGearItemDetailViewModelImpl(
+    private val repository: KeyGearItemsRepository
+) : KeyGearItemDetailViewModel() {
 
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
@@ -35,7 +36,10 @@ class KeyGearItemDetailViewModelImpl(private val repository: KeyGearItemsReposit
     }
 
     override fun uploadReceipt(uri: Uri) {
-        isUploading.value = true
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        viewModelScope.launch {
+            isUploading.value = true
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
+            repository.uploadReceipt(id, uri)
+        }
     }
 }

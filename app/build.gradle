@@ -155,6 +155,7 @@ dependencies {
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.github.PaulWoitaschek:Slimber:1.0.7'
 
     // Lottie
     implementation "com.airbnb.android:lottie:3.0.7"
@@ -194,7 +195,7 @@ dependencies {
     // test
     testImplementation 'junit:junit:4.12'
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

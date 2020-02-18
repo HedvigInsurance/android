@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.keygear
 
 import android.animation.ValueAnimator
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
@@ -23,15 +24,16 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.YearMonth
-import java.text.DateFormatSymbols
+import org.threeten.bp.LocalDate
+import java.util.*
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
-
     private val model: KeyGearValuationViewModel by viewModel()
+
     private var isUploading = false
-    private var date: YearMonth? = null
     var id: String? = ""
+    private var date: LocalDate? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +43,19 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         saveContainer.show()
 
         dateInput.setHapticClickListener {
-            PurchaseDateYearMonthPicker.newInstance(resources.getString(R.string.KEY_GEAR_YEARMONTH_PICKER_TITLE))
-                .show(supportFragmentManager, PurchaseDateYearMonthPicker.TAG)
+            val calendar = Calendar.getInstance()
+            DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    date = LocalDate.of(year, month, dayOfMonth)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).apply {
+                datePicker.maxDate = LocalDate.now().toEpochDay()
+                show()
+            }
         }
 
         close.setHapticClickListener {
@@ -81,15 +94,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         priceInput.setOnChangeListener {
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
-        }
-
-        model.purchaseDate.observe(this) { yearMonth ->
-            setButtonState(priceInput.getText().isNotEmpty(), yearMonth != null)
-            yearMonth?.let {
-                date = yearMonth
-                dateInput.text =
-                    "${DateFormatSymbols().months[yearMonth.month.value - 1]} ${yearMonth.year}"
-            }
         }
     }
 
