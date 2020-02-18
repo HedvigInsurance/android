@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import com.hedvig.app.feature.keygear.KeyGearValuationInfoViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -18,4 +19,5 @@ val mockModule = module {
     viewModel<KeyGearItemDetailViewModel> { MockKeyGearItemDetailViewModel() }
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
+    viewModel<KeyGearValuationInfoViewModel> { MockKeyGearValuationInfoViewModel() }
 }

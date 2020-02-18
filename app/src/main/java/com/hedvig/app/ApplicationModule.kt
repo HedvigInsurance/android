@@ -24,6 +24,8 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.keygear.KeyGearValuationInfoViewModel
+import com.hedvig.app.feature.keygear.KeyGearValuationInfoViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
@@ -189,6 +191,7 @@ val keyGearModule = module {
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
+    viewModel<KeyGearValuationInfoViewModel> { KeyGearValuationInfoViewModelImpl(get()) }
 }
 
 val serviceModule = module {
