@@ -66,7 +66,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 "345",
                                 listOf(),
                                 listOf(),
-                                KeyGearItemCategory.JEWELRY
+                                KeyGearItemCategory.JEWELRY,
+                                null,
+                                null
                             )
                         )
                     )
