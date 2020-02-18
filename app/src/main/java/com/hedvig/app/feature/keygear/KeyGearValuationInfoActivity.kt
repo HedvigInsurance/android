@@ -22,26 +22,27 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
 
         model.data.observe(this) { data ->
             //TODO get all data
-            val category = data?.fragments?.keyGearItemFragment?.category.toString()
-            val purchasePrice = data?.fragments?.keyGearItemFragment?.purchasePrice.toString()
+            data?.let {
+                val category = data.fragments.keyGearItemFragment.category.toString()
+                val purchasePrice = data.fragments.keyGearItemFragment.purchasePrice.toString()
 
-            setPercentage(47)
-            //TODO fix correct markdown from * to **
-            body.setMarkdownText(
-                interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
-                    "ITEM_TYPE" to category,
-                    "ITEM_VALUATION" to 70,
-                    "PURCHASE_PRICE" to purchasePrice,
-                    "VALUATION_PRICE" to 1234
+                setPercentage(47)
+                body.setMarkdownText(
+                    interpolateTextKey(
+                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                        "ITEM_TYPE" to category,
+                        "ITEM_VALUATION" to 70,
+                        "PURCHASE_PRICE" to purchasePrice,
+                        "VALUATION_PRICE" to 1234
+                    )
                 )
-            )
+            }
         }
         model.loadItem(id)
     }
 
     private fun setPercentage(percentage: Int) {
-        valuationPercentage.setMarkdownText("$percentage%")
+        valuationPercentage.text = "$percentage%"
     }
 
     companion object {
