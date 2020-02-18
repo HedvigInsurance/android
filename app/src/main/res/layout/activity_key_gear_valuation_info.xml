@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:text="70%" />
+        tools:text="70%" />
 
     <TextView
         style="@style/Body"

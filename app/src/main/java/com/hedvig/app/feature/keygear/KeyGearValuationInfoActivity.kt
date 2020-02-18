@@ -21,6 +21,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         val id = intent.getStringExtra(ITEM_ID)
 
         model.data.observe(this) { data ->
+            //TODO get all data
             val category = data?.fragments?.keyGearItemFragment?.category.toString()
             val purchasePrice = data?.fragments?.keyGearItemFragment?.purchasePrice.toString()
 
@@ -37,8 +38,6 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
             )
         }
         model.loadItem(id)
-
-        //TODO get valuation percentage
     }
 
     private fun setPercentage(percentage: Int) {
