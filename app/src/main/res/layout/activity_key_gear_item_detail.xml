@@ -57,6 +57,84 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_triple">
+
+                <TextView
+                    android:id="@+id/name"
+                    style="@style/Body.Regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mobiltelefon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.hedvig.app.ui.view.HedvigEditText
+                    android:id="@+id/nameEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:alpha="0"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    app:hintText="Namn"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <Button
+                    android:id="@+id/addName"
+                    style="@style/Body.Regular.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/base_margin_triple"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
+                    android:textAllCaps="false"
+                    android:textColor="@color/link_purple"
+                    android:theme="@style/Body.Regular.Link"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <!--TODO translation-->
+                <Button
+                    android:id="@+id/saveName"
+                    style="@style/Body.Regular.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/base_margin_triple"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="Spara"
+                    android:textAllCaps="false"
+                    android:textColor="@color/link_purple"
+                    android:theme="@style/Body.Regular.Link"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/horizontal_line_height"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:background="@color/separator" />
+
+            <TextView
+                style="@style/Headline.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE" />
 
             <LinearLayout
@@ -106,83 +184,6 @@
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/horizontal_line_height"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@color/separator" />
-
-            <TextView
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin_triple">
-
-                <TextView
-                    android:id="@+id/name"
-                    style="@style/Body.Regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mobiltelefon"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.hedvig.app.ui.view.HedvigEditText
-                    android:id="@+id/nameEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:alpha="0"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:visibility="gone"
-                    app:hintText="Namn"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <Button
-                    android:id="@+id/addName"
-                    style="@style/Body.Regular.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:background="?attr/selectableItemBackground"
-                    android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
-                    android:textAllCaps="false"
-                    android:textColor="@color/link_purple"
-                    android:theme="@style/Body.Regular.Link"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <Button
-                    android:id="@+id/saveName"
-                    style="@style/Body.Regular.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:background="?attr/selectableItemBackground"
-                    android:text="Spara"
-                    android:textAllCaps="false"
-                    android:textColor="@color/link_purple"
-                    android:theme="@style/Body.Regular.Link"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
