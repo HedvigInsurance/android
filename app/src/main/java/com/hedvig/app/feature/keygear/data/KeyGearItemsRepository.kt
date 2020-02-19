@@ -24,7 +24,7 @@ import com.hedvig.app.util.extensions.into
 import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
-import org.threeten.bp.YearMonth
+import org.threeten.bp.LocalDate
 import java.io.File
 import java.util.*
 
@@ -49,7 +49,7 @@ class KeyGearItemsRepository(
 
     suspend fun updatePurchasePriceAndDateAsync(
         id: String,
-        date: YearMonth,
+        date: LocalDate,
         price: MonetaryAmountV2Input
     ) {
         val mutation = UpdateKeyGearPriceAndDateMutation(id, date, price)
