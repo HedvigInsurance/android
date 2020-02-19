@@ -13,9 +13,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
         data.postValue(
             KeyGearItemsQuery.Data(
                 listOf(
-                    KeyGearItemsQuery.KeyGearItemsSimple(
+                    KeyGearItemsQuery.KeyGearItem(
                         "KeyGearItem",
-                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                        KeyGearItemsQuery.KeyGearItem.Fragments(
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "123",
@@ -35,9 +35,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             )
                         )
                     ),
-                    KeyGearItemsQuery.KeyGearItemsSimple(
+                    KeyGearItemsQuery.KeyGearItem(
                         "KeyGearItem",
-                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                        KeyGearItemsQuery.KeyGearItem.Fragments(
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "234",
@@ -58,9 +58,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                         )
                     ),
 
-                    KeyGearItemsQuery.KeyGearItemsSimple(
+                    KeyGearItemsQuery.KeyGearItem(
                         "KeyGearItem",
-                        KeyGearItemsQuery.KeyGearItemsSimple.Fragments(
+                        KeyGearItemsQuery.KeyGearItem.Fragments(
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "345",
