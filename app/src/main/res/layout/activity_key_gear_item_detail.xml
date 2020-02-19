@@ -13,9 +13,11 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/scrollViewContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/base_margin_quintuple">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -35,13 +37,9 @@
 
             </FrameLayout>
 
-            <TextView
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" />
+            <include
+                android:id="@+id/coverageSection"
+                layout="@layout/key_gear_item_detail_coverage_section" />
 
             <View
                 android:layout_width="match_parent"
@@ -91,7 +89,6 @@
                     android:background="?attr/selectableItemBackground"
                     android:textAllCaps="false"
                     android:textColor="@color/link_purple"
-                    android:theme="@style/Body.Regular.Link"
                     tools:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON" />
 
             </LinearLayout>
