@@ -15,4 +15,12 @@ fragment KeyGearItemFragment on KeyGearItem {
     amount
   }
   timeOfPurchase
+  valuation{
+    ...on KeyGearItemValuationFixed{
+      ratio
+      valuation{
+        amount
+      }
+    }
+  }
 }

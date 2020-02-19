@@ -31,7 +31,15 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.PHONE,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                                    "KeyGearItemValuation",
+                                    31,
+                                    KeyGearItemFragment.Valuation1(
+                                        "KeyGearItemValuationFixed",
+                                        "1234"
+                                    )
+                                )
                             )
                         )
                     ),
@@ -53,7 +61,15 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.COMPUTER,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                                    "KeyGearItemValuation",
+                                    31,
+                                    KeyGearItemFragment.Valuation1(
+                                        "KeyGearItemValuationFixed",
+                                        "1234"
+                                    )
+                                )
                             )
                         )
                     ),
@@ -68,7 +84,15 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.JEWELRY,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                                    "KeyGearItemValuation",
+                                    31,
+                                    KeyGearItemFragment.Valuation1(
+                                        "KeyGearItemValuationFixed",
+                                        "1234"
+                                    )
+                                )
                             )
                         )
                     )

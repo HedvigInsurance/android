@@ -69,7 +69,15 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.PHONE,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuation",
+                        31,
+                        KeyGearItemFragment.Valuation1(
+                            "KeyGearItemValuationFixed",
+                            "1234"
+                        )
+                    )
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -87,7 +95,15 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.COMPUTER,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuation",
+                        31,
+                        KeyGearItemFragment.Valuation1(
+                            "KeyGearItemValuationFixed",
+                            "1234"
+                        )
+                    )
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -97,7 +113,15 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.JEWELRY,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuation",
+                        31,
+                        KeyGearItemFragment.Valuation1(
+                            "KeyGearItemValuationFixed",
+                            "1234"
+                        )
+                    )
                 )
         )
     }

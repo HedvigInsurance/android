@@ -3,6 +3,7 @@ package com.hedvig.app.feature.keygear
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
@@ -26,20 +27,22 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         }
 
         model.data.observe(this) { data ->
-            //TODO get all data
             data?.let {
-                val category = data.fragments.keyGearItemFragment.category.toString()
+                val category = data.fragments.keyGearItemFragment.category.toString().toLowerCase()
                 val purchasePrice = data.fragments.keyGearItemFragment.purchasePrice?.amount
+                val valuationPercentage =
+                    (data.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio
+                val valuationPrice =
+                    (data.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
 
-                setPercentage(47)
+                setPercentage(valuationPercentage)
                 body.setMarkdownText(
                     interpolateTextKey(
                         getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
                         "ITEM_TYPE" to category,
-                        "ITEM_VALUATION" to 70,
-                        "VALUATION_PERCENTAGE" to 23,
+                        "VALUATION_PERCENTAGE" to valuationPercentage,
                         "PURCHASE_PRICE" to purchasePrice,
-                        "VALUATION_PRICE" to 1234
+                        "VALUATION_PRICE" to valuationPrice
                     )
                 )
             }
