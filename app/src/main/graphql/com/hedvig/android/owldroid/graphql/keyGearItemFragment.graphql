@@ -15,4 +15,18 @@ fragment KeyGearItemFragment on KeyGearItem {
     amount
   }
   timeOfPurchase
+  deductible {
+    amount
+  }
+  valuation {
+    ... on KeyGearItemValuationFixed {
+      ratio
+      valuation {
+        amount
+      }
+    }
+    ... on KeyGearItemValuationMarketValue {
+      ratio
+    }
+  }
 }

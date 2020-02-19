@@ -31,6 +31,11 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.PHONE,
                                 null,
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
                                 null
                             )
                         )
@@ -53,6 +58,11 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.COMPUTER,
                                 null,
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
                                 null
                             )
                         )
@@ -68,6 +78,11 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.JEWELRY,
                                 null,
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
                                 null
                             )
                         )

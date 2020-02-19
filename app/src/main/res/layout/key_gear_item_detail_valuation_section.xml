@@ -8,7 +8,7 @@
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
         android:layout_weight="0.5">
@@ -18,12 +18,65 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/valuationLabel"
                 style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_TITLE"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- TODO: Content Description text key -->
+            <ImageView
+                android:id="@+id/valuationMoreInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@null"
+                android:focusable="true"
+                android:padding="@dimen/base_margin"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_TITLE" />
+                app:srcCompat="@drawable/ic_info_purple"
+                tools:visibility="visible" />
+
+            <Button
+                android:id="@+id/addPurchaseInfo"
+                style="@style/Body.Small.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginBottom="@dimen/base_margin_double"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/valuationLabel" />
+
+            <TextView
+                android:id="@+id/valuation"
+                style="@style/Body.XSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginBottom="@dimen/base_margin_double"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/valuationLabel"
+                tools:text="70% av inköpspris" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -31,7 +84,7 @@
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_weight="0.5">
 
@@ -49,20 +102,6 @@
                 android:text="@string/KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- TODO: Content Description text key -->
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@null"
-                android:focusable="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info_purple" />
 
             <TextView
                 android:id="@+id/deductible"
