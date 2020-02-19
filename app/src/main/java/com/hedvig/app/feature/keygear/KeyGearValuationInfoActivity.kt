@@ -37,6 +37,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                         getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
                         "ITEM_TYPE" to category,
                         "ITEM_VALUATION" to 70,
+                        "VALUATION_PERCENTAGE" to 23,
                         "PURCHASE_PRICE" to purchasePrice,
                         "VALUATION_PRICE" to 1234
                     )
