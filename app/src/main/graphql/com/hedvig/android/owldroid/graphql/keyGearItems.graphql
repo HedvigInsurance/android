@@ -1,5 +1,5 @@
 query KeyGearItems {
-  keyGearItemsSimple {
+  keyGearItems {
     ... KeyGearItemFragment
   }
 }

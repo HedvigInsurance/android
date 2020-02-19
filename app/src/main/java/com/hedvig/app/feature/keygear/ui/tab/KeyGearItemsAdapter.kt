@@ -29,9 +29,9 @@ import kotlinx.android.synthetic.main.key_gear_item.view.*
 
 class KeyGearItemsAdapter(
     private val createItem: (view: View) -> Unit,
-    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItemsSimple) -> Unit
+    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
-    var items: List<KeyGearItemsQuery.KeyGearItemsSimple> = listOf()
+    var items: List<KeyGearItemsQuery.KeyGearItem> = listOf()
         set(value) {
             val callback = KeyGearItemsDiffCallback(field, value)
             val result = DiffUtil.calculateDiff(callback)
@@ -81,7 +81,7 @@ class KeyGearItemsAdapter(
                         item
                     )
                 }
-                val photoUrl =  item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
+                val photoUrl = item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
                 if (photoUrl != null) {
                     holder.root.setBackgroundColor(Color.TRANSPARENT)
                     holder.image.updateLayoutParams {

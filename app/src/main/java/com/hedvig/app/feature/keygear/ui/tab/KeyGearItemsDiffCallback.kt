@@ -4,8 +4,8 @@ import androidx.recyclerview.widget.DiffUtil
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 
 class KeyGearItemsDiffCallback(
-    private val old: List<KeyGearItemsQuery.KeyGearItemsSimple>,
-    private val new: List<KeyGearItemsQuery.KeyGearItemsSimple>
+    private val old: List<KeyGearItemsQuery.KeyGearItem>,
+    private val new: List<KeyGearItemsQuery.KeyGearItem>
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
         old[oldItemPosition].fragments.keyGearItemFragment.id == new[newItemPosition].fragments.keyGearItemFragment.id
