@@ -33,10 +33,4 @@ fun boundedProgress(start: Float, end: Float, current: Float): Float {
     }
 }
 
-// 175.0, 0.0, 180 => 175.0
-// 175.0, 0.0, 168 => 168
-// 175.0, 0.0, -5 => 0
-// 0.0, 175.0, 168 => 168
-// 0.0, 175.0, 180 => 175.0
-
 fun transitionPair(view: View) = Pair(view, ViewCompat.getTransitionName(view)!!)
