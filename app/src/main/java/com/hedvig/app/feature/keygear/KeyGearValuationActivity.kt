@@ -15,7 +15,6 @@ import androidx.core.view.updateLayoutParams
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.ui.itemdetail.PurchaseDateYearMonthPicker
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
@@ -25,7 +24,8 @@ import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
-import java.util.*
+import java.text.DateFormatSymbols
+import java.util.Calendar
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -33,7 +33,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     private var isUploading = false
     var id: String? = ""
     private var date: LocalDate? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +47,17 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 this,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     date = LocalDate.of(year, month, dayOfMonth)
+
+                    val monthText = DateFormatSymbols().months[month]
+                    dateInput.text = "$dayOfMonth $monthText $year"
+
+                    setButtonState(priceInput.getText().isNotEmpty(), date != null)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).apply {
-                datePicker.maxDate = LocalDate.now().toEpochDay()
+                datePicker.maxDate = calendar.time.time
                 show()
             }
         }

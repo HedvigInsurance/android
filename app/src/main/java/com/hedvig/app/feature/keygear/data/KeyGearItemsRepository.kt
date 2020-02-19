@@ -25,9 +25,8 @@ import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -139,7 +138,13 @@ class KeyGearItemsRepository(
 
         val addReceiptResult = apolloClientWrapper
             .apolloClient
-            .mutate(AddReceiptToKeyGearItemMutation(AddReceiptToKeyGearItemInput.builder().itemId(itemId).file(s3file).build()))
+            .mutate(
+                AddReceiptToKeyGearItemMutation(
+                    AddReceiptToKeyGearItemInput.builder().itemId(
+                        itemId
+                    ).file(s3file).build()
+                )
+            )
             .toDeferred()
             .await()
 
@@ -162,7 +167,8 @@ class KeyGearItemsRepository(
                     keyGearItem
                         .toBuilder()
                         .fragments(KeyGearItemQuery.KeyGearItem.Fragments(addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment))
-                        .build()).build()
+                        .build()
+                ).build()
 
             apolloClientWrapper
                 .apolloClient
