@@ -12,6 +12,7 @@ import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.view.openKeyboard
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.hedvig_edit_text.view.*
 
@@ -55,11 +56,23 @@ class HedvigEditText @JvmOverloads constructor(
         }
     }
 
+    fun openKeyBoard() {
+        textInput.requestFocus()
+        textInput.openKeyboard()
+    }
+
     fun getText() = textInput.text.toString()
 
     fun setOnChangeListener(action: () -> Unit) {
         textInput.onChange {
             action()
+        }
+    }
+
+    fun setDoneListener(action: () -> Unit) {
+        textInput.setOnEditorActionListener { v, actionId, event ->
+            action()
+            return@setOnEditorActionListener false
         }
     }
 

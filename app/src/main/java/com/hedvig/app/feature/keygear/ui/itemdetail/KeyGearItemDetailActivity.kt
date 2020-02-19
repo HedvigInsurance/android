@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
@@ -17,11 +18,15 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.dismissKeyboard
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
 
@@ -31,6 +36,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
 
         root.useEdgeToEdge()
         initializeToolbar()
@@ -38,12 +45,92 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             intent.getStringExtra(FIRST_PHOTO_URL),
             intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         )
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+            )
+        }
+
+        addName.setHapticClickListener {
+            focusEditName()
+        }
+
+        nameEditText.setDoneListener {
+            hideEditName()
+            //TODO Upload new name
+            Timber.d("Done")
+        }
+
+        saveName.setHapticClickListener {
+            //TODO Upload new name
+            hideEditName()
+        }
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }
         }
         intent.getStringExtra(ID)?.let { id ->
             model.loadItem(id)
+        }
+    }
+
+    private fun focusEditName() {
+        name.animate().alpha(0.0f).withEndAction {
+            name.remove()
+        }.duration = ANIMATE_DURATION
+
+        addName.animate().alpha(0.0f).withEndAction {
+            addName.remove()
+        }.duration = ANIMATE_DURATION
+
+
+        nameEditText.apply {
+            alpha = 0.0f
+            show()
+            nameEditText.animate().alpha(1.0f).withEndAction {
+                nameEditText.openKeyBoard()
+            }.duration = ANIMATE_DURATION
+        }
+
+        saveName.apply {
+            alpha = 0.0f
+            show()
+            saveName
+                .animate()
+                .alpha(1.0f)
+                .duration = ANIMATE_DURATION
+        }
+    }
+
+    private fun hideEditName() {
+        saveName.animate()
+            .alpha(0.0f)
+            .withEndAction {
+                saveName.remove()
+            }.duration = ANIMATE_DURATION
+
+        nameEditText.apply {
+            animate()
+                .alpha(0f).withEndAction {
+                    nameEditText.dismissKeyboard()
+                    nameEditText.remove()
+                }.duration = ANIMATE_DURATION
+        }
+
+        name.apply {
+            alpha = 0.0f
+            show()
+            animate()
+                .alpha(1.0f)
+                .duration = ANIMATE_DURATION
+        }
+
+        addName.apply {
+            alpha = 0.0f
+            show()
+            animate()
+                .alpha(1.0f)
+                .duration = ANIMATE_DURATION
         }
     }
 
@@ -97,7 +184,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        val newPhotos: MutableList<String?> = data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
+        val newPhotos: MutableList<String?> =
+            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
         if (newPhotos.isEmpty()) {
             newPhotos.add(intent.getStringExtra(FIRST_PHOTO_URL))
         }
@@ -122,6 +210,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         private const val FIRST_PHOTO_URL = "FIRST_PHOTO_URL"
         private const val CATEGORY = "CATEGORY"
         private const val ID = "ID"
+        private const val ANIMATE_DURATION = 60L
 
         fun newInstance(
             context: Context,
