@@ -3,51 +3,48 @@ package com.hedvig.app.feature.keygear
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import android.os.Parcelable
+import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setMarkdownText
+import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
+import com.hedvig.app.util.safeLet
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_key_gear_valuation_info.*
-import org.koin.android.viewmodel.ext.android.viewModel
 
 class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_valuation_info) {
-
-    private val model: KeyGearValuationInfoViewModel by viewModel()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val id = intent.getStringExtra(ITEM_ID)
+        val category = intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
+        val valuationData = intent.getParcelableExtra<ValuationData>(VALUATION_DATA)
+
+        safeLet(category, valuationData) { c, vd ->
+            setPercentage(vd.ratio)
+            if (vd.valuationType == ValuationType.FIXED) {
+                interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                    "ITEM_TYPE" to getString(c.label).toLowerCase(),
+                    "VALUATION_PERCENTAGE" to vd.ratio,
+                    "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt(),
+                    "VALUATION_PRICE" to vd.valuationAmount?.toBigInteger()?.toInt()
+                )
+            } else {
+                //TODO
+                interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                    "ITEM_TYPE" to getString(c.label),
+                    "VALUATION_PERCENTAGE" to vd.ratio,
+                    "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt()
+                )
+            }
+        }
 
         close.setHapticClickListener {
             onBackPressed()
         }
-
-        model.data.observe(this) { data ->
-            data?.let {
-                val category = data.fragments.keyGearItemFragment.category.toString().toLowerCase()
-                val purchasePrice = data.fragments.keyGearItemFragment.purchasePrice?.amount
-                val valuationPercentage =
-                    (data.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio
-                val valuationPrice =
-                    (data.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
-
-                setPercentage(valuationPercentage)
-                body.setMarkdownText(
-                    interpolateTextKey(
-                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
-                        "ITEM_TYPE" to category,
-                        "VALUATION_PERCENTAGE" to valuationPercentage,
-                        "PURCHASE_PRICE" to purchasePrice,
-                        "VALUATION_PRICE" to valuationPrice
-                    )
-                )
-            }
-        }
-        model.loadItem(id)
     }
 
     private fun setPercentage(percentage: Int) {
@@ -55,13 +52,39 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
     }
 
     companion object {
-        private const val ITEM_ID = "ITEM_ID"
+        private const val CATEGORY = "CATEGORY"
+        private const val VALUATION_DATA = "VALUATION_DATA"
 
-        fun newInstance(context: Context, id: String) =
+        fun newInstance(
+            context: Context,
+            category: KeyGearItemCategory,
+            valuationData: ValuationData
+        ) =
             Intent(context, KeyGearValuationInfoActivity::class.java).apply {
-                putExtra(ITEM_ID, id)
+                putExtra(CATEGORY, category)
+                putExtra(VALUATION_DATA, valuationData)
             }
     }
 }
 
+@Parcelize
+data class ValuationData(
+    val purchasePrice: String,
+    val valuationType: ValuationType,
+    val ratio: Int,
+    val valuationAmount: String?
+) : Parcelable {
+    companion object {
+        fun from(
+            purchasePrice: String,
+            valuationType: ValuationType,
+            ratio: Int,
+            valuationAmount: String?
+        ) = ValuationData(purchasePrice, valuationType, ratio, valuationAmount)
+    }
+}
 
+enum class ValuationType {
+    MARKET_PRICE,
+    FIXED
+}

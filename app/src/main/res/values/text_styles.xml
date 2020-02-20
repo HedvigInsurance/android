@@ -39,7 +39,7 @@
         <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
-    <style name="Headline.xLarge">
+    <style name="Headline.XLarge">
         <item name="android:fontFamily">@font/soray_extrabold</item>
         <item name="android:textSize">@dimen/text_xxxlarge</item>
     </style>
