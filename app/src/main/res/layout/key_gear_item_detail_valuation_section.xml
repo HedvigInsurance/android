@@ -8,7 +8,7 @@
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/valuation_card_height"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
         android:layout_weight="0.5">
@@ -84,7 +84,7 @@
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/valuation_card_height"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_weight="0.5">
 
