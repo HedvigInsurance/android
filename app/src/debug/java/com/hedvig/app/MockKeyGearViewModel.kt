@@ -31,7 +31,14 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.PHONE,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     ),
@@ -53,7 +60,14 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.COMPUTER,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     ),
@@ -68,7 +82,14 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 listOf(),
                                 KeyGearItemCategory.JEWELRY,
                                 null,
-                                null
+                                null,
+                                KeyGearItemFragment.Deductible(
+                                    "MonetaryAmountV2",
+                                    "1500.00"
+                                ),
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     )

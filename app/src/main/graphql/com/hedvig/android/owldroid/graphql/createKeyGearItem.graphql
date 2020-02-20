@@ -1,6 +1,7 @@
 mutation CreateKeyGearItem(
   $category: KeyGearItemCategory!
   $photos: [S3FileInput!]!
+  $languageCode: String!
 ) {
   createKeyGearItem(input: { photos: $photos, category: $category }) {
     ...KeyGearItemFragment

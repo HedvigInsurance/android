@@ -1,4 +1,4 @@
-mutation UpdateKeyGearPriceAndDate($id: ID!, $newTimeOfPurchase: YearMonth!, $newPrice: MonetaryAmountV2Input!){
+mutation UpdateKeyGearPriceAndDate($id: ID!, $newTimeOfPurchase: LocalDate!, $newPrice: MonetaryAmountV2Input!){
   updateTimeOfPurchaseForKeyGearItem(id: $id, newTimeOfPurchase: $newTimeOfPurchase){
     id
     timeOfPurchase

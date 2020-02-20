@@ -15,4 +15,32 @@ fragment KeyGearItemFragment on KeyGearItem {
     amount
   }
   timeOfPurchase
+  deductible {
+    amount
+  }
+  valuation {
+    ... on KeyGearItemValuationFixed {
+      ratio
+      valuation {
+        amount
+      }
+    }
+    ... on KeyGearItemValuationMarketValue {
+      ratio
+    }
+  }
+  covered {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
+  exceptions {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
 }

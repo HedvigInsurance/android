@@ -69,7 +69,21 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.PHONE,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.Deductible(
+                        "MonetaryAmountV2",
+                        "1500.00"
+                    ),
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuationFixed",
+                        90,
+                        KeyGearItemFragment.Valuation1(
+                            "MonetaryAmountV2",
+                            "9000.00"
+                        )
+                    ),
+                    listOf(),
+                    listOf()
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -87,7 +101,14 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.COMPUTER,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.Deductible(
+                        "MonetaryAmountV2",
+                        "1500.00"
+                    ),
+                    null,
+                    listOf(),
+                    listOf()
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -97,7 +118,17 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.JEWELRY,
                     null,
-                    null
+                    null,
+                    KeyGearItemFragment.Deductible(
+                        "MonetaryAmountV2",
+                        "1500.00"
+                    ),
+                    KeyGearItemFragment.AsKeyGearItemValuationMarketValue(
+                        "KeyGearItemValuationFixed",
+                        100
+                    ),
+                    listOf(),
+                    listOf()
                 )
         )
     }
