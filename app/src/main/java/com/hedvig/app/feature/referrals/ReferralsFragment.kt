@@ -7,7 +7,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.ui.decoration.BottomPaddingItemDecoration
+import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.fragment_new_referral.*
@@ -31,7 +31,7 @@ class ReferralsFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         invites.addItemDecoration(
-            BottomPaddingItemDecoration(
+            BelowRecyclerViewBottomPaddingItemDecoration(
                 resources.getDimensionPixelSize(R.dimen.referral_extra_bottom_space)
             )
         )

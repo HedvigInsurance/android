@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.LinearLayout
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
@@ -13,6 +14,7 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.ReceiptActivity
+import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
@@ -27,6 +29,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
     private val model: KeyGearItemDetailViewModel by viewModel()
 
+    private lateinit var coverageBinder: CoverageBinder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,6 +42,10 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             intent.getStringExtra(FIRST_PHOTO_URL),
             intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         )
+        coverageBinder = CoverageBinder(coverageSection as LinearLayout)
+        scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }
@@ -102,6 +110,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             newPhotos.add(intent.getStringExtra(FIRST_PHOTO_URL))
         }
         (photos.adapter as? PhotosAdapter)?.photoUrls = newPhotos
+        coverageBinder.bind(data)
 
         data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
             addOrViewReceipt.text = getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)

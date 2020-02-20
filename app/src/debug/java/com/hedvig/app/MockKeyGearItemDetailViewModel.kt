@@ -69,7 +69,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.PHONE,
                     null,
-                    null
+                    null,
+                    listOf(),
+                    listOf()
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -87,7 +89,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.COMPUTER,
                     null,
-                    null
+                    null,
+                    listOf(),
+                    listOf()
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -97,7 +101,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     listOf(),
                     KeyGearItemCategory.JEWELRY,
                     null,
-                    null
+                    null,
+                    listOf(),
+                    listOf()
                 )
         )
     }
