@@ -37,6 +37,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/body"
         style="@style/Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -15,11 +15,13 @@ import androidx.core.view.updateLayoutParams
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -31,7 +33,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     private val model: KeyGearValuationViewModel by viewModel()
 
     private var isUploading = false
-    var id: String? = ""
+    var id: String = ""
     private var date: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +42,20 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         id = intent.getStringExtra(ITEM_ID)
 
         saveContainer.show()
+        model.data.observe(this) { data ->
+            data?.let {
+                val category =
+                    resources.getString(data.fragments.keyGearItemFragment.category.label)
+                        .toLowerCase()
+
+                body.text = interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY),
+                    "ITEM_TYPE" to category
+                )
+            }
+        }
+        model.loadItem(id)
+
 
         dateInput.setHapticClickListener {
             val calendar = Calendar.getInstance()
@@ -79,18 +95,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
 
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
-                model.finishedUploading.observe(this) { finishedUploading ->
-                    finishedUploading?.let {
-                        if (finishedUploading) {
-                            startActivity(
-                                KeyGearValuationInfoActivity.newInstance(
-                                    applicationContext,
-                                    id
-                                )
-                            )
-                        }
-                    }
-                }
 
             }
         }
@@ -98,6 +102,22 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         priceInput.setOnChangeListener {
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
+        }
+
+        model.finishedUploading.observe(this) { finishedUploading ->
+            finishedUploading?.let {
+                if (finishedUploading) {
+                    id?.let { id ->
+                        startActivity(
+                            KeyGearValuationInfoActivity.newInstance(
+                                this,
+                                id
+                            )
+                        )
+                        finish()
+                    }
+                }
+            }
         }
     }
 
