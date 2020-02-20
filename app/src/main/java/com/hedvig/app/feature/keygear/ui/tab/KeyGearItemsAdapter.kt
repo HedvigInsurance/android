@@ -35,8 +35,8 @@ class KeyGearItemsAdapter(
         set(value) {
             val callback = KeyGearItemsDiffCallback(field, value)
             val result = DiffUtil.calculateDiff(callback)
-            field = value
             result.dispatchUpdatesTo(this)
+            field = value
         }
 
     override fun getItemViewType(position: Int) = when (position) {
