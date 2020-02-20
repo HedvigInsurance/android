@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -19,88 +18,41 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/base_margin_quintuple">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/photos"
-                    android:layout_width="match_parent"
-                    android:layout_height="480dp" />
-
-                <com.hedvig.app.ui.view.PagerIndicatorView
-                    android:id="@+id/pagerIndicator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:layout_marginBottom="@dimen/base_margin_double" />
-
-            </FrameLayout>
-
             <include
-                android:id="@+id/coverageSection"
-                layout="@layout/key_gear_item_detail_coverage_section" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/horizontal_line_height"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@color/separator" />
-
-            <TextView
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE" />
+                android:id="@+id/photosSection"
+                layout="@layout/key_gear_item_detail_photos_section" />
 
             <LinearLayout
+                android:id="@+id/postPhotosSections"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_quintuple">
+                android:alpha="0"
+                android:orientation="vertical"
+                android:translationY="50dp"
+                android:visibility="gone"
+                tools:alpha="1"
+                tools:translationY="0dp"
+                tools:visibility="visible">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/base_margin_triple"
-                    android:contentDescription="@null"
-                    app:srcCompat="@drawable/ic_receipt" />
+                <include
+                    android:id="@+id/valuationSection"
+                    layout="@layout/key_gear_item_detail_valuation_section" />
 
-                <TextView
-                    style="@style/Body.Regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/base_margin_triple"
-                    android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                <include
+                    android:id="@+id/coverageSection"
+                    layout="@layout/key_gear_item_detail_coverage_section" />
 
-                <Button
-                    android:id="@+id/addOrViewReceipt"
-                    style="@style/Body.Regular.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:background="?attr/selectableItemBackground"
-                    android:textAllCaps="false"
-                    android:textColor="@color/link_purple"
-                    tools:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON" />
+                <include
+                    android:id="@+id/receiptSection"
+                    layout="@layout/key_gear_item_detail_receipt_section" />
 
             </LinearLayout>
-
-            <TextView
-                style="@style/Body.XSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
