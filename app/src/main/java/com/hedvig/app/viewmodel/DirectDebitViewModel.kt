@@ -7,7 +7,7 @@ import com.hedvig.app.data.debit.DirectDebitRepository
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
-abstract class DirectDebitViewModel: ViewModel() {
+abstract class DirectDebitViewModel : ViewModel() {
     abstract val data: MutableLiveData<DirectDebitQuery.Data>
     abstract fun refreshDirectDebitStatus()
 }
@@ -48,5 +48,10 @@ class DirectDebitViewModelImpl(
             })
 
         disposables.add(disposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 }

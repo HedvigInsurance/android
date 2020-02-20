@@ -36,7 +36,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                null
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     ),
@@ -63,7 +65,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                null
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     ),
@@ -83,7 +87,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                null
+                                null,
+                                listOf(),
+                                listOf()
                             )
                         )
                     )

@@ -12,9 +12,11 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/scrollViewContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/base_margin_quintuple">
 
             <include
                 android:id="@+id/photosSection"
@@ -41,6 +43,10 @@
                     android:layout_height="@dimen/horizontal_line_height"
                     android:layout_marginTop="@dimen/base_margin_quintuple"
                     android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/coverageSection"
+                    layout="@layout/key_gear_item_detail_coverage_section" />
 
                 <include
                     android:id="@+id/receiptSection"

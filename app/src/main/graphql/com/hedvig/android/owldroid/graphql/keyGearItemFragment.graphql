@@ -29,4 +29,18 @@ fragment KeyGearItemFragment on KeyGearItem {
       ratio
     }
   }
+  covered {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
+  exceptions {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
 }

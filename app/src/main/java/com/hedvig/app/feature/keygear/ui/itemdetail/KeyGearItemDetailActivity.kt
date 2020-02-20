@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -17,6 +18,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ValuationBinder
+import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
@@ -36,6 +38,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
     private lateinit var photosBinder: PhotosBinder
     private lateinit var valuationBinder: ValuationBinder
+    private lateinit var coverageBinder: CoverageBinder
     private lateinit var receiptBinder: ReceiptBinder
 
     private var isFirstLoad = true
@@ -54,7 +57,12 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         ) { supportStartPostponedEnterTransition() }
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
+        coverageBinder = CoverageBinder(coverageSection as LinearLayout)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
+
+        scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }
@@ -99,6 +107,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
         photosBinder.bind(data)
         valuationBinder.bind(data)
+        coverageBinder.bind(data)
         receiptBinder.bind(data)
 
         if (isFirstLoad) {
