@@ -8,14 +8,13 @@ import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
-import com.hedvig.app.util.apollo.YearMonthAdapter
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import okhttp3.OkHttpClient
 
 class ApolloClientWrapper(
-    val okHttpClient: OkHttpClient,
-    val context: Context,
-    val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
+    private val okHttpClient: OkHttpClient,
+    private val context: Context,
+    private val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
 ) {
 
     val apolloClient: ApolloClient
@@ -45,7 +44,6 @@ class ApolloClientWrapper(
             .serverUrl(BuildConfig.GRAPHQL_URL)
             .okHttpClient(okHttpClient)
             .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
-            .addCustomTypeAdapter(CustomType.YEARMONTH, YearMonthAdapter())
             .subscriptionConnectionParams(mapOf("Authorization" to authToken))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
