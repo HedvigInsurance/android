@@ -6,7 +6,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/photos"
         android:layout_width="match_parent"
-        android:layout_height="480dp" />
+        android:layout_height="@dimen/key_gear_item_detail_photos_height" />
 
     <com.hedvig.app.ui.view.PagerIndicatorView
         android:id="@+id/pagerIndicator"
