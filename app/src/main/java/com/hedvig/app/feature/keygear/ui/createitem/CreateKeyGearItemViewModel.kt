@@ -91,13 +91,13 @@ class CreateKeyGearItemViewModelImpl(
             val uploads = if (photos.isNotEmpty()) {
                 val uploadsResponse =
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
-                    uploadsResponse.data()?.uploadFiles?.map {
-                        S3FileInput.builder().bucket(it.bucket).key(it.key).build()
-                    } ?: return@launch
+                uploadsResponse.data()?.uploadFiles?.map {
+                    S3FileInput.builder().bucket(it.bucket).key(it.key).build()
+                } ?: return@launch
             } else {
                 emptyList()
             }
-            val result = keyGearItemsRepository.createKeyGearItemAsync(category, uploads).await()
+            val result = keyGearItemsRepository.createKeyGearItemAsync(category, uploads)
 
             createResult.postValue(result.data())
         }
