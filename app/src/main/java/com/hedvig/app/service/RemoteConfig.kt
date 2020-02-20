@@ -7,6 +7,12 @@ import kotlin.coroutines.resume
 class RemoteConfig {
     private val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
 
+    init {
+        firebaseRemoteConfig.setDefaultsAsync(mapOf(
+            "Key_Gear_Enabled" to false
+        ))
+    }
+
     suspend fun fetch() = suspendCancellableCoroutine<RemoteConfigData> { cont ->
         firebaseRemoteConfig
             .fetchAndActivate()
