@@ -19,6 +19,7 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.getLocale
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import e
@@ -38,12 +39,12 @@ class KeyGearItemsRepository(
     fun keyGearItems() =
         apolloClientWrapper
             .apolloClient
-            .query(KeyGearItemsQuery())
+            .query(KeyGearItemsQuery(getLocale(context).toString()))
             .watcher()
             .toChannel()
 
     fun keyGearItem(id: String): Channel<Response<KeyGearItemQuery.Data>> {
-        keyGearItemQuery = KeyGearItemQuery(id)
+        keyGearItemQuery = KeyGearItemQuery(id, getLocale(context).toString())
         return apolloClientWrapper.apolloClient.query(keyGearItemQuery).watcher().toChannel()
     }
 
@@ -107,7 +108,8 @@ class KeyGearItemsRepository(
         apolloClientWrapper.apolloClient.mutate(
             CreateKeyGearItemMutation(
                 category,
-                files
+                files,
+                getLocale(context).toString()
             )
         ).toDeferred()
 
@@ -138,13 +140,7 @@ class KeyGearItemsRepository(
 
         val addReceiptResult = apolloClientWrapper
             .apolloClient
-            .mutate(
-                AddReceiptToKeyGearItemMutation(
-                    AddReceiptToKeyGearItemInput.builder().itemId(
-                        itemId
-                    ).file(s3file).build()
-                )
-            )
+            .mutate(AddReceiptToKeyGearItemMutation(AddReceiptToKeyGearItemInput.builder().itemId(itemId).file(s3file).build(), getLocale(context).toString()))
             .toDeferred()
             .await()
 

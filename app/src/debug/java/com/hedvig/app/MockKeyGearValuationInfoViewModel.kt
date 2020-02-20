@@ -38,6 +38,10 @@ class MockKeyGearValuationInfoViewModel : KeyGearValuationInfoViewModel() {
             KeyGearItemCategory.PHONE,
             KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", "1234"),
             null,
+            KeyGearItemFragment.Deductible(
+                "MonetaryAmountV2",
+                "1500.00"
+            ),
             KeyGearItemFragment.AsKeyGearItemValuationFixed(
                 "KeyGearItemValuation",
                 31,
@@ -45,7 +49,9 @@ class MockKeyGearValuationInfoViewModel : KeyGearValuationInfoViewModel() {
                     "KeyGearItemValuationFixed",
                     "1234"
                 )
-            )
+            ),
+            listOf(),
+            listOf()
         )
     }
 }

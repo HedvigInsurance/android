@@ -249,21 +249,21 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.keygear.ui.ReceiptActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Receipt"
+            android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
 
         <meta-data

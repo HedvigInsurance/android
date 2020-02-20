@@ -1,4 +1,6 @@
-query KeyGearItems {
+query KeyGearItems(
+  $languageCode: String!
+){
   keyGearItems {
     ... KeyGearItemFragment
   }
