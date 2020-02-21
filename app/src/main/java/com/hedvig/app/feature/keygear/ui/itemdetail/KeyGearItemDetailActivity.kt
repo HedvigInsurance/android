@@ -61,20 +61,11 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
         nameBinder = NameBinder(nameSection as LinearLayout, this, model)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
-        
+
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
 
         }
-
-
-        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-            )
-        }
-
-
 
         model.data.observe(this) { data ->
             data?.let { bind(it) }

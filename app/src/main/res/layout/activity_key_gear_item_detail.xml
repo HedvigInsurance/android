@@ -50,43 +50,28 @@
                     android:id="@+id/coverageSection"
                     layout="@layout/key_gear_item_detail_coverage_section" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/nameSection"
+                    layout="@layout/key_gear_item_detail_name_section" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
                 <include
                     android:id="@+id/receiptSection"
                     layout="@layout/key_gear_item_detail_receipt_section" />
 
+
             </LinearLayout>
-
-            <TextView
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/horizontal_line_height"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@color/separator" />
-
-            <include
-                android:id="@+id/nameSection"
-                layout="@layout/key_gear_item_detail_name_section" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/horizontal_line_height"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@color/separator" />
-
-            <TextView
-                style="@style/Headline.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_triple"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE" />
 
 
         </LinearLayout>
