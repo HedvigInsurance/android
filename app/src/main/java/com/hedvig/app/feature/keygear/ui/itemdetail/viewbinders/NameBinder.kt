@@ -3,6 +3,7 @@ package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.dismissKeyboard
@@ -17,19 +18,26 @@ class NameBinder(
     private val model: KeyGearItemDetailViewModel
 ) {
     init {
+        var isEditState = false
         root.addName.setHapticClickListener {
-            focusEditName()
+            if (isEditState) {
+                hideEditName()
+                root.addName.text =
+                    baseActivity.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+                updateName()
+                isEditState = false
+            } else {
+                focusEditName()
+                //TODO fix translation
+                root.addName.text = "Spara"
+                isEditState = true
+            }
+
         }
 
         root.nameEditText.setDoneListener {
             hideEditName()
             updateName()
-        }
-
-        root.saveName.setHapticClickListener {
-            updateName()
-            hideEditName()
-
         }
     }
 
@@ -55,11 +63,6 @@ class NameBinder(
             root.name.remove()
         }.duration = ANIMATE_DURATION
 
-        root.addName.animate().alpha(0.0f).withEndAction {
-            root.addName.remove()
-        }.duration = ANIMATE_DURATION
-
-
         root.nameEditText.apply {
             alpha = 0.0f
             show()
@@ -67,24 +70,9 @@ class NameBinder(
                 nameEditText.openKeyBoard()
             }.duration = ANIMATE_DURATION
         }
-
-        root.saveName.apply {
-            alpha = 0.0f
-            show()
-            root.saveName
-                .animate()
-                .alpha(1.0f)
-                .duration = ANIMATE_DURATION
-        }
     }
 
     private fun hideEditName() {
-        root.saveName.animate()
-            .alpha(0.0f)
-            .withEndAction {
-                root.saveName.remove()
-            }.duration = ANIMATE_DURATION
-
         root.nameEditText.apply {
             animate()
                 .alpha(0f).withEndAction {
@@ -94,14 +82,6 @@ class NameBinder(
         }
 
         root.name.apply {
-            alpha = 0.0f
-            show()
-            animate()
-                .alpha(1.0f)
-                .duration = ANIMATE_DURATION
-        }
-
-        root.addName.apply {
             alpha = 0.0f
             show()
             animate()
