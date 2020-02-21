@@ -40,6 +40,8 @@ import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
@@ -77,7 +79,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -192,6 +194,10 @@ val keyGearModule = module {
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
     viewModel<KeyGearValuationInfoViewModel> { KeyGearValuationInfoViewModelImpl(get()) }
+}
+
+val loggedInModule = module {
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
 
 val serviceModule = module {

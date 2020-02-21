@@ -34,18 +34,27 @@ class KeyGearItemsRepository(
     private val fileService: FileService,
     private val context: Context
 ) {
+    private lateinit var keyGearItemsQuery: KeyGearItemsQuery
     private lateinit var keyGearItemQuery: KeyGearItemQuery
 
-    fun keyGearItems() =
-        apolloClientWrapper
+    fun keyGearItems(): Channel<Response<KeyGearItemsQuery.Data>> {
+        keyGearItemsQuery = KeyGearItemsQuery(getLocale(context).toString())
+
+        return apolloClientWrapper
             .apolloClient
-            .query(KeyGearItemsQuery(getLocale(context).toString()))
+            .query(keyGearItemsQuery)
             .watcher()
             .toChannel()
+    }
 
     fun keyGearItem(id: String): Channel<Response<KeyGearItemQuery.Data>> {
         keyGearItemQuery = KeyGearItemQuery(id, getLocale(context).toString())
-        return apolloClientWrapper.apolloClient.query(keyGearItemQuery).watcher().toChannel()
+
+        return apolloClientWrapper
+            .apolloClient
+            .query(keyGearItemQuery)
+            .watcher()
+            .toChannel()
     }
 
     suspend fun updatePurchasePriceAndDateAsync(
@@ -104,14 +113,44 @@ class KeyGearItemsRepository(
         return apolloClientWrapper.apolloClient.mutate(UploadFilesMutation(files)).toDeferred()
     }
 
-    fun createKeyGearItemAsync(category: KeyGearItemCategory, files: List<S3FileInput>) =
-        apolloClientWrapper.apolloClient.mutate(
+    suspend fun createKeyGearItemAsync(category: KeyGearItemCategory, files: List<S3FileInput>): Response<CreateKeyGearItemMutation.Data> {
+        val result = apolloClientWrapper.apolloClient.mutate(
             CreateKeyGearItemMutation(
                 category,
                 files,
                 getLocale(context).toString()
             )
-        ).toDeferred()
+        )
+            .toDeferred()
+            .await()
+
+        val data = result.data()
+        if (data == null) {
+            e { "Failed to create new key gear item" }
+            return result
+        }
+
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(keyGearItemsQuery)
+            .execute()
+
+        val newKeyGearItems = cachedData.keyGearItems.toMutableList()
+        newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
+        val newData = cachedData
+            .toBuilder()
+            .keyGearItems(newKeyGearItems)
+            .build()
+
+        apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .writeAndPublish(keyGearItemsQuery, newData)
+            .execute()
+
+        return result
+    }
 
     suspend fun uploadReceipt(itemId: String, file: Uri) {
         val mimeType = fileService.getMimeType(file)
