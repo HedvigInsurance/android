@@ -1,28 +1,42 @@
 package com.hedvig.app.feature.keygear.ui
 
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.view.ViewGroup
 import androidx.core.content.FileProvider
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setScaleXY
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import e
 import kotlinx.android.synthetic.main.activity_receipt.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
 class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
+    private val fileService: FileService by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,20 +54,53 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         }
 
         share.setHapticClickListener {
+            if (appearsToBeAnImage(fileUrl)) {
+                shareImage(fileUrl)
+            } else {
+                downloadFile(fileUrl)
+            }
+        }
 
-            Glide.with(this)
-                .asBitmap()
-                .load(fileUrl)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
+        if (appearsToBeAnImage(fileUrl)) {
+            loadImage(fileUrl)
+        } else {
+            // TODO: Switch the share icon to be a download icon
+            receipt.setImageResource(R.drawable.ic_file)
+            receipt.updateLayoutParams {
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            receipt.setScaleXY(3f)
+        }
+    }
 
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        saveImage(resource)?.let { filePath ->
+    private fun loadImage(fileUrl: String) {
+        Glide.with(this)
+            .load(fileUrl)
+            .transform(CenterCrop())
+            .into(receipt)
+    }
 
+    private fun shareImage(fileUrl: String) {
+        Glide.with(this)
+            .asBitmap()
+            .load(fileUrl)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    lifecycleScope.launch {
+                        val filePath = saveImage(resource)
+                        if (filePath == null) {
+                            e { "Failed to save image to temp file" }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main) {
                             val sendIntent = Intent().apply {
 
                                 action = Intent.ACTION_SEND
@@ -79,40 +126,49 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                             startActivity(shareIntent)
                         }
                     }
-                })
+                }
+            })
+    }
+
+    private fun downloadFile(fileUrl: String) {
+        val uri = Uri.parse(fileUrl)
+        val request = DownloadManager.Request(uri).apply {
+            setDescription(getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)) // I'm cheating a bit here
+            setTitle(fileService.getFileName(uri))
+            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileService.getFileName(uri))
+            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         }
 
-        loadImage(fileUrl)
+        (getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager)?.enqueue(request)
+
+        Snackbar
+            // TODO: Translation
+            .make(root, "Downloading receipt", Snackbar.LENGTH_LONG)
+            .show()
     }
 
-    private fun loadImage(fileUrl: String) {
-        Glide.with(this)
-            .load(fileUrl)
-            .transform(CenterCrop())
-            .into(receipt)
-    }
+    suspend fun saveImage(finalBitmap: Bitmap): String? =
+        withContext(Dispatchers.IO) {
+            val root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()
+            val myDir = File(root)
+            myDir.mkdirs()
 
-    private fun saveImage(finalBitmap: Bitmap): String? {
-        val root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()
-        val myDir = File(root)
-        myDir.mkdirs()
+            val fName = "Image-receipt.jpg"
+            val file = File(myDir, fName)
 
-        val fName = "Image-receipt.jpg"
-        val file = File(myDir, fName)
+            if (file.exists()) file.delete()
 
-        if (file.exists()) file.delete()
-
-        return try {
-            val out = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-            out.flush()
-            out.close()
-            file.absolutePath
-        } catch (e: Exception) {
-            Timber.e(e, "Error saving image")
-            null
+            return@withContext try {
+                val out = FileOutputStream(file)
+                finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                out.flush()
+                out.close()
+                file.absolutePath
+            } catch (e: Exception) {
+                Timber.e(e, "Error saving image")
+                null
+            }
         }
-    }
 
     companion object {
         private const val RECEIPT_URL = "RECEIPT_URL"
@@ -121,5 +177,16 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             Intent(context, ReceiptActivity::class.java).apply {
                 putExtra(RECEIPT_URL, receiptUrl)
             }
+
+        private fun appearsToBeAnImage(url: String): Boolean {
+            return try {
+                when (Uri.parse(url).toString().substringAfterLast('.', "")) {
+                    "jpg", "jpeg", "png" -> true
+                    else -> false
+                }
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 }
