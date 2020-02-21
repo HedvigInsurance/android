@@ -10,7 +10,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.key_gear_item_detail_name_section.view.*
-import timber.log.Timber
 
 class NameBinder(
     private val root: LinearLayout,
@@ -25,7 +24,6 @@ class NameBinder(
         root.nameEditText.setDoneListener {
             hideEditName()
             updateName()
-            Timber.d("Done")
         }
 
         root.saveName.setHapticClickListener {

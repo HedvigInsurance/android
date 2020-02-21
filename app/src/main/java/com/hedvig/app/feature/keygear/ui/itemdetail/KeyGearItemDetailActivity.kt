@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.updatePadding
@@ -49,8 +48,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-
 
         root.useEdgeToEdge()
         initializeToolbar()
@@ -62,8 +59,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         ) { supportStartPostponedEnterTransition() }
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
-        receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
         nameBinder = NameBinder(nameSection as LinearLayout, this, model)
+        receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
@@ -120,21 +117,15 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        val newPhotos: MutableList<String?> =
-            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
-                .toMutableList()
+        photosBinder.bind(data)
+        valuationBinder.bind(data)
         nameBinder.bind(data)
-        if (newPhotos.isEmpty()) {
-            newPhotos.add(intent.getStringExtra(FIRST_PHOTO_URL))
-            photosBinder.bind(data)
-            valuationBinder.bind(data)
-            coverageBinder.bind(data)
-            receiptBinder.bind(data)
+        coverageBinder.bind(data)
+        receiptBinder.bind(data)
 
-            if (isFirstLoad) {
-                revealWithAnimation()
-                isFirstLoad = false
-            }
+        if (isFirstLoad) {
+            revealWithAnimation()
+            isFirstLoad = false
         }
     }
 
