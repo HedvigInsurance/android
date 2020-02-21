@@ -23,8 +23,8 @@
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
-            android:paddingTop="@dimen/base_margin_double"
-            android:paddingBottom="@dimen/base_margin_double"
+            android:paddingTop="@dimen/hedvig_edit_text_padding"
+            android:paddingBottom="@dimen/hedvig_edit_text_padding"
             android:background="@null"
             android:inputType="numberDecimal"
             android:singleLine="true" />
