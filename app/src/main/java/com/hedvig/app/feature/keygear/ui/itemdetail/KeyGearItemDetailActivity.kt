@@ -59,7 +59,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         ) { supportStartPostponedEnterTransition() }
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
-        nameBinder = NameBinder(nameSection as LinearLayout, this, model)
+        nameBinder = NameBinder(nameSection as LinearLayout, model)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->

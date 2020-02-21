@@ -2,10 +2,8 @@ package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
 import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -14,7 +12,6 @@ import kotlinx.android.synthetic.main.key_gear_item_detail_name_section.view.*
 
 class NameBinder(
     private val root: LinearLayout,
-    private val baseActivity: BaseActivity,
     private val model: KeyGearItemDetailViewModel
 ) {
     init {
@@ -23,13 +20,13 @@ class NameBinder(
             if (isEditState) {
                 hideEditName()
                 root.addName.text =
-                    baseActivity.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+                    root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
                 updateName()
                 isEditState = false
             } else {
                 focusEditName()
                 root.addName.text =
-                    baseActivity.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
+                    root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
                 isEditState = true
             }
 
@@ -49,13 +46,6 @@ class NameBinder(
     private fun updateName() {
         val name = root.nameEditText.getText()
         model.updateItemName(name)
-        model.data.observe(baseActivity) { data ->
-            data?.let {
-                val newName = data.fragments.keyGearItemFragment.name
-                root.name.text = newName
-            }
-
-        }
     }
 
     private fun focusEditName() {
