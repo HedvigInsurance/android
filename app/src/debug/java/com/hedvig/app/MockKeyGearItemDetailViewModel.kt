@@ -14,6 +14,20 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
 
     override val isUploading = LiveEvent<Boolean>()
 
+    override fun updateItemName(newName: String) {
+        val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
+        Handler().postDelayed({
+            data.postValue(
+                KeyGearItemQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemQuery.KeyGearItem.Fragments(
+                        items[id]!!.toBuilder().name(newName).build()
+                    )
+                )
+            )
+        }, 250)
+    }
+
     override fun loadItem(id: String) {
         Handler().postDelayed({
             data.postValue(
@@ -57,6 +71,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 KeyGearItemFragment(
                     "KeyGearItem",
                     "123",
+                    "Mackapär",
                     listOf(
                         KeyGearItemFragment.Photo(
                             "KeyGearItemPhoto",
@@ -89,6 +104,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 KeyGearItemFragment(
                     "KeyGearItem",
                     "234",
+                    "Mackapär",
                     listOf(
                         KeyGearItemFragment.Photo(
                             "KeyGearItemPhoto",
@@ -114,6 +130,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 KeyGearItemFragment(
                     "KeyGearItem",
                     "345",
+                    "Mackapär",
                     listOf(),
                     listOf(),
                     KeyGearItemCategory.JEWELRY,

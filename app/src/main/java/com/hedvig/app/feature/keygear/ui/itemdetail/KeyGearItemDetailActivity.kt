@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
+import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ValuationBinder
@@ -24,9 +25,6 @@ import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.dismissKeyboard
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.spring
@@ -34,7 +32,6 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
 
@@ -44,6 +41,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private lateinit var valuationBinder: ValuationBinder
     private lateinit var coverageBinder: CoverageBinder
     private lateinit var receiptBinder: ReceiptBinder
+    private lateinit var nameBinder: NameBinder
 
     private var isFirstLoad = true
 
@@ -65,6 +63,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
+        nameBinder = NameBinder(nameSection as LinearLayout, this, model)
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
@@ -78,87 +77,13 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             )
         }
 
-        addName.setHapticClickListener {
-            focusEditName()
+
+
+        model.data.observe(this) { data ->
+            data?.let { bind(it) }
         }
-
-        nameEditText.setDoneListener {
-            hideEditName()
-            //TODO Upload new name
-            Timber.d("Done")
-        }
-
-        saveName.setHapticClickListener {
-            //TODO Upload new name
-            hideEditName()
-
-
-            model.data.observe(this) { data ->
-                data?.let { bind(it) }
-            }
-            intent.getStringExtra(ID)?.let { id ->
-                model.loadItem(id)
-            }
-        }
-    }
-
-    private fun focusEditName() {
-        name.animate().alpha(0.0f).withEndAction {
-            name.remove()
-        }.duration = ANIMATE_DURATION
-
-        addName.animate().alpha(0.0f).withEndAction {
-            addName.remove()
-        }.duration = ANIMATE_DURATION
-
-
-        nameEditText.apply {
-            alpha = 0.0f
-            show()
-            nameEditText.animate().alpha(1.0f).withEndAction {
-                nameEditText.openKeyBoard()
-            }.duration = ANIMATE_DURATION
-        }
-
-        saveName.apply {
-            alpha = 0.0f
-            show()
-            saveName
-                .animate()
-                .alpha(1.0f)
-                .duration = ANIMATE_DURATION
-        }
-    }
-
-    private fun hideEditName() {
-        saveName.animate()
-            .alpha(0.0f)
-            .withEndAction {
-                saveName.remove()
-            }.duration = ANIMATE_DURATION
-
-        nameEditText.apply {
-            animate()
-                .alpha(0f).withEndAction {
-                    nameEditText.dismissKeyboard()
-                    nameEditText.remove()
-                }.duration = ANIMATE_DURATION
-        }
-
-        name.apply {
-            alpha = 0.0f
-            show()
-            animate()
-                .alpha(1.0f)
-                .duration = ANIMATE_DURATION
-        }
-
-        addName.apply {
-            alpha = 0.0f
-            show()
-            animate()
-                .alpha(1.0f)
-                .duration = ANIMATE_DURATION
+        intent.getStringExtra(ID)?.let { id ->
+            model.loadItem(id)
         }
     }
 
@@ -198,6 +123,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         val newPhotos: MutableList<String?> =
             data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }
                 .toMutableList()
+        nameBinder.bind(data)
         if (newPhotos.isEmpty()) {
             newPhotos.add(intent.getStringExtra(FIRST_PHOTO_URL))
             photosBinder.bind(data)
@@ -229,7 +155,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         private const val FIRST_PHOTO_URL = "FIRST_PHOTO_URL"
         private const val CATEGORY = "CATEGORY"
         private const val ID = "ID"
-        private const val ANIMATE_DURATION = 60L
 
         fun newInstance(
             context: Context,

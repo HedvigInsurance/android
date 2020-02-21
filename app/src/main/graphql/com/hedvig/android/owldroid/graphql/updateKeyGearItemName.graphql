@@ -1,0 +1,5 @@
+mutation UpdateKeyGearItemName($id: ID!, $updatedName: String){
+  updateKeyGearItemName(itemId: $id, updatedName: $updatedName){
+    name
+  }
+}
