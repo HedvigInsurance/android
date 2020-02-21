@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
+import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemNameMutation
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
@@ -179,7 +180,13 @@ class KeyGearItemsRepository(
 
         val addReceiptResult = apolloClientWrapper
             .apolloClient
-            .mutate(AddReceiptToKeyGearItemMutation(AddReceiptToKeyGearItemInput.builder().itemId(itemId).file(s3file).build(), getLocale(context).toString()))
+            .mutate(
+                AddReceiptToKeyGearItemMutation(
+                    AddReceiptToKeyGearItemInput.builder().itemId(
+                        itemId
+                    ).file(s3file).build(), getLocale(context).toString()
+                )
+            )
             .toDeferred()
             .await()
 
@@ -203,6 +210,40 @@ class KeyGearItemsRepository(
                         .toBuilder()
                         .fragments(KeyGearItemQuery.KeyGearItem.Fragments(addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment))
                         .build()
+                ).build()
+
+            apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .writeAndPublish(keyGearItemQuery, newData)
+                .execute()
+        }
+    }
+
+    suspend fun updateItemName(itemId: String, name: String) {
+        val mutation =
+            UpdateKeyGearItemNameMutation.builder().id(itemId).updatedName(name).build()
+        val response = apolloClientWrapper.apolloClient.mutate(mutation).toDeferred().await()
+
+        val newName = response.data()?.updateKeyGearItemName?.name
+
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(keyGearItemQuery)
+            .execute()
+
+        cachedData?.keyGearItem?.let { keyGearItem ->
+            val newData = cachedData
+                .toBuilder()
+                .keyGearItem(
+                    keyGearItem
+                        .toBuilder()
+                        .fragments(
+                            KeyGearItemQuery.KeyGearItem.Fragments(
+                                keyGearItem.fragments.keyGearItemFragment.toBuilder().name(newName).build()
+                            )
+                        ).build()
                 ).build()
 
             apolloClientWrapper

@@ -27,7 +27,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
     init {
         categories.value = KeyGearItemCategory
             .values()
-            .filter { it != KeyGearItemCategory.`$UNKNOWN` && it != KeyGearItemCategory.SOUND_SYSTEM } // TODO: Fix this once we remove this stray category
+            .filter { it != KeyGearItemCategory.`$UNKNOWN` }
             .map { Category(it) }
     }
 

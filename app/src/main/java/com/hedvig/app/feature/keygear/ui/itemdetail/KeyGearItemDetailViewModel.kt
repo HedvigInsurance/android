@@ -17,6 +17,7 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
 
     abstract fun loadItem(id: String)
     abstract fun uploadReceipt(uri: Uri)
+    abstract fun updateItemName(newName: String)
 }
 
 class KeyGearItemDetailViewModelImpl(
@@ -40,6 +41,13 @@ class KeyGearItemDetailViewModelImpl(
             isUploading.value = true
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             repository.uploadReceipt(id, uri)
+        }
+    }
+
+    override fun updateItemName(newName: String) {
+        viewModelScope.launch {
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
+            repository.updateItemName(id, newName)
         }
     }
 }

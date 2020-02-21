@@ -1,5 +1,6 @@
 fragment KeyGearItemFragment on KeyGearItem {
   id
+  name
   photos {
     file {
       preSignedUrl

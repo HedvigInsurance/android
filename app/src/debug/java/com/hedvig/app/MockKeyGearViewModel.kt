@@ -19,6 +19,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "123",
+                                "Sak",
                                 listOf(
                                     KeyGearItemFragment.Photo(
                                         "KeyGearItemPhoto",
@@ -55,6 +56,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "234",
+                                "Mackapär",
                                 listOf(
                                     KeyGearItemFragment.Photo(
                                         "KeyGearItemPhoto",
@@ -92,6 +94,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "345",
+                                null,
                                 listOf(),
                                 listOf(),
                                 KeyGearItemCategory.JEWELRY,
