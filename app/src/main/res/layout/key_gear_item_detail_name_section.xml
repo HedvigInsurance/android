@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -26,24 +26,20 @@
             style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Mobiltelefon"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center_vertical"
+            tools:text="Mobiltelefon" />
 
         <com.hedvig.app.ui.view.HedvigEditText
             android:id="@+id/nameEditText"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:alpha="0"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:visibility="gone"
             app:hintText="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center"
+            tools:visibility="visible" />
 
 
         <Button
@@ -51,13 +47,12 @@
             style="@style/Body.Regular.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="?attr/selectableItemBackground"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
             android:textAllCaps="false"
-            android:textColor="@color/link_purple"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textColor="@color/link_purple" />
 
         <!--TODO translation-->
         <Button
@@ -65,14 +60,14 @@
             style="@style/Body.Regular.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="?attr/selectableItemBackground"
             android:text="Spara"
             android:textAllCaps="false"
             android:textColor="@color/link_purple"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            tools:visibility="visible" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </LinearLayout>
