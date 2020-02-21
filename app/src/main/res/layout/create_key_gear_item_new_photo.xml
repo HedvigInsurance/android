@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/create_key_gear_add_photo_height"
     android:background="@drawable/background_rounded_corners_ripple"
-    android:backgroundTint="@color/violet_100"
+    android:backgroundTint="@color/color_on_surface"
     android:clickable="true"
     android:elevation="@dimen/key_gear_item_elevation"
     android:focusable="true"

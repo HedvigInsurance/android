@@ -7,7 +7,7 @@
     android:layout_height="@dimen/key_gear_card_height"
     android:layout_gravity="center"
     android:background="@drawable/background_rounded_corners_ripple"
-    android:backgroundTint="@color/violet_100"
+    android:backgroundTint="@color/color_on_surface"
     android:orientation="vertical"
     android:transitionName="addItemRoot"
     tools:layout_width="160dp">
