@@ -18,7 +18,8 @@ val KeyGearItemCategory.label: Int
             KeyGearItemCategory.PHONE -> R.string.ITEM_TYPE_PHONE
             KeyGearItemCategory.TV -> R.string.ITEM_TYPE_TV
             KeyGearItemCategory.JEWELRY -> R.string.ITEM_TYPE_JEWELRY
-            KeyGearItemCategory.SOUND_SYSTEM -> 0 // TODO: Remove this when this category is removed
+            KeyGearItemCategory.WATCH -> R.string.ITEM_TYPE_WATCH
+            KeyGearItemCategory.SMART_WATCH -> R.string.ITEM_TYPE_WATCH //TODO get correct translation
             else -> 0 // Null string resource - does not cause a crash, simply does nothing
         }
 
@@ -30,6 +31,7 @@ val KeyGearItemCategory?.illustration: Int
             KeyGearItemCategory.PHONE -> R.drawable.illustration_phone
             KeyGearItemCategory.TV -> R.drawable.illustration_tv
             KeyGearItemCategory.JEWELRY -> R.drawable.illustration_jewelry
-            KeyGearItemCategory.SOUND_SYSTEM -> 0
+            KeyGearItemCategory.WATCH -> R.drawable.illustration_jewelry //TODO get illustration
+            KeyGearItemCategory.SMART_WATCH -> R.drawable.illustration_jewelry //TODO get illustration
             else -> 0
         }

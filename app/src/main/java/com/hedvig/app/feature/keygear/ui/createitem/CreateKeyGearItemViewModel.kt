@@ -27,7 +27,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
     init {
         categories.value = KeyGearItemCategory
             .values()
-            .filter { it != KeyGearItemCategory.`$UNKNOWN` && it != KeyGearItemCategory.SOUND_SYSTEM } // TODO: Fix this once we remove this stray category
+            .filter { it != KeyGearItemCategory.`$UNKNOWN` }
             .map { Category(it) }
     }
 
@@ -91,9 +91,9 @@ class CreateKeyGearItemViewModelImpl(
             val uploads = if (photos.isNotEmpty()) {
                 val uploadsResponse =
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
-                    uploadsResponse.data()?.uploadFiles?.map {
-                        S3FileInput.builder().bucket(it.bucket).key(it.key).build()
-                    } ?: return@launch
+                uploadsResponse.data()?.uploadFiles?.map {
+                    S3FileInput.builder().bucket(it.bucket).key(it.key).build()
+                } ?: return@launch
             } else {
                 emptyList()
             }
