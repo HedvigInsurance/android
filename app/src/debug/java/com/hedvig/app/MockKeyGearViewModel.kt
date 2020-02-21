@@ -49,7 +49,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "234",
-                                "Sak",
+                                "Mackapär",
                                 listOf(
                                     KeyGearItemFragment.Photo(
                                         "KeyGearItemPhoto",

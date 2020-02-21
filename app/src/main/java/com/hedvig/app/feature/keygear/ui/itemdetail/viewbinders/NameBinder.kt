@@ -28,8 +28,8 @@ class NameBinder(
                 isEditState = false
             } else {
                 focusEditName()
-                //TODO fix translation
-                root.addName.text = "Spara"
+                root.addName.text =
+                    baseActivity.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
                 isEditState = true
             }
 
