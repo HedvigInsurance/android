@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.view.Gravity
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
@@ -33,6 +34,8 @@ import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.avdDoOnEnd
+import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
@@ -43,6 +46,7 @@ import com.hedvig.app.util.extensions.view.centerY
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import kotlinx.android.synthetic.main.app_bar.*
@@ -179,14 +183,48 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             duration = POST_CREATE_REVEAL_DURATION
             interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
+                val category = data.createKeyGearItem.fragments.keyGearItemFragment.category
                 appBarLayout.remove()
                 scrollView.remove()
 
-                // TODO: Put the right animation asset into this view based on category, and animate it
-                createdAnimation.show()
-
                 createdLabel.show()
-                createdLabel.alpha = 0f
+                createdLabel.text = interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS),
+                    "ITEM_TYPE" to getString(category.label)
+                )
+
+                createdIllustration.show()
+                createdIllustration.setImageResource(category.illustration)
+                createdIllustration
+                    .animate()
+                    .alpha(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(1000)
+                    .start()
+                createdCheckmark.show()
+                createdCheckmark
+                    .animate()
+                    .alpha(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(1000)
+                    .start()
+
+                createdAnimation.show()
+                createdAnimation.avdStart()
+                createdAnimation.avdDoOnEnd {
+                    finish()
+                    startActivity(
+                        KeyGearItemDetailActivity.newInstance(
+                            this@CreateKeyGearItemActivity,
+                            data.createKeyGearItem.fragments.keyGearItemFragment
+                        ),
+                        ActivityOptionsCompat.makeCustomAnimation(
+                            this@CreateKeyGearItemActivity,
+                            0,
+                            R.anim.fade_out
+                        ).toBundle()
+                    )
+                }
 
                 Handler().postDelayed({
                     createdLabel.spring(SpringAnimation.TRANSLATION_Y)
@@ -195,21 +233,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                         }
                         .animateToFinalPosition(0f)
 
-                    // TODO: Replace this call with an onEnd-listener on the animation asset that we will have later
-                    Handler().postDelayed({
-                        finish()
-                        startActivity(
-                            KeyGearItemDetailActivity.newInstance(
-                                this@CreateKeyGearItemActivity,
-                                data.createKeyGearItem.fragments.keyGearItemFragment
-                            ),
-                            ActivityOptionsCompat.makeCustomAnimation(
-                                this@CreateKeyGearItemActivity,
-                                0,
-                                R.anim.fade_out
-                            ).toBundle()
-                        )
-                    }, 400)
                 }, POST_CREATE_LABEL_REVEAL_DELAY)
 
             }
