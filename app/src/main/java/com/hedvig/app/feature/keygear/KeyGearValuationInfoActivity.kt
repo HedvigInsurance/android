@@ -3,15 +3,14 @@ package com.hedvig.app.feature.keygear
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
-import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_key_gear_valuation_info.*
 
 class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_valuation_info) {
@@ -67,24 +66,3 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
     }
 }
 
-@Parcelize
-data class ValuationData(
-    val purchasePrice: String,
-    val valuationType: ValuationType,
-    val ratio: Int,
-    val valuationAmount: String?
-) : Parcelable {
-    companion object {
-        fun from(
-            purchasePrice: String,
-            valuationType: ValuationType,
-            ratio: Int,
-            valuationAmount: String?
-        ) = ValuationData(purchasePrice, valuationType, ratio, valuationAmount)
-    }
-}
-
-enum class ValuationType {
-    MARKET_PRICE,
-    FIXED
-}
