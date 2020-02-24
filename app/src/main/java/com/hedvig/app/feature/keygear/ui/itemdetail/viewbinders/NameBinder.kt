@@ -41,10 +41,16 @@ class NameBinder(
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val name = data.fragments.keyGearItemFragment.name
-        if (name == null || name == "" || name == " ") {
-            root.name.text =
-                root.context.resources.getString(data.fragments.keyGearItemFragment.category.label)
+        val category =
+            root.context.resources.getString(data.fragments.keyGearItemFragment.category.label)
+
+        if (name.isNullOrEmpty() || name.isNullOrBlank()) {
+            root.nameEditText.setText(category)
+            root.nameEditText.setSelection(category.length)
+            root.name.text = category
         } else {
+            root.nameEditText.setText(name)
+            root.nameEditText.setSelection(name.length)
             root.name.text = name
         }
     }
