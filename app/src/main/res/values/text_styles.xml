@@ -131,6 +131,6 @@
 
     <style name="TabBar">
         <item name="android:fontFamily">@font/circular_book</item>
-        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textSize">@dimen/text_xsmall</item>
     </style>
 </resources>

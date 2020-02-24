@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -15,10 +14,11 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
+import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ValuationBinder
-import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
@@ -40,6 +40,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private lateinit var valuationBinder: ValuationBinder
     private lateinit var coverageBinder: CoverageBinder
     private lateinit var receiptBinder: ReceiptBinder
+    private lateinit var nameBinder: NameBinder
 
     private var isFirstLoad = true
 
@@ -58,10 +59,12 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         ) { supportStartPostponedEnterTransition() }
         valuationBinder = ValuationBinder(valuationSection as LinearLayout)
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
+        nameBinder = NameBinder(nameSection as LinearLayout, model)
         receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+
         }
 
         model.data.observe(this) { data ->
@@ -107,6 +110,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     private fun bind(data: KeyGearItemQuery.KeyGearItem) {
         photosBinder.bind(data)
         valuationBinder.bind(data)
+        nameBinder.bind(data)
         coverageBinder.bind(data)
         receiptBinder.bind(data)
 
@@ -139,7 +143,12 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             item: KeyGearItemFragment
         ) =
             Intent(context, KeyGearItemDetailActivity::class.java).apply {
-                item.photos.getOrNull(0)?.file?.preSignedUrl?.let { putExtra(FIRST_PHOTO_URL, it) }
+                item.photos.getOrNull(0)?.file?.preSignedUrl?.let {
+                    putExtra(
+                        FIRST_PHOTO_URL,
+                        it
+                    )
+                }
                 putExtra(CATEGORY, item.category)
                 putExtra(ID, item.id)
             }

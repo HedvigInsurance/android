@@ -164,5 +164,6 @@
     <dimen name="horizontal_line_height">1dp</dimen>
     <dimen name="valuation_card_height">100dp</dimen>
     <dimen name="key_gear_item_detail_photos_height">480dp</dimen>
+    <dimen name="hedvig_edit_text_padding">14dp</dimen>
 
 </resources>

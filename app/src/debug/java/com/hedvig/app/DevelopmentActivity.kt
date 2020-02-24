@@ -38,20 +38,20 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         "News",
         WhatsNewQuery.Illustration(
             "Icon", WhatsNewQuery.Variants(
-                "IconVariants", WhatsNewQuery.Variants.Fragments(
-                    IconVariantsFragment(
-                        "IconVariants",
-                        IconVariantsFragment.Dark(
-                            "IconVariant",
-                            "/app-content-service/whats_new_reward_dark.svg"
-                        ),
-                        IconVariantsFragment.Light(
-                            "IconVariant",
-                            "/app-content-service/whats_new_reward.svg"
-                        )
-                    )
+            "IconVariants", WhatsNewQuery.Variants.Fragments(
+            IconVariantsFragment(
+                "IconVariants",
+                IconVariantsFragment.Dark(
+                    "IconVariant",
+                    "/app-content-service/whats_new_reward_dark.svg"
+                ),
+                IconVariantsFragment.Light(
+                    "IconVariant",
+                    "/app-content-service/whats_new_reward.svg"
                 )
             )
+        )
+        )
         ),
         "Bonusregn till folket!",
         "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
@@ -190,6 +190,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(offerModule, profileModule, directDebitModule, keyGearModule, loggedInModule)
     }
 }

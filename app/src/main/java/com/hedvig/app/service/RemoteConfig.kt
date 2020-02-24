@@ -1,56 +1,37 @@
 package com.hedvig.app.service
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import io.reactivex.Observable
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class RemoteConfig {
     private val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
 
     init {
-        firebaseRemoteConfig.setDefaults(
-            mapOf(
-                "Referrals_Enabled" to false,
-                "Referrals_Incentive" to DEFAULT_INCENTIVE,
-                "DynamicLink_iOS_BundleId" to "",
-                "DynamicLink_Domain_Prefix" to "",
-                "New_Referrals_Enabled" to false
-            )
-        )
+        firebaseRemoteConfig.setDefaultsAsync(mapOf(
+            "Key_Gear_Enabled" to false
+        ))
     }
 
-    fun fetch(): Observable<RemoteConfigData> {
-        return Observable.create { emitter ->
-            emitter.onNext(RemoteConfigData.from(firebaseRemoteConfig))
+    suspend fun fetch() = suspendCancellableCoroutine<RemoteConfigData> { cont ->
+        firebaseRemoteConfig
+            .fetchAndActivate()
+            .addOnSuccessListener {
+                cont.resume(RemoteConfigData.from(firebaseRemoteConfig))
+            }
+            .addOnFailureListener { error ->
+                cont.cancel(error)
+            }
+    }
 
-            firebaseRemoteConfig
-                .fetchAndActivate()
-                .addOnSuccessListener {
-                    emitter.onNext(RemoteConfigData.from(firebaseRemoteConfig))
-                }
-                .addOnFailureListener { error ->
-                    emitter.onError(error)
-                }
-        }
-    }
-    companion object {
-        const val DEFAULT_INCENTIVE = 100L
-    }
 }
 
 data class RemoteConfigData(
-    val referralsEnabled: Boolean,
-    val referralsIncentiveAmount: Int,
-    val referralsIosBundleId: String,
-    val referralsDomain: String,
-    val newReferralsEnabled: Boolean
+    val keyGearEnabled: Boolean
 ) {
     companion object {
-        fun from(firebaseRemoteConfig: FirebaseRemoteConfig): RemoteConfigData = RemoteConfigData(
-            firebaseRemoteConfig.getBoolean("Referrals_Enabled"),
-            firebaseRemoteConfig.getLong("Referrals_Incentive").toInt(),
-            firebaseRemoteConfig.getString("DynamicLink_iOS_BundleId"),
-            firebaseRemoteConfig.getString("DynamicLink_Domain_Prefix"),
-            firebaseRemoteConfig.getBoolean("New_Referrals_Enabled")
+        fun from(firebaseRemoteConfig: FirebaseRemoteConfig) = RemoteConfigData(
+            firebaseRemoteConfig.getBoolean("Key_Gear_Enabled")
         )
     }
 }

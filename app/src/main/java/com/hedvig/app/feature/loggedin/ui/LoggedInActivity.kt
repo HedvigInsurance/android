@@ -52,7 +52,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
 
+    private val loggedInViewModel: LoggedInViewModel by viewModel()
+
     private val profileTracker: ProfileTracker by inject()
+    private val loggedInTracker: LoggedInTracker by inject()
 
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
 
@@ -153,9 +156,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             } else {
                 when (tab) {
                     TabNotification.REFERRALS -> {
+                        val position = when (bottomTabs.menu.size()) {
+                            4 -> 3
+                            5 -> 4
+                            else -> 3
+                        }
                         val itemView =
                             (bottomTabs.getChildAt(0) as BottomNavigationMenuView).getChildAt(
-                                LoggedInTabs.REFERRALS.ordinal
+                                position
                             ) as BottomNavigationItemView
 
                         badge = layoutInflater.inflate(
@@ -186,6 +194,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toDouble(),
                 data?.referralInformation?.campaign?.code
             ) { incentive, code -> bindReferralsButton(incentive, code) }
+
+            data?.member?.id?.let { id ->
+                loggedInTracker.setMemberId(id)
+            }
         }
         whatsNewViewModel.fetchNews()
 
@@ -196,6 +208,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
+                }
+            }
+        }
+
+        loggedInViewModel.remoteConfig.observe(this) { data ->
+            data?.let {
+                if (data.keyGearEnabled && bottomTabs.menu.size() != 5) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
+                } else if (!data.keyGearEnabled && bottomTabs.menu.size() != 4) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu)
                 }
             }
         }
