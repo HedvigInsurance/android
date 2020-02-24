@@ -29,6 +29,16 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
         date: LocalDate,
         price: MonetaryAmountV2Input
     ) {
+        data.postValue(
+            KeyGearItemQuery.KeyGearItem(
+                "KeyGearItem",
+                KeyGearItemQuery.KeyGearItem.Fragments(
+                    item.toBuilder().purchasePrice(
+                        KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", price.amount())
+                    ).build()
+                )
+            )
+        )
         Handler().postDelayed({
             finishedUploading.postValue(true)
         }, 500L)
@@ -38,6 +48,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
         val item = KeyGearItemFragment(
             "KeyGearItem",
             "123",
+            "Sak",
             listOf(
                 KeyGearItemFragment.Photo(
                     "KeyGearItemPhoto",
@@ -56,11 +67,11 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "1500.00"
             ),
             KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                "KeyGearItemValuation",
-                31,
+                "KeyGearItemValuationFixed",
+                90,
                 KeyGearItemFragment.Valuation1(
-                    "KeyGearItemValuationFixed",
-                    "1234"
+                    "MonetaryAmountV2",
+                    "9000"
                 )
             ),
             listOf(),

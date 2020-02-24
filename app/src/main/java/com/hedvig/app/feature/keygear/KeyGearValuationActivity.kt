@@ -98,7 +98,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
 
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
-
             }
         }
 
@@ -111,7 +110,10 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             val item = model.data.value
             finishedUploading?.let {
                 if (finishedUploading) {
-                    item?.let {
+                    safeLet(
+                        item?.fragments?.keyGearItemFragment?.purchasePrice?.amount,
+                        item
+                    ) { amount, item ->
                         val type = valuationType(item)
                         if (type != null) {
                             startActivity(
@@ -119,7 +121,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                                     this,
                                     item.fragments.keyGearItemFragment.category,
                                     ValuationData.from(
-                                        item.fragments.keyGearItemFragment.purchasePrice!!.amount,
+                                        amount,
                                         type,
                                         (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
                                         (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount

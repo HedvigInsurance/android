@@ -25,6 +25,7 @@ class MockKeyGearValuationInfoViewModel : KeyGearValuationInfoViewModel() {
         val item = KeyGearItemFragment(
             "KeyGearItem",
             "123",
+            "Sak",
             listOf(
                 KeyGearItemFragment.Photo(
                     "KeyGearItemPhoto",
@@ -36,18 +37,18 @@ class MockKeyGearValuationInfoViewModel : KeyGearValuationInfoViewModel() {
             ),
             listOf(),
             KeyGearItemCategory.PHONE,
-            KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", "1234"),
+            null,
             null,
             KeyGearItemFragment.Deductible(
                 "MonetaryAmountV2",
                 "1500.00"
             ),
             KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                "KeyGearItemValuation",
-                31,
+                "KeyGearItemValuationFixed",
+                90,
                 KeyGearItemFragment.Valuation1(
-                    "KeyGearItemValuationFixed",
-                    "1234"
+                    "MonetaryAmountV2",
+                    "9000.00"
                 )
             ),
             listOf(),

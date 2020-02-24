@@ -44,7 +44,7 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY"
+        tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY"
         android:textAlignment="center" />
 
     <com.hedvig.app.ui.view.HedvigEditText
