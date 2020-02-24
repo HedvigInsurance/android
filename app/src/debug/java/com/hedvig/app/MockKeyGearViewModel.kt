@@ -8,6 +8,7 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 
 class MockKeyGearViewModel : KeyGearViewModel() {
     override val data = MutableLiveData<KeyGearItemsQuery.Data>()
+    override fun sendAutoAddedItems() {}
 
     init {
         data.postValue(

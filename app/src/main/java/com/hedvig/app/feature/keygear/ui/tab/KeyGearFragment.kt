@@ -55,6 +55,8 @@ class KeyGearFragment : BaseTabFragment() {
                 bind(data)
             }
         }
+
+
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {
