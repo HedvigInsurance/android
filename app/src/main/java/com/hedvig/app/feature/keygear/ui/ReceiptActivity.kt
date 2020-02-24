@@ -8,9 +8,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.view.ViewGroup
 import androidx.core.content.FileProvider
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -21,9 +19,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.service.FileService
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setScaleXY
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import com.hedvig.app.util.interpolateTextKey
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.android.synthetic.main.activity_receipt.*
@@ -54,23 +54,20 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         }
 
         share.setHapticClickListener {
-            if (appearsToBeAnImage(fileUrl)) {
-                shareImage(fileUrl)
-            } else {
-                downloadFile(fileUrl)
-            }
+            shareImage(fileUrl)
+        }
+
+        download.setHapticClickListener {
+            downloadFile(fileUrl)
         }
 
         if (appearsToBeAnImage(fileUrl)) {
+            receipt.show()
             loadImage(fileUrl)
         } else {
-            // TODO: Switch the share icon to be a download icon
-            receipt.setImageResource(R.drawable.ic_file)
-            receipt.updateLayoutParams {
-                width = ViewGroup.LayoutParams.WRAP_CONTENT
-                height = ViewGroup.LayoutParams.WRAP_CONTENT
-            }
-            receipt.setScaleXY(3f)
+            share.remove()
+            fileIcon.show()
+            download.show()
         }
     }
 
@@ -132,8 +129,9 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
     private fun downloadFile(fileUrl: String) {
         val uri = Uri.parse(fileUrl)
+        val filename = fileService.getFileName(uri)
         val request = DownloadManager.Request(uri).apply {
-            setDescription(getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)) // I'm cheating a bit here
+            setDescription(getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE))
             setTitle(fileService.getFileName(uri))
             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileService.getFileName(uri))
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -142,8 +140,16 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         (getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager)?.enqueue(request)
 
         Snackbar
-            // TODO: Translation
-            .make(root, "Downloading receipt", Snackbar.LENGTH_LONG)
+            .make(
+                root,
+                interpolateTextKey(
+                    getString(R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR),
+                    "FILENAME" to (
+                        filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)
+                        )
+                ),
+                Snackbar.LENGTH_LONG
+            )
             .show()
     }
 

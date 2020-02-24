@@ -49,16 +49,54 @@
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_SHARE_BUTTON"
             android:padding="@dimen/base_margin_half"
             android:tint="@color/icon_tint"
-            app:srcCompat="@drawable/ic_share" />
+            app:srcCompat="@drawable/ic_share"
+            tools:visibility="gone" />
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/receipt"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:contentDescription="@null" />
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/receipt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/fileIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/base_margin_quintuple"
+            android:contentDescription="@null"
+            android:scaleX="3"
+            android:scaleY="3"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/download"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/ic_file"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/download"
+            style="@style/HedvigButton.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/KEY_GEAR_RECEIPT_DOWNLOAD"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fileIcon"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
