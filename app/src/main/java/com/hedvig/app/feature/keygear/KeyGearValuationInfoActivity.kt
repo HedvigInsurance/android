@@ -33,7 +33,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                         "VALUATION_PRICE" to vd.valuationAmount?.toBigInteger()?.toInt()
                     )
                 )
-            } else {
+            } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
                 //TODO
                 body.setMarkdownText(
                     interpolateTextKey(

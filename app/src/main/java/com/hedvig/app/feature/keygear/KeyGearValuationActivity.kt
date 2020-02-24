@@ -137,9 +137,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        return when {
-            item.fragments.keyGearItemFragment.valuation is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
-            item.fragments.keyGearItemFragment.valuation is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
+        return when (item.fragments.keyGearItemFragment.valuation) {
+            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
+            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
             else -> null
         }
     }
