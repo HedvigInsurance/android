@@ -9,12 +9,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:paddingBottom="@dimen/bottom_navigation_height"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/bottom_navigation_height">
 
         <include layout="@layout/loading_spinner" />
 
-        <!-- TODO: Add actual illustration -->
         <ImageView
             android:id="@+id/illustration"
             android:layout_width="wrap_content"

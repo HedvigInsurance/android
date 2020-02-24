@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/key_gear"
-        android:icon="@drawable/ic_claims"
+        android:icon="@drawable/ic_key_gear"
         android:title="@string/KEY_GEAR_TAB_TITLE" />
 
     <item
