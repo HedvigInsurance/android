@@ -95,7 +95,7 @@
         android:id="@+id/postCreate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/link_purple"
+        android:background="@color/off_black_dark"
         android:translationZ="@dimen/post_create_z_translation"
         android:visibility="gone"
         tools:visibility="visible">
@@ -108,28 +108,13 @@
             android:alpha="0"
             android:contentDescription="@null"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/createdAnimation"
-            app:layout_constraintEnd_toEndOf="@id/createdAnimation"
-            app:layout_constraintStart_toStartOf="@id/createdAnimation"
-            app:layout_constraintTop_toTopOf="@id/createdAnimation"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:alpha="1"
-            tools:src="@drawable/illustration_phone"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/createdAnimation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/base_margin_octuple"
-            android:contentDescription="@null"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/createdLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/key_gear_post_create_animation"
+            tools:alpha="1"
+            tools:src="@drawable/illustration_phone"
             tools:visibility="visible" />
 
         <ImageView
@@ -159,7 +144,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/createdAnimation"
+            app:layout_constraintTop_toBottomOf="@id/createdIllustration"
             tools:alpha="1"
             tools:text="@string/KEY_GEAR_ADD_ITEM_SUCCESS"
             tools:visibility="visible" />

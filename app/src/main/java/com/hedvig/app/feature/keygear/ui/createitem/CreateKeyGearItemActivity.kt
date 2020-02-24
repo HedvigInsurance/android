@@ -34,8 +34,6 @@ import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.askForPermissions
-import com.hedvig.app.util.extensions.avdDoOnEnd
-import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
@@ -207,24 +205,21 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                     .alpha(1f)
                     .setInterpolator(DecelerateInterpolator())
                     .setDuration(1000)
+                    .withEndAction {
+                        finish()
+                        startActivity(
+                            KeyGearItemDetailActivity.newInstance(
+                                this@CreateKeyGearItemActivity,
+                                data.createKeyGearItem.fragments.keyGearItemFragment
+                            ),
+                            ActivityOptionsCompat.makeCustomAnimation(
+                                this@CreateKeyGearItemActivity,
+                                0,
+                                R.anim.fade_out
+                            ).toBundle()
+                        )
+                    }
                     .start()
-
-                createdAnimation.show()
-                createdAnimation.avdStart()
-                createdAnimation.avdDoOnEnd {
-                    finish()
-                    startActivity(
-                        KeyGearItemDetailActivity.newInstance(
-                            this@CreateKeyGearItemActivity,
-                            data.createKeyGearItem.fragments.keyGearItemFragment
-                        ),
-                        ActivityOptionsCompat.makeCustomAnimation(
-                            this@CreateKeyGearItemActivity,
-                            0,
-                            R.anim.fade_out
-                        ).toBundle()
-                    )
-                }
 
                 Handler().postDelayed({
                     createdLabel.spring(SpringAnimation.TRANSLATION_Y)
