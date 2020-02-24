@@ -52,6 +52,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
 
+    private val loggedInViewModel: LoggedInViewModel by viewModel()
+
     private val profileTracker: ProfileTracker by inject()
 
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
@@ -196,6 +198,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
+                }
+            }
+        }
+
+        loggedInViewModel.remoteConfig.observe(this) { data ->
+            data?.let {
+                if (data.keyGearEnabled && bottomTabs.menu.size() != 5) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
+                } else if (!data.keyGearEnabled && bottomTabs.menu.size() != 4) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu)
                 }
             }
         }

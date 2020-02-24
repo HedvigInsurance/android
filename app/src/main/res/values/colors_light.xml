@@ -17,4 +17,5 @@
     <item name="offer_background" type="color">@color/dark_purple</item>
     <item name="foreground_gray" type="color">@color/semi_light_gray</item>
     <item name="icon_color" type="color">@color/off_black</item>
+    <item name="color_on_surface" type="color">@color/violet_100</item>
 </resources>
