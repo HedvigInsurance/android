@@ -8,6 +8,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
+import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
@@ -23,20 +24,24 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         safeLet(category, valuationData) { c, vd ->
             setPercentage(vd.ratio)
             if (vd.valuationType == ValuationType.FIXED) {
-                interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
-                    "ITEM_TYPE" to getString(c.label).toLowerCase(),
-                    "VALUATION_PERCENTAGE" to vd.ratio,
-                    "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt(),
-                    "VALUATION_PRICE" to vd.valuationAmount?.toBigInteger()?.toInt()
+                body.setMarkdownText(
+                    interpolateTextKey(
+                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                        "ITEM_TYPE" to getString(c.label).toLowerCase(),
+                        "VALUATION_PERCENTAGE" to vd.ratio,
+                        "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt(),
+                        "VALUATION_PRICE" to vd.valuationAmount?.toBigInteger()?.toInt()
+                    )
                 )
             } else {
                 //TODO
-                interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
-                    "ITEM_TYPE" to getString(c.label),
-                    "VALUATION_PERCENTAGE" to vd.ratio,
-                    "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt()
+                body.setMarkdownText(
+                    interpolateTextKey(
+                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                        "ITEM_TYPE" to getString(c.label),
+                        "VALUATION_PERCENTAGE" to vd.ratio,
+                        "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt()
+                    )
                 )
             }
         }
