@@ -176,9 +176,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             saveContainer.show()
             saveContainer
                 .spring(SpringAnimation.TRANSLATION_Y)
-                .addEndListener { _, _, _, _ ->
-                    saveContainer.requestApplyInsets()
-                }
                 .animateToFinalPosition(0f)
         }
     }

@@ -37,7 +37,6 @@
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:paddingTop="@dimen/base_margin"
         android:clipChildren="false"
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
