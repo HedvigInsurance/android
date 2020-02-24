@@ -44,8 +44,11 @@ import com.hedvig.app.util.extensions.view.centerY
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import kotlinx.android.synthetic.main.app_bar.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -66,6 +69,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
+        root.useEdgeToEdge()
 
         setupLargeTitle(
             R.string.KEY_GEAR_ADD_ITEM_PAGE_TITLE,
@@ -73,6 +77,12 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             R.drawable.ic_back,
             backAction = this::onBackPressed
         )
+        appBarLayout.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+        saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
 
         photos.adapter =
             PhotosAdapter(
