@@ -44,9 +44,8 @@ class NameBinder(
         val category =
             root.context.resources.getString(data.fragments.keyGearItemFragment.category.label)
 
-        if (name.isNullOrEmpty() || name.isNullOrBlank()) {
-            root.nameEditText.setText(category)
-            root.nameEditText.setSelection(category.length)
+        if (name.isNullOrBlank()) {
+            root.nameEditText.setText("")
             root.name.text = category
         } else {
             root.nameEditText.setText(name)
