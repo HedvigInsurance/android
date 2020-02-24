@@ -122,7 +122,14 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500.00"
                     ),
-                    null,
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuation",
+                        31,
+                        KeyGearItemFragment.Valuation1(
+                            "KeyGearItemValuationFixed",
+                            "1234"
+                        )
+                    ),
                     listOf(),
                     listOf()
                 ),
@@ -148,9 +155,13 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500.00"
                     ),
-                    KeyGearItemFragment.AsKeyGearItemValuationMarketValue(
-                        "KeyGearItemValuationFixed",
-                        100
+                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
+                        "KeyGearItemValuation",
+                        31,
+                        KeyGearItemFragment.Valuation1(
+                            "KeyGearItemValuationFixed",
+                            "1234"
+                        )
                     ),
                     listOf(),
                     listOf()

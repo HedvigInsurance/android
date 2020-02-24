@@ -1,13 +1,30 @@
 package com.hedvig.app.feature.keygear
 
+import android.animation.ValueAnimator
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Build
 import android.os.Bundle
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
+import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.ValuationData
+import com.hedvig.app.feature.keygear.ui.createitem.label
+import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.dp
+import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -18,12 +35,30 @@ import java.util.Calendar
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
 
+    private var isUploading = false
+    var id: String = ""
     private var date: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val id = intent.getStringExtra(ITEM_ID)
+        id = intent.getStringExtra(ITEM_ID)
+
+        saveContainer.show()
+        model.data.observe(this) { data ->
+            data?.let { data ->
+                val category =
+                    resources.getString(data.fragments.keyGearItemFragment.category.label)
+                        .toLowerCase()
+
+                body.text = interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY),
+                    "ITEM_TYPE" to category
+                )
+            }
+        }
+        model.loadItem(id)
+
 
         dateInput.setHapticClickListener {
             val calendar = Calendar.getInstance()
@@ -50,15 +85,19 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             onBackPressed()
         }
 
-        continueButton.setHapticClickListener {
-            val price = priceInput.getText()
+        save.setHapticClickListener {
+            if (isUploading) {
+                return@setHapticClickListener
+            }
+            isUploading = true
+            transitionToUploading()
 
+            val price = priceInput.getText()
             safeLet(date, id) { date, id ->
                 val monetaryValue =
                     MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
+
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
-                //TODO
-                onBackPressed()
             }
         }
 
@@ -66,14 +105,103 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
         }
+
+        model.finishedUploading.observe(this) { finishedUploading ->
+            val item = model.data.value
+            finishedUploading?.let {
+                if (finishedUploading) {
+                    safeLet(
+                        item?.fragments?.keyGearItemFragment?.purchasePrice?.amount,
+                        item
+                    ) { amount, item ->
+                        val type = valuationType(item)
+                        if (type != null) {
+                            if (type == ValuationType.FIXED) {
+                                startActivity(
+                                    KeyGearValuationInfoActivity.newInstance(
+                                        this,
+                                        item.fragments.keyGearItemFragment.category,
+                                        ValuationData.from(
+                                            amount,
+                                            type,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
+                                        )
+                                    )
+                                )
+                                finish()
+                            } else if (type == ValuationType.MARKET_PRICE) {
+                                startActivity(
+                                    KeyGearValuationInfoActivity.newInstance(
+                                        this,
+                                        item.fragments.keyGearItemFragment.category,
+                                        ValuationData.from(
+                                            amount,
+                                            type,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationMarketValue).ratio
+                                        )
+                                    )
+                                )
+                                finish()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
+        return when (item.fragments.keyGearItemFragment.valuation) {
+            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
+            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
+            else -> null
+        }
+    }
+
+    private fun transitionToUploading() {
+        loadingIndicator.show()
+        val startCornerRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ((saveContainer.background as RippleDrawable).getDrawable(0) as GradientDrawable).cornerRadius
+        } else {
+            BUTTON_CORNER_RADIUS
+        }
+        ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
+            interpolator = AccelerateDecelerateInterpolator()
+            duration = SAVE_BUTTON_TRANSITION_DURATION
+            addUpdateListener { va ->
+                saveContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                    width = va.animatedValue as Int
+                }
+                save.alpha = 1 - va.animatedFraction
+                loadingIndicator.alpha = va.animatedFraction
+                val backgroundShape =
+                    ((saveContainer.background as? RippleDrawable)?.getDrawable(0) as? GradientDrawable)?.mutate() as? GradientDrawable
+                backgroundShape?.cornerRadius =
+                    boundedLerp(startCornerRadius, saveContainer.height / 2f, va.animatedFraction)
+            }
+            start()
+        }
     }
 
     private fun setButtonState(hasPrice: Boolean, hasDate: Boolean) {
-        continueButton.isEnabled = hasPrice && hasDate
+        if (hasPrice && hasDate) {
+            save.isEnabled = true
+            saveContainer.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.link_purple)
+        } else {
+            save.isEnabled = false
+            saveContainer.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.semi_light_gray)
+        }
     }
 
     companion object {
         private const val ITEM_ID = "ITEM_ID"
+
+        private val BUTTON_CORNER_RADIUS = 112.dp.toFloat()
+
+        private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 
         fun newInstance(context: Context, id: String) =
             Intent(context, KeyGearValuationActivity::class.java).apply {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_xxxlarge">48sp</dimen>
     <dimen name="text_xxlarge">32sp</dimen>
     <dimen name="text_xlarge">24sp</dimen>
     <dimen name="text_large">18sp</dimen>
@@ -17,6 +18,10 @@
         <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
+    <style name="Header.xLarge">
+        <item name="android:textSize">@dimen/text_xxxlarge</item>
+    </style>
+
     <style name="Header.Large">
         <item name="android:textSize">@dimen/text_xxlarge</item>
     </style>
@@ -32,6 +37,11 @@
     <style name="Headline">
         <item name="android:fontFamily">@font/circular_bold</item>
         <item name="android:textColor">@color/text_emphasized</item>
+    </style>
+
+    <style name="Headline.XLarge">
+        <item name="android:fontFamily">@font/soray_extrabold</item>
+        <item name="android:textSize">@dimen/text_xxxlarge</item>
     </style>
 
     <style name="Headline.Large">
