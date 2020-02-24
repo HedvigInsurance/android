@@ -49,6 +49,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             "KeyGearItem",
             "123",
             "Sak",
+            null,
             listOf(
                 KeyGearItemFragment.Photo(
                     "KeyGearItemPhoto",

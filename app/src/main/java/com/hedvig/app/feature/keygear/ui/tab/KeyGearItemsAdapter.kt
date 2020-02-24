@@ -23,7 +23,9 @@ import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.key_gear_add_item.view.*
 import kotlinx.android.synthetic.main.key_gear_item.view.*
 
@@ -104,8 +106,14 @@ class KeyGearItemsAdapter(
                     holder.image.setImageDrawable(holder.image.context.compatDrawable(item.fragments.keyGearItemFragment.category.illustration))
                 }
 
-                holder.category.text =
-                    holder.category.resources.getString(item.fragments.keyGearItemFragment.category.label)
+                holder.name.text = item.fragments.keyGearItemFragment.name
+                    ?: holder.name.resources.getString(item.fragments.keyGearItemFragment.category.label)
+
+                if (item.fragments.keyGearItemFragment.physicalReferenceHash != null) {
+                    holder.autoAdded.show()
+                } else {
+                    holder.autoAdded.remove()
+                }
             }
         }
     }
@@ -123,7 +131,8 @@ class KeyGearItemsAdapter(
         class Item(view: View) : ViewHolder(view) {
             val root: FrameLayout = view.keyGearItemRoot
             val image: ImageView = view.itemPhoto
-            val category: TextView = view.itemCategory
+            val name: TextView = view.name
+            val autoAdded: TextView = view.autoAddedTag
         }
     }
 }

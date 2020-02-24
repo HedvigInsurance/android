@@ -1,6 +1,7 @@
 fragment KeyGearItemFragment on KeyGearItem {
   id
   name
+  physicalReferenceHash
   photos {
     file {
       preSignedUrl
