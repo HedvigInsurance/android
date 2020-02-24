@@ -37,10 +37,9 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                 //TODO
                 body.setMarkdownText(
                     interpolateTextKey(
-                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
+                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY),
                         "ITEM_TYPE" to getString(c.label),
-                        "VALUATION_PERCENTAGE" to vd.ratio,
-                        "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt()
+                        "VALUATION_PERCENTAGE" to vd.ratio
                     )
                 )
             }

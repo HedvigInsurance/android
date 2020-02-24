@@ -16,7 +16,7 @@ data class ValuationData(
             purchasePrice: String,
             valuationType: ValuationType,
             ratio: Int,
-            valuationAmount: String?
+            valuationAmount: String? = null
         ) = ValuationData(purchasePrice, valuationType, ratio, valuationAmount)
     }
 }

@@ -67,7 +67,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "1500.00"
             ),
             KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                "KeyGearItemValuationFixed",
+                "KeyGearItemValuationMarketValue",
                 90,
                 KeyGearItemFragment.Valuation1(
                     "MonetaryAmountV2",

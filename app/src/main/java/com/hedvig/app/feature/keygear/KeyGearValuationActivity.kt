@@ -116,19 +116,34 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     ) { amount, item ->
                         val type = valuationType(item)
                         if (type != null) {
-                            startActivity(
-                                KeyGearValuationInfoActivity.newInstance(
-                                    this,
-                                    item.fragments.keyGearItemFragment.category,
-                                    ValuationData.from(
-                                        amount,
-                                        type,
-                                        (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
-                                        (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
+                            if (type == ValuationType.FIXED) {
+                                startActivity(
+                                    KeyGearValuationInfoActivity.newInstance(
+                                        this,
+                                        item.fragments.keyGearItemFragment.category,
+                                        ValuationData.from(
+                                            amount,
+                                            type,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
+                                        )
                                     )
                                 )
-                            )
-                            finish()
+                                finish()
+                            } else if (type == ValuationType.MARKET_PRICE) {
+                                startActivity(
+                                    KeyGearValuationInfoActivity.newInstance(
+                                        this,
+                                        item.fragments.keyGearItemFragment.category,
+                                        ValuationData.from(
+                                            amount,
+                                            type,
+                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationMarketValue).ratio
+                                        )
+                                    )
+                                )
+                                finish()
+                            }
                         }
                     }
                 }
