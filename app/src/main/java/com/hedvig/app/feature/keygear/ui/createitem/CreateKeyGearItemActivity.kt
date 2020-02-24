@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.view.Gravity
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
@@ -43,6 +44,7 @@ import com.hedvig.app.util.extensions.view.centerY
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import kotlinx.android.synthetic.main.app_bar.*
@@ -179,24 +181,31 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             duration = POST_CREATE_REVEAL_DURATION
             interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
+                val category = data.createKeyGearItem.fragments.keyGearItemFragment.category
                 appBarLayout.remove()
                 scrollView.remove()
 
-                // TODO: Put the right animation asset into this view based on category, and animate it
-                createdAnimation.show()
-
                 createdLabel.show()
-                createdLabel.alpha = 0f
+                createdLabel.text = interpolateTextKey(
+                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS),
+                    "ITEM_TYPE" to getString(category.label)
+                )
 
-                Handler().postDelayed({
-                    createdLabel.spring(SpringAnimation.TRANSLATION_Y)
-                        .addUpdateListener { _, value, _ ->
-                            createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
-                        }
-                        .animateToFinalPosition(0f)
-
-                    // TODO: Replace this call with an onEnd-listener on the animation asset that we will have later
-                    Handler().postDelayed({
+                createdIllustration.show()
+                createdIllustration.setImageResource(category.illustration)
+                createdIllustration
+                    .animate()
+                    .alpha(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(1000)
+                    .start()
+                createdCheckmark.show()
+                createdCheckmark
+                    .animate()
+                    .alpha(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(1000)
+                    .withEndAction {
                         finish()
                         startActivity(
                             KeyGearItemDetailActivity.newInstance(
@@ -209,7 +218,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                                 R.anim.fade_out
                             ).toBundle()
                         )
-                    }, 400)
+                    }
+                    .start()
+
+                Handler().postDelayed({
+                    createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                        .addUpdateListener { _, value, _ ->
+                            createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                        }
+                        .animateToFinalPosition(0f)
+
                 }, POST_CREATE_LABEL_REVEAL_DELAY)
 
             }
