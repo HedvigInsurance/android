@@ -41,9 +41,10 @@ class KeyGearItemDetailViewModelImpl(
 
     override fun uploadReceipt(uri: Uri) {
         viewModelScope.launch {
-            isUploading.value = true
+            isUploading.postValue(true)
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             repository.uploadReceipt(id, uri)
+            isUploading.postValue(false)
         }
     }
 

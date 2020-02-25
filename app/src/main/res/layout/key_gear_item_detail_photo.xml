@@ -17,9 +17,8 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/item_detail_gradient_size"
         android:contentDescription="@null"
-        app:srcCompat="@drawable/key_gear_item_photo_gradient"
-        android:rotation="180" />
+        app:srcCompat="@drawable/key_gear_item_detail_photo_gradient" />
 
 </FrameLayout>
