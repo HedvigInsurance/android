@@ -17,7 +17,6 @@ import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
@@ -150,7 +149,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             interpolator = AccelerateDecelerateInterpolator()
             duration = SAVE_BUTTON_TRANSITION_DURATION
             addUpdateListener { va ->
-                saveContainer.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                saveContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                     width = va.animatedValue as Int
                 }
                 save.alpha = 1 - va.animatedFraction
