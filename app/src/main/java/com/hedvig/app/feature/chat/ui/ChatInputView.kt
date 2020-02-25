@@ -125,7 +125,7 @@ class ChatInputView : FrameLayout {
         uploadRecording: (String) -> Unit,
         tracker: ChatTracker,
         openSendGif: () -> Unit,
-        chatRecorderView: RecyclerView,
+        chatRecyclerView: RecyclerView,
         chatRecorderViewInitialPadding: Int
     ) {
         this.sendTextMessage = sendTextMessage
@@ -135,7 +135,7 @@ class ChatInputView : FrameLayout {
         audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.tracker = tracker
         this.openSendGif = openSendGif
-        this.chatRecyclerView = chatRecorderView
+        this.chatRecyclerView = chatRecyclerView
         this.chatRecyclerViewInitialPadding = chatRecorderViewInitialPadding
     }
 
@@ -189,6 +189,7 @@ class ChatInputView : FrameLayout {
     }
 
     private fun bindTextInput(input: TextInput) {
+        this.setBackgroundColor(resources.getColor(R.color.background_semi_transparent))
         if (input.richTextSupport) {
             uploadFile.show()
             sendGif.show()
@@ -237,6 +238,7 @@ class ChatInputView : FrameLayout {
         value: String,
         type: SingleSelectChoiceType
     ) {
+        this.setBackgroundColor(resources.getColor(R.color.background))
         val singleSelectButton =
             layoutInflater.inflate(
                 R.layout.chat_single_select_button,
@@ -258,8 +260,8 @@ class ChatInputView : FrameLayout {
         }
         singleSelectContainer.addView(singleSelectButton)
 
-        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
-        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + this.measureTextInput())
+        singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + singleSelectContainer.measuredHeight - measureTextInput())
     }
 
     private fun disableSingleButtons() {
