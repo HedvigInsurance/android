@@ -14,10 +14,12 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
     abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
 
     abstract val isUploading: LiveEvent<Boolean>
+    abstract val isDeleted: LiveEvent<Boolean>
 
     abstract fun loadItem(id: String)
     abstract fun uploadReceipt(uri: Uri)
     abstract fun updateItemName(newName: String)
+    abstract fun deleteItem()
 }
 
 class KeyGearItemDetailViewModelImpl(
@@ -27,6 +29,7 @@ class KeyGearItemDetailViewModelImpl(
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override val isUploading = LiveEvent<Boolean>()
+    override val isDeleted = LiveEvent<Boolean>()
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
@@ -48,6 +51,14 @@ class KeyGearItemDetailViewModelImpl(
         viewModelScope.launch {
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             repository.updateItemName(id, newName)
+        }
+    }
+
+    override fun deleteItem() {
+        viewModelScope.launch {
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
+            repository.deleteItem(id)
+            isDeleted.postValue(true)
         }
     }
 }

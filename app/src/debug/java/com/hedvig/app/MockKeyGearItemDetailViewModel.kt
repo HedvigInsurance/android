@@ -13,6 +13,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override val isUploading = LiveEvent<Boolean>()
+    override val isDeleted = LiveEvent<Boolean>()
 
     override fun updateItemName(newName: String) {
         val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
@@ -25,6 +26,12 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     )
                 )
             )
+        }, 250)
+    }
+
+    override fun deleteItem() {
+        Handler().postDelayed({
+            isDeleted.postValue(true)
         }, 250)
     }
 
