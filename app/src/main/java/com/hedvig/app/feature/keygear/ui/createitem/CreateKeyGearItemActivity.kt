@@ -65,15 +65,13 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     private var isShowingPostCreateAnimation = false
     private var isUploading = false
 
-    private var topBarHeight: Int = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
         root.useEdgeToEdge()
         topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        topBarHeight = topBar.measuredHeight
+        val topBarHeight = topBar.measuredHeight
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
