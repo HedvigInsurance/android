@@ -12,6 +12,9 @@
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Hedvig.Theme.KeyGear.ItemDetail" parent="Hedvig.Theme.KeyGear">
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

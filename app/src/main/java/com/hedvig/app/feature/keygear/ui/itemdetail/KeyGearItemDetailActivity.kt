@@ -82,7 +82,9 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.navigationIcon = compatDrawable(R.drawable.ic_back_white)
+        val backDrawable = compatDrawable(R.drawable.ic_back)
+        backDrawable?.setTint(compatColor(R.color.white))
+        toolbar.navigationIcon = backDrawable
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
