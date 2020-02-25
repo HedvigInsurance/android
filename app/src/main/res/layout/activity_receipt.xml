@@ -73,15 +73,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/base_margin_quintuple"
             android:contentDescription="@null"
-            android:scaleX="3"
-            android:scaleY="3"
+            android:tint="@color/icon_tint"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/download"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/ic_file"
+            app:srcCompat="@drawable/ic_choose_file"
             tools:visibility="visible" />
 
         <Button
