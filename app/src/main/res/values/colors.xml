@@ -39,4 +39,5 @@
     <color name="translucent_dark_mode">#aa0a0d14</color>
     <color name="dark_mode_elevation_1">#24272e</color>
     <color name="dark_mode_semi_transparent">#e624272e</color>
+    <color name="translucent_tool_bar">#730A0D14</color>
 </resources>
