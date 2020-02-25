@@ -30,13 +30,13 @@ import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
-import java.util.Calendar
+import java.util.*
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
 
     private var isUploading = false
-    var id: String = ""
+    private lateinit var id: String
     private var date: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,9 +46,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
         saveContainer.show()
         model.data.observe(this) { data ->
-            data?.let { data ->
+            data?.let { d ->
                 val category =
-                    resources.getString(data.fragments.keyGearItemFragment.category.label)
+                    resources.getString(d.fragments.keyGearItemFragment.category.label)
                         .toLowerCase()
 
                 body.text = interpolateTextKey(

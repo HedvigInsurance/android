@@ -109,7 +109,8 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
-                    listOf()
+                    listOf(),
+                    false
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -143,7 +144,8 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
-                    listOf()
+                    listOf(),
+                    false
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -177,7 +179,8 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
-                    listOf()
+                    listOf(),
+                    false
                 )
         )
     }

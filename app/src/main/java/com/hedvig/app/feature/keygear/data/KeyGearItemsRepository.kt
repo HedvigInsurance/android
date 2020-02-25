@@ -148,7 +148,10 @@ class KeyGearItemsRepository(
             .execute()
 
         val newKeyGearItems = cachedData.keyGearItems.toMutableList()
-        if (!newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }) {
+        if (
+            !newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }
+            && !data.createKeyGearItem.fragments.keyGearItemFragment.isDeleted
+        ) {
             newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
         }
         val newData = cachedData

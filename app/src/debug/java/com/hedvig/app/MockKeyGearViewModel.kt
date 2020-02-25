@@ -48,7 +48,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     ),
@@ -86,7 +87,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     ),
@@ -117,7 +119,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     )

@@ -76,7 +76,8 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 )
             ),
             listOf(),
-            listOf()
+            listOf(),
+            false
         )
     }
 }

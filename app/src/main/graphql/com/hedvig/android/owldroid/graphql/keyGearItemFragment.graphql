@@ -45,4 +45,5 @@ fragment KeyGearItemFragment on KeyGearItem {
       }
     }
   }
+  deleted
 }

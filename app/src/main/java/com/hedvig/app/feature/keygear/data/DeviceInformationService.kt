@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -24,7 +25,7 @@ class DeviceInformationService(
         messageDigest.update(androidId.toByteArray())
 
         val result = messageDigest.digest()
-        return result.toString()
+        return BigInteger(1, result).toString(16).padStart(32, '0')
     }
 
     fun getDeviceType(): DeviceType {
