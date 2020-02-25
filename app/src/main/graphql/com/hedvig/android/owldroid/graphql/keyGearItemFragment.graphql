@@ -1,6 +1,7 @@
 fragment KeyGearItemFragment on KeyGearItem {
   id
   name
+  physicalReferenceHash
   photos {
     file {
       preSignedUrl
@@ -44,4 +45,5 @@ fragment KeyGearItemFragment on KeyGearItem {
       }
     }
   }
+  deleted
 }

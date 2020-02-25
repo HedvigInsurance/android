@@ -49,6 +49,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             "KeyGearItem",
             "123",
             "Sak",
+            null,
             listOf(
                 KeyGearItemFragment.Photo(
                     "KeyGearItemPhoto",
@@ -75,7 +76,8 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 )
             ),
             listOf(),
-            listOf()
+            listOf(),
+            false
         )
     }
 }

@@ -72,7 +72,7 @@ class ValuationBinder(
         val category = data.fragments.keyGearItemFragment.category
         root.valuationMoreInfo.setHapticClickListener {
             safeLet(
-                data?.fragments?.keyGearItemFragment?.purchasePrice?.amount,
+                data.fragments.keyGearItemFragment.purchasePrice?.amount,
                 data
             ) { amount, item ->
                 val type = valuationType(item)

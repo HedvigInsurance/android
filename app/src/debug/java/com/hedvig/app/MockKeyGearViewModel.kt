@@ -8,6 +8,7 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 
 class MockKeyGearViewModel : KeyGearViewModel() {
     override val data = MutableLiveData<KeyGearItemsQuery.Data>()
+    override fun sendAutoAddedItems() {}
 
     init {
         data.postValue(
@@ -20,6 +21,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 "KeyGearItem",
                                 "123",
                                 "Sak",
+                                null,
                                 listOf(
                                     KeyGearItemFragment.Photo(
                                         "KeyGearItemPhoto",
@@ -46,7 +48,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     ),
@@ -57,6 +60,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 "KeyGearItem",
                                 "234",
                                 "Mackapär",
+                                null,
                                 listOf(
                                     KeyGearItemFragment.Photo(
                                         "KeyGearItemPhoto",
@@ -83,7 +87,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     ),
@@ -94,6 +99,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                             KeyGearItemFragment(
                                 "KeyGearItem",
                                 "345",
+                                null,
                                 null,
                                 listOf(),
                                 listOf(),
@@ -113,7 +119,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
-                                listOf()
+                                listOf(),
+                                false
                             )
                         )
                     )

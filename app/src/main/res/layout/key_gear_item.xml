@@ -3,11 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyGearItemRoot"
-    android:background="@drawable/background_rounded_corners"
-    android:backgroundTint="@color/dark_purple"
     android:layout_width="match_parent"
     android:layout_height="@dimen/key_gear_card_height"
+    android:background="@drawable/background_rounded_corners"
+    android:backgroundTint="@color/dark_purple"
     tools:layout_width="160dp">
+
+    <TextView
+        android:id="@+id/autoAddedTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_half"
+        android:layout_marginTop="@dimen/base_margin_half"
+        android:background="@drawable/background_rounded_corners"
+        android:backgroundTint="@color/translucent_dark_mode"
+        android:paddingStart="@dimen/base_margin"
+        android:paddingTop="@dimen/base_margin_half"
+        android:paddingEnd="@dimen/base_margin"
+        android:paddingBottom="@dimen/base_margin_half"
+        android:text="@string/KEY_GEAR_ADDED_AUTOMATICALLY_TAG"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/itemPhoto"
@@ -24,7 +41,7 @@
         app:srcCompat="@drawable/key_gear_item_photo_gradient" />
 
     <TextView
-        android:id="@+id/itemCategory"
+        android:id="@+id/name"
         style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

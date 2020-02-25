@@ -115,14 +115,23 @@ class KeyGearItemsRepository(
         return apolloClientWrapper.apolloClient.mutate(UploadFilesMutation(files)).toDeferred()
     }
 
-    suspend fun createKeyGearItemAsync(category: KeyGearItemCategory, files: List<S3FileInput>): Response<CreateKeyGearItemMutation.Data> {
-        val result = apolloClientWrapper.apolloClient.mutate(
-            CreateKeyGearItemMutation(
-                category,
-                files,
-                getLocale(context).toString()
-            )
-        )
+    suspend fun createKeyGearItemAsync(
+        category: KeyGearItemCategory,
+        files: List<S3FileInput>,
+        physicalReferenceHash: String? = null
+    ): Response<CreateKeyGearItemMutation.Data> {
+        val builder = CreateKeyGearItemMutation.builder()
+
+        builder
+            .category(category)
+            .photos(files)
+            .languageCode(getLocale(context).toString())
+
+        physicalReferenceHash?.let { builder.physicalReferenceHash(it) }
+
+        val result = apolloClientWrapper
+            .apolloClient
+            .mutate(builder.build())
             .toDeferred()
             .await()
 
@@ -139,7 +148,12 @@ class KeyGearItemsRepository(
             .execute()
 
         val newKeyGearItems = cachedData.keyGearItems.toMutableList()
-        newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
+        if (
+            !newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }
+            && !data.createKeyGearItem.fragments.keyGearItemFragment.isDeleted
+        ) {
+            newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
+        }
         val newData = cachedData
             .toBuilder()
             .keyGearItems(newKeyGearItems)

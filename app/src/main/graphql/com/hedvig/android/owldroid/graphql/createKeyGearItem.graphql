@@ -2,8 +2,15 @@ mutation CreateKeyGearItem(
   $category: KeyGearItemCategory!
   $photos: [S3FileInput!]!
   $languageCode: String!
+  $physicalReferenceHash: String
 ) {
-  createKeyGearItem(input: { photos: $photos, category: $category }) {
+  createKeyGearItem(
+    input: {
+      photos: $photos
+      category: $category
+      physicalReferenceHash: $physicalReferenceHash
+    }
+  ) {
     ...KeyGearItemFragment
   }
 }

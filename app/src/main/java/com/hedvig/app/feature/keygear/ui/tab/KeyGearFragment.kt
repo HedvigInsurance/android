@@ -25,6 +25,8 @@ class KeyGearFragment : BaseTabFragment() {
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
 
+    private var hasSentAutoAddedItems = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -55,8 +57,13 @@ class KeyGearFragment : BaseTabFragment() {
         viewModel.data.observe(this) { d ->
             d?.let { data ->
                 bind(data)
+                if (!hasSentAutoAddedItems) {
+                    hasSentAutoAddedItems = true
+                    viewModel.sendAutoAddedItems()
+                }
             }
         }
+
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {

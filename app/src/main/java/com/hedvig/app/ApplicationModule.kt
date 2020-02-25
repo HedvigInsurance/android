@@ -26,6 +26,7 @@ import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
+import com.hedvig.app.feature.keygear.data.DeviceInformationService
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
@@ -78,7 +79,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -188,7 +189,7 @@ val directDebitModule = module {
 }
 
 val keyGearModule = module {
-    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get()) }
+    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
@@ -203,6 +204,7 @@ val serviceModule = module {
     single { LoginStatusService(get(), get()) }
     single { RemoteConfig() }
     single { TabNotificationService(get()) }
+    single { DeviceInformationService(get()) }
 }
 
 val repositoriesModule = module {
