@@ -20,7 +20,8 @@ val KeyGearItemCategory.label: Int
             KeyGearItemCategory.JEWELRY -> R.string.ITEM_TYPE_JEWELRY
             KeyGearItemCategory.WATCH -> R.string.ITEM_TYPE_WATCH
             KeyGearItemCategory.BIKE -> R.string.ITEM_TYPE_BIKE
-            KeyGearItemCategory.SMART_WATCH -> R.string.ITEM_TYPE_WATCH //TODO get correct translation
+            KeyGearItemCategory.SMART_WATCH -> R.string.ITEM_TYPE_SMART_WATCH
+            KeyGearItemCategory.TABLET -> R.string.ITEM_TYPE_TABLET
             else -> 0 // Null string resource - causes a crash, use with caution
         }
 
@@ -35,5 +36,6 @@ val KeyGearItemCategory?.illustration: Int
             KeyGearItemCategory.WATCH -> R.drawable.illustration_clock
             KeyGearItemCategory.BIKE -> R.drawable.illustration_bicycle
             KeyGearItemCategory.SMART_WATCH -> R.drawable.illustration_clock
-            else -> 0
+            KeyGearItemCategory.TABLET -> R.drawable.illustration_tablet
+            else -> 0 // Null drawable resources - causes a crash, use with caution
         }

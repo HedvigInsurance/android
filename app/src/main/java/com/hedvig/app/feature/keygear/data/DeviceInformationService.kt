@@ -18,7 +18,7 @@ class DeviceInformationService(
 ) {
     @SuppressLint("HardwareIds")
     fun getDeviceFingerprint(): String {
-        val messageDigest = MessageDigest.getInstance("SHA-256")
+        val messageDigest = MessageDigest.getInstance(SHA256)
         messageDigest.reset()
 
         val androidId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -46,11 +46,17 @@ class DeviceInformationService(
         val diagonalInches = sqrt(widthInches.pow(2) + heightInches.pow(2))
 
         // This is unfortunately the only trick that is available
-        if (diagonalInches >= 7.0f) {
+        if (diagonalInches >= MINIMUM_TABLET_SCREEN_SIZE_INCHES) {
             return DeviceType.TABLET
         }
 
         return DeviceType.PHONE
+    }
+
+    companion object {
+        private const val SHA256 = "SHA-256"
+
+        private const val MINIMUM_TABLET_SCREEN_SIZE_INCHES = 7.0f
     }
 }
 
@@ -62,7 +68,7 @@ enum class DeviceType {
 
     fun into() = when (this) {
         PHONE -> KeyGearItemCategory.PHONE
-        TABLET -> TODO()
+        TABLET -> KeyGearItemCategory.TABLET
         WATCH -> KeyGearItemCategory.SMART_WATCH
         TV -> KeyGearItemCategory.TV
     }
