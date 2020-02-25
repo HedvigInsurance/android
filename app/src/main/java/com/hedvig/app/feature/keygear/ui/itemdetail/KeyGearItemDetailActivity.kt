@@ -82,7 +82,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.navigationIcon = compatDrawable(R.drawable.ic_back)
+        toolbar.navigationIcon = compatDrawable(R.drawable.ic_back_white)
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -100,7 +100,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             toolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
-                    compatColor(R.color.translucent_background),
+                    compatColor(R.color.translucent_tool_bar),
                     percentage
                 )
             )
