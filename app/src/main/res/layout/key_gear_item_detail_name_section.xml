@@ -48,7 +48,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="?attr/selectableItemBackground"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
             android:textAllCaps="false"

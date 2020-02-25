@@ -61,7 +61,15 @@ class HedvigEditText @JvmOverloads constructor(
         textInput.openKeyboard()
     }
 
+    fun setSelection(position: Int) {
+        textInput.setSelection(position)
+    }
+
     fun getText() = textInput.text.toString()
+
+    fun setText(text: String) {
+        textInput.setText(text)
+    }
 
     fun setOnChangeListener(action: () -> Unit) {
         textInput.onChange {
