@@ -9,6 +9,7 @@ import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
+import com.hedvig.android.owldroid.graphql.DeleteKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemNameMutation
@@ -28,7 +29,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.LocalDate
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -252,5 +253,38 @@ class KeyGearItemsRepository(
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
         }
+    }
+
+    suspend fun deleteItem(id: String) {
+        val response = apolloClientWrapper
+            .apolloClient
+            .mutate(DeleteKeyGearItemMutation(id))
+            .toDeferred()
+            .await()
+
+        if (response.hasErrors() || response.data()?.deleteKeyGearItem?.isDeleted == false) {
+            e { "Failed to delete item" }
+            return
+        }
+
+        val cachedData = apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .read(keyGearItemsQuery)
+            .execute()
+
+        val newKeyGearItems = cachedData.keyGearItems
+            .filter { it.fragments.keyGearItemFragment.id != id }
+
+        val newData = cachedData
+            .toBuilder()
+            .keyGearItems(newKeyGearItems)
+            .build()
+
+        apolloClientWrapper
+            .apolloClient
+            .apolloStore()
+            .writeAndPublish(keyGearItemsQuery, newData)
+            .execute()
     }
 }
