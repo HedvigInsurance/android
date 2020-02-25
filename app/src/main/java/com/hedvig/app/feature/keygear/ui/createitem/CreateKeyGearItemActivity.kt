@@ -13,6 +13,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.view.Gravity
+import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -64,16 +65,18 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     private var isShowingPostCreateAnimation = false
     private var isUploading = false
 
+    private var topBarHeight: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
         root.useEdgeToEdge()
+        topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        topBarHeight = topBar.measuredHeight
 
-        topBar.measure(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-
-        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop + topBar.measuredHeight)
+        scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
         }
 
         topBar.doOnApplyWindowInsets { view, insets, initialState ->
@@ -105,7 +108,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         categories.adapter = CategoryAdapter(
             model::setActiveCategory
         )
-
+        categories.isNestedScrollingEnabled = false
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
         close.setHapticClickListener {
