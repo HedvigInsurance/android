@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/purple">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/purple">
     <item>
         <selector android:exitFadeDuration="@android:integer/config_mediumAnimTime">
             <item android:state_selected="true">
                 <shape>
-                    <corners android:radius="@dimen/chat_single_select_corner_radius" />
-                    <solid android:color="@color/link_purple" />
+                    <corners android:radius="@dimen/chat_single_select_corner_radius"/>
+                    <solid android:color="@color/link_purple"/>
                 </shape>
             </item>
-
             <item>
                 <shape>
-                    <corners android:radius="@dimen/chat_single_select_corner_radius" />
-                    <stroke
-                        android:width="1dp"
-                        android:color="@color/link_purple" />
-                    <solid android:color="@color/background" />
+                    <corners android:radius="@dimen/chat_single_select_corner_radius"/>
+                    <stroke android:width="1dp" android:color="@color/link_purple"/>
+                    <solid android:color="@color/background"/>
                 </shape>
             </item>
         </selector>
