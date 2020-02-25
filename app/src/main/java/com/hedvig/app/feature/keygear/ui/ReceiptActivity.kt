@@ -186,7 +186,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
         private fun appearsToBeAnImage(url: String): Boolean {
             return try {
-                when (Uri.parse(url).toString().substringAfterLast('.', "")) {
+                when (Uri.parse(url).buildUpon().clearQuery().build().toString().substringAfterLast('.', "")) {
                     "jpg", "jpeg", "png" -> true
                     else -> false
                 }
