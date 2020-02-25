@@ -143,7 +143,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun initializeMessages() {
-        messages.setHasFixedSize(false)
         val adapter = ChatAdapter(this, onPressEdit = {
             showAlert(
                 R.string.CHAT_EDIT_MESSAGE_TITLE,
@@ -154,7 +153,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
             )
         }, tracker = tracker)
-        adapter.setHasStableIds(true)
         messages.addOnScrollListener(adapter.recyclerViewPreloader)
         messages.adapter = adapter
     }
