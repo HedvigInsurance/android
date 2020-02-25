@@ -12,12 +12,10 @@ class FileService(
     fun getFileName(uri: Uri): String? {
         if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
             val cursor = context.contentResolver.query(uri, null, null, null, null)
-            try {
+            cursor.use { cursor ->
                 if (cursor?.moveToFirst() == true) {
                     return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
-            } finally {
-                cursor?.close()
             }
         }
 
@@ -25,7 +23,7 @@ class FileService(
 
         cut?.let { c ->
             if (c != -1) {
-                return uri.path?.substring(c)
+                return uri.path?.substring(c + 1)
             }
         }
         return uri.path
@@ -44,5 +42,6 @@ class FileService(
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase())
     }
 
-    fun getFileExtension(path: String) = MimeTypeMap.getFileExtensionFromUrl(path)
+    fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
+
 }

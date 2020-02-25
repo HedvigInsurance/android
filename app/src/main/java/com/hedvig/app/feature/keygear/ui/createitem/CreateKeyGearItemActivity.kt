@@ -16,7 +16,7 @@ import android.view.Gravity
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import android.widget.FrameLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnNextLayout
@@ -37,7 +37,6 @@ import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.centerX
 import com.hedvig.app.util.extensions.view.centerY
@@ -45,12 +44,12 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
-import kotlinx.android.synthetic.main.app_bar.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
@@ -71,15 +70,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         supportPostponeEnterTransition()
         root.useEdgeToEdge()
 
-        setupLargeTitle(
-            R.string.KEY_GEAR_ADD_ITEM_PAGE_TITLE,
-            R.font.circular_bold,
-            R.drawable.ic_back,
-            backAction = this::onBackPressed
-        )
-        appBarLayout.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        topBar.measure(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop + topBar.measuredHeight)
         }
+
+        topBar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
         saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
@@ -107,6 +107,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         )
 
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
+
+        close.setHapticClickListener {
+            onBackPressed()
+        }
 
         save.setHapticClickListener {
             if (isUploading) {
@@ -145,7 +149,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             interpolator = AccelerateDecelerateInterpolator()
             duration = SAVE_BUTTON_TRANSITION_DURATION
             addUpdateListener { va ->
-                saveContainer.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                saveContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                     width = va.animatedValue as Int
                 }
                 save.alpha = 1 - va.animatedFraction
@@ -191,7 +195,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
                 val category = data.createKeyGearItem.fragments.keyGearItemFragment.category
-                appBarLayout.remove()
                 scrollView.remove()
 
                 createdLabel.show()

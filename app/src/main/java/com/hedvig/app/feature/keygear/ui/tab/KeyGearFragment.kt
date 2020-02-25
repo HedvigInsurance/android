@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
@@ -51,6 +52,7 @@ class KeyGearFragment : BaseTabFragment() {
                 )
             })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
+        items.itemAnimator = SlideInItemAnimator()
 
         viewModel.data.observe(this) { d ->
             d?.let { data ->

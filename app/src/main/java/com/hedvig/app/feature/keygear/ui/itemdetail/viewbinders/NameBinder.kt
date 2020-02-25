@@ -3,6 +3,7 @@ package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
@@ -40,7 +41,17 @@ class NameBinder(
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val name = data.fragments.keyGearItemFragment.name
-        root.name.text = name
+        val category =
+            root.context.resources.getString(data.fragments.keyGearItemFragment.category.label)
+
+        if (name.isNullOrBlank()) {
+            root.nameEditText.setText("")
+            root.name.text = category
+        } else {
+            root.nameEditText.setText(name)
+            root.nameEditText.setSelection(name.length)
+            root.name.text = name
+        }
     }
 
     private fun updateName() {

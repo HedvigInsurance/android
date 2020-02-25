@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.updatePadding
@@ -70,9 +72,30 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         model.data.observe(this) { data ->
             data?.let { bind(it) }
         }
+
+        model.isDeleted.observe(this) { isDeleted ->
+            isDeleted?.let { isd ->
+                if (isd) {
+                    onBackPressed()
+                }
+            }
+        }
         intent.getStringExtra(ID)?.let { id ->
             model.loadItem(id)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.key_gear_item_detail_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.deleteItem -> {
+            model.deleteItem()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun initializeToolbar() {
