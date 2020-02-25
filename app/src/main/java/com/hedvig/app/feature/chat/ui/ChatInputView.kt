@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
@@ -150,17 +149,6 @@ class ChatInputView : FrameLayout {
             is Audio -> audioRecorder.fadeOut(fadeIn)
             is NullInput -> fadeIn()
         }
-    }
-
-    fun measureTextInput(): Int {
-        this.textInputContainer.show()
-        this.textInputContainer.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        val height = this.textInputContainer.measuredHeight
-        this.textInputContainer.remove()
-        return height
     }
 
     private fun show(value: ChatInputType) {
