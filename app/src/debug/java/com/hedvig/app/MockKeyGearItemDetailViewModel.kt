@@ -146,8 +146,16 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     "345",
                     null,
                     listOf(),
-                    listOf(),
-                    KeyGearItemCategory.COMPUTER,
+                    listOf(
+                        KeyGearItemFragment.Receipt(
+                            "KeyGearItemReceipt",
+                            KeyGearItemFragment.File1(
+                                "S3File",
+                                "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                            )
+                        )
+                    ),
+                    KeyGearItemCategory.JEWELRY,
                     null,
                     null,
                     KeyGearItemFragment.Deductible(
