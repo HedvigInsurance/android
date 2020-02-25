@@ -35,7 +35,10 @@ class NameBinder(
 
         root.nameEditText.setDoneListener {
             hideEditName()
+            root.addName.text =
+                root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
             updateName()
+            isEditState = false
         }
     }
 
