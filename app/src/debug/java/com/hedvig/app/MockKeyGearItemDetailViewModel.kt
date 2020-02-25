@@ -90,18 +90,21 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     ),
                     listOf(),
                     KeyGearItemCategory.PHONE,
-                    null,
+                    KeyGearItemFragment.PurchasePrice(
+                        "PurchasePrice",
+                        "123"
+                    ),
                     null,
                     KeyGearItemFragment.Deductible(
                         "MonetaryAmountV2",
-                        "1500.00"
+                        "1500"
                     ),
                     KeyGearItemFragment.AsKeyGearItemValuationFixed(
                         "KeyGearItemValuationFixed",
                         90,
                         KeyGearItemFragment.Valuation1(
                             "MonetaryAmountV2",
-                            "9000.00"
+                            "9000"
                         )
                     ),
                     listOf(),
@@ -127,7 +130,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     null,
                     KeyGearItemFragment.Deductible(
                         "MonetaryAmountV2",
-                        "1500.00"
+                        "1500"
                     ),
                     KeyGearItemFragment.AsKeyGearItemValuationFixed(
                         "KeyGearItemValuation",
@@ -160,7 +163,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     null,
                     KeyGearItemFragment.Deductible(
                         "MonetaryAmountV2",
-                        "1500.00"
+                        "1500"
                     ),
                     KeyGearItemFragment.AsKeyGearItemValuationFixed(
                         "KeyGearItemValuation",
