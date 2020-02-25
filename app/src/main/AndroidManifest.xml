@@ -256,7 +256,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear"
+            android:theme="@style/Hedvig.Theme.KeyGear.ItemDetail"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".feature.keygear.ui.ReceiptActivity"

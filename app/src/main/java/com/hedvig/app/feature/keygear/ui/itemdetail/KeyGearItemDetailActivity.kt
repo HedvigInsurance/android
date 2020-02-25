@@ -66,7 +66,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-
         }
 
         model.data.observe(this) { data ->
@@ -105,7 +104,9 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.navigationIcon = compatDrawable(R.drawable.ic_back)
+        val backDrawable = compatDrawable(R.drawable.ic_back)
+        backDrawable?.setTint(compatColor(R.color.white))
+        toolbar.navigationIcon = backDrawable
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -123,7 +124,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             toolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
-                    compatColor(R.color.translucent_background),
+                    compatColor(R.color.translucent_tool_bar),
                     percentage
                 )
             )
