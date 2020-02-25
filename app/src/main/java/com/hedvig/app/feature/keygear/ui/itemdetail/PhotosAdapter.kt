@@ -47,7 +47,11 @@ class PhotosAdapter(
         )
     )
 
-    override fun getItemCount() = if (photoUrls.isNotEmpty()) { photoUrls.size } else { 1 }
+    override fun getItemCount() = if (photoUrls.isNotEmpty()) {
+        photoUrls.size
+    } else {
+        1
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val photoUrl = photoUrls.getOrNull(position)
@@ -60,7 +64,7 @@ class PhotosAdapter(
             Glide.with(holder.photo)
                 .load(photoUrls[position])
                 .transform(CenterCrop())
-                .addListener(object: RequestListener<Drawable> {
+                .addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                         photoDidLoad()
                         return false
