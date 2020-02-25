@@ -25,7 +25,7 @@ class DeviceInformationService(
         messageDigest.update(androidId.toByteArray())
 
         val result = messageDigest.digest()
-        return BigInteger(1, result).toString(16).padStart(32, '0')
+        return result.toHexString()
     }
 
     fun getDeviceType(): DeviceType {
@@ -57,6 +57,8 @@ class DeviceInformationService(
         private const val SHA256 = "SHA-256"
 
         private const val MINIMUM_TABLET_SCREEN_SIZE_INCHES = 7.0f
+
+        private fun ByteArray.toHexString() = BigInteger(1, this).toString(16).padStart(32, '0')
     }
 }
 
