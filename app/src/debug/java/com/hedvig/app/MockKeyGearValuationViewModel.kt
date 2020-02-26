@@ -10,7 +10,7 @@ import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import org.threeten.bp.LocalDate
 
 class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
-    override val finishedUploading = MutableLiveData<Boolean>()
+    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun loadItem(id: String) {
@@ -40,7 +40,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             )
         )
         Handler().postDelayed({
-            finishedUploading.postValue(true)
+            // uploadResult.postValue()
         }, 500L)
     }
 

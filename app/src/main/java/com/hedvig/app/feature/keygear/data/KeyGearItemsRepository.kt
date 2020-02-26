@@ -29,7 +29,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.LocalDate
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -63,13 +63,13 @@ class KeyGearItemsRepository(
         id: String,
         date: LocalDate,
         price: MonetaryAmountV2Input
-    ) {
+    ): KeyGearItemQuery.Data? {
         val mutation = UpdateKeyGearPriceAndDateMutation(id, date, price)
         val response = apolloClientWrapper.apolloClient.mutate(mutation).toDeferred().await()
         val newPrice =
-            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount ?: return
+            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount ?: return null
         val newDate =
-            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase ?: return
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase ?: return null
 
         val cachedData =
             apolloClientWrapper
@@ -77,7 +77,6 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .read(keyGearItemQuery)
                 .execute()
-
 
         cachedData.keyGearItem?.let { keyGearItem ->
             val newData = cachedData
@@ -97,7 +96,11 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
+
+            return newData
         }
+
+        return null
     }
 
     fun uploadPhotosForNewKeyGearItemAsync(photos: List<Uri>): Deferred<Response<UploadFilesMutation.Data>> {
@@ -152,7 +155,12 @@ class KeyGearItemsRepository(
             !newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }
             && !data.createKeyGearItem.fragments.keyGearItemFragment.isDeleted
         ) {
-            newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
+            newKeyGearItems.add(
+                KeyGearItemsQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)
+                )
+            )
         }
         val newData = cachedData
             .toBuilder()
