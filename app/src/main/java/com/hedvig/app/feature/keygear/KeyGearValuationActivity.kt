@@ -72,9 +72,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
                     setButtonState(priceInput.getText().isNotEmpty(), date != null)
                 },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
+                date?.year ?: calendar.get(Calendar.YEAR),
+                date?.monthValue ?: calendar.get(Calendar.MONTH),
+                date?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
             ).apply {
                 datePicker.maxDate = calendar.time.time
                 show()
