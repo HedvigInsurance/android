@@ -5,5 +5,5 @@ import com.google.firebase.analytics.FirebaseAnalytics
 class LoggedInTracker(
     private val firebaseAnalytics: FirebaseAnalytics
 ) {
-    fun setMemberId(memberId: String) = firebaseAnalytics.setUserProperty("user_id", memberId)
+    fun setMemberId(memberId: String) = firebaseAnalytics.setUserId(memberId)
 }
