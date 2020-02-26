@@ -71,7 +71,7 @@ class KeyGearFragment : BaseTabFragment() {
         (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItems
         items.show()
 
-        if (data.keyGearItems.isEmpty()) {
+        if (data.keyGearItems.isEmpty() || !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }) {
             illustration.show()
             title.show()
             description.show()
