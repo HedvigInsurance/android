@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
         android:layout_gravity="bottom"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:menu="@menu/logged_in_menu" />
 
