@@ -48,6 +48,10 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
+                                KeyGearItemFragment.MaxInsurableAmount(
+                                    "MaxInsurableAmount",
+                                    "50000"
+                                ),
                                 listOf(),
                                 false
                             )
@@ -87,6 +91,10 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
+                                KeyGearItemFragment.MaxInsurableAmount(
+                                    "MaxInsurableAmount",
+                                    "50000"
+                                ),
                                 listOf(),
                                 false
                             )
@@ -119,6 +127,10 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     )
                                 ),
                                 listOf(),
+                                KeyGearItemFragment.MaxInsurableAmount(
+                                    "MaxInsurableAmount",
+                                    "50000"
+                                ),
                                 listOf(),
                                 false
                             )

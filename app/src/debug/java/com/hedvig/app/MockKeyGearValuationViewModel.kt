@@ -76,6 +76,11 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 )
             ),
             listOf(),
+
+            KeyGearItemFragment.MaxInsurableAmount(
+                "MaxInsurableAmount",
+                "50000"
+            ),
             listOf(),
             false
         )

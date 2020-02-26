@@ -38,6 +38,9 @@ fragment KeyGearItemFragment on KeyGearItem {
       }
     }
   }
+  maxInsurableAmount{
+    amount
+  }
   exceptions {
     title {
       translations(where: { language: { code: $languageCode }, project: Android }) {

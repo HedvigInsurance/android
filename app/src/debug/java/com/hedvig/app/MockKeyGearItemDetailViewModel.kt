@@ -109,6 +109,10 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MaxInsurableAmount",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 ),
@@ -140,10 +144,14 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         31,
                         KeyGearItemFragment.Valuation1(
                             "KeyGearItemValuationFixed",
-                            "1234"
+                            "55000"
                         )
                     ),
                     listOf(),
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MaxInsurableAmount",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 ),
@@ -170,15 +178,13 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500"
                     ),
-                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                        "KeyGearItemValuation",
-                        31,
-                        KeyGearItemFragment.Valuation1(
-                            "KeyGearItemValuationFixed",
-                            "1234"
-                        )
-                    ),
+                    null,
                     listOf(),
+
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MaxInsurableAmount",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 )
