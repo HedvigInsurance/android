@@ -46,19 +46,19 @@
         tools:text="70%" />
 
     <TextView
-        style="@style/Body"
+        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL" />
 
     <TextView
         android:id="@+id/body"
-        style="@style/Body"
+        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_half"
+        android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:layout_marginEnd="@dimen/base_margin_half"
+        android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_BODY"
         android:textAlignment="center" />
 
