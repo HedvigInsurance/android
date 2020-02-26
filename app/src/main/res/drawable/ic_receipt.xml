@@ -1,23 +1,5 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="42dp"
-    android:height="42dp"
-    android:viewportWidth="42"
-    android:viewportHeight="42">
-  <path
-      android:strokeWidth="1"
-      android:pathData="M21,21m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/text_regular"
-      android:fillType="evenOdd"/>
-  <path
-      android:strokeWidth="1"
-      android:pathData="M29,10v22l-2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2L13,10l2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2z"
-      android:strokeLineJoin="round"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/text_regular"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M15,16h8v1h-8zM15,20h8v1h-8zM23,25h4v1h-4z"
-      android:fillColor="@color/text_regular"
-      android:fillType="evenOdd"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="42dp" android:height="42dp" android:viewportWidth="42" android:viewportHeight="42">
+    <path android:strokeWidth="1" android:pathData="M1 21a20 20 0 1 1 40 0 20 20 0 1 1-40 0" android:strokeColor="@color/text_regular" android:fillType="evenOdd"/>
+    <path android:strokeWidth="1" android:pathData="M29 10v22l-2-2-2 2-2-2-2 2-2-2-2 2-2-2-2 2V10l2 2 2-2 2 2 2-2 2 2 2-2 2 2 2-2z" android:strokeLineJoin="round" android:strokeColor="@color/text_regular" android:fillType="evenOdd"/>
+    <path android:pathData="M15 16h8v1h-8zm0 4h8v1h-8zm8 5h4v1h-4z" android:fillColor="@color/text_regular" android:fillType="evenOdd"/>
 </vector>
