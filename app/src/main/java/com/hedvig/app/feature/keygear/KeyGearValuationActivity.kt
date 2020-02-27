@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
@@ -33,6 +34,7 @@ import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
@@ -118,13 +120,17 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
             if (!text.isNullOrBlank()) {
-                val value = text.toDouble()
-                if (value > maxInsurableAmount.toDouble()) {
-                    animateDateDown()
-                    noCoverage.show()
-                } else {
-                    animateDateUp()
-                    noCoverage.remove()
+                try {
+                    val value = text.toDouble()
+                    if (value > maxInsurableAmount.toDouble()) {
+                        animateDateDown()
+                        noCoverage.show()
+                    } else {
+                        animateDateUp()
+                        noCoverage.remove()
+                    }
+                } catch (e: Exception) {
+                    Timber.e("Cant convert to double")
                 }
             }
         }
@@ -204,8 +210,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
     private fun getNoCoverageHeight(): Float {
         noCoverage.measure(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED
         )
         return noCoverage.measuredHeight.toFloat()
     }
