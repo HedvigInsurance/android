@@ -17,7 +17,9 @@
         <item name="android:navigationBarColor">@color/translucent_background</item>
     </style>
 
-    <style name="Hedvig.Theme.KeyGear.ItemDetail" />
+    <style name="Hedvig.Theme.KeyGear.ItemDetail">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
 
     <style name="Hedvig.Theme.Marketing">
         <item name="android:navigationBarColor">@android:color/transparent</item>
