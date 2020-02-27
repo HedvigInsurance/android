@@ -34,7 +34,6 @@ import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
@@ -130,7 +129,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                         noCoverage.remove()
                     }
                 } catch (e: Exception) {
-                    Timber.e("Cant convert to double")
                 }
             }
         }
