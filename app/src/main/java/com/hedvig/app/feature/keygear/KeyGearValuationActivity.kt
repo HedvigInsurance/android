@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
-import java.util.*
+import java.util.Calendar
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -65,7 +65,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             DatePickerDialog(
                 this,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    date = LocalDate.of(year, month, dayOfMonth)
+                    date = LocalDate.of(year, month + 1, dayOfMonth)
 
                     val monthText = DateFormatSymbols().months[month]
                     dateInput.text = "$dayOfMonth $monthText $year"
