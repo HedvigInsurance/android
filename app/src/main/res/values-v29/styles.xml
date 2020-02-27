@@ -16,5 +16,6 @@
 
     <style name="Hedvig.Theme.KeyGear.ItemDetail">
         <item name="android:windowLightStatusBar">false</item>
+        <item name="colorControlNormal">@color/white</item>
     </style>
 </resources>
