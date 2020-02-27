@@ -266,6 +266,14 @@
             android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".feature.adyen.AdyenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_symbol_android" />
@@ -291,6 +299,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".feature.adyen.AdyenDropInService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
 </manifest>

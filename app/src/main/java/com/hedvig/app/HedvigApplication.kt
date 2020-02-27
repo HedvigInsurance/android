@@ -59,6 +59,7 @@ class HedvigApplication : Application() {
                     directDebitModule,
                     keyGearModule,
                     loggedInModule,
+                    adyenModule,
                     serviceModule,
                     repositoriesModule,
                     trackerModule

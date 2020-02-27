@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.feature.adyen.AdyenViewModel
+import com.hedvig.app.feature.adyen.AdyenViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -197,6 +199,10 @@ val keyGearModule = module {
 
 val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
+}
+
+val adyenModule = module {
+    viewModel<AdyenViewModel> { AdyenViewModelImpl() }
 }
 
 val serviceModule = module {
