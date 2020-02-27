@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/key_gear_card_height"
     android:layout_gravity="center"
-    android:background="@drawable/background_rounded_corners_ripple"
+    android:background="@drawable/background_rounded_corners"
     android:backgroundTint="@color/color_on_surface"
     android:orientation="vertical"
     android:transitionName="addItemRoot"
