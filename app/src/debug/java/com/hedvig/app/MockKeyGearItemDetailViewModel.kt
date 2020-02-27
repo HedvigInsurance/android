@@ -170,14 +170,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500"
                     ),
-                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                        "KeyGearItemValuation",
-                        31,
-                        KeyGearItemFragment.Valuation1(
-                            "KeyGearItemValuationFixed",
-                            "1234"
-                        )
-                    ),
+                    null,
                     listOf(),
                     listOf(),
                     false
