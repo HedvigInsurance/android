@@ -10,10 +10,7 @@ import android.widget.CheckBox
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -22,7 +19,7 @@ import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.whatsnew.WhatsNewDialog
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -33,30 +30,6 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
-
-    private val newsItem = WhatsNewQuery.News(
-        "News",
-        WhatsNewQuery.Illustration(
-            "Icon", WhatsNewQuery.Variants(
-            "IconVariants", WhatsNewQuery.Variants.Fragments(
-            IconVariantsFragment(
-                "IconVariants",
-                IconVariantsFragment.Dark(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward_dark.svg"
-                ),
-                IconVariantsFragment.Light(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward.svg"
-                )
-            )
-        )
-        )
-        ),
-        "Bonusregn till folket!",
-        "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,14 +58,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     }
 
     private fun initializeButtons() {
-        findViewById<Button>(R.id.openWhatsNew).setHapticClickListener {
-            WhatsNewDialog.newInstance(
-                listOf(
-                    newsItem, newsItem, newsItem
-                )
-            ).show(supportFragmentManager, "whats_new")
-        }
-
         findViewById<Button>(R.id.openAlert).setHapticClickListener {
             showAlert(
                 R.string.alert_title,
@@ -106,8 +71,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openValuation.setHapticClickListener {
-            startActivity(KeyGearValuationActivity.newInstance(this, "123"))
+        openWebOnboarding.setHapticClickListener {
+            startActivity(WebOnboardingActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
