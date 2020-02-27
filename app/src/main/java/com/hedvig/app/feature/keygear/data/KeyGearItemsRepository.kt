@@ -12,8 +12,9 @@ import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.DeleteKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
+import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemDateMutation
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemNameMutation
-import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
+import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemPriceMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
@@ -64,12 +65,18 @@ class KeyGearItemsRepository(
         date: LocalDate,
         price: MonetaryAmountV2Input
     ): KeyGearItemQuery.Data? {
-        val mutation = UpdateKeyGearPriceAndDateMutation(id, date, price)
-        val response = apolloClientWrapper.apolloClient.mutate(mutation).toDeferred().await()
+        val updatePriceMutation = UpdateKeyGearItemPriceMutation(id, price)
+        val updateDateMutation = UpdateKeyGearItemDateMutation(id, date)
+        apolloClientWrapper.apolloClient.mutate(updatePriceMutation).toDeferred().await()
+        val response =
+            apolloClientWrapper.apolloClient.mutate(updateDateMutation).toDeferred().await()
+
         val newPrice =
-            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount ?: return null
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.purchasePrice?.amount
+                ?: return null
         val newDate =
-            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase ?: return null
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase
+                ?: return null
 
         val cachedData =
             apolloClientWrapper

@@ -1,0 +1,20 @@
+mutation UpdateKeyGearItemDate($id: ID!, $newTimeOfPurchase: LocalDate!) {
+  updateTimeOfPurchaseForKeyGearItem(id: $id, newTimeOfPurchase: $newTimeOfPurchase) {
+    id
+    timeOfPurchase
+    purchasePrice {
+      amount
+    }
+    valuation {
+      ...on KeyGearItemValuationFixed {
+        ratio
+        valuation {
+          amount
+        }
+      }
+      ...on KeyGearItemValuationMarketValue {
+        ratio
+      }
+    }
+  }
+}
