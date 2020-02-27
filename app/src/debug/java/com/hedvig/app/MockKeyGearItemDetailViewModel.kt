@@ -110,7 +110,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     ),
                     listOf(),
                     KeyGearItemFragment.MaxInsurableAmount(
-                        "MaxInsurableAmount",
+                        "MonetaryAmountV2",
                         "50000"
                     ),
                     listOf(),

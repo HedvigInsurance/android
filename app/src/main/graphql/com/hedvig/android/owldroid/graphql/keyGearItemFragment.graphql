@@ -38,7 +38,7 @@ fragment KeyGearItemFragment on KeyGearItem {
       }
     }
   }
-  maxInsurableAmount{
+  maxInsurableAmount {
     amount
   }
   exceptions {
