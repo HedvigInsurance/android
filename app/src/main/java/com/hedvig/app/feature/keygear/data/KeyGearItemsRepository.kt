@@ -118,7 +118,8 @@ class KeyGearItemsRepository(
     suspend fun createKeyGearItemAsync(
         category: KeyGearItemCategory,
         files: List<S3FileInput>,
-        physicalReferenceHash: String? = null
+        physicalReferenceHash: String? = null,
+        name: String? = null
     ): Response<CreateKeyGearItemMutation.Data> {
         val builder = CreateKeyGearItemMutation.builder()
 
@@ -128,6 +129,7 @@ class KeyGearItemsRepository(
             .languageCode(getLocale(context).toString())
 
         physicalReferenceHash?.let { builder.physicalReferenceHash(it) }
+        name?.let { builder.name(it) }
 
         val result = apolloClientWrapper
             .apolloClient

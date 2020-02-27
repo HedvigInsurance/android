@@ -20,12 +20,14 @@ class KeyGearViewModelImpl(
     private val deviceInformationService: DeviceInformationService
 ) : KeyGearViewModel() {
     override val data = MutableLiveData<KeyGearItemsQuery.Data>()
+
     override fun sendAutoAddedItems() {
         viewModelScope.launch {
             val deviceFingerprint = deviceInformationService.getDeviceFingerprint()
             val deviceType = deviceInformationService.getDeviceType()
+            val deviceName = deviceInformationService.getDeviceName()
 
-            repository.createKeyGearItemAsync(deviceType.into(), listOf(), deviceFingerprint)
+            repository.createKeyGearItemAsync(deviceType.into(), listOf(), deviceFingerprint, deviceName)
         }
     }
 
