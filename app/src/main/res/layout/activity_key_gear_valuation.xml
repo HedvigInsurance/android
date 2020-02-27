@@ -68,7 +68,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:text="@string/KEY_GEAR_NOT_COVERED"
         android:textAlignment="center"
-        android:textColor="@color/warning"
+        android:textColor="@color/coral_700"
         android:visibility="gone"
         tools:visibility="visible" />
 
