@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
@@ -133,46 +133,36 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             }
         }
 
-        model.finishedUploading.observe(this) { finishedUploading ->
-            val item = model.data.value
-            finishedUploading?.let {
-                if (finishedUploading) {
-                    safeLet(
-                        item?.fragments?.keyGearItemFragment?.purchasePrice?.amount,
-                        item
-                    ) { amount, item ->
-                        val type = valuationType(item)
-                        if (type != null) {
-                            if (type == ValuationType.FIXED) {
-                                startActivity(
-                                    KeyGearValuationInfoActivity.newInstance(
-                                        this,
-                                        item.fragments.keyGearItemFragment.category,
-                                        ValuationData.from(
-                                            amount,
-                                            type,
-                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
-                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
-                                        )
-                                    )
-                                )
-                                finish()
-                            } else if (type == ValuationType.MARKET_PRICE) {
-                                startActivity(
-                                    KeyGearValuationInfoActivity.newInstance(
-                                        this,
-                                        item.fragments.keyGearItemFragment.category,
-                                        ValuationData.from(
-                                            amount,
-                                            type,
-                                            (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationMarketValue).ratio
-                                        )
-                                    )
-                                )
-                                finish()
-                            }
-                        }
-                    }
+        model.uploadResult.observe(this) { uploadResult ->
+            safeLet(uploadResult?.keyGearItem, uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount) { item, amount ->
+                val type = valuationType(item)
+                if (type == ValuationType.FIXED) {
+                    startActivity(
+                        KeyGearValuationInfoActivity.newInstance(
+                            this,
+                            item.fragments.keyGearItemFragment.category,
+                            ValuationData.from(
+                                amount,
+                                type,
+                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).ratio,
+                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).valuation.amount
+                            )
+                        )
+                    )
+                    finish()
+                } else if (type == ValuationType.MARKET_PRICE) {
+                    startActivity(
+                        KeyGearValuationInfoActivity.newInstance(
+                            this,
+                            item.fragments.keyGearItemFragment.category,
+                            ValuationData.from(
+                                amount,
+                                type,
+                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue).ratio
+                            )
+                        )
+                    )
+                    finish()
                 }
             }
         }
@@ -215,9 +205,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        return when (item.fragments.keyGearItemFragment.valuation) {
-            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
-            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
+        return when (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation) {
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
             else -> null
         }
     }

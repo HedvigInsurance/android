@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
@@ -10,7 +11,7 @@ import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import org.threeten.bp.LocalDate
 
 class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
-    override val finishedUploading = MutableLiveData<Boolean>()
+    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun loadItem(id: String) {
@@ -40,7 +41,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             )
         )
         Handler().postDelayed({
-            finishedUploading.postValue(true)
+            // uploadResult.postValue()
         }, 500L)
     }
 
@@ -67,14 +68,6 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "MonetaryAmountV2",
                 "1500.00"
             ),
-            KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                "KeyGearItemValuationMarketValue",
-                90,
-                KeyGearItemFragment.Valuation1(
-                    "MonetaryAmountV2",
-                    "9000"
-                )
-            ),
             listOf(),
 
             KeyGearItemFragment.MaxInsurableAmount(
@@ -82,7 +75,13 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "50000"
             ),
             listOf(),
-            false
+            false,
+            KeyGearItemFragment.Fragments(
+                KeyGearItemValuationFragment(
+                    "KeyGearItemValuation",
+                    null
+                )
+            )
         )
     }
 }

@@ -63,13 +63,23 @@ class KeyGearItemsRepository(
         id: String,
         date: LocalDate,
         price: MonetaryAmountV2Input
-    ) {
-        val mutation = UpdateKeyGearPriceAndDateMutation(id, date, price)
-        val response = apolloClientWrapper.apolloClient.mutate(mutation).toDeferred().await()
+    ): KeyGearItemQuery.Data? {
+        val response = apolloClientWrapper
+            .apolloClient
+            .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
+            .toDeferred()
+            .await()
+
         val newPrice =
-            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount ?: return
+            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount
+                ?: return null
         val newDate =
-            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase ?: return
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase
+                ?: return null
+        val newValuation =
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.fragments?.keyGearItemValuationFragment?.valuation
+                ?: response.data()?.updatePurchasePriceForKeyGearItem?.fragments?.keyGearItemValuationFragment?.valuation
+                ?: return null
 
         val cachedData =
             apolloClientWrapper
@@ -77,7 +87,6 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .read(keyGearItemQuery)
                 .execute()
-
 
         cachedData.keyGearItem?.let { keyGearItem ->
             val newData = cachedData
@@ -87,7 +96,27 @@ class KeyGearItemsRepository(
                         KeyGearItemQuery.KeyGearItem.Fragments(
                             keyGearItem.fragments.keyGearItemFragment.toBuilder().purchasePrice(
                                 KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", newPrice)
-                            ).timeOfPurchase(newDate).build()
+                            )
+                                .timeOfPurchase(newDate)
+                                .fragments(
+                                    keyGearItem
+                                        .fragments
+                                        .keyGearItemFragment
+                                        .fragments
+                                        .toBuilder()
+                                        .keyGearItemValuationFragment(
+                                            keyGearItem
+                                                .fragments
+                                                .keyGearItemFragment
+                                                .fragments
+                                                .keyGearItemValuationFragment
+                                                .toBuilder()
+                                                .valuation(newValuation)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
                         )
                     ).build()
                 ).build()
@@ -97,7 +126,10 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
+
+            return newData
         }
+        return null
     }
 
     fun uploadPhotosForNewKeyGearItemAsync(photos: List<Uri>): Deferred<Response<UploadFilesMutation.Data>> {
@@ -154,7 +186,12 @@ class KeyGearItemsRepository(
             !newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }
             && !data.createKeyGearItem.fragments.keyGearItemFragment.isDeleted
         ) {
-            newKeyGearItems.add(KeyGearItemsQuery.KeyGearItem("KeyGearItem", KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)))
+            newKeyGearItems.add(
+                KeyGearItemsQuery.KeyGearItem(
+                    "KeyGearItem",
+                    KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)
+                )
+            )
         }
         val newData = cachedData
             .toBuilder()

@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
 abstract class KeyGearValuationViewModel : ViewModel() {
-    abstract val finishedUploading: LiveData<Boolean>
+    abstract val uploadResult: LiveData<KeyGearItemQuery.Data>
     abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
 
     abstract fun updatePurchaseDateAndPrice(
@@ -27,7 +27,7 @@ class KeyGearValuationViewModelImpl(
     private val repository: KeyGearItemsRepository
 ) :
     KeyGearValuationViewModel() {
-    override val finishedUploading = MutableLiveData<Boolean>()
+    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun updatePurchaseDateAndPrice(
@@ -36,8 +36,8 @@ class KeyGearValuationViewModelImpl(
         price: MonetaryAmountV2Input
     ) {
         viewModelScope.launch {
-            repository.updatePurchasePriceAndDateAsync(id, date, price)
-            finishedUploading.postValue(true)
+            val result = repository.updatePurchasePriceAndDateAsync(id, date, price)
+            uploadResult.postValue(result)
         }
     }
 

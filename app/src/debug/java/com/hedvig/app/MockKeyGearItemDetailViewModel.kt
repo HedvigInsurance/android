@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -100,21 +101,26 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500"
                     ),
-                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                        "KeyGearItemValuationFixed",
-                        90,
-                        KeyGearItemFragment.Valuation1(
-                            "MonetaryAmountV2",
-                            "9000"
-                        )
-                    ),
                     listOf(),
                     KeyGearItemFragment.MaxInsurableAmount(
                         "MonetaryAmountV2",
                         "50000"
                     ),
                     listOf(),
-                    false
+                    false,
+                    KeyGearItemFragment.Fragments(
+                        KeyGearItemValuationFragment(
+                            "KeyGearItemValuationFixed",
+                            KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                "KeyGearItemValuationFixed",
+                                90,
+                                KeyGearItemValuationFragment.Valuation1(
+                                    "MonetaryAmountV2",
+                                    "9000.00"
+                                )
+                            )
+                        )
+                    )
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -142,21 +148,26 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500"
                     ),
-                    KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                        "KeyGearItemValuation",
-                        31,
-                        KeyGearItemFragment.Valuation1(
-                            "KeyGearItemValuationFixed",
-                            "55000"
-                        )
-                    ),
                     listOf(),
                     KeyGearItemFragment.MaxInsurableAmount(
                         "MaxInsurableAmount",
                         "50000"
                     ),
                     listOf(),
-                    false
+                    false,
+                    KeyGearItemFragment.Fragments(
+                        KeyGearItemValuationFragment(
+                            "KeyGearItemValuationFixed",
+                            KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                "KeyGearItemValuationFixed",
+                                31,
+                                KeyGearItemValuationFragment.Valuation1(
+                                    "MonetaryAmountV2",
+                                    "55000.00"
+                                )
+                            )
+                        )
+                    )
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -181,14 +192,19 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         "MonetaryAmountV2",
                         "1500"
                     ),
-                    null,
                     listOf(),
                     KeyGearItemFragment.MaxInsurableAmount(
                         "MaxInsurableAmount",
                         "50000"
                     ),
                     listOf(),
-                    false
+                    false,
+                    KeyGearItemFragment.Fragments(
+                        KeyGearItemValuationFragment(
+                            "KeyGearItemValuation",
+                            null
+                        )
+                    )
                 )
         )
     }
