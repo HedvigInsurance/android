@@ -21,8 +21,9 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.getLocale
 import com.hedvig.app.service.FileService
+import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.toLocaleString
 import com.hedvig.app.util.extensions.into
 import e
 import kotlinx.coroutines.Deferred
@@ -40,7 +41,7 @@ class KeyGearItemsRepository(
     private lateinit var keyGearItemQuery: KeyGearItemQuery
 
     fun keyGearItems(): Channel<Response<KeyGearItemsQuery.Data>> {
-        keyGearItemsQuery = KeyGearItemsQuery(getLocale(context).toString())
+        keyGearItemsQuery = KeyGearItemsQuery(defaultLocale(context).toLocaleString())
 
         return apolloClientWrapper
             .apolloClient
@@ -50,7 +51,7 @@ class KeyGearItemsRepository(
     }
 
     fun keyGearItem(id: String): Channel<Response<KeyGearItemQuery.Data>> {
-        keyGearItemQuery = KeyGearItemQuery(id, getLocale(context).toString())
+        keyGearItemQuery = KeyGearItemQuery(id, defaultLocale(context).toLocaleString())
 
         return apolloClientWrapper
             .apolloClient
@@ -158,7 +159,7 @@ class KeyGearItemsRepository(
         builder
             .category(category)
             .photos(files)
-            .languageCode(getLocale(context).toString())
+            .languageCode(defaultLocale(context).toLocaleString())
 
         physicalReferenceHash?.let { builder.physicalReferenceHash(it) }
         name?.let { builder.name(it) }
@@ -238,7 +239,7 @@ class KeyGearItemsRepository(
                 AddReceiptToKeyGearItemMutation(
                     AddReceiptToKeyGearItemInput.builder().itemId(
                         itemId
-                    ).file(s3file).build(), getLocale(context).toString()
+                    ).file(s3file).build(), defaultLocale(context).toLocaleString()
                 )
             )
             .toDeferred()
