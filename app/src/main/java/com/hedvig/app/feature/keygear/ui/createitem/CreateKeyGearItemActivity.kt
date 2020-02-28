@@ -106,7 +106,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         categories.adapter = CategoryAdapter(
             model::setActiveCategory
         )
-        categories.isNestedScrollingEnabled = false
         categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
         close.setHapticClickListener {
