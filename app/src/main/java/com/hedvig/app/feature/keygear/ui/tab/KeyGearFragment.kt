@@ -15,6 +15,7 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.transitionPair
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -63,7 +64,6 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {
@@ -79,6 +79,7 @@ class KeyGearFragment : BaseTabFragment() {
             illustration.remove()
             title.remove()
             description.remove()
+            items.updateMargin(top = (resources.getDimension(R.dimen.base_margin_octuple) / resources.displayMetrics.density).toInt())
         }
     }
 
