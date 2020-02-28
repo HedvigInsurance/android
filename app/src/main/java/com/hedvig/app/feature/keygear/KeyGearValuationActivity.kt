@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
-import java.util.Calendar
+import java.util.*
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -56,7 +56,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 data,
                 data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount
             ) { d, amout ->
-                maxInsurableAmount = amout.toInt()
+                maxInsurableAmount = amout.toBigDecimal().toInt()
                 val category =
                     resources.getString(d.fragments.keyGearItemFragment.category.label)
                         .toLowerCase()
