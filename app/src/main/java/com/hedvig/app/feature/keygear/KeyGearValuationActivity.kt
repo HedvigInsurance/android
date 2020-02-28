@@ -134,8 +134,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         }
 
         model.uploadResult.observe(this) { uploadResult ->
-            val amount = priceInput.getText()
-            uploadResult?.keyGearItem?.let { item ->
+            safeLet(uploadResult?.keyGearItem, uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount) { item, amount ->
                 val type = valuationType(item)
                 if (type == ValuationType.FIXED) {
                     startActivity(
