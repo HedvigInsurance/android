@@ -93,7 +93,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     KeyGearItemCategory.PHONE,
                     KeyGearItemFragment.PurchasePrice(
                         "PurchasePrice",
-                        "123"
+                        "60000"
                     ),
                     null,
                     KeyGearItemFragment.Deductible(
@@ -109,6 +109,10 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         )
                     ),
                     listOf(),
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MonetaryAmountV2",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 ),
@@ -129,7 +133,10 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     ),
                     listOf(),
                     KeyGearItemCategory.COMPUTER,
-                    null,
+                    KeyGearItemFragment.PurchasePrice(
+                        "PurchasePrice",
+                        "20000"
+                    ),
                     null,
                     KeyGearItemFragment.Deductible(
                         "MonetaryAmountV2",
@@ -140,10 +147,14 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                         31,
                         KeyGearItemFragment.Valuation1(
                             "KeyGearItemValuationFixed",
-                            "1234"
+                            "55000"
                         )
                     ),
                     listOf(),
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MaxInsurableAmount",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 ),
@@ -172,6 +183,10 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     ),
                     null,
                     listOf(),
+                    KeyGearItemFragment.MaxInsurableAmount(
+                        "MaxInsurableAmount",
+                        "50000"
+                    ),
                     listOf(),
                     false
                 )

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.WindowManager
@@ -52,6 +53,8 @@ class DeviceInformationService(
 
         return DeviceType.PHONE
     }
+
+    fun getDeviceName() = "${Build.MANUFACTURER} ${Build.MODEL}"
 
     companion object {
         private const val SHA256 = "SHA-256"

@@ -13,6 +13,14 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
+    <style name="Hedvig.Theme.KeyGear">
+        <item name="android:navigationBarColor">@color/translucent_background</item>
+    </style>
+
+    <style name="Hedvig.Theme.KeyGear.ItemDetail">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
     <style name="Hedvig.Theme.Marketing">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

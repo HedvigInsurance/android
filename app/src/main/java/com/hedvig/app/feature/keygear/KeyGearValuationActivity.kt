@@ -8,10 +8,13 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
@@ -22,10 +25,12 @@ import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
@@ -43,18 +48,27 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         super.onCreate(savedInstanceState)
 
         id = intent.getStringExtra(ITEM_ID)
+        var maxInsurableAmount = 0
 
         saveContainer.show()
         model.data.observe(this) { data ->
-            data?.let { d ->
+            safeLet(
+                data,
+                data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount
+            ) { d, amout ->
+                maxInsurableAmount = amout.toBigDecimal().toInt()
                 val category =
                     resources.getString(d.fragments.keyGearItemFragment.category.label)
                         .toLowerCase()
-
+                noCoverage.text = interpolateTextKey(
+                    getString(R.string.KEY_GEAR_NOT_COVERED),
+                    "ITEM_TYPE" to category
+                )
                 body.text = interpolateTextKey(
                     getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY),
                     "ITEM_TYPE" to category
                 )
+
             }
         }
         model.loadItem(id)
@@ -65,16 +79,16 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             DatePickerDialog(
                 this,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    date = LocalDate.of(year, month, dayOfMonth)
+                    date = LocalDate.of(year, month + 1, dayOfMonth)
 
                     val monthText = DateFormatSymbols().months[month]
                     dateInput.text = "$dayOfMonth $monthText $year"
 
                     setButtonState(priceInput.getText().isNotEmpty(), date != null)
                 },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
+                date?.year ?: calendar.get(Calendar.YEAR),
+                date?.monthValue ?: calendar.get(Calendar.MONTH),
+                date?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
             ).apply {
                 datePicker.maxDate = calendar.time.time
                 show()
@@ -104,6 +118,19 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         priceInput.setOnChangeListener {
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
+            if (!text.isNullOrBlank()) {
+                try {
+                    val value = text.toDouble()
+                    if (value > maxInsurableAmount.toDouble()) {
+                        animateDateDown()
+                        noCoverage.show()
+                    } else {
+                        animateDateUp()
+                        noCoverage.remove()
+                    }
+                } catch (e: Exception) {
+                }
+            }
         }
 
         model.uploadResult.observe(this) { uploadResult ->
@@ -144,6 +171,42 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 }
             }
         }
+    }
+
+    private fun animateDateDown() {
+        dateInput.spring(
+            SpringAnimation.TRANSLATION_Y,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(getNoCoverageHeight())
+
+        saveContainer.spring(
+            SpringAnimation.TRANSLATION_Y,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(getNoCoverageHeight())
+    }
+
+    private fun animateDateUp() {
+        dateInput.spring(
+            SpringAnimation.TRANSLATION_Y,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(-(getNoCoverageHeight() / 50f))
+
+        saveContainer.spring(
+            SpringAnimation.TRANSLATION_Y,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(-(getNoCoverageHeight() / 50f))
+    }
+
+    private fun getNoCoverageHeight(): Float {
+        noCoverage.measure(
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED
+        )
+        return noCoverage.measuredHeight.toFloat()
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {

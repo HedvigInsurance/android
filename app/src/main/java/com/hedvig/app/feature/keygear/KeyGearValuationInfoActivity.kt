@@ -29,8 +29,8 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                         getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
                         "ITEM_TYPE" to getString(c.label).toLowerCase(),
                         "VALUATION_PERCENTAGE" to vd.ratio,
-                        "PURCHASE_PRICE" to vd.purchasePrice.toBigInteger().toInt(),
-                        "VALUATION_PRICE" to vd.valuationAmount?.toBigInteger()?.toInt()
+                        "PURCHASE_PRICE" to vd.purchasePrice.toBigDecimal().toInt(),
+                        "VALUATION_PRICE" to vd.valuationAmount?.toBigDecimal()?.toInt()
                     )
                 )
             } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
