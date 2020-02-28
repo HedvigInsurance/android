@@ -56,6 +56,7 @@ class KeyGearFragment : BaseTabFragment() {
             })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
         items.itemAnimator = SlideInItemAnimator()
+        items.isNestedScrollingEnabled = false
 
         viewModel.data.observe(this) { d ->
             d?.let { data ->
