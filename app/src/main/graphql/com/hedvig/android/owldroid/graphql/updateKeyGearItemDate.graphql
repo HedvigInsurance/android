@@ -10,6 +10,7 @@ mutation UpdateKeyGearItemDate($id: ID!, $newTimeOfPurchase: LocalDate!) {
         ratio
         valuation {
           amount
+          currency
         }
       }
       ...on KeyGearItemValuationMarketValue {

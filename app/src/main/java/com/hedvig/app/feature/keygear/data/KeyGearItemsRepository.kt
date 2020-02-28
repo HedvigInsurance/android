@@ -77,6 +77,8 @@ class KeyGearItemsRepository(
         val newDate =
             response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase
                 ?: return null
+        val newValuation =
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.valuation as KeyGearItemFragment.Valuation?
 
         val cachedData =
             apolloClientWrapper
@@ -93,7 +95,7 @@ class KeyGearItemsRepository(
                         KeyGearItemQuery.KeyGearItem.Fragments(
                             keyGearItem.fragments.keyGearItemFragment.toBuilder().purchasePrice(
                                 KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", newPrice)
-                            ).timeOfPurchase(newDate).build()
+                            ).timeOfPurchase(newDate).valuation(newValuation).build()
                         )
                     ).build()
                 ).build()
@@ -106,7 +108,6 @@ class KeyGearItemsRepository(
 
             return newData
         }
-
         return null
     }
 
