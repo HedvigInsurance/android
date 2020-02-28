@@ -73,6 +73,7 @@
                 android:layout_marginStart="@dimen/base_margin_sesqui"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_sesqui"
+                android:nestedScrollingEnabled="false"
                 android:orientation="horizontal"
                 app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
                 tools:itemCount="5"
