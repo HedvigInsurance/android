@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.keygear.ui
 
+import android.Manifest
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -19,6 +21,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.service.FileService
+import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -58,7 +62,11 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         }
 
         download.setHapticClickListener {
-            downloadFile(fileUrl)
+            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                downloadFile(fileUrl)
+            } else {
+                askForPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), EXTERNAL_STORAGE_REQUEST_CODE)
+            }
         }
 
         if (appearsToBeAnImage(fileUrl)) {
@@ -68,6 +76,13 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             share.remove()
             fileIcon.show()
             download.show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            downloadFile(intent.getStringExtra(RECEIPT_URL))
         }
     }
 
@@ -178,6 +193,8 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
     companion object {
         private const val RECEIPT_URL = "RECEIPT_URL"
+
+        private const val EXTERNAL_STORAGE_REQUEST_CODE = 6457
 
         fun newInstance(context: Context, receiptUrl: String) =
             Intent(context, ReceiptActivity::class.java).apply {
