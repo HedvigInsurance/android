@@ -6,6 +6,8 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
+import com.hedvig.app.BASE_MARGIN_QUINTUPLE
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
@@ -15,6 +17,7 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.transitionPair
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -63,7 +66,6 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {
@@ -75,10 +77,12 @@ class KeyGearFragment : BaseTabFragment() {
             illustration.show()
             title.show()
             description.show()
+            items.updateMargin(top = BASE_MARGIN_QUINTUPLE)
         } else {
             illustration.remove()
             title.remove()
             description.remove()
+            items.updateMargin(top = BASE_MARGIN_TRIPLE)
         }
     }
 
