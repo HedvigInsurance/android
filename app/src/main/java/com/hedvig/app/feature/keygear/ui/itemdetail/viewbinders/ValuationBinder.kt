@@ -5,7 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.KeyGearValuationActivity
@@ -24,11 +24,11 @@ class ValuationBinder(
 ) {
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        when (val valuation = data.fragments.keyGearItemFragment.valuation) {
-            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> {
+        when (val valuation = data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation) {
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationFixed -> {
                 bindValuation(data, valuation.ratio)
             }
-            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> {
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue -> {
                 bindValuation(data, valuation.ratio)
             }
             null -> {
@@ -58,9 +58,9 @@ class ValuationBinder(
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        return when (item.fragments.keyGearItemFragment.valuation) {
-            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
-            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
+        return when (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation) {
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
+            is KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
             else -> null
         }
     }
@@ -86,8 +86,8 @@ class ValuationBinder(
                                 ValuationData.from(
                                     amount,
                                     type,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
+                                    (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).ratio,
+                                    (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).valuation.amount
                                 )
                             ),
                             null
@@ -101,7 +101,7 @@ class ValuationBinder(
                                 ValuationData.from(
                                     amount,
                                     type,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationMarketValue).ratio
+                                    (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue).ratio
                                 )
                             ),
                             null

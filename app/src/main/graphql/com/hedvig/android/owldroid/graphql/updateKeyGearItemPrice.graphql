@@ -1,8 +1,0 @@
-mutation UpdateKeyGearItemPrice($id: ID!, $newPrice: MonetaryAmountV2Input!) {
-  updatePurchasePriceForKeyGearItem(itemId: $id, newPrice: $newPrice) {
-    id
-    purchasePrice {
-      amount
-    }
-  }
-}

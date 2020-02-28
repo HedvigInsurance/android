@@ -20,17 +20,7 @@ fragment KeyGearItemFragment on KeyGearItem {
   deductible {
     amount
   }
-  valuation {
-    ... on KeyGearItemValuationFixed {
-      ratio
-      valuation {
-        amount
-      }
-    }
-    ... on KeyGearItemValuationMarketValue {
-      ratio
-    }
-  }
+  ... KeyGearItemValuationFragment
   covered {
     title {
       translations(where: { language: { code: $languageCode }, project: Android }) {

@@ -1,0 +1,13 @@
+fragment KeyGearItemValuationFragment on KeyGearItem {
+  valuation {
+    ... on KeyGearItemValuationFixed {
+      ratio
+      valuation {
+        amount
+      }
+    }
+    ... on KeyGearItemValuationMarketValue {
+      ratio
+    }
+  }
+}

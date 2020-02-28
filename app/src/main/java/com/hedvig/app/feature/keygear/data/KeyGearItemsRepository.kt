@@ -12,9 +12,8 @@ import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.DeleteKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
-import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemDateMutation
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemNameMutation
-import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemPriceMutation
+import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
@@ -30,7 +29,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import org.threeten.bp.LocalDate
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -65,20 +64,22 @@ class KeyGearItemsRepository(
         date: LocalDate,
         price: MonetaryAmountV2Input
     ): KeyGearItemQuery.Data? {
-        val updatePriceMutation = UpdateKeyGearItemPriceMutation(id, price)
-        val updateDateMutation = UpdateKeyGearItemDateMutation(id, date)
-        apolloClientWrapper.apolloClient.mutate(updatePriceMutation).toDeferred().await()
-        val response =
-            apolloClientWrapper.apolloClient.mutate(updateDateMutation).toDeferred().await()
+        val response = apolloClientWrapper
+            .apolloClient
+            .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
+            .toDeferred()
+            .await()
 
         val newPrice =
-            response.data()?.updateTimeOfPurchaseForKeyGearItem?.purchasePrice?.amount
+            response.data()?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount
                 ?: return null
         val newDate =
             response.data()?.updateTimeOfPurchaseForKeyGearItem?.timeOfPurchase
                 ?: return null
         val newValuation =
-            response.data()?.updateTimeOfPurchaseForKeyGearItem?.valuation as KeyGearItemFragment.Valuation?
+            response.data()?.updateTimeOfPurchaseForKeyGearItem?.fragments?.keyGearItemValuationFragment?.valuation
+                ?: response.data()?.updatePurchasePriceForKeyGearItem?.fragments?.keyGearItemValuationFragment?.valuation
+                ?: return null
 
         val cachedData =
             apolloClientWrapper
@@ -95,7 +96,27 @@ class KeyGearItemsRepository(
                         KeyGearItemQuery.KeyGearItem.Fragments(
                             keyGearItem.fragments.keyGearItemFragment.toBuilder().purchasePrice(
                                 KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", newPrice)
-                            ).timeOfPurchase(newDate).valuation(newValuation).build()
+                            )
+                                .timeOfPurchase(newDate)
+                                .fragments(
+                                    keyGearItem
+                                        .fragments
+                                        .keyGearItemFragment
+                                        .fragments
+                                        .toBuilder()
+                                        .keyGearItemValuationFragment(
+                                            keyGearItem
+                                                .fragments
+                                                .keyGearItemFragment
+                                                .fragments
+                                                .keyGearItemValuationFragment
+                                                .toBuilder()
+                                                .valuation(newValuation)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
                         )
                     ).build()
                 ).build()

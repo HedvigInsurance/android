@@ -1,34 +1,14 @@
-mutation UpdateKeyGearPriceAndDate($id: ID!, $newTimeOfPurchase: LocalDate!, $newPrice: MonetaryAmountV2Input!){
-  updateTimeOfPurchaseForKeyGearItem(id: $id, newTimeOfPurchase: $newTimeOfPurchase){
+mutation UpdateKeyGearPriceAndDate($id: ID!, $newTimeOfPurchase: LocalDate!, $newPrice: MonetaryAmountV2Input!) {
+  updateTimeOfPurchaseForKeyGearItem(id: $id, newTimeOfPurchase: $newTimeOfPurchase) {
     id
     timeOfPurchase
-    valuation {
-      ...on KeyGearItemValuationFixed {
-        ratio
-        valuation {
-          amount
-        }
-      }
-      ...on KeyGearItemValuationMarketValue {
-        ratio
-      }
-    }
+    ... KeyGearItemValuationFragment
   }
-  updatePurchasePriceForKeyGearItem(itemId: $id, newPrice: $newPrice){
+  updatePurchasePriceForKeyGearItem(itemId: $id, newPrice: $newPrice) {
     id
-    purchasePrice{
+    purchasePrice {
       amount
     }
-    valuation {
-      ...on KeyGearItemValuationFixed {
-        ratio
-        valuation{
-          amount
-        }
-      }
-      ...on KeyGearItemValuationMarketValue {
-        ratio
-      }
-    }
+    ... KeyGearItemValuationFragment
   }
 }

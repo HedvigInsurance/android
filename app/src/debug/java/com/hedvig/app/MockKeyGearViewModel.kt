@@ -2,6 +2,7 @@ package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
@@ -39,21 +40,26 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                                    "KeyGearItemValuation",
-                                    31,
-                                    KeyGearItemFragment.Valuation1(
-                                        "KeyGearItemValuationFixed",
-                                        "1234"
-                                    )
-                                ),
                                 listOf(),
                                 KeyGearItemFragment.MaxInsurableAmount(
                                     "MaxInsurableAmount",
                                     "50000"
                                 ),
                                 listOf(),
-                                false
+                                false,
+                                KeyGearItemFragment.Fragments(
+                                    KeyGearItemValuationFragment(
+                                        "KeyGearItemValuationFixed",
+                                        KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            "KeyGearItemValuationFixed",
+                                            31,
+                                            KeyGearItemValuationFragment.Valuation1(
+                                                "MonetaryAmountV2",
+                                                "1234.00"
+                                            )
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
@@ -82,21 +88,26 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                                    "KeyGearItemValuation",
-                                    31,
-                                    KeyGearItemFragment.Valuation1(
-                                        "KeyGearItemValuationFixed",
-                                        "1234"
-                                    )
-                                ),
                                 listOf(),
                                 KeyGearItemFragment.MaxInsurableAmount(
                                     "MaxInsurableAmount",
                                     "50000"
                                 ),
                                 listOf(),
-                                false
+                                false,
+                                KeyGearItemFragment.Fragments(
+                                    KeyGearItemValuationFragment(
+                                        "KeyGearItemValuationFixed",
+                                        KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            "KeyGearItemValuationFixed",
+                                            31,
+                                            KeyGearItemValuationFragment.Valuation1(
+                                                "MonetaryAmountV2",
+                                                "1234.00"
+                                            )
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
@@ -118,21 +129,26 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     "MonetaryAmountV2",
                                     "1500.00"
                                 ),
-                                KeyGearItemFragment.AsKeyGearItemValuationFixed(
-                                    "KeyGearItemValuation",
-                                    31,
-                                    KeyGearItemFragment.Valuation1(
-                                        "KeyGearItemValuationFixed",
-                                        "1234"
-                                    )
-                                ),
                                 listOf(),
                                 KeyGearItemFragment.MaxInsurableAmount(
                                     "MaxInsurableAmount",
                                     "50000"
                                 ),
                                 listOf(),
-                                false
+                                false,
+                                KeyGearItemFragment.Fragments(
+                                    KeyGearItemValuationFragment(
+                                        "KeyGearItemValuationFixed",
+                                        KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            "KeyGearItemValuationFixed",
+                                            31,
+                                            KeyGearItemValuationFragment.Valuation1(
+                                                "MonetaryAmountV2",
+                                                "1234.00"
+                                            )
+                                        )
+                                    )
+                                )
                             )
                         )
                     )

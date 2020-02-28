@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
@@ -67,7 +68,6 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "MonetaryAmountV2",
                 "1500.00"
             ),
-            null,
             listOf(),
 
             KeyGearItemFragment.MaxInsurableAmount(
@@ -75,7 +75,13 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 "50000"
             ),
             listOf(),
-            false
+            false,
+            KeyGearItemFragment.Fragments(
+                KeyGearItemValuationFragment(
+                    "KeyGearItemValuation",
+                    null
+                )
+            )
         )
     }
 }
