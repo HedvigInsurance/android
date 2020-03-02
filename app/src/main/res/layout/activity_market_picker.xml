@@ -34,8 +34,8 @@
         style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select your country of residence"
-        android:layout_marginStart="@dimen/base_margin_triple" />
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:text="Select your country of residence" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryList"
@@ -50,16 +50,16 @@
         style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Language"
-        android:layout_marginStart="@dimen/base_margin_triple" />
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:text="Select Language" />
 
     <!--TODO textkey-->
     <TextView
         style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You can change this setting later in the app"
-        android:layout_marginStart="@dimen/base_margin_triple" />
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:text="You can change this setting later in the app" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/languageList"
@@ -70,10 +70,11 @@
         tools:listitem="@layout/market_item" />
 
     <Button
+        android:id="@+id/save"
         style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Continue"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:text="Continue" />
 
 </LinearLayout>

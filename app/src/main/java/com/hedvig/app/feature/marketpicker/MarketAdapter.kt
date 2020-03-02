@@ -46,12 +46,13 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
 
         holder.button.setHapticClickListener { v ->
             when (position) {
-                SV -> model.updateMarket("SV")
-                NO -> model.updateMarket("NO")
+                SV -> model.updateMarket(Country.SV)
+                NO -> model.updateMarket(Country.NO)
             }
             val cb = v as RadioButton
             if (cb.isChecked) {
                 if (lastChecked != null) {
+                    //TODO fixa !!
                     lastChecked!!.isChecked = false
                 }
                 lastChecked = cb
