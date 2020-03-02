@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -13,7 +14,9 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
@@ -26,6 +29,9 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
+
         languageList.adapter = LanguageAdapterNew(languageViewModel, Country.SV)
         countryModel.selectedMarket.observe(this) { market ->
             market?.let {
@@ -65,5 +71,11 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
+    }
+
+    companion object {
+        private const val HAS_SHOWN_MARKET_SELECTION = "HAS_SHOWN_MARKET_SELECTION"
+        fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
+        fun hasBeenShown(context: Context) = context.getStoredBoolean(HAS_SHOWN_MARKET_SELECTION)
     }
 }
