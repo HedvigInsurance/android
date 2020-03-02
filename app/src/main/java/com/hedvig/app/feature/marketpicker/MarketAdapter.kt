@@ -34,28 +34,30 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
             NO -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_no))
                 //TODO textkey
-                country.text = "Norige"
+                country.text = "Norge"
             }
         }
-
 
         if (position == 0 && holder.button.isChecked) {
             lastChecked = holder.button
             lastCheckedPos = 0
         }
 
-        holder.button.setHapticClickListener { v ->
+        holder.parent.setHapticClickListener { v ->
             when (position) {
                 SV -> model.updateMarket(Country.SV)
                 NO -> model.updateMarket(Country.NO)
             }
-            val cb = v as RadioButton
-            if (cb.isChecked) {
+            val rb = v.radioButton as RadioButton
+            rb.isChecked = true
+            if (rb.isChecked) {
                 if (lastChecked != null) {
                     //TODO fixa !!
-                    lastChecked!!.isChecked = false
+                    if (lastCheckedPos != position) {
+                        lastChecked!!.isChecked = false
+                    }
                 }
-                lastChecked = cb
+                lastChecked = rb
                 lastCheckedPos = position
             } else lastChecked = null
         }

@@ -35,12 +35,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="Select your country of residence" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
         tools:listitem="@layout/market_item" />
@@ -51,6 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="Select Language" />
 
     <!--TODO textkey-->
@@ -65,16 +68,20 @@
         android:id="@+id/languageList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
         tools:listitem="@layout/market_item" />
 
+    <!--TODO textkey-->
     <Button
         android:id="@+id/save"
         style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="@dimen/base_margin_octuple"
         android:text="Continue" />
 
 </LinearLayout>
