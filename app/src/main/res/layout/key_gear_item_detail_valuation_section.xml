@@ -28,7 +28,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- TODO: Content Description text key -->
             <ImageView
                 android:id="@+id/valuationMoreInfo"
                 android:layout_width="wrap_content"
@@ -37,7 +36,7 @@
                 android:layout_marginEnd="@dimen/base_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:contentDescription="@null"
+                android:contentDescription="@string/KEY_GEAR_VALUATION_MORE_INFO"
                 android:focusable="true"
                 android:padding="@dimen/base_margin"
                 android:visibility="gone"

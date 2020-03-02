@@ -32,6 +32,7 @@ import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
@@ -39,6 +40,7 @@ import java.util.*
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
+    private val tracker: KeyGearTracker by inject()
 
     private var isUploading = false
     private lateinit var id: String
@@ -55,8 +57,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             safeLet(
                 data,
                 data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount
-            ) { d, amout ->
-                maxInsurableAmount = amout.toBigDecimal().toInt()
+            ) { d, amount ->
+                maxInsurableAmount = amount.toBigDecimal().toInt()
                 val category =
                     resources.getString(d.fragments.keyGearItemFragment.category.label)
                         .toLowerCase()
@@ -75,6 +77,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
 
         dateInput.setHapticClickListener {
+            tracker.addDate()
             val calendar = Calendar.getInstance()
             DatePickerDialog(
                 this,
@@ -103,6 +106,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             if (isUploading) {
                 return@setHapticClickListener
             }
+            tracker.saveValuation()
             isUploading = true
             transitionToUploading()
 
@@ -118,7 +122,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         priceInput.setOnChangeListener {
             val text = priceInput.getText()
             setButtonState(text.isNotEmpty(), date != null)
-            if (!text.isNullOrBlank()) {
+            if (!text.isBlank()) {
                 try {
                     val value = text.toDouble()
                     if (value > maxInsurableAmount.toDouble()) {

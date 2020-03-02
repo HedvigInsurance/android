@@ -29,6 +29,7 @@ import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
@@ -51,6 +52,7 @@ import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
@@ -59,6 +61,7 @@ import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
     private val model: CreateKeyGearItemViewModel by viewModel()
+    private val tracker: KeyGearTracker by inject()
 
     private lateinit var tempPhotoPath: String
     private var dirty = false
@@ -87,6 +90,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         photos.adapter =
             PhotosAdapter(
+                tracker,
                 { takePhoto() },
                 {
                     askForPermissions(
@@ -113,6 +117,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
 
         save.setHapticClickListener {
+            tracker.saveItem()
             if (isUploading) {
                 return@setHapticClickListener
             }

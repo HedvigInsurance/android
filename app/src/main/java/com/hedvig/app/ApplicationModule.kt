@@ -24,6 +24,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
 import com.hedvig.app.feature.keygear.data.DeviceInformationService
@@ -240,4 +241,5 @@ val trackerModule = module {
     single { LanguageSelectionTracker(get()) }
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
+    single { KeyGearTracker(get()) }
 }

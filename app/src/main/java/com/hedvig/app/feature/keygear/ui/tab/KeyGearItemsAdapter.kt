@@ -19,6 +19,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.compatColor
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.key_gear_add_item.view.*
 import kotlinx.android.synthetic.main.key_gear_item.view.*
 
 class KeyGearItemsAdapter(
+    private val tracker: KeyGearTracker,
     private val createItem: (view: View) -> Unit,
     private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit
 ) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
@@ -72,12 +74,14 @@ class KeyGearItemsAdapter(
         when (holder) {
             is ViewHolder.NewItem -> {
                 holder.root.setHapticClickListener { v ->
+                    tracker.createItem()
                     createItem(v)
                 }
             }
             is ViewHolder.Item -> {
                 val item = items[position - 1]
                 holder.root.setHapticClickListener {
+                    tracker.openItem()
                     openItem(
                         holder.root,
                         item

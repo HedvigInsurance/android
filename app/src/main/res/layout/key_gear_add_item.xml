@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE"
+        android:text="@string/KEY_GEAR_ADD_BUTTON"
         android:textColor="@color/link_purple"
         android:transitionName="addItemLabel"
         app:layout_constraintBottom_toBottomOf="parent"
