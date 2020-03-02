@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chat_top_bar_height"
+        android:background="@color/background"
+        android:elevation="@dimen/top_bar_elevation"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/base_margin"
+        android:paddingEnd="@dimen/base_margin">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
+            android:padding="@dimen/base_margin"
+            android:tint="@color/icon_tint"
+            app:srcCompat="@drawable/ic_close" />
+
+        <TextView
+            style="@style/Headline.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/body"
+        style="@style/Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:textAlignment="center"
+        tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
+
+    <com.hedvig.app.ui.view.HedvigEditText
+        android:id="@+id/priceInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        app:hintBackground="@color/background"
+        app:hintText="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE" />
+
+    <TextView
+        android:id="@+id/noCoverage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:text="@string/KEY_GEAR_NOT_COVERED"
+        android:textAlignment="center"
+        android:textColor="@color/coral_700"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.hedvig.app.ui.view.DateInputView
+        android:id="@+id/dateInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        app:dateHintBackground="@color/background" />
+
+    <FrameLayout
+        android:id="@+id/saveContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:background="@drawable/button_primary"
+        android:backgroundTint="@color/semi_light_gray"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/save"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+    </FrameLayout>
+
+</LinearLayout>

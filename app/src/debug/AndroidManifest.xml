@@ -9,14 +9,6 @@
         tools:targetApi="28">
 
         <activity
-            android:name=".feature.chat.ui.ChatActivity"
-            android:theme="@style/Hedvig.Theme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".DevelopmentActivity"
             android:label="Hedvig Development Screen"
             android:theme="@style/Hedvig.Theme">

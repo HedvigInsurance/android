@@ -1,0 +1,8 @@
+mutation AddReceiptToKeyGearItem(
+  $input: AddReceiptToKeyGearItemInput!,
+  $languageCode: String!
+) {
+  addReceiptToKeyGearItem(input: $input) {
+    ...KeyGearItemFragment
+  }
+}

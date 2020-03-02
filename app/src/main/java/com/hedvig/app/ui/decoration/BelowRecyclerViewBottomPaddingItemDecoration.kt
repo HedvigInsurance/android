@@ -1,16 +1,18 @@
 package com.hedvig.app.ui.decoration
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
-class BottomPaddingItemDecoration(val bottomPadding: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+class BelowRecyclerViewBottomPaddingItemDecoration(
+    private val bottomPadding: Int
+) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
-        parent: androidx.recyclerview.widget.RecyclerView,
-        state: androidx.recyclerview.widget.RecyclerView.State
+        parent: RecyclerView,
+        state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
 

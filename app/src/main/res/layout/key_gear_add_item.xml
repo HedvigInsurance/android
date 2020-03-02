@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/key_gear_card_height"
+    android:layout_gravity="center"
+    android:background="@drawable/background_rounded_corners"
+    android:backgroundTint="@color/color_on_surface"
+    android:orientation="vertical"
+    android:transitionName="addItemRoot"
+    tools:layout_width="160dp">
+
+    <ImageView
+        android:id="@+id/addItemIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:transitionName="addItemIcon"
+        app:layout_constraintBottom_toTopOf="@id/addItemLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/ic_chat_attach_file" />
+
+    <TextView
+        android:id="@+id/addItemLabel"
+        style="@style/Body.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/KEY_GEAR_ADD_BUTTON"
+        android:textColor="@color/link_purple"
+        android:transitionName="addItemLabel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addItemIcon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

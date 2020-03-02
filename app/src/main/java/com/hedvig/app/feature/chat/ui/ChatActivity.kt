@@ -24,11 +24,8 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
@@ -146,7 +143,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun initializeMessages() {
-        messages.setHasFixedSize(false)
         val adapter = ChatAdapter(this, onPressEdit = {
             showAlert(
                 R.string.CHAT_EDIT_MESSAGE_TITLE,
@@ -157,7 +153,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
             )
         }, tracker = tracker)
-        adapter.setHasStableIds(true)
         messages.addOnScrollListener(adapter.recyclerViewPreloader)
         messages.adapter = adapter
     }
@@ -290,7 +285,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
             },
             showUploadBottomSheetCallback = {
-                UploadBottomSheet().show(supportFragmentManager, "FileUploadOverlay")
+                ChatFileUploadBottomSheet
+                    .newInstance()
+                    .show(
+                        supportFragmentManager,
+                        ChatFileUploadBottomSheet.TAG
+                    )
             },
             dismissCallback = { motionEvent ->
 

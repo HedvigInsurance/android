@@ -11,6 +11,7 @@
     <color name="transparent_white">#00FFFFFF</color>
     <color name="blur_white">#e6ffffff</color>
     <color name="white">#ffffff</color>
+    <color name="translucent_off_white">#aaf9fafc</color>
     <color name="purple">#651eff</color>
     <color name="violet_300">#9361ff</color>
     <color name="gray">#9b9baa</color>
@@ -33,8 +34,11 @@
     <color name="violet_200">#c1a5ff</color>
     <color name="coral_500">#ff8a80</color>
     <color name="coral_200">#ffd0cc</color>
+    <color name="coral_700">#cc6e66</color>
     <color name="sunflower_300">#fbe356</color>
     <color name="dark_mode">#0a0d14</color>
+    <color name="translucent_dark_mode">#aa0a0d14</color>
     <color name="dark_mode_elevation_1">#24272e</color>
     <color name="dark_mode_semi_transparent">#e624272e</color>
+    <color name="translucent_tool_bar">#730A0D14</color>
 </resources>

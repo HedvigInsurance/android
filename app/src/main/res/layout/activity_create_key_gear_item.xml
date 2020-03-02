@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.keygear.ui.createitem.CreateKeyGearItemActivity">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:elevation="@dimen/top_bar_elevation"
+        android:padding="@dimen/base_margin">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
+            android:padding="@dimen/base_margin"
+            app:srcCompat="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/receipt_title"
+            style="@style/Headline.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/scrollViewContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/base_margin"
+            android:paddingBottom="@dimen/base_margin_sextuple"
+            tools:paddingTop="56dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/photos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/create_key_gear_item_photo" />
+
+            <TextView
+                style="@style/Body.Regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:text="@string/KEY_GEAR_ADD_ITEM_TYPE_HEADLINE" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_sesqui"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_sesqui"
+                android:nestedScrollingEnabled="false"
+                android:orientation="horizontal"
+                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/create_key_gear_item_category" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/saveContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_quadruple"
+        android:layout_marginBottom="@dimen/base_margin_quadruple"
+        android:background="@drawable/button_primary"
+        android:backgroundTint="@color/link_purple"
+        android:translationY="140dp"
+        android:visibility="gone"
+        tools:translationY="0dp"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/save"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/postCreate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/off_black_dark"
+        android:translationZ="@dimen/post_create_z_translation"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/createdIllustration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/base_margin_octuple"
+            android:alpha="0"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/createdLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:alpha="1"
+            tools:src="@drawable/illustration_phone"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/createdCheckmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:contentDescription="@null"
+            android:translationX="@dimen/base_margin"
+            android:translationY="-8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/createdIllustration"
+            app:layout_constraintTop_toTopOf="@id/createdIllustration"
+            app:srcCompat="@drawable/ic_filled_checkmark_small"
+            tools:alpha="1"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/createdLabel"
+            style="@style/Headline.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:textColor="@color/white"
+            android:translationY="@dimen/base_margin_triple"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/createdIllustration"
+            tools:alpha="1"
+            tools:text="@string/KEY_GEAR_ADD_ITEM_SUCCESS"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

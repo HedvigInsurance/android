@@ -24,11 +24,25 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.keygear.KeyGearTracker
+import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
+import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
+import com.hedvig.app.feature.keygear.data.DeviceInformationService
+import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
+import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
+import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
@@ -66,7 +80,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -160,6 +174,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+
 }
 
 val offerModule = module {
@@ -174,11 +189,23 @@ val directDebitModule = module {
     viewModel<DirectDebitViewModel> { DirectDebitViewModelImpl(get()) }
 }
 
+val keyGearModule = module {
+    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
+    viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
+    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
+    viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
+}
+
+val loggedInModule = module {
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
     single { RemoteConfig() }
     single { TabNotificationService(get()) }
+    single { DeviceInformationService(get()) }
 }
 
 val repositoriesModule = module {
@@ -194,6 +221,7 @@ val repositoriesModule = module {
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
+    single { KeyGearItemsRepository(get(), get(), get()) }
 }
 
 val trackerModule = module {
@@ -212,4 +240,6 @@ val trackerModule = module {
     single { PaymentTracker(get()) }
     single { LanguageSelectionTracker(get()) }
     single { RatingsTracker(get()) }
+    single { LoggedInTracker(get()) }
+    single { KeyGearTracker(get()) }
 }

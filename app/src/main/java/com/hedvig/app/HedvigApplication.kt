@@ -22,8 +22,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
-import com.facebook.FacebookSdk
-import com.facebook.appevents.AppEventsLogger
 
 class HedvigApplication : Application() {
     val apolloClientWrapper: ApolloClientWrapper by inject()
@@ -44,8 +42,8 @@ class HedvigApplication : Application() {
             ?.apply(this)
 
         Theme
-           .fromSettings(this)
-           ?.apply()
+            .fromSettings(this)
+            ?.apply()
 
         AndroidThreeTen.init(this)
 
@@ -59,6 +57,8 @@ class HedvigApplication : Application() {
                     offerModule,
                     profileModule,
                     directDebitModule,
+                    keyGearModule,
+                    loggedInModule,
                     serviceModule,
                     repositoriesModule,
                     trackerModule

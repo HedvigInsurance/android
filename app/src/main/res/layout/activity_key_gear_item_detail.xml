@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <LinearLayout
+            android:id="@+id/scrollViewContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/base_margin_quintuple">
+
+            <include
+                android:id="@+id/photosSection"
+                layout="@layout/key_gear_item_detail_photos_section" />
+
+            <LinearLayout
+                android:id="@+id/postPhotosSections"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0"
+                android:orientation="vertical"
+                android:translationY="50dp"
+                android:visibility="gone"
+                tools:alpha="1"
+                tools:translationY="0dp"
+                tools:visibility="visible">
+
+                <include
+                    android:id="@+id/valuationSection"
+                    layout="@layout/key_gear_item_detail_valuation_section" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/coverageSection"
+                    layout="@layout/key_gear_item_detail_coverage_section" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/nameSection"
+                    layout="@layout/key_gear_item_detail_name_section" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_line_height"
+                    android:layout_marginTop="@dimen/base_margin_quintuple"
+                    android:background="@color/separator" />
+
+                <include
+                    android:id="@+id/receiptSection"
+                    layout="@layout/key_gear_item_detail_receipt_section" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_height="?attr/actionBarSize" />
+
+</FrameLayout>

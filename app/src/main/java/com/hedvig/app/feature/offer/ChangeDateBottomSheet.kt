@@ -4,17 +4,12 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.spring
-import kotlinx.android.synthetic.main.date_pick_layout.*
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -109,9 +104,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                 localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
                 val month = DateFormatSymbols().months[monthOfYear].capitalize()
 
-                dialog?.dateText?.text = "$dayOfMonth $month $year"
-                animateHintMove()
-                dialog?.dateText?.show()
+                dialog?.datePickButton?.text = "$dayOfMonth $month $year"
 
                 dialog?.chooseDateButton?.isEnabled = true
                 dialog?.chooseDateButton?.backgroundTintList =
@@ -124,17 +117,6 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
         dpd.show()
-    }
-
-    private fun animateHintMove() {
-        val animateDistance = dialog?.datePickButton
-            ?.height?.div(2.5)
-            ?.toFloat() ?: return
-
-        dialog?.dateHint?.let { dateHint ->
-            dateHint.spring(SpringAnimation.TRANSLATION_Y, SpringForce.DAMPING_RATIO_LOW_BOUNCY, SpringForce.STIFFNESS_MEDIUM)
-                .animateToFinalPosition(-animateDistance)
-        }
     }
 
     companion object {

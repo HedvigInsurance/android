@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class LoggedInActivity : BaseActivity() {
+class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val tabViewModel: BaseTabViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
@@ -52,13 +52,15 @@ class LoggedInActivity : BaseActivity() {
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
 
+    private val loggedInViewModel: LoggedInViewModel by viewModel()
+
     private val profileTracker: ProfileTracker by inject()
+    private val loggedInTracker: LoggedInTracker by inject()
 
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_logged_in)
         toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
@@ -97,8 +99,8 @@ class LoggedInActivity : BaseActivity() {
     }
 
     private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
-        LoggedInTabs.DASHBOARD, LoggedInTabs.CLAIMS, LoggedInTabs.PROFILE -> referralButton.remove()
         LoggedInTabs.REFERRALS -> referralButton.show()
+        else -> referralButton.remove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -112,6 +114,9 @@ class LoggedInActivity : BaseActivity() {
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
+            }
+            LoggedInTabs.KEY_GEAR -> {
+                // TODO
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -135,6 +140,9 @@ class LoggedInActivity : BaseActivity() {
                             .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
             }
+            LoggedInTabs.KEY_GEAR -> {
+                // TODO
+            }
         }
         return true
     }
@@ -148,9 +156,14 @@ class LoggedInActivity : BaseActivity() {
             } else {
                 when (tab) {
                     TabNotification.REFERRALS -> {
+                        val position = when (bottomTabs.menu.size()) {
+                            4 -> 3
+                            5 -> 4
+                            else -> 3
+                        }
                         val itemView =
                             (bottomTabs.getChildAt(0) as BottomNavigationMenuView).getChildAt(
-                                LoggedInTabs.REFERRALS.ordinal
+                                position
                             ) as BottomNavigationItemView
 
                         badge = layoutInflater.inflate(
@@ -181,6 +194,10 @@ class LoggedInActivity : BaseActivity() {
                 data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toDouble(),
                 data?.referralInformation?.campaign?.code
             ) { incentive, code -> bindReferralsButton(incentive, code) }
+
+            data?.member?.id?.let { id ->
+                loggedInTracker.setMemberId(id)
+            }
         }
         whatsNewViewModel.fetchNews()
 
@@ -191,6 +208,18 @@ class LoggedInActivity : BaseActivity() {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
+                }
+            }
+        }
+
+        loggedInViewModel.remoteConfig.observe(this) { data ->
+            data?.let {
+                if (data.keyGearEnabled && bottomTabs.menu.size() != 5) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
+                } else if (!data.keyGearEnabled && bottomTabs.menu.size() != 4) {
+                    bottomTabs.menu.clear()
+                    bottomTabs.inflateMenu(R.menu.logged_in_menu)
                 }
             }
         }
@@ -227,6 +256,9 @@ class LoggedInActivity : BaseActivity() {
             }
             LoggedInTabs.CLAIMS -> {
                 setupLargeTitle(R.string.CLAIMS_TITLE, R.font.circular_bold)
+            }
+            LoggedInTabs.KEY_GEAR -> {
+                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE), R.font.circular_bold)
             }
             LoggedInTabs.REFERRALS -> {
                 setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE, R.font.circular_bold)

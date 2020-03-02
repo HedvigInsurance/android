@@ -1,0 +1,42 @@
+fragment KeyGearItemFragment on KeyGearItem {
+  id
+  name
+  physicalReferenceHash
+  photos {
+    file {
+      preSignedUrl
+    }
+  }
+  receipts {
+    file {
+      preSignedUrl
+    }
+  }
+  category
+  purchasePrice {
+    amount
+  }
+  timeOfPurchase
+  deductible {
+    amount
+  }
+  ... KeyGearItemValuationFragment
+  covered {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
+  maxInsurableAmount {
+    amount
+  }
+  exceptions {
+    title {
+      translations(where: { language: { code: $languageCode }, project: Android }) {
+        text
+      }
+    }
+  }
+  deleted
+}

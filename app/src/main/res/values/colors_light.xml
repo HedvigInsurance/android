@@ -2,6 +2,7 @@
 <resources>
     <item name="background" type="color">@color/off_white</item>
     <item name="background_elevation_1" type="color">@color/white</item>
+    <item name="translucent_background" type="color">@color/translucent_off_white</item>
     <item name="text_emphasized" type="color">@color/off_black_dark</item>
     <item name="text_regular" type="color">@color/off_black</item>
     <item name="text_negative" type="color">@color/white</item>
@@ -15,4 +16,6 @@
     <item name="separator_elevation_1" type="color">@color/light_gray</item>
     <item name="offer_background" type="color">@color/dark_purple</item>
     <item name="foreground_gray" type="color">@color/semi_light_gray</item>
+    <item name="icon_color" type="color">@color/off_black</item>
+    <item name="color_on_surface" type="color">@color/violet_100</item>
 </resources>

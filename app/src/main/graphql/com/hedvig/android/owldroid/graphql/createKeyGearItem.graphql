@@ -1,0 +1,18 @@
+mutation CreateKeyGearItem(
+  $category: KeyGearItemCategory!
+  $photos: [S3FileInput!]!
+  $languageCode: String!
+  $physicalReferenceHash: String
+  $name: String
+) {
+  createKeyGearItem(
+    input: {
+      photos: $photos
+      category: $category
+      physicalReferenceHash: $physicalReferenceHash
+      name: $name
+    }
+  ) {
+    ...KeyGearItemFragment
+  }
+}

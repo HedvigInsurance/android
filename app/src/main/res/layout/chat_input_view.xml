@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/base_margin"
         android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/uploadFile"
@@ -81,7 +81,7 @@
         android:contentDescription="@null"
         android:visibility="gone"
         app:srcCompat="@drawable/animation_typing"
-        tools:visibility="visible" />
+        tools:visibility="invisible" />
 
     <com.hedvig.app.feature.chat.ui.AudioRecorderView
         android:id="@+id/audioRecorder"

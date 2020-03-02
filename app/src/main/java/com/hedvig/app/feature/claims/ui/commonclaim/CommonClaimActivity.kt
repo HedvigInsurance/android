@@ -26,14 +26,13 @@ import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.common_claim_first_message.*
 import org.koin.android.ext.android.inject
 
-class CommonClaimActivity : BaseActivity() {
+class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
     private val requestBuilder by lazy { buildRequestBuilder() }
     private val tracker: ClaimsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_common_claim)
 
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
 

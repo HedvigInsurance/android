@@ -9,6 +9,7 @@
     <dimen name="base_margin_quadruple">32dp</dimen>
     <dimen name="base_margin_quintuple">40dp</dimen>
     <dimen name="base_margin_sextuple">48dp</dimen>
+    <dimen name="base_margin_octuple">64dp</dimen>
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
@@ -116,16 +117,16 @@
     <dimen name="price_bubble_size">180dp</dimen>
     <dimen name="discount_bubble_size">107dp</dimen>
     <dimen name="deductible_bubble_size">99dp</dimen>
-    <dimen name="deductibe_bubble_top_offset">192dp</dimen>
-    <dimen name="deductible_bubble_end_offset">77dp</dimen>
-    <dimen name="binding_period_bubble_size">148dp</dimen>
-    <dimen name="binding_period_bubble_top_offset">66dp</dimen>
-    <dimen name="binding_period_bubble_end_offset">187dp</dimen>
-    <dimen name="coverage_or_travel_bubble_size">148dp</dimen>
-    <dimen name="coverage_or_travel_bubble_top_offset">137dp</dimen>
-    <dimen name="coverage_or_travel_bubble_start_offset">143dp</dimen>
-    <dimen name="start_date_bubble_size">143dp</dimen>
-    <dimen name="start_date_bubble_start_offset">163dp</dimen>
+    <dimen name="deductibe_bubble_top_offset">160dp</dimen>
+    <dimen name="deductible_bubble_end_offset">67dp</dimen>
+    <dimen name="binding_period_bubble_size">134dp</dimen>
+    <dimen name="binding_period_bubble_top_offset">60dp</dimen>
+    <dimen name="binding_period_bubble_end_offset">177dp</dimen>
+    <dimen name="coverage_or_travel_bubble_size">137dp</dimen>
+    <dimen name="coverage_or_travel_bubble_top_offset">147dp</dimen>
+    <dimen name="coverage_or_travel_bubble_start_offset">133dp</dimen>
+    <dimen name="start_date_bubble_size">120dp</dimen>
+    <dimen name="start_date_bubble_start_offset">147dp</dimen>
     <dimen name="number_insured_bubble_size">99dp</dimen>
     <dimen name="button_shadow_offset">2dp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
@@ -148,11 +149,22 @@
     <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
     <dimen name="settings_custom_offset">11dp</dimen>
     <dimen name="ratings_dialog_minimum_width">250dp</dimen>
+    <dimen name="key_gear_card_height">200dp</dimen>
+    <dimen name="create_key_gear_add_photo_height">250dp</dimen>
+    <dimen name="auto_set_date_text_size">14dp</dimen>
 
     <dimen name="pick_date_button_corner_radius">12dp</dimen>
     <dimen name="button_border_white_padding">10dp</dimen>
     <dimen name="button_border_white_corner_radius">120dp</dimen>
     <dimen name="date_pick_button_height">60dp</dimen>
-
+    <dimen name="base_margin_sesqui">12dp</dimen>
+    <dimen name="top_bar_elevation">2dp</dimen>
+    <dimen name="post_create_z_translation">7dp</dimen>
+    <dimen name="key_gear_item_elevation">2dp</dimen>
+    <dimen name="horizontal_line_height">1dp</dimen>
+    <dimen name="valuation_card_height">100dp</dimen>
+    <dimen name="key_gear_item_detail_photos_height">480dp</dimen>
+    <dimen name="hedvig_edit_text_padding">14dp</dimen>
+    <dimen name="item_detail_gradient_size">300dp</dimen>
 
 </resources>

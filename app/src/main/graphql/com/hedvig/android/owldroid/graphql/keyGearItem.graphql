@@ -1,0 +1,8 @@
+query KeyGearItem(
+  $id: ID!
+  $languageCode: String!
+) {
+  keyGearItem(id: $id) {
+    ... KeyGearItemFragment
+  }
+}

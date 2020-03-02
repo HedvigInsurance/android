@@ -30,13 +30,12 @@
 
     <Button
         android:id="@+id/uploadImageOrVideo"
-        style="@style/HedvigButton"
+        style="@style/HedvigButton.Purple"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_weight="0.5"
-        android:backgroundTint="@color/purple"
         android:text="@string/FILE_UPLOAD_IMAGE"
         app:layout_constraintEnd_toStartOf="@id/uploadFile"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,12 +43,11 @@
 
     <Button
         android:id="@+id/uploadFile"
-        style="@style/HedvigButton"
+        style="@style/HedvigButton.Purple"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_weight="0.5"
-        android:backgroundTint="@color/purple"
         android:text="@string/FILE_UPLOAD_FILE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/uploadImageOrVideo"

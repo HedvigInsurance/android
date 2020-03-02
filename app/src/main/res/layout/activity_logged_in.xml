@@ -25,7 +25,8 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/referrals_button_bottom_margin"
         android:text="@string/REFERRAL_SHAREINVITE"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
@@ -33,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
         android:layout_gravity="bottom"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:menu="@menu/logged_in_menu" />
 

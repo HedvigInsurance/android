@@ -13,7 +13,18 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
-    <style name="Hedvig.Theme.Marketing" />
+    <style name="Hedvig.Theme.KeyGear">
+        <item name="android:navigationBarColor">@color/translucent_background</item>
+    </style>
+
+    <style name="Hedvig.Theme.KeyGear.ItemDetail">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="Hedvig.Theme.Marketing">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
     <style name="Hedvig.Theme.Offer" />
 
@@ -103,7 +114,7 @@
     </style>
 
     <style name="HedvigButton.Purple">
-        <item name="android:backgroundTint">@color/link_purple</item>
+        <item name="android:backgroundTint">@color/hedvig_button_state</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

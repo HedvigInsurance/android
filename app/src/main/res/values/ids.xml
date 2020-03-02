@@ -12,7 +12,6 @@
     <item name="storyProgressIndicatorContainer" type="id" />
     <item name="hedvigFaceAnimation" type="id" />
     <item name="login" type="id" />
-    <item name="activity_marketing" type="id" />
     <item name="loadingSpinner" type="id" />
     <item name="profile_charity_image" type="id" />
     <item name="myInfoRow" type="id" />
@@ -91,7 +90,18 @@
     <item name="phoneNumberInputContainer" type="id" />
     <item name="profileReferralRow" type="id" />
     <item name="iconNavigateNext" type="id" />
-    <item name="spring_scale_x" type="id" />
-    <item name="spring_scale_y" type="id" />
-    <item name="spring_translation_y" type="id" />
+    <item name="translation_x" type="id" />
+    <item name="translation_y" type="id" />
+    <item name="translation_z" type="id" />
+    <item name="scale_x" type="id" />
+    <item name="scale_y" type="id" />
+    <item name="rotation" type="id" />
+    <item name="rotation_x" type="id" />
+    <item name="rotation_y" type="id" />
+    <item name="x" type="id" />
+    <item name="y" type="id" />
+    <item name="z" type="id" />
+    <item name="alpha" type="id" />
+    <item name="scroll_x" type="id" />
+    <item name="scroll_y" type="id" />
 </resources>

@@ -13,6 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -27,6 +28,7 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
@@ -36,20 +38,20 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         "News",
         WhatsNewQuery.Illustration(
             "Icon", WhatsNewQuery.Variants(
-                "IconVariants", WhatsNewQuery.Variants.Fragments(
-                    IconVariantsFragment(
-                        "IconVariants",
-                        IconVariantsFragment.Dark(
-                            "IconVariant",
-                            "/app-content-service/whats_new_reward_dark.svg"
-                        ),
-                        IconVariantsFragment.Light(
-                            "IconVariant",
-                            "/app-content-service/whats_new_reward.svg"
-                        )
-                    )
+            "IconVariants", WhatsNewQuery.Variants.Fragments(
+            IconVariantsFragment(
+                "IconVariants",
+                IconVariantsFragment.Dark(
+                    "IconVariant",
+                    "/app-content-service/whats_new_reward_dark.svg"
+                ),
+                IconVariantsFragment.Light(
+                    "IconVariant",
+                    "/app-content-service/whats_new_reward.svg"
                 )
             )
+        )
+        )
         ),
         "Bonusregn till folket!",
         "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
@@ -104,10 +106,18 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        findViewById<Button>(R.id.openLoggedIn).setHapticClickListener {
+        openValuation.setHapticClickListener {
+            startActivity(KeyGearValuationActivity.newInstance(this, "123"))
+        }
+
+        findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
             })
+        }
+
+        findViewById<Button>(R.id.openLoggedInWithoutWelcome).setHapticClickListener {
+            startActivity(Intent(this, LoggedInActivity::class.java))
         }
         findViewById<Button>(R.id.openReferralReceiver).setHapticClickListener {
             startActivity(ReferralsReceiverActivity.newInstance(this, "CODE12", "10.00"))
@@ -179,6 +189,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
-        private val REAL_MODULES = listOf(offerModule, profileModule, directDebitModule)
+        private val REAL_MODULES =
+            listOf(offerModule, profileModule, directDebitModule, keyGearModule, loggedInModule)
     }
 }

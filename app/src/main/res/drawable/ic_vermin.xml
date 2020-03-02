@@ -1,32 +1,5 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="48"
-    android:viewportHeight="48">
-  <path
-      android:pathData="M48,24c0,13.255 -10.745,24 -24,24S0,37.255 0,24 10.745,0 24,0s24,10.745 24,24"
-      android:fillColor="#FF8A80"
-      android:fillType="evenOdd"/>
-  <path
-      android:strokeWidth="1"
-      android:pathData="M24,14L24,14A8,8 0,0 1,32 22L32,28A8,8 0,0 1,24 36L24,36A8,8 0,0 1,16 28L16,22A8,8 0,0 1,24 14z"
-      android:fillColor="#00000000"
-      android:strokeColor="#FFF"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M24,19m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
-      android:fillColor="#FFF"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M24,25m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
-      android:fillColor="#FFF"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M24,31m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
-      android:fillColor="#FFF"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M31.5,19h5.2v1h-5.2zM31.5,31h5.2v1h-5.2zM31.5,25h7v1h-7zM16.2,19L11,19v1h5.2zM30.085,10.308l-3.677,3.677 0.707,0.707 3.677,-3.677zM18.115,10.308l3.677,3.677 -0.707,0.707 -3.677,-3.677zM17,31L11,31v1h6zM16,25L9,25v1h7z"
-      android:fillColor="#FFF"
-      android:fillType="evenOdd"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
+    <path android:pathData="M48 24c0 13.255-10.745 24-24 24S0 37.255 0 24 10.745 0 24 0s24 10.745 24 24" android:fillColor="#FF8A80" android:fillType="evenOdd"/>
+    <path android:strokeWidth="1" android:pathData="M24 14a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8 8 8 0 0 1-8-8v-6a8 8 0 0 1 8-8z" android:strokeColor="#FFF" android:fillType="evenOdd"/>
+    <path android:pathData="M23 19a1 1 0 1 1 2 0 1 1 0 1 1-2 0m0 6a1 1 0 1 1 2 0 1 1 0 1 1-2 0m0 6a1 1 0 1 1 2 0 1 1 0 1 1-2 0m8.5-12h5.2v1h-5.2zm0 12h5.2v1h-5.2zm0-6h7v1h-7zm-15.3-6H11v1h5.2zm13.885-8.692l-3.677 3.677 0.707 0.707 3.677-3.677zm-11.97 0l3.677 3.677-0.707 0.707-3.677-3.677zM17 31h-6v1h6zm-1-6H9v1h7z" android:fillColor="#FFF" android:fillType="evenOdd"/>
 </vector>

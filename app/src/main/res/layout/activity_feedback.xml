@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hedvig.app.feature.profile.ui.feedback.FeedbackFragment">
+    tools:context=".feature.profile.ui.feedback.FeedbackActivity">
 
     <include layout="@layout/app_bar" />
 
