@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <LinearLayout
@@ -35,10 +34,35 @@
         style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select your country of residence" />
+        android:text="Select your country of residence"
+        android:layout_marginStart="@dimen/base_margin_triple" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="2"
+        tools:listitem="@layout/market_item" />
+
+    <!--TODO textkey-->
+    <TextView
+        style="@style/Headline.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Language"
+        android:layout_marginStart="@dimen/base_margin_triple" />
+
+    <!--TODO textkey-->
+    <TextView
+        style="@style/Body.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can change this setting later in the app"
+        android:layout_marginStart="@dimen/base_margin_triple" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/languageList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -49,7 +73,7 @@
         style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Continue" />
-
+        android:text="Continue"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
