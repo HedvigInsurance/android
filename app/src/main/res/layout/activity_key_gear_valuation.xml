@@ -81,7 +81,6 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         app:dateHintBackground="@color/background" />
 
-
     <FrameLayout
         android:id="@+id/saveContainer"
         android:layout_width="match_parent"

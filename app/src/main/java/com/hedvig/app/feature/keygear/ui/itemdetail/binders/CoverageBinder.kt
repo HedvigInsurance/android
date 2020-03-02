@@ -9,7 +9,6 @@ class CoverageBinder(
 ) {
     init {
         root.covered.adapter = CoverageAdapter(false)
-
         root.exceptions.adapter = CoverageAdapter(true)
     }
 

@@ -9,6 +9,7 @@ import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
@@ -21,12 +22,14 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.transitionPair
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : BaseTabFragment() {
     override val layout = R.layout.fragment_key_gear
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
+    private val tracker: KeyGearTracker by inject()
 
     private var hasSentAutoAddedItems = false
 
@@ -34,15 +37,17 @@ class KeyGearFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         items.adapter =
-            KeyGearItemsAdapter({ v ->
-                startActivity(
-                    CreateKeyGearItemActivity.newInstance(requireContext()),
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        requireActivity(),
-                        transitionPair(v)
-                    ).toBundle()
-                )
-            }, { root, item ->
+            KeyGearItemsAdapter(
+                tracker,
+                { v ->
+                    startActivity(
+                        CreateKeyGearItemActivity.newInstance(requireContext()),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            requireActivity(),
+                            transitionPair(v)
+                        ).toBundle()
+                    )
+                }, { root, item ->
                 startActivity(
                     KeyGearItemDetailActivity.newInstance(
                         requireContext(),

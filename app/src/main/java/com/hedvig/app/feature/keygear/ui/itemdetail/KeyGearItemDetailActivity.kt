@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
@@ -32,11 +33,12 @@ import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
-
     private val model: KeyGearItemDetailViewModel by viewModel()
+    private val tracker: KeyGearTracker by inject()
 
     private lateinit var photosBinder: PhotosBinder
     private lateinit var valuationBinder: ValuationBinder
@@ -59,10 +61,10 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             intent.getStringExtra(FIRST_PHOTO_URL),
             intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
         ) { supportStartPostponedEnterTransition() }
-        valuationBinder = ValuationBinder(valuationSection as LinearLayout)
+        valuationBinder = ValuationBinder(valuationSection as LinearLayout, tracker)
         coverageBinder = CoverageBinder(coverageSection as LinearLayout)
-        nameBinder = NameBinder(nameSection as LinearLayout, model)
-        receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager)
+        nameBinder = NameBinder(nameSection as LinearLayout, model, tracker)
+        receiptBinder = ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager, tracker)
 
         scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)

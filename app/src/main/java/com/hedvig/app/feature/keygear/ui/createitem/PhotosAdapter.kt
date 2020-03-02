@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.performOnLongPressHapticFeedback
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.create_key_gear_item_new_photo.view.*
 import kotlinx.android.synthetic.main.create_key_gear_item_photo.view.*
 
 class PhotosAdapter(
+    private val tracker: KeyGearTracker,
     private val takePhoto: () -> Unit,
     private val requestPhotoPermissionsAndTakePhoto: () -> Unit,
     private val deletePhoto: (photo: Photo) -> Unit
@@ -51,7 +53,8 @@ class PhotosAdapter(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
                             ITEM_HEIGHT.dp
                         )
-                }
+                },
+                tracker
             )
             PHOTO -> ViewHolder.Photo(
                 LayoutInflater.from(parent.context).inflate(
@@ -64,7 +67,8 @@ class PhotosAdapter(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
                             ITEM_HEIGHT.dp
                         )
-                }
+                },
+                tracker
             )
             else -> {
                 throw Error("Unknown viewType $viewType")
@@ -95,7 +99,7 @@ class PhotosAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class Photo(view: View) : ViewHolder(view) {
+        class Photo(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
             val photo: ImageView = view.photo
 
             fun bind(
@@ -109,11 +113,13 @@ class PhotosAdapter(
                     .into(photo)
 
                 photo.setOnCreateContextMenuListener { _, v, _ ->
+                    tracker.openPhotoContextMenu()
                     v.performOnLongPressHapticFeedback()
                     val popup = PopupMenu(v.context, v)
                     popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
                     popup.setOnMenuItemClickListener { item ->
                         if (item.itemId == R.id.delete) {
+                            tracker.deletePhoto()
                             deletePhoto(data)
                         }
                         true
@@ -123,7 +129,7 @@ class PhotosAdapter(
             }
         }
 
-        class AddPhoto(view: View) : ViewHolder(view) {
+        class AddPhoto(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
             val root: ConstraintLayout = view.addPhoto
 
             fun bind(
@@ -131,6 +137,7 @@ class PhotosAdapter(
                 requestPhotoPermissionsAndTakePhoto: () -> Unit
             ) {
                 root.setHapticClickListener {
+                    tracker.addPhoto()
                     if (root.context.hasPermissions(Manifest.permission.CAMERA)) {
                         takePhoto()
                     } else {
