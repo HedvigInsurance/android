@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:elevation="@dimen/top_bar_elevation"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/base_margin">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
+            android:padding="@dimen/base_margin"
+            android:tint="@color/icon_tint"
+            app:srcCompat="@drawable/ic_hedvig_wordmark_black" />
+
+    </LinearLayout>
+
+
+    <!--TODO textkey-->
+    <TextView
+        style="@style/Headline.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select your country of residence" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/countryList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="2"
+        tools:listitem="@layout/market_item" />
+
+    <Button
+        style="@style/HedvigButton.Purple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Continue" />
+
+
+</LinearLayout>
