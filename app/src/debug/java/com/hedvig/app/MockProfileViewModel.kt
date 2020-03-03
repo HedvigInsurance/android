@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -26,7 +27,8 @@ class MockProfileViewModel : ProfileViewModel() {
                     "Test",
                     "Testerson",
                     "test@hedvig.com",
-                    "070 123 345 67"
+                    "070 123 345 67",
+                    listOf(Feature.KEYGEAR)
                 ),
                 ProfileQuery.Insurance(
                     "Insurance",

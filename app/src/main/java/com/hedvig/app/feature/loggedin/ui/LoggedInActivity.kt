@@ -10,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
@@ -25,6 +26,7 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -51,8 +53,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
-
-    private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val profileTracker: ProfileTracker by inject()
     private val loggedInTracker: LoggedInTracker by inject()
@@ -198,6 +198,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             data?.member?.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
+
+            val keyGearEnabled = isDebug() || data?.member?.features?.contains(Feature.KEYGEAR) ?: false
+
+            if (keyGearEnabled && bottomTabs.menu.size() != 5) {
+                bottomTabs.menu.clear()
+                bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
+            } else if (!keyGearEnabled && bottomTabs.menu.size() != 4) {
+                bottomTabs.menu.clear()
+                bottomTabs.inflateMenu(R.menu.logged_in_menu)
+            }
         }
         whatsNewViewModel.fetchNews()
 
@@ -208,18 +218,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
-                }
-            }
-        }
-
-        loggedInViewModel.remoteConfig.observe(this) { data ->
-            data?.let {
-                if (data.keyGearEnabled && bottomTabs.menu.size() != 5) {
-                    bottomTabs.menu.clear()
-                    bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
-                } else if (!data.keyGearEnabled && bottomTabs.menu.size() != 4) {
-                    bottomTabs.menu.clear()
-                    bottomTabs.inflateMenu(R.menu.logged_in_menu)
                 }
             }
         }
