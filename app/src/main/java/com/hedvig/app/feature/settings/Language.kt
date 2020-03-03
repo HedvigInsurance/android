@@ -11,7 +11,9 @@ import java.util.Locale
 enum class Language {
     SYSTEM_DEFAULT,
     SV_SE,
-    EN_SE;
+    EN_SE,
+    NB_NO,
+    EN_NO;
 
     fun apply(context: Context?): Context? {
         val locale = into()
@@ -61,6 +63,8 @@ enum class Language {
     private fun into(): LocaleWrapper = when (this) {
         SV_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_SV_SE))
         EN_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_SE))
+        NB_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_NB_NO))
+        EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
         SYSTEM_DEFAULT -> DefaultLocale.get()
     }
 
@@ -68,17 +72,23 @@ enum class Language {
         SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
         SV_SE -> SETTING_SV_SE
         EN_SE -> SETTING_EN_SE
+        NB_NO -> SETTING_NB_NO
+        EN_NO -> SETTING_EN_NO
     }
 
     companion object {
         const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
         const val SETTING_EN_SE = "en-SE"
+        const val SETTING_NB_NO = "nb-NO"
+        const val SETTING_EN_NO = "en-NO"
 
         fun from(value: String) = when (value) {
             SETTING_SYSTEM_DEFAULT -> SYSTEM_DEFAULT
             SETTING_SV_SE -> SV_SE
             SETTING_EN_SE -> EN_SE
+            SETTING_NB_NO -> NB_NO
+            SETTING_EN_NO -> EN_NO
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
