@@ -30,6 +30,7 @@ class LanguageAdapterNew(
     override fun getItemCount() = 2
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        languageViewModel.selectedLanguage.postValue(null)
         when (position) {
             LOCAL -> {
                 when (selectedCountry) {

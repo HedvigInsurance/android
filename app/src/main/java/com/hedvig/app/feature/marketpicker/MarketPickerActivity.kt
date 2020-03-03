@@ -59,6 +59,10 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             }
             goToMarketingActivity()
         }
+
+        languageViewModel.selectedLanguage.observe(this) { language ->
+            save.isEnabled = language != null
+        }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important

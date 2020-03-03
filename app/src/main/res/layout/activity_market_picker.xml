@@ -75,7 +75,7 @@
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
-        tools:listitem="@layout/market_item" />
+        tools:listitem="@layout/language_item_new" />
 
     <!--TODO textkey-->
     <Button
@@ -85,6 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/base_margin_octuple"
+        android:enabled="false"
         android:text="Continue" />
 
 </LinearLayout>
