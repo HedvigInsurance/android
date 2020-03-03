@@ -46,6 +46,9 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
+import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
+import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
+import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModelImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -200,6 +203,10 @@ val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
 
+val norwegianAuthModule = module {
+    viewModel<NorwegianAuthenticationViewModel> { NorwegianAuthenticationViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -222,6 +229,7 @@ val repositoriesModule = module {
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
+    single { NorwegianAuthenticationRepository(get()) }
 }
 
 val trackerModule = module {
