@@ -33,6 +33,7 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
                 //TODO textkey
                 country.text = "Sverige"
+                selectMarket(holder, position)
             }
             NO -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_no))
@@ -51,24 +52,28 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
                 SV -> model.updateMarket(Country.SV)
                 NO -> model.updateMarket(Country.NO)
             }
-            val rb = v.radioButton as RadioButton
-            rb.isChecked = true
-            rb.background = rb.context.getDrawable(R.drawable.ic_radiob_button_checked)
-            animateRadioButton(holder)
-            if (rb.isChecked) {
-                if (lastChecked != null) {
-                    //TODO fixa !!
-                    if (lastCheckedPos != position) {
-                        lastChecked!!.background =
-                            rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                        lastChecked!!.isChecked = false
-                        animateRadioButton(holder)
-                    }
-                }
-                lastChecked = rb
-                lastCheckedPos = position
-            } else lastChecked = null
+            selectMarket(holder, position)
         }
+    }
+
+    private fun selectMarket(holder: ViewHolder, position: Int) {
+        val rb = holder.parent.radioButton as RadioButton
+        rb.isChecked = true
+        rb.background = rb.context.getDrawable(R.drawable.ic_radiob_button_checked)
+        animateRadioButton(holder)
+        if (rb.isChecked) {
+            if (lastChecked != null) {
+                //TODO fixa !!
+                if (lastCheckedPos != position) {
+                    lastChecked!!.background =
+                        rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+                    lastChecked!!.isChecked = false
+                    animateRadioButton(holder)
+                }
+            }
+            lastChecked = rb
+            lastCheckedPos = position
+        } else lastChecked = null
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
