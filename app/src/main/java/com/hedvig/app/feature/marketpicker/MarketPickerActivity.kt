@@ -34,7 +34,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
         storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
-        languageList.adapter = LanguageAdapterNew(languageViewModel, Country.SV)
+        languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SV)
         countryModel.selectedMarket.observe(this) { market ->
             market?.let {
                 languageList.adapter = LanguageAdapterNew(languageViewModel, market)

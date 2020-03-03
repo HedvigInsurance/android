@@ -8,6 +8,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
@@ -48,9 +49,18 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
         }
 
         holder.parent.setHapticClickListener { v ->
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.context)
             when (position) {
-                SV -> model.updateMarket(Country.SV)
-                NO -> model.updateMarket(Country.NO)
+                SV -> {
+                    model.updateMarket(Market.SV)
+                    sharedPreferences.edit().putInt(Market.MARKET_SHARED_PREF, Market.SV.ordinal)
+                        .commit()
+                }
+                NO -> {
+                    model.updateMarket(Market.NO)
+                    sharedPreferences.edit().putInt(Market.MARKET_SHARED_PREF, Market.NO.ordinal)
+                        .commit()
+                }
             }
             selectMarket(holder, position)
         }

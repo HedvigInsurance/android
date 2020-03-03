@@ -9,12 +9,14 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ProgressBar
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -46,6 +48,9 @@ class MarketingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
+
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        Timber.d("Market: ${pref.getInt(Market.MARKET_SHARED_PREF, 21)}")
 
         activity_marketing.useEdgeToEdge()
 

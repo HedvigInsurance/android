@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 abstract class MarketPickerViewModel : ViewModel() {
-    abstract val selectedMarket: LiveData<Country>
-    abstract fun updateMarket(market: Country)
+    abstract val selectedMarket: LiveData<Market>
+    abstract fun updateMarket(market: Market)
 }
 
 class MarketPickerViewModelImpl : MarketPickerViewModel() {
-    override val selectedMarket = MutableLiveData<Country>()
+    override val selectedMarket = MutableLiveData<Market>()
 
-    override fun updateMarket(market: Country) {
+    override fun updateMarket(market: Market) {
         selectedMarket.postValue(market)
     }
 }

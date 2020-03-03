@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapterNew(
     private val languageViewModel: LanguageViewModel,
-    private val selectedCountry: Country
+    private val selectedMarket: Market
 ) : RecyclerView.Adapter<LanguageAdapterNew.ViewHolder>() {
     private var lastChecked: RadioButton? = null
     private var lastCheckedPos = 0
@@ -33,14 +33,14 @@ class LanguageAdapterNew(
         languageViewModel.selectedLanguage.postValue(null)
         when (position) {
             LOCAL -> {
-                when (selectedCountry) {
-                    Country.SV -> {
+                when (selectedMarket) {
+                    Market.SV -> {
                         holder.apply {
                             language.text =
                                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
                         }
                     }
-                    Country.NO -> {
+                    Market.NO -> {
                         holder.apply {
                             //TODO textkey
                             language.text = "Norska"
@@ -68,10 +68,10 @@ class LanguageAdapterNew(
             when (position) {
                 EN -> languageViewModel.selectLanguage(Language.EN_SE)
                 LOCAL -> {
-                    when (selectedCountry) {
-                        Country.SV -> languageViewModel.selectLanguage(Language.SV_SE)
+                    when (selectedMarket) {
+                        Market.SV -> languageViewModel.selectLanguage(Language.SV_SE)
                         //TODO fix correct language
-                        Country.NO -> languageViewModel.selectLanguage(Language.SV_SE)
+                        Market.NO -> languageViewModel.selectLanguage(Language.SV_SE)
                     }
                 }
             }
