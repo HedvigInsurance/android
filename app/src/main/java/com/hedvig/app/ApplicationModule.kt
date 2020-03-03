@@ -41,8 +41,6 @@ import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
@@ -69,7 +67,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
@@ -196,14 +193,9 @@ val keyGearModule = module {
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
 }
 
-val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
-}
-
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
-    single { RemoteConfig() }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
