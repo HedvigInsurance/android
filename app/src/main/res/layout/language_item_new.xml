@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:background="@color/background_elevation_1"
+    android:gravity="center_vertical"
     android:paddingStart="@dimen/base_margin_triple"
     android:paddingTop="@dimen/market_item_padding"
     android:paddingEnd="@dimen/base_margin_triple"
@@ -19,9 +19,11 @@
         tools:text="Sverige" />
 
     <RadioButton
-        android:clickable="false"
         android:id="@+id/radioButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_radio_button_unchecked"
+        android:button="@color/transparent"
+        android:clickable="false" />
 
 </LinearLayout>

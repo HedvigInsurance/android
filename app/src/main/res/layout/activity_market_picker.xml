@@ -43,6 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
         tools:listitem="@layout/market_item" />
@@ -70,6 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_weight="1"
+        android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
         tools:listitem="@layout/market_item" />

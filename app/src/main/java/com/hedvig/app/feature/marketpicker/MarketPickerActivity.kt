@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageSelectionTracker
@@ -14,6 +15,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
@@ -38,7 +40,17 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 languageList.adapter = LanguageAdapterNew(languageViewModel, market)
             }
         }
+        languageList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
+                compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
+            }
+        )
         countryList.adapter = MarketAdapter(countryModel)
+        countryList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
+                compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
+            }
+        )
 
         save.setHapticClickListener {
             val language = languageViewModel.selectedLanguage.value

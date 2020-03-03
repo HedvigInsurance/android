@@ -26,9 +26,11 @@
         tools:text="Sverige" />
 
     <RadioButton
-        android:clickable="false"
         android:id="@+id/radioButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_radio_button_unchecked"
+        android:button="@color/transparent"
+        android:clickable="false" />
 
 </LinearLayout>

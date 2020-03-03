@@ -6,10 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.market_item.view.*
 
 class MarketAdapter(private val model: MarketPickerViewModel) :
@@ -50,17 +53,38 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
             }
             val rb = v.radioButton as RadioButton
             rb.isChecked = true
+            rb.background = rb.context.getDrawable(R.drawable.ic_radiob_button_checked)
+            animateRadioButton(holder)
             if (rb.isChecked) {
                 if (lastChecked != null) {
                     //TODO fixa !!
                     if (lastCheckedPos != position) {
+                        lastChecked!!.background =
+                            rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
                         lastChecked!!.isChecked = false
+                        animateRadioButton(holder)
                     }
                 }
                 lastChecked = rb
                 lastCheckedPos = position
             } else lastChecked = null
         }
+    }
+
+    private fun animateRadioButton(holder: ViewHolder) {
+        val button = holder.button
+        button.scaleX = 0f
+        button.scaleY = 0f
+        button.spring(
+            SpringAnimation.SCALE_X,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(1f)
+        button.spring(
+            SpringAnimation.SCALE_Y,
+            SpringForce.STIFFNESS_HIGH,
+            SpringForce.DAMPING_RATIO_NO_BOUNCY
+        ).animateToFinalPosition(1f)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
