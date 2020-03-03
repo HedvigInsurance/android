@@ -8,8 +8,8 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isHouse
-import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import kotlinx.android.synthetic.main.additional_buildings_row.view.*
+import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import org.threeten.bp.LocalDate
 
 class FactAreaBinder(
@@ -79,7 +79,8 @@ class FactAreaBinder(
         additionalBuildingsTitle.show()
         additionalBuildingsSeparator.show()
 
-        extraBuildings.forEach { extraBuilding ->
+        extraBuildings.forEach { eb ->
+            val extraBuilding = eb as? OfferQuery.AsExtraBuildingCore ?: return@forEach
             val row = LayoutInflater
                 .from(additionalBuildingsContainer.context)
                 .inflate(R.layout.additional_buildings_row, additionalBuildingsContainer, false)

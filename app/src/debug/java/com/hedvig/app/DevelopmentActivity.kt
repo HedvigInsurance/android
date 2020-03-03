@@ -34,7 +34,7 @@ import org.koin.core.context.unloadKoinModules
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
-    private val newsItem = WhatsNewQuery.News(
+    private val newsItem = WhatsNewQuery.New(
         "News",
         WhatsNewQuery.Illustration(
             "Icon", WhatsNewQuery.Variants(

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.BaseActivity
@@ -102,7 +103,8 @@ class MyHomeActivity : BaseActivity() {
         }
         additionalBuildingsTitle.show()
 
-        extraBuildings.forEach { extraBuilding ->
+        extraBuildings.forEach { eb ->
+            val extraBuilding = eb as? OfferQuery.AsExtraBuildingCore ?: return@forEach
             val row = LayoutInflater
                 .from(additionalBuildingsContainer.context)
                 .inflate(

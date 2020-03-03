@@ -3,7 +3,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.apollographql.android'
+apply plugin: 'com.apollographql.apollo'
 
 apollo {
     useJavaBeansSemanticNaming = true
@@ -134,7 +134,6 @@ dependencies {
     implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
     implementation "com.apollographql.apollo:apollo-rx2-support:$apollo_version"
     implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
-    androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
 
 
     // Firebase

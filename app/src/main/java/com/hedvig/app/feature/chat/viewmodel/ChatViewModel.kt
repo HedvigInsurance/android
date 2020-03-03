@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.apollographql.apollo.api.Response
+import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
@@ -103,7 +104,7 @@ class ChatViewModel(
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
-        response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.type == "paragraph"
+        (response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body as? ChatMessageFragment.AsMessageBodyCore)?.type == "paragraph"
 
     private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
         response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()

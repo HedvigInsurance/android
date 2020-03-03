@@ -146,13 +146,13 @@ class ChatAdapter(
                 when {
                     isImageUploadMessage(messages[position].fragments.chatMessageFragment.body) -> FROM_ME_IMAGE_UPLOAD
                     isFileUploadMessage((messages[position].fragments.chatMessageFragment.body)) -> FROM_ME_FILE_UPLOAD
-                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_GIPHY
-                    isImageMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_IMAGE
+                    isGiphyMessage((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) -> FROM_ME_GIPHY
+                    isImageMessage((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) -> FROM_ME_IMAGE
                     else -> FROM_ME_TEXT
                 }
             } else {
                 when {
-                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_HEDVIG_GIPHY
+                    isGiphyMessage((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) -> FROM_HEDVIG_GIPHY
                     isAudioMessage(messages[position].fragments.chatMessageFragment.body) -> NULL_RENDER // This message sucks. Lets kill it
                     else -> FROM_HEDVIG
                 }
@@ -165,15 +165,15 @@ class ChatAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (viewHolder.itemViewType) {
             FROM_HEDVIG -> {
-                (viewHolder as? HedvigMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? HedvigMessage)?.apply { bind((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) }
             }
             FROM_HEDVIG_GIPHY -> {
-                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? HedvigGiphyMessage)?.apply { bind((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) }
             }
             FROM_ME_TEXT -> {
                 (viewHolder as? UserMessage)?.apply {
                     bind(
-                        messages[position].fragments.chatMessageFragment.body?.text,
+                        (messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text,
                         position,
                         messages[position].fragments.chatMessageFragment.header.statusMessage,
                         messages[position].fragments.chatMessageFragment.header.isEditAllowed
@@ -181,10 +181,10 @@ class ChatAdapter(
                 }
             }
             FROM_ME_GIPHY -> {
-                (viewHolder as? GiphyUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? GiphyUserMessage)?.apply { bind((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) }
             }
             FROM_ME_IMAGE -> {
-                (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? ImageUserMessage)?.apply { bind((messages[position].fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) }
             }
             FROM_ME_IMAGE_UPLOAD -> {
                 (viewHolder as? ImageUploadUserMessage)?.apply {
@@ -359,7 +359,7 @@ class ChatAdapter(
         override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
             messages.getOrNull(position)?.let { message ->
                 when {
-                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(
+                    isGiphyMessage((message.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) -> listOf(
                         message
                     )
                     isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(
@@ -371,7 +371,7 @@ class ChatAdapter(
 
         override fun getPreloadRequestBuilder(item: ChatMessagesQuery.Message): RequestBuilder<*>? {
             val url = when {
-                isGiphyMessage(item.fragments.chatMessageFragment.body?.text) -> item.fragments.chatMessageFragment.body?.text
+                isGiphyMessage((item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text) -> (item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyCore)?.text
                 isImageUploadMessage(item.fragments.chatMessageFragment.body) -> (item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
                 else -> null
             }
