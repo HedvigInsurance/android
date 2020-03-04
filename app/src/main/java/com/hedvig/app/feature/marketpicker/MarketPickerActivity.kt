@@ -25,17 +25,19 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
-    private val countryModel: MarketPickerViewModelImpl by viewModel()
+    private val marketModel: MarketPickerViewModelImpl by viewModel()
     private val languageViewModel: LanguageViewModel by viewModel()
     private val tracker: LanguageSelectionTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
+        val marketAdapter = MarketAdapter(marketModel)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
         languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SV)
-        countryModel.selectedMarket.observe(this) { market ->
+        marketModel.selectedMarket.observe(this) { market ->
             market?.let {
                 languageList.adapter = LanguageAdapterNew(languageViewModel, market)
             }
@@ -45,7 +47,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
-        countryList.adapter = MarketAdapter(countryModel)
+        countryList.adapter = marketAdapter
         countryList.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
@@ -53,6 +55,9 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         )
 
         save.setHapticClickListener {
+            sharedPreferences.edit()
+                .putInt(Market.MARKET_SHARED_PREF, marketAdapter.getSelectedMarket())
+                .commit()
             val language = languageViewModel.selectedLanguage.value
             language?.let {
                 setLanguage(language, languageViewModel)

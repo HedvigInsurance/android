@@ -8,7 +8,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
@@ -35,6 +34,7 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
                 //TODO textkey
                 country.text = "Sverige"
                 selectMarket(holder, position)
+
             }
             NO -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_no))
@@ -48,25 +48,25 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
             lastCheckedPos = 0
         }
 
-        holder.parent.setHapticClickListener { v ->
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.context)
-            when (position) {
-                SV -> {
-                    model.updateMarket(Market.SV)
-                    sharedPreferences.edit().putInt(Market.MARKET_SHARED_PREF, Market.SV.ordinal)
-                        .commit()
-                }
-                NO -> {
-                    model.updateMarket(Market.NO)
-                    sharedPreferences.edit().putInt(Market.MARKET_SHARED_PREF, Market.NO.ordinal)
-                        .commit()
-                }
-            }
+        holder.parent.setHapticClickListener {
             selectMarket(holder, position)
         }
     }
 
+    fun getSelectedMarket(): Int {
+        return lastCheckedPos
+    }
+
     private fun selectMarket(holder: ViewHolder, position: Int) {
+        when (position) {
+            SV -> {
+                model.updateMarket(Market.SV)
+            }
+            NO -> {
+                model.updateMarket(Market.NO)
+            }
+        }
+
         val rb = holder.parent.radioButton as RadioButton
         rb.isChecked = true
         rb.background = rb.context.getDrawable(R.drawable.ic_radiob_button_checked)
