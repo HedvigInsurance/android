@@ -3,7 +3,7 @@ package com.hedvig.app.feature.chat
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.type.KeyboardType
-import timber.log.Timber
+import e
 
 sealed class ChatInputType {
     companion object {
@@ -27,7 +27,7 @@ sealed class ChatInputType {
                 )
             }
             body.asMessageBodySingleSelect?.let { messageBodySingleSelect ->
-                SingleSelect(messageBodySingleSelect.choices?.filterNotNull() ?: emptyList())
+                return SingleSelect(messageBodySingleSelect.choices?.filterNotNull() ?: emptyList())
             }
             body.asMessageBodyParagraph?.let {
                 return ParagraphInput
@@ -36,7 +36,7 @@ sealed class ChatInputType {
                 return Audio
             }
 
-            Timber.e("Implement support for ${message::class.java.simpleName}")
+            e { "Implement support for ${message::class.java.simpleName}" }
             return NullInput
         }
     }
