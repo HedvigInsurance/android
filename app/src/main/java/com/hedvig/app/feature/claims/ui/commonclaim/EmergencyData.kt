@@ -16,7 +16,7 @@ data class EmergencyData(
 ) : Parcelable {
     companion object {
         fun from(data: CommonClaimQuery.CommonClaim, status: InsuranceStatus): EmergencyData? {
-            val layout = data.layout as? CommonClaimQuery.AsEmergency ?: return null
+            val layout = data.layout.asEmergency ?: return null
             return EmergencyData(
                 ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
                 layout.color,

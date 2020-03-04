@@ -70,8 +70,8 @@ class InvitesAdapter(
 
     override fun getItemCount(): Int {
         var count = 1 //start of with header
-        data.invitations?.let { count += it.size + 1 } //add title
-        data.referredBy?.let { count += 2 } //add title and item
+        data.invitations.let { count += it.size + 1 } //add title
+        data.referredBy.let { count += 2 } //add title and item
 
         return count
     }
@@ -150,22 +150,26 @@ class InvitesAdapter(
                     headerTextView.resources.getString(R.string.REFERRAL_INVITE_TITLE)
             }
             INVITE_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
-                data.invitations?.getOrNull(position - 2)?.let { invite ->
-                    when (invite) {
-                        is ProfileQuery.AsActiveReferral1 -> bindActiveRow(
+                data.invitations.getOrNull(position - 2)?.let { invite ->
+                    invite.asActiveReferral1?.let { activeReferralInvite ->
+                        bindActiveRow(
                             this,
-                            invite.name,
-                            invite.discount.amount.toBigDecimal().toInt().toString(),
+                            activeReferralInvite.name,
+                            activeReferralInvite.discount.amount.toBigDecimal().toInt().toString(),
                             false
                         )
-                        is ProfileQuery.AsInProgressReferral1 -> bindInProgress(this, invite.name)
-                        is ProfileQuery.AsAcceptedReferral1 -> bindNotInitiated(
-                            this, invite.quantity
-                                ?: 0
+                    }
+                    invite.asInProgressReferral1?.let { inProgressReferralInvite ->
+                        bindInProgress(this, inProgressReferralInvite.name)
+                    }
+                    invite.asAcceptedReferral1?.let { acceptedReferralInvite ->
+                        bindNotInitiated(
+                            this, acceptedReferralInvite.quantity
+                            ?: 0
                         )
-                        is ProfileQuery.AsTerminatedReferral1 -> bindTerminated(this, invite.name)
-                        else -> { /* Should never happen */
-                        }
+                    }
+                    invite.asTerminatedReferral1?.let { terminatedReferralInvite ->
+                        bindTerminated(this, terminatedReferralInvite.name)
                     }
                 }
 
@@ -175,21 +179,26 @@ class InvitesAdapter(
                     headerTextView.resources.getString(R.string.REFERRAL_REFERRED_BY_TITLE)
             }
             REFERRED_BY_ITEM -> (viewHolder as? ItemViewHolder)?.apply {
-                when (val referredBy = data.referredBy) {
-                    is ProfileQuery.AsActiveReferral -> bindActiveRow(
+                val referredBy = data.referredBy
+                referredBy?.asActiveReferral?.let { activeReferral ->
+                    bindActiveRow(
                         this,
-                        referredBy.name,
-                        referredBy.discount.amount.toBigDecimal().toInt().toString(),
+                        activeReferral.name,
+                        activeReferral.discount.amount.toBigDecimal().toInt().toString(),
                         true
                     )
-                    is ProfileQuery.AsInProgressReferral -> bindInProgress(this, referredBy.name)
-                    is ProfileQuery.AsTerminatedReferral -> bindTerminated(this, referredBy.name)
-                    is ProfileQuery.AsAcceptedReferral -> bindNotInitiated(
-                        this, referredBy.quantity
-                            ?: 0
+                }
+                referredBy?.asInProgressReferral?.let { inProgressReferral ->
+                    bindInProgress(this, inProgressReferral.name)
+                }
+                referredBy?.asTerminatedReferral?.let { terminatedReferral ->
+                    bindTerminated(this, terminatedReferral.name)
+                }
+                referredBy?.asAcceptedReferral?.let { acceptedReferral ->
+                    bindNotInitiated(
+                        this, acceptedReferral.quantity
+                        ?: 0
                     )
-                    else -> { /* Should never happen */
-                    }
                 }
             }
         }
@@ -286,8 +295,8 @@ class InvitesAdapter(
         (data.referredBy as? ProfileQuery.AsActiveReferral?)?.let {
             totalDiscount += it.discount.amount.toBigDecimal().toInt()
         }
-        data.invitations?.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
-            ?.forEach { receiver ->
+        data.invitations.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
+            .forEach { receiver ->
                 totalDiscount += receiver.discount.amount.toBigDecimal().toInt()
             }
         return min(totalDiscount, monthlyCost)
@@ -297,7 +306,7 @@ class InvitesAdapter(
     private fun calculateInvitesLeftToFree(): Int {
         val amount = monthlyCost - calculateDiscount()
         val incentive =
-            (data.campaign.incentive as? ProfileQuery.AsMonthlyCostDeduction)?.amount?.amount?.toBigDecimal()?.toDouble()
+            data.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()?.toDouble()
                 ?: 0.0
         return ceil((amount / incentive)).toInt()
     }

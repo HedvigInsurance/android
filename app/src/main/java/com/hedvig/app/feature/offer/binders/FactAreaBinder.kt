@@ -80,7 +80,7 @@ class FactAreaBinder(
         additionalBuildingsSeparator.show()
 
         extraBuildings.forEach { eb ->
-            val extraBuilding = eb as? OfferQuery.AsExtraBuildingCore ?: return@forEach
+            val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
             val row = LayoutInflater
                 .from(additionalBuildingsContainer.context)
                 .inflate(R.layout.additional_buildings_row, additionalBuildingsContainer, false)
@@ -90,7 +90,7 @@ class FactAreaBinder(
                 resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
                 "HOUSE_INFO_AMOUNT_BOYTA" to extraBuilding.area
             )
-            if (extraBuilding.isHasWaterConnected) {
+            if (extraBuilding.hasWaterConnected) {
                 bodyText += ", " + resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
             }
             row.body.text = bodyText

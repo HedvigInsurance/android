@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.BaseActivity
@@ -104,7 +103,7 @@ class MyHomeActivity : BaseActivity() {
         additionalBuildingsTitle.show()
 
         extraBuildings.forEach { eb ->
-            val extraBuilding = eb as? OfferQuery.AsExtraBuildingCore ?: return@forEach
+            val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
             val row = LayoutInflater
                 .from(additionalBuildingsContainer.context)
                 .inflate(
@@ -118,7 +117,7 @@ class MyHomeActivity : BaseActivity() {
                 resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
                 "HOUSE_INFO_AMOUNT_BOYTA" to extraBuilding.area
             )
-            if (extraBuilding.isHasWaterConnected) {
+            if (extraBuilding.hasWaterConnected) {
                 bodyText += ", " + resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
             }
             row.body.text = bodyText

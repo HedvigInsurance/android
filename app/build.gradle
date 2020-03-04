@@ -6,8 +6,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.apollographql.apollo'
 
 apollo {
-    useJavaBeansSemanticNaming = true
-    generateModelBuilder = true
+    generateKotlinModels = true
     customTypeMapping = [
             "URL"      : "java.lang.String",
             "LocalDate": "org.threeten.bp.LocalDate",

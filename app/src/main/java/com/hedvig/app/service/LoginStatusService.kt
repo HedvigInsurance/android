@@ -10,7 +10,6 @@ import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import io.reactivex.Observable
-import timber.log.Timber
 
 class LoginStatusService(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -43,7 +42,7 @@ class LoginStatusService(
                             LoginStatus.LOGGED_IN_TERMINATED
                         }
                         InsuranceStatus.PENDING,
-                        InsuranceStatus.`$UNKNOWN` -> {
+                        InsuranceStatus.UNKNOWN__ -> {
                             context.setIsLoggedIn(false)
                             LoginStatus.ONBOARDING
                         }

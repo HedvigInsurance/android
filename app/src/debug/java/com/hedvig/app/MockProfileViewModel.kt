@@ -22,107 +22,86 @@ class MockProfileViewModel : ProfileViewModel() {
         data.postValue(
             ProfileQuery.Data(
                 ProfileQuery.Member(
-                    "Member",
-                    "123456",
-                    "Test",
-                    "Testerson",
-                    "test@hedvig.com",
-                    "070 123 345 67",
-                    listOf(Feature.KEYGEAR)
+                    id = "123456",
+                    firstName = "Test",
+                    lastName = "Testerson",
+                    email = "test@hedvig.com",
+                    phoneNumber = "070 123 345 67",
+                    features = listOf(Feature.KEYGEAR)
                 ),
                 ProfileQuery.Insurance(
-                    "Insurance",
-                    "Testvägen 1",
-                    "12345",
-                    InsuranceType.BRF,
-                    InsuranceStatus.ACTIVE,
-                    "http://www.africau.edu/images/default/sample.pdf",
-                    2,
-                    50,
-                    null,
-                    null,
-                    null,
-                    ProfileQuery.Cost(
-                        "InsuranceCost",
-                        //null,
-                        LocalDate.of(2019, 11, 27),
-                        ProfileQuery.Cost.Fragments(
+                    address = "Testvägen 1",
+                    postalNumber = "12345",
+                    type = InsuranceType.BRF,
+                    status = InsuranceStatus.ACTIVE,
+                    certificateUrl = "http://www.africau.edu/images/default/sample.pdf",
+                    personsInHousehold = 2,
+                    livingSpace = 50,
+                    ancillaryArea = null,
+                    yearOfConstruction = null,
+                    numberOfBathrooms = null,
+                    cost = ProfileQuery.Cost(
+                        freeUntil = LocalDate.of(2019, 11, 27),
+                        fragments = ProfileQuery.Cost.Fragments(
                             CostFragment(
-                                "InsuranceCost",
-                                CostFragment.MonthlyDiscount(
-                                    "MonetaryAmountV2",
-                                    "10.00"
+                                monthlyDiscount = CostFragment.MonthlyDiscount(
+                                    amount = "10.00"
                                 ),
-                                CostFragment.MonthlyNet(
-                                    "MonetaryAmountV2",
-                                    "119.00"
+                                monthlyNet = CostFragment.MonthlyNet(
+                                    amount = "119.00"
                                 ),
-                                CostFragment.MonthlyGross(
-                                    "MonetaryAmountV2",
-                                    "129.00"
+                                monthlyGross = CostFragment.MonthlyGross(
+                                    amount = "129.00"
                                 )
                             )
                         )
                     ),
-                    null,
-                    null
+                    extraBuildings = null,
+                    isSubleted = null
                 ),
-                ProfileQuery.Balance(
-                    "Balance",
-                    3
+                balance = ProfileQuery.Balance(
+                    failedCharges = 3
                 ),
-                ProfileQuery.ChargeEstimation(
-                    "ChargeEstimation",
-                    ProfileQuery.Charge(
-                        "MonetaryAmountV2",
-                        "119.00"
+                chargeEstimation = ProfileQuery.ChargeEstimation(
+                    charge = ProfileQuery.Charge(
+                        amount = "119.00"
                     ),
-                    ProfileQuery.Discount(
-                        "MonetaryAmountV2",
-                        "10.00"
+                    discount = ProfileQuery.Discount(
+                        amount = "10.00"
                     ),
-                    ProfileQuery.Subscription(
-                        "MonetaryAmountV2",
-                        "129.00"
+                    subscription = ProfileQuery.Subscription(
+                        amount = "129.00"
                     )
                 ),
-                LocalDate.of(2019, 10, 27),
-                listOf(
+                nextChargeDate = LocalDate.of(2019, 10, 27),
+                chargeHistory = listOf(
                     ProfileQuery.ChargeHistory(
-                        "Charge",
-                        ProfileQuery.Amount(
-                            "MonetaryAmountV2",
-                            "129.00"
+                        amount = ProfileQuery.Amount(
+                            amount = "129.00"
                         ),
-                        LocalDate.of(2019, 8, 27)
+                        date = LocalDate.of(2019, 8, 27)
                     ),
                     ProfileQuery.ChargeHistory(
-                        "Charge",
-                        ProfileQuery.Amount(
-                            "MonetaryAmountV2",
-                            "129.00"
+                        amount = ProfileQuery.Amount(
+                            amount = "129.00"
                         ),
-                        LocalDate.of(2019, 7, 27)
+                        date = LocalDate.of(2019, 7, 27)
                     ),
                     ProfileQuery.ChargeHistory(
-                        "Charge",
-                        ProfileQuery.Amount(
-                            "MonetaryAmountV2",
-                            "129.00"
+                        amount = ProfileQuery.Amount(
+                            amount = "129.00"
                         ),
-                        LocalDate.of(2019, 6, 27)
+                        date = LocalDate.of(2019, 6, 27)
                     )
                 ),
-                ProfileQuery.BankAccount(
-                    "BankAccount",
-                    "Testbanken",
-                    "*** 456 789"
+                bankAccount = ProfileQuery.BankAccount(
+                    bankName = "Testbanken",
+                    descriptor = "*** 456 789"
                 ),
-                null,
-                listOf(),
-                listOf(
+                cashback = null,
+                cashbackOptions = emptyList(),
+                redeemedCampaigns = listOf(
                     ProfileQuery.RedeemedCampaign(
-                        "Campaign",
                         // ProfileQuery.Owner(
                         //     "CampaignOwner",
                         //     "Test campaign"
@@ -149,28 +128,28 @@ class MockProfileViewModel : ProfileViewModel() {
                         //         )
                         //     )
                         // )
-                        null,
-                        ProfileQuery.RedeemedCampaign.Fragments(
+                        owner = null,
+                        fragments = ProfileQuery.RedeemedCampaign.Fragments(
                             IncentiveFragment(
-                                "Incentive",
-                                IncentiveFragment.AsPercentageDiscountMonths(
-                                    "PercentageDiscountMonths",
-                                    20.0,
-                                    1
+                                incentive = IncentiveFragment.Incentive(
+                                    asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
+                                        percentageDiscount = 20.0,
+                                        pdmQuantity = 1
+                                    ),
+                                    asMonthlyCostDeduction = null,
+                                    asFreeMonths = null
                                 )
                             )
                         )
                     )
                 ),
-                ProfileQuery.ReferralInformation(
-                    "Referrals",
-                    ProfileQuery.Campaign(
-                        "Campaign",
-                        "ABC123",
-                        null
+                referralInformation = ProfileQuery.ReferralInformation(
+                    campaign = ProfileQuery.Campaign(
+                        code = "ABC123",
+                        incentive = null
                     ),
-                    null,
-                    listOf()
+                    referredBy = null,
+                    invitations = emptyList()
                 )
             )
         )

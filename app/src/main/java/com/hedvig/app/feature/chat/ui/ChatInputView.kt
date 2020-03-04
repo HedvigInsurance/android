@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
-import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.Audio
@@ -35,7 +34,6 @@ import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.chat_input_view.view.*
 
 class ChatInputView : FrameLayout {
-
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
@@ -188,23 +186,15 @@ class ChatInputView : FrameLayout {
 
     private fun bindSingleSelect(input: SingleSelect) {
         singleSelectContainer.removeAllViews()
-        input.options.forEach {
-            when (it) {
-                is ChatMessageFragment.AsMessageBodyChoicesSelection ->
-                    inflateSingleSelectButton(
-                        it.text, it.value,
-                        SingleSelectChoiceType.SELECTION
-                    )
-                is ChatMessageFragment.AsMessageBodyChoicesLink ->
-                    inflateSingleSelectButton(
-                        it.text, it.value,
-                        SingleSelectChoiceType.LINK
-                    )
-                is ChatMessageFragment.AsMessageBodyChoicesUndefined ->
-                    inflateSingleSelectButton(
-                        it.text, it.value,
-                        SingleSelectChoiceType.UNDEFINED
-                    )
+        input.options.forEach { option ->
+            option.asMessageBodyChoicesSelection?.let { selection ->
+                inflateSingleSelectButton(selection.text, selection.value, SingleSelectChoiceType.SELECTION)
+            }
+            option.asMessageBodyChoicesLink?.let { link ->
+                inflateSingleSelectButton(link.text, link.value, SingleSelectChoiceType.LINK)
+            }
+            option.asMessageBodyChoicesUndefined?.let { undefined ->
+                inflateSingleSelectButton(undefined.text, undefined.value, SingleSelectChoiceType.UNDEFINED)
             }
         }
     }

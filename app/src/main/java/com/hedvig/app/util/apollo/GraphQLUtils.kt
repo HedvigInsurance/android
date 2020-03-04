@@ -14,5 +14,5 @@ fun defaultLocale(context: Context) =
 fun Locale.toLocaleString() = when (this) {
     Locale.EN_SE -> "en_SE"
     Locale.SV_SE -> "sv_SE"
-    Locale.`$UNKNOWN` -> ""
+    Locale.UNKNOWN__ -> ""
 }
