@@ -5,6 +5,7 @@ query Profile {
     lastName
     email
     phoneNumber
+    features
   }
   insurance {
     address

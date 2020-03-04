@@ -191,6 +191,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule, loggedInModule)
+            listOf(offerModule, profileModule, directDebitModule, keyGearModule)
     }
 }
