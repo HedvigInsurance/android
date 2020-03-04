@@ -13,9 +13,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -106,8 +106,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openValuation.setHapticClickListener {
-            startActivity(KeyGearValuationActivity.newInstance(this, "123"))
+        openNorwegianAuth.setHapticClickListener {
+            startActivity(NorwegianAuthenticationActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
