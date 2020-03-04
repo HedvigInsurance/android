@@ -10,6 +10,9 @@ import android.webkit.WebViewClient
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
 import e
 import kotlinx.android.synthetic.main.activity_norwegian_authentication.*
@@ -21,6 +24,13 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        toolbar.navigationIcon = compatDrawable(R.drawable.ic_close)?.apply {
+            compatSetTint(compatColor(R.color.icon_tint))
+        }
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         norwegianBankIdContainer.settings.apply {
             javaScriptEnabled = true
