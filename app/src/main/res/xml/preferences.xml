@@ -21,7 +21,7 @@
         <ListPreference
             app:entries="@array/market_settings"
             app:entryValues="@array/market_settings_values"
-            app:key="market"
+            app:key="MARKET_SHARED_PREF"
             app:title="Market"
             app:useSimpleSummaryProvider="true" />
 
