@@ -46,7 +46,6 @@ import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
-import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModelImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -175,7 +174,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
-
+    viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 
 val offerModule = module {
@@ -195,10 +194,6 @@ val keyGearModule = module {
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
-}
-
-val norwegianAuthModule = module {
-    viewModel<NorwegianAuthenticationViewModel> { NorwegianAuthenticationViewModelImpl(get()) }
 }
 
 val serviceModule = module {
