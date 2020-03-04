@@ -1,0 +1,5 @@
+query GeoQuery {
+  geo{
+    countryISOCode
+  }
+}
