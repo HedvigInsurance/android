@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="Select your country of residence" />
+        android:text="@string/select_country" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryList"
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="Select Language" />
+        android:text="@string/select_language_title_market" />
 
     <!--TODO textkey-->
     <TextView
@@ -64,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
-        android:text="You can change this setting later in the app" />
+        android:text="@string/select_language_paragraph_market" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/languageList"
