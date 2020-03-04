@@ -29,7 +29,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import io.reactivex.Observable
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class ChatRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -50,18 +50,16 @@ class ChatRepository(
     }
 
     fun subscribeToChatMessages() =
-        Rx2Apollo.from(apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription.builder().build()))
+        Rx2Apollo.from(apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription()))
 
     fun sendChatMessage(id: String, message: String): Observable<Response<SendChatTextResponseMutation.Data>> {
-        val input = ChatResponseTextInput.builder()
-            .globalId(id)
-            .body(ChatResponseBodyTextInput.builder().text(message).build())
-            .build()
+        val input = ChatResponseTextInput(
+            globalId = id,
+            body = ChatResponseBodyTextInput(text = message)
+        )
 
         val sendChatMessageMutation =
-            SendChatTextResponseMutation.builder()
-                .input(input)
-                .build()
+            SendChatTextResponseMutation(input = input)
 
         return Rx2Apollo.from(
             apolloClientWrapper.apolloClient.mutate(sendChatMessageMutation)
@@ -69,20 +67,16 @@ class ChatRepository(
     }
 
     fun sendSingleSelect(id: String, value: String): Observable<Response<SendChatSingleSelectResponseMutation.Data>> {
-        val input = ChatResponseSingleSelectInput.builder()
-            .globalId(id)
-            .body(
-                ChatResponseBodySingleSelectInput
-                    .builder()
-                    .selectedValue(value)
-                    .build()
+        val input = ChatResponseSingleSelectInput(
+            globalId = id,
+            body = ChatResponseBodySingleSelectInput(
+                selectedValue = value
             )
-            .build()
+        )
 
-        val sendChatSingleSelectMutation = SendChatSingleSelectResponseMutation
-            .builder()
-            .input(input)
-            .build()
+        val sendChatSingleSelectMutation = SendChatSingleSelectResponseMutation(
+            input = input
+        )
 
         return Rx2Apollo.from(
             apolloClientWrapper.apolloClient.mutate(sendChatSingleSelectMutation)
@@ -90,10 +84,10 @@ class ChatRepository(
     }
 
     fun uploadClaim(id: String, path: String): Observable<Response<UploadClaimMutation.Data>> {
-        val mutation = UploadClaimMutation.builder()
-            .id(id)
-            .claim(FileUpload(fileService.getMimeType(path), File(path)))
-            .build()
+        val mutation = UploadClaimMutation(
+            id = id,
+            claim = FileUpload(fileService.getMimeType(path), File(path))
+        )
 
         return Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(mutation))
     }
@@ -107,24 +101,17 @@ class ChatRepository(
         val chatMessagesFragment =
             ChatMessagesQuery
                 .Message
-                .Fragments.builder().chatMessageFragment(message).build()
+                .Fragments(chatMessageFragment = message)
 
-        val chatMessageQueryBuilder =
-            ChatMessagesQuery
-                .Message
-                .builder()
-                .__typename(message.__typename)
-                .fragments(
-                    chatMessagesFragment
-                )
+        val newMessages = cachedData.messages.toMutableList()
+        newMessages.add(ChatMessagesQuery.Message(message.__typename, fragments = chatMessagesFragment))
 
-        val newMessagesBuilder = cachedData
-            .toBuilder()
-            .messages { it.add(0, chatMessageQueryBuilder) }
+        val newData = cachedData
+            .copy(messages = newMessages)
 
         apolloClientWrapper.apolloClient
             .apolloStore()
-            .writeAndPublish(messagesQuery, newMessagesBuilder.build())
+            .writeAndPublish(messagesQuery, newData)
             .execute()
     }
 
@@ -132,7 +119,8 @@ class ChatRepository(
         val mimeType = fileService.getMimeType(uri)
         val file = File(
             context.cacheDir,
-            fileService.getFileName(uri) ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
+            fileService.getFileName(uri)
+                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
         ) // I hate this but it seems there's no other way
         context.contentResolver.openInputStream(uri)?.into(file)
         return uploadFile(file, mimeType ?: "")
@@ -142,10 +130,9 @@ class ChatRepository(
         uploadFile(File(uri.path), fileService.getMimeType(uri) ?: "")
 
     private fun uploadFile(file: File, mimeType: String): Observable<Response<UploadFileMutation.Data>> {
-        val uploadFileMutation = UploadFileMutation
-            .builder()
-            .file(FileUpload(mimeType, file))
-            .build()
+        val uploadFileMutation = UploadFileMutation(
+            file = FileUpload(mimeType, file)
+        )
 
         return Rx2Apollo.from(
             apolloClientWrapper.apolloClient.mutate(uploadFileMutation)
@@ -155,21 +142,15 @@ class ChatRepository(
     fun sendFileResponse(id: String, key: String, uri: Uri): Observable<Response<SendChatFileResponseMutation.Data>> {
         val mimeType = fileService.getMimeType(uri) ?: ""
 
-        val input = ChatResponseFileInput
-            .builder()
-            .body(
-                ChatResponseBodyFileInput
-                    .builder()
-                    .key(key)
-                    .mimeType(mimeType)
-                    .build()
-            )
-            .globalId(id)
-            .build()
+        val input = ChatResponseFileInput(
+            body = ChatResponseBodyFileInput(
+                key = key,
+                mimeType = mimeType
+            ),
+            globalId = id
+        )
 
-        val chatFileResponse = SendChatFileResponseMutation.builder()
-            .input(input)
-            .build()
+        val chatFileResponse = SendChatFileResponseMutation(input)
 
         return Rx2Apollo.from(
             apolloClientWrapper.apolloClient.mutate(chatFileResponse)
@@ -179,7 +160,7 @@ class ChatRepository(
     fun editLastResponse() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()))
 
     fun triggerFreeTextChat(): Observable<Response<TriggerFreeTextChatMutation.Data>> {
-        val triggerFreeTextChatMutation = TriggerFreeTextChatMutation.builder().build()
+        val triggerFreeTextChatMutation = TriggerFreeTextChatMutation()
 
         return Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(triggerFreeTextChatMutation))
     }
@@ -187,7 +168,7 @@ class ChatRepository(
     fun searchGifs(query: String) = Rx2Apollo
         .from(
             apolloClientWrapper.apolloClient.query(
-                GifQuery.builder().query(query).build()
+                GifQuery(query)
             )
         )
 }

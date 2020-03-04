@@ -44,7 +44,7 @@ fun HedvigColor.mappedColor(): Int = when (this) {
     HedvigColor.PINK -> R.color.pink
     HedvigColor.BLACKPURPLE -> R.color.off_black_dark
     HedvigColor.YELLOW -> R.color.yellow
-    HedvigColor.`$UNKNOWN` -> R.color.purple
+    HedvigColor.UNKNOWN__ -> R.color.purple
 }
 
 val colorArray = arrayOf(

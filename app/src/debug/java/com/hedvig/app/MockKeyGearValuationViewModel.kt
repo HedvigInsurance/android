@@ -18,8 +18,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
         Handler().postDelayed({
             data.postValue(
                 KeyGearItemQuery.KeyGearItem(
-                    "KeyGearItem",
-                    KeyGearItemQuery.KeyGearItem.Fragments(item)
+                    fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
                 )
             )
         }, 250)
@@ -32,11 +31,12 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
     ) {
         data.postValue(
             KeyGearItemQuery.KeyGearItem(
-                "KeyGearItem",
-                KeyGearItemQuery.KeyGearItem.Fragments(
-                    item.toBuilder().purchasePrice(
-                        KeyGearItemFragment.PurchasePrice("MonetaryAmountV2", price.amount())
-                    ).build()
+                fragments = KeyGearItemQuery.KeyGearItem.Fragments(
+                    item.copy(
+                        purchasePrice = KeyGearItemFragment.PurchasePrice(
+                            amount = price.amount
+                        )
+                    )
                 )
             )
         )
@@ -47,39 +47,32 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
 
     companion object {
         val item = KeyGearItemFragment(
-            "KeyGearItem",
-            "123",
-            "Sak",
-            null,
-            listOf(
+            id = "123",
+            name = "Sak",
+            physicalReferenceHash = null,
+            photos = listOf(
                 KeyGearItemFragment.Photo(
-                    "KeyGearItemPhoto",
-                    KeyGearItemFragment.File(
-                        "S3File",
-                        "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
+                    file = KeyGearItemFragment.File(
+                        preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
                     )
                 )
             ),
-            listOf(),
-            KeyGearItemCategory.PHONE,
-            null,
-            null,
-            KeyGearItemFragment.Deductible(
-                "MonetaryAmountV2",
-                "1500.00"
+            receipts = emptyList(),
+            category = KeyGearItemCategory.PHONE,
+            purchasePrice = null,
+            timeOfPurchase = null,
+            deductible = KeyGearItemFragment.Deductible(
+                amount = "1500.00"
             ),
-            listOf(),
-
-            KeyGearItemFragment.MaxInsurableAmount(
-                "MaxInsurableAmount",
-                "50000"
+            covered = emptyList(),
+            maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
+                amount = "50000"
             ),
-            listOf(),
-            false,
-            KeyGearItemFragment.Fragments(
+            exceptions = emptyList(),
+            deleted = false,
+            fragments = KeyGearItemFragment.Fragments(
                 KeyGearItemValuationFragment(
-                    "KeyGearItemValuation",
-                    null
+                    valuation = null
                 )
             )
         )

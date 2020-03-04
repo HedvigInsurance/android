@@ -34,7 +34,7 @@ import org.koin.core.context.unloadKoinModules
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
-    private val newsItem = WhatsNewQuery.News(
+    private val newsItem = WhatsNewQuery.New(
         "News",
         WhatsNewQuery.Illustration(
             "Icon", WhatsNewQuery.Variants(
@@ -190,6 +190,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule, loggedInModule, norwegianAuthModule)
+            listOf(offerModule, profileModule, directDebitModule, keyGearModule, norwegianAuthModule)
     }
 }

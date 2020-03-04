@@ -3,7 +3,6 @@ package com.hedvig.app.feature.marketing.data
 import android.content.Context
 import android.net.Uri
 import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import com.bumptech.glide.Glide
@@ -32,16 +31,16 @@ class MarketingStoriesRepository(
 ) {
 
     fun fetchMarketingStories(completion: (result: List<MarketingStoriesQuery.MarketingStory>) -> Unit) {
-        val marketingStoriesQuery = MarketingStoriesQuery.builder()
-            .environment(
-                if (BuildConfig.APPLICATION_ID.endsWith(".dev.app") ||
-                    BuildConfig.APPLICATION_ID.endsWith(".test.app")) {
-                    Environment.STAGING
-                } else {
-                    Environment.PRODUCTION
-                })
-            .languageCode(defaultLocale(context).rawValue())
-            .build()
+        val marketingStoriesQuery = MarketingStoriesQuery(
+            environment =
+            if (BuildConfig.APPLICATION_ID.endsWith(".dev.app") ||
+                BuildConfig.APPLICATION_ID.endsWith(".test.app")) {
+                Environment.STAGING
+            } else {
+                Environment.PRODUCTION
+            },
+            languageCode = defaultLocale(context).rawValue
+        )
 
         apolloClientWrapper.apolloClient
             .query(marketingStoriesQuery)
@@ -57,7 +56,8 @@ class MarketingStoriesRepository(
 
                 override fun onResponse(response: Response<MarketingStoriesQuery.Data>) {
                     val data = response.data()?.marketingStories
-                    data?.let { cacheAssets(it, completion) } ?: handleNoMarketingStories()
+                    data?.let { cacheAssets(it.filterNotNull(), completion) }
+                        ?: handleNoMarketingStories()
                 }
             })
     }

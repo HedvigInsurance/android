@@ -49,8 +49,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.util.Calendar
-import java.util.GregorianCalendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -161,8 +160,8 @@ class DashboardFragment : BaseTabFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         categoryView.onAnimateExpand = { handleExpandShowEntireView(categoryView) }
-        category.perils?.let {
-            categoryView.expandedContent = makePerilCategoryExpandContent(it, category)
+        category.perils?.let { perils ->
+            categoryView.expandedContent = makePerilCategoryExpandContent(perils.filterNotNull(), category)
         }
 
         return categoryView
@@ -328,7 +327,7 @@ class DashboardFragment : BaseTabFragment() {
 
                 setupInsurancePendingMoreInfo()
             }
-            InsuranceStatus.`$UNKNOWN`,
+            InsuranceStatus.UNKNOWN__,
             InsuranceStatus.PENDING,
             InsuranceStatus.TERMINATED -> {
             }
