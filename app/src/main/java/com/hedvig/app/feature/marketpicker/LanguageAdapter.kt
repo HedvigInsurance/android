@@ -38,15 +38,16 @@ class LanguageAdapterNew(
                         holder.apply {
                             language.text =
                                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
+                            parent.setHapticClickListener {
+                                languageViewModel.selectLanguage(Language.SV_SE)
+                            }
                         }
                     }
                     Market.NO -> {
                         holder.apply {
-                            //TODO textkey
-                            language.text = "Norska"
+                            language.text = language.resources.getString(R.string.norwegian)
                             parent.setHapticClickListener {
-                                //TODO fix correct language
-                                languageViewModel.selectLanguage(Language.EN_SE)
+                                languageViewModel.selectLanguage(Language.NB_NO)
 
                             }
                         }
@@ -70,8 +71,7 @@ class LanguageAdapterNew(
                 LOCAL -> {
                     when (selectedMarket) {
                         Market.SE -> languageViewModel.selectLanguage(Language.SV_SE)
-                        //TODO fix correct language
-                        Market.NO -> languageViewModel.selectLanguage(Language.SV_SE)
+                        Market.NO -> languageViewModel.selectLanguage(Language.NB_NO)
                     }
                 }
             }
@@ -81,7 +81,6 @@ class LanguageAdapterNew(
             animateRadioButton(holder)
             if (rb.isChecked) {
                 if (lastChecked != null) {
-                    //TODO fixa !!
                     if (lastCheckedPos != position) {
                         lastChecked!!.background =
                             rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)

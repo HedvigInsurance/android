@@ -23,7 +23,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     private val marketModel: MarketPickerViewModel by viewModel()
@@ -34,14 +33,12 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         super.onCreate(savedInstanceState)
         storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
-        val marketId = intent.getIntExtra(MARKET_ID, -1)
         var marketAdapter: MarketAdapter? = null
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        marketModel.preselectedMarket.observe(this) { market ->
-            Timber.d("market: $market")
-            market?.let {
-                val market = Market.valueOf(market)
+        marketModel.preselectedMarket.observe(this) { marketString ->
+            marketString?.let {
+                val market = Market.valueOf(marketString)
                 marketAdapter = MarketAdapter(marketModel, market.ordinal)
                 countryList.adapter = marketAdapter
                 countryList.addItemDecoration(
@@ -111,10 +108,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     companion object {
         private const val HAS_SHOWN_MARKET_SELECTION = "HAS_SHOWN_MARKET_SELECTION"
         private const val MARKET_ID = "MARKET_ID"
-        fun newInstance(context: Context, marketId: Int): Intent {
-            val intent = Intent(context, MarketPickerActivity::class.java)
-            intent.putExtra(MARKET_ID, marketId)
-            return intent
+        fun newInstance(context: Context): Intent {
+            return Intent(context, MarketPickerActivity::class.java)
         }
 
         fun hasBeenShown(context: Context) = context.getStoredBoolean(HAS_SHOWN_MARKET_SELECTION)

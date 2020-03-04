@@ -34,14 +34,12 @@ class MarketAdapter(private val model: MarketPickerViewModel, private val market
         when (position) {
             SV -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
-                //TODO textkey
-                country.text = "Sverige"
+                country.text = holder.button.context.getText(R.string.sweden)
 
             }
             NO -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_no))
-                //TODO textkey
-                country.text = "Norge"
+                country.text = holder.button.context.getText(R.string.norway)
             }
         }
 
@@ -75,7 +73,6 @@ class MarketAdapter(private val model: MarketPickerViewModel, private val market
         animateRadioButton(holder)
         if (rb.isChecked) {
             if (lastChecked != null) {
-                //TODO fixa !!
                 if (lastCheckedPos != position) {
                     lastChecked!!.background =
                         rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)

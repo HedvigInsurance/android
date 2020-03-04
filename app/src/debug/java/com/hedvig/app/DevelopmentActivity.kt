@@ -15,7 +15,6 @@ import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
@@ -108,7 +107,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         openMarketPicker.setHapticClickListener {
-            startActivity(MarketPickerActivity.newInstance(this, Market.SE.ordinal))
+            startActivity(MarketPickerActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {

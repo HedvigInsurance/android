@@ -29,7 +29,6 @@
     </LinearLayout>
 
 
-    <!--TODO textkey-->
     <TextView
         style="@style/Headline.Large"
         android:layout_width="wrap_content"
@@ -49,7 +48,6 @@
         tools:itemCount="2"
         tools:listitem="@layout/market_item" />
 
-    <!--TODO textkey-->
     <TextView
         style="@style/Headline.Large"
         android:layout_width="wrap_content"
@@ -58,7 +56,6 @@
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/select_language_title_market" />
 
-    <!--TODO textkey-->
     <TextView
         style="@style/Body.Regular"
         android:layout_width="wrap_content"
@@ -69,7 +66,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/languageList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_weight="1"
         android:overScrollMode="never"
@@ -77,7 +74,6 @@
         tools:itemCount="2"
         tools:listitem="@layout/language_item_new" />
 
-    <!--TODO textkey-->
     <Button
         android:id="@+id/save"
         style="@style/HedvigButton.Purple"
@@ -86,6 +82,6 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/base_margin_octuple"
         android:enabled="false"
-        android:text="Continue" />
+        android:text="@string/continue_market" />
 
 </LinearLayout>
