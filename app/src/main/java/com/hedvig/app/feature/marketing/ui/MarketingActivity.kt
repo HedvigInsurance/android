@@ -50,7 +50,8 @@ class MarketingActivity : BaseActivity() {
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        Timber.d("Market: ${pref.getInt(Market.MARKET_SHARED_PREF, 21)}")
+        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, 21)]
+        Timber.d("Market: $market")
 
         activity_marketing.useEdgeToEdge()
 

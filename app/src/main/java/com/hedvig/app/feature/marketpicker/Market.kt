@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.marketpicker
 
 enum class Market {
-    SV,
+    SE,
     NO;
 
     companion object {

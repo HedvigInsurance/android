@@ -23,9 +23,10 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
-    private val marketModel: MarketPickerViewModelImpl by viewModel()
+    private val marketModel: MarketPickerViewModel by viewModel()
     private val languageViewModel: LanguageViewModel by viewModel()
     private val tracker: LanguageSelectionTracker by inject()
 
@@ -34,10 +35,26 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
         val marketId = intent.getIntExtra(MARKET_ID, -1)
-        val marketAdapter = MarketAdapter(marketModel, marketId)
+        var marketAdapter: MarketAdapter? = null
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SV)
+        marketModel.preselectedMarket.observe(this) { market ->
+            Timber.d("market: $market")
+            market?.let {
+                val market = Market.valueOf(market)
+                marketAdapter = MarketAdapter(marketModel, market.ordinal)
+                countryList.adapter = marketAdapter
+                countryList.addItemDecoration(
+                    DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
+                        compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
+                    }
+                )
+            }
+
+        }
+        marketModel.loadGeo()
+
+        languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SE)
         marketModel.selectedMarket.observe(this) { market ->
             market?.let {
                 languageList.adapter = LanguageAdapterNew(languageViewModel, market)
@@ -48,17 +65,13 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
-        countryList.adapter = marketAdapter
-        countryList.addItemDecoration(
-            DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
-                compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
-            }
-        )
 
         save.setHapticClickListener {
-            sharedPreferences.edit()
-                .putInt(Market.MARKET_SHARED_PREF, marketAdapter.getSelectedMarket())
-                .commit()
+            marketAdapter?.let {
+                sharedPreferences.edit()
+                    .putInt(Market.MARKET_SHARED_PREF, marketAdapter!!.getSelectedMarket())
+                    .commit()
+            }
             val language = languageViewModel.selectedLanguage.value
             language?.let {
                 setLanguage(language, languageViewModel)

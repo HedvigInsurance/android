@@ -108,7 +108,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         openMarketPicker.setHapticClickListener {
-            startActivity(MarketPickerActivity.newInstance(this, Market.SV.ordinal))
+            startActivity(MarketPickerActivity.newInstance(this, Market.SE.ordinal))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {

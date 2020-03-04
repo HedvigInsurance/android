@@ -34,7 +34,7 @@ class LanguageAdapterNew(
         when (position) {
             LOCAL -> {
                 when (selectedMarket) {
-                    Market.SV -> {
+                    Market.SE -> {
                         holder.apply {
                             language.text =
                                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
@@ -69,7 +69,7 @@ class LanguageAdapterNew(
                 EN -> languageViewModel.selectLanguage(Language.EN_SE)
                 LOCAL -> {
                     when (selectedMarket) {
-                        Market.SV -> languageViewModel.selectLanguage(Language.SV_SE)
+                        Market.SE -> languageViewModel.selectLanguage(Language.SV_SE)
                         //TODO fix correct language
                         Market.NO -> languageViewModel.selectLanguage(Language.SV_SE)
                     }

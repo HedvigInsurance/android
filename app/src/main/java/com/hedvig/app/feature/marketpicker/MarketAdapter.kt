@@ -62,7 +62,7 @@ class MarketAdapter(private val model: MarketPickerViewModel, private val market
     private fun selectMarket(holder: ViewHolder, position: Int) {
         when (position) {
             SV -> {
-                model.updateMarket(Market.SV)
+                model.updateMarket(Market.SE)
             }
             NO -> {
                 model.updateMarket(Market.NO)
