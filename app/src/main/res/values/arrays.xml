@@ -20,4 +20,12 @@
         <item>sv-SE</item>
         <item>en-SE</item>
     </string-array>
+    <string-array name="market_settings">
+        <item>Sverige</item>
+        <item>Norge</item>
+    </string-array>
+    <string-array name="market_settings_values">
+        <item>NO</item>
+        <item>SV</item>
+    </string-array>
 </resources>
