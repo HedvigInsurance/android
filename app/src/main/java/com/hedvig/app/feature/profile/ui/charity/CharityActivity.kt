@@ -42,7 +42,7 @@ class CharityActivity : BaseActivity() {
 
             profileData?.let { data ->
                 data.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
-                    ?: showCharityPicker(data.cashbackOptions)
+                    ?: showCharityPicker(data.cashbackOptions.filterNotNull())
             }
         })
     }

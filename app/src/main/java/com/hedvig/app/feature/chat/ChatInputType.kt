@@ -3,28 +3,41 @@ package com.hedvig.app.feature.chat
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.type.KeyboardType
-import timber.log.Timber
+import e
 
 sealed class ChatInputType {
     companion object {
-        fun from(message: ChatMessagesQuery.Message) = when (val body = message.fragments.chatMessageFragment.body) {
-            is ChatMessageFragment.AsMessageBodyFile -> TextInput()
-            is ChatMessageFragment.AsMessageBodyText -> TextInput(
-                body.keyboard,
-                body.placeholder,
-                message.fragments.chatMessageFragment.header.isRichTextChatCompatible
-            )
-            is ChatMessageFragment.AsMessageBodyNumber -> TextInput(body.keyboard, body.placeholder, false)
-            is ChatMessageFragment.AsMessageBodySingleSelect -> SingleSelect(
-                body.choices
-                    ?: listOf()
-            )
-            is ChatMessageFragment.AsMessageBodyParagraph -> ParagraphInput
-            is ChatMessageFragment.AsMessageBodyAudio -> Audio
-            else -> {
-                Timber.e("Implement support for ${message::class.java.simpleName}")
-                NullInput
+        fun from(message: ChatMessagesQuery.Message): ChatInputType {
+            val body = message.fragments.chatMessageFragment.body
+            body.asMessageBodyFile?.let {
+                return TextInput()
             }
+            body.asMessageBodyText?.let { messageBodyText ->
+                return TextInput(
+                    messageBodyText.keyboard,
+                    messageBodyText.placeholder,
+                    message.fragments.chatMessageFragment.header.richTextChatCompatible
+                )
+            }
+            body.asMessageBodyNumber?.let { messageBodyNumber ->
+                return TextInput(
+                    messageBodyNumber.keyboard,
+                    messageBodyNumber.placeholder,
+                    false
+                )
+            }
+            body.asMessageBodySingleSelect?.let { messageBodySingleSelect ->
+                return SingleSelect(messageBodySingleSelect.choices?.filterNotNull() ?: emptyList())
+            }
+            body.asMessageBodyParagraph?.let {
+                return ParagraphInput
+            }
+            body.asMessageBodyAudio?.let {
+                return Audio
+            }
+
+            e { "Implement support for ${message::class.java.simpleName}" }
+            return NullInput
         }
     }
 }

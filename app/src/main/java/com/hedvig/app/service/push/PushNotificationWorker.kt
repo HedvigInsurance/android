@@ -45,10 +45,7 @@ class PushNotificationWorker(
 
     private fun registerPushToken(pushToken: String) {
         Timber.i("Registering push token")
-        val registerPushTokenMutation = RegisterPushTokenMutation
-            .builder()
-            .pushToken(pushToken)
-            .build()
+        val registerPushTokenMutation = RegisterPushTokenMutation(pushToken)
 
         disposables += Rx2Apollo
             .from(apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation))

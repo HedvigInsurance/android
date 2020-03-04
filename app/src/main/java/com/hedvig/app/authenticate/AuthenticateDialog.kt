@@ -39,7 +39,7 @@ class AuthenticateDialog : DialogFragment() {
         dialog.setCanceledOnTouchOutside(false)
 
         userViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
-            data?.bankIdAuth?.autoStartToken?.let { autoStartToken ->
+            data?.swedishBankIdAuth?.autoStartToken?.let { autoStartToken ->
                 val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
                 val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
                 if (requireContext().canOpenUri(bankIdUri)) {
@@ -72,7 +72,7 @@ class AuthenticateDialog : DialogFragment() {
         AuthState.IN_PROGRESS -> {
             dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
-        AuthState.`$UNKNOWN`,
+        AuthState.UNKNOWN__,
         AuthState.FAILED -> {
             dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)

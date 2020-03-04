@@ -141,18 +141,18 @@ class ChatAdapter(
     override fun getItemCount() = messages.size
 
     override fun getItemViewType(position: Int) =
-        messages.getOrNull(position)?.fragments?.chatMessageFragment?.header?.isFromMyself?.let { isFromMyself ->
+        messages.getOrNull(position)?.fragments?.chatMessageFragment?.header?.fromMyself?.let { isFromMyself ->
             if (isFromMyself) {
                 when {
                     isImageUploadMessage(messages[position].fragments.chatMessageFragment.body) -> FROM_ME_IMAGE_UPLOAD
                     isFileUploadMessage((messages[position].fragments.chatMessageFragment.body)) -> FROM_ME_FILE_UPLOAD
-                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_GIPHY
-                    isImageMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_ME_IMAGE
+                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> FROM_ME_GIPHY
+                    isImageMessage(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> FROM_ME_IMAGE
                     else -> FROM_ME_TEXT
                 }
             } else {
                 when {
-                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body?.text) -> FROM_HEDVIG_GIPHY
+                    isGiphyMessage(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> FROM_HEDVIG_GIPHY
                     isAudioMessage(messages[position].fragments.chatMessageFragment.body) -> NULL_RENDER // This message sucks. Lets kill it
                     else -> FROM_HEDVIG
                 }
@@ -165,26 +165,26 @@ class ChatAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (viewHolder.itemViewType) {
             FROM_HEDVIG -> {
-                (viewHolder as? HedvigMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? HedvigMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) }
             }
             FROM_HEDVIG_GIPHY -> {
-                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? HedvigGiphyMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) }
             }
             FROM_ME_TEXT -> {
                 (viewHolder as? UserMessage)?.apply {
                     bind(
-                        messages[position].fragments.chatMessageFragment.body?.text,
+                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
                         position,
                         messages[position].fragments.chatMessageFragment.header.statusMessage,
-                        messages[position].fragments.chatMessageFragment.header.isEditAllowed
+                        messages[position].fragments.chatMessageFragment.header.editAllowed
                     )
                 }
             }
             FROM_ME_GIPHY -> {
-                (viewHolder as? GiphyUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? GiphyUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text) }
             }
             FROM_ME_IMAGE -> {
-                (viewHolder as? ImageUserMessage)?.apply { bind(messages[position].fragments.chatMessageFragment.body?.text) }
+                (viewHolder as? ImageUserMessage)?.apply { bind() }
             }
             FROM_ME_IMAGE_UPLOAD -> {
                 (viewHolder as? ImageUploadUserMessage)?.apply {
@@ -307,17 +307,8 @@ class ChatAdapter(
     inner class ImageUserMessage(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.uploadedImage
 
-        fun bind(url: String?) {
-            image.remove() // Not supported for now as our image resizing API does not work.
-            //Glide
-            //    .with(image)
-            //    .load("${BuildConfig.PIG_URL}/unsafe/280/200/smart/${URLEncoder.encode(url, "utf-8")}")
-            //    .apply(RequestOptions.bitmapTransform(RoundedCorners(20)))
-            //    .override(
-            //        com.bumptech.glide.request.target.Target.SIZE_ORIGINAL,
-            //        com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-            //    )
-            //    .into(image)
+        fun bind() {
+            image.remove()
         }
     }
 
@@ -359,7 +350,7 @@ class ChatAdapter(
         override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
             messages.getOrNull(position)?.let { message ->
                 when {
-                    isGiphyMessage(message.fragments.chatMessageFragment.body?.text) -> listOf(
+                    isGiphyMessage(message.fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> listOf(
                         message
                     )
                     isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(
@@ -371,8 +362,8 @@ class ChatAdapter(
 
         override fun getPreloadRequestBuilder(item: ChatMessagesQuery.Message): RequestBuilder<*>? {
             val url = when {
-                isGiphyMessage(item.fragments.chatMessageFragment.body?.text) -> item.fragments.chatMessageFragment.body?.text
-                isImageUploadMessage(item.fragments.chatMessageFragment.body) -> (item.fragments.chatMessageFragment.body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
+                isGiphyMessage(item.fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> item.fragments.chatMessageFragment.body.asMessageBodyCore?.text
+                isImageUploadMessage(item.fragments.chatMessageFragment.body) -> item.fragments.chatMessageFragment.body.asMessageBodyFile?.file?.signedUrl
                 else -> null
             }
             return Glide
@@ -405,22 +396,22 @@ class ChatAdapter(
         }
 
         private fun isImageUploadMessage(body: ChatMessageFragment.Body?): Boolean {
-            val asUpload = (body as? ChatMessageFragment.AsMessageBodyFile) ?: return false
+            val asUpload = body?.asMessageBodyFile ?: return false
 
             return isImageMessage(asUpload.file.signedUrl)
         }
 
         private fun isFileUploadMessage(body: ChatMessageFragment.Body?): Boolean {
-            val asUpload = (body as? ChatMessageFragment.AsMessageBodyFile) ?: return false
+            val asUpload = body?.asMessageBodyFile ?: return false
 
             return !isImageMessage(asUpload.file.signedUrl)
         }
 
         private fun isAudioMessage(body: ChatMessageFragment.Body?) =
-            body is ChatMessageFragment.AsMessageBodyAudio
+            body?.asMessageBodyAudio != null
 
         private fun getFileUrl(body: ChatMessageFragment.Body?) =
-            (body as? ChatMessageFragment.AsMessageBodyFile)?.file?.signedUrl
+            body?.asMessageBodyFile?.file?.signedUrl
     }
 }
 

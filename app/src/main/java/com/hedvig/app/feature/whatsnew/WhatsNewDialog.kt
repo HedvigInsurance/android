@@ -32,7 +32,7 @@ class WhatsNewDialog : DismissablePager() {
 
         private const val PAGES = "pages"
 
-        fun newInstance(pages: List<WhatsNewQuery.News>) = WhatsNewDialog().apply {
+        fun newInstance(pages: List<WhatsNewQuery.New>) = WhatsNewDialog().apply {
             arguments = Bundle().apply {
                 putParcelableArrayList(
                     PAGES,

@@ -23,6 +23,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.lightenColor
 import com.hedvig.app.util.mappedColor
 import com.hedvig.app.util.svg.buildRequestBuilder
+import e
 import kotlinx.android.synthetic.main.activity_emergency.*
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.common_claim_first_message.*
@@ -40,6 +41,11 @@ class EmergencyActivity : BaseActivity() {
         setContentView(R.layout.activity_emergency)
 
         val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)
+
+        if (data == null) {
+            e { "Programmer error: No EMERGENCY_DATA passed to ${this.javaClass}" }
+            return
+        }
 
         val backgroundColor = if (isDarkThemeActive) {
             darkenColor(compatColor(data.color.mappedColor()), 0.3f)

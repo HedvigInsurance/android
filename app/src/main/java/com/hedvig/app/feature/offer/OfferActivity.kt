@@ -13,7 +13,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
@@ -217,57 +216,57 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     ?.toInt()?.toString()
         }
 
-        if (data.redeemedCampaigns.size > 0) {
-            when (val incentive = data.redeemedCampaigns[0].fragments.incentiveFragment.incentive) {
-                is IncentiveFragment.AsMonthlyCostDeduction -> {
-                    grossPremium.show()
-                    grossPremium.text = interpolateTextKey(
-                        getString(R.string.OFFER_GROSS_PREMIUM),
-                        "GROSS_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
-                    )
+        if (data.redeemedCampaigns.isNotEmpty()) {
+            val incentive = data.redeemedCampaigns[0].fragments.incentiveFragment.incentive
+            incentive?.asMonthlyCostDeduction?.let {
+                grossPremium.show()
+                grossPremium.text = interpolateTextKey(
+                    getString(R.string.OFFER_GROSS_PREMIUM),
+                    "GROSS_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                )
 
-                    discountBubble.show()
-                    discount.text = getString(R.string.OFFER_SCREEN_INVITED_BUBBLE)
+                discountBubble.show()
+                discount.text = getString(R.string.OFFER_SCREEN_INVITED_BUBBLE)
 
-                    if (!lastAnimationHasCompleted) {
-                        netPremium.setTextColor(compatColor(R.color.pink))
-                    }
-                }
-                is IncentiveFragment.AsFreeMonths -> {
-                    discountBubble.show()
-                    discountTitle.show()
-                    discount.text = interpolateTextKey(
-                        getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
-                        "free_month" to incentive.quantity
-                    )
-                }
-                is IncentiveFragment.AsPercentageDiscountMonths -> {
-                    grossPremium.show()
-                    grossPremium.text = interpolateTextKey(
-                        getString(R.string.OFFER_GROSS_PREMIUM),
-                        "GROSS_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
-                    )
-                    discountBubble.show()
-                    discountTitle.text =
-                        getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
-                    discountTitle.show()
-                    discount.text = if (incentive.pdmQuantity == 1) {
-                        interpolateTextKey(
-                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
-                            "percentage" to incentive.percentageDiscount.toInt()
-                        )
-                    } else {
-                        interpolateTextKey(
-                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
-                            "months" to incentive.pdmQuantity,
-                            "percentage" to incentive.percentageDiscount.toInt()
-                        )
-                    }
-                    if (!lastAnimationHasCompleted) {
-                        netPremium.setTextColor(compatColor(R.color.pink))
-                    }
+                if (!lastAnimationHasCompleted) {
+                    netPremium.setTextColor(compatColor(R.color.pink))
                 }
             }
+            incentive?.asFreeMonths?.let { freeMonthsIncentive ->
+                discountBubble.show()
+                discountTitle.show()
+                discount.text = interpolateTextKey(
+                    getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
+                    "free_month" to freeMonthsIncentive.quantity
+                )
+            }
+            incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
+                grossPremium.show()
+                grossPremium.text = interpolateTextKey(
+                    getString(R.string.OFFER_GROSS_PREMIUM),
+                    "GROSS_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                )
+                discountBubble.show()
+                discountTitle.text =
+                    getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
+                discountTitle.show()
+                discount.text = if (percentageDiscountMonthsIncentive.pdmQuantity == 1) {
+                    interpolateTextKey(
+                        getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
+                        "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt()
+                    )
+                } else {
+                    interpolateTextKey(
+                        getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
+                        "months" to percentageDiscountMonthsIncentive.pdmQuantity,
+                        "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt()
+                    )
+                }
+                if (!lastAnimationHasCompleted) {
+                    netPremium.setTextColor(compatColor(R.color.pink))
+                }
+            }
+
             if (lastAnimationHasCompleted) {
                 animateDiscountBubble()
             }
@@ -392,7 +391,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         data.insurance.previousInsurer?.let { previousInsurer ->
             switchSection.show()
 
-            if (previousInsurer.isSwitchable) {
+            if (previousInsurer.switchable) {
                 switchTitle.text = interpolateTextKey(
                     getString(R.string.OFFER_SWITCH_TITLE_APP),
                     "INSURER" to previousInsurer.displayName
@@ -413,15 +412,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val maxPerilsPerRow = rowWidth / perilTotalWidth
             if (perils.size < maxPerilsPerRow) {
                 container.orientation = LinearLayout.HORIZONTAL
-                perils.forEach { peril ->
+                perils.filterNotNull().forEach { peril ->
                     container.addView(makePeril(peril, category))
                 }
             } else {
                 container.orientation = LinearLayout.VERTICAL
-                for (row in 0 until perils.size step maxPerilsPerRow) {
+                for (row in perils.indices step maxPerilsPerRow) {
                     val rowView = LinearLayout(this)
                     val rowPerils = perils.subList(row, min(row + maxPerilsPerRow, perils.size))
-                    rowPerils.forEach { peril ->
+                    rowPerils.filterNotNull().forEach { peril ->
                         rowView.addView(makePeril(peril, category))
                     }
                     container.addView(rowView)
@@ -460,7 +459,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         private val PRIVACY_POLICY_URL =
             Uri.parse("https://s3.eu-central-1.amazonaws.com/com-hedvig-web-content/Hedvig+-+integritetspolicy.pdf")
 
-        private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.size > 0
+        private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.isNotEmpty()
 
         private fun performBubbleAnimation(view: View, endAction: (() -> Unit)? = null) {
             view

@@ -10,6 +10,7 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
+import e
 import kotlinx.android.synthetic.main.referrals_receiver_activity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -35,19 +36,29 @@ class ReferralsReceiverActivity : BaseActivity() {
         }
         referralReceiverContinueButton.setHapticClickListener {
             tracker.redeemReferralCode()
-            referralViewModel.redeemReferralCode(intent.getStringExtra(EXTRA_REFERRAL_CODE))
+            val referralCode = intent.getStringExtra(EXTRA_REFERRAL_CODE)
+            if (referralCode == null) {
+                e { "Programmer error: EXTRA_REFERRAL_CODE not passed to ${this.javaClass}" }
+                return@setHapticClickListener
+            }
+            referralViewModel.redeemReferralCode(referralCode)
         }
         referralReceiverContinueWithoutButton.setHapticClickListener {
             tracker.skipReferralCode()
             startChat()
         }
+        val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()
+        if (incentive == null) {
+            e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not passed to ${this.javaClass}" }
+            return
+        }
         referralsReceiverTitle.text = interpolateTextKey(
             getString(R.string.REFERRAL_STARTSCREEN_HEADLINE),
-            "REFERRAL_VALUE" to intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE).toBigDecimal().toInt()
+            "REFERRAL_VALUE" to incentive
         )
         referralsReceiverBody.text = interpolateTextKey(
             getString(R.string.REFERRAL_STARTSCREEN_BODY),
-            "REFERRAL_VALUE" to intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE).toBigDecimal().toInt()
+            "REFERRAL_VALUE" to incentive
         )
     }
 

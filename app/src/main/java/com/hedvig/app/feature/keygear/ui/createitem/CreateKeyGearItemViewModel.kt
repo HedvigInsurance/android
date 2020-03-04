@@ -27,7 +27,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
     init {
         categories.value = KeyGearItemCategory
             .values()
-            .filter { it != KeyGearItemCategory.`$UNKNOWN` }
+            .filter { it != KeyGearItemCategory.UNKNOWN__ }
             .map { Category(it) }
     }
 
@@ -92,7 +92,7 @@ class CreateKeyGearItemViewModelImpl(
                 val uploadsResponse =
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
                 uploadsResponse.data()?.uploadFiles?.map {
-                    S3FileInput.builder().bucket(it.bucket).key(it.key).build()
+                    S3FileInput(bucket = it.bucket, key = it.key)
                 } ?: return@launch
             } else {
                 emptyList()
