@@ -33,7 +33,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         super.onCreate(savedInstanceState)
         storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
-        val marketAdapter = MarketAdapter(marketModel)
+        val marketId = intent.getIntExtra(MARKET_ID, -1)
+        val marketAdapter = MarketAdapter(marketModel, marketId)
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SV)
@@ -96,7 +97,13 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
     companion object {
         private const val HAS_SHOWN_MARKET_SELECTION = "HAS_SHOWN_MARKET_SELECTION"
-        fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
+        private const val MARKET_ID = "MARKET_ID"
+        fun newInstance(context: Context, marketId: Int): Intent {
+            val intent = Intent(context, MarketPickerActivity::class.java)
+            intent.putExtra(MARKET_ID, marketId)
+            return intent
+        }
+
         fun hasBeenShown(context: Context) = context.getStoredBoolean(HAS_SHOWN_MARKET_SELECTION)
     }
 }

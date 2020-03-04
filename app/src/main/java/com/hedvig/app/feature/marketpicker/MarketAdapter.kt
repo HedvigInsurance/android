@@ -15,7 +15,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.market_item.view.*
 
-class MarketAdapter(private val model: MarketPickerViewModel) :
+class MarketAdapter(private val model: MarketPickerViewModel, private val marketId: Int) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
 
     private var lastChecked: RadioButton? = null
@@ -28,12 +28,14 @@ class MarketAdapter(private val model: MarketPickerViewModel) :
     override fun getItemCount() = 2
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (marketId == position) {
+            selectMarket(holder, position)
+        }
         when (position) {
             SV -> holder.apply {
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
                 //TODO textkey
                 country.text = "Sverige"
-                selectMarket(holder, position)
 
             }
             NO -> holder.apply {
