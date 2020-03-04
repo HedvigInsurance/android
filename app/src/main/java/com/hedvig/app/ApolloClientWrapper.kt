@@ -4,6 +4,7 @@ import android.content.Context
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
+import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.ApolloTimberLogger
@@ -44,7 +45,7 @@ class ApolloClientWrapper(
             .serverUrl(BuildConfig.GRAPHQL_URL)
             .okHttpClient(okHttpClient)
             .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
-            .subscriptionConnectionParams(mapOf("Authorization" to authToken))
+            .subscriptionConnectionParams(SubscriptionConnectionParams(mapOf("Authorization" to authToken)))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
                     BuildConfig.WS_GRAPHQL_URL,

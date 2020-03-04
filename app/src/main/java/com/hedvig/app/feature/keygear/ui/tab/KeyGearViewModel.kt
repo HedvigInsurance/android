@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.feature.keygear.data.DeviceInformationService
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 abstract class KeyGearViewModel : ViewModel() {
@@ -33,9 +34,11 @@ class KeyGearViewModelImpl(
 
     init {
         viewModelScope.launch {
-            for (response in repository.keyGearItems()) {
-                data.postValue(response.data())
-            }
+            repository
+                .keyGearItems()
+                .collect { response ->
+                    data.postValue(response.data())
+                }
         }
     }
 }

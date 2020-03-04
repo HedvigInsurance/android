@@ -54,6 +54,10 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         }
 
         val fileUrl = intent.getStringExtra(RECEIPT_URL)
+        if (fileUrl == null) {
+            e { "Programmer error: No file url passed to ${this.javaClass}" }
+            return
+        }
 
         close.setHapticClickListener {
             onBackPressed()
@@ -86,7 +90,12 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            downloadFile(intent.getStringExtra(RECEIPT_URL))
+            val fileUrl = intent.getStringExtra(RECEIPT_URL)
+            if (fileUrl == null) {
+                e { "Programmer error: No file url passed to ${this.javaClass}" }
+                return
+            }
+            downloadFile(fileUrl)
         }
     }
 

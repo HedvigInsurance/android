@@ -13,6 +13,7 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
+import e
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 import timber.log.Timber
@@ -35,27 +36,21 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val newCost = cachedData.insurance.cost?.toBuilder()
-            ?.fragments(OfferQuery.Cost.Fragments.builder().costFragment(data.redeemCode.cost.fragments.costFragment).build())
-            ?.build()
+        val newCost = cachedData.insurance.cost?.copy(
+            fragments = OfferQuery.Cost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        )
 
         val newData = cachedData
-            .toBuilder()
-            .insurance(cachedData.insurance.toBuilder().cost(newCost).build())
-            .redeemedCampaigns(
-                listOf(
-                    OfferQuery.RedeemedCampaign
-                        .builder()
-                        .fragments(
-                            OfferQuery.RedeemedCampaign.Fragments.builder().incentiveFragment(
-                                data.redeemCode.campaigns[0].fragments.incentiveFragment
-                            ).build()
+            .copy(
+                insurance = cachedData.insurance.copy(cost = newCost),
+                redeemedCampaigns = listOf(
+                    OfferQuery.RedeemedCampaign(
+                        fragments = OfferQuery.RedeemedCampaign.Fragments(
+                            incentiveFragment = data.redeemCode.campaigns[0].fragments.incentiveFragment
                         )
-                        .__typename("RedeemedCampaign")
-                        .build()
+                    )
                 )
             )
-            .build()
 
         apolloClientWrapper
             .apolloClient
@@ -77,24 +72,24 @@ class OfferRepository(
 
         val oldCostFragment = cachedData.insurance.cost?.fragments?.costFragment ?: return
         val newCostFragment = oldCostFragment
-            .toBuilder()
-            .monthlyDiscount(oldCostFragment.monthlyDiscount.toBuilder().amount("0.00").build())
-            .monthlyNet(oldCostFragment.monthlyNet.toBuilder().amount(oldCostFragment.monthlyGross.amount).build())
-            .build()
+            .copy(
+                monthlyDiscount = oldCostFragment
+                    .monthlyDiscount
+                    .copy(amount = "0.00"),
+                monthlyNet = oldCostFragment
+                    .monthlyNet
+                    .copy(amount = oldCostFragment.monthlyGross.amount)
+            )
 
         val newData = cachedData
-            .toBuilder()
-            .insurance(
-                cachedData.insurance.toBuilder().cost(
-                    cachedData.insurance.cost?.toBuilder()?.fragments(
-                        OfferQuery.Cost.Fragments.builder().costFragment(
-                            newCostFragment
-                        ).build()
-                    )?.build()
-                ).build()
+            .copy(
+                insurance = cachedData.insurance.copy(
+                    cost = cachedData.insurance.cost.copy(
+                        fragments = OfferQuery.Cost.Fragments(costFragment = newCostFragment)
+                    )
+                ),
+                redeemedCampaigns = emptyList()
             )
-            .redeemedCampaigns(listOf())
-            .build()
 
         apolloClientWrapper
             .apolloClient
@@ -133,24 +128,24 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val newDate = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.startDate
-        val newId = (data.editQuote as? ChooseStartDateMutation.AsCompleteQuote)?.id
+        val newDate = data.editQuote.asCompleteQuote?.startDate
+        val newId = data.editQuote.asCompleteQuote?.id
         if (newId == null) {
             Timber.e("Id is null")
             return
         }
 
-        (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
+        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
             val newData = cachedData
-                .toBuilder()
-                .lastQuoteOfMember(
-                    lastQuoteOfMember
-                        .toBuilder()
-                        .id(newId)
-                        .startDate(newDate)
-                        .build()
+                .copy(
+                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
+                        asCompleteQuote = completeQuote
+                            .copy(
+                                id = newId,
+                                startDate = newDate
+                            )
+                    )
                 )
-                .build()
 
             apolloClientWrapper
                 .apolloClient
@@ -170,24 +165,24 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val newDate = (data.removeStartDate as? RemoveStartDateMutation.AsCompleteQuote)?.startDate
-        val newId = (data.removeStartDate as? RemoveStartDateMutation.AsCompleteQuote)?.id
+        val newDate = data.removeStartDate.asCompleteQuote?.startDate
+        val newId = data.removeStartDate.asCompleteQuote?.id
         if (newId == null) {
-            Timber.e("Id is null")
+            e { "Id is null" }
             return
         }
 
-        (cachedData.lastQuoteOfMember as? OfferQuery.AsCompleteQuote)?.let { lastQuoteOfMember ->
+        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
             val newData = cachedData
-                .toBuilder()
-                .lastQuoteOfMember(
-                    lastQuoteOfMember
-                        .toBuilder()
-                        .id(newId)
-                        .startDate(newDate)
-                        .build()
+                .copy(
+                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
+                        asCompleteQuote = completeQuote
+                            .copy(
+                                id = newId,
+                                startDate = newDate
+                            )
+                    )
                 )
-                .build()
 
             apolloClientWrapper
                 .apolloClient

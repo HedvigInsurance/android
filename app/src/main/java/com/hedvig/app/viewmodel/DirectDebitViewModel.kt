@@ -38,7 +38,7 @@ class DirectDebitViewModelImpl(
     }
 
     override fun refreshDirectDebitStatus() {
-        val disposable = directDebitRepository.refreshDirectdebitStatus()
+        val disposable = directDebitRepository.refreshDirectDebitStatus()
             .subscribe({ response ->
                 response.data()?.let { data ->
                     directDebitRepository.writeDirectDebitStatusToCache(data.directDebitStatus)

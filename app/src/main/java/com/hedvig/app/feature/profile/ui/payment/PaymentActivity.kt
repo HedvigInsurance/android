@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
@@ -141,86 +140,81 @@ class PaymentActivity : BaseActivity() {
                 )
             }
         }
-
-        when (val incentive =
-            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
-            is IncentiveFragment.AsFreeMonths -> {
-                incentive.quantity?.let { quantity ->
-                    discountSphereText.text = buildSpannedString {
-                        scale(20f / 12f) {
-                            append("$quantity\n")
-                        }
-                        append(
-                            if (quantity > 1) {
-                                getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
-                            } else {
-                                getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
-                            }
-                        )
+        val incentive = data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+        incentive?.asFreeMonths?.let { freeMonthsIncentive ->
+            freeMonthsIncentive.quantity?.let { quantity ->
+                discountSphereText.text = buildSpannedString {
+                    scale(20f / 12f) {
+                        append("$quantity\n")
                     }
-                    discountSphere.show()
-                }
-            }
-            is IncentiveFragment.AsPercentageDiscountMonths -> {
-                discountSphereText.text = if (incentive.pdmQuantity > 1) {
-                    interpolateTextKey(
-                        "{percentage}% rabatt i {months} månader",
-                        "percentage" to incentive.percentageDiscount.toInt(),
-                        "months" to incentive.pdmQuantity
-                    )
-                } else {
-                    interpolateTextKey(
-                        "{percentage}% rabatt i en månad",
-                        "percentage" to incentive.percentageDiscount.toInt()
+                    append(
+                        if (quantity > 1) {
+                            getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                        } else {
+                            getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                        }
                     )
                 }
                 discountSphere.show()
             }
         }
+        incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
+            discountSphereText.text = if (percentageDiscountMonthsIncentive.pdmQuantity > 1) {
+                interpolateTextKey(
+                    "{percentage}% rabatt i {months} månader",
+                    "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
+                    "months" to percentageDiscountMonthsIncentive.pdmQuantity
+                )
+            } else {
+                interpolateTextKey(
+                    "{percentage}% rabatt i en månad",
+                    "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt()
+                )
+            }
+            discountSphere.show()
+        }
     }
 
     private fun bindCampaignInformation(data: ProfileQuery.Data) {
-        when (val incentive =
-            data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive) {
-            is IncentiveFragment.AsFreeMonths -> {
-                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
-                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_CAMPAIGN_OWNER)
-                data.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
-                    campaignInformationFieldOne.text = displayName
-                }
-
-                when (data.insurance.status) {
-                    InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                        data.insurance.cost?.freeUntil?.let { freeUntil ->
-                            lastFreeDay.text = freeUntil.format(DATE_FORMAT)
-                        }
-                        lastFreeDay.show()
-                        lastFreeDayLabel.show()
-                    }
-                    InsuranceStatus.INACTIVE -> {
-                        willUpdateWhenStartDateIsSet.show()
-                    }
-                    else -> {
-                        Timber.e(
-                            "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
-                        )
-                    }
-                }
-                campaignInformationContainer.show()
-                campaignInformationSeparator.show()
+        val incentive = data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+        incentive?.asFreeMonths?.let {
+            campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
+            campaignInformationLabelOne.text = getString(R.string.PAYMENTS_CAMPAIGN_OWNER)
+            data.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
+                campaignInformationFieldOne.text = displayName
             }
-            is IncentiveFragment.AsMonthlyCostDeduction -> {
-                campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
-                campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
-                incentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
-                    campaignInformationFieldOne.text = interpolateTextKey(
-                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
-                        "DISCOUNT" to amount
+
+            when (data.insurance.status) {
+                InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+                    data.insurance.cost?.freeUntil?.let { freeUntil ->
+                        lastFreeDay.text = freeUntil.format(DATE_FORMAT)
+                    }
+                    lastFreeDay.show()
+                    lastFreeDayLabel.show()
+                }
+                InsuranceStatus.INACTIVE -> {
+                    willUpdateWhenStartDateIsSet.show()
+                }
+                else -> {
+                    Timber.e(
+                        "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
                     )
                 }
-                campaignInformationContainer.show()
-                campaignInformationSeparator.show()
             }
+            campaignInformationContainer.show()
+            campaignInformationSeparator.show()
+        }
+        incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
+            campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
+            campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
+            monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
+                campaignInformationFieldOne.text = interpolateTextKey(
+                    getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
+                    "DISCOUNT" to amount
+                )
+            }
+            campaignInformationContainer.show()
+            campaignInformationSeparator.show()
         }
     }
 
@@ -356,7 +350,7 @@ class PaymentActivity : BaseActivity() {
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
             profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
-            && profileData.insurance.cost?.freeUntil == null
+            && profileData.insurance.cost.freeUntil == null
         ) {
             redeemCode.show()
         }

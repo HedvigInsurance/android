@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
@@ -43,9 +44,11 @@ class KeyGearValuationViewModelImpl(
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
-            for (response in repository.keyGearItem(id)) {
-                data.postValue(response.data()?.keyGearItem)
-            }
+            repository
+                .keyGearItem(id)
+                .collect { response ->
+                    data.postValue(response.data()?.keyGearItem)
+                }
         }
     }
 }

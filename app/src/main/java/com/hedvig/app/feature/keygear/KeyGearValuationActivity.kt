@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
@@ -31,6 +30,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
+import e
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -43,13 +43,16 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     private val tracker: KeyGearTracker by inject()
 
     private var isUploading = false
-    private lateinit var id: String
     private var date: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        id = intent.getStringExtra(ITEM_ID)
+        val id = intent.getStringExtra(ITEM_ID)
+        if (id == null) {
+            e { "Programmer error: No ID passed to ${this.javaClass}" }
+            return
+        }
         var maxInsurableAmount = 0
 
         saveContainer.show()
@@ -61,7 +64,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 maxInsurableAmount = amount.toBigDecimal().toInt()
                 val category =
                     resources.getString(d.fragments.keyGearItemFragment.category.label)
-                        .toLowerCase()
+                        .toLowerCase(Locale.ROOT)
                 noCoverage.text = interpolateTextKey(
                     getString(R.string.KEY_GEAR_NOT_COVERED),
                     "ITEM_TYPE" to category
@@ -113,7 +116,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             val price = priceInput.getText()
             safeLet(date, id) { date, id ->
                 val monetaryValue =
-                    MonetaryAmountV2Input.builder().amount(price).currency("SEK").build()
+                    MonetaryAmountV2Input(amount = price, currency = "SEK")
 
                 model.updatePurchaseDateAndPrice(id, date, monetaryValue)
             }
@@ -141,6 +144,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             safeLet(uploadResult?.keyGearItem, uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount) { item, amount ->
                 val type = valuationType(item)
                 if (type == ValuationType.FIXED) {
+                    val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                        ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(
                             this,
@@ -148,13 +153,15 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                             ValuationData.from(
                                 amount,
                                 type,
-                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).ratio,
-                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationFixed).valuation.amount
+                                valuation.ratio,
+                                valuation.valuation.amount
                             )
                         )
                     )
                     finish()
                 } else if (type == ValuationType.MARKET_PRICE) {
+                    val ratio = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue?.ratio
+                        ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(
                             this,
@@ -162,7 +169,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                             ValuationData.from(
                                 amount,
                                 type,
-                                (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation as KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue).ratio
+                                ratio
                             )
                         )
                     )
@@ -209,9 +216,11 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        return when (item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation) {
-            is KeyGearItemValuationFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
-            is KeyGearItemValuationFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
+        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+
+        return when {
+            valuation?.asKeyGearItemValuationFixed != null -> ValuationType.FIXED
+            valuation?.asKeyGearItemValuationMarketValue != null -> ValuationType.MARKET_PRICE
             else -> null
         }
     }

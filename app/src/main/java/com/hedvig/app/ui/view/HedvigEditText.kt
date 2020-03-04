@@ -49,7 +49,7 @@ class HedvigEditText @JvmOverloads constructor(
             animateHint()
         }
 
-        textInput.setOnFocusChangeListener { v, hasFocus ->
+        textInput.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 animateHint()
             }
@@ -78,7 +78,7 @@ class HedvigEditText @JvmOverloads constructor(
     }
 
     fun setDoneListener(action: () -> Unit) {
-        textInput.setOnEditorActionListener { v, actionId, event ->
+        textInput.setOnEditorActionListener { _, _, _ ->
             action()
             return@setOnEditorActionListener false
         }

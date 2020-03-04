@@ -157,6 +157,7 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
         0
     )
 } else {
+    @Suppress("DEPRECATION")
     (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locale
 }
 
