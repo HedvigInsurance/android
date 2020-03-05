@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -14,7 +15,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
 
 class MockOfferViewModel(
-    private val context: Context
+    context: Context
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
@@ -65,7 +66,52 @@ class MockOfferViewModel(
                 extraBuildings = null,
                 isSubleted = null,
                 arrangedPerilCategories = OfferQuery.ArrangedPerilCategories(
-                    me = null,
+                    me = OfferQuery.Me(
+                        fragments = OfferQuery.Me.Fragments(
+                            PerilCategoryFragment(
+                                title = "Mock",
+                                description = "Mock",
+                                iconUrl = null,
+                                perils = listOf(
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    ),
+                                    PerilCategoryFragment.Peril(
+                                        id = "ME.LEGAL",
+                                        title = "Mock",
+                                        description = "Mock"
+                                    )
+                                )
+                            )
+                        )
+                    ),
                     home = null,
                     stuff = null
                 ),

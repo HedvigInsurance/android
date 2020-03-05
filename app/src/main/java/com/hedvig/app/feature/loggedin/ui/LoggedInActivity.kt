@@ -11,10 +11,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
@@ -211,16 +209,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
         whatsNewViewModel.fetchNews()
 
-        dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.insurance?.status?.let { insuranceStatus ->
-                if (insuranceStatus == InsuranceStatus.TERMINATED) {
-                    startActivity(Intent(this, LoggedInTerminatedActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    })
-                }
-            }
-        }
+        // dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
+        //     data?.insurance?.status?.let { insuranceStatus ->
+        //         if (insuranceStatus == InsuranceStatus.TERMINATED) {
+        //             startActivity(Intent(this, LoggedInTerminatedActivity::class.java).apply {
+        //                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        //                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        //             })
+        //         }
+        //     }
+        // }
     }
 
     private fun bindReferralsButton(incentive: Double, code: String) {

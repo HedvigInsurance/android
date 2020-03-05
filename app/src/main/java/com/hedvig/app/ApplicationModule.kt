@@ -24,6 +24,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -166,7 +167,6 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 val viewModelModule = module {
     viewModel { MarketingStoriesViewModel(get()) }
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
@@ -175,6 +175,10 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
+}
+
+val dashboardModule = module {
+    viewModel<DashboardViewModel> { DashboardViewModelImpl(get()) }
 }
 
 val offerModule = module {

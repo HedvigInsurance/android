@@ -1,32 +1,14 @@
 query DashboardQuery {
-  insurance {
+  contracts {
     status
-    type
-    activeFrom
-
-    renewal {
-      certificateUrl
-      date
+    inception
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
     }
-
-    arrangedPerilCategories {
-      me {
-        ... PerilCategoryFragment
-      }
-      home {
-        ... PerilCategoryFragment
-      }
-      stuff {
-        ... PerilCategoryFragment
-      }
+    currentAgreement {
+      __typename
     }
-
-  }
-
-  chatActions {
-    text
-    triggerUrl
-    enabled
   }
 }
 

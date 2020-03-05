@@ -20,6 +20,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
 import com.hedvig.app.feature.dashboard.ui.PerilIcon
 import com.hedvig.app.feature.dashboard.ui.PerilView
+import com.hedvig.app.feature.dashboard.ui.PerilsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
 import com.hedvig.app.feature.offer.binders.FeatureBubbleBinder
@@ -351,11 +352,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun bindHomeSection(data: OfferQuery.Data) {
         homeSection.title.text = data.insurance.address
-        data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                homeSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 
@@ -370,20 +371,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
             )
         }
-        data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                stuffSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
-        data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                meSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 

@@ -1,30 +1,52 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
+import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 
-class DashboardViewModel(
+abstract class DashboardViewModel : ViewModel() {
+    abstract val data: LiveData<DashboardData>
+}
+
+class DashboardViewModelImpl(
     private val dashboardRepository: DashboardRepository
-) : ViewModel() {
+) : DashboardViewModel() {
 
-    val data = MutableLiveData<DashboardQuery.Data>()
-
-    val disposables = CompositeDisposable()
+    override val data = MutableLiveData<DashboardData>()
 
     init {
-        loadData()
-    }
-
-    private fun loadData() {
-        disposables += dashboardRepository
-            .fetchDashboard()
-            .subscribe({ response ->
-                response.data()?.let { data.postValue(it) }
-            }, { Timber.e(it) })
+        viewModelScope.launch {
+            val response = dashboardRepository
+                .dashboardAsync()
+                .await()
+        }
     }
 }
+
+data class DashboardData(
+    val contracts: List<Contract>
+)
+
+data class Contract(
+    val id: String,
+    val status: ContractStatus,
+    val inception: LocalDate,
+    val upcomingRenewal: DashboardQuery.UpcomingRenewal?,
+    val currentAgreement: DashboardQuery.CurrentAgreement,
+    val perilCategories: List<PerilCategory>
+)
+
+data class PerilCategory(
+    // val icon: SomeKindOfImageResource,
+    val id: String,
+    val title: String,
+    val subtitle: String,
+    val perils: List<PerilCategoryFragment.Peril>
+)
