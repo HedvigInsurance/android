@@ -25,7 +25,7 @@
         <item>Norge</item>
     </string-array>
     <string-array name="market_settings_values">
-        <item>NO</item>
         <item>SV</item>
+        <item>NO</item>
     </string-array>
 </resources>
