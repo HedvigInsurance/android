@@ -37,13 +37,13 @@
             android:prompt="@string/mock_personas_prompt" />
 
         <Button
-            android:id="@+id/openMarketPicker"
+            android:id="@+id/openNorwegianAuth"
             style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open Market Picker" />
+            android:text="Open Norwegian Auth" />
 
         <Button
             android:id="@+id/openWhatsNew"
