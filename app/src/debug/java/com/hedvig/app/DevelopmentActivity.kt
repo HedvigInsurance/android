@@ -15,7 +15,7 @@ import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -106,8 +106,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openNorwegianAuth.setHapticClickListener {
-            startActivity(NorwegianAuthenticationActivity.newInstance(this))
+        openMarketPicker.setHapticClickListener {
+            startActivity(MarketPickerActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
@@ -190,6 +190,12 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(
+                offerModule,
+                profileModule,
+                directDebitModule,
+                keyGearModule,
+                languageAndMarketModule
+            )
     }
 }

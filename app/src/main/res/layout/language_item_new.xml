@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_elevation_1"
+    android:clickable="true"
+    android:focusable="true"
     android:gravity="center_vertical"
     android:paddingStart="@dimen/base_margin_triple"
-    android:paddingTop="@dimen/market_item_padding"
+    android:paddingTop="@dimen/base_margin_double"
     android:paddingEnd="@dimen/base_margin_triple"
-    android:paddingBottom="@dimen/market_item_padding">
+    android:paddingBottom="@dimen/base_margin_double">
 
     <TextView
         android:id="@+id/language"

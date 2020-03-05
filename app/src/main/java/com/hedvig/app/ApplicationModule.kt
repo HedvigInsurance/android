@@ -35,17 +35,15 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
+import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
-import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
-import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
-import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -176,9 +174,11 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { LanguageViewModel(get()) }
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
+}
+
+val languageAndMarketModule = module {
+    viewModel { LanguageAndMarketViewModel(get(), get()) }
 }
 
 val offerModule = module {

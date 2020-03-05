@@ -9,37 +9,33 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageSelectionTracker
-import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
-    private val marketModel: MarketPickerViewModel by viewModel()
-    private val languageViewModel: LanguageViewModel by viewModel()
+    private val model: LanguageAndMarketViewModel by viewModel()
     private val tracker: LanguageSelectionTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        storeBoolean(HAS_SHOWN_MARKET_SELECTION, true)
 
         var marketAdapter: MarketAdapter? = null
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        marketModel.preselectedMarket.observe(this) { marketString ->
+        model.preselectedMarket.observe(this) { marketString ->
             marketString?.let {
                 val market = Market.valueOf(marketString)
-                marketAdapter = MarketAdapter(marketModel, market.ordinal)
+                marketAdapter = MarketAdapter(model, market.ordinal)
                 countryList.adapter = marketAdapter
                 countryList.addItemDecoration(
                     DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
@@ -49,12 +45,12 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             }
 
         }
-        marketModel.loadGeo()
+        model.loadGeo()
 
-        languageList.adapter = LanguageAdapterNew(languageViewModel, Market.SE)
-        marketModel.selectedMarket.observe(this) { market ->
+        languageList.adapter = LanguageAdapterNew(model, Market.SE)
+        model.selectedMarket.observe(this) { market ->
             market?.let {
-                languageList.adapter = LanguageAdapterNew(languageViewModel, market)
+                languageList.adapter = LanguageAdapterNew(model, market)
             }
         }
         languageList.addItemDecoration(
@@ -69,20 +65,22 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                     .putInt(Market.MARKET_SHARED_PREF, marketAdapter!!.getSelectedMarket())
                     .commit()
             }
-            val language = languageViewModel.selectedLanguage.value
+            val language = model.selectedLanguage.value
             language?.let {
-                setLanguage(language, languageViewModel)
+                setLanguage(language)
             }
             goToMarketingActivity()
         }
 
-        languageViewModel.selectedLanguage.observe(this) { language ->
+        model.selectedLanguage.observe(this) { language ->
             save.isEnabled = language != null
         }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-    private fun setLanguage(language: Language, languageViewModel: LanguageViewModel) {
+    private fun setLanguage(
+        language: Language
+    ) {
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .edit()
@@ -90,7 +88,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             .commit()
 
         language.apply(this)?.let { language ->
-            languageViewModel.updateLanguage(makeLocaleString(language))
+            model.updateLanguage(makeLocaleString(language))
         }
 
         LocalBroadcastManager
@@ -99,19 +97,10 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     }
 
     private fun goToMarketingActivity() {
-        startActivity(Intent(this, MarketingActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
+        startActivity(MarketingActivity.newInstance(this, true))
     }
 
     companion object {
-        private const val HAS_SHOWN_MARKET_SELECTION = "HAS_SHOWN_MARKET_SELECTION"
-        private const val MARKET_ID = "MARKET_ID"
-        fun newInstance(context: Context): Intent {
-            return Intent(context, MarketPickerActivity::class.java)
-        }
-
-        fun hasBeenShown(context: Context) = context.getStoredBoolean(HAS_SHOWN_MARKET_SELECTION)
+        fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
     }
 }

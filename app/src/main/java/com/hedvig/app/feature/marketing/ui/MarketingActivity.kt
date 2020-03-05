@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketing.ui
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.GestureDetector
@@ -23,6 +24,7 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -50,8 +52,8 @@ class MarketingActivity : BaseActivity() {
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, 21)]
-        Timber.d("Market: $market")
+        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        makeToast("$market")
 
         activity_marketing.useEdgeToEdge()
 
@@ -307,5 +309,13 @@ class MarketingActivity : BaseActivity() {
         const val BUTTON_ANIMATION_DURATION = 500L
         const val BLUR_ANIMATION_SHOW_DURATION = 300L
         const val BLUR_ANIMATION_DISMISS_DURATION = 200L
+
+        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+            Intent(context, MarketingActivity::class.java).apply {
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+            }
     }
 }

@@ -10,12 +10,13 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.market_item.view.*
 
-class MarketAdapter(private val model: MarketPickerViewModel, private val marketId: Int) :
+class MarketAdapter(private val model: LanguageAndMarketViewModel, private val marketId: Int) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
 
     private var lastChecked: RadioButton? = null
@@ -67,16 +68,16 @@ class MarketAdapter(private val model: MarketPickerViewModel, private val market
             }
         }
 
-        val rb = holder.parent.radioButton as RadioButton
+        val rb = holder.parent.radioButton
         rb.isChecked = true
-        rb.background = rb.context.getDrawable(R.drawable.ic_radiob_button_checked)
+        rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
         animateRadioButton(holder)
         if (rb.isChecked) {
-            if (lastChecked != null) {
+            lastChecked?.let {
                 if (lastCheckedPos != position) {
-                    lastChecked!!.background =
+                    lastChecked?.background =
                         rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                    lastChecked!!.isChecked = false
+                    lastChecked?.isChecked = false
                     animateRadioButton(holder)
                 }
             }
@@ -86,19 +87,20 @@ class MarketAdapter(private val model: MarketPickerViewModel, private val market
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
-        val button = holder.button
-        button.scaleX = 0f
-        button.scaleY = 0f
-        button.spring(
-            SpringAnimation.SCALE_X,
-            SpringForce.STIFFNESS_HIGH,
-            SpringForce.DAMPING_RATIO_NO_BOUNCY
-        ).animateToFinalPosition(1f)
-        button.spring(
-            SpringAnimation.SCALE_Y,
-            SpringForce.STIFFNESS_HIGH,
-            SpringForce.DAMPING_RATIO_NO_BOUNCY
-        ).animateToFinalPosition(1f)
+        holder.button.apply {
+            scaleX = 0f
+            scaleY = 0f
+            spring(
+                SpringAnimation.SCALE_X,
+                SpringForce.STIFFNESS_HIGH,
+                SpringForce.DAMPING_RATIO_NO_BOUNCY
+            ).animateToFinalPosition(1f)
+            spring(
+                SpringAnimation.SCALE_Y,
+                SpringForce.STIFFNESS_HIGH,
+                SpringForce.DAMPING_RATIO_NO_BOUNCY
+            ).animateToFinalPosition(1f)
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
