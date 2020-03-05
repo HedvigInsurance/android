@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
@@ -16,74 +13,69 @@ import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapterNew(
-    private val languageAndMarketViewModel: LanguageAndMarketViewModel,
+    private val model: LanguageAndMarketViewModel,
     private val selectedMarket: Market
 ) : RecyclerView.Adapter<LanguageAdapterNew.ViewHolder>() {
-    private var lastChecked: RadioButton? = null
-    private var lastCheckedPos = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.language_item_new, parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun getItemCount() = Market.values().size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        languageAndMarketViewModel.selectedLanguage.postValue(null)
+        model.selectedLanguage.postValue(null)
         when (position) {
             LOCAL -> {
                 when (selectedMarket) {
                     Market.SE -> {
-                        holder.apply {
+                        holder.itemView.apply {
                             language.text =
                                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
-                            parent.setHapticClickListener {
-                                languageAndMarketViewModel.selectLanguage(Language.SV_SE)
+                            setHapticClickListener {
+                                model.selectLanguage(Language.SV_SE)
                             }
                         }
                     }
                     Market.NO -> {
-                        holder.apply {
+                        holder.itemView.apply {
                             language.text = language.resources.getString(R.string.norwegian)
-                            parent.setHapticClickListener {
-                                languageAndMarketViewModel.selectLanguage(Language.NB_NO)
+                            setHapticClickListener {
+                                model.selectLanguage(Language.NB_NO)
 
                             }
                         }
                     }
                 }
             }
-            EN -> holder.apply {
+            EN -> holder.itemView.apply {
                 language.text =
                     language.resources.getString(R.string.SETTINGS_LANGUAGE_ENGLISH)
             }
         }
 
-        if (position == 0 && holder.button.isChecked) {
-            lastChecked = holder.button
-            lastCheckedPos = 0
+        if (position == 0 && holder.itemView.radioButton.isChecked) {
+            model.languageLastChecked.postValue(holder.itemView.radioButton)
+            model.languageLastCheckedPos.postValue(0)
         }
 
-        holder.parent.setHapticClickListener { v ->
+        holder.itemView.setHapticClickListener { v ->
             when (position) {
                 EN -> {
                     when (selectedMarket) {
                         Market.SE -> {
-                            languageAndMarketViewModel.selectLanguage(Language.EN_SE)
+                            model.selectLanguage(Language.EN_SE)
                         }
                         Market.NO -> {
-                            languageAndMarketViewModel.selectLanguage(Language.EN_NO)
+                            model.selectLanguage(Language.EN_NO)
                         }
                     }
                 }
                 LOCAL -> {
                     when (selectedMarket) {
                         Market.SE -> {
-                            languageAndMarketViewModel.selectLanguage(Language.SV_SE)
+                            model.selectLanguage(Language.SV_SE)
                         }
                         Market.NO -> {
-                            languageAndMarketViewModel.selectLanguage(Language.NB_NO)
+                            model.selectLanguage(Language.NB_NO)
                         }
                     }
                 }
@@ -93,22 +85,22 @@ class LanguageAdapterNew(
             rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
             animateRadioButton(holder)
             if (rb.isChecked) {
-                lastChecked?.let {
-                    if (lastCheckedPos != position) {
-                        lastChecked?.background =
+                model.languageLastChecked.value?.let { rb ->
+                    if (model.languageLastCheckedPos.value != position) {
+                        rb.background =
                             rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                        lastChecked?.isChecked = false
+                        rb.isChecked = false
                         animateRadioButton(holder)
                     }
                 }
-                lastChecked = rb
-                lastCheckedPos = position
-            } else lastChecked = null
+                model.languageLastChecked.postValue(rb)
+                model.languageLastCheckedPos.postValue(position)
+            } else model.languageLastChecked.postValue(null)
         }
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
-        holder.button.apply {
+        holder.itemView.radioButton.apply {
             scaleX = 0f
             scaleY = 0f
             spring(
@@ -124,11 +116,13 @@ class LanguageAdapterNew(
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val parent = view
-        val language: TextView = view.language
-        val button: RadioButton = view.radioButton
-    }
+    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.language_item_new,
+            parent,
+            false
+        )
+    )
 
     companion object {
         private const val LOCAL = 0

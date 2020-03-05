@@ -61,9 +61,11 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
         save.setHapticClickListener {
             marketAdapter?.let {
-                sharedPreferences.edit()
-                    .putInt(Market.MARKET_SHARED_PREF, marketAdapter!!.getSelectedMarket())
-                    .commit()
+                marketAdapter!!.getSelectedMarket()?.let { market ->
+                    sharedPreferences.edit()
+                        .putInt(Market.MARKET_SHARED_PREF, market)
+                        .commit()
+                }
             }
             val language = model.selectedLanguage.value
             language?.let {

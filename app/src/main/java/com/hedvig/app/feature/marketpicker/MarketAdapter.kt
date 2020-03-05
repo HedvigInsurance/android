@@ -1,11 +1,7 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
@@ -19,12 +15,7 @@ import kotlinx.android.synthetic.main.market_item.view.*
 class MarketAdapter(private val model: LanguageAndMarketViewModel, private val marketId: Int) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
 
-    private var lastChecked: RadioButton? = null
-    private var lastCheckedPos = 0
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.market_item, parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun getItemCount() = 2
 
@@ -33,30 +24,27 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
             selectMarket(holder, position)
         }
         when (position) {
-            SV -> holder.apply {
-                flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
-                country.text = holder.button.context.getText(R.string.sweden)
-
+            SV -> holder.itemView.apply {
+                flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_se))
+                country.text = holder.itemView.context.getText(R.string.sweden)
             }
-            NO -> holder.apply {
-                flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_no))
-                country.text = holder.button.context.getText(R.string.norway)
+            NO -> holder.itemView.apply {
+                flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_no))
+                country.text = holder.itemView.context.getText(R.string.norway)
             }
         }
 
-        if (position == 0 && holder.button.isChecked) {
-            lastChecked = holder.button
-            lastCheckedPos = 0
+        if (position == 0 && holder.itemView.radioButton.isChecked) {
+            model.marketLastChecked.postValue(holder.itemView.radioButton)
+            model.marketLastCheckedPos.postValue(0)
         }
 
-        holder.parent.setHapticClickListener {
+        holder.itemView.setHapticClickListener {
             selectMarket(holder, position)
         }
     }
 
-    fun getSelectedMarket(): Int {
-        return lastCheckedPos
-    }
+    fun getSelectedMarket() = model.marketLastCheckedPos.value
 
     private fun selectMarket(holder: ViewHolder, position: Int) {
         when (position) {
@@ -68,26 +56,26 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
             }
         }
 
-        val rb = holder.parent.radioButton
+        val rb = holder.itemView.radioButton
         rb.isChecked = true
         rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
         animateRadioButton(holder)
         if (rb.isChecked) {
-            lastChecked?.let {
-                if (lastCheckedPos != position) {
-                    lastChecked?.background =
+            model.marketLastChecked.value?.let { rb ->
+                if (model.marketLastCheckedPos.value != position) {
+                    rb.background =
                         rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                    lastChecked?.isChecked = false
+                    rb.isChecked = false
                     animateRadioButton(holder)
                 }
             }
-            lastChecked = rb
-            lastCheckedPos = position
-        } else lastChecked = null
+            model.marketLastChecked.postValue(rb)
+            model.marketLastCheckedPos.postValue(position)
+        } else model.marketLastChecked.postValue(null)
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
-        holder.button.apply {
+        holder.itemView.radioButton.apply {
             scaleX = 0f
             scaleY = 0f
             spring(
@@ -103,12 +91,13 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val parent = view
-        val flag: ImageView = view.flag
-        val country: TextView = view.country
-        val button: RadioButton = view.radioButton
-    }
+    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.market_item,
+            parent,
+            false
+        )
+    )
 
     companion object {
         private const val SV = 0
