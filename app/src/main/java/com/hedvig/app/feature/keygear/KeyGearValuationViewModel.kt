@@ -7,11 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
 abstract class KeyGearValuationViewModel : ViewModel() {
-    abstract val finishedUploading: LiveData<Boolean>
+    abstract val uploadResult: LiveData<KeyGearItemQuery.Data>
     abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
 
     abstract fun updatePurchaseDateAndPrice(
@@ -27,7 +28,7 @@ class KeyGearValuationViewModelImpl(
     private val repository: KeyGearItemsRepository
 ) :
     KeyGearValuationViewModel() {
-    override val finishedUploading = MutableLiveData<Boolean>()
+    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun updatePurchaseDateAndPrice(
@@ -36,16 +37,18 @@ class KeyGearValuationViewModelImpl(
         price: MonetaryAmountV2Input
     ) {
         viewModelScope.launch {
-            repository.updatePurchasePriceAndDateAsync(id, date, price)
-            finishedUploading.postValue(true)
+            val result = repository.updatePurchasePriceAndDateAsync(id, date, price)
+            uploadResult.postValue(result)
         }
     }
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
-            for (response in repository.keyGearItem(id)) {
-                data.postValue(response.data()?.keyGearItem)
-            }
+            repository
+                .keyGearItem(id)
+                .collect { response ->
+                    data.postValue(response.data()?.keyGearItem)
+                }
         }
     }
 }

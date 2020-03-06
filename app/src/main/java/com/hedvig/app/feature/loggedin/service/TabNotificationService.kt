@@ -7,13 +7,16 @@ class TabNotificationService(
     private val context: Context
 ) {
     fun getTabNotification(): TabNotification? {
-        if (!context
-                .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, false)
-        ) {
+        // TODO: Clean this up. Since we updated Material Components, an implementation detail of
+        // the BottomNavigationBar has changed, and our tab notification feature no longer works.
+       
+        // if (!context
+        //         .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        //         .getBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, false)
+        // ) {
 
-            return TabNotification.REFERRALS
-        }
+        //     return TabNotification.REFERRALS
+        // }
 
         return null
     }

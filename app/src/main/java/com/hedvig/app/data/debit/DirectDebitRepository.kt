@@ -12,18 +12,14 @@ class DirectDebitRepository(private val apolloClientWrapper: ApolloClientWrapper
     private lateinit var directDebitQuery: DirectDebitQuery
 
     fun fetchDirectDebit(): Observable<Response<DirectDebitQuery.Data>> {
-        directDebitQuery = DirectDebitQuery
-            .builder()
-            .build()
+        directDebitQuery = DirectDebitQuery()
 
         return Rx2Apollo
             .from(apolloClientWrapper.apolloClient.query(directDebitQuery).watcher())
     }
 
-    fun refreshDirectdebitStatus(): Observable<Response<DirectDebitQuery.Data>> {
-        val bankAccountQuery = DirectDebitQuery
-            .builder()
-            .build()
+    fun refreshDirectDebitStatus(): Observable<Response<DirectDebitQuery.Data>> {
+        val bankAccountQuery = DirectDebitQuery()
 
         return Rx2Apollo
             .from(
@@ -39,10 +35,9 @@ class DirectDebitRepository(private val apolloClientWrapper: ApolloClientWrapper
             .read(directDebitQuery)
             .execute()
 
-        val newData = cachedData
-            .toBuilder()
-            .directDebitStatus(directDebitStatus)
-            .build()
+        val newData = cachedData.copy(
+            directDebitStatus = directDebitStatus
+        )
 
         apolloClientWrapper.apolloClient
             .apolloStore()

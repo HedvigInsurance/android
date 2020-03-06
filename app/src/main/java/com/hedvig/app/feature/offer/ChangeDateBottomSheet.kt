@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.compatColor
@@ -16,7 +15,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.text.DateFormatSymbols
-import java.util.Calendar
+import java.util.*
 
 class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
@@ -43,7 +42,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
                 lateinit var buttonText: String
-                data.lastQuoteOfMember?.completeQuote?.id?.let { id ->
+                data.lastQuoteOfMember.asCompleteQuote?.id?.let { id ->
                     if (data.insurance.previousInsurer != null) {
                         dialog.chooseDateButton.setOnClickListener {
                             requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
@@ -63,7 +62,7 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                             dialog.hide()
                         }
                     }
-                    if (data.lastQuoteOfMember?.completeQuote?.currentInsurer == null) {
+                    if (data.lastQuoteOfMember.asCompleteQuote.currentInsurer == null) {
                         tracker.activateToday()
                         buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
                         dialog.autoSetDateText.text = buttonText
@@ -92,27 +91,27 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
 
     private fun showDatePickerDialog() {
         val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        val defaultYear = c.get(Calendar.YEAR)
+        val defaultMonth = c.get(Calendar.MONTH)
+        val defaultDay = c.get(Calendar.DAY_OF_MONTH)
 
         val dpd = DatePickerDialog(
             requireContext(),
-            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
 
                 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
                 localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                val month = DateFormatSymbols().months[monthOfYear].capitalize()
+                val monthFormatted = DateFormatSymbols().months[monthOfYear].capitalize()
 
-                dialog?.datePickButton?.text = "$dayOfMonth $month $year"
+                dialog?.datePickButton?.text = "$dayOfMonth $monthFormatted $year"
 
                 dialog?.chooseDateButton?.isEnabled = true
                 dialog?.chooseDateButton?.backgroundTintList =
                     ColorStateList.valueOf(requireContext().compatColor(R.color.purple))
             },
-            year,
-            month,
-            day
+            defaultYear,
+            defaultMonth,
+            defaultDay
         )
 
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
@@ -126,8 +125,5 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         fun newInstance(): ChangeDateBottomSheet {
             return ChangeDateBottomSheet()
         }
-
-        private val OfferQuery.LastQuoteOfMember.completeQuote: OfferQuery.AsCompleteQuote?
-            get() = (this as? OfferQuery.AsCompleteQuote)
     }
 }

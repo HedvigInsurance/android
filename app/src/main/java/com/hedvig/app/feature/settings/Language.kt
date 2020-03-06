@@ -6,7 +6,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
-import java.util.Locale
+import java.util.*
 
 enum class Language {
     SYSTEM_DEFAULT,
@@ -22,7 +22,7 @@ enum class Language {
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @Suppress("DEPRECATION")
     private fun applySingleLocale(context: Context?, locale: LocaleWrapper): Context? {
         if (locale !is LocaleWrapper.SingleLocale) {
             throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")

@@ -3,11 +3,10 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.apollographql.android'
+apply plugin: 'com.apollographql.apollo'
 
 apollo {
-    useJavaBeansSemanticNaming = true
-    generateModelBuilder = true
+    generateKotlinModels = true
     customTypeMapping = [
             "URL"      : "java.lang.String",
             "LocalDate": "org.threeten.bp.LocalDate",
@@ -32,7 +31,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '3.2.0'
+        versionName '3.3.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -134,7 +133,6 @@ dependencies {
     implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
     implementation "com.apollographql.apollo:apollo-rx2-support:$apollo_version"
     implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
-    androidTestImplementation "com.apollographql.apollo:apollo-espresso-support:$apollo_version"
 
 
     // Firebase

@@ -260,7 +260,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             triggerScrollToBottom = true
         }
         (messages.adapter as? ChatAdapter)?.let {
-            it.messages = data.messages
+            it.messages = data.messages.filterNotNull()
             val layoutManager = messages.layoutManager as LinearLayoutManager
             val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
             if (pos == 0) {

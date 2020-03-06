@@ -22,7 +22,7 @@ data class CommonClaimsData(
             data: CommonClaimQuery.CommonClaim,
             insuranceStatus: InsuranceStatus
         ): CommonClaimsData? {
-            val layout = (data.layout as? CommonClaimQuery.AsTitleAndBulletPoints) ?: return null
+            val layout = data.layout.asTitleAndBulletPoints ?: return null
             return CommonClaimsData(
                 ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
                 data.title,

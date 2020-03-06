@@ -3,7 +3,7 @@ package com.hedvig.app.feature.chat.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
-import com.hedvig.android.owldroid.graphql.BankIdAuthMutation
+import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.chat.data.UserRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -17,7 +17,7 @@ class UserViewModel(
 
     private val disposables = CompositeDisposable()
 
-    val autoStartToken = MutableLiveData<BankIdAuthMutation.Data>()
+    val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
     val authStatus = MutableLiveData<AuthStatusSubscription.Data>()
 
     fun fetchBankIdStartToken() {

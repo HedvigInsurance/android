@@ -12,9 +12,9 @@ class FileService(
     fun getFileName(uri: Uri): String? {
         if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
             val cursor = context.contentResolver.query(uri, null, null, null, null)
-            cursor.use { cursor ->
-                if (cursor?.moveToFirst() == true) {
-                    return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            cursor.use { c ->
+                if (c?.moveToFirst() == true) {
+                    return c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
             }
         }

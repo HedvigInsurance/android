@@ -48,31 +48,28 @@ class MockOfferViewModel(
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
             OfferQuery.Insurance(
-                "Insurance",
-                InsuranceStatus.PENDING,
-                "Testvägen 1",
-                2,
-                OfferQuery.PreviousInsurer(
-                    "PreviousInsurer",
-                    "Folksam",
-                    true
+                status = InsuranceStatus.PENDING,
+                address = "Testvägen 1",
+                personsInHousehold = 2,
+                previousInsurer = OfferQuery.PreviousInsurer(
+                    displayName = "Folksam",
+                    switchable = true
                 ),
-                42,
-                InsuranceType.BRF,
-                "http://www.africau.edu/images/default/sample.pdf",
-                "http://www.africau.edu/images/default/sample.pdf",
-                null,
-                null,
-                null,
-                null,
-                null,
-                OfferQuery.ArrangedPerilCategories(
-                    "ArrangedPerilCategories",
-                    null,
-                    null,
-                    null
+                livingSpace = 42,
+                type = InsuranceType.BRF,
+                presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
+                policyUrl = "http://www.africau.edu/images/default/sample.pdf",
+                ancillaryArea = null,
+                yearOfConstruction = null,
+                numberOfBathrooms = null,
+                extraBuildings = null,
+                isSubleted = null,
+                arrangedPerilCategories = OfferQuery.ArrangedPerilCategories(
+                    me = null,
+                    home = null,
+                    stuff = null
                 ),
-                OfferQuery.Cost(
+                cost = OfferQuery.Cost(
                     "InsuranceCost",
                     OfferQuery.Cost.Fragments(
                         CostFragment(
@@ -94,68 +91,66 @@ class MockOfferViewModel(
 
                 )
             ),
-            listOf(
+            redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
-                    "Campaign",
-                    OfferQuery.RedeemedCampaign.Fragments(
+                    fragments = OfferQuery.RedeemedCampaign.Fragments(
                         IncentiveFragment(
-                            "Campaign",
-                            IncentiveFragment.AsPercentageDiscountMonths(
-                                "PercentageDiscountMonths",
-                                50.0,
-                                3
+                            incentive = IncentiveFragment.Incentive(
+                                asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
+                                    percentageDiscount = 50.0,
+                                    pdmQuantity = 3
+                                ),
+                                asFreeMonths = null,
+                                asMonthlyCostDeduction = null
                             )
                         )
                     )
                 )
             ),
-            OfferQuery.AsCompleteQuote(
-                "CompleteQuote",
-                LocalDate.of(2020, 2, 1),
-                "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                OfferQuery.CurrentInsurer(
-                    "CurrentInsurer",
-                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
+                asCompleteQuote = OfferQuery.AsCompleteQuote(
+                    startDate = LocalDate.of(2020, 2, 1),
+                    id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                    currentInsurer = OfferQuery.CurrentInsurer(
+                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                    )
                 )
             )
         )
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
             OfferQuery.Insurance(
-                "Insurance",
-                InsuranceStatus.PENDING,
-                "Testvägen 1",
-                2,
-                OfferQuery.PreviousInsurer(
-                    "PreviousInsurer",
-                    "Folksam",
-                    true
+                status = InsuranceStatus.PENDING,
+                address = "Testvägen 1",
+                personsInHousehold = 2,
+                previousInsurer = OfferQuery.PreviousInsurer(
+                    displayName = "Folksam",
+                    switchable = true
                 ),
-                42,
-                InsuranceType.HOUSE,
-                "http://www.africau.edu/images/default/sample.pdf",
-                "http://www.africau.edu/images/default/sample.pdf",
-                30,
-                1992,
-                2,
-                listOf(),
-                true,
-                OfferQuery.ArrangedPerilCategories(
-                    "ArrangedPerilCategories",
-                    null,
-                    null,
-                    null
+                livingSpace = 42,
+                type = InsuranceType.HOUSE,
+                presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
+                policyUrl = "http://www.africau.edu/images/default/sample.pdf",
+                ancillaryArea = 30,
+                yearOfConstruction = 1992,
+                numberOfBathrooms = 2,
+                extraBuildings = emptyList(),
+                isSubleted = true,
+                arrangedPerilCategories = OfferQuery.ArrangedPerilCategories(
+                    me = null,
+                    home = null,
+                    stuff = null
                 ),
-                null
+                cost = null
             ),
-            listOf(),
-            OfferQuery.AsCompleteQuote(
-                "CompleteQuote",
-                LocalDate.of(2020, 2, 1),
-                "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                OfferQuery.CurrentInsurer(
-                    "CurrentInsurer",
-                    "ea656f5f-40b2-4953-85d9-752b33e69e38"
+            emptyList(),
+            OfferQuery.LastQuoteOfMember(
+                asCompleteQuote = OfferQuery.AsCompleteQuote(
+                    startDate = LocalDate.of(2020, 2, 1),
+                    id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                    currentInsurer = OfferQuery.CurrentInsurer(
+                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                    )
                 )
             )
         )

@@ -3,6 +3,7 @@ package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.extensions.view.dismissKeyboard
@@ -13,18 +14,21 @@ import kotlinx.android.synthetic.main.key_gear_item_detail_name_section.view.*
 
 class NameBinder(
     private val root: LinearLayout,
-    private val model: KeyGearItemDetailViewModel
+    private val model: KeyGearItemDetailViewModel,
+    private val tracker: KeyGearTracker
 ) {
     init {
         var isEditState = false
         root.addName.setHapticClickListener {
             if (isEditState) {
+                tracker.saveName()
                 hideEditName()
                 root.addName.text =
                     root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
                 updateName()
                 isEditState = false
             } else {
+                tracker.editName()
                 focusEditName()
                 root.addName.text =
                     root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
@@ -34,6 +38,7 @@ class NameBinder(
         }
 
         root.nameEditText.setDoneListener {
+            tracker.saveName()
             hideEditName()
             root.addName.text =
                 root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)

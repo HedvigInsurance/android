@@ -1,13 +1,12 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.keygear.KeyGearValuationInfoActivity
 import com.hedvig.app.feature.keygear.ValuationType
@@ -19,32 +18,33 @@ import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.key_gear_item_detail_valuation_section.view.*
 
 class ValuationBinder(
-    private val root: LinearLayout
-
+    private val root: LinearLayout,
+    private val tracker: KeyGearTracker
 ) {
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        when (val valuation = data.fragments.keyGearItemFragment.valuation) {
-            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> {
-                bindValuation(data, valuation.ratio)
-            }
-            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> {
-                bindValuation(data, valuation.ratio)
-            }
-            null -> {
-                root.valuationMoreInfo.remove()
+        val valuation = data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+        if (valuation == null) {
+            root.valuationMoreInfo.remove()
 
-                root.addPurchaseInfo.show()
-                root.addPurchaseInfo.setHapticClickListener {
-                    root.context.startActivity(
-                        KeyGearValuationActivity.newInstance(
-                            root.context,
-                            data.fragments.keyGearItemFragment.id
-                        )
+            root.addPurchaseInfo.show()
+            root.addPurchaseInfo.setHapticClickListener {
+                tracker.addPurchaseInfo()
+                root.context.startActivity(
+                    KeyGearValuationActivity.newInstance(
+                        root.context,
+                        data.fragments.keyGearItemFragment.id
                     )
-                }
+                )
             }
         }
+        valuation?.asKeyGearItemValuationFixed?.let { fixedValuation ->
+            bindValuation(data, fixedValuation.ratio)
+        }
+        valuation?.asKeyGearItemValuationMarketValue?.let { marketValuation ->
+            bindValuation(data, marketValuation.ratio)
+        }
+
         root.deductible.text = buildSpannedString {
             bold {
                 scale(2.0f) {
@@ -58,11 +58,14 @@ class ValuationBinder(
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        return when (item.fragments.keyGearItemFragment.valuation) {
-            is KeyGearItemFragment.AsKeyGearItemValuationFixed -> ValuationType.FIXED
-            is KeyGearItemFragment.AsKeyGearItemValuationMarketValue -> ValuationType.MARKET_PRICE
-            else -> null
+        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+        if (valuation?.asKeyGearItemValuationFixed != null) {
+            return ValuationType.FIXED
         }
+        if (valuation?.asKeyGearItemValuationMarketValue != null) {
+            return ValuationType.MARKET_PRICE
+        }
+        return null
     }
 
     private fun bindValuation(data: KeyGearItemQuery.KeyGearItem, ratio: Int) {
@@ -71,6 +74,7 @@ class ValuationBinder(
         root.valuationMoreInfo.show()
         val category = data.fragments.keyGearItemFragment.category
         root.valuationMoreInfo.setHapticClickListener {
+            tracker.valuationMoreInfo()
             safeLet(
                 data.fragments.keyGearItemFragment.purchasePrice?.amount,
                 data
@@ -78,30 +82,32 @@ class ValuationBinder(
                 val type = valuationType(item)
                 if (type != null) {
                     if (type == ValuationType.FIXED) {
-                        ContextCompat.startActivity(
-                            root.context,
+                        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                            ?: return@safeLet
+                        root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
                                 root.context,
                                 category,
                                 ValuationData.from(
                                     amount,
                                     type,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).ratio,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationFixed).valuation.amount
+                                    valuation.ratio,
+                                    valuation.valuation.amount
                                 )
                             ),
                             null
                         )
                     } else if (type == ValuationType.MARKET_PRICE) {
-                        ContextCompat.startActivity(
-                            root.context,
+                        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue
+                            ?: return@safeLet
+                        root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
                                 root.context,
                                 item.fragments.keyGearItemFragment.category,
                                 ValuationData.from(
                                     amount,
                                     type,
-                                    (item.fragments.keyGearItemFragment.valuation as KeyGearItemFragment.AsKeyGearItemValuationMarketValue).ratio
+                                    valuation.ratio
                                 )
                             ),
                             null
