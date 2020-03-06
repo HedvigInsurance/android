@@ -7,13 +7,11 @@ import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -121,25 +119,25 @@ class PaymentActivity : BaseActivity() {
             nextPaymentGross.text =
                 interpolateTextKey(
                     getString(R.string.PAYMENTS_FULL_PREMIUM),
-                    "FULL_PREMIUM" to data.insurance.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                    "FULL_PREMIUM" to data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
                 )
         }
 
-        when (data.insurance.status) {
-            InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
-            }
-            InsuranceStatus.INACTIVE -> {
-                nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
-                nextPaymentDate.setTextColor(compatColor(R.color.off_black))
-                nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
-            }
-            else -> {
-                Timber.e(
-                    "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
-                )
-            }
-        }
+        //when (data.insurance.status) {
+        //    InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+        //        nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
+        //    }
+        //    InsuranceStatus.INACTIVE -> {
+        //        nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
+        //        nextPaymentDate.setTextColor(compatColor(R.color.off_black))
+        //        nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
+        //    }
+        //    else -> {
+        //        Timber.e(
+        //            "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+        //        )
+        //    }
+        //}
         val incentive = data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
         incentive?.asFreeMonths?.let { freeMonthsIncentive ->
             freeMonthsIncentive.quantity?.let { quantity ->
@@ -184,23 +182,23 @@ class PaymentActivity : BaseActivity() {
                 campaignInformationFieldOne.text = displayName
             }
 
-            when (data.insurance.status) {
-                InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                    data.insurance.cost?.freeUntil?.let { freeUntil ->
-                        lastFreeDay.text = freeUntil.format(DATE_FORMAT)
-                    }
-                    lastFreeDay.show()
-                    lastFreeDayLabel.show()
-                }
-                InsuranceStatus.INACTIVE -> {
-                    willUpdateWhenStartDateIsSet.show()
-                }
-                else -> {
-                    Timber.e(
-                        "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
-                    )
-                }
-            }
+            // when (data.insurance.status) {
+            //     InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
+            //         data.insuranceCost?.freeUntil?.let { freeUntil ->
+            //             lastFreeDay.text = freeUntil.format(DATE_FORMAT)
+            //         }
+            //         lastFreeDay.show()
+            //         lastFreeDayLabel.show()
+            //     }
+            //     InsuranceStatus.INACTIVE -> {
+            //         willUpdateWhenStartDateIsSet.show()
+            //     }
+            //     else -> {
+            //         Timber.e(
+            //             "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
+            //         )
+            //     }
+            // }
             campaignInformationContainer.show()
             campaignInformationSeparator.show()
         }
@@ -349,8 +347,8 @@ class PaymentActivity : BaseActivity() {
 
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
-            profileData.insurance.cost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
-            && profileData.insurance.cost.freeUntil == null
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
+            && profileData.insuranceCost.freeUntil == null
         ) {
             redeemCode.show()
         }

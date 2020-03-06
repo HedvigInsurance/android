@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -25,6 +26,22 @@ class MockProfileViewModel : ProfileViewModel() {
                     email = "test@hedvig.com",
                     phoneNumber = "070 123 345 67",
                     features = listOf(Feature.KEYGEAR)
+                ),
+                ProfileQuery.InsuranceCost(
+                    freeUntil = null,
+                    fragments = ProfileQuery.InsuranceCost.Fragments(
+                        CostFragment(
+                            monthlyDiscount = CostFragment.MonthlyDiscount(
+                                amount = "10.00"
+                            ),
+                            monthlyNet = CostFragment.MonthlyNet(
+                                amount = "99.00"
+                            ),
+                            monthlyGross = CostFragment.MonthlyGross(
+                                amount = "109.00"
+                            )
+                        )
+                    )
                 ),
                 //ProfileQuery.Insurance(
                 //    address = "Testvägen 1",
