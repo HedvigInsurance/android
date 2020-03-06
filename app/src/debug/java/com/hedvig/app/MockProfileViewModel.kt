@@ -1,13 +1,10 @@
 package com.hedvig.app
 
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.android.owldroid.type.InsuranceStatus
-import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
 import org.threeten.bp.LocalDate
@@ -29,36 +26,36 @@ class MockProfileViewModel : ProfileViewModel() {
                     phoneNumber = "070 123 345 67",
                     features = listOf(Feature.KEYGEAR)
                 ),
-                ProfileQuery.Insurance(
-                    address = "Testvägen 1",
-                    postalNumber = "12345",
-                    type = InsuranceType.BRF,
-                    status = InsuranceStatus.ACTIVE,
-                    certificateUrl = "http://www.africau.edu/images/default/sample.pdf",
-                    personsInHousehold = 2,
-                    livingSpace = 50,
-                    ancillaryArea = null,
-                    yearOfConstruction = null,
-                    numberOfBathrooms = null,
-                    cost = ProfileQuery.Cost(
-                        freeUntil = LocalDate.of(2019, 11, 27),
-                        fragments = ProfileQuery.Cost.Fragments(
-                            CostFragment(
-                                monthlyDiscount = CostFragment.MonthlyDiscount(
-                                    amount = "10.00"
-                                ),
-                                monthlyNet = CostFragment.MonthlyNet(
-                                    amount = "119.00"
-                                ),
-                                monthlyGross = CostFragment.MonthlyGross(
-                                    amount = "129.00"
-                                )
-                            )
-                        )
-                    ),
-                    extraBuildings = null,
-                    isSubleted = null
-                ),
+                //ProfileQuery.Insurance(
+                //    address = "Testvägen 1",
+                //    postalNumber = "12345",
+                //    type = InsuranceType.BRF,
+                //    status = InsuranceStatus.ACTIVE,
+                //    certificateUrl = "http://www.africau.edu/images/default/sample.pdf",
+                //    personsInHousehold = 2,
+                //    livingSpace = 50,
+                //    ancillaryArea = null,
+                //    yearOfConstruction = null,
+                //    numberOfBathrooms = null,
+                //    cost = ProfileQuery.Cost(
+                //        freeUntil = LocalDate.of(2019, 11, 27),
+                //        fragments = ProfileQuery.Cost.Fragments(
+                //            CostFragment(
+                //                monthlyDiscount = CostFragment.MonthlyDiscount(
+                //                    amount = "10.00"
+                //                ),
+                //                monthlyNet = CostFragment.MonthlyNet(
+                //                    amount = "119.00"
+                //                ),
+                //                monthlyGross = CostFragment.MonthlyGross(
+                //                    amount = "129.00"
+                //                )
+                //            )
+                //        )
+                //    ),
+                //    extraBuildings = null,
+                //    isSubleted = null
+                //),
                 balance = ProfileQuery.Balance(
                     failedCharges = 3
                 ),

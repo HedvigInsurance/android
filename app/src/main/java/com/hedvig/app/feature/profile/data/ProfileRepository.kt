@@ -98,19 +98,20 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
         val costFragment = data.redeemCode.cost.fragments.costFragment
 
-        val newCost = cachedData.insurance.cost?.copy(
-            fragments = ProfileQuery.Cost.Fragments(costFragment = costFragment)
-        )
+        // TODO: Fix
+        // val newCost = cachedData.insurance.cost?.copy(
+        //     fragments = ProfileQuery.Cost.Fragments(costFragment = costFragment)
+        // )
 
-        val newData = cachedData
-            .copy(
-                insurance = cachedData.insurance.copy(cost = newCost)
-            )
+        // val newData = cachedData
+        //     .copy(
+        //         insurance = cachedData.insurance.copy(cost = newCost)
+        //     )
 
-        apolloClientWrapper.apolloClient
-            .apolloStore()
-            .writeAndPublish(profileQuery, newData)
-            .execute()
+        // apolloClientWrapper.apolloClient
+        //     .apolloStore()
+        //     .writeAndPublish(profileQuery, newData)
+        //     .execute()
     }
 
     fun startTrustlySession(): Observable<StartDirectDebitRegistrationMutation.Data> {
@@ -147,7 +148,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .copy(
                 bankAccount = newBankAccount
             )
-       
+
         apolloClientWrapper.apolloClient
             .apolloStore()
             .writeAndPublish(profileQuery, newData)
