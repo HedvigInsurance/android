@@ -36,8 +36,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             marketString?.let {
                 val market = Market.valueOf(marketString)
                 marketAdapter = MarketAdapter(model, market.ordinal)
-                countryList.adapter = marketAdapter
-                countryList.addItemDecoration(
+                marketList.adapter = marketAdapter
+                marketList.addItemDecoration(
                     DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
                         compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
                     }
