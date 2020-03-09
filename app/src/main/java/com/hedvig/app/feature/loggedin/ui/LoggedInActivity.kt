@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.loggedin.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -268,6 +269,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     companion object {
+        fun newInstance(context: Context, withoutHistory: Boolean = false) = Intent(context, LoggedInActivity::class.java).apply {
+            if (withoutHistory) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        }
+
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
     }
