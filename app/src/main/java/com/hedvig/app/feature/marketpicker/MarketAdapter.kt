@@ -78,7 +78,7 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
-        holder.itemView.radioButton.apply {
+        holder.button.apply {
             scaleX = 0f
             scaleY = 0f
             spring(
@@ -100,7 +100,9 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
             parent,
             false
         )
-    )
+    ) {
+        val button: RadioButton = itemView.radioButton
+    }
 
     companion object {
         private const val SV = 0

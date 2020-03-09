@@ -105,7 +105,7 @@ class LanguageAdapterNew(
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
-        holder.itemView.radioButton.apply {
+        holder.button.apply {
             scaleX = 0f
             scaleY = 0f
             spring(
@@ -127,7 +127,9 @@ class LanguageAdapterNew(
             parent,
             false
         )
-    )
+    ) {
+        val button: RadioButton = itemView.radioButton
+    }
 
     companion object {
         private const val LOCAL = 0
