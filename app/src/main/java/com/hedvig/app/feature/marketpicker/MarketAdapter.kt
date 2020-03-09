@@ -13,68 +13,52 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.market_item.view.*
 
-class MarketAdapter(private val model: LanguageAndMarketViewModel, private val marketId: Int) :
+class MarketAdapter(private val model: LanguageAndMarketViewModel) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
-    private var lastCheckedPos = 0
-    private var lastChecked: RadioButton? = null
+    var items: List<MarketModel> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
-    override fun getItemCount() = 2
+    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (marketId == position) {
-            selectMarket(holder, position)
+        if (items[position].selected) {
+            animateRadioButton(holder)
+            holder.button.background =
+                holder.button.context.getDrawable(R.drawable.ic_radio_button_checked)
+        } else {
+            holder.button.background =
+                holder.button.context.getDrawable(R.drawable.ic_radio_button_unchecked)
         }
         when (position) {
-            SV -> holder.itemView.apply {
+            Market.SE.ordinal -> holder.itemView.apply {
                 flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_se))
                 country.text = holder.itemView.context.getText(R.string.sweden)
             }
-            NO -> holder.itemView.apply {
+            Market.NO.ordinal -> holder.itemView.apply {
                 flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_no))
                 country.text = holder.itemView.context.getText(R.string.norway)
             }
         }
 
-        if (position == 0 && holder.itemView.radioButton.isChecked) {
-            lastChecked = holder.itemView.radioButton
-            lastCheckedPos = 0
-        }
-
         holder.itemView.setHapticClickListener {
-            selectMarket(holder, position)
+            selectMarket(position)
         }
     }
 
-    fun getSelectedMarket() = lastCheckedPos
-
-    private fun selectMarket(holder: ViewHolder, position: Int) {
+    private fun selectMarket(position: Int) {
         when (position) {
-            SV -> {
+            Market.SE.ordinal -> {
                 model.updateMarket(Market.SE)
             }
-            NO -> {
+            Market.NO.ordinal -> {
                 model.updateMarket(Market.NO)
             }
         }
-
-        val rb = holder.itemView.radioButton
-        rb.isChecked = true
-        rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
-        animateRadioButton(holder)
-        if (rb.isChecked) {
-            lastChecked?.let { rb ->
-                if (lastCheckedPos != position) {
-                    rb.background =
-                        rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                    rb.isChecked = false
-                    animateRadioButton(holder)
-                }
-            }
-            lastChecked = rb
-            lastCheckedPos = position
-        } else lastChecked = null
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
