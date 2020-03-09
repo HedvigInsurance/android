@@ -29,7 +29,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var marketAdapter: MarketAdapter? = null
+        var marketAdapter = MarketAdapter(model, 0)
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         model.preselectedMarket.observe(this) { marketString ->
@@ -60,8 +60,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         )
 
         save.setHapticClickListener {
-            marketAdapter?.let {
-                marketAdapter!!.getSelectedMarket()?.let { market ->
+            marketAdapter.let {
+                marketAdapter.getSelectedMarket().let { market ->
                     sharedPreferences.edit()
                         .putInt(Market.MARKET_SHARED_PREF, market)
                         .commit()

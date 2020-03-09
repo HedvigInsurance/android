@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.language
 
-import android.widget.RadioButton
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,10 +13,6 @@ class LanguageAndMarketViewModel(
     private val marketRepository: MarketRepository
 ) : ViewModel() {
     val selectedLanguage = MutableLiveData<Language>()
-    val marketLastCheckedPos = MutableLiveData(0)
-    val marketLastChecked = MutableLiveData<RadioButton>(null)
-    val languageLastCheckedPos = MutableLiveData(0)
-    val languageLastChecked = MutableLiveData<RadioButton>(null)
 
     fun selectLanguage(language: Language) {
         selectedLanguage.postValue(language)

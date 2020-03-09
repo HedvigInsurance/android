@@ -2,6 +2,7 @@ package com.hedvig.app.feature.marketpicker
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.RadioButton
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,8 @@ import kotlinx.android.synthetic.main.market_item.view.*
 
 class MarketAdapter(private val model: LanguageAndMarketViewModel, private val marketId: Int) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
+    private var lastCheckedPos = 0
+    private var lastChecked: RadioButton? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
@@ -35,8 +38,8 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
         }
 
         if (position == 0 && holder.itemView.radioButton.isChecked) {
-            model.marketLastChecked.postValue(holder.itemView.radioButton)
-            model.marketLastCheckedPos.postValue(0)
+            lastChecked = holder.itemView.radioButton
+            lastCheckedPos = 0
         }
 
         holder.itemView.setHapticClickListener {
@@ -44,7 +47,7 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
         }
     }
 
-    fun getSelectedMarket() = model.marketLastCheckedPos.value
+    fun getSelectedMarket() = lastCheckedPos
 
     private fun selectMarket(holder: ViewHolder, position: Int) {
         when (position) {
@@ -61,17 +64,17 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel, private val m
         rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
         animateRadioButton(holder)
         if (rb.isChecked) {
-            model.marketLastChecked.value?.let { rb ->
-                if (model.marketLastCheckedPos.value != position) {
+            lastChecked?.let { rb ->
+                if (lastCheckedPos != position) {
                     rb.background =
                         rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
                     rb.isChecked = false
                     animateRadioButton(holder)
                 }
             }
-            model.marketLastChecked.postValue(rb)
-            model.marketLastCheckedPos.postValue(position)
-        } else model.marketLastChecked.postValue(null)
+            lastChecked = rb
+            lastCheckedPos = position
+        } else lastChecked = null
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
