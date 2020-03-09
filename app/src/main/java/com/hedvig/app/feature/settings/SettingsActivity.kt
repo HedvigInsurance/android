@@ -58,26 +58,29 @@ class SettingsActivity : BaseActivity() {
                 }
             }
 
-            val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
+            val marketPreference = findPreference<ListPreference>(SETTINGS_MARKET)
             marketPreference?.let { mp ->
-                mp.setOnPreferenceClickListener {
-                    //TODO real text for dialog
-                    requireContext().showAlert(
-                        R.string.alert_title,
-                        R.string.alert_message,
-                        positiveAction = {
-                            userViewModel.logout {
-                                requireContext().storeBoolean(
-                                    LoginStatusService.IS_VIEWING_OFFER,
-                                    false
-                                )
-                                requireContext().setAuthenticationToken(null)
-                                requireContext().setIsLoggedIn(false)
-                                FirebaseInstanceId.getInstance().deleteInstanceId()
-                                requireActivity().triggerRestartActivity()
+                val oldValue = mp.value
+                mp.setOnPreferenceChangeListener { preference, newValue ->
+                    if (oldValue != newValue) {
+                        //TODO real text for dialog
+                        requireContext().showAlert(
+                            R.string.alert_title,
+                            R.string.alert_message,
+                            positiveAction = {
+                                userViewModel.logout {
+                                    requireContext().storeBoolean(
+                                        LoginStatusService.IS_VIEWING_OFFER,
+                                        false
+                                    )
+                                    requireContext().setAuthenticationToken(null)
+                                    requireContext().setIsLoggedIn(false)
+                                    FirebaseInstanceId.getInstance().deleteInstanceId()
+                                    requireActivity().triggerRestartActivity()
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                     true
                 }
             }
