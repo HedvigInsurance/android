@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="@string/SETTINGS_DISPLAY_TITLE">
 
@@ -18,13 +19,9 @@
             app:title="@string/SETTINGS_LANGUAGE_TITLE"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
-            app:entries="@array/market_settings"
-            app:entryValues="@array/market_settings_values"
-            app:key="market"
-            app:title="Market"
-            app:useSimpleSummaryProvider="true" />
-
+        <Preference
+            android:key="market"
+            app:title="Change Market"/>
 
         <Preference
             app:key="notifications"
