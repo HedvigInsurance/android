@@ -11,30 +11,14 @@ query Profile {
     ... CostFragment
     freeUntil
   }
-  # insurance {
-  #   address
-  #   postalNumber
-  #   type
-  #   status
-  #   certificateUrl
-  #   personsInHousehold
-  #   livingSpace
-  #   ancillaryArea
-  #   yearOfConstruction
-  #   numberOfBathrooms
-  #   cost {
-  #     ... CostFragment
-  #     freeUntil
-  #   }
-  #   extraBuildings {
-  #     ... on ExtraBuildingCore {
-  #       area
-  #       displayName
-  #       hasWaterConnected
-  #     }
-  #   }
-  #   isSubleted
-  # }
+  contracts {
+    status
+    currentAgreement {
+      ... on AgreementCore {
+        status
+      }
+    }
+  }
   balance {
     failedCharges
   }

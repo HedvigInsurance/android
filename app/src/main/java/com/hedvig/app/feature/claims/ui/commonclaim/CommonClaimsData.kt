@@ -3,7 +3,6 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.type.HedvigColor
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.parcel.Parcelize
 
@@ -14,13 +13,13 @@ data class CommonClaimsData(
     val color: HedvigColor,
     val layoutTitle: String,
     val buttonText: String,
-    val insuranceStatus: InsuranceStatus,
+    val eligibleToClaim: Boolean,
     val bulletPoints: List<BulletPoint>
 ) : Parcelable {
     companion object {
         fun from(
             data: CommonClaimQuery.CommonClaim,
-            insuranceStatus: InsuranceStatus
+            eligibleToClaim: Boolean
         ): CommonClaimsData? {
             val layout = data.layout.asTitleAndBulletPoints ?: return null
             return CommonClaimsData(
@@ -29,7 +28,7 @@ data class CommonClaimsData(
                 layout.color,
                 layout.title,
                 layout.buttonTitle,
-                insuranceStatus,
+                eligibleToClaim,
                 BulletPoint.from(layout.bulletPoints)
             )
         }

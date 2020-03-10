@@ -1,7 +1,5 @@
 query CommonClaim($locale: Locale!) {
-  insurance {
-    status
-  }
+  isEligibleToCreateClaim
   commonClaims(locale: $locale) {
     title
     icon {

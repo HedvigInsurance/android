@@ -9,7 +9,9 @@ query DashboardQuery {
     }
     currentAgreement {
       ... on AgreementCore {
-        id
+        status
+        activeFrom
+        activeTo
       }
       ... on SwedishApartmentAgreement {
         address {

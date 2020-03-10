@@ -13,6 +13,7 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
+import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -22,6 +23,7 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -91,12 +93,12 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupPayment(profileData: ProfileQuery.Data) {
-        // paymentRow.description = interpolateTextKey(
-        //     resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-        //     "COST" to profileData.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
-        // )
-        // paymentRow.setHapticClickListener {
-        //     startActivity(Intent(requireContext(), PaymentActivity::class.java))
-        // }
+        paymentRow.description = interpolateTextKey(
+            resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
+            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
+        )
+        paymentRow.setHapticClickListener {
+            startActivity(Intent(requireContext(), PaymentActivity::class.java))
+        }
     }
 }

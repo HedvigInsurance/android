@@ -11,6 +11,9 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
@@ -37,10 +40,30 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             return
         }
 
+        homeChangeInfo.setHapticClickListener {
+            showChangeInfoDialog()
+        }
+
+        coinsuredChangeInfo.setHapticClickListener {
+            showChangeInfoDialog()
+        }
+
         model.data.observe(this) { contract ->
             contract?.let { bind(it) }
         }
         model.loadContract(id)
+    }
+
+    private fun showChangeInfoDialog() {
+        showAlert(
+            R.string.PROFILE_MY_HOME_CHANGE_DIALOG_TITLE,
+            R.string.PROFILE_MY_HOME_CHANGE_DIALOG_DESCRIPTION,
+            R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CONFIRM,
+            R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CANCEL,
+            positiveAction = {
+                startClosableChat()
+            }
+        )
     }
 
     private fun bind(data: Contract) {
@@ -79,6 +102,7 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
 
     companion object {
         private const val ID = "ID"
+
         fun newInstance(context: Context, id: String) = Intent(context, ContractDetailActivity::class.java).apply {
             putExtra(ID, id)
         }

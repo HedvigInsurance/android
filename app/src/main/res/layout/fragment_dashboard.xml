@@ -34,6 +34,7 @@
             tools:listitem="@layout/dashboard_contract_row" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/upsells"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"

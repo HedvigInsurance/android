@@ -25,6 +25,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -33,6 +34,7 @@
                 tools:src="@drawable/ic_fire_green" />
 
             <TextView
+                android:id="@+id/title"
                 style="@style/Headline.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,6 +43,7 @@
                 tools:text="Worried about leaving the house?" />
 
             <TextView
+                android:id="@+id/description"
                 style="@style/Body.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -52,6 +55,7 @@
                 tools:text="Get covered while travelling as well. Write to us in the chat to get Travel Insurance at a great price." />
 
             <Button
+                android:id="@+id/cta"
                 style="@style/HedvigButton.Purple"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

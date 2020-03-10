@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -71,9 +70,10 @@ class EmergencyActivity : BaseActivity() {
         commonClaimFirstMessage.text = getString(R.string.CLAIMS_EMERGENCY_FIRST_MESSAGE)
         commonClaimCreateClaimButton.remove()
 
-        when (data.insuranceStatus) {
-            InsuranceStatus.ACTIVE -> showInsuranceActive()
-            else -> showInsuranceInactive()
+        if (data.eligibleToClaim) {
+            showInsuranceActive()
+        } else {
+            showInsuranceInactive()
         }
 
         thirdEmergencyButton.setHapticClickListener {

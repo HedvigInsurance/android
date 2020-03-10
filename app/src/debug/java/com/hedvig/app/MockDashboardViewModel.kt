@@ -4,8 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
-import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
+import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.feature.dashboard.ui.DashboardData
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
@@ -28,11 +29,13 @@ class MockDashboardViewModel : DashboardViewModel() {
                     null,
                     DashboardQuery.CurrentAgreement(
                         asAgreementCore = DashboardQuery.AsAgreementCore(
-                            id = "81398a4b-5ae4-4639-8711-652d76237366"
+                            status = AgreementStatus.ACTIVE,
+                            activeFrom = LocalDate.of(2020, 1, 1),
+                            activeTo = null
                         ),
-                        asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
-                            address = DashboardQuery.Address(
-                                fragments = DashboardQuery.Address.Fragments(
+                        asNorwegianHomeContentAgreement = DashboardQuery.AsNorwegianHomeContentAgreement(
+                            address = DashboardQuery.Address2(
+                                fragments = DashboardQuery.Address2.Fragments(
                                     AddressFragment(
                                         street = "Testvägen 1",
                                         postalCode = "123 45",
@@ -42,9 +45,9 @@ class MockDashboardViewModel : DashboardViewModel() {
                             ),
                             numberCoInsured = 2,
                             squareMeters = 50,
-                            saType = SwedishApartmentLineOfBusiness.BRF
+                            nhcType = NorwegianHomeContentLineOfBusiness.RENT
                         ),
-                        asNorwegianHomeContentAgreement = null,
+                        asSwedishApartmentAgreement = null,
                         asNorwegianTravelAgreement = null,
                         asSwedishHouseAgreement = null
                     ),

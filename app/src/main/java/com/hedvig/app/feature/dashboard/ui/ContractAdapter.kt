@@ -7,6 +7,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
@@ -14,6 +15,7 @@ import com.hedvig.app.util.extensions.view.animateCollapse
 import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
+import org.threeten.bp.format.DateTimeFormatter
 
 class ContractAdapter(
     private val fragmentManager: FragmentManager
@@ -56,11 +58,23 @@ class ContractAdapter(
                 }
                 ContractStatus.PENDING -> {
                     status.setCompoundDrawables(status.context.compatDrawable(R.drawable.ic_clock), null, null, null)
-                    status.text = "?? TODO" // TODO: Translation
+                    if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
+                        status.text = "Inget startdatum valt" // TODO: Translation
+                    } else {
+                        contract.currentAgreement.asAgreementCore?.activeFrom?.let { activeFrom ->
+                            status.text = "Aktiveres ${activeFrom.format(FORMATTER)}" // TODO: Translation
+                        }
+                    }
                 }
                 ContractStatus.TERMINATED -> {
                     status.setCompoundDrawables(status.context.compatDrawable(R.drawable.ic_cross), null, null, null)
-                    status.text = "?? TODO" // TODO: Translation
+                    if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED) {
+                        status.text = "Avslutet" // TODO: Translation
+                    } else {
+                        contract.currentAgreement.asAgreementCore?.activeTo?.let { activeTo ->
+                            status.text = "Avslutes ${activeTo.format(FORMATTER)}" // TODO: Translation
+                        }
+                    }
                 }
                 else -> {
                 } // TODO
@@ -93,6 +107,10 @@ class ContractAdapter(
                 }
             }
         }
+    }
+
+    companion object {
+        private val FORMATTER = DateTimeFormatter.ofPattern("dd, LLL YYYY")
     }
 }
 

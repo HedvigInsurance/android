@@ -6,12 +6,14 @@ import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -123,21 +125,14 @@ class PaymentActivity : BaseActivity() {
                 )
         }
 
-        //when (data.insurance.status) {
-        //    InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-        //        nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
-        //    }
-        //    InsuranceStatus.INACTIVE -> {
-        //        nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
-        //        nextPaymentDate.setTextColor(compatColor(R.color.off_black))
-        //        nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
-        //    }
-        //    else -> {
-        //        Timber.e(
-        //            "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
-        //        )
-        //    }
-        //}
+        if (isActive(data.contracts)) {
+            nextPaymentDate.text = data.nextChargeDate?.format(DATE_FORMAT)
+        } else if (isPending(data.contracts)) {
+            nextPaymentDate.background.compatSetTint(compatColor(R.color.sunflower_300))
+            nextPaymentDate.setTextColor(compatColor(R.color.off_black))
+            nextPaymentDate.text = getString(R.string.PAYMENTS_CARD_NO_STARTDATE)
+        }
+
         val incentive = data.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
         incentive?.asFreeMonths?.let { freeMonthsIncentive ->
             freeMonthsIncentive.quantity?.let { quantity ->
@@ -182,23 +177,16 @@ class PaymentActivity : BaseActivity() {
                 campaignInformationFieldOne.text = displayName
             }
 
-            // when (data.insurance.status) {
-            //     InsuranceStatus.ACTIVE, InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-            //         data.insuranceCost?.freeUntil?.let { freeUntil ->
-            //             lastFreeDay.text = freeUntil.format(DATE_FORMAT)
-            //         }
-            //         lastFreeDay.show()
-            //         lastFreeDayLabel.show()
-            //     }
-            //     InsuranceStatus.INACTIVE -> {
-            //         willUpdateWhenStartDateIsSet.show()
-            //     }
-            //     else -> {
-            //         Timber.e(
-            //             "Invariant detected: Member viewing ${javaClass.simpleName} with status ${data.insurance.status}"
-            //         )
-            //     }
-            // }
+            if (isActive(data.contracts)) {
+                data.insuranceCost?.freeUntil?.let { freeUntil ->
+                    lastFreeDay.text = freeUntil.format(DATE_FORMAT)
+                }
+                lastFreeDay.show()
+                lastFreeDayLabel.show()
+            } else if (isPending(data.contracts)) {
+                willUpdateWhenStartDateIsSet.show()
+            }
+
             campaignInformationContainer.show()
             campaignInformationSeparator.show()
         }
@@ -356,5 +344,8 @@ class PaymentActivity : BaseActivity() {
 
     companion object {
         val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL YYYY")
+
+        fun isActive(contracts: List<ProfileQuery.Contract>) = contracts.any { it.status == ContractStatus.ACTIVE }
+        fun isPending(contracts: List<ProfileQuery.Contract>) = contracts.all { it.status == ContractStatus.PENDING }
     }
 }
