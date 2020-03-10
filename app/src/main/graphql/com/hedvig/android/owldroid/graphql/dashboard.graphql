@@ -1,5 +1,6 @@
 query DashboardQuery {
   contracts {
+    id
     status
     inception
     upcomingRenewal {
@@ -7,8 +8,41 @@ query DashboardQuery {
       draftCertificateUrl
     }
     currentAgreement {
-      __typename
+      ... on AgreementCore {
+        id
+      }
+      ... on SwedishApartmentAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+        saType: type
+      }
+      ... on SwedishHouseAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+      }
+      ... on NorwegianHomeContentAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+        nhcType: type
+      }
+      ... on NorwegianTravelAgreement {
+        numberCoInsured
+      }
     }
   }
 }
 
+fragment AddressFragment on Address {
+  street
+  postalCode
+  city
+}

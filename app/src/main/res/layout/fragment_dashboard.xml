@@ -29,10 +29,19 @@
             android:overScrollMode="never"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:itemCount="1"
             tools:listitem="@layout/dashboard_contract_row" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/contracts"
+            tools:itemCount="1"
+            tools:listitem="@layout/dashboard_upsell" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

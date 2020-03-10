@@ -40,13 +40,5 @@ data class Contract(
     val inception: LocalDate,
     val upcomingRenewal: DashboardQuery.UpcomingRenewal?,
     val currentAgreement: DashboardQuery.CurrentAgreement,
-    val perilCategories: List<PerilCategory>
-)
-
-data class PerilCategory(
-    // val icon: SomeKindOfImageResource,
-    val id: String,
-    val title: String,
-    val subtitle: String,
     val perils: List<PerilCategoryFragment.Peril>
 )

@@ -23,6 +23,8 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
+import com.hedvig.app.feature.dashboard.ui.ContractDetailViewModel
+import com.hedvig.app.feature.dashboard.ui.ContractDetailViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
@@ -179,6 +181,7 @@ val viewModelModule = module {
 
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
 }
 
 val offerModule = module {

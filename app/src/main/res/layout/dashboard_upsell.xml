@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/Headline.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Reiseforsikring" />
+
+    <com.hedvig.app.ui.view.HedvigCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:background="@drawable/background_rounded_corners"
+        android:backgroundTint="@color/violet_100"
+        android:paddingBottom="@dimen/base_margin_triple">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_fire_green" />
+
+            <TextView
+                style="@style/Headline.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin_double"
+                tools:text="Worried about leaving the house?" />
+
+            <TextView
+                style="@style/Body.Regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:textAlignment="center"
+                tools:text="Get covered while travelling as well. Write to us in the chat to get Travel Insurance at a great price." />
+
+            <Button
+                style="@style/HedvigButton.Purple"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin_double"
+                tools:text="Get Travel insurance" />
+
+        </LinearLayout>
+
+    </com.hedvig.app.ui.view.HedvigCardView>
+
+</LinearLayout>
