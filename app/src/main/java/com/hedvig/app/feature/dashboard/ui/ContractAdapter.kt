@@ -22,9 +22,10 @@ class ContractAdapter(
 ) : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
     var items: List<Contract> = emptyList()
         set(value) {
-            val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
+            //val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
             field = value
-            diff.dispatchUpdatesTo(this)
+            //diff.dispatchUpdatesTo(this)
+            notifyDataSetChanged()
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ContractViewHolder(parent, fragmentManager)

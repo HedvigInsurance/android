@@ -8,11 +8,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".feature.dashboard.ui.DashboardFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/bottom_navigation_height"
         android:clipToPadding="false"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/base_margin_double">
 
         <include
@@ -26,11 +27,9 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:nestedScrollingEnabled="false"
-            android:overScrollMode="never"
+            android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:itemCount="1"
+            tools:itemCount="2"
             tools:listitem="@layout/dashboard_contract_row" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -40,10 +39,9 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/contracts"
             tools:itemCount="1"
             tools:listitem="@layout/dashboard_upsell" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

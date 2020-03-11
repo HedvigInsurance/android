@@ -20,6 +20,6 @@ val mockModule = module {
     viewModel<KeyGearItemDetailViewModel> { MockKeyGearItemDetailViewModel() }
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
-    viewModel<DashboardViewModel> { MockDashboardViewModel() }
-    viewModel<ContractDetailViewModel> { MockContractDetailViewModel() }
+    viewModel<DashboardViewModel> { MockDashboardViewModel(get()) }
+    viewModel<ContractDetailViewModel> { MockContractDetailViewModel(get()) }
 }
