@@ -14,11 +14,11 @@ import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.offer.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -156,6 +156,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(dashboardModule, offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(dashboardModule, offerModule, profileModule, keyGearModule)
     }
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
@@ -12,6 +13,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
@@ -22,7 +24,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.viewmodel.DirectDebitViewModel
+import e
 import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.campaign_information_section.*
 import kotlinx.android.synthetic.main.connect_bank_account_card.*
@@ -34,11 +36,9 @@ import kotlinx.android.synthetic.main.payment_history_section.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.format.DateTimeFormatter
-import timber.log.Timber
 
 class PaymentActivity : BaseActivity() {
     private val profileViewModel: ProfileViewModel by viewModel()
-    private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
 
@@ -87,13 +87,45 @@ class PaymentActivity : BaseActivity() {
                 bindFailedPaymentsCard(pd)
                 bindNextPaymentCard(pd)
                 bindCampaignInformation(pd)
+                bindPaymentDetails(pd)
                 bindPaymentHistory(pd.chargeHistory)
             }
-
-            bindPaymentDetails()
         }
-        directDebitViewModel.data.observe(lifecycleOwner = this) {
-            bindPaymentDetails()
+        profileViewModel
+            .directDebitStatus
+            .observe(this) { data ->
+                data?.let { bindDirectDebitStatus(it) }
+            }
+    }
+
+    private fun bindDirectDebitStatus(data: DirectDebitQuery.Data) {
+        when (data.directDebitStatus) {
+            DirectDebitStatus.ACTIVE -> {
+                paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
+                endSeparator.show()
+                changeBankAccount.show()
+                connectBankAccountCard.remove()
+            }
+            DirectDebitStatus.PENDING -> {
+                paymentDetailsContainer.show()
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
+
+                connectBankAccountCard.remove()
+                bankAccountUnderChangeParagraph.show()
+            }
+            DirectDebitStatus.NEEDS_SETUP -> {
+                paymentDetailsContainer.show()
+
+                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+
+                toggleBankInfo(false)
+                connectBankAccountCard.show()
+                connectBankAccountWithLink.show()
+            }
+            else -> {
+                e { "Payment fragment direct debit status UNKNOWN!" }
+            }
         }
     }
 
@@ -235,55 +267,13 @@ class PaymentActivity : BaseActivity() {
         paymentHistorySeparator.show()
     }
 
-    private fun bindPaymentDetails() {
-        val profileData = profileViewModel.data.value ?: return
+    private fun bindPaymentDetails(pd: ProfileQuery.Data) {
+        pd.bankAccount?.let { bankAccount ->
+            accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
+            toggleBankInfo(true)
+        } ?: toggleBankInfo(false)
 
-        when (directDebitViewModel.data.value?.directDebitStatus ?: return) {
-            DirectDebitStatus.ACTIVE -> {
-                paymentDetailsContainer.show()
-                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
-
-                profileData.bankAccount?.let { bankAccount ->
-                    accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
-
-                    toggleBankInfo(true)
-                } ?: toggleBankInfo(false)
-
-
-                endSeparator.show()
-                changeBankAccount.show()
-                connectBankAccountCard.remove()
-            }
-            DirectDebitStatus.PENDING -> {
-                paymentDetailsContainer.show()
-                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
-
-                profileData.bankAccount?.let {
-                    accountNumber.text =
-                        resources.getString(R.string.PROFILE_PAYMENT_ACCOUNT_NUMBER_CHANGING)
-
-                    toggleBankInfo(true)
-                } ?: toggleBankInfo(false)
-
-
-                connectBankAccountCard.remove()
-                bankAccountUnderChangeParagraph.show()
-            }
-            DirectDebitStatus.NEEDS_SETUP -> {
-                paymentDetailsContainer.show()
-
-                directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
-
-                toggleBankInfo(false)
-                connectBankAccountCard.show()
-                connectBankAccountWithLink.show()
-            }
-            else -> {
-                Timber.e("Payment fragment direct debit status UNKNOWN!")
-            }
-        }
-
-        showRedeemCodeOnNoDiscount(profileData)
+        showRedeemCodeOnNoDiscount(pd)
     }
 
     private fun connectDirectDebitWithLink() {

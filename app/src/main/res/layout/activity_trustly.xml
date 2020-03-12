@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hedvig.app.feature.profile.ui.payment.TrustlyActivity">
+    tools:context="com.hedvig.app.feature.trustly.TrustlyActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/explainerScreen"

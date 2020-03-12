@@ -3,10 +3,12 @@ package com.hedvig.app
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
@@ -17,6 +19,7 @@ class MockProfileViewModel : ProfileViewModel() {
         MutableLiveData<ProfileQuery.Data>()
     override val dirty = MutableLiveData<Boolean>()
     override val trustlyUrl = LiveEvent<String>()
+    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
 
     init {
         data.postValue(
@@ -179,6 +182,8 @@ class MockProfileViewModel : ProfileViewModel() {
                 )
             )
         )
+
+        directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
 
     override fun selectCashback(id: String) = Unit

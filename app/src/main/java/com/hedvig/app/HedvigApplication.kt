@@ -57,7 +57,6 @@ class HedvigApplication : Application() {
                     dashboardModule,
                     offerModule,
                     profileModule,
-                    directDebitModule,
                     keyGearModule,
                     serviceModule,
                     repositoriesModule,

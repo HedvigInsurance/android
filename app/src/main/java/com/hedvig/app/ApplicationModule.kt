@@ -58,12 +58,12 @@ import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
-import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -74,8 +74,6 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.viewmodel.DirectDebitViewModel
-import com.hedvig.app.viewmodel.DirectDebitViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -180,7 +178,7 @@ val viewModelModule = module {
 }
 
 val dashboardModule = module {
-    viewModel<DashboardViewModel> { DashboardViewModelImpl(get()) }
+    viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
 }
 
@@ -190,10 +188,6 @@ val offerModule = module {
 
 val profileModule = module {
     viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
-}
-
-val directDebitModule = module {
-    viewModel<DirectDebitViewModel> { DirectDebitViewModelImpl(get()) }
 }
 
 val keyGearModule = module {

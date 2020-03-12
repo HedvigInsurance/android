@@ -3,12 +3,17 @@ package com.hedvig.app.feature.dashboard.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.UpsellAdapter
 import com.hedvig.app.UpsellModel
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -26,6 +31,24 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         dashboardViewModel.data.observe(this) { dashboardData ->
             dashboardData?.let { bindDashboardData(it) }
+        }
+
+        dashboardViewModel.directDebitStatus.observe(this) { directDebitStatusData ->
+            directDebitStatusData?.let { bindDirectDebiStatusData(it) }
+        }
+    }
+
+    private fun bindDirectDebiStatusData(data: DirectDebitQuery.Data) {
+        if (data.directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
+            infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
+            infoBoxBody.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
+            infoBoxButton.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
+            infoBoxButton.setHapticClickListener {
+                startActivity(TrustlyActivity.newInstance(requireContext()))
+            }
+            infoBox.show()
+        } else {
+            infoBox.remove()
         }
     }
 

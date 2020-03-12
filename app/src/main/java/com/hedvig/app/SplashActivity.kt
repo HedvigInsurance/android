@@ -7,8 +7,8 @@ import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +16,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import timber.log.Timber
-import java.util.Locale
+import java.util.*
 
 class SplashActivity : BaseActivity() {
     private val loggedInService: LoginStatusService by inject()

@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe

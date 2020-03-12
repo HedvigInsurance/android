@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.profile.ui.payment
+package com.hedvig.app.feature.trustly
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,7 +20,6 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.viewmodel.DirectDebitViewModel
 import kotlinx.android.synthetic.main.activity_trustly.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -29,7 +28,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class TrustlyActivity : BaseActivity() {
 
     private val profileViewModel: ProfileViewModel by viewModel()
-    private val directDebitViewModel: DirectDebitViewModel by viewModel()
 
     private val tracker: TrustlyTracker by inject()
     private var hasSuccessfullyConnectedDirectDebit = false
@@ -159,7 +157,6 @@ class TrustlyActivity : BaseActivity() {
         }
         resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
-            directDebitViewModel.refreshDirectDebitStatus()
             close()
         }
         resultScreen.show()

@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.feature.dashboard.ui.DashboardData
@@ -15,6 +17,7 @@ import org.threeten.bp.LocalDate
 
 class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     override val data = MutableLiveData<DashboardData>()
+    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
 
     init {
         val activePersona = context
@@ -26,6 +29,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
             else -> NORWEGIAN_HOME_CONTENTS
         })
+
+        directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
 
     companion object {
