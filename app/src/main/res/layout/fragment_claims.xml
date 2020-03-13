@@ -103,6 +103,8 @@
                     android:layout_marginTop="@dimen/base_margin"
                     android:layout_marginBottom="@dimen/base_margin"
                     android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
                     tools:itemCount="3"
