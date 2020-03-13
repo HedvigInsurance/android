@@ -54,14 +54,12 @@
     <style name="ProfileFieldLabel">
         <item name="android:textColor">@color/text_regular</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/circular_book</item>
     </style>
 
     <style name="ProfileField" parent="Widget.Design.TextInputLayout">
         <item name="hintTextAppearance">@style/ProfileFieldLabel</item>
         <item name="colorControlActivated">@color/link_purple</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/circular_book</item>
         <item name="android:textColor">@color/text_emphasized</item>
     </style>
 
@@ -80,7 +78,6 @@
     -->
 
     <style name="ProfileField.ValidationError">
-        <item name="android:fontFamily">@font/circular_book</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/pink</item>
     </style>
@@ -137,7 +134,6 @@
     <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/link_purple</item>
         <item name="android:background">@drawable/background_rounded_corners</item>
-        <item name="android:fontFamily">@font/circular_book</item>
         <item name="android:textColor">@color/text_regular</item>
         <item name="android:textColorPrimary">@color/text_regular</item>
     </style>

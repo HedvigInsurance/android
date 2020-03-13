@@ -36,7 +36,6 @@
             android:layout_marginBottom="@dimen/base_margin_half"
             android:background="@drawable/circle_background"
             android:backgroundTint="@color/link_purple"
-            android:fontFamily="@font/circular_book"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
             android:textColor="@color/white" />

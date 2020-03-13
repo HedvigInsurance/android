@@ -75,7 +75,6 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/base_margin_half"
                     android:layout_marginEnd="@dimen/base_margin_half"
-                    android:fontFamily="@font/circular_bold"
                     android:gravity="center"
                     android:lineSpacingExtra="0sp"
                     android:textAppearance="?textAppearanceBody3"

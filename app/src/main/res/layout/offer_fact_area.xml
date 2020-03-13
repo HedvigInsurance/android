@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:fontFamily="@font/circular_bold"
         android:gravity="center_horizontal"
         android:textAppearance="?textAppearanceHeadline5"
         android:textColor="@color/violet_200"

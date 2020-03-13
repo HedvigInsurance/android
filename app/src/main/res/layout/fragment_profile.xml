@@ -102,7 +102,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginBottom="@dimen/base_margin_double"
-            android:fontFamily="@font/circular_book"
             android:padding="8dp"
             android:text="@string/PROFILE_LOGOUT_BUTTON"
             android:textAlignment="center"

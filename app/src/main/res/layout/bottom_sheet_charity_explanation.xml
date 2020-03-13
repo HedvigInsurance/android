@@ -37,7 +37,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:fontFamily="@font/circular_bold"
         android:text="@string/CHARITY_INFO_DIALOG_HOW_IT_WORKS_TITLE"
         android:textAppearance="?textAppearanceSubtitle1" />
 

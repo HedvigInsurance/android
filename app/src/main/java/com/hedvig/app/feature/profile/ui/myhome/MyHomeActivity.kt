@@ -29,7 +29,7 @@ class MyHomeActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_home)
 
-        setupLargeTitle(R.string.PROFILE_MY_HOME_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(R.string.PROFILE_MY_HOME_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
         sphere.drawable.compatSetTint(compatColor(R.color.maroon))
