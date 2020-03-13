@@ -117,6 +117,14 @@
             android:text="Open Post-sign Direct Debit screen" />
 
         <Button
+            android:id="@+id/openViewGallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open View Gallery" />
+
+        <Button
             android:id="@+id/openVectorDrawableGallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

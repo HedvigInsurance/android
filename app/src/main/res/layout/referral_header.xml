@@ -66,6 +66,7 @@
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center_horizontal"
+        android:textAppearance="?textAppearanceBody1"
         tools:text="Du ger bort 10 kr rabatt och får 10 kr rabatt för varje vän du bjuder in via din unika länk! Kan du nå gratis försäkring?" />
 
     <TextView

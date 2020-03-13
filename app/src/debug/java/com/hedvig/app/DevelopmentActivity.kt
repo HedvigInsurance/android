@@ -142,6 +142,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
         }
 
+        openViewGallery.setHapticClickListener {
+            startActivity(ViewGalleryActivity.newInstance(this))
+        }
+
         findViewById<Button>(R.id.openSettings).setHapticClickListener {
             startActivity(SettingsActivity.newInstance(this))
         }

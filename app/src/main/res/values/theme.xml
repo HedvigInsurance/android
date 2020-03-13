@@ -27,9 +27,6 @@
         <item name="materialButtonTextStyle">@style/Hedvig.Button.Text</item>
         <item name="materialButtonOutlinedStyle">@style/Hedvig.Button.Outlined</item>
 
-        <!-- Default text style -->
-        <item name="android:textAppearance">?textAppearanceBody1</item>
-
         <!-- Material Typography variants -->
         <item name="textAppearanceHeadline3">@style/Hedvig.TextAppearance.Headline3</item>
         <item name="textAppearanceHeadline4">@style/Hedvig.TextAppearance.Headline4</item>

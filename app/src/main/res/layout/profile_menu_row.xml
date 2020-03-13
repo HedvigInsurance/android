@@ -38,6 +38,7 @@
             android:id="@id/profile_menu_row_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceBody1"
             tools:text="109 kr/månad - Betalas via autogiro" />
     </LinearLayout>
 

@@ -12,6 +12,10 @@
     <dimen name="line_height_small">20sp</dimen>
     <dimen name="line_height_xsmall">16sp</dimen>
 
+    <style name="Hedvig.TextView" parent="@android:style/TextAppearance.Widget.TextView">
+        <item name="android:textAppearance">?textAppearanceBody1</item>
+    </style>
+
     <style name="Hedvig.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="lineHeight">@dimen/line_height_medium</item>

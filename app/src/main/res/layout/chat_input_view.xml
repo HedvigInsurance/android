@@ -38,6 +38,7 @@
             android:backgroundTint="@color/link_purple"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
+            android:textAppearance="?textAppearanceBody1"
             android:textColor="@color/white" />
 
         <!--

@@ -31,7 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION" />
+        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION"
+        android:textAppearance="?textAppearanceBody1" />
 
 
     <com.hedvig.app.ui.view.DateInputView

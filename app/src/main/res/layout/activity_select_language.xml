@@ -27,6 +27,7 @@
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/select_language_paragraph"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toTopOf="@id/options"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

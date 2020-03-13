@@ -27,7 +27,8 @@
             android:id="@+id/avatarLetter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:textAppearance="?textAppearanceBody1" />
     </FrameLayout>
 
     <TextView
@@ -48,6 +49,7 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginBottom="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/avatarContainer"
         app:layout_constraintTop_toBottomOf="@id/name"
@@ -76,6 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin"
+            android:textAppearance="?textAppearanceBody1"
             android:textColor="@color/off_black"
             tools:text="-10 kr" />
 
