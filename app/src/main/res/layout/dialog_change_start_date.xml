@@ -9,25 +9,25 @@
     android:paddingStart="@dimen/base_margin_triple"
     android:paddingTop="@dimen/base_margin"
     android:paddingEnd="@dimen/base_margin_triple"
-    android:paddingBottom="@dimen/peril_bottom_extra_spacing">
+    android:paddingBottom="@dimen/peril_bottom_extra_spacing"
+    tool:context=".feature.offer.ChangeDateBottomSheet">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@null"
-        android:src="@drawable/bottom_sheet_handle" />
+        app:srcCompat="@drawable/bottom_sheet_handle" />
 
     <TextView
-        style="@style/Header.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/DRAGGABLE_STARTDATE_TITLE" />
+        android:text="@string/DRAGGABLE_STARTDATE_TITLE"
+        android:textAppearance="?textAppearanceHeadline4" />
 
     <TextView
         android:id="@+id/info"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
@@ -39,26 +39,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_sextuple"
-        app:dateHintBackground="@color/background_elevation_1"/>
+        app:dateHintBackground="@color/background_elevation_1" />
 
     <Button
         android:id="@+id/chooseDateButton"
-        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/CHOOSE_DATE_BTN" />
 
-    <TextView
+    <Button
         android:id="@+id/autoSetDateText"
-        style="@style/Body.Regular.Link"
+        style="?attr/materialButtonTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/auto_set_date_text_size"
         android:textAlignment="center"
-        android:textStyle="bold"
+        android:textColor="?colorSecondary"
         tool:text="@string/ACTIVATE_INSURANCE_END_BTN" />
 
 

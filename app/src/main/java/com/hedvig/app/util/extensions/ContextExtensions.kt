@@ -13,9 +13,12 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
@@ -36,6 +39,16 @@ const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
     "shared_preference_asked_for_permission_prefix"
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
+
+@ColorInt
+fun Context.colorAttr(
+    @AttrRes color: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+): Int {
+    theme.resolveAttribute(color, typedValue, resolveRefs)
+    return typedValue.data
+}
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 

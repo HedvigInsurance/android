@@ -24,7 +24,6 @@
 
     <TextView
         android:id="@+id/language"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"

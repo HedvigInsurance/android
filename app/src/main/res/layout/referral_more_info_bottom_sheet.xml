@@ -17,22 +17,20 @@
         android:src="@drawable/bottom_sheet_handle" />
 
     <TextView
-        style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_HEADLINE" />
+        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_HEADLINE"
+        android:textAppearance="?textAppearanceHeadline5" />
 
     <TextView
         android:id="@+id/referralMoreInfoParagraphOne"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH_ONE" />
 
     <TextView
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
@@ -40,14 +38,10 @@
 
     <Button
         android:id="@+id/referralMoreInfoButton"
-        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_half"
-        android:background="@drawable/button_primary"
-        android:backgroundTint="@color/light_gray"
-        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_CTA"
-        android:textColor="@color/off_black" />
+        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_CTA" />
 </LinearLayout>

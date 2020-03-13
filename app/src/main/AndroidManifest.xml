@@ -221,7 +221,7 @@
             android:noHistory="true"
             android:parentActivityName=".SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Splash"
+            android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoggedInTerminatedActivity"

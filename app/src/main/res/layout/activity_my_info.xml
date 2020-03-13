@@ -38,8 +38,12 @@
                 app:layout_constraintTop_toBottomOf="@id/sphereContainer">
 
                 <TextView
-                    style="@style/SectionHeader"
-                    android:text="@string/PROFILE_MY_INFO_SECTION_TITLE_CONTACT_DETAILS" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:text="@string/PROFILE_MY_INFO_SECTION_TITLE_CONTACT_DETAILS"
+                    android:textAppearance="?textAppearanceSubtitle1" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@id/emailInputContainer"
@@ -48,7 +52,6 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="12dp"
-                    android:theme="@style/ProfileField"
                     app:errorTextAppearance="@style/ProfileField.ValidationError">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -69,7 +72,6 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="12dp"
-                    android:theme="@style/ProfileField"
                     app:errorTextAppearance="@style/ProfileField.ValidationError">
 
                     <com.google.android.material.textfield.TextInputEditText

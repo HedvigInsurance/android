@@ -27,11 +27,11 @@
 
         <TextView
             android:id="@+id/explainerPreHeadline"
-            style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
             android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
+            android:textAppearance="?textAppearanceHeadline5"
             android:textColor="@color/link_purple"
             app:layout_constraintBottom_toTopOf="@id/explainerTitle"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,10 +40,10 @@
 
         <TextView
             android:id="@+id/explainerTitle"
-            style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ONBOARDING_CONNECT_DD_HEADLINE"
+            android:textAppearance="?textAppearanceHeadline5"
             app:layout_constraintBottom_toTopOf="@id/explainerParagraph"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,6 @@
 
         <TextView
             android:id="@+id/explainerParagraph"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_triple"
@@ -66,7 +65,6 @@
 
         <Button
             android:id="@+id/explainerButton"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_quintuple"
@@ -95,22 +93,21 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
-                    android:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
+                    android:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE"
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <Button
                     android:id="@+id/notNow"
-                    style="?attr/borderlessButtonStyle"
+                    style="?attr/materialButtonTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="@string/TRUSTLY_SKIP_BUTTON"
                     android:textAllCaps="false"
-                    android:textColor="@color/coral_500"
-                    android:theme="@style/Body.Regular.Link" />
+                    android:textColor="@color/coral_500" />
 
             </FrameLayout>
 
@@ -145,13 +142,13 @@
 
             <TextView
                 android:id="@+id/resultTitle"
-                style="@style/TrustlyTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:gravity="center"
                 android:paddingStart="@dimen/base_margin_double"
                 android:paddingEnd="@dimen/base_margin_double"
+                android:textAppearance="?textAppearanceHeadline3"
                 app:layout_constraintBottom_toTopOf="@id/resultParagraph"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -160,13 +157,13 @@
 
             <TextView
                 android:id="@+id/resultParagraph"
-                style="@style/TrustlyParagraph"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:gravity="center"
                 android:paddingStart="@dimen/base_margin_triple"
                 android:paddingEnd="@dimen/base_margin_triple"
+                android:textAppearance="?textAppearanceSubtitle1"
                 app:layout_constraintBottom_toTopOf="@id/resultClose"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -175,11 +172,9 @@
 
             <Button
                 android:id="@+id/resultClose"
-                style="@style/HedvigButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:backgroundTint="@color/background_elevation_1"
                 android:text="@string/PROFILE_TRUSTLY_CLOSE"
                 app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -188,14 +183,13 @@
 
             <Button
                 android:id="@+id/resultDoItLater"
-                style="?attr/borderlessButtonStyle"
+                style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:text="@string/ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER"
                 android:textAllCaps="false"
-                android:textColor="@color/pink"
-                android:theme="@style/Body.Small.Link.Caution"
+                android:textColor="?colorError"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

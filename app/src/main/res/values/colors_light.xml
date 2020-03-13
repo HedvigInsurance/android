@@ -18,4 +18,11 @@
     <item name="foreground_gray" type="color">@color/semi_light_gray</item>
     <item name="icon_color" type="color">@color/off_black</item>
     <item name="color_on_surface" type="color">@color/violet_100</item>
+
+    <item name="colorPrimary" type="color">@color/hedvig_black</item>
+    <item name="colorOnPrimary" type="color">@color/hedvig_white</item>
+    <item name="colorPrimaryVariant" type="color">@color/hedvig_dark_gray</item>
+    <item name="colorBackground" type="color">@color/hedvig_off_white</item>
+    <item name="colorSurface" type="color">@color/hedvig_white</item>
+    <item name="colorSecondary" type="color">@color/purple</item>
 </resources>

@@ -41,7 +41,7 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         } else {
             lightenColor(compatColor(data.color.mappedColor()), 0.3f)
         }
-        setupLargeTitle(data.title, R.font.circular_bold, R.drawable.ic_back, backgroundColor) {
+        setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
             onBackPressed()
         }
         appBarLayout.setExpanded(false, false)

@@ -33,28 +33,28 @@
 
             <TextView
                 android:id="@+id/infoBoxTitle"
-                style="@style/Headline.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:textAppearance="?textAppearanceSubtitle1"
                 android:textColor="@color/off_black_dark"
                 tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
 
             <TextView
                 android:id="@+id/infoBoxText"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin"
                 android:fontFamily="@font/circular_book"
                 android:gravity="center"
+                android:textAppearance="?textAppearanceBody2"
                 android:textColor="@color/off_black"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
             <Button
                 android:id="@+id/infoBoxButton"
-                style="@style/HedvigButton.Outlined"
+                style="?materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -77,10 +77,10 @@
             tools:visibility="visible">
 
             <TextView
-                style="@style/Headline.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/DASHBOARD_INSURANCE_ACTIVE" />
+                android:text="@string/DASHBOARD_INSURANCE_ACTIVE"
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <ImageView
                 android:layout_width="@dimen/checkmark_size"
@@ -106,11 +106,11 @@
             tools:visibility="visible">
 
             <TextView
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_TITLE" />
+                android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_TITLE"
+                android:textAppearance="?textAppearanceBody2" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/insurancePendingLoadingAnimation"
@@ -223,12 +223,12 @@
 
             <TextView
                 android:id="@+id/insurancePendingExplanation"
-                style="@style/Body.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:paddingTop="@dimen/base_margin"
                 android:paddingBottom="@dimen/base_margin"
+                android:textAppearance="?textAppearanceBody2"
                 tools:text="Du är " />
 
             <TextView

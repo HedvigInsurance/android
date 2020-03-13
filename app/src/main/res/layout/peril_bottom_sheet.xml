@@ -21,10 +21,10 @@
 
     <TextView
         android:id="@+id/perilSubject"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Testvägen 123" />
@@ -41,7 +41,6 @@
 
     <TextView
         android:id="@+id/dialogSubHeader"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"
@@ -51,17 +50,16 @@
 
     <TextView
         android:id="@+id/perilTitle"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/peril_title_extra_spacing"
+        android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialogSubHeader"
         tools:text="Eldsvåda" />
 
     <TextView
         android:id="@+id/perilDescription"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"

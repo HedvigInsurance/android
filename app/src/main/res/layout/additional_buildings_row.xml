@@ -9,22 +9,22 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        tools:text="Garage"/>
+        android:textAppearance="?textAppearanceBody2"
+        tools:text="Garage" />
 
     <TextView
         android:id="@+id/body"
-        style="@style/Body.Regular.Emphasized"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="22 kvadratmeter, indraget vatten" />
 
 </LinearLayout>

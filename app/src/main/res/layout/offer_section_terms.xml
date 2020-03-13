@@ -22,20 +22,18 @@
 
     <TextView
         android:id="@+id/header"
-        style="@style/Header.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:fontFamily="@font/circular_bold"
         android:text="@string/OFFER_TITLE_SAFE_WITH_US"
+        android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/offer_legal_image" />
 
     <TextView
         android:id="@+id/noLimit"
-        style="@style/Body.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -44,6 +42,7 @@
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
+        android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -51,7 +50,6 @@
 
     <TextView
         android:id="@+id/maxCompensation"
-        style="@style/Body.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -60,6 +58,7 @@
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
+        android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/noLimit"
@@ -67,7 +66,6 @@
 
     <TextView
         android:id="@+id/deductible"
-        style="@style/Body.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -76,6 +74,7 @@
         android:drawableStart="@drawable/ic_filled_checkmark_small"
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
+        android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/maxCompensation"
@@ -83,19 +82,18 @@
 
     <TextView
         android:id="@+id/deductibleExceptions"
-        style="@style/Body.XSmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_quadruple"
         android:layout_marginTop="@dimen/base_margin_half"
         android:text="@string/OFFER_TRUST_INCREASED_DEDUCTIBLE"
+        android:textAppearance="?textAppearanceBody3"
         app:layout_constraintEnd_toEndOf="@id/deductible"
         app:layout_constraintStart_toStartOf="@id/deductible"
         app:layout_constraintTop_toBottomOf="@id/deductible" />
 
     <TextView
         android:id="@+id/backedBy"
-        style="@style/Body.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -105,13 +103,13 @@
         android:drawablePadding="@dimen/base_margin_double"
         android:gravity="center_vertical|start"
         android:text="@string/OFFER_HOUSE_TRUST_HDI"
+        android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/deductibleExceptions" />
 
     <TextView
         android:id="@+id/presaleInformation"
-        style="@style/Body"
         android:layout_width="@dimen/terms_icon_size"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
@@ -129,7 +127,6 @@
 
     <TextView
         android:id="@+id/terms"
-        style="@style/Body"
         android:layout_width="@dimen/terms_icon_size"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
@@ -147,7 +144,6 @@
 
     <TextView
         android:id="@+id/privacyPolicy"
-        style="@style/Body"
         android:layout_width="@dimen/terms_icon_size"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"

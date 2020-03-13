@@ -18,7 +18,6 @@
 
     <EditText
         android:id="@+id/gifSearchField"
-        style="@style/Body.Regular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin"
@@ -36,7 +35,6 @@
 
     <TextView
         android:id="@+id/emptyGifLabel"
-        style="@style/Body.Regular"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_image_size"
         android:gravity="center"

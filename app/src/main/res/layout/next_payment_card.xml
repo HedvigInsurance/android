@@ -28,27 +28,28 @@
 
             <TextView
                 android:id="@+id/nextPaymentLabel"
-                style="@style/Body.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/PAYMENTS_CARD_TITLE"
+                android:textAppearance="?textAppearanceBody2"
                 android:textColor="@color/off_white"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/nextPaymentAmount"
-                style="@style/Header.Large.Negative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin"
+                android:textAppearance="?textAppearanceHeadline4"
+                android:textColor="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/nextPaymentLabel"
                 tools:text="139 kr" />
 
             <TextView
                 android:id="@+id/nextPaymentGross"
-                style="@style/Body.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody2"
                 android:textColor="@color/off_white"
                 android:visibility="invisible"
                 app:layout_constraintTop_toBottomOf="@id/nextPaymentAmount"
@@ -69,7 +70,6 @@
 
                 <TextView
                     android:id="@+id/discountSphereText"
-                    style="@style/Body.XSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -78,6 +78,7 @@
                     android:fontFamily="@font/circular_bold"
                     android:gravity="center"
                     android:lineSpacingExtra="0sp"
+                    android:textAppearance="?textAppearanceBody3"
                     android:textColor="@color/off_white"
                     tools:text="3\nGratis\nmånader" />
 
@@ -94,11 +95,11 @@
 
             <TextView
                 android:id="@+id/nextPaymentDateLabel"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
-                android:text="@string/PAYMENTS_CARD_DATE" />
+                android:text="@string/PAYMENTS_CARD_DATE"
+                android:textAppearance="?textAppearanceBody2" />
 
             <View
                 android:layout_width="0dp"
@@ -107,7 +108,6 @@
 
             <TextView
                 android:id="@+id/nextPaymentDate"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/base_margin_double"
@@ -116,6 +116,7 @@
                 android:paddingTop="@dimen/base_margin_half"
                 android:paddingEnd="@dimen/base_margin"
                 android:paddingBottom="@dimen/base_margin_half"
+                android:textAppearance="?textAppearanceBody2"
                 tools:text="2019-06-27" />
 
         </LinearLayout>

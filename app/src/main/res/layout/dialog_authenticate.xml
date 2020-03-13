@@ -11,7 +11,6 @@
 
     <TextView
         android:id="@+id/authTitle"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin"
@@ -20,6 +19,7 @@
         android:gravity="center"
         android:paddingBottom="@dimen/base_margin_double"
         android:text="@string/BANK_ID_AUTH_TITLE_INITIATED"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="@string/BANK_ID_NOT_INSTALLED" />
 
     <ImageView

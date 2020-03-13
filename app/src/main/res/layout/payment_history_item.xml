@@ -9,19 +9,19 @@
 
     <TextView
         android:id="@+id/date"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceBody2"
         tools:text="26 juli" />
 
     <TextView
         android:id="@+id/amount"
-        style="@style/Body.Regular.Emphasized"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="179 kr" />
 
 </LinearLayout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Hedvig.Button" parent="Widget.MaterialComponents.Button" />
+
+    <style name="Hedvig.Button.Large">
+        <item name="android:padding">@dimen/base_margin_double</item>
+        <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
+    </style>
+
+    <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
+
+    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+</resources>

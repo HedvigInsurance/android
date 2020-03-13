@@ -25,42 +25,41 @@
 
         <TextView
             android:id="@+id/referralProgressHighPremiumDiscount"
-            style="@style/Header.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceHeadline4"
             android:textColor="@color/off_black_dark"
             android:textSize="@dimen/referral_current_discount_huge_text"
             tools:text="-10kr" />
 
         <TextView
-            style="@style/Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="@string/REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE" />
+            android:text="@string/REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE"
+            android:textAppearance="?textAppearanceSubtitle1" />
 
         <TextView
             android:id="@+id/referralProgressHighPremiumCurrentPrice"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
+            android:textAppearance="?textAppearanceBody2"
             tools:text="Nuvarande pris: 259kr/mån" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/subtitle"
-        style="@style/Header.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/referral_title_spacing"
+        android:textAppearance="?textAppearanceHeadline5"
         tools:text="9 vänner kvar att bjuda in" />
 
     <TextView
         android:id="@+id/explainer"
-        style="@style/Body.Regular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -70,16 +69,15 @@
         tools:text="Du ger bort 10 kr rabatt och får 10 kr rabatt för varje vän du bjuder in via din unika länk! Kan du nå gratis försäkring?" />
 
     <TextView
-        style="@style/Body.XSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:text="@string/REFERRAL_PROGRESS_CODE_TITLE" />
+        android:text="@string/REFERRAL_PROGRESS_CODE_TITLE"
+        android:textAppearance="?textAppearanceBody3" />
 
     <TextView
         android:id="@+id/code"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -91,6 +89,7 @@
         android:paddingTop="@dimen/base_margin_half"
         android:paddingEnd="@dimen/base_margin_double"
         android:paddingBottom="@dimen/base_margin_half"
+        android:textAppearance="?textAppearanceHeadline6"
         android:textColor="@color/link_purple"
         tools:text="HDVG87" />
 

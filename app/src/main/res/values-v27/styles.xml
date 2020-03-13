@@ -2,8 +2,8 @@
 <resources>
 
     <style name="Hedvig.Theme.V27" parent="Hedvig.Theme.V23">
-        <item name="android:navigationBarColor">@color/background</item>
-        <item name="android:windowLightNavigationBar">@bool/light_system_ui</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+        <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V27" />

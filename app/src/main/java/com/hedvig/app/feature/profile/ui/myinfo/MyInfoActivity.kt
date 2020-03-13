@@ -35,7 +35,7 @@ class MyInfoActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_info)
 
-        setupLargeTitle(R.string.PROFILE_MY_INFO_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(R.string.PROFILE_MY_INFO_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
 

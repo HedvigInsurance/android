@@ -1,9 +1,8 @@
-package com.hedvig.app.feature.dismissablepager
+package com.hedvig.app.feature.dismissiblepager
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

@@ -23,11 +23,11 @@
 
     <TextView
         android:id="@+id/switchTitle"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center"
+        android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switchImage"
@@ -35,7 +35,6 @@
 
     <TextView
         android:id="@+id/bulletOne"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -43,13 +42,13 @@
         android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_one"
+        android:textAppearance="?textAppearanceHeadline6"
         android:textColor="@color/off_white"
         app:layout_constraintBaseline_toBaselineOf="@id/switchParagraphOne"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/switchParagraphOne"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -61,7 +60,6 @@
 
     <TextView
         android:id="@+id/bulletTwo"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -69,6 +67,7 @@
         android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_two"
+        android:textAppearance="?textAppearanceHeadline6"
         android:textColor="@color/off_white"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphTwo"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +75,6 @@
 
     <TextView
         android:id="@+id/switchParagraphTwo"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -89,7 +87,6 @@
 
     <TextView
         android:id="@+id/bulletThree"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -98,6 +95,7 @@
         android:backgroundTint="@color/link_purple"
         android:gravity="center"
         android:text="@string/numeric_three"
+        android:textAppearance="?textAppearanceHeadline6"
         android:textColor="@color/off_white"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphThree"
         app:layout_constraintStart_toStartOf="parent"
@@ -105,7 +103,6 @@
 
     <TextView
         android:id="@+id/switchParagraphThree"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"

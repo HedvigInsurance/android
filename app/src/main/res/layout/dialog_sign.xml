@@ -10,10 +10,10 @@
 
     <TextView
         android:id="@+id/signStatus"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/SIGN_START_BANKID" />
+        android:text="@string/SIGN_START_BANKID"
+        android:textAppearance="?textAppearanceHeadline6" />
 
     <ImageView
         android:layout_width="wrap_content"

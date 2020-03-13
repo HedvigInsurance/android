@@ -24,7 +24,6 @@
 
         <TextView
             android:id="@+id/grossPremium"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -36,7 +35,6 @@
 
         <TextView
             android:id="@+id/netPremium"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -46,7 +44,6 @@
             tools:textColor="@color/pink" />
 
         <TextView
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -73,12 +70,12 @@
 
         <TextView
             android:id="@+id/discountTitle"
-            style="@style/Body.XSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/base_margin"
             android:text="@string/OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE"
+            android:textAppearance="?textAppearanceBody3"
             android:textColor="@color/white"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/discount"
@@ -90,12 +87,12 @@
 
         <TextView
             android:id="@+id/discount"
-            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="0sp"
+            android:textAppearance="?textAppearanceHeadline6"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

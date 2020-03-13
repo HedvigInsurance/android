@@ -1,30 +1,33 @@
-package com.hedvig.app.feature.dismissablepager
+package com.hedvig.app.feature.dismissiblepager
 
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.annotation.StyleRes
-import androidx.fragment.app.DialogFragment
-import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
+import androidx.fragment.app.DialogFragment
+import androidx.viewpager.widget.ViewPager
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.screenWidth
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_dismissable_pager.*
 
-abstract class DismissablePager : DialogFragment() {
-    abstract val items: List<DismissablePagerPage>
+abstract class DismissiblePager : DialogFragment() {
+    abstract val items: List<DismissiblePagerPage>
     abstract val tracker: DismissablePageTracker
 
     @get:StringRes
     abstract val proceedLabel: Int
+
     @get:StringRes
     abstract val dismissLabel: Int
+
     @get:StyleRes
     abstract val animationStyle: Int
+
     @get:StringRes
     abstract val titleLabel: Int?
 

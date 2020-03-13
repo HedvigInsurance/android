@@ -46,7 +46,7 @@ class PaymentActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_payment)
-        setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
 

@@ -28,7 +28,6 @@ class CoinsuredActivity : BaseActivity() {
 
         setupLargeTitle(
             R.string.PROFILE_COINSURED_TITLE,
-            R.font.circular_bold,
             R.drawable.ic_back
         ) {
             onBackPressed()

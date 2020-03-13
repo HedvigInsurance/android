@@ -1,13 +1,12 @@
-package com.hedvig.app.feature.dismissablepager
+package com.hedvig.app.feature.dismissiblepager
 
 import android.content.Context
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.hedvig.app.util.extensions.isDarkThemeActive
 
 class DismissablePagerAdapter(
     fragmentManager: FragmentManager,
-    private val data: List<DismissablePagerPage>,
+    private val data: List<DismissiblePagerPage>,
     private val context: Context
 ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getItem(position: Int) = if (position < data.size) {

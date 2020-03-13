@@ -36,17 +36,17 @@
                 tools:layout_marginStart="@dimen/base_margin_double">
 
                 <TextView
-                    style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/OFFER_TITLE"
+                    android:textAppearance="?textAppearanceHeadline6"
                     android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/offerToolbarAddress"
-                    style="@style/Body.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?textAppearanceBody2"
                     android:textColor="@color/white"
                     tools:text="Storgatan 32" />
             </LinearLayout>
@@ -163,17 +163,16 @@
             <include layout="@layout/offer_section_switch" />
 
             <TextView
-                style="@style/Headline.Medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:background="@color/offer_background"
                 android:gravity="center"
                 android:text="@string/OFFER_GET_HEDVIG_TITLE"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:textColor="@color/off_white_light" />
 
             <TextView
-                style="@style/Body.Regular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/offer_background"
@@ -191,7 +190,7 @@
 
     <Button
         android:id="@+id/signButton"
-        style="@style/HedvigButton"
+        style="?attr/materialButtonContainedLargeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"

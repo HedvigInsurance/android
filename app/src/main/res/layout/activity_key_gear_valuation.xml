@@ -29,22 +29,22 @@
             app:srcCompat="@drawable/ic_close" />
 
         <TextView
-            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
-            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE" />
+            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
+            android:textAppearance="?textAppearanceHeadline6" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/body"
-        style="@style/Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:textAlignment="center"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
 
     <com.hedvig.app.ui.view.HedvigEditText

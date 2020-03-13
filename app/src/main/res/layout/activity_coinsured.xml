@@ -90,17 +90,17 @@
                 tools:visibility="visible">
 
                 <TextView
-                    style="@style/Headline.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/PROFILE_COINSURED_MORE_TO_COME_TITLE" />
+                    android:text="@string/PROFILE_COINSURED_MORE_TO_COME_TITLE"
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin"
                     android:text="@string/PROFILE_COINSURED_MORE_TO_COME_DESCRIPTION"
-                    android:theme="@style/Body.Small" />
+                    android:textAppearance="?textAppearanceBody2" />
 
             </LinearLayout>
 

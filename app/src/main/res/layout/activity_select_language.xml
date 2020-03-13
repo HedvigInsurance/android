@@ -9,11 +9,11 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:text="@string/select_language_title"
+        android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintBottom_toTopOf="@id/paragraph"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,7 +21,6 @@
 
     <TextView
         android:id="@+id/paragraph"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"

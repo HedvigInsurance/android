@@ -25,11 +25,11 @@
 
     <TextView
         android:id="@+id/addPhotoLabel"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON"
+        android:textAppearance="?textAppearanceBody2"
         android:textColor="@color/link_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

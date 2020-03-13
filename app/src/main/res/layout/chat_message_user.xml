@@ -22,14 +22,13 @@
 
         <TextView
             android:id="@+id/userMessage"
-            style="@style/Body.Regular.Negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/base_margin"
             android:autoLink="web"
             android:background="@drawable/chat_message_hedvig"
-            android:backgroundTint="@color/link_purple"
+            android:backgroundTint="?colorSecondary"
             android:linksClickable="true"
             android:paddingStart="@dimen/base_margin_double"
             android:paddingTop="@dimen/base_margin"
@@ -61,11 +60,11 @@
 
         <TextView
             android:id="@+id/statusMessage"
-            style="@style/Body.XSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_double"
+            android:textAppearance="?textAppearanceBody3"
             android:textColor="@color/text_regular"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"

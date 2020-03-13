@@ -52,7 +52,7 @@ class EmergencyActivity : BaseActivity() {
         } else {
             lightenColor(compatColor(data.color.mappedColor()), 0.3f)
         }
-        setupLargeTitle(data.title, R.font.circular_bold, R.drawable.ic_back, backgroundColor) {
+        setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
             onBackPressed()
         }
         appBarLayout.setExpanded(false, false)
@@ -85,15 +85,8 @@ class EmergencyActivity : BaseActivity() {
     }
 
     private fun showInsuranceActive() {
-        firstEmergencyButton.enable()
         secondEmergencyButton.enable()
 
-        firstEmergencyButton.setHapticClickListener {
-            tracker.emergencyClick()
-            claimsViewModel.triggerCallMeChat {
-                startClosableChat()
-            }
-        }
         secondEmergencyButton.setHapticClickListener {
             tracker.callGlobalAssistance()
             makeACall(GLOBAL_ASSISTANCE_URI)
@@ -101,7 +94,6 @@ class EmergencyActivity : BaseActivity() {
     }
 
     private fun showInsuranceInactive() {
-        firstEmergencyButton.disable()
         secondEmergencyButton.disable()
     }
 

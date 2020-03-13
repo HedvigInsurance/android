@@ -27,7 +27,6 @@ class AboutAppActivity : BaseActivity() {
 
         setupLargeTitle(
             R.string.PROFILE_ABOUT_APP_TITLE,
-            R.font.circular_bold,
             R.drawable.ic_back
         ) {
             onBackPressed()

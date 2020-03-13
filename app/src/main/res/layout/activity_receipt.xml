@@ -29,12 +29,12 @@
 
         <TextView
             android:id="@+id/receipt_title"
-            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/base_margin_triple"
-            android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE" />
+            android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE"
+            android:textAppearance="?textAppearanceHeadline6" />
 
         <Space
             android:layout_width="0dp"
@@ -85,7 +85,6 @@
 
         <Button
             android:id="@+id/download"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/KEY_GEAR_RECEIPT_DOWNLOAD"

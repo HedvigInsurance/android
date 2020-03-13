@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dismissablepager
+package com.hedvig.app.feature.dismissiblepager
 
 interface DismissablePageTracker {
     fun clickProceed()

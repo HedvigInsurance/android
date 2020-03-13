@@ -13,8 +13,8 @@
         android:tint="@color/link_purple"
         app:srcCompat="@drawable/ic_info_purple" />
 
-    <TextView
-        style="@style/Body.Small.Link"
+    <Button
+        style="?attr/materialButtonTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/base_margin_half"
@@ -22,5 +22,5 @@
         android:paddingEnd="@dimen/base_margin_half"
         android:paddingBottom="@dimen/base_margin"
         android:text="@string/CHARITY_INFO_BUTTON_LABEL"
-        android:textAllCaps="false" />
+        android:textColor="@color/colorSecondary" />
 </LinearLayout>

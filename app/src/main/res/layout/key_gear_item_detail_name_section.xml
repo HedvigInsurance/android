@@ -7,12 +7,12 @@
     android:orientation="vertical">
 
     <TextView
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE" />
+        android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
+        android:textAppearance="?textAppearanceHeadline6" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,7 +23,6 @@
 
         <TextView
             android:id="@+id/name"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -41,17 +40,15 @@
             app:hintText="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
             tools:visibility="visible" />
 
-
         <Button
             android:id="@+id/addName"
-            style="@style/Body.Regular.Link"
+            style="?attr/materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
+            android:layout_gravity="end|center|center_vertical"
             android:background="?attr/selectableItemBackground"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
-            android:textAllCaps="false"
-            android:textColor="@color/link_purple" />
+            android:textColor="?colorSecondary" />
 
     </FrameLayout>
 </LinearLayout>

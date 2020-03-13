@@ -27,11 +27,11 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/Headline.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:gravity="center"
+            android:textAppearance="?textAppearanceHeadline6"
             android:visibility="gone"
             tools:text="@string/NEWS_TITLE"
             tools:visibility="visible" />
@@ -43,14 +43,14 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <com.hedvig.app.feature.dismissablepager.PagerIndicatorView
+    <com.hedvig.app.feature.dismissiblepager.PagerIndicatorView
         android:id="@+id/pagerIndicator"
         android:layout_width="match_parent"
         android:layout_height="@dimen/pager_indicator_height" />
 
     <Button
         android:id="@+id/proceed"
-        style="@style/HedvigButton.Purple"
+        style="@style/Hedvig.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"

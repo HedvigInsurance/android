@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Hedvig.Theme.V21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorError">@color/coral_500</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryVariant</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
+        <item name="fontFamily">@font/favorit_book</item>
+        <item name="android:fontFamily">@font/favorit_book</item>
+
+        <item name="shapeAppearanceLargeComponent">
+            @style/Hedvig.ShapeAppearance.LargeComponent
+        </item>
+
+        <!-- Default button -->
+        <item name="materialButtonStyle">@style/Hedvig.Button</item>
+        <item name="textAppearanceButton">@style/Hedvig.TextAppearance.Button</item>
+
+        <!-- Button Variants -->
+        <item name="materialButtonContainedLargeStyle">@style/Hedvig.Button.Large</item>
+        <item name="materialButtonTextStyle">@style/Hedvig.Button.Text</item>
+        <item name="materialButtonOutlinedStyle">@style/Hedvig.Button.Outlined</item>
+
+        <!-- Default text style -->
+        <item name="android:textAppearance">?textAppearanceBody1</item>
+
+        <!-- Material Typography variants -->
+        <item name="textAppearanceHeadline3">@style/Hedvig.TextAppearance.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/Hedvig.TextAppearance.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/Hedvig.TextAppearance.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/Hedvig.TextAppearance.Headline6</item>
+
+        <item name="textAppearanceSubtitle1">@style/Hedvig.TextAppearance.Subtitle1</item>
+
+        <item name="textAppearanceBody1">@style/Hedvig.TextAppearance.Body1</item>
+        <item name="textAppearanceBody2">@style/Hedvig.TextAppearance.Body2</item>
+        <item name="textAppearanceBody3">@style/Hedvig.TextAppearance.Body3</item>
+
+        <item name="textAppearanceCaption">@style/Hedvig.TextAppearance.Caption</item>
+
+        <!-- Widget styles -->
+        <item name="appBarLayoutStyle">@style/Hedvig.Theme.AppBarLayout</item>
+
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:alertDialogTheme">@style/AlertDialog</item>
+        <item name="android:statusBarColor">@color/colorBackground</item>
+    </style>
+
+    <attr name="materialButtonContainedLargeStyle" format="reference" />
+    <attr name="materialButtonTextStyle" format="reference" />
+    <attr name="textAppearanceBody3" format="reference" />
+
+</resources>

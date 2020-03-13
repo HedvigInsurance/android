@@ -11,7 +11,6 @@
 
         <TextView
             android:id="@+id/hedvigMessage"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
