@@ -17,6 +17,53 @@
             tools:visibility="gone" />
 
         <LinearLayout
+            android:id="@+id/importantMessagesInfoBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_triple"
+            android:background="@drawable/rounded_corners_background_light_gray"
+            android:backgroundTint="@color/sunflower_300"
+            android:orientation="vertical"
+            android:padding="@dimen/base_margin_double"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/importantMessagesTitle"
+                style="@style/Headline.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/off_black_dark"
+                tools:text="Alert" />
+
+            <TextView
+                android:id="@+id/importantMessagesBody"
+                style="@style/Body.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin"
+                android:fontFamily="@font/circular_book"
+                android:gravity="center"
+                android:textColor="@color/off_black"
+                tools:text="Alert infot" />
+
+            <Button
+                android:id="@+id/importantMessagesButton"
+                style="@style/HedvigButton.Outlined.Black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin_double"
+                tools:text="Read more" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/infoBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +75,7 @@
             android:orientation="vertical"
             android:padding="@dimen/base_margin_double"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/importantMessagesInfoBox"
             tools:visibility="visible">
 
             <TextView

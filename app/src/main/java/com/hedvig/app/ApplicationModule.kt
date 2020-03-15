@@ -12,6 +12,7 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
+import com.hedvig.app.data.ImportantMessagesRepository
 import com.hedvig.app.data.debit.DirectDebitRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
@@ -71,6 +72,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.viewmodel.DirectDebitViewModel
 import com.hedvig.app.viewmodel.DirectDebitViewModelImpl
+import com.hedvig.app.viewmodel.ImportantMessagesViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -171,6 +173,7 @@ val viewModelModule = module {
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+    viewModel { ImportantMessagesViewModel(get()) }
 
 }
 
@@ -214,6 +217,7 @@ val repositoriesModule = module {
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
+    single { ImportantMessagesRepository(get(), get()) }
 }
 
 val trackerModule = module {
