@@ -1,0 +1,8 @@
+query ImportantMessages($languageCode: String!) {
+  importantMessages(where: { language: { code: $languageCode } }) {
+    title
+    message
+    button
+    link
+  }
+}

@@ -122,6 +122,11 @@
         <item name="android:background">@drawable/button_border_purple</item>
     </style>
 
+    <style name="HedvigButton.Outlined.Black">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/button_border_black</item>
+    </style>
+
     <style name="HedvigButton.Outlined.White">
         <item name="android:background">@drawable/button_border_white</item>
         <item name="android:textColor">@color/off_white</item>

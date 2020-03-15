@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.ImportantMessagesQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
@@ -17,23 +18,15 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
-import com.hedvig.app.util.extensions.addViews
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.displayMetrics
-import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.animateCollapse
-import com.hedvig.app.util.extensions.view.animateExpand
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.view.*
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isApartmentOwner
 import com.hedvig.app.util.isHouse
 import com.hedvig.app.util.isStudentInsurance
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.viewmodel.DirectDebitViewModel
+import com.hedvig.app.viewmodel.ImportantMessagesViewModel
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -59,6 +52,7 @@ class DashboardFragment : BaseTabFragment() {
 
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
     private val directDebitViewModel: DirectDebitViewModel by sharedViewModel()
+    private val importantMessagesViewModel: ImportantMessagesViewModel by sharedViewModel()
 
     private val bottomNavigationHeight: Int by lazy {
         resources.getDimensionPixelSize(R.dimen.bottom_navigation_height)
@@ -105,11 +99,13 @@ class DashboardFragment : BaseTabFragment() {
     private fun loadData() {
         dashboardViewModel.data.observe(this) { bindData() }
         directDebitViewModel.data.observe(this) { bindData() }
+        importantMessagesViewModel.data.observe(this) { bindData() }
     }
 
     private fun bindData() {
         val dashboardData = dashboardViewModel.data.value ?: return
         val directDebitData = directDebitViewModel.data.value ?: return
+        val importantMessagesData = importantMessagesViewModel.data.value ?: return
         loadingSpinner.remove()
         setupInsuranceStatusStatus(dashboardData.insurance)
 
@@ -147,6 +143,9 @@ class DashboardFragment : BaseTabFragment() {
         dashboardData.insurance.type?.let { setupAdditionalInformationRow(it) }
 
         setupInfoBox(directDebitData.directDebitStatus, dashboardData.insurance.renewal)
+        importantMessagesData.importantMessages.firstOrNull()?.let { importantMessage ->
+            setupImportantMessagesInfoBox(importantMessage)
+        } ?: hideImportantMessagesInfoBox()
     }
 
     private fun makePerilCategoryRow(category: PerilCategoryFragment): PerilCategoryView {
@@ -400,4 +399,21 @@ class DashboardFragment : BaseTabFragment() {
             dashboardNestedScrollView.scrollY += d
         }
     }
+
+    private fun setupImportantMessagesInfoBox(
+        importantMessage: ImportantMessagesQuery.ImportantMessage
+    ) {
+        importantMessagesTitle.text = importantMessage.title
+        importantMessage.message?.let { importantMessagesBody.setMarkdownText(it) }
+        importantMessagesButton.text = importantMessage.button
+        importantMessagesButton.setHapticClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(importantMessage.link)))
+        }
+        importantMessagesInfoBox.show()
+    }
+
+    private fun hideImportantMessagesInfoBox() {
+        importantMessagesInfoBox.remove()
+    }
+
 }
