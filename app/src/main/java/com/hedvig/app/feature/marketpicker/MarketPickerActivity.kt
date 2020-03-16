@@ -18,7 +18,6 @@ import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import i
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -35,7 +34,6 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         model.markets.observe(this) { list ->
             list?.let {
                 (marketList.adapter as? MarketAdapter)?.items = list
-                i { list.toString() }
             }
         }
         model.preselectedMarket.observe(this) { marketString ->
@@ -62,7 +60,6 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                     val market = model.markets.value?.first { it.selected }?.market
                     market?.let { market ->
                         languageAdapter.selectedMarket = market
-                        languageList.adapter = languageAdapter
                     }
                 } catch (e: Exception) {
 
@@ -84,9 +81,11 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             goToMarketingActivity()
         }
 
-        // model.selectedLanguage.observe(this) { language ->
-        //     save.isEnabled = language != null
-        // }
+        model.isMarketAndLanguageSelected.observe(this) { isBothSelected ->
+            isBothSelected?.let {
+                save.isEnabled = isBothSelected
+            }
+        }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important

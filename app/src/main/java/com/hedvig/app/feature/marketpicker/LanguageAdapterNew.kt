@@ -12,6 +12,7 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
+import d
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapterNew(
@@ -26,8 +27,6 @@ class LanguageAdapterNew(
             field = value
             notifyDataSetChanged()
         }
-
-    var market = model.markets.value?.first { !it.selected }?.market
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
@@ -82,9 +81,11 @@ class LanguageAdapterNew(
                     when (selectedMarket) {
                         Market.SE -> {
                             model.selectLanguage(Language.EN_SE)
+                            d { "EN_SE" }
                         }
                         Market.NO -> {
                             model.selectLanguage(Language.EN_NO)
+                            d { "EN_NO" }
                         }
                     }
                 }
@@ -92,9 +93,11 @@ class LanguageAdapterNew(
                     when (selectedMarket) {
                         Market.SE -> {
                             model.selectLanguage(Language.SV_SE)
+                            d { "SV_SE" }
                         }
                         Market.NO -> {
                             model.selectLanguage(Language.NB_NO)
+                            d { "NB_NO" }
                         }
                     }
                 }

@@ -131,6 +131,6 @@ enum class Language {
 
 data class LanguageModel(
     val language: Language,
-    val selected: Boolean = false,
+    var selected: Boolean = false,
     var available: Boolean = false
 )

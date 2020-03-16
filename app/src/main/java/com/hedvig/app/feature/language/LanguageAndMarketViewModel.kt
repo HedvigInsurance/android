@@ -19,7 +19,7 @@ class LanguageAndMarketViewModel(
 ) : AndroidViewModel(application) {
     val markets = MutableLiveData<List<MarketModel>>()
     val preselectedMarket = MutableLiveData<String>()
-
+    val isMarketAndLanguageSelected = MutableLiveData<Boolean>(false)
     val languages = MutableLiveData<List<LanguageModel>>()
 
     init {
@@ -34,6 +34,16 @@ class LanguageAndMarketViewModel(
                 language
             )
         })
+    }
+
+    private fun setMarketAndLanguageSelected() {
+        val selectedMarket = markets.value?.firstOrNull { it.selected }
+        val selectedLanguage = languages.value?.firstOrNull { it.selected }
+        if (selectedMarket != null && selectedLanguage != null) {
+            isMarketAndLanguageSelected.postValue(true)
+        } else {
+            isMarketAndLanguageSelected.postValue(false)
+        }
     }
 
     fun save() {
@@ -83,10 +93,15 @@ class LanguageAndMarketViewModel(
             }
             LanguageModel(
                 languageModel.language,
-                false,
+                languageModel.selected,
                 available
             )
         })
+        languages.value?.let { list ->
+            for (languageModel in list) {
+                languageModel.selected = false
+            }
+        }
     }
 
     fun loadGeo() {
