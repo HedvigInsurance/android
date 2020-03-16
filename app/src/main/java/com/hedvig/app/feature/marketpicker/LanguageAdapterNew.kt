@@ -9,25 +9,39 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapterNew(
-    private val model: LanguageAndMarketViewModel,
-    private val selectedMarket: Market
+    private val model: LanguageAndMarketViewModel
 ) : RecyclerView.Adapter<LanguageAdapterNew.ViewHolder>() {
     private var lastCheckedPos = 0
     private var lastChecked: RadioButton? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        model.selectedLanguage.postValue(null)
-        return ViewHolder(parent)
-    }
+    var selectedMarket = Market.SE
+    var items: List<LanguageModel> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
-    override fun getItemCount() = Market.values().size
+    var market = model.markets.value?.first { !it.selected }?.market
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
+
+    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (items[position].selected) {
+            animateRadioButton(holder)
+            holder.button.background =
+                holder.button.context.getDrawable(R.drawable.ic_radio_button_checked)
+        } else {
+            holder.button.background =
+                holder.button.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+        }
         when (position) {
             LOCAL -> {
                 when (selectedMarket) {

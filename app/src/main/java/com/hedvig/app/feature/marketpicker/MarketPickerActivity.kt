@@ -38,7 +38,6 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 i { list.toString() }
             }
         }
-
         model.preselectedMarket.observe(this) { marketString ->
             marketString?.let {
                 val market = Market.valueOf(marketString)
@@ -48,16 +47,28 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                     }
                 )
             }
-
         }
         model.loadGeo()
+        val languageAdapter = LanguageAdapterNew(model)
+        languageList.adapter = languageAdapter
+        model.markets.observe(this) { markets ->
+            markets?.let {
+                val language = model.languages.value
+                language?.let { list ->
+                    val availableLanguages = list.filter { it.available }
+                    languageAdapter.items = availableLanguages
+                }
+                try {
+                    val market = model.markets.value?.first { it.selected }?.market
+                    market?.let { market ->
+                        languageAdapter.selectedMarket = market
+                        languageList.adapter = languageAdapter
+                    }
+                } catch (e: Exception) {
 
-        languageList.adapter = LanguageAdapterNew(model, Market.SE)
-        // model.selectedMarket.observe(this) { market ->
-        //     market?.let {
-        //         languageList.adapter = LanguageAdapterNew(model, market)
-        //     }
-        // }
+                }
+            }
+        }
         languageList.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
@@ -66,16 +77,16 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
         save.setHapticClickListener {
             model.save()
-            val language = model.selectedLanguage.value
-            language?.let {
-                setLanguage(language)
-            }
+            // val language = model.selectedLanguage.value
+            // language?.let {
+            //     setLanguage(language)
+            // }
             goToMarketingActivity()
         }
 
-        model.selectedLanguage.observe(this) { language ->
-            save.isEnabled = language != null
-        }
+        // model.selectedLanguage.observe(this) { language ->
+        //     save.isEnabled = language != null
+        // }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important

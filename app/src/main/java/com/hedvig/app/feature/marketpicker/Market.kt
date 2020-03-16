@@ -1,7 +1,11 @@
 package com.hedvig.app.feature.marketpicker
 
+import com.hedvig.app.feature.settings.Language
+
 enum class Market {
-    SE,
+    SE {
+        val languages = listOf<Language>(Language.EN_SE, Language.SV_SE)
+    },
     NO;
 
     companion object {

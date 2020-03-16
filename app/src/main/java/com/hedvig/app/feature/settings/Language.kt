@@ -6,7 +6,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
-import java.util.*
+import java.util.Locale
 
 enum class Language {
     SYSTEM_DEFAULT,
@@ -128,3 +128,9 @@ enum class Language {
         data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
     }
 }
+
+data class LanguageModel(
+    val language: Language,
+    val selected: Boolean = false,
+    var available: Boolean = false
+)
