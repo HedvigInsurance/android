@@ -111,10 +111,6 @@
         </item>
     </style>
 
-    <style name="LoadingSpinner" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/purple</item>
-    </style>
-
     <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@drawable/background_rounded_corners</item>
     </style>

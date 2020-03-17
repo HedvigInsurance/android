@@ -30,7 +30,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <!-- There's something really wrong with the colors here. TODO: Investigate this further -->
+    <!-- Theme attribute refused to work as a color here. -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
         android:layout_width="match_parent"
