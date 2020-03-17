@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
@@ -54,21 +54,9 @@ class AttachFileAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         if (viewType == CAMERA_AND_MISC_VIEW_TYPE) {
-            ViewHolder.CameraAndMiscViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.camera_and_misc_item,
-                    parent,
-                    false
-                )
-            )
+            ViewHolder.CameraAndMiscViewHolder(parent)
         } else {
-            ViewHolder.ImageViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.attach_file_image_item,
-                    parent,
-                    false
-                )
-            )
+            ViewHolder.ImageViewHolder(parent)
         }
 
     override fun getItemCount() = attachImageData.size + 1
@@ -165,19 +153,31 @@ class AttachFileAdapter(
         }
     }
 
-    sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        class CameraAndMiscViewHolder(itemView: View) : ViewHolder(itemView) {
+    sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        class CameraAndMiscViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.camera_and_misc_item,
+                parent,
+                false
+            )
+        ) {
             val cameraButton: FrameLayout = itemView.cameraButton
             val cameraIcon: ImageView = itemView.cameraIcon
-            val loadingSpinner: LottieAnimationView = itemView.loadingSpinner
+            val loadingSpinner: ProgressBar = itemView.loadingSpinner
             val miscButton: FrameLayout = itemView.miscButton
         }
 
-        class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
+        class ImageViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.attach_file_image_item,
+                parent,
+                false
+            )
+        ) {
             val attachFileImage: ImageView = itemView.attachFileImage
             val attachFileImageContainer: FrameLayout = itemView.attachFileContainer
             val attachFileSendButton: Button = itemView.attachFileSendButton
-            val loadingSpinner: LottieAnimationView = itemView.loadingSpinner
+            val loadingSpinner: ProgressBar = itemView.loadingSpinner
         }
     }
 
