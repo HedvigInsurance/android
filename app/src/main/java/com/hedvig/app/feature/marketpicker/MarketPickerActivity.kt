@@ -30,20 +30,15 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         super.onCreate(savedInstanceState)
 
         marketList.adapter = MarketAdapter(model)
+        marketList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
+                compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
+            }
+        )
 
         model.markets.observe(this) { list ->
             list?.let {
                 (marketList.adapter as? MarketAdapter)?.items = list
-            }
-        }
-        model.preselectedMarket.observe(this) { marketString ->
-            marketString?.let {
-                val market = Market.valueOf(marketString)
-                marketList.addItemDecoration(
-                    DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
-                        compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
-                    }
-                )
             }
         }
         model.loadGeo()
@@ -81,11 +76,12 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             goToMarketingActivity()
         }
 
-        model.isMarketAndLanguageSelected.observe(this) { isBothSelected ->
-            isBothSelected?.let {
-                save.isEnabled = isBothSelected
-            }
-        }
+        //TODO fixa
+        // model.isMarketAndLanguageSelected.observe(this) { isBothSelected ->
+        //     isBothSelected?.let {
+        //         save.isEnabled = isBothSelected
+        //     }
+        // }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important

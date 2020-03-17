@@ -36,16 +36,6 @@ class LanguageAndMarketViewModel(
         })
     }
 
-    private fun setMarketAndLanguageSelected() {
-        val selectedMarket = markets.value?.firstOrNull { it.selected }
-        val selectedLanguage = languages.value?.firstOrNull { it.selected }
-        if (selectedMarket != null && selectedLanguage != null) {
-            isMarketAndLanguageSelected.postValue(true)
-        } else {
-            isMarketAndLanguageSelected.postValue(false)
-        }
-    }
-
     fun save() {
         val selected = markets.value?.first { it.selected }?.market
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication())
@@ -80,23 +70,22 @@ class LanguageAndMarketViewModel(
             )
         })
 
-        languages.postValue(languages.value?.map { languageModel ->
-            var available = false
-            if (market == Market.SE) {
-                if (languageModel.language == Language.SV_SE || languageModel.language == Language.EN_SE) {
-                    available = true
+        languages.value?.let { list ->
+            for (languageModel in list) {
+                var available = false
+                if (market == Market.SE) {
+                    if (languageModel.language == Language.SV_SE || languageModel.language == Language.EN_SE) {
+                        available = true
+                    }
+                } else if (market == Market.NO) {
+                    if (languageModel.language == Language.NB_NO || languageModel.language == Language.EN_NO) {
+                        available = true
+                    }
                 }
-            } else if (market == Market.NO) {
-                if (languageModel.language == Language.NB_NO || languageModel.language == Language.EN_NO) {
-                    available = true
-                }
+                languageModel.available = available
             }
-            LanguageModel(
-                languageModel.language,
-                languageModel.selected,
-                available
-            )
-        })
+        }
+
         languages.value?.let { list ->
             for (languageModel in list) {
                 languageModel.selected = false

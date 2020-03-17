@@ -87,9 +87,4 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel) :
     ) {
         val button: RadioButton = itemView.radioButton
     }
-
-    companion object {
-        private const val SV = 0
-        private const val NO = 1
-    }
 }
