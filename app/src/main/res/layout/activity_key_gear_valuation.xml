@@ -47,17 +47,22 @@
         android:textAppearance="?textAppearanceHeadline6"
         tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
 
-    <com.hedvig.app.ui.view.HedvigEditText
-        android:id="@+id/priceInput"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        android:imeOptions="actionDone"
-        android:inputType="numberDecimal"
-        app:hintBackground="?android:colorBackground"
-        app:hintText="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE" />
+        android:inputType="numberDecimal">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/priceInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE"
+            android:imeOptions="actionDone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/noCoverage"

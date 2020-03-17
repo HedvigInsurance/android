@@ -1,4 +1,4 @@
-package com.hedvig.app
+package com.hedvig.app.mocks
 
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery

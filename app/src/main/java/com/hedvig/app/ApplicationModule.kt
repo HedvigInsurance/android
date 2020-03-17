@@ -44,6 +44,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModelImpl
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
@@ -164,7 +165,6 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 }
 
 val viewModelModule = module {
-    viewModel { MarketingStoriesViewModel(get()) }
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
@@ -175,6 +175,10 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
+}
+
+val marketingModule = module {
+    viewModel<MarketingStoriesViewModel> { MarketingStoriesViewModelImpl(get()) }
 }
 
 val offerModule = module {

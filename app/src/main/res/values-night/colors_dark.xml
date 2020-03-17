@@ -5,7 +5,7 @@
     <item name="icon_tint" type="color">@color/off_white</item>
 
     <!-- TODO: Remove when we have colors for the offer screen -->
-    <item name="offer_background" type="color">?android:colorBackground</item>
+    <item name="offer_background" type="color">@color/colorBackground</item>
 
     <item name="colorPrimary" type="color">@color/hedvig_white</item>
     <item name="colorOnPrimary" type="color">@color/hedvig_black</item>

@@ -1,4 +1,4 @@
-package com.hedvig.app
+package com.hedvig.app.mocks
 
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData

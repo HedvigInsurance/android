@@ -202,6 +202,7 @@
         android:textColor="@color/off_black_dark"
         android:translationY="@dimen/offer_sign_button_off_screen_translation"
         android:visibility="visible"
+        app:drawableTint="@color/off_black_dark"
         tools:translationY="0dp" />
 
 </FrameLayout>

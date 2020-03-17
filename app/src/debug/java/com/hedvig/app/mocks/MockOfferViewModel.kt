@@ -1,4 +1,4 @@
-package com.hedvig.app
+package com.hedvig.app.mocks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
+import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
 

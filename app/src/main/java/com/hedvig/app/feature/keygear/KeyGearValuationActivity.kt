@@ -26,6 +26,7 @@ import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -92,7 +93,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     val monthText = DateFormatSymbols().months[month]
                     dateInput.text = "$dayOfMonth $monthText $year"
 
-                    setButtonState(priceInput.getText().isNotEmpty(), date != null)
+                    setButtonState(!priceInput.text.isNullOrEmpty(), date != null)
                 },
                 date?.year ?: calendar.get(Calendar.YEAR),
                 date?.monthValue ?: calendar.get(Calendar.MONTH),
@@ -115,7 +116,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             isUploading = true
             transitionToUploading()
 
-            val price = priceInput.getText()
+            val price = priceInput.text.toString()
             safeLet(date, id) { date, id ->
                 val monetaryValue =
                     MonetaryAmountV2Input(amount = price, currency = "SEK")
@@ -124,8 +125,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             }
         }
 
-        priceInput.setOnChangeListener {
-            val text = priceInput.getText()
+        priceInput.onChange {
+            val text = priceInput.text.toString()
             setButtonState(text.isNotEmpty(), date != null)
             if (!text.isBlank()) {
                 try {
