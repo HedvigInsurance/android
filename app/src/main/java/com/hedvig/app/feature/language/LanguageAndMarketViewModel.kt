@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.language
 
 import android.annotation.SuppressLint
-import android.app.Application
+import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
@@ -21,8 +21,8 @@ import kotlinx.coroutines.launch
 class LanguageAndMarketViewModel(
     private val languageRepository: LanguageRepository,
     private val marketRepository: MarketRepository,
-    application: Application
-) : AndroidViewModel(application) {
+    private val context: Context
+) : ViewModel() {
     val markets = MutableLiveData<List<MarketModel>>()
     private val preselectedMarket = MutableLiveData<String>()
     val isLanguageSelected = MutableLiveData<Boolean>(false)
@@ -59,7 +59,7 @@ class LanguageAndMarketViewModel(
     fun save() {
         val market = markets.value?.first { it.selected }?.market
         val language = languages.value?.first { it.selected }?.language
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication())
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         market?.let {
             sharedPreferences.edit()
@@ -69,17 +69,17 @@ class LanguageAndMarketViewModel(
 
         language?.let {
             PreferenceManager
-                .getDefaultSharedPreferences(getApplication())
+                .getDefaultSharedPreferences(context)
                 .edit()
                 .putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
                 .commit()
 
-            language.apply(getApplication())?.let { language ->
+            language.apply(context)?.let { language ->
                 updateLanguage(makeLocaleString(language))
             }
 
             LocalBroadcastManager
-                .getInstance(getApplication())
+                .getInstance(context)
                 .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
         }
     }

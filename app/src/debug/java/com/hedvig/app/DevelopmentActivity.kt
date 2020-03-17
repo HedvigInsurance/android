@@ -194,8 +194,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 offerModule,
                 profileModule,
                 directDebitModule,
-                keyGearModule,
-                languageAndMarketModule
+                keyGearModule
             )
     }
 }
