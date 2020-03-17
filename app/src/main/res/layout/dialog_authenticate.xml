@@ -38,7 +38,6 @@
         android:layout_marginEnd="@dimen/base_margin"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:contentDescription="@null"
-        android:tint="@color/icon_tint"
         app:srcCompat="@drawable/ic_bank_id" />
 
 </LinearLayout>

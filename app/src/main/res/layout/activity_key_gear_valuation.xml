@@ -11,7 +11,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
-        android:background="@color/background"
+        android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -44,7 +44,7 @@
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:textAlignment="center"
-        android:textAppearance="?textAppearanceSubtitle1"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
 
     <com.hedvig.app.ui.view.HedvigEditText
@@ -56,7 +56,7 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
-        app:hintBackground="@color/background"
+        app:hintBackground="?android:colorBackground"
         app:hintText="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE" />
 
     <TextView
@@ -79,7 +79,7 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        app:dateHintBackground="@color/background" />
+        app:dateHintBackground="?android:colorBackground" />
 
     <FrameLayout
         android:id="@+id/saveContainer"

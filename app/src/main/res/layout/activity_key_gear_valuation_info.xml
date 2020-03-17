@@ -12,7 +12,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
-        android:background="@color/background"
+        android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:gravity="center_vertical"
         android:orientation="horizontal"

@@ -7,7 +7,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
@@ -48,15 +47,6 @@ class ReferralsSuccessfulInviteActivity : BaseActivity(R.layout.referrals_succes
             "REFERRAL_VALUE" to incentive
         )
         referralSuccessBody.show()
-    }
-
-    private fun showUltimateSuccess() {
-        referralSuccessRoot.setBackgroundColor(compatColor(R.color.yellow))
-        referralUltimateSuccessImage.show()
-        referralUltimateSuccessTitle.text = getString(R.string.REFERRAL_ULTIMATE_SUCCESS_TITLE)
-        referralUltimateSuccessTitle.show()
-        referralUltimateSuccessBody.text = getString(R.string.REFERRAL_ULTIMATE_SUCCESS_BODY)
-        referralUltimateSuccessBody.show()
     }
 
     private fun setupButtons() {

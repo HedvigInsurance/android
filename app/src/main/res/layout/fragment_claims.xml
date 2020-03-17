@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
                     android:text="@string/CLAIMS_QUICK_ACTIONS"
-                    android:textAppearance="?textAppearanceSubtitle1" />
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/commonClaimsRecyclerView"

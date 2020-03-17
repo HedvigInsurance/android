@@ -32,7 +32,7 @@
             android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
             android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
             android:textAppearance="?textAppearanceHeadline5"
-            android:textColor="@color/link_purple"
+            android:textColor="?colorSecondary"
             app:layout_constraintBottom_toTopOf="@id/explainerTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -107,8 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="@string/TRUSTLY_SKIP_BUTTON"
-                    android:textAllCaps="false"
-                    android:textColor="@color/coral_500" />
+                    android:textColor="?colorError" />
 
             </FrameLayout>
 
@@ -164,7 +163,7 @@
                 android:gravity="center"
                 android:paddingStart="@dimen/base_margin_triple"
                 android:paddingEnd="@dimen/base_margin_triple"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintBottom_toTopOf="@id/resultClose"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

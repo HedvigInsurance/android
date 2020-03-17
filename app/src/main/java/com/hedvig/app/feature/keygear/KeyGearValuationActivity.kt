@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
@@ -22,6 +23,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
@@ -254,7 +256,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         if (hasPrice && hasDate) {
             save.isEnabled = true
             saveContainer.backgroundTintList =
-                ContextCompat.getColorStateList(this, R.color.link_purple)
+                ColorStateList.valueOf(colorAttr(R.attr.colorSecondary))
         } else {
             save.isEnabled = false
             saveContainer.backgroundTintList =

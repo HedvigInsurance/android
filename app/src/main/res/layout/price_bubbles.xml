@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/base_margin"
-    tools:background="@color/dark_purple"
+    tools:background="@color/offer_background"
     tools:layout_marginTop="0dp">
 
     <FrameLayout
@@ -13,7 +13,7 @@
         android:layout_width="@dimen/price_bubble_size"
         android:layout_height="@dimen/price_bubble_size"
         android:background="@drawable/sphere"
-        android:backgroundTint="@color/background_elevation_1"
+        android:backgroundTint="?colorSurface"
         android:scaleX="0"
         android:scaleY="0"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/base_margin_sextuple"
-            android:textColor="@color/gray"
+            android:textAppearance="?textAppearanceBody1"
             android:visibility="gone"
             tools:text="109 kr/mån"
             tools:visibility="visible" />
@@ -41,14 +41,15 @@
             android:layout_marginBottom="@dimen/base_margin"
             android:textSize="60sp"
             tools:text="99"
-            tools:textColor="@color/pink" />
+            tools:textColor="?colorError" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/base_margin_quintuple"
-            android:text="@string/OFFER_PRICE_PER_MONTH" />
+            android:text="@string/OFFER_PRICE_PER_MONTH"
+            android:textAppearance="?textAppearanceBody1" />
     </FrameLayout>
 
 
@@ -57,7 +58,7 @@
         android:layout_width="@dimen/discount_bubble_size"
         android:layout_height="@dimen/discount_bubble_size"
         android:background="@drawable/sphere"
-        android:backgroundTint="@color/pink"
+        android:backgroundTint="?colorError"
         android:scaleX="0"
         android:scaleY="0"
         android:translationX="-40dp"
@@ -76,7 +77,7 @@
             android:layout_marginBottom="@dimen/base_margin"
             android:text="@string/OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE"
             android:textAppearance="?textAppearanceBody3"
-            android:textColor="@color/white"
+            android:textColor="?colorOnError"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/discount"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +94,7 @@
             android:gravity="center"
             android:lineSpacingExtra="0sp"
             android:textAppearance="?textAppearanceHeadline6"
-            android:textColor="@color/white"
+            android:textColor="?colorOnError"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

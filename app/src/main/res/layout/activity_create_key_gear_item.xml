@@ -11,7 +11,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+        android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:padding="@dimen/base_margin">
 
@@ -91,7 +91,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:background="@drawable/button_primary"
-        android:backgroundTint="@color/link_purple"
+        android:backgroundTint="?colorSecondary"
         android:translationY="140dp"
         android:visibility="gone"
         tools:translationY="0dp"

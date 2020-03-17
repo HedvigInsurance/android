@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
             android:textAppearance="?textAppearanceBody2"
-            android:textColor="@color/off_black"
             tools:text="Du ligger 3 månader efter med dina betalningar. Vi kommer att dra mer pengar än din ordinarie premie den 21 juni, 2019." />
 
     </LinearLayout>

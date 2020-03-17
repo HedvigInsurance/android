@@ -43,7 +43,7 @@
                     android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:text="@string/PROFILE_MY_INFO_SECTION_TITLE_CONTACT_DETAILS"
-                    android:textAppearance="?textAppearanceSubtitle1" />
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@id/emailInputContainer"
@@ -51,8 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="12dp"
-                    app:errorTextAppearance="@style/ProfileField.ValidationError">
+                    android:layout_marginEnd="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@id/emailInput"
@@ -64,15 +63,13 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@id/phoneNumberInputContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="32dp"
-                    android:layout_marginEnd="12dp"
-                    app:errorTextAppearance="@style/ProfileField.ValidationError">
+                    android:layout_marginEnd="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@id/phoneNumberInput"
@@ -83,7 +80,6 @@
                         tools:text="0701234567" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
 
             </LinearLayout>
 

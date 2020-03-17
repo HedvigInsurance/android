@@ -28,6 +28,7 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules

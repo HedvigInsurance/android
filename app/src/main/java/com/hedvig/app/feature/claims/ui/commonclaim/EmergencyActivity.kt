@@ -10,9 +10,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.util.darkenColor
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.startClosableChat
@@ -20,8 +18,6 @@ import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.lightenColor
-import com.hedvig.app.util.mappedColor
 import com.hedvig.app.util.svg.buildRequestBuilder
 import e
 import kotlinx.android.synthetic.main.activity_emergency.*
@@ -47,11 +43,8 @@ class EmergencyActivity : BaseActivity() {
             return
         }
 
-        val backgroundColor = if (isDarkThemeActive) {
-            darkenColor(compatColor(data.color.mappedColor()), 0.3f)
-        } else {
-            lightenColor(compatColor(data.color.mappedColor()), 0.3f)
-        }
+        // TODO: This surface should be themed entirely I think
+        val backgroundColor = colorAttr(R.attr.colorOnPrimary)
         setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
             onBackPressed()
         }

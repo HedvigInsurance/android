@@ -24,7 +24,7 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity
-            android:name=".ViewGalleryActivity"
+            android:name=".viewgallery.ViewGalleryActivity"
             android:label="View Gallery"
             android:theme="@style/Hedvig.Theme" />
 

@@ -45,40 +45,6 @@
         tools:text="@string/REFERRAL_SUCCESS_BODY"
         tools:visibility="visible" />
 
-
-    <ImageView
-        android:id="@+id/referralUltimateSuccessImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:contentDescription="@null"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_ultimate_success_alternative" />
-
-    <TextView
-        android:id="@+id/referralUltimateSuccessTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin_double"
-        android:gravity="center"
-        android:textAppearance="?textAppearanceHeadline5"
-        android:visibility="gone"
-        tools:text="@string/REFERRAL_ULTIMATE_SUCCESS_TITLE" />
-
-    <TextView
-        android:id="@+id/referralUltimateSuccessBody"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:gravity="center"
-        android:visibility="gone"
-        tools:text="@string/REFERRAL_SUCCESS_BODY" />
-
     <Button
         android:id="@+id/referralSuccessInvite"
         android:layout_width="wrap_content"

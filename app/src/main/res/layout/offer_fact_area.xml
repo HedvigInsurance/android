@@ -55,7 +55,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 tools:text="150 square meters" />
 
             <TextView
@@ -77,7 +77,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 tools:text="150 kvadratmeter" />
 
             <TextView
@@ -99,7 +99,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:visibility="gone"
                 tools:text="1987"
                 tools:visibility="visible" />
@@ -123,7 +123,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:visibility="gone"
                 tools:text="2"
                 tools:visibility="visible" />
@@ -147,7 +147,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:visibility="gone"
                 tools:text="Nej"
                 tools:visibility="visible" />
@@ -169,7 +169,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceHeadline6"
                 tools:text="4" />
 
             <View
@@ -177,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:background="@color/separator_elevation_1"
+                android:background="@color/separator_on_surface"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
@@ -205,7 +205,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:background="@color/separator_elevation_1" />
+                android:background="@color/separator_on_surface" />
 
             <TextView
                 android:id="@+id/offerExpirationDate"

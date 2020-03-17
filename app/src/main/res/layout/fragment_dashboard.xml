@@ -24,7 +24,6 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:background="@drawable/rounded_corners_background_light_gray"
-            android:backgroundTint="@color/violet_100"
             android:orientation="vertical"
             android:padding="@dimen/base_margin_double"
             android:visibility="gone"
@@ -36,8 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textAppearance="?textAppearanceSubtitle1"
-                android:textColor="@color/off_black_dark"
+                android:textAppearance="?textAppearanceHeadline6"
                 tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
 
             <TextView
@@ -48,7 +46,6 @@
                 android:layout_marginTop="@dimen/base_margin"
                 android:gravity="center"
                 android:textAppearance="?textAppearanceBody2"
-                android:textColor="@color/off_black"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
             <Button
@@ -58,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:textColor="@color/link_purple"
+                android:textColor="?colorSecondary"
                 tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL" />
 
         </LinearLayout>
@@ -79,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/DASHBOARD_INSURANCE_ACTIVE"
-                android:textAppearance="?textAppearanceSubtitle1" />
+                android:textAppearance="?textAppearanceHeadline6" />
 
             <ImageView
                 android:layout_width="@dimen/checkmark_size"
@@ -136,7 +133,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/base_margin_half"
                     android:includeFontPadding="false"
-                    android:textColor="@color/pink"
+                    android:textColor="?colorError"
                     android:textSize="@dimen/insurance_pending_countdown_text"
                     tools:text="8" />
 
@@ -147,7 +144,6 @@
                     android:layout_marginEnd="@dimen/base_margin"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_MONTH"
-                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -156,7 +152,6 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/base_margin_half"
                     android:includeFontPadding="false"
-                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/insurance_pending_countdown_text"
                     tools:text="23" />
 
@@ -167,7 +162,6 @@
                     android:layout_marginEnd="@dimen/base_margin"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_DAYS"
-                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -176,7 +170,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/base_margin_half"
                     android:includeFontPadding="false"
-                    android:textColor="@color/link_purple"
+                    android:textColor="?colorSecondary"
                     android:textSize="@dimen/insurance_pending_countdown_text"
                     tools:text="23" />
 
@@ -187,7 +181,6 @@
                     android:layout_marginEnd="@dimen/base_margin"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_HOURS"
-                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
                 <TextView
@@ -207,7 +200,6 @@
                     android:layout_marginEnd="@dimen/base_margin"
                     android:includeFontPadding="false"
                     android:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_PENDING_COUNTDOWN_MINUTES"
-                    android:textColor="@color/text_emphasized"
                     android:textSize="@dimen/text_small" />
 
             </LinearLayout>
@@ -224,7 +216,7 @@
 
             <TextView
                 android:id="@+id/insurancePendingMoreInfo"
-                style="@style/SmallButton"
+                style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin"

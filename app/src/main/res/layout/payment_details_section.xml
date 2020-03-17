@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceSubtitle1"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="Aktivt" />
 
     <TextView
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceSubtitle1"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="SEB **** 8347" />
 
     <TextView

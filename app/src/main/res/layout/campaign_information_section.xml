@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceSubtitle1"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="Partner XYZ" />
 
     <TextView
@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceSubtitle1"
+        android:textAppearance="?textAppearanceHeadline6"
         android:visibility="gone"
         tools:text="2019-06-28"
         tools:visibility="visible" />

@@ -39,7 +39,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:contentDescription="@null"
-        android:tint="@color/icon_tint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

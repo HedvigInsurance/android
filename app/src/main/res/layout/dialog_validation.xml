@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:textAppearance="?textAppearanceSubtitle1"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Hoppsan!" />

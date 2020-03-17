@@ -7,7 +7,7 @@
     android:layout_height="@dimen/key_gear_card_height"
     android:layout_gravity="center"
     android:background="@drawable/background_rounded_corners"
-    android:backgroundTint="@color/color_on_surface"
+    android:backgroundTint="?colorSurface"
     android:orientation="vertical"
     android:transitionName="addItemRoot"
     tools:layout_width="160dp">
@@ -32,7 +32,7 @@
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/KEY_GEAR_ADD_BUTTON"
         android:textAppearance="?textAppearanceBody2"
-        android:textColor="@color/link_purple"
+        android:textColor="?colorSecondary"
         android:transitionName="addItemLabel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

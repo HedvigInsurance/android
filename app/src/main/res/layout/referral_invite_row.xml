@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/referral_row_height"
-    android:background="@color/background_elevation_1">
+    android:background="?colorSurface">
 
     <FrameLayout
         android:id="@+id/avatarContainer"
@@ -70,7 +70,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="@drawable/background_rounded_corners"
-        tools:backgroundTint="@color/light_gray"
+        tools:backgroundTint="?colorSurface"
         tools:ignore="UseCompoundDrawables">
 
         <TextView
@@ -79,7 +79,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="@color/off_black"
             tools:text="-10 kr" />
 
         <ImageView

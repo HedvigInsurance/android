@@ -35,11 +35,11 @@
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/link_purple"
+            android:backgroundTint="?colorSecondary"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="@color/white" />
+            android:textColor="?colorOnSecondary" />
 
         <!--
         Ignore RtlHardcoded
@@ -80,7 +80,7 @@
         android:contentDescription="@null"
         android:visibility="gone"
         app:srcCompat="@drawable/animation_typing"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
     <com.hedvig.app.feature.chat.ui.AudioRecorderView
         android:id="@+id/audioRecorder"

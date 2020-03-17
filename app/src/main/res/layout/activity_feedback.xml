@@ -35,8 +35,8 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@string/PROFILE_FEEDBACK_HEADER"
-                    android:textColor="@color/white"
-                    android:textSize="40sp" />
+                    android:textAppearance="?textAppearanceHeadline3"
+                    android:textColor="?colorOnPrimary" />
 
             </FrameLayout>
 
@@ -49,7 +49,7 @@
 
             <Button
                 android:id="@id/bugReportEmail"
-                style="?attr/materialButtonTextStyle"
+                style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
@@ -66,7 +66,7 @@
 
             <Button
                 android:id="@id/playLink"
-                style="?attr/materialButtonTextStyle"
+                style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"

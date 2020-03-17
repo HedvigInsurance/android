@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:textAppearance="?textAppearanceSubtitle1"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="SOS Barnbyar" />
