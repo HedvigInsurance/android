@@ -77,17 +77,15 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         }
 
         //TODO fixa
-        // model.isMarketAndLanguageSelected.observe(this) { isBothSelected ->
-        //     isBothSelected?.let {
-        //         save.isEnabled = isBothSelected
-        //     }
-        // }
+        model.isLanguageSelected.observe(this) { isLanguageSelected ->
+            isLanguageSelected?.let {
+                save.isEnabled = isLanguageSelected
+            }
+        }
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-    private fun setLanguage(
-        language: Language
-    ) {
+    private fun setLanguage(language: Language) {
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .edit()

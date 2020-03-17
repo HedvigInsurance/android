@@ -43,30 +43,41 @@ class LanguageAdapterNew(
         }
         when (position) {
             LOCAL -> {
-                when (selectedMarket) {
-                    Market.SE -> {
-                        holder.itemView.apply {
-                            language.text =
-                                language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
-                            setHapticClickListener {
-                                model.selectLanguage(Language.SV_SE)
-                            }
-                        }
-                    }
-                    Market.NO -> {
-                        holder.itemView.apply {
-                            language.text = language.resources.getString(R.string.norwegian)
-                            setHapticClickListener {
-                                model.selectLanguage(Language.NB_NO)
-
-                            }
-                        }
+                holder.itemView.apply {
+                    language.text = items[position].language.name
+                    setHapticClickListener {
+                        model.selectLanguage(items[position].language)
                     }
                 }
+                // when (selectedMarket) {
+                //     Market.SE -> {
+                //         holder.itemView.apply {
+                //             language.text =
+                //                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
+                //             setHapticClickListener {
+                //                 model.selectLanguage(Language.SV_SE)
+                //             }
+                //         }
+                //     }
+                //     Market.NO -> {
+                //         holder.itemView.apply {
+                //             language.text = language.resources.getString(R.string.norwegian)
+                //             setHapticClickListener {
+                //                 model.selectLanguage(Language.NB_NO)
+                //
+                //             }
+                //         }
+                //     }
+                // }
             }
             EN -> holder.itemView.apply {
-                language.text =
-                    language.resources.getString(R.string.SETTINGS_LANGUAGE_ENGLISH)
+                language.text = items[position].language.name
+                setHapticClickListener {
+                    model.selectLanguage(items[position].language)
+                }
+
+                // language.text =
+                //     language.resources.getString(R.string.SETTINGS_LANGUAGE_ENGLISH)
             }
         }
 
@@ -77,18 +88,6 @@ class LanguageAdapterNew(
 
         holder.itemView.setHapticClickListener { v ->
             when (position) {
-                EN -> {
-                    when (selectedMarket) {
-                        Market.SE -> {
-                            model.selectLanguage(Language.EN_SE)
-                            d { "EN_SE" }
-                        }
-                        Market.NO -> {
-                            model.selectLanguage(Language.EN_NO)
-                            d { "EN_NO" }
-                        }
-                    }
-                }
                 LOCAL -> {
                     when (selectedMarket) {
                         Market.SE -> {
@@ -98,6 +97,18 @@ class LanguageAdapterNew(
                         Market.NO -> {
                             model.selectLanguage(Language.NB_NO)
                             d { "NB_NO" }
+                        }
+                    }
+                }
+                EN -> {
+                    when (selectedMarket) {
+                        Market.SE -> {
+                            model.selectLanguage(Language.EN_SE)
+                            d { "EN_SE" }
+                        }
+                        Market.NO -> {
+                            model.selectLanguage(Language.EN_NO)
+                            d { "EN_NO" }
                         }
                     }
                 }

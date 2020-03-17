@@ -18,8 +18,8 @@ class LanguageAndMarketViewModel(
     application: Application
 ) : AndroidViewModel(application) {
     val markets = MutableLiveData<List<MarketModel>>()
-    val preselectedMarket = MutableLiveData<String>()
-    val isMarketAndLanguageSelected = MutableLiveData<Boolean>(false)
+    private val preselectedMarket = MutableLiveData<String>()
+    val isLanguageSelected = MutableLiveData<Boolean>(false)
     val languages = MutableLiveData<List<LanguageModel>>()
 
     init {
@@ -36,6 +36,19 @@ class LanguageAndMarketViewModel(
         })
     }
 
+    private fun isLanguageSelected() {
+        var languageSelected = false
+        languages.value?.let { list ->
+            val selectedLanguage = list.find { it.selected }
+            languageSelected = selectedLanguage?.selected ?: false
+        }
+        if (languageSelected) {
+            isLanguageSelected.postValue(true)
+        } else {
+            isLanguageSelected.postValue(false)
+        }
+    }
+
     fun save() {
         val selected = markets.value?.first { it.selected }?.market
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication())
@@ -48,13 +61,12 @@ class LanguageAndMarketViewModel(
     }
 
     fun selectLanguage(language: Language) {
-        languages.postValue(languages.value?.map { languageModel ->
-            LanguageModel(
-                languageModel.language,
-                languageModel.language == language,
-                languageModel.available
-            )
-        })
+        languages.value?.let { list ->
+            for (languageModel in list) {
+                languageModel.selected = languageModel.language == language
+            }
+        }
+        isLanguageSelected()
     }
 
     fun updateLanguage(acceptLanguage: String) {
@@ -91,6 +103,7 @@ class LanguageAndMarketViewModel(
                 languageModel.selected = false
             }
         }
+        isLanguageSelected()
     }
 
     fun loadGeo() {
