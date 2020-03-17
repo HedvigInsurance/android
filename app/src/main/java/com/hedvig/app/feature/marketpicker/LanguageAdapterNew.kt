@@ -8,11 +8,9 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
-import d
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapterNew(
@@ -44,40 +42,20 @@ class LanguageAdapterNew(
         when (position) {
             LOCAL -> {
                 holder.itemView.apply {
-                    language.text = items[position].language.name
+                    language.text = resources.getString(items[position].language.getLabel())
                     setHapticClickListener {
                         model.selectLanguage(items[position].language)
+                        setupRadioButton(holder, position)
                     }
                 }
-                // when (selectedMarket) {
-                //     Market.SE -> {
-                //         holder.itemView.apply {
-                //             language.text =
-                //                 language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
-                //             setHapticClickListener {
-                //                 model.selectLanguage(Language.SV_SE)
-                //             }
-                //         }
-                //     }
-                //     Market.NO -> {
-                //         holder.itemView.apply {
-                //             language.text = language.resources.getString(R.string.norwegian)
-                //             setHapticClickListener {
-                //                 model.selectLanguage(Language.NB_NO)
-                //
-                //             }
-                //         }
-                //     }
-                // }
             }
             EN -> holder.itemView.apply {
-                language.text = items[position].language.name
+                language.text = resources.getString(items[position].language.getLabel())
                 setHapticClickListener {
                     model.selectLanguage(items[position].language)
+                    setupRadioButton(holder, position)
                 }
 
-                // language.text =
-                //     language.resources.getString(R.string.SETTINGS_LANGUAGE_ENGLISH)
             }
         }
 
@@ -85,51 +63,25 @@ class LanguageAdapterNew(
             lastChecked = holder.itemView.radioButton
             lastCheckedPos = 0
         }
+    }
 
-        holder.itemView.setHapticClickListener { v ->
-            when (position) {
-                LOCAL -> {
-                    when (selectedMarket) {
-                        Market.SE -> {
-                            model.selectLanguage(Language.SV_SE)
-                            d { "SV_SE" }
-                        }
-                        Market.NO -> {
-                            model.selectLanguage(Language.NB_NO)
-                            d { "NB_NO" }
-                        }
-                    }
-                }
-                EN -> {
-                    when (selectedMarket) {
-                        Market.SE -> {
-                            model.selectLanguage(Language.EN_SE)
-                            d { "EN_SE" }
-                        }
-                        Market.NO -> {
-                            model.selectLanguage(Language.EN_NO)
-                            d { "EN_NO" }
-                        }
-                    }
+    private fun setupRadioButton(holder: ViewHolder, position: Int) {
+        val rb = holder.button
+        rb.isChecked = true
+        rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
+        animateRadioButton(holder)
+        if (rb.isChecked) {
+            lastChecked?.let { rb ->
+                if (lastCheckedPos != position) {
+                    rb.background =
+                        rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+                    rb.isChecked = false
+                    animateRadioButton(holder)
                 }
             }
-            val rb = v.radioButton
-            rb.isChecked = true
-            rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
-            animateRadioButton(holder)
-            if (rb.isChecked) {
-                lastChecked?.let { rb ->
-                    if (lastCheckedPos != position) {
-                        rb.background =
-                            rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
-                        rb.isChecked = false
-                        animateRadioButton(holder)
-                    }
-                }
-                lastChecked = rb
-                lastCheckedPos = position
-            } else lastChecked = null
-        }
+            lastChecked = rb
+            lastCheckedPos = position
+        } else lastChecked = null
     }
 
     private fun animateRadioButton(holder: ViewHolder) {
