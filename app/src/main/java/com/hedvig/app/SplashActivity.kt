@@ -3,9 +3,8 @@ package com.hedvig.app
 import android.content.Intent
 import android.net.Uri
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
-import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
@@ -16,7 +15,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import timber.log.Timber
-import java.util.Locale
 
 class SplashActivity : BaseActivity() {
     private val loggedInService: LoginStatusService by inject()
@@ -87,15 +85,7 @@ class SplashActivity : BaseActivity() {
 
     private fun startDefaultActivity(loginStatus: LoginStatus?) {
         when (loginStatus) {
-            LoginStatus.ONBOARDING -> {
-                if (!LanguageSelectionActivity.hasBeenShown(this)) {
-                    if (getLocale(this) != Locale.forLanguageTag("sv-SE")) {
-                        startActivity(LanguageSelectionActivity.newInstance(this))
-                        return
-                    }
-                }
-                startActivity(Intent(this, MarketingActivity::class.java))
-            }
+            LoginStatus.ONBOARDING -> startActivity(MarketPickerActivity.newInstance(this))
             LoginStatus.IN_OFFER -> startActivity(Intent(this, OfferActivity::class.java))
             LoginStatus.LOGGED_IN -> startActivity(Intent(this, LoggedInActivity::class.java))
             LoginStatus.LOGGED_IN_TERMINATED -> startActivity(

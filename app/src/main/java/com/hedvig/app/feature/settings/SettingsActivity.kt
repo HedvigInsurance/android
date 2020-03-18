@@ -16,6 +16,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -46,6 +47,7 @@ class SettingsActivity : BaseActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val market = Market.values()[sharedPreferences.getInt(Market.MARKET_SHARED_PREF, -1)]
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -64,16 +66,16 @@ class SettingsActivity : BaseActivity() {
             }
 
             val marketPreference = findPreference<ListPreference>(SETTINGS_MARKET)
+            marketPreference?.setValueIndex(market.ordinal)
             marketPreference?.let { mp ->
                 val oldValue = mp.value
-                mp.setOnPreferenceChangeListener { preference, newValue ->
+                mp.setOnPreferenceChangeListener { _, newValue ->
                     if (oldValue != newValue) {
                         //TODO real text for dialog
                         requireContext().showAlert(
                             R.string.alert_title,
                             R.string.alert_message,
                             positiveAction = {
-    
                                 sharedPreferences.edit()
                                     .putInt(
                                         Market.MARKET_SHARED_PREF,
@@ -89,7 +91,7 @@ class SettingsActivity : BaseActivity() {
                                     requireContext().setAuthenticationToken(null)
                                     requireContext().setIsLoggedIn(false)
                                     FirebaseInstanceId.getInstance().deleteInstanceId()
-                                    requireActivity().triggerRestartActivity()
+                                    requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                                 }
                             },
                             negativeAction = {

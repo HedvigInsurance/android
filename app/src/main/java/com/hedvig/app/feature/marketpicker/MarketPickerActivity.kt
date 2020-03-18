@@ -22,6 +22,11 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val changedMarketName = intent.getStringExtra(CHANGED_MARKET)
+        var changedMarket: Market? = null
+        changedMarketName?.let {
+            changedMarket = Market.valueOf(changedMarketName)
+        }
 
         marketList.adapter = MarketAdapter(model)
         marketList.addItemDecoration(
@@ -29,13 +34,16 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
-
+        // changedMarket?.let { market ->
+        //     model.updateMarket(market)
+        // }
         model.markets.observe(this) { list ->
             list?.let {
                 (marketList.adapter as? MarketAdapter)?.items = list
             }
         }
         model.loadGeo()
+
         val languageAdapter = LanguageAdapterNew(model)
         languageList.adapter = languageAdapter
         model.markets.observe(this) { markets ->
@@ -74,10 +82,16 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     }
 
     private fun goToMarketingActivity() {
-        startActivity(MarketingActivity.newInstance(this, true))
+        startActivity(Intent(this, MarketingActivity::class.java))
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
+        const val CHANGED_MARKET = "changedMarket"
+        fun newInstance(context: Context, market: Market? = null): Intent {
+            val intent = Intent(context, MarketPickerActivity::class.java)
+            val marketName = market?.name
+            marketName?.let { intent.putExtra(CHANGED_MARKET, it) }
+            return intent
+        }
     }
 }
