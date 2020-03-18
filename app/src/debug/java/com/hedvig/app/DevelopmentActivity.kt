@@ -15,7 +15,7 @@ import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -40,20 +40,20 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         "News",
         WhatsNewQuery.Illustration(
             "Icon", WhatsNewQuery.Variants(
-            "IconVariants", WhatsNewQuery.Variants.Fragments(
-            IconVariantsFragment(
-                "IconVariants",
-                IconVariantsFragment.Dark(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward_dark.svg"
-                ),
-                IconVariantsFragment.Light(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward.svg"
+                "IconVariants", WhatsNewQuery.Variants.Fragments(
+                    IconVariantsFragment(
+                        "IconVariants",
+                        IconVariantsFragment.Dark(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward_dark.svg"
+                        ),
+                        IconVariantsFragment.Light(
+                            "IconVariant",
+                            "/app-content-service/whats_new_reward.svg"
+                        )
+                    )
                 )
             )
-        )
-        )
         ),
         "Bonusregn till folket!",
         "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
@@ -108,8 +108,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openNorwegianAuth.setHapticClickListener {
-            startActivity(NorwegianAuthenticationActivity.newInstance(this))
+        openMarketPicker.setHapticClickListener {
+            startActivity(MarketPickerActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
@@ -196,6 +196,12 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(marketingModule, offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(
+                marketingModule,
+                offerModule,
+                profileModule,
+                directDebitModule,
+                keyGearModule
+            )
     }
 }

@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketing.ui
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.GestureDetector
@@ -9,12 +10,14 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ProgressBar
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -46,6 +49,9 @@ class MarketingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
+
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
 
         activity_marketing.useEdgeToEdge()
 
@@ -301,5 +307,13 @@ class MarketingActivity : BaseActivity() {
         const val BUTTON_ANIMATION_DURATION = 500L
         const val BLUR_ANIMATION_SHOW_DURATION = 300L
         const val BLUR_ANIMATION_DISMISS_DURATION = 200L
+
+        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+            Intent(context, MarketingActivity::class.java).apply {
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+            }
     }
 }

@@ -6,12 +6,15 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
-import java.util.*
+import com.hedvig.app.R
+import java.util.Locale
 
 enum class Language {
     SYSTEM_DEFAULT,
     SV_SE,
-    EN_SE;
+    EN_SE,
+    NB_NO,
+    EN_NO;
 
     fun apply(context: Context?): Context? {
         val locale = into()
@@ -61,24 +64,40 @@ enum class Language {
     private fun into(): LocaleWrapper = when (this) {
         SV_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_SV_SE))
         EN_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_SE))
+        NB_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_NB_NO))
+        EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
         SYSTEM_DEFAULT -> DefaultLocale.get()
+    }
+
+    fun getLabel() = when (this) {
+        SYSTEM_DEFAULT -> R.string.system_default
+        SV_SE -> R.string.swedish
+        EN_SE -> R.string.english_swedish
+        NB_NO -> R.string.norwegian
+        EN_NO -> R.string.english_norwegian
     }
 
     override fun toString() = when (this) {
         SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
         SV_SE -> SETTING_SV_SE
         EN_SE -> SETTING_EN_SE
+        NB_NO -> SETTING_NB_NO
+        EN_NO -> SETTING_EN_NO
     }
 
     companion object {
         const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
         const val SETTING_EN_SE = "en-SE"
+        const val SETTING_NB_NO = "nb-NO"
+        const val SETTING_EN_NO = "en-NO"
 
         fun from(value: String) = when (value) {
             SETTING_SYSTEM_DEFAULT -> SYSTEM_DEFAULT
             SETTING_SV_SE -> SV_SE
             SETTING_EN_SE -> EN_SE
+            SETTING_NB_NO -> NB_NO
+            SETTING_EN_NO -> EN_NO
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
@@ -118,3 +137,9 @@ enum class Language {
         data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
     }
 }
+
+data class LanguageModel(
+    val language: Language,
+    var selected: Boolean = false,
+    var available: Boolean = false
+)

@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
@@ -88,6 +89,15 @@ fun Context.setIsLoggedIn(isLoggedIn: Boolean) =
 
 fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
+
+fun Context.getMarket(): Market? {
+    val marketId = getSharedPreferences().getInt(Market.MARKET_SHARED_PREF, -1)
+    return if (marketId == -1) {
+        null
+    } else {
+        Market.values()[marketId]
+    }
+}
 
 private fun Context.getSharedPreferences() =
     this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
