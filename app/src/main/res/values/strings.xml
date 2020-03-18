@@ -12,5 +12,15 @@
     <string name="numeric_three" translatable="false">3</string>
     <string name="select_language_title" translatable="false">Pick language</string>
     <string name="select_language_paragraph" translatable="false">You can change this later in settings.</string>
-
+    <string name="select_country" translatable="false">Select your country of residence</string>
+    <string name="select_language_title_market" translatable="false">Select language</string>
+    <string name="select_language_paragraph_market" translatable="false">You can change this later in app.</string>
+    <string name="continue_market" translatable="false">Continue</string>
+    <string name="sweden" translatable="false">Sverige</string>
+    <string name="swedish" translatable="false">Svenska</string>
+    <string name="english_swedish" translatable="false">English</string>
+    <string name="norway" translatable="false">Norge</string>
+    <string name="norwegian" translatable="false">Norsk</string>
+    <string name="english_norwegian" translatable="false">English</string>
+    <string name="system_default" translatable="false">System default</string>
 </resources>
