@@ -19,18 +19,18 @@
 
         <TextView
             android:id="@+id/fileUploadLabel"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:background="@drawable/chat_message_hedvig_ripple"
-            android:backgroundTint="@color/link_purple"
+            android:backgroundTint="?colorSecondary"
             android:drawableStart="@drawable/ic_file"
             android:drawablePadding="@dimen/base_margin_half"
             android:padding="12dp"
-            android:textColor="@color/white"
-            app:drawableTint="@color/white"
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="?colorOnSecondary"
+            app:drawableTint="?colorOnSecondary"
             tools:text="pdf-fil uppladdad" />
 
     </FrameLayout>

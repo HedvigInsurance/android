@@ -25,6 +25,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
@@ -194,7 +195,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         if (lastAnimationHasCompleted) {
             animatePremium(data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt())
         } else {
-            netPremium.setTextColor(compatColor(R.color.text_emphasized))
+            netPremium.setTextColor(colorAttr(android.R.attr.textColorSecondary))
             netPremium.text =
                 data.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
                     ?.toInt()?.toString()
@@ -265,9 +266,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         safeLet(prevNetPremium, newNetPremium) { p, n ->
             if (p != n) {
                 val colors = if (p > n) {
-                    Pair(compatColor(R.color.text_emphasized), compatColor(R.color.pink))
+                    Pair(colorAttr(android.R.attr.textColorSecondary), compatColor(R.color.pink))
                 } else {
-                    Pair(compatColor(R.color.pink), compatColor(R.color.text_emphasized))
+                    Pair(compatColor(R.color.pink), colorAttr(android.R.attr.textColorSecondary))
                 }
                 ValueAnimator.ofInt(p, n).apply {
                     duration = 1000

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/background_rounded_corners"
@@ -15,7 +16,7 @@
         android:paddingStart="@dimen/base_margin_quadruple"
         android:paddingEnd="@dimen/base_margin_quadruple"
         android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
-        android:theme="@style/Headline.Large" />
+        android:textAppearance="?textAppearanceHeadline5" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,7 +25,7 @@
         android:layout_marginTop="@dimen/base_margin"
         android:gravity="center"
         android:text="@string/REFERRAL_ADDCOUPON_BODY"
-        android:theme="@style/Body.Small" />
+        android:textAppearance="?textAppearanceBody2" />
 
     <EditText
         android:id="@+id/bottomSheetAddPromotionCodeEditText"
@@ -34,7 +35,6 @@
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:background="@drawable/background_edit_text_rounded_corners"
-        android:fontFamily="@font/circular_book"
         android:hint="@string/REFERRAL_ADDCOUPON_INPUTPLACEHOLDER"
         android:imeOptions="actionDone"
         android:importantForAutofill="no"
@@ -50,13 +50,13 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:gravity="center"
         android:text="@string/REFERRAL_ERROR_MISSINGCODE_BODY"
-        android:textColor="@color/pink"
-        android:theme="@style/Body.Small"
-        android:visibility="gone" />
+        android:textAppearance="?textAppearanceBody2"
+        android:textColor="?colorError"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/bottomSheetAddPromotionCodeButton"
-        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -74,7 +74,7 @@
         android:paddingStart="@dimen/base_margin_quadruple"
         android:paddingEnd="@dimen/base_margin_quadruple"
         android:text="@string/REFERRAL_ADDCOUPON_TC_EXPLANATION_ANDROID"
-        android:theme="@style/Body.Small" />
+        android:textAppearance="?textAppearanceBody2" />
 
     <TextView
         android:id="@+id/bottomSheetPromotionCodeTermsAndConditionLink"
@@ -84,6 +84,6 @@
         android:layout_marginTop="@dimen/base_margin"
         android:gravity="center"
         android:text="@string/REFERRAL_ADDCOUPON_TC_LINK"
-        android:theme="@style/Body.Small.Link" />
+        android:textColor="?colorSecondary" />
 
 </LinearLayout>

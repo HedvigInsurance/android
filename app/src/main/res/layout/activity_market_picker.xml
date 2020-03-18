@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".feature.marketpicker.MarketPickerActivity">
 
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+        android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:gravity="center_horizontal"
         android:padding="@dimen/base_margin"
@@ -25,7 +26,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
             android:padding="@dimen/base_margin"
-            android:tint="@color/off_black"
+            android:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
     </LinearLayout>
@@ -41,16 +42,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                style="@style/Headline.Large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/select_country" />
+                android:text="@string/select_country"
+                android:textAppearance="?textAppearanceHeadline4" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/marketList"
@@ -64,19 +65,19 @@
                 tools:listitem="@layout/market_item" />
 
             <TextView
-                style="@style/Headline.Large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
                 android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:text="@string/select_language_title_market" />
+                android:text="@string/select_language_title_market"
+                android:textAppearance="?textAppearanceHeadline4" />
 
             <TextView
-                style="@style/Body.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
-                android:text="@string/select_language_paragraph_market" />
+                android:text="@string/select_language_paragraph_market"
+                android:textAppearance="?textAppearanceBody1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/languageList"
@@ -94,7 +95,7 @@
 
     <Button
         android:id="@+id/save"
-        style="@style/HedvigButton.Purple"
+        style="?materialButtonContainedLargeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"

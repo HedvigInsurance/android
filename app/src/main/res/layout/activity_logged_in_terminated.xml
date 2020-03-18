@@ -4,32 +4,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <TextView
-        style="@style/Headline.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:gravity="center"
-        android:text="@string/INSURANCE_STATUS_TERMINATED_ALERT_TITLE" />
+        android:text="@string/INSURANCE_STATUS_TERMINATED_ALERT_TITLE"
+        android:textAppearance="?textAppearanceHeadline5" />
 
     <TextView
-        style="@style/Body.Regular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center"
-        android:text="@string/INSURANCE_STATUS_TERMINATED_ALERT_MESSAGE" />
+        android:text="@string/INSURANCE_STATUS_TERMINATED_ALERT_MESSAGE"
+        android:textAppearance="?textAppearanceBody1" />
 
     <Button
         android:id="@+id/terminatedOpenChatButton"
-        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:backgroundTint="@color/purple"
         android:text="@string/INSURANCE_STATUS_TERMINATED_ALERT_CTA" />
 </LinearLayout>

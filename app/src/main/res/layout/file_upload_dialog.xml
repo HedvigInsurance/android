@@ -20,17 +20,16 @@
 
     <TextView
         android:id="@+id/header"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/FILE_UPLOAD_OVERLAY_TITLE"
+        android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/uploadImageOrVideo"
-        style="@style/HedvigButton.Purple"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
@@ -43,7 +42,6 @@
 
     <Button
         android:id="@+id/uploadFile"
-        style="@style/HedvigButton.Purple"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
@@ -53,9 +51,8 @@
         app:layout_constraintStart_toEndOf="@id/uploadImageOrVideo"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
-    <com.airbnb.lottie.LottieAnimationView
+    <ProgressBar
         android:id="@id/loadingSpinner"
-        style="@style/LoadingSpinner"
         android:layout_width="@dimen/loading_spinner_width"
         android:layout_height="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_double"
@@ -64,9 +61,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
-        app:lottie_autoPlay="false"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/hedvig_uploading_animation"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

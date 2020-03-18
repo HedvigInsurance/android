@@ -4,14 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
-import android.view.View
-import android.view.WindowManager
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.FontRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -22,52 +18,8 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.view.setupLargeTitle
-import com.hedvig.app.util.hasNotch
-import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.app_bar.*
 import timber.log.Timber
-
-fun Activity.setLightNavigationBar() {
-    window.navigationBarColor = compatColor(R.color.off_white)
-    whenApiVersion(Build.VERSION_CODES.O) {
-        val flags = window.decorView.systemUiVisibility
-        window.decorView.systemUiVisibility = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-    }
-}
-
-fun Activity.setDarkNavigationBar() {
-    window.navigationBarColor = compatColor(R.color.black)
-    whenApiVersion(Build.VERSION_CODES.O) {
-        val flags = window.decorView.systemUiVisibility
-        window.decorView.systemUiVisibility = flags xor View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-    }
-}
-
-fun Activity.showStatusBar() {
-    whenApiVersion(Build.VERSION_CODES.M) {
-        if (hasNotch()) {
-            val flags = window.decorView.systemUiVisibility
-            window.decorView.systemUiVisibility = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            window.statusBarColor = compatColor(R.color.off_white)
-            return
-        }
-    }
-
-    window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-}
-
-fun Activity.hideStatusBar() {
-    whenApiVersion(Build.VERSION_CODES.M) {
-        if (hasNotch()) {
-            val flags = window.decorView.systemUiVisibility
-            window.decorView.systemUiVisibility = flags xor View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            window.statusBarColor = compatColor(R.color.black)
-            return
-        }
-    }
-
-    window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-}
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -81,14 +33,12 @@ val Activity.screenWidth: Int
 
 fun AppCompatActivity.setupLargeTitle(
     @StringRes title: Int,
-    @FontRes font: Int,
     @DrawableRes icon: Int? = null,
     @ColorInt backgroundColor: Int? = null,
     backAction: (() -> Unit)? = null
 ) {
     setupLargeTitle(
         getString(title),
-        font,
         icon,
         backgroundColor,
         backAction
@@ -97,14 +47,12 @@ fun AppCompatActivity.setupLargeTitle(
 
 fun AppCompatActivity.setupLargeTitle(
     title: String,
-    @FontRes font: Int,
     @DrawableRes icon: Int? = null,
     @ColorInt backgroundColor: Int? = null,
     backAction: (() -> Unit)? = null
 ) {
     appBarLayout.setupLargeTitle(
         title,
-        font,
         this,
         icon,
         backgroundColor,

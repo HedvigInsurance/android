@@ -12,7 +12,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_top_bar_height"
-        android:background="@color/background_elevation_1"
+        android:background="?colorSurface"
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:layout_marginStart="@dimen/base_margin"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
             android:orientation="horizontal">
 
@@ -35,8 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
                 android:padding="@dimen/base_margin"
-                android:tint="@color/icon_tint"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_close"
                 tools:visibility="visible" />
@@ -50,7 +49,6 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
                 android:padding="@dimen/base_margin"
-                android:tint="@color/icon_tint"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_restart_chat"
                 tools:visibility="visible" />
@@ -62,7 +60,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/hedvig_logo_margin_top"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:tint="@color/icon_tint"
+            android:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
@@ -74,7 +72,6 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
             android:padding="@dimen/base_margin_half"
-            android:tint="@color/icon_tint"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_settings"
             tools:visibility="visible" />

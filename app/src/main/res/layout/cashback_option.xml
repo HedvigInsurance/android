@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:theme="@style/Headline.Small"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="SOS Barnbyar" />
@@ -28,7 +28,7 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin"
             android:layout_marginEnd="@dimen/base_margin_double"
-            android:theme="@style/Body.Small"
+            android:textAppearance="?textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cashbackOptionTitle"
@@ -44,12 +44,11 @@
 
         <Button
             android:id="@id/cashbackSelect"
-            style="?android:attr/borderlessButtonStyle"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:gravity="center_vertical|end"
-            android:theme="@style/DialogButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/endSeparator"

@@ -1,16 +1,25 @@
 package com.hedvig.app.feature.referrals
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.View
-import com.hedvig.app.R
-import com.hedvig.app.util.extensions.compatColor
-import android.graphics.drawable.BitmapDrawable
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import com.hedvig.app.R
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.interpolateTextKey
 import kotlin.math.ceil
@@ -68,6 +77,7 @@ class ProgressTankView : View {
     //strings
     private val callToAction = context.getString(R.string.REFERRAL_PROGRESS_BAR_CTA)
     private val bottomLabelText = context.getString(R.string.REFERRAL_PROGRESS_FREE)
+
     // use by lazy to get premium on first draw instead of on init
     private val currentPremiumPrice by lazy {
         interpolateTextKey(
@@ -83,7 +93,7 @@ class ProgressTankView : View {
     }
 
     //font
-    val font = context.compatFont(R.font.circular_bold)
+    private val font = context.compatFont(R.font.favorit_book)
 
     init {
         val polkaTile = BitmapFactory.decodeResource(context.resources, R.mipmap.polka_pattern_green_tile)

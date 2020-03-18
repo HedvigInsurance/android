@@ -35,7 +35,6 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.showRestartDialog
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -167,11 +166,17 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
             restart.setOnClickListener {
                 tracker.restartChat()
-                showRestartDialog {
-                    storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                    setAuthenticationToken(null)
-                    userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
-                }
+                showAlert(
+                    R.string.CHAT_RESET_DIALOG_TITLE,
+                    R.string.CHAT_RESET_DIALOG_MESSAGE,
+                    R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
+                    R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
+                    positiveAction = {
+                        storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+                        setAuthenticationToken(null)
+                        userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+                    }
+                )
             }
             restart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
             restart.show()

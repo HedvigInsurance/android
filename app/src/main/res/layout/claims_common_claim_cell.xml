@@ -7,8 +7,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_claims_cell_height"
-        android:layout_margin="@dimen/base_margin_double"
         android:layout_gravity="bottom"
+        android:layout_margin="@dimen/base_margin_double"
         android:orientation="vertical">
 
         <ImageView
@@ -20,11 +20,10 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/commonClaimCellLabel"
-            style="@style/Body.Regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Drulle" />

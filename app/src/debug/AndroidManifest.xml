@@ -23,12 +23,10 @@
             android:label="Vector Drawable Gallery"
             android:theme="@style/Hedvig.Theme" />
 
-        <meta-data
-            android:name="io.branch.sdk.BranchKey.test"
-            android:value="@string/BRANCH_KEY" />
-        <meta-data
-            android:name="io.branch.sdk.TestMode"
-            android:value="true" />
+        <activity
+            android:name=".viewgallery.ViewGalleryActivity"
+            android:label="View Gallery"
+            android:theme="@style/Hedvig.Theme" />
 
     </application>
 
