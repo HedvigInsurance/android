@@ -6,7 +6,8 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
-import java.util.*
+import com.hedvig.app.R
+import java.util.Locale
 
 enum class Language {
     SYSTEM_DEFAULT,
@@ -66,6 +67,14 @@ enum class Language {
         NB_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_NB_NO))
         EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
         SYSTEM_DEFAULT -> DefaultLocale.get()
+    }
+
+    fun getLabel() = when (this) {
+        SYSTEM_DEFAULT -> R.string.system_default
+        SV_SE -> R.string.swedish
+        EN_SE -> R.string.english_swedish
+        NB_NO -> R.string.norwegian
+        EN_NO -> R.string.english_norwegian
     }
 
     override fun toString() = when (this) {
@@ -128,3 +137,9 @@ enum class Language {
         data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
     }
 }
+
+data class LanguageModel(
+    val language: Language,
+    var selected: Boolean = false,
+    var available: Boolean = false
+)

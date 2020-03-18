@@ -178,7 +178,7 @@ val viewModelModule = module {
 }
 
 val languageAndMarketModule = module {
-    viewModel { LanguageAndMarketViewModel(get(), get()) }
+    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
 }
 
 val offerModule = module {
