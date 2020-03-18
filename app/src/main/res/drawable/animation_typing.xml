@@ -1,9 +1,9 @@
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector android:name="vector" android:width="40dp" android:height="40dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:name="path" android:fillColor="@color/foreground_gray" android:pathData="M 0 12.001 C 0 10.318 1.334 8.953 2.983 8.953 C 4.63 8.953 5.965 10.318 5.965 12.001 C 5.965 13.682 4.63 15.047 2.983 15.047 C 1.334 15.047 0 13.682 0 12.001 Z"/>
-            <path android:name="path_1" android:fillColor="@color/foreground_gray" android:pathData="M 9.018 12.001 C 9.018 10.318 10.354 8.953 12.001 8.953 C 13.648 8.953 14.982 10.318 14.982 12.001 C 14.982 13.683 13.648 15.047 12.001 15.047 C 10.354 15.047 9.018 13.683 9.018 12.001 Z"/>
-            <path android:name="path_2" android:fillColor="@color/foreground_gray" android:pathData="M 18.035 12.001 C 18.035 10.318 19.371 8.953 21.018 8.953 C 22.665 8.953 24 10.318 24 12.001 C 24 13.683 22.665 15.047 21.018 15.047 C 19.371 15.047 18.035 13.683 18.035 12.001 Z"/>
+            <path android:name="path" android:fillColor="?colorPrimaryVariant" android:pathData="M 0 12.001 C 0 10.318 1.334 8.953 2.983 8.953 C 4.63 8.953 5.965 10.318 5.965 12.001 C 5.965 13.682 4.63 15.047 2.983 15.047 C 1.334 15.047 0 13.682 0 12.001 Z"/>
+            <path android:name="path_1" android:fillColor="?colorPrimaryVariant" android:pathData="M 9.018 12.001 C 9.018 10.318 10.354 8.953 12.001 8.953 C 13.648 8.953 14.982 10.318 14.982 12.001 C 14.982 13.683 13.648 15.047 12.001 15.047 C 10.354 15.047 9.018 13.683 9.018 12.001 Z"/>
+            <path android:name="path_2" android:fillColor="?colorPrimaryVariant" android:pathData="M 18.035 12.001 C 18.035 10.318 19.371 8.953 21.018 8.953 C 22.665 8.953 24 10.318 24 12.001 C 24 13.683 22.665 15.047 21.018 15.047 C 19.371 15.047 18.035 13.683 18.035 12.001 Z"/>
         </vector>
     </aapt:attr>
     <target android:name="path">

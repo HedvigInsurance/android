@@ -11,7 +11,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+        android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:padding="@dimen/base_margin">
 
@@ -27,12 +27,12 @@
 
         <TextView
             android:id="@+id/receipt_title"
-            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/base_margin_triple"
-            android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE" />
+            android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE"
+            android:textAppearance="?textAppearanceHeadline6" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -59,7 +59,6 @@
                 tools:listitem="@layout/create_key_gear_item_photo" />
 
             <TextView
-                style="@style/Body.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_triple"
@@ -92,7 +91,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:background="@drawable/button_primary"
-        android:backgroundTint="@color/link_purple"
+        android:backgroundTint="?colorSecondary"
         android:translationY="140dp"
         android:visibility="gone"
         tools:translationY="0dp"
@@ -162,10 +161,10 @@
 
         <TextView
             android:id="@+id/createdLabel"
-            style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0"
+            android:textAppearance="?textAppearanceHeadline5"
             android:textColor="@color/white"
             android:translationY="@dimen/base_margin_triple"
             android:visibility="gone"

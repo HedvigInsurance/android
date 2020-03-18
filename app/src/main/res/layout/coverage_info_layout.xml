@@ -26,20 +26,20 @@
 
         <TextView
             android:id="@+id/bulletPointTitle"
-            style="@style/Headline.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toEndOf="@id/bulletPointIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Ersättning" />
 
         <TextView
             android:id="@+id/bulletPointDescription"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
+            android:textAppearance="?textAppearanceBody2"
             app:layout_constraintStart_toEndOf="@id/bulletPointIcon"
             app:layout_constraintTop_toBottomOf="@id/bulletPointTitle"
             tools:text="Hedvig täcker hela kostnaden för en reparation minus självrisk (1 500 kr) eller det uppskattade värdet på telefonen minus självrisk om den inte går att reparera" />

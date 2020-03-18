@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="Login with BankID"
-        app:titleTextAppearance="@style/Headline.Medium"
+        app:titleTextAppearance="?textAppearanceHeadline6"
         tools:layout_height="?attr/actionBarSize" />
 
     <com.hedvig.app.ui.view.SafeWebView

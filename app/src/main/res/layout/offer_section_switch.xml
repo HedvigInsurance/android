@@ -5,7 +5,7 @@
     android:id="@+id/switchSection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="?android:colorBackground"
     android:orientation="vertical"
     android:paddingTop="@dimen/base_margin_quadruple"
     android:paddingBottom="@dimen/base_margin_quadruple"
@@ -23,11 +23,11 @@
 
     <TextView
         android:id="@+id/switchTitle"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center"
+        android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switchImage"
@@ -35,53 +35,53 @@
 
     <TextView
         android:id="@+id/bulletOne"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/link_purple"
+        android:backgroundTint="?colorSecondary"
         android:gravity="center"
         android:text="@string/numeric_one"
-        android:textColor="@color/off_white"
+        android:textAppearance="?textAppearanceHeadline6"
+        android:textColor="?colorOnSecondary"
         app:layout_constraintBaseline_toBaselineOf="@id/switchParagraphOne"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/switchParagraphOne"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/SIGN_MOBILE_BANK_ID"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintStart_toEndOf="@id/bulletOne"
         app:layout_constraintTop_toBottomOf="@id/switchTitle" />
 
     <TextView
         android:id="@+id/bulletTwo"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/link_purple"
+        android:backgroundTint="?colorSecondary"
         android:gravity="center"
         android:text="@string/numeric_two"
-        android:textColor="@color/off_white"
+        android:textAppearance="?textAppearanceHeadline6"
+        android:textColor="?colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphTwo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/switchParagraphTwo" />
 
     <TextView
         android:id="@+id/switchParagraphTwo"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletTwo"
         app:layout_constraintTop_toBottomOf="@id/switchParagraphOne"
@@ -89,29 +89,29 @@
 
     <TextView
         android:id="@+id/bulletThree"
-        style="@style/Headline.Medium"
         android:layout_width="@dimen/offer_switch_bullet_size"
         android:layout_height="@dimen/offer_switch_bullet_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:background="@drawable/circle_background"
-        android:backgroundTint="@color/link_purple"
+        android:backgroundTint="?colorSecondary"
         android:gravity="center"
         android:text="@string/numeric_three"
-        android:textColor="@color/off_white"
+        android:textAppearance="?textAppearanceHeadline6"
+        android:textColor="?colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="@id/switchParagraphThree"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/switchParagraphThree" />
 
     <TextView
         android:id="@+id/switchParagraphThree"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/OFFER_SWITCH_COL_THREE_PARAGRAPH_APP"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bulletThree"
         app:layout_constraintTop_toBottomOf="@id/switchParagraphTwo" />

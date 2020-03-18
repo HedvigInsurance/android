@@ -250,19 +250,19 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
         when (id) {
             LoggedInTabs.DASHBOARD -> {
-                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE)
             }
             LoggedInTabs.CLAIMS -> {
-                setupLargeTitle(R.string.CLAIMS_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.CLAIMS_TITLE)
             }
             LoggedInTabs.KEY_GEAR -> {
-                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE), R.font.circular_bold)
+                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE))
             }
             LoggedInTabs.REFERRALS -> {
-                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE)
             }
             LoggedInTabs.PROFILE -> {
-                setupLargeTitle(R.string.PROFILE_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.PROFILE_TITLE)
             }
         }
         lastLoggedInTab = id

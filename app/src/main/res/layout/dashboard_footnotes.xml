@@ -25,11 +25,11 @@
 
         <TextView
             android:id="@+id/ownerFootnoteText"
-            style="@style/Body.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
-            android:text="@string/DASHBOARD_OWNER_FOOTNOTE" />
+            android:text="@string/DASHBOARD_OWNER_FOOTNOTE"
+            android:textAppearance="?textAppearanceBody2" />
 
     </LinearLayout>
 
@@ -48,24 +48,24 @@
 
         <TextView
             android:id="@+id/deductibleFootnote"
-            style="@style/Body.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
             android:maxLines="1"
-            android:text="@string/DASHBOARD_DEDUCTIBLE_FOOTNOTE" />
+            android:text="@string/DASHBOARD_DEDUCTIBLE_FOOTNOTE"
+            android:textAppearance="?textAppearanceBody2" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/deductibleExceptions"
-        style="@style/Body.XSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_half"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/OFFER_TRUST_INCREASED_DEDUCTIBLE"
+        android:textAppearance="?textAppearanceBody3"
         android:visibility="gone"
         tools:visibility="gone" />
 
@@ -84,10 +84,10 @@
 
         <TextView
             android:id="@+id/totalCoverageFootnote"
-            style="@style/Body.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
+            android:textAppearance="?textAppearanceBody2"
             tools:text="@string/DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE" />
 
     </LinearLayout>
@@ -107,11 +107,11 @@
 
         <TextView
             android:id="@+id/travelFootnote"
-            style="@style/Body.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
-            android:text="@string/DASHBOARD_TRAVEL_FOOTNOTE" />
+            android:text="@string/DASHBOARD_TRAVEL_FOOTNOTE"
+            android:textAppearance="?textAppearanceBody2" />
 
     </LinearLayout>
 

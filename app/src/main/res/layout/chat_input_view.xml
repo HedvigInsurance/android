@@ -35,11 +35,11 @@
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/link_purple"
-            android:fontFamily="@font/circular_book"
+            android:backgroundTint="?colorSecondary"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
-            android:textColor="@color/white" />
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="?colorOnSecondary" />
 
         <!--
         Ignore RtlHardcoded
@@ -47,7 +47,6 @@
         -->
         <com.hedvig.app.feature.chat.ui.ChatTextInput
             android:id="@+id/inputText"
-            style="@style/Body.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
@@ -81,7 +80,7 @@
         android:contentDescription="@null"
         android:visibility="gone"
         app:srcCompat="@drawable/animation_typing"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
     <com.hedvig.app.feature.chat.ui.AudioRecorderView
         android:id="@+id/audioRecorder"

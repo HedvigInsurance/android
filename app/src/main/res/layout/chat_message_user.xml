@@ -22,21 +22,20 @@
 
         <TextView
             android:id="@+id/userMessage"
-            style="@style/Body.Regular.Negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/base_margin"
             android:autoLink="web"
             android:background="@drawable/chat_message_hedvig"
-            android:backgroundTint="@color/link_purple"
+            android:backgroundTint="?colorSecondary"
             android:linksClickable="true"
             android:paddingStart="@dimen/base_margin_double"
             android:paddingTop="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin_double"
             android:paddingBottom="@dimen/base_margin"
-            android:textColor="@color/white"
-            android:textColorLink="@color/white"
+            android:textColor="?colorOnSecondary"
+            android:textColorLink="?colorOnSecondary"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toStartOf="@id/editMessage"
@@ -61,15 +60,15 @@
 
         <TextView
             android:id="@+id/statusMessage"
-            style="@style/Body.XSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_double"
-            android:textColor="@color/text_regular"
+            android:textAppearance="?textAppearanceBody3"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/userMessage"
             tools:text="Hedvig svarar inom 15 min"
             tools:visibility="visible" />
 

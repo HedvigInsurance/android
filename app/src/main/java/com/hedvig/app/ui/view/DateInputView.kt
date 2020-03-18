@@ -10,7 +10,7 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.date_pick_layout.view.*
@@ -32,7 +32,7 @@ class DateInputView @JvmOverloads constructor(
 
         val color = typedArray.getColor(
             R.styleable.DateInputView_dateHintBackground,
-            context.compatColor(R.color.background)
+            context.colorAttr(android.R.attr.colorBackground)
         )
         setHintBackgroundColor(color)
         typedArray.recycle()
@@ -45,7 +45,7 @@ class DateInputView @JvmOverloads constructor(
             dateText.show()
             dateText.text = text
         }
-    
+
     private fun animateHint() {
         val animateDistance =
             (getViewHeight() - BASE_MARGIN) / 2f

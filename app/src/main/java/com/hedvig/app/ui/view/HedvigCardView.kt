@@ -3,41 +3,20 @@ package com.hedvig.app.ui.view
 import android.content.Context
 import android.graphics.Outline
 import android.graphics.Rect
-import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
 
-open class HedvigCardView : FrameLayout {
-    private var attributeSet: AttributeSet? = null
-    private var defStyle: Int = 0
-
-    constructor(context: Context) : super(context) {
-        initialize()
-    }
-
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
-        this.attributeSet = attributeSet
-        initialize()
-    }
-
-    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
-        context,
-        attributeSet,
-        defStyle
-    ) {
-        this.attributeSet = attributeSet
-        this.defStyle = defStyle
-        initialize()
-    }
-
-    private fun initialize() {
+open class HedvigCardView @JvmOverloads constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+    defStyle: Int = 0
+) : FrameLayout(context, attributeSet, defStyle) {
+    init {
         background = context.compatDrawable(R.drawable.hedvig_card_view)
-
         val attributes = context.obtainStyledAttributes(
             attributeSet,
             R.styleable.HedvigCardView,
@@ -53,7 +32,6 @@ open class HedvigCardView : FrameLayout {
         outlineProvider = OutlineProvider()
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     inner class OutlineProvider : ViewOutlineProvider() {
         private val inset: Rect = Rect()
 

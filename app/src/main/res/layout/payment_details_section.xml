@@ -12,50 +12,50 @@
     tools:visibility="visible">
 
     <TextView
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD" />
+        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD"
+        android:textAppearance="?textAppearanceHeadline6" />
 
     <TextView
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/PAYMENTS_DIRECT_DEBIT" />
+        android:text="@string/PAYMENTS_DIRECT_DEBIT"
+        android:textAppearance="?textAppearanceBody2" />
 
     <TextView
         android:id="@+id/directDebitStatus"
-        style="@style/Body.Regular.Emphasized"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="Aktivt" />
 
     <TextView
         android:id="@+id/accountNumberLabel"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:text="@string/PAYMENTS_SUBTITLE_ACCOUNT" />
+        android:text="@string/PAYMENTS_SUBTITLE_ACCOUNT"
+        android:textAppearance="?textAppearanceBody2" />
 
     <TextView
         android:id="@+id/accountNumber"
-        style="@style/Body.Regular.Emphasized"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="SEB **** 8347" />
 
     <TextView
         android:id="@+id/bankAccountUnderChangeParagraph"
-        style="@style/Body.XSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
+        android:textAppearance="?textAppearanceBody3"
         android:visibility="gone"
         tools:visibility="visible" />
 </LinearLayout>

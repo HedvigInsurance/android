@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE" />
+        android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
+        android:textAppearance="?textAppearanceHeadline6" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,35 +22,38 @@
 
         <TextView
             android:id="@+id/name"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             tools:text="Mobiltelefon" />
 
-        <com.hedvig.app.ui.view.HedvigEditText
-            android:id="@+id/nameEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameEditTextContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:visibility="gone"
-            app:hintText="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
-            tools:visibility="visible" />
+            android:visibility="gone">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/addName"
-            style="@style/Body.Regular.Link"
+            style="?attr/materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
+            android:layout_gravity="end|center|center_vertical"
             android:background="?attr/selectableItemBackground"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
-            android:textAllCaps="false"
-            android:textColor="@color/link_purple" />
+            android:textColor="?colorSecondary" />
 
     </FrameLayout>
 </LinearLayout>

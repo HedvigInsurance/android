@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="?android:colorBackground"
     android:orientation="vertical"
     android:paddingBottom="@dimen/base_margin_quadruple">
 
@@ -17,21 +17,21 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="Testvägen 1" />
 
     <TextView
         android:id="@+id/paragraph"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceBody2"
         tools:text="Vi vet hur mycket ett hem betyder. Därför ger vi det ett riktigt bra skydd, så att du kan känna dig trygg i alla lägen." />
 
     <LinearLayout

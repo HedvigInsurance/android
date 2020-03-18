@@ -23,11 +23,13 @@ import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
+import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
@@ -142,6 +144,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
         }
 
+        openViewGallery.setHapticClickListener {
+            startActivity(ViewGalleryActivity.newInstance(this))
+        }
+
         findViewById<Button>(R.id.openSettings).setHapticClickListener {
             startActivity(SettingsActivity.newInstance(this))
         }
@@ -191,6 +197,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
             listOf(
+                marketingModule,
                 offerModule,
                 profileModule,
                 directDebitModule,

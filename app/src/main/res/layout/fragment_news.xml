@@ -20,19 +20,18 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Header.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/base_margin"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin"
         android:gravity="center"
+        android:textAppearance="?textAppearanceHeadline4"
         tools:text="Bonusregn till folket!" />
 
     <TextView
         android:id="@+id/paragraph"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -40,6 +39,7 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
+        android:textAppearance="?textAppearanceBody1"
         tools:text="Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får 10 kr lägre månadskostnad – för varje vän!" />
 
 </LinearLayout>

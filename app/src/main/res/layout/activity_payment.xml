@@ -61,40 +61,37 @@
 
             <Button
                 android:id="@+id/changeBankAccount"
-                style="?android:attr/borderlessButtonStyle"
+                style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
-                android:textAllCaps="false"
-                android:theme="@style/Body.Small.Link.Emphasized"
+                android:textColor="?colorError"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
             <Button
                 android:id="@+id/redeemCode"
-                style="?android:attr/borderlessButtonStyle"
+                style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
-                android:textAllCaps="false"
-                android:theme="@style/Body.Small.Link.Emphasized"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
             <Button
                 android:id="@+id/connectBankAccountWithLink"
-                style="?android:attr/borderlessButtonStyle"
+                style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_WITH_LINK_BUTTON"
-                android:textAllCaps="false"
-                android:theme="@style/Body.Small.Link.Emphasized"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 tools:visibility="visible" />
         </LinearLayout>

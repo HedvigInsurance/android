@@ -12,6 +12,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.observe
@@ -46,7 +47,7 @@ class PaymentActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_payment)
-        setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
 
@@ -315,7 +316,7 @@ class PaymentActivity : BaseActivity() {
         nextPaymentGross.hide()
         discountSphere.remove()
         nextPaymentDate.background.setTintList(null)
-        nextPaymentDate.setTextColor(compatColor(R.color.text_regular))
+        nextPaymentDate.setTextColor(colorAttr(android.R.attr.textColorPrimary))
 
         campaignInformationContainer.remove()
         lastFreeDayLabel.remove()

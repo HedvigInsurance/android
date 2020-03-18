@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="background" type="color">@color/off_white</item>
-    <item name="background_elevation_1" type="color">@color/white</item>
     <item name="translucent_background" type="color">@color/translucent_off_white</item>
-    <item name="text_emphasized" type="color">@color/off_black_dark</item>
-    <item name="text_regular" type="color">@color/off_black</item>
-    <item name="text_negative" type="color">@color/white</item>
-    <item name="bottom_sheet_handle" type="color">@color/semi_light_gray</item>
     <item name="background_semi_transparent" type="color">@color/blur_white</item>
-    <item name="light_system_ui" type="bool">true</item>
     <item name="icon_tint" type="color">@null</item>
-    <item name="hedvig_logo_weak_tint" type="color">@color/gray</item>
-    <item name="link_purple" type="color">@color/purple</item>
-    <item name="separator" type="color">@color/light_gray</item>
-    <item name="separator_elevation_1" type="color">@color/light_gray</item>
+    <!-- TODO: Remove when we have colors for the offer screen -->
     <item name="offer_background" type="color">@color/dark_purple</item>
-    <item name="foreground_gray" type="color">@color/semi_light_gray</item>
-    <item name="icon_color" type="color">@color/off_black</item>
-    <item name="color_on_surface" type="color">@color/violet_100</item>
+
+    <item name="colorPrimary" type="color">@color/hedvig_black</item>
+    <item name="colorOnPrimary" type="color">@color/hedvig_white</item>
+    <item name="colorPrimaryVariant" type="color">@color/hedvig_dark_gray</item>
+    <item name="colorBackground" type="color">@color/hedvig_off_white</item>
+    <item name="colorSurface" type="color">@color/hedvig_white</item>
+    <item name="colorOnSurface" type="color">@color/colorPrimary</item>
+    <item name="colorSecondary" type="color">@color/purple</item>
+    <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
+
+    <item name="textColorPrimary" type="color">@color/hedvig_dark_gray</item>
+    <item name="textColorSecondary" type="color">@color/hedvig_black</item>
+
+    <item name="colorButton" type="color">@color/mtrl_btn_bg_color_selector</item>
+    <item name="textColorButton" type="color">@color/mtrl_btn_text_color_selector</item>
 </resources>

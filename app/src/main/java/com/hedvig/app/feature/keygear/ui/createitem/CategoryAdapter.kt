@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.create_key_gear_item_category.view.*
 
@@ -40,10 +40,10 @@ class CategoryAdapter(
         fun bind(data: Category, setActiveCategory: (Category) -> Unit) {
             text.text = text.resources.getString(data.category.label)
             if (data.selected) {
-                text.setTextColor(text.context.compatColor(R.color.link_purple))
+                text.setTextColor(text.context.colorAttr(R.attr.colorSecondary))
                 text.isActivated = true
             } else {
-                text.setTextColor(text.context.compatColor(R.color.text_regular))
+                text.setTextColor(text.context.colorAttr(android.R.attr.textColorPrimary))
                 text.isActivated = false
             }
             text.setHapticClickListener {

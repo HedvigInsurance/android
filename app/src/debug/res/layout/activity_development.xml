@@ -12,12 +12,12 @@
         tools:ignore="HardcodedText">
 
         <TextView
-            style="@style/Header.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_triple"
             android:gravity="center_horizontal"
-            android:text="Hedvig Development Screen" />
+            android:text="Hedvig Development Screen"
+            android:textAppearance="?textAppearanceHeadline4" />
 
         <CheckBox
             android:id="@+id/useMockData"
@@ -38,7 +38,6 @@
 
         <Button
             android:id="@+id/openMarketPicker"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -47,7 +46,6 @@
 
         <Button
             android:id="@+id/openWhatsNew"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -56,7 +54,6 @@
 
         <Button
             android:id="@+id/openNativeChat"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -65,7 +62,6 @@
 
         <Button
             android:id="@+id/openNativeOffer"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -74,7 +70,6 @@
 
         <Button
             android:id="@+id/openAlert"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -83,7 +78,6 @@
 
         <Button
             android:id="@+id/openLoggedInWithWelcome"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -92,7 +86,6 @@
 
         <Button
             android:id="@+id/openLoggedInWithoutWelcome"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -101,7 +94,6 @@
 
         <Button
             android:id="@+id/openReferralReceiver"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -110,7 +102,6 @@
 
         <Button
             android:id="@+id/openReferralNotification"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -119,7 +110,6 @@
 
         <Button
             android:id="@+id/openPostSignDD"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -127,8 +117,15 @@
             android:text="Open Post-sign Direct Debit screen" />
 
         <Button
+            android:id="@+id/openViewGallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open View Gallery" />
+
+        <Button
             android:id="@+id/openVectorDrawableGallery"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -137,7 +134,6 @@
 
         <Button
             android:id="@+id/openSettings"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -146,7 +142,6 @@
 
         <Button
             android:id="@+id/openRatingsDialog"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -155,7 +150,6 @@
 
         <Button
             android:id="@+id/openLanguageSelector"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -163,7 +157,6 @@
             android:text="Open language selector" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/ProfileField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double">
@@ -178,7 +171,6 @@
 
         <Button
             android:id="@+id/saveToken"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
