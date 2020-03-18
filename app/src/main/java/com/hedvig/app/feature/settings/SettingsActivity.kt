@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.settings
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,10 +11,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -39,8 +42,10 @@ class SettingsActivity : BaseActivity() {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val userViewModel: UserViewModel by sharedViewModel()
+        @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -68,6 +73,14 @@ class SettingsActivity : BaseActivity() {
                             R.string.alert_title,
                             R.string.alert_message,
                             positiveAction = {
+    
+                                sharedPreferences.edit()
+                                    .putInt(
+                                        Market.MARKET_SHARED_PREF,
+                                        Market.valueOf(newValue.toString()).ordinal
+                                    )
+                                    .commit()
+
                                 userViewModel.logout {
                                     requireContext().storeBoolean(
                                         LoginStatusService.IS_VIEWING_OFFER,
@@ -78,6 +91,9 @@ class SettingsActivity : BaseActivity() {
                                     FirebaseInstanceId.getInstance().deleteInstanceId()
                                     requireActivity().triggerRestartActivity()
                                 }
+                            },
+                            negativeAction = {
+                                mp.value = oldValue
                             }
                         )
                     }

@@ -24,6 +24,7 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -52,6 +53,7 @@ class MarketingActivity : BaseActivity() {
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        makeToast(market.name)
 
         activity_marketing.useEdgeToEdge()
 
