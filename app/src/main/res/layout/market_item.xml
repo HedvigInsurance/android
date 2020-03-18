@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background_elevation_1"
+    android:background="?colorSurface"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
@@ -16,15 +16,16 @@
         android:id="@+id/flag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/market_item_flag_padding_end"
+        android:contentDescription="@null"
         tools:src="@drawable/ic_flag_se" />
 
     <TextView
         android:id="@+id/country"
-        style="@style/Body.Regular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_weight="1"
+        android:textAppearance="?textAppearanceBody1"
         tools:text="Sverige" />
 
     <RadioButton
