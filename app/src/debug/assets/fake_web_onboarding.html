@@ -1,0 +1,26 @@
+<html>
+<head>
+    <script>
+    var port
+
+    window.addEventListener('message', event => {
+         if (event.data === 'init') {
+            // Capture the MessagePort sent from the native side
+            port = event.ports[0]
+         } else {
+            // Handle the message normally
+         }
+    }, false)
+
+    function signComplete() {
+        port.postMessage(JSON.stringify({type:'SIGN_COMPLETE'}))
+    }
+
+    </script>
+</head>
+<body>
+
+<button onclick="signComplete()">Fake sign</button>
+
+</body>
+</html>

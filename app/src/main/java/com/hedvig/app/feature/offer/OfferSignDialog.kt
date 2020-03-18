@@ -120,10 +120,7 @@ class OfferSignDialog : DialogFragment() {
     private fun goToDirectDebit() {
         requireContext().storeBoolean(IS_VIEWING_OFFER, false)
         handler.postDelayed({
-            startActivity(TrustlyActivity.newInstance(requireContext(), true).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            })
+            startActivity(TrustlyActivity.newInstance(requireContext(), withExplainer = true, withoutHistory = true))
         }, 1000)
     }
 
