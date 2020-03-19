@@ -106,10 +106,17 @@ class SettingsActivity : BaseActivity() {
 
             val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
             languagePreference?.let { lp ->
-                // //TODO fortsätt
-                // when (market) {
-                //     Market.NO -> lp.entries = resources.getStringArray(R.array.language_settings_no)
-                // }
+                when (market) {
+                    Market.SE -> {
+                        lp.entries = resources.getStringArray(R.array.language_settings)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values)
+                    }
+                    Market.NO -> {
+                        lp.entries = resources.getStringArray(R.array.language_settings_no)
+                        lp.entryValues =
+                            resources.getStringArray(R.array.language_settings_values_no)
+                    }
+                }
 
                 if (lp.value == null) {
                     lp.value = Language.SYSTEM_DEFAULT.toString()
