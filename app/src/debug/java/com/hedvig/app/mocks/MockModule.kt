@@ -24,6 +24,6 @@ val mockModule = module {
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
     viewModel<DashboardViewModel> { MockDashboardViewModel(get()) }
     viewModel<ContractDetailViewModel> { MockContractDetailViewModel(get()) }
-    viewModel<ContractCoverageDetailViewModel> { MockContractCoverageDetailViewModel() }
+    viewModel<ContractCoverageDetailViewModel> { MockContractCoverageDetailViewModel(get()) }
     viewModel<MarketingStoriesViewModel> { MockMarketingStoriesViewModel() }
 }
