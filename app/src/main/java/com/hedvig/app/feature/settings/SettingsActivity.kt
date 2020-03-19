@@ -16,8 +16,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -77,11 +77,12 @@ class SettingsActivity : BaseActivity() {
                             R.string.alert_message,
                             positiveAction = {
                                 sharedPreferences.edit()
-                                    .putInt(
-                                        Market.MARKET_SHARED_PREF,
-                                        Market.valueOf(newValue.toString()).ordinal
+                                    .putString(
+                                        SETTINGS_NEW_MARKET,
+                                        Market.valueOf(newValue.toString()).name
                                     )
                                     .commit()
+
 
                                 userViewModel.logout {
                                     requireContext().storeBoolean(
@@ -91,7 +92,7 @@ class SettingsActivity : BaseActivity() {
                                     requireContext().setAuthenticationToken(null)
                                     requireContext().setIsLoggedIn(false)
                                     FirebaseInstanceId.getInstance().deleteInstanceId()
-                                    requireActivity().triggerRestartActivity(MarketingActivity::class.java)
+                                    requireActivity().triggerRestartActivity(MarketPickerActivity::class.java)
                                 }
                             },
                             negativeAction = {
@@ -105,6 +106,11 @@ class SettingsActivity : BaseActivity() {
 
             val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
             languagePreference?.let { lp ->
+                // //TODO fortsätt
+                // when (market) {
+                //     Market.NO -> lp.entries = resources.getStringArray(R.array.language_settings_no)
+                // }
+
                 if (lp.value == null) {
                     lp.value = Language.SYSTEM_DEFAULT.toString()
                 }
@@ -146,6 +152,7 @@ class SettingsActivity : BaseActivity() {
         const val SETTING_LANGUAGE = "language"
         const val SETTING_NOTIFICATIONS = "notifications"
         const val SETTINGS_MARKET = "market"
+        const val SETTINGS_NEW_MARKET = "newMarket"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }

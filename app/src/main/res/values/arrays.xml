@@ -15,6 +15,11 @@
         <item>@string/SETTINGS_LANGUAGE_SWEDISH</item>
         <item>@string/SETTINGS_LANGUAGE_ENGLISH</item>
     </string-array>
+    <string-array name="language_settings_no">
+        <item>@string/SETTINGS_LANGUAGE_SYSTEM_DEFAULT</item>
+        <item>@string/norwegian</item>
+        <item>@string/SETTINGS_LANGUAGE_ENGLISH</item>
+    </string-array>
     <string-array name="language_settings_values">
         <item>system_default</item>
         <item>sv-SE</item>
