@@ -25,8 +25,8 @@ import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageDetailViewModel
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageDetailViewModelImpl
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
@@ -182,7 +182,7 @@ val viewModelModule = module {
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
-    viewModel<ContractCoverageDetailViewModel> { ContractCoverageDetailViewModelImpl() }
+    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl() }
 }
 
 val marketingModule = module {

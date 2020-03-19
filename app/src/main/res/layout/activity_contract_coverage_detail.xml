@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feature.dashboard.ui.contractcoverage.ContractCoverageDetailActivity">
+    tools:context=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity">
 
     <!-- TODO: Translations -->
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_close"
@@ -38,6 +39,8 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginEnd="@dimen/base_margin_double"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
                 tools:itemCount="8"
@@ -53,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:text="Mer informasjon"
                 android:textAppearance="?textAppearanceHeadline5" />

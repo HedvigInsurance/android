@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -74,6 +75,10 @@ class ContractAdapter(
             }
             informationCard.setHapticClickListener {
                 informationCard.context.startActivity(ContractDetailActivity.newInstance(informationCard.context, contract.id))
+            }
+
+            perilCard.setHapticClickListener {
+                perilCard.context.startActivity(ContractCoverageActivity.newInstance(perilCard.context, contract.id))
             }
         }
     }

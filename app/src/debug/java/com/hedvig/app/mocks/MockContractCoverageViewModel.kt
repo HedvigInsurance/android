@@ -6,9 +6,9 @@ import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.MockDashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.feature.dashboard.ui.DashboardData
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageDetailViewModel
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
 
-class MockContractCoverageDetailViewModel(context: Context) : ContractCoverageDetailViewModel() {
+class MockContractCoverageViewModel(context: Context) : ContractCoverageViewModel() {
     override val data = MutableLiveData<Contract>()
 
     private val mockData: DashboardData
