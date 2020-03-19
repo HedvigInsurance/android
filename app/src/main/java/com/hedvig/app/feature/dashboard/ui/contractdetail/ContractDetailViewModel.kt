@@ -1,10 +1,11 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.dashboard.ui.contractdetail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.hedvig.app.feature.dashboard.ui.Contract
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {

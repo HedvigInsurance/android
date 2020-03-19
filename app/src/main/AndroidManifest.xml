@@ -282,7 +282,15 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.dashboard.ui.ContractDetailActivity"
+            android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.dashboard.ui.contractcoverage.ContractCoverageDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

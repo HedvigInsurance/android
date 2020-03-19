@@ -59,28 +59,34 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         if (isNorway(data.contracts)) {
             if (doesNotHaveHomeContents(data.contracts)) {
                 (upsells.adapter as? UpsellAdapter)?.items = listOf(
-                    UpsellModel( // TODO: Translations and Icon
-                        android.R.drawable.btn_plus,
-                        android.R.string.ok,
-                        android.R.string.ok,
-                        android.R.string.ok
-                    )
+                    UPSELL_HOME_CONTENTS
                 )
             }
             if (doesNotHaveTravelInsurance(data.contracts)) {
                 (upsells.adapter as? UpsellAdapter)?.items = listOf(
-                    UpsellModel( // TODO: Translations and Icon
-                        android.R.drawable.btn_minus,
-                        android.R.string.no,
-                        android.R.string.no,
-                        android.R.string.no
-                    )
+                    UPSELL_TRAVEL
                 )
             }
         }
     }
 
     companion object {
+        private val UPSELL_HOME_CONTENTS =
+            UpsellModel( // TODO: Icon
+                android.R.drawable.btn_plus,
+                R.string.UPSELL_NOTIFICATION_CONTENT_TITLE,
+                R.string.UPSELL_NOTIFICATION_CONTENT_DESCRIPTION,
+                R.string.UPSELL_NOTIFICATION_CONTENT_CTA
+            )
+
+        private val UPSELL_TRAVEL =
+            UpsellModel( // TODO: Icon
+                android.R.drawable.btn_minus,
+                R.string.UPSELL_NOTIFICATION_TRAVEL_TITLE,
+                R.string.UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION,
+                R.string.UPSELL_NOTIFICATION_TRAVEL_CTA
+            )
+
         fun isNorway(contracts: List<Contract>) = contracts.any { it.currentAgreement.asNorwegianTravelAgreement != null || it.currentAgreement.asNorwegianHomeContentAgreement != null }
 
         fun doesNotHaveHomeContents(contracts: List<Contract>) = contracts.none { it.currentAgreement.asNorwegianHomeContentAgreement != null }

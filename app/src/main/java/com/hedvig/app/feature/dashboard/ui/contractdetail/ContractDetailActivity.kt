@@ -1,20 +1,20 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.dashboard.ui.contractdetail
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.hedvig.android.owldroid.fragment.AddressFragment
+import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
+import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.compatSetTint
-import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.interpolateTextKey
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -25,11 +25,6 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        toolbar.navigationIcon = compatDrawable(R.drawable.ic_close)?.apply {
-            if (isDarkThemeActive) {
-                compatSetTint(compatColor(R.color.icon_tint))
-            }
-        }
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -68,15 +63,16 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
 
     private fun bind(data: Contract) {
         data.currentAgreement.asNorwegianHomeContentAgreement?.let { nhca ->
-            bindHomeInformation(nhca.address.fragments.addressFragment, nhca.squareMeters, "TODO")
+            bindHomeInformation(nhca.address.fragments.addressFragment, nhca.squareMeters, nhca.nhcType?.displayName(this)
+                ?: "")
             bindCoinsured(nhca.numberCoInsured)
         }
         data.currentAgreement.asSwedishApartmentAgreement?.let { saa ->
-            bindHomeInformation(saa.address.fragments.addressFragment, saa.squareMeters, "TODO")
+            bindHomeInformation(saa.address.fragments.addressFragment, saa.squareMeters, saa.saType.displayName(this))
             bindCoinsured(saa.numberCoInsured)
         }
         data.currentAgreement.asSwedishHouseAgreement?.let { sha ->
-            bindHomeInformation(sha.address.fragments.addressFragment, sha.squareMeters, "TODO")
+            bindHomeInformation(sha.address.fragments.addressFragment, sha.squareMeters, getString(R.string.SWEDISH_HOUSE_LOB))
             bindCoinsured(sha.numberCoInsured)
         }
         data.currentAgreement.asNorwegianTravelAgreement?.let { nta ->
@@ -87,21 +83,39 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     private fun bindHomeInformation(addressData: AddressFragment, sqm: Int, typeTranslated: String) {
         homeInformationContainer.show()
         address.text = addressData.street
-        squareMeters.text = "$sqm kvm" // TODO
+        squareMeters.text = interpolateTextKey(
+            getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT),
+            "SQUARE_METERS" to sqm
+        )
         type.text = typeTranslated
     }
 
     private fun bindCoinsured(amount: Int) {
         coinsuredContainer.show()
-        coinsuredAmount.text = if (amount == 1) { // TODO
-            "Endast du"
-        } else {
-            "Du og ${amount - 1} andre"
-        }
+        coinsuredAmount.text = interpolateTextKey(
+            getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT),
+            "COINSURED" to amount
+        )
     }
 
     companion object {
         private const val ID = "ID"
+
+        private fun SwedishApartmentLineOfBusiness.displayName(context: Context) = when (this) {
+            SwedishApartmentLineOfBusiness.RENT -> context.getString(R.string.SWEDISH_APARTMENT_LOB_RENT)
+            SwedishApartmentLineOfBusiness.BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_BRF)
+            SwedishApartmentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.SWEDISH_APARTMENT_LOB_STUDENT_RENT)
+            SwedishApartmentLineOfBusiness.STUDENT_BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_STUDENT_BRF)
+            SwedishApartmentLineOfBusiness.UNKNOWN__ -> ""
+        }
+
+        private fun NorwegianHomeContentLineOfBusiness.displayName(context: Context) = when (this) {
+            NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
+            NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
+            NorwegianHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
+            NorwegianHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
+            NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
+        }
 
         fun newInstance(context: Context, id: String) = Intent(context, ContractDetailActivity::class.java).apply {
             putExtra(ID, id)

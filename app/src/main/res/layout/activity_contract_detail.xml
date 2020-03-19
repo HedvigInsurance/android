@@ -1,216 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".feature.dashboard.ui.contractdetail.ContractDetailActivity">
 
-    <!-- TODO: Translation -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:title="Min informasjon"
-        app:titleTextAppearance="@style/Headline.Medium"
-        tools:height="56dp" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/homeInformationContainer"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:layout_marginBottom="@dimen/base_margin_quintuple"
-        android:visibility="gone"
-        tools:visibility="visible">
+        app:navigationIcon="@drawable/ic_close"
+        app:title="@string/CONTRACT_DETAIL_MAIN_TITLE" />
 
-        <TextView
-            android:id="@+id/homeInfoTitle"
-            style="@style/Headline.Medium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Hjemmet mitt"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/addressLabel"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_quadruple"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Address"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/homeInfoTitle" />
-
-        <TextView
-            android:id="@+id/address"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/addressLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Karl Johans gate 24" />
-
-        <TextView
-            android:id="@+id/postalNumberLabel"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_quadruple"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Postkode"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addressLabel" />
-
-        <TextView
-            android:id="@+id/postalNumber"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/postalNumberLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="0195" />
-
-        <TextView
-            android:id="@+id/squareMetersLabel"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_quadruple"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Storlek"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/postalNumberLabel" />
-
-        <TextView
-            android:id="@+id/squareMeters"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/squareMetersLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="56 kvm" />
-
-        <TextView
-            android:id="@+id/typeLabel"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_quadruple"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Type"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/squareMetersLabel" />
-
-        <TextView
-            android:id="@+id/type"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/typeLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Leier" />
-
-        <View
-            android:id="@+id/homeSeparator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="@color/separator"
-            app:layout_constraintTop_toBottomOf="@id/typeLabel" />
-
-        <Button
-            android:id="@+id/homeChangeInfo"
-            style="@style/Body.Regular.Link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="?attr/selectableItemBackground"
-            android:text="Ändre info"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/homeSeparator" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/coinsuredContainer"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_quintuple">
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize">
 
-        <TextView
-            android:id="@+id/coinsuredTitle"
-            style="@style/Headline.Medium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Medforsikrade"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/coinsuredAmountLabel"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_quadruple"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Antal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coinsuredTitle" />
-
-        <TextView
-            android:id="@+id/coinsuredAmount"
-            style="@style/Body.Regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/coinsuredAmountLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Du og 2 andre" />
-
-        <View
-            android:id="@+id/coinsuredSeparator"
+        <LinearLayout
+            android:id="@+id/scrollViewContent"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="@color/separator"
-            app:layout_constraintTop_toBottomOf="@id/coinsuredAmountLabel" />
-
-        <Button
-            android:id="@+id/coinsuredChangeInfo"
-            style="@style/Body.Regular.Link"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="?attr/selectableItemBackground"
-            android:text="Ändre info"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coinsuredSeparator" />
+            android:orientation="vertical">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/homeInformationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginBottom="@dimen/base_margin_quintuple"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/homeInfoTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_HOME_TITLE"
+                    android:textAppearance="?textAppearanceHeadline5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/addressLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_HOME_ADDRESS"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/homeInfoTitle" />
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBaseline_toBaselineOf="@id/addressLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Karl Johans gate 24" />
+
+                <TextView
+                    android:id="@+id/postalNumberLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_HOME_POSTCODE"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/addressLabel" />
+
+                <TextView
+                    android:id="@+id/postalNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBaseline_toBaselineOf="@id/postalNumberLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="0195" />
+
+                <TextView
+                    android:id="@+id/squareMetersLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_HOME_SIZE"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/postalNumberLabel" />
+
+                <TextView
+                    android:id="@+id/squareMeters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBaseline_toBaselineOf="@id/squareMetersLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="56 kvm" />
+
+                <TextView
+                    android:id="@+id/typeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_HOME_TYPE"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/squareMetersLabel" />
+
+                <TextView
+                    android:id="@+id/type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBaseline_toBaselineOf="@id/typeLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Leier" />
+
+                <View
+                    android:id="@+id/homeSeparator"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:background="@color/separator"
+                    app:layout_constraintTop_toBottomOf="@id/typeLabel" />
+
+                <Button
+                    android:id="@+id/homeChangeInfo"
+                    style="?materialButtonTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:text="@string/CONTRACT_DETAIL_HOME_CHANGE_INFO"
+                    android:textAllCaps="false"
+                    android:textColor="?colorSecondary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/homeSeparator" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/coinsuredContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_quintuple">
+
+                <TextView
+                    android:id="@+id/coinsuredTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_COINSURED_TITLE"
+                    android:textAppearance="?textAppearanceHeadline5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/coinsuredAmountLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginTop="@dimen/base_margin_quadruple"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:text="@string/CONTRACT_DETAIL_COINSURED_NUMBER"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/coinsuredTitle" />
+
+                <TextView
+                    android:id="@+id/coinsuredAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin_double"
+                    android:layout_marginEnd="@dimen/base_margin_double"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBaseline_toBaselineOf="@id/coinsuredAmountLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Du og 2 andre" />
+
+                <View
+                    android:id="@+id/coinsuredSeparator"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:background="@color/separator"
+                    app:layout_constraintTop_toBottomOf="@id/coinsuredAmountLabel" />
+
+                <Button
+                    android:id="@+id/coinsuredChangeInfo"
+                    style="?materialButtonTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="@string/CONTRACT_DETAIL_COINSURED_CHANGE_INFO"
+                    android:textAllCaps="false"
+                    android:textColor="?colorSecondary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/coinsuredSeparator" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

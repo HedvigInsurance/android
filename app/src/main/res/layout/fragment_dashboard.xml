@@ -28,8 +28,6 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
-            android:background="@drawable/background_rounded_corners"
-            android:backgroundTint="@color/violet_100"
             android:padding="@dimen/base_margin_double"
             android:visibility="gone"
             tools:visibility="visible">
@@ -41,30 +39,29 @@
 
                 <TextView
                     android:id="@+id/infoBoxTitle"
-                    style="@style/Headline.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:textAppearance="?textAppearanceHeadline6"
                     tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
 
                 <TextView
                     android:id="@+id/infoBoxBody"
-                    style="@style/Body.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/base_margin"
                     android:textAlignment="center"
+                    android:textAppearance="?textAppearanceBody2"
                     tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
 
                 <Button
                     android:id="@+id/infoBoxButton"
-                    style="@style/HedvigButton.Outlined"
+                    style="?materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/base_margin_double"
-                    android:textColor="@color/link_purple"
                     tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL" />
 
             </LinearLayout>

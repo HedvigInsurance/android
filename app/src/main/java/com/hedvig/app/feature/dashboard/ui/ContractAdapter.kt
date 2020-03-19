@@ -2,17 +2,14 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.view.animateCollapse
-import com.hedvig.app.util.extensions.view.animateExpand
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import org.threeten.bp.format.DateTimeFormatter
@@ -22,9 +19,9 @@ class ContractAdapter(
 ) : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
     var items: List<Contract> = emptyList()
         set(value) {
-            //val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
+            val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
             field = value
-            //diff.dispatchUpdatesTo(this)
+            diff.dispatchUpdatesTo(this)
             notifyDataSetChanged()
         }
 
@@ -44,14 +41,9 @@ class ContractAdapter(
         private val name = itemView.contractName
         private val informationCard = itemView.contractInformationCard
         private val perilCard = itemView.perilCard
-        private val perilExpandCollapse = itemView.expandCollapse
-        private val perils = itemView.perilsContainer
-
-        init {
-            perils.adapter = PerilsAdapter(fragmentManager)
-        }
 
         fun bind(contract: Contract) {
+            name.text = contract.displayName
             when (contract.status) {
                 ContractStatus.ACTIVE -> {
                     status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_filled_checkmark_small), null, null, null)
@@ -82,30 +74,6 @@ class ContractAdapter(
             }
             informationCard.setHapticClickListener {
                 informationCard.context.startActivity(ContractDetailActivity.newInstance(informationCard.context, contract.id))
-            }
-            (perils.adapter as? PerilsAdapter)?.setData("TODO", contract.perils)
-            perilCard.setHapticClickListener {
-                val isExpanded = perils.height != 0
-                if (isExpanded) {
-                    perils.animateCollapse(withOpacity = true)
-                    perilExpandCollapse
-                        .animate()
-                        .withLayer()
-                        .setDuration(200)
-                        .setInterpolator(DecelerateInterpolator())
-                        .rotation(0f)
-                        .start()
-                } else {
-                    perils.updateLayoutParams { height = 1 }
-                    perils.animateExpand(withOpacity = true)
-                    perilExpandCollapse
-                        .animate()
-                        .withLayer()
-                        .setDuration(200)
-                        .setInterpolator(DecelerateInterpolator())
-                        .rotation(-180f)
-                        .start()
-                }
             }
         }
     }

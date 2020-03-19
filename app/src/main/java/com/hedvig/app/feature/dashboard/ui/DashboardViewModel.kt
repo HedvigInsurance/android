@@ -52,6 +52,7 @@ data class Contract(
     val id: String,
     val status: ContractStatus,
     val inception: LocalDate,
+    val displayName: String,
     val upcomingRenewal: DashboardQuery.UpcomingRenewal?,
     val currentAgreement: DashboardQuery.CurrentAgreement,
     val perils: List<PerilCategoryFragment.Peril>

@@ -23,10 +23,12 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.dashboard.ui.ContractDetailViewModel
-import com.hedvig.app.feature.dashboard.ui.ContractDetailViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageDetailViewModel
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageDetailViewModelImpl
+import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -82,7 +84,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -180,6 +182,7 @@ val viewModelModule = module {
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
+    viewModel<ContractCoverageDetailViewModel> { ContractCoverageDetailViewModelImpl() }
 }
 
 val marketingModule = module {
@@ -195,7 +198,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {

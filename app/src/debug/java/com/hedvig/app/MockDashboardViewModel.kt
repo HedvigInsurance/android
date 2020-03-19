@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
+import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.feature.dashboard.ui.DashboardData
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
@@ -24,20 +25,188 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
         data.postValue(when (activePersona) {
+            0 -> SWEDISH_APARTMENT
+            1 -> SWEDISH_HOUSE
             2 -> NORWEGIAN_HOME_CONTENTS
             3 -> NORWEGIAN_TRAVEL
             4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-            else -> NORWEGIAN_HOME_CONTENTS
+            else -> SWEDISH_APARTMENT
         })
 
         directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
 
     companion object {
+        private val SWEDISH_HOUSE_CONTRACT = Contract(
+            "120e9ac9-84b1-4e5d-add1-70a9bad340be",
+            ContractStatus.ACTIVE,
+            LocalDate.of(2020, 1, 1),
+            "Hemförsäkring",
+            null,
+            DashboardQuery.CurrentAgreement(
+                asAgreementCore = DashboardQuery.AsAgreementCore(
+                    status = AgreementStatus.ACTIVE,
+                    activeFrom = LocalDate.of(2020, 1, 1),
+                    activeTo = null
+                ),
+                asSwedishHouseAgreement = DashboardQuery.AsSwedishHouseAgreement(
+                    address = DashboardQuery.Address1(
+                        fragments = DashboardQuery.Address1.Fragments(
+                            AddressFragment(
+                                street = "Testvägen 1",
+                                postalCode = "123 45",
+                                city = "Tensta"
+                            )
+                        )
+                    ),
+                    numberCoInsured = 2,
+                    squareMeters = 50
+                ),
+                asNorwegianHomeContentAgreement = null,
+                asNorwegianTravelAgreement = null,
+                asSwedishApartmentAgreement = null
+            ),
+            listOf(
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                )
+            )
+        )
+        private val SWEDISH_APARTMENT_CONTRACT = Contract(
+            "120e9ac9-84b1-4e5d-add1-70a9bad340be",
+            ContractStatus.ACTIVE,
+            LocalDate.of(2020, 1, 1),
+            "Hemförsäkring",
+            null,
+            DashboardQuery.CurrentAgreement(
+                asAgreementCore = DashboardQuery.AsAgreementCore(
+                    status = AgreementStatus.ACTIVE,
+                    activeFrom = LocalDate.of(2020, 1, 1),
+                    activeTo = null
+                ),
+                asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
+                    address = DashboardQuery.Address(
+                        fragments = DashboardQuery.Address.Fragments(
+                            AddressFragment(
+                                street = "Testvägen 1",
+                                postalCode = "123 45",
+                                city = "Tensta"
+                            )
+                        )
+                    ),
+                    numberCoInsured = 2,
+                    squareMeters = 50,
+                    saType = SwedishApartmentLineOfBusiness.RENT
+                ),
+                asNorwegianHomeContentAgreement = null,
+                asNorwegianTravelAgreement = null,
+                asSwedishHouseAgreement = null
+            ),
+            listOf(
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                ),
+                PerilCategoryFragment.Peril(
+                    id = "ME.LEGAL",
+                    title = "Mock",
+                    description = "Mock"
+                )
+            )
+        )
         private val NORWEGIAN_HOME_CONTENTS_CONTRACT = Contract(
             "120e9ac9-84b1-4e5d-add1-70a9bad340be",
             ContractStatus.ACTIVE,
             LocalDate.of(2020, 1, 1),
+            "Innboforsikring",
             null,
             DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
@@ -121,6 +290,7 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             "eaaf8b5c-5a61-44a9-91bc-3de5b6bf878e",
             ContractStatus.ACTIVE,
             LocalDate.of(2020, 1, 1),
+            "Reiseforsikring",
             null,
             DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
@@ -187,6 +357,14 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     description = "Mock"
                 )
             )
+        )
+
+        val SWEDISH_APARTMENT = DashboardData(
+            listOf(SWEDISH_APARTMENT_CONTRACT)
+        )
+
+        val SWEDISH_HOUSE = DashboardData(
+            listOf(SWEDISH_HOUSE_CONTRACT)
         )
 
         val NORWEGIAN_HOME_CONTENTS = DashboardData(

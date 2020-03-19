@@ -6,24 +6,25 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <!-- TODO: Translations -->
     <TextView
         android:id="@+id/contractName"
-        style="@style/Headline.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceHeadline5"
         tools:text="Hemförsäkring" />
 
     <TextView
         android:id="@+id/contractStatus"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:drawablePadding="@dimen/base_margin"
+        android:textAppearance="?textAppearanceBody1"
         tools:drawableStart="@drawable/ic_filled_checkmark_small"
         tools:text="Aktiv" />
 
@@ -56,11 +57,11 @@
 
             <TextView
                 android:id="@+id/contractInformationTitle"
-                style="@style/Headline.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
+                android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintBottom_toTopOf="@id/contractInformationDescription"
                 app:layout_constraintStart_toEndOf="@id/contractInformationIcon"
                 app:layout_constraintTop_toTopOf="parent"
@@ -69,12 +70,12 @@
 
             <TextView
                 android:id="@+id/contractInformationDescription"
-                style="@style/Body.Small"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/base_margin_triple"
                 android:ellipsize="end"
                 android:singleLine="true"
+                android:textAppearance="?textAppearanceBody2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/contractInformationInfoIcon"
                 app:layout_constraintStart_toStartOf="@id/contractInformationTitle"
@@ -105,89 +106,43 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/catIcon"
+                android:layout_width="@dimen/peril_category_icon_size"
+                android:layout_height="@dimen/peril_category_icon_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_family" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:id="@+id/textContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:layout_marginBottom="@dimen/base_margin_triple"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/catIcon"
-                    android:layout_width="@dimen/peril_category_icon_size"
-                    android:layout_height="@dimen/peril_category_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/base_margin_triple"
-                    android:contentDescription="@null"
-                    tools:src="@drawable/ic_family" />
-
-                <LinearLayout
-                    android:id="@+id/textContainer"
+                <TextView
+                    android:id="@+id/categoryTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/base_margin_double"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:layout_marginEnd="@dimen/base_margin"
-                    android:layout_marginBottom="@dimen/base_margin_triple"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    android:text="Mitt skydd"
+                    android:textAppearance="?textAppearanceHeadline6" />
 
-                    <TextView
-                        android:id="@+id/categoryTitle"
-                        style="@style/Headline.Medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="Mitt skydd"
-                        app:autoSizeMaxTextSize="@dimen/text_medium"
-                        app:autoSizeMinTextSize="@dimen/text_small"
-                        app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
-                        app:autoSizeTextType="uniform" />
-
-                    <TextView
-                        android:id="@+id/categorySubtitle"
-                        style="@style/Body.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tryck för att läsa" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/expandCollapse"
+                <TextView
+                    android:id="@+id/categorySubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:contentDescription="@null"
-                    app:srcCompat="@drawable/ic_expand" />
-
+                    android:text="Tryck för att läsa"
+                    android:textAppearance="?textAppearanceBody2" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/perilsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal"
-                android:overScrollMode="never"
-                android:paddingStart="@dimen/base_margin"
-                android:paddingEnd="@dimen/base_margin"
-                android:paddingBottom="@dimen/base_margin"
-                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textContainer"
-                tools:itemCount="5"
-                tools:layout_height="wrap_content"
-                tools:listitem="@layout/peril" />
 
         </LinearLayout>
 

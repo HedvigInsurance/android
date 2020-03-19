@@ -51,17 +51,6 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <!--  TODO: Remove these once we've removed the only screen using it -->
-    <style name="ProfileFieldLabel">
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="ProfileField" parent="Widget.Design.TextInputLayout">
-        <item name="hintTextAppearance">@style/ProfileFieldLabel</item>
-        <item name="colorControlActivated">?colorSecondary</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
     <!--
     <style name="AppTheme.MenuItem">
         <item name="android:textColor">?colorSecondary</item>

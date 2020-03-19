@@ -3,6 +3,7 @@ query DashboardQuery {
     id
     status
     inception
+    displayName
     upcomingRenewal {
       renewalDate
       draftCertificateUrl

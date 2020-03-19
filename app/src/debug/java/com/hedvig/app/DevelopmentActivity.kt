@@ -19,7 +19,6 @@ import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.trustly.TrustlyActivity
-import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -168,7 +167,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 marketingModule,
                 offerModule,
                 profileModule,
-                directDebitModule,
                 keyGearModule
             )
     }
