@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient android:angle="270" android:endColor="@color/background_elevation_1" android:startColor="@color/transparent"/>
-    <corners android:bottomLeftRadius="@dimen/hedvig_card_view_radius" android:bottomRightRadius="@dimen/hedvig_card_view_radius"/>
+    <gradient
+        android:angle="270"
+        android:endColor="?colorSurface"
+        android:startColor="@color/transparent" />
+    <corners
+        android:bottomLeftRadius="@dimen/hedvig_card_view_radius"
+        android:bottomRightRadius="@dimen/hedvig_card_view_radius" />
 </shape>

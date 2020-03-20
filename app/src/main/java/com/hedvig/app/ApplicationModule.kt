@@ -35,15 +35,19 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
+import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
-import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
+import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -77,7 +81,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -162,7 +166,6 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 }
 
 val viewModelModule = module {
-    viewModel { MarketingStoriesViewModel(get()) }
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
@@ -171,8 +174,15 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { LanguageViewModel(get()) }
+    viewModel { NorwegianAuthenticationViewModel(get()) }
+}
 
+val marketingModule = module {
+    viewModel<MarketingStoriesViewModel> { MarketingStoriesViewModelImpl(get()) }
+}
+
+val languageAndMarketModule = module {
+    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
 }
 
 val offerModule = module {
@@ -215,6 +225,8 @@ val repositoriesModule = module {
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
+    single { MarketRepository(get()) }
+    single { NorwegianAuthenticationRepository(get()) }
 }
 
 val trackerModule = module {

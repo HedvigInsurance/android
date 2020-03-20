@@ -29,7 +29,7 @@ class CharityActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_charity)
 
-        setupLargeTitle(R.string.PROFILE_CHARITY_TITLE, R.font.circular_bold, R.drawable.ic_back) {
+        setupLargeTitle(R.string.PROFILE_CHARITY_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
 

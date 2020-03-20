@@ -21,7 +21,6 @@ class PaymentHistoryActivity : BaseActivity() {
 
         setupLargeTitle(
             R.string.PAYMENT_HISTORY_TITLE,
-            R.font.circular_bold,
             R.drawable.ic_back,
             backAction = {
                 onBackPressed()

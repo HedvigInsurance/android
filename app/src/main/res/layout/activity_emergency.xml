@@ -39,68 +39,28 @@
                     android:orientation="vertical">
 
                     <TextView
-                        style="@style/Headline.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/CLAIMS_EMERGENCY_FIRST_BOX_TITLE" />
+                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_TITLE"
+                        android:textAppearance="?textAppearanceHeadline6" />
 
                     <TextView
-                        style="@style/Body.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/base_margin"
-                        android:text="@string/CLAIMS_EMERGENCY_FIRST_BOX_DESCRIPTION" />
-
-                    <Button
-                        android:id="@+id/firstEmergencyButton"
-                        style="@style/HedvigButton.Purple"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|center_horizontal"
-                        android:layout_marginTop="@dimen/base_margin_double"
-                        android:text="@string/CLAIMS_EMERGENCY_FIRST_BOX_BUTTON_LABEL"
-                        tools:visibility="visible" />
-                </LinearLayout>
-            </com.hedvig.app.ui.view.HedvigCardView>
-
-            <com.hedvig.app.ui.view.HedvigCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/base_margin_double"
-                    android:layout_marginTop="@dimen/base_margin_triple"
-                    android:layout_marginEnd="@dimen/base_margin_double"
-                    android:layout_marginBottom="@dimen/base_margin_triple"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/Headline.Medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_TITLE" />
-
-                    <TextView
-                        style="@style/Body.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/base_margin"
-                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_DESCRIPTION" />
+                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_DESCRIPTION"
+                        android:textAppearance="?textAppearanceBody2" />
 
                     <Button
                         android:id="@+id/secondEmergencyButton"
-                        style="@style/HedvigButton.Purple"
-                        android:layout_width="wrap_content"
+                        style="?attr/materialButtonContainedLargeStyle"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginTop="@dimen/base_margin_double"
                         android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_BUTTON_LABEL"
                         tools:visibility="visible" />
+
                 </LinearLayout>
             </com.hedvig.app.ui.view.HedvigCardView>
 
@@ -121,29 +81,27 @@
                     android:orientation="vertical">
 
                     <TextView
-                        style="@style/Headline.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_TITLE" />
+                        android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_TITLE"
+                        android:textAppearance="?textAppearanceHeadline6" />
 
                     <TextView
-                        style="@style/Body.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/base_margin"
-                        android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_DESCRIPTION" />
+                        android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_DESCRIPTION"
+                        android:textAppearance="?textAppearanceBody2" />
 
                     <Button
                         android:id="@+id/thirdEmergencyButton"
-                        style="@style/HedvigButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginTop="@dimen/base_margin_double"
-                        android:backgroundTint="@color/light_gray"
                         android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_BUTTON_LABEL"
-                        android:textColor="@color/off_black"
                         tools:visibility="visible" />
+
                 </LinearLayout>
 
             </com.hedvig.app.ui.view.HedvigCardView>

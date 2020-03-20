@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/purple</color>
-    <color name="colorPrimaryDark">@color/dark_purple</color>
-    <color name="colorAccentLight">@color/violet_200</color>
-    <color name="colorAccentDark">#FFFFFF</color>
-    <color name="colorText">@color/off_white</color>
-    <color name="colorLight">#F6F6F7</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="transparent_white">#00FFFFFF</color>
     <color name="blur_white">#e6ffffff</color>
@@ -41,4 +34,14 @@
     <color name="dark_mode_elevation_1">#24272e</color>
     <color name="dark_mode_semi_transparent">#e624272e</color>
     <color name="translucent_tool_bar">#730A0D14</color>
+
+    <color name="hedvig_black">#121212</color>
+    <color name="hedvig_off_white">#fafafa</color>
+    <color name="hedvig_white">#ffffff</color>
+    <color name="hedvig_light_gray">#eaeaea</color>
+    <color name="hedvig_gray">#aaaaaa</color>
+    <color name="hedvig_dark_gray">#505050</color>
+    <color name="hedvig_gray_on_dark">#888888</color>
+    <color name="hedvig_gray_on_light">#717171</color>
+    <color name="hedvig_off_black">#1b1b1b</color>
 </resources>

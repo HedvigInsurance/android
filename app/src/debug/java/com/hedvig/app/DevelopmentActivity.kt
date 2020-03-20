@@ -13,6 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -20,11 +21,13 @@ import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
@@ -75,6 +78,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(WebOnboardingActivity.newInstance(this))
         }
 
+        openMarketPicker.setHapticClickListener {
+            startActivity(MarketPickerActivity.newInstance(this))
+        }
+
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
             startActivity(Intent(this, LoggedInActivity::class.java).apply {
                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
@@ -105,6 +112,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
         findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {
             startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+        }
+
+        openViewGallery.setHapticClickListener {
+            startActivity(ViewGalleryActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openSettings).setHapticClickListener {
@@ -155,6 +166,12 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(
+                marketingModule,
+                offerModule,
+                profileModule,
+                directDebitModule,
+                keyGearModule
+            )
     }
 }

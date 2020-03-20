@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.loggedin.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -249,25 +250,32 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
         when (id) {
             LoggedInTabs.DASHBOARD -> {
-                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE)
             }
             LoggedInTabs.CLAIMS -> {
-                setupLargeTitle(R.string.CLAIMS_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.CLAIMS_TITLE)
             }
             LoggedInTabs.KEY_GEAR -> {
-                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE), R.font.circular_bold)
+                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE))
             }
             LoggedInTabs.REFERRALS -> {
-                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE)
             }
             LoggedInTabs.PROFILE -> {
-                setupLargeTitle(R.string.PROFILE_TITLE, R.font.circular_bold)
+                setupLargeTitle(R.string.PROFILE_TITLE)
             }
         }
         lastLoggedInTab = id
     }
 
     companion object {
+        fun newInstance(context: Context, withoutHistory: Boolean = false) = Intent(context, LoggedInActivity::class.java).apply {
+            if (withoutHistory) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        }
+
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
     }

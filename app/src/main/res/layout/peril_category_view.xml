@@ -35,11 +35,11 @@
 
             <TextView
                 android:id="@+id/categoryTitle"
-                style="@style/Headline.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textAppearance="?textAppearanceHeadline6"
                 app:autoSizeMaxTextSize="@dimen/text_medium"
                 app:autoSizeMinTextSize="@dimen/text_small"
                 app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
@@ -48,9 +48,9 @@
 
             <TextView
                 android:id="@+id/categorySubtitle"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody2"
                 tools:text="försäkras för" />
         </LinearLayout>
 

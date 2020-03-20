@@ -13,9 +13,12 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
@@ -25,6 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
@@ -36,6 +40,16 @@ const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
     "shared_preference_asked_for_permission_prefix"
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
+
+@ColorInt
+fun Context.colorAttr(
+    @AttrRes color: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+): Int {
+    theme.resolveAttribute(color, typedValue, resolveRefs)
+    return typedValue.data
+}
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 
@@ -75,6 +89,15 @@ fun Context.setIsLoggedIn(isLoggedIn: Boolean) =
 
 fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
+
+fun Context.getMarket(): Market? {
+    val marketId = getSharedPreferences().getInt(Market.MARKET_SHARED_PREF, -1)
+    return if (marketId == -1) {
+        null
+    } else {
+        Market.values()[marketId]
+    }
+}
 
 private fun Context.getSharedPreferences() =
     this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".feature.webonboarding.WebOnboardingActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -20,7 +22,6 @@
             android:clickable="true"
             android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
             android:focusable="true"
-            android:tint="@color/icon_color"
             app:srcCompat="@drawable/ic_settings" />
 
         <ImageView
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:tint="@color/icon_color"
+            android:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
@@ -40,7 +41,6 @@
             android:clickable="true"
             android:contentDescription="@string/DASHBOARD_OPEN_CHAT"
             android:focusable="true"
-            android:tint="@color/icon_color"
             app:srcCompat="@drawable/ic_chat" />
 
     </FrameLayout>

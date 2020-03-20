@@ -33,11 +33,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/soray_extrabold"
                     android:gravity="center"
                     android:text="@string/PROFILE_FEEDBACK_HEADER"
-                    android:textColor="@color/white"
-                    android:textSize="40sp" />
+                    android:textAppearance="?textAppearanceHeadline3"
+                    android:textColor="?colorOnPrimary" />
 
             </FrameLayout>
 
@@ -46,34 +45,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:text="@string/PROFILE_FEEDBACK_REPORT_BUG"
-                android:theme="@style/ProfileFieldLabel" />
+                android:text="@string/PROFILE_FEEDBACK_REPORT_BUG" />
 
-            <TextView
+            <Button
                 android:id="@id/bugReportEmail"
-                style="@style/Body.Regular.Link"
+                style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
-                android:text="@string/bug_report_mail" />
+                android:text="@string/bug_report_mail"
+                android:textColor="?colorSecondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="32dp"
-                android:text="@string/PROFILE_FEEDBACK_RATE_APP"
-                android:theme="@style/ProfileFieldLabel" />
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:text="@string/PROFILE_FEEDBACK_RATE_APP" />
 
-            <TextView
+            <Button
                 android:id="@id/playLink"
-                style="@style/Body.Regular.Link"
+                style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
-                android:text="@string/rate_us_link" />
+                android:text="@string/rate_us_link"
+                android:textColor="?colorSecondary" />
 
         </LinearLayout>
 

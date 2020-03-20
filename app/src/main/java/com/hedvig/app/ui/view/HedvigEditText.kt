@@ -10,7 +10,7 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
-import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.openKeyboard
 import com.hedvig.app.util.spring
@@ -33,7 +33,7 @@ class HedvigEditText @JvmOverloads constructor(
 
         val color = typedArray.getColor(
             R.styleable.HedvigEditText_hintBackground,
-            context.compatColor(R.color.background)
+            context.colorAttr(android.R.attr.colorBackground)
         )
         val inputType = typedArray.getInt(R.styleable.HedvigEditText_android_inputType, 0)
         val imeOption = typedArray.getInt(R.styleable.HedvigEditText_android_imeOptions, 0)

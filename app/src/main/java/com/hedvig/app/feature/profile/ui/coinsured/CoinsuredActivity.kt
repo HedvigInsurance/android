@@ -28,7 +28,6 @@ class CoinsuredActivity : BaseActivity() {
 
         setupLargeTitle(
             R.string.PROFILE_COINSURED_TITLE,
-            R.font.circular_bold,
             R.drawable.ic_back
         ) {
             onBackPressed()
@@ -51,7 +50,7 @@ class CoinsuredActivity : BaseActivity() {
                 val partOne = SpannableString("${personsInHousehold - 1}\n")
                 val partTwo = SpannableString(label)
                 partOne.setSpan(
-                    CustomTypefaceSpan(compatFont(R.font.soray_extrabold)),
+                    CustomTypefaceSpan(compatFont(R.font.favorit_book)),
                     0,
                     1,
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE

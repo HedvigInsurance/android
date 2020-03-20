@@ -31,7 +31,6 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/Headline.Large"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
@@ -39,6 +38,7 @@
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:text="@string/KEY_GEAR_START_EMPTY_HEADLINE"
             android:textAlignment="center"
+            android:textAppearance="?textAppearanceHeadline5"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,6 @@
 
         <TextView
             android:id="@+id/description"
-            style="@style/Body.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
@@ -55,6 +54,7 @@
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:text="@string/KEY_GEAR_START_EMPTY_BODY"
             android:textAlignment="center"
+            android:textAppearance="?textAppearanceBody2"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

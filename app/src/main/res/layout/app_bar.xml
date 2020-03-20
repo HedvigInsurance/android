@@ -4,15 +4,15 @@
     android:id="@+id/appBarLayout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/app_bar_height"
-    android:theme="@style/AppTheme.AppBarOverlay">
+    app:liftOnScroll="true">
 
     <com.google.android.material.appbar.CollapsingToolbarLayout
         android:id="@id/collapsingToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:minHeight="?attr/actionBarSize"
-        app:collapsedTitleTextAppearance="@style/AppTheme.AppBarOverlay.CollapsedTitle"
-        app:expandedTitleTextAppearance="@style/AppTheme.AppBarOverlay.ExpandedTitle"
+        app:collapsedTitleTextAppearance="@style/Hedvig.TextAppearance.Body1"
+        app:expandedTitleTextAppearance="@style/Hedvig.TextAppearance.Headline4"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:toolbarId="@id/toolbar">
 
@@ -20,9 +20,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="@style/AppTheme.Toolbar"
             app:layout_collapseMode="pin"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:title="" />
 
     </com.google.android.material.appbar.CollapsingToolbarLayout>
 

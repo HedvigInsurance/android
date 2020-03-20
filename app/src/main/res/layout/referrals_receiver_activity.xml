@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.referrals.ReferralsReceiverActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +19,7 @@
             android:layout_marginTop="@dimen/base_margin"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
             android:src="@drawable/ic_hedvig_wordmark"
-            android:tint="@color/icon_tint" />
+            android:tint="?colorPrimary" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -29,25 +30,24 @@
 
         <TextView
             android:id="@+id/referralsReceiverTitle"
-            style="@style/Headline.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:gravity="center"
+            android:textAppearance="?textAppearanceHeadline5"
             tools:text="@string/REFERRAL_STARTSCREEN_HEADLINE" />
 
         <TextView
             android:id="@+id/referralsReceiverBody"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
             android:gravity="center"
+            android:textAppearance="?textAppearanceBody1"
             tools:text="@string/REFERRAL_STARTSCREEN_BODY" />
 
         <Button
             android:id="@+id/referralReceiverContinueButton"
-            style="@style/HedvigButton.Purple"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/referral_receiver_continue_button_height"
             android:layout_marginTop="@dimen/base_margin_triple"
@@ -60,17 +60,15 @@
 
         <Button
             android:id="@+id/referralReceiverContinueWithoutButton"
-            style="@style/HedvigButton"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/referral_receiver_continue_without_button_height"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginBottom="@dimen/base_margin_quadruple"
-            android:backgroundTint="@color/light_gray"
             android:paddingLeft="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:text="@string/REFERRAL_STARTSCREEN_BTN_SKIP"
-            android:textColor="@color/off_black_dark"
             android:textSize="@dimen/text_medium" />
 
     </LinearLayout>

@@ -20,12 +20,9 @@
 
     <Button
         android:id="@+id/attachFileSendButton"
-        style="@style/HedvigButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/button_primary"
-        android:backgroundTint="@color/green"
         android:text="@string/CHAT_UPLOAD_PRESS_SEND_LABEL"
         android:visibility="gone"
         tools:visibility="visible" />

@@ -18,24 +18,24 @@
 
         <TextView
             android:id="@id/cardTitle"
-            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@id/cardParagraph"
-            style="@style/Body.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_DESCRIPTION"
+            android:textAppearance="?textAppearanceBody2"
             app:layout_constraintTop_toBottomOf="@id/cardTitle" />
 
         <View
@@ -43,17 +43,16 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/base_margin_triple"
-            android:background="@color/separator_elevation_1"
+            android:background="@color/separator_on_surface"
             app:layout_constraintTop_toBottomOf="@id/cardParagraph" />
 
         <Button
             android:id="@id/connectBankAccount"
-            style="?android:attr/borderlessButtonStyle"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON"
-            android:theme="@style/DialogButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardSeparator" />

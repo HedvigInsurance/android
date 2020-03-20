@@ -12,12 +12,10 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
-import androidx.annotation.FontRes
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.compatFont
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.app_bar.view.*
@@ -139,18 +137,13 @@ fun View.setScaleXY(scale: Float) {
 
 fun View.setupLargeTitle(
     title: String,
-    @FontRes font: Int,
     activity: AppCompatActivity,
     @DrawableRes icon: Int? = null,
     @ColorInt backgroundColor: Int? = null,
     backAction: (() -> Unit)? = null
 ) {
     activity.setSupportActionBar(toolbar)
-    toolbar.title = null // Always remove the underlying toolbar title
     collapsingToolbar.title = title
-    val resolvedFont = activity.compatFont(font)
-    collapsingToolbar.setExpandedTitleTypeface(resolvedFont)
-    collapsingToolbar.setCollapsedTitleTypeface(resolvedFont)
 
     backgroundColor?.let { color ->
         toolbar.setBackgroundColor(color)

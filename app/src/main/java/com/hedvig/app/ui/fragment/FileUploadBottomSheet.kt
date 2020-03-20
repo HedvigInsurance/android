@@ -46,7 +46,6 @@ abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
     protected fun uploadStarted() {
         dialog?.apply {
             header.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
-            loadingSpinner.playAnimation()
             loadingSpinner.show()
             uploadImageOrVideo.remove()
             uploadFile.remove()

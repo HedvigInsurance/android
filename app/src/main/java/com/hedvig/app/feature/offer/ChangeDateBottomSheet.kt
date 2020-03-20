@@ -2,11 +2,9 @@ package com.hedvig.app.feature.offer
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.res.ColorStateList
 import android.os.Bundle
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
@@ -36,8 +34,6 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
         }
 
         dialog.chooseDateButton.isEnabled = false
-        dialog.chooseDateButton.backgroundTintList =
-            ColorStateList.valueOf(requireContext().compatColor(R.color.semi_light_gray))
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
@@ -106,8 +102,6 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
                 dialog?.datePickButton?.text = "$dayOfMonth $monthFormatted $year"
 
                 dialog?.chooseDateButton?.isEnabled = true
-                dialog?.chooseDateButton?.backgroundTintList =
-                    ColorStateList.valueOf(requireContext().compatColor(R.color.purple))
             },
             defaultYear,
             defaultMonth,

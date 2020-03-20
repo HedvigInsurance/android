@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:theme="@style/Headline.Small"
+            android:textAppearance="?textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Hoppsan!" />
@@ -33,18 +33,17 @@
             android:layout_marginTop="8dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:theme="@style/Body.Small"
+            android:textAppearance="?textAppearanceBody2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dialogTitle"
             tools:text="Det där verkar inte vara en giltig e-postadress!" />
 
         <Button
             android:id="@id/dialogConfirm"
-            style="?android:attr/borderlessButtonStyle"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:theme="@style/DialogButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Okej" />
