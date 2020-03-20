@@ -37,18 +37,20 @@ class KeyGearValuationViewModelImpl(
         price: MonetaryAmountV2Input
     ) {
         viewModelScope.launch {
-            val result = repository.updatePurchasePriceAndDateAsync(id, date, price)
-            uploadResult.postValue(result)
+            val result = runCatching { repository.updatePurchasePriceAndDateAsync(id, date, price) }
+            result.getOrNull()?.let { uploadResult.postValue(it) }
         }
     }
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
-            repository
-                .keyGearItem(id)
-                .collect { response ->
-                    data.postValue(response.data()?.keyGearItem)
-                }
+            runCatching {
+                repository
+                    .keyGearItem(id)
+                    .collect { response ->
+                        data.postValue(response.data()?.keyGearItem)
+                    }
+            }
         }
     }
 }

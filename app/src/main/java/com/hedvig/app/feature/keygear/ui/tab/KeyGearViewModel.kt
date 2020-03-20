@@ -28,17 +28,26 @@ class KeyGearViewModelImpl(
             val deviceType = deviceInformationService.getDeviceType()
             val deviceName = deviceInformationService.getDeviceName()
 
-            repository.createKeyGearItemAsync(deviceType.into(), listOf(), deviceFingerprint, deviceName)
+            runCatching {
+                repository.createKeyGearItemAsync(
+                    deviceType.into(),
+                    listOf(),
+                    deviceFingerprint,
+                    deviceName
+                )
+            }
         }
     }
 
     init {
         viewModelScope.launch {
-            repository
-                .keyGearItems()
-                .collect { response ->
-                    data.postValue(response.data())
-                }
+            runCatching {
+                repository
+                    .keyGearItems()
+                    .collect { response ->
+                        data.postValue(response.data())
+                    }
+            }
         }
     }
 }

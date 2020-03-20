@@ -34,11 +34,13 @@ class KeyGearItemDetailViewModelImpl(
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
-            repository
-                .keyGearItem(id)
-                .collect { response ->
-                    data.postValue(response.data()?.keyGearItem)
-                }
+            runCatching {
+                repository
+                    .keyGearItem(id)
+                    .collect { response ->
+                        data.postValue(response.data()?.keyGearItem)
+                    }
+            }
         }
     }
 
@@ -46,7 +48,7 @@ class KeyGearItemDetailViewModelImpl(
         viewModelScope.launch {
             isUploading.postValue(true)
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.uploadReceipt(id, uri)
+            runCatching { repository.uploadReceipt(id, uri) }
             isUploading.postValue(false)
         }
     }
@@ -54,14 +56,14 @@ class KeyGearItemDetailViewModelImpl(
     override fun updateItemName(newName: String) {
         viewModelScope.launch {
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.updateItemName(id, newName)
+            runCatching { repository.updateItemName(id, newName) }
         }
     }
 
     override fun deleteItem() {
         viewModelScope.launch {
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.deleteItem(id)
+            runCatching { repository.deleteItem(id) }
             isDeleted.postValue(true)
         }
     }
