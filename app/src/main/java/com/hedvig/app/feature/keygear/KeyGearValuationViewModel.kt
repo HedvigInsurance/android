@@ -10,6 +10,7 @@ import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
@@ -41,7 +42,7 @@ class KeyGearValuationViewModelImpl(
         viewModelScope.launch {
             val result = runCatching { repository.updatePurchasePriceAndDateAsync(id, date, price) }
             if (result.isFailure) {
-                result.exceptionOrNull()?.let { e { it.localizedMessage } }
+                result.exceptionOrNull()?.let { e(it) }
             }
             result.getOrNull()?.let { uploadResult.postValue(it) }
         }
@@ -49,17 +50,14 @@ class KeyGearValuationViewModelImpl(
 
     override fun loadItem(id: String) {
         viewModelScope.launch {
-            val result = runCatching {
-                repository
-                    .keyGearItem(id)
-                    .catch { e -> e { e.localizedMessage } }
-                    .collect { response ->
-                        data.postValue(response.data()?.keyGearItem)
-                    }
-            }
-            if (result.isFailure) {
-                result.exceptionOrNull()?.let { e { it.localizedMessage } }
-            }
+            repository
+                .keyGearItem(id)
+                .onEach { response ->
+                    data.postValue(response.data()?.keyGearItem)
+                }
+                .catch { e -> e(e) }
+                .collect()
+
         }
     }
 }

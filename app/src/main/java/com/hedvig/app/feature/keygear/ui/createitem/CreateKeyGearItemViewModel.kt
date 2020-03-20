@@ -94,7 +94,7 @@ class CreateKeyGearItemViewModelImpl(
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
                 }
                 if (uploadsResponse.isFailure) {
-                    uploadsResponse.exceptionOrNull()?.let { e { it.localizedMessage } }
+                    uploadsResponse.exceptionOrNull()?.let { e(it) }
                 }
                 uploadsResponse.getOrNull()?.let { response ->
                     response.data()?.uploadFiles?.map {
@@ -113,7 +113,7 @@ class CreateKeyGearItemViewModelImpl(
                 }
             }
             if (result.isFailure) {
-                result.exceptionOrNull()?.let { e { it.localizedMessage } }
+                result.exceptionOrNull()?.let { e(it) }
             }
             result.getOrNull()?.let { createResult.postValue(it.data()) }
         }

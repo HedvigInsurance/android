@@ -10,6 +10,7 @@ import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class KeyGearViewModel : ViewModel() {
@@ -39,24 +40,20 @@ class KeyGearViewModelImpl(
                 )
             }
             if (result.isFailure) {
-                result.exceptionOrNull()?.let { e { it.localizedMessage } }
+                result.exceptionOrNull()?.let { e(it) }
             }
         }
     }
 
     init {
         viewModelScope.launch {
-            val result = runCatching {
-                repository
-                    .keyGearItems()
-                    .catch { e -> e { e.localizedMessage } }
-                    .collect { response ->
-                        data.postValue(response.data())
-                    }
-            }
-            if (result.isFailure) {
-                result.exceptionOrNull()?.let { e { it.localizedMessage } }
-            }
+            repository
+                .keyGearItems()
+                .onEach { response ->
+                    data.postValue(response.data())
+                }
+                .catch { e -> e(e) }
+                .collect()
         }
     }
 }
