@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import e
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -92,6 +93,9 @@ class CreateKeyGearItemViewModelImpl(
                 val uploadsResponse = runCatching {
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
                 }
+                if (uploadsResponse.isFailure) {
+                    uploadsResponse.exceptionOrNull()?.let { e { it.localizedMessage } }
+                }
                 uploadsResponse.getOrNull()?.let { response ->
                     response.data()?.uploadFiles?.map {
                         S3FileInput(bucket = it.bucket, key = it.key)
@@ -107,6 +111,9 @@ class CreateKeyGearItemViewModelImpl(
                         uploads
                     )
                 }
+            }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e { it.localizedMessage } }
             }
             result.getOrNull()?.let { createResult.postValue(it.data()) }
         }

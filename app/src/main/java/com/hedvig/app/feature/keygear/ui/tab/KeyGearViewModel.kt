@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.feature.keygear.data.DeviceInformationService
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import e
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -28,7 +30,7 @@ class KeyGearViewModelImpl(
             val deviceType = deviceInformationService.getDeviceType()
             val deviceName = deviceInformationService.getDeviceName()
 
-            runCatching {
+            val result = runCatching {
                 repository.createKeyGearItemAsync(
                     deviceType.into(),
                     listOf(),
@@ -36,17 +38,24 @@ class KeyGearViewModelImpl(
                     deviceName
                 )
             }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e { it.localizedMessage } }
+            }
         }
     }
 
     init {
         viewModelScope.launch {
-            runCatching {
+            val result = runCatching {
                 repository
                     .keyGearItems()
+                    .catch { e -> e { e.localizedMessage } }
                     .collect { response ->
                         data.postValue(response.data())
                     }
+            }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e { it.localizedMessage } }
             }
         }
     }
