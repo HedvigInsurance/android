@@ -1,8 +1,9 @@
 <html>
 <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <script>
-    var port
-
+    //let port
+    /*
     window.addEventListener('message', event => {
          if (event.data === 'init') {
             // Capture the MessagePort sent from the native side
@@ -11,10 +12,13 @@
             // Handle the message normally
          }
     }, false)
+    */
 
     function signComplete() {
-        port.postMessage(JSON.stringify({type:'SIGN_COMPLETE'}))
+        //port.postMessage(JSON.stringify({type:'SIGN_COMPLETE'}))
+        window.location = '#/connect-payment'
     }
+
 
     </script>
 </head>
