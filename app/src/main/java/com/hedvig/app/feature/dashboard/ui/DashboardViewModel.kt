@@ -8,7 +8,10 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.app.data.debit.DirectDebitRepository
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import kotlinx.coroutines.flow.collect
+import e
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class DashboardViewModel : ViewModel() {
@@ -26,17 +29,28 @@ class DashboardViewModelImpl(
 
     init {
         viewModelScope.launch {
-            val dashboardResponse = dashboardRepository
-                .dashboardAsync()
-                .await()
-
             directDebitRepository
                 .directDebit()
-                .collect { response ->
+                .onEach { response ->
                     response.data()?.let { data ->
                         directDebitStatus.postValue(data)
                     }
                 }
+                .catch { e(it) }
+                .launchIn(this)
+
+            val dashboardResponse = runCatching {
+                dashboardRepository
+                    .dashboardAsync()
+                    .await()
+            }
+
+            if (dashboardResponse.isFailure) {
+                dashboardResponse.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+
+            data.postValue(dashboardResponse.getOrNull()?.data())
         }
     }
 }

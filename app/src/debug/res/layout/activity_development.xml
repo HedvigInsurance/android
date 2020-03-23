@@ -45,6 +45,14 @@
             android:text="Open Market picker" />
 
         <Button
+            android:id="@+id/openNorwegianAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open Norwegian Auth" />
+
+        <Button
             android:id="@+id/openNativeChat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

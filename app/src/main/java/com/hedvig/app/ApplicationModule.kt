@@ -182,7 +182,7 @@ val viewModelModule = module {
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
-    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl() }
+    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
 
 val marketingModule = module {
