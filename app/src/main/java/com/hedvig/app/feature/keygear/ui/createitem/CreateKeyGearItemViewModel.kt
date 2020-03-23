@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import e
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -89,17 +90,32 @@ class CreateKeyGearItemViewModelImpl(
             val category = activeCategory ?: return@launch
             val photos = photos.value?.map { it.uri } ?: listOf()
             val uploads = if (photos.isNotEmpty()) {
-                val uploadsResponse =
+                val uploadsResponse = runCatching {
                     keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
-                uploadsResponse.data()?.uploadFiles?.map {
-                    S3FileInput(bucket = it.bucket, key = it.key)
-                } ?: return@launch
+                }
+                if (uploadsResponse.isFailure) {
+                    uploadsResponse.exceptionOrNull()?.let { e(it) }
+                }
+                uploadsResponse.getOrNull()?.let { response ->
+                    response.data()?.uploadFiles?.map {
+                        S3FileInput(bucket = it.bucket, key = it.key)
+                    } ?: return@launch
+                }
             } else {
                 emptyList()
             }
-            val result = keyGearItemsRepository.createKeyGearItemAsync(category, uploads)
-
-            createResult.postValue(result.data())
+            val result = runCatching {
+                uploads?.let { uploads ->
+                    keyGearItemsRepository.createKeyGearItemAsync(
+                        category,
+                        uploads
+                    )
+                }
+            }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+            }
+            result.getOrNull()?.let { createResult.postValue(it.data()) }
         }
     }
 }
