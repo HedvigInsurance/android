@@ -1,14 +1,17 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -20,8 +23,12 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     private val model: LanguageAndMarketViewModel by viewModel()
     private val tracker: LanguageSelectionTracker by inject()
 
+    @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val newMarketPref = sharedPreferences.getString(SettingsActivity.SETTINGS_NEW_MARKET, null)
 
         marketList.adapter = MarketAdapter(model)
         marketList.addItemDecoration(
@@ -29,13 +36,25 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
-
         model.markets.observe(this) { list ->
             list?.let {
                 (marketList.adapter as? MarketAdapter)?.items = list
             }
         }
-        model.loadGeo()
+        if (newMarketPref != null) {
+            val market = Market.valueOf(newMarketPref)
+            model.preselectedMarket.postValue(market.name)
+            model.updateMarket(market)
+            sharedPreferences.edit()
+                .putString(
+                    SettingsActivity.SETTINGS_NEW_MARKET,
+                    null
+                )
+                .commit()
+        } else {
+            model.loadGeo()
+        }
+
         val languageAdapter = LanguageAdapterNew(model)
         languageList.adapter = languageAdapter
         model.markets.observe(this) { markets ->
@@ -74,10 +93,11 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     }
 
     private fun goToMarketingActivity() {
-        startActivity(MarketingActivity.newInstance(this, true))
+        startActivity(Intent(this, MarketingActivity::class.java))
     }
 
     companion object {
+        const val CHANGED_MARKET = "changedMarket"
         fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
     }
 }
