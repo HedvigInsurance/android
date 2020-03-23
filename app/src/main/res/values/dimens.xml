@@ -167,5 +167,6 @@
     <dimen name="hedvig_edit_text_padding">14dp</dimen>
     <dimen name="item_detail_gradient_size">300dp</dimen>
     <dimen name="market_item_flag_padding_end">20dp</dimen>
+    <dimen name="checkbox_size">24dp</dimen>
 
 </resources>
