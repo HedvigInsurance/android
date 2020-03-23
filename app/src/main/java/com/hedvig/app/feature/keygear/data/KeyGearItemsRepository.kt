@@ -31,7 +31,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -291,7 +291,11 @@ class KeyGearItemsRepository(
                 .copy(
                     keyGearItem = keyGearItem
                         .copy(
-                            fragments = KeyGearItemQuery.KeyGearItem.Fragments(keyGearItem.fragments.keyGearItemFragment.copy(name = newName))
+                            fragments = KeyGearItemQuery.KeyGearItem.Fragments(
+                                keyGearItem.fragments.keyGearItemFragment.copy(
+                                    name = newName
+                                )
+                            )
                         )
                 )
 

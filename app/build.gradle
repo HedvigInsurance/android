@@ -8,7 +8,7 @@ apply plugin: 'com.apollographql.apollo'
 apollo {
     generateKotlinModels = true
     customTypeMapping = [
-            "URL"      : "java.lang.String",
+            "URL"      : "kotlin.String",
             "LocalDate": "org.threeten.bp.LocalDate",
             "Upload"   : "com.apollographql.apollo.api.FileUpload"
     ]
@@ -121,7 +121,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
 
     // WorkManager
-    def workmanager_version = "2.2.0"
+    def workmanager_version = "2.3.2"
     implementation "androidx.work:work-runtime:$workmanager_version"
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
@@ -142,10 +142,10 @@ dependencies {
     releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
-    implementation "com.google.firebase:firebase-core:17.2.0"
-    implementation "com.google.firebase:firebase-dynamic-links:19.0.0"
-    implementation 'com.google.firebase:firebase-config:19.0.2'
-    implementation "com.google.firebase:firebase-messaging:20.0.0"
+    implementation "com.google.firebase:firebase-core:17.2.3"
+    implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
+    implementation 'com.google.firebase:firebase-config:19.1.2'
+    implementation "com.google.firebase:firebase-messaging:20.1.2"
 
     // Koin
     def koin_version = "2.0.1"
@@ -167,7 +167,7 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.0'
 
     // coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
 
     // Svg
@@ -181,7 +181,7 @@ dependencies {
     }
 
     //facebook
-    implementation 'com.facebook.android:facebook-android-sdk:5.13.0'
+    implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
 
     // ZXing
     implementation 'com.google.zxing:core:3.4.0'
