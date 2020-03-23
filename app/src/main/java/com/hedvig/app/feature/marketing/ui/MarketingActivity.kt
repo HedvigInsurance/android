@@ -46,12 +46,14 @@ class MarketingActivity : BaseActivity() {
     private var blurDismissAnimator: ValueAnimator? = null
     private var topHideAnimation: ValueAnimator? = null
 
+    private lateinit var market: Market
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
 
         activity_marketing.useEdgeToEdge()
 
@@ -297,9 +299,16 @@ class MarketingActivity : BaseActivity() {
                 marketingStoriesViewModel.page.value,
                 marketingStoriesViewModel.blurred.value
             )
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-            startActivity(intent)
+            when (market) {
+                Market.SE -> {
+                    val intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
+                    startActivity(intent)
+                }
+                Market.NO -> {
+                    //TODO open web onboarding
+                }
+            }
         }
     }
 
