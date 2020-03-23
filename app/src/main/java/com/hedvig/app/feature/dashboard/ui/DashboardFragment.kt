@@ -3,6 +3,7 @@ package com.hedvig.app.feature.dashboard.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
@@ -52,7 +53,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
     }
 
-    private fun bindDashboardData(data: DashboardData) {
+    private fun bindDashboardData(data: DashboardQuery.Data) {
         loadingSpinner.remove()
         (contracts.adapter as? ContractAdapter)?.items = data.contracts
 
@@ -87,9 +88,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 R.string.UPSELL_NOTIFICATION_TRAVEL_CTA
             )
 
-        fun isNorway(contracts: List<Contract>) = contracts.any { it.currentAgreement.asNorwegianTravelAgreement != null || it.currentAgreement.asNorwegianHomeContentAgreement != null }
+        fun isNorway(contracts: List<DashboardQuery.Contract>) = contracts.any { it.currentAgreement.asNorwegianTravelAgreement != null || it.currentAgreement.asNorwegianHomeContentAgreement != null }
 
-        fun doesNotHaveHomeContents(contracts: List<Contract>) = contracts.none { it.currentAgreement.asNorwegianHomeContentAgreement != null }
-        fun doesNotHaveTravelInsurance(contracts: List<Contract>) = contracts.none { it.currentAgreement.asNorwegianTravelAgreement != null }
+        fun doesNotHaveHomeContents(contracts: List<DashboardQuery.Contract>) = contracts.none { it.currentAgreement.asNorwegianHomeContentAgreement != null }
+        fun doesNotHaveTravelInsurance(contracts: List<DashboardQuery.Contract>) = contracts.none { it.currentAgreement.asNorwegianTravelAgreement != null }
     }
 }

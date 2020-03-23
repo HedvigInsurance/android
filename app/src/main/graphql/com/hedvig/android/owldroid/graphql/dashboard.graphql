@@ -1,4 +1,4 @@
-query DashboardQuery {
+query DashboardQuery($locale: Locale!) {
   contracts {
     id
     status
@@ -39,6 +39,20 @@ query DashboardQuery {
       }
       ... on NorwegianTravelAgreement {
         numberCoInsured
+      }
+    }
+    perils(locale: $locale) {
+      title
+      description
+      icon {
+        variants {
+          dark {
+            svgUrl
+          }
+          light {
+            svgUrl
+          }
+        }
       }
     }
   }

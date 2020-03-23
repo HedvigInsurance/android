@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.R
@@ -18,7 +19,7 @@ import org.threeten.bp.format.DateTimeFormatter
 class ContractAdapter(
     private val fragmentManager: FragmentManager
 ) : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
-    var items: List<Contract> = emptyList()
+    var items: List<DashboardQuery.Contract> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
             field = value
@@ -43,7 +44,7 @@ class ContractAdapter(
         private val informationCard = itemView.contractInformationCard
         private val perilCard = itemView.perilCard
 
-        fun bind(contract: Contract) {
+        fun bind(contract: DashboardQuery.Contract) {
             name.text = contract.displayName
             when (contract.status) {
                 ContractStatus.ACTIVE -> {
@@ -89,8 +90,8 @@ class ContractAdapter(
 }
 
 class ContractDiffCallback(
-    private val old: List<Contract>,
-    private val new: List<Contract>
+    private val old: List<DashboardQuery.Contract>,
+    private val new: List<DashboardQuery.Contract>
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = old[oldItemPosition].id == new[newItemPosition].id
     override fun getOldListSize() = old.size

@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.hedvig.android.owldroid.fragment.AddressFragment
+import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
@@ -61,7 +61,7 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         )
     }
 
-    private fun bind(data: Contract) {
+    private fun bind(data: DashboardQuery.Contract) {
         data.currentAgreement.asNorwegianHomeContentAgreement?.let { nhca ->
             bindHomeInformation(nhca.address.fragments.addressFragment, nhca.squareMeters, nhca.nhcType?.displayName(this)
                 ?: "")
@@ -112,8 +112,8 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         private fun NorwegianHomeContentLineOfBusiness.displayName(context: Context) = when (this) {
             NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
             NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
-            NorwegianHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
-            NorwegianHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
+            NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
+            NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
             NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
         }
 

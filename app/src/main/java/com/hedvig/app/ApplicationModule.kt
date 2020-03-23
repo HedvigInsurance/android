@@ -219,7 +219,7 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { DirectDebitRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { DashboardRepository(get()) }
+    single { DashboardRepository(get(), get()) }
     single { MarketingStoriesRepository(get(), get(), get()) }
     single { ProfileRepository(get()) }
     single { ReferralRepository(get()) }

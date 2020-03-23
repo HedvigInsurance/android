@@ -10,6 +10,7 @@ import android.widget.ImageView
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
+import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
@@ -17,7 +18,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.dashboard.ui.Contract
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -274,7 +274,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
-        fun isTerminated(contracts: List<Contract>) = contracts.all { it.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED }
+        fun isTerminated(contracts: List<DashboardQuery.Contract>) = contracts.all { it.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"

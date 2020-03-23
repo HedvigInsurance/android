@@ -3,7 +3,6 @@ package com.hedvig.app
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
-import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
@@ -11,13 +10,11 @@ import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
-import com.hedvig.app.feature.dashboard.ui.Contract
-import com.hedvig.app.feature.dashboard.ui.DashboardData
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import org.threeten.bp.LocalDate
 
 class MockDashboardViewModel(context: Context) : DashboardViewModel() {
-    override val data = MutableLiveData<DashboardData>()
+    override val data = MutableLiveData<DashboardQuery.Data>()
     override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
 
     init {
@@ -37,13 +34,13 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     }
 
     companion object {
-        private val SWEDISH_HOUSE_CONTRACT = Contract(
-            "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            ContractStatus.ACTIVE,
-            LocalDate.of(2020, 1, 1),
-            "Hemförsäkring",
-            null,
-            DashboardQuery.CurrentAgreement(
+        private val SWEDISH_HOUSE_CONTRACT = DashboardQuery.Contract(
+            id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
+            status = ContractStatus.ACTIVE,
+            inception = LocalDate.of(2020, 1, 1),
+            displayName = "Hemförsäkring",
+            upcomingRenewal = null,
+            currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
@@ -66,66 +63,30 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asNorwegianTravelAgreement = null,
                 asSwedishApartmentAgreement = null
             ),
-            listOf(
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+            perils = listOf(
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 )
             )
         )
-        private val SWEDISH_APARTMENT_CONTRACT = Contract(
-            "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            ContractStatus.ACTIVE,
-            LocalDate.of(2020, 1, 1),
-            "Hemförsäkring",
-            null,
-            DashboardQuery.CurrentAgreement(
+        private val SWEDISH_APARTMENT_CONTRACT = DashboardQuery.Contract(
+            id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
+            status = ContractStatus.ACTIVE,
+            inception = LocalDate.of(2020, 1, 1),
+            displayName = "Hemförsäkring",
+            upcomingRenewal = null,
+            currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
@@ -149,66 +110,86 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asNorwegianTravelAgreement = null,
                 asSwedishHouseAgreement = null
             ),
-            listOf(
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+            perils = listOf(
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 )
             )
         )
-        private val NORWEGIAN_HOME_CONTENTS_CONTRACT = Contract(
-            "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            ContractStatus.ACTIVE,
-            LocalDate.of(2020, 1, 1),
-            "Innboforsikring",
-            null,
-            DashboardQuery.CurrentAgreement(
+        private val NORWEGIAN_HOME_CONTENTS_CONTRACT = DashboardQuery.Contract(
+            id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
+            status = ContractStatus.ACTIVE,
+            inception = LocalDate.of(2020, 1, 1),
+            displayName = "Innboforsikring",
+            upcomingRenewal = null,
+            currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
@@ -232,67 +213,31 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asNorwegianTravelAgreement = null,
                 asSwedishHouseAgreement = null
             ),
-            listOf(
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+            perils = listOf(
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 )
             )
         )
 
-        private val NORWEGIAN_TRAVEL_CONTRACT = Contract(
-            "eaaf8b5c-5a61-44a9-91bc-3de5b6bf878e",
-            ContractStatus.ACTIVE,
-            LocalDate.of(2020, 1, 1),
-            "Reiseforsikring",
-            null,
-            DashboardQuery.CurrentAgreement(
+        private val NORWEGIAN_TRAVEL_CONTRACT = DashboardQuery.Contract(
+            id = "eaaf8b5c-5a61-44a9-91bc-3de5b6bf878e",
+            status = ContractStatus.ACTIVE,
+            inception = LocalDate.of(2020, 1, 1),
+            displayName = "Reiseforsikring",
+            upcomingRenewal = null,
+            currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
@@ -305,77 +250,41 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asSwedishApartmentAgreement = null,
                 asSwedishHouseAgreement = null
             ),
-            listOf(
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
+            perils = listOf(
+                DashboardQuery.Peril(
                     title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
-                ),
-                PerilCategoryFragment.Peril(
-                    id = "ME.LEGAL",
-                    title = "Mock",
-                    description = "Mock"
+                    description = "Mock",
+                    icon = DashboardQuery.Icon(
+                        variants = DashboardQuery.Variants(
+                            dark = DashboardQuery.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = DashboardQuery.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    )
                 )
             )
         )
 
-        val SWEDISH_APARTMENT = DashboardData(
+        val SWEDISH_APARTMENT = DashboardQuery.Data(
             listOf(SWEDISH_APARTMENT_CONTRACT)
         )
 
-        val SWEDISH_HOUSE = DashboardData(
+        val SWEDISH_HOUSE = DashboardQuery.Data(
             listOf(SWEDISH_HOUSE_CONTRACT)
         )
 
-        val NORWEGIAN_HOME_CONTENTS = DashboardData(
+        val NORWEGIAN_HOME_CONTENTS = DashboardQuery.Data(
             listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT)
         )
 
-        val NORWEGIAN_TRAVEL = DashboardData(
+        val NORWEGIAN_TRAVEL = DashboardQuery.Data(
             listOf(NORWEGIAN_TRAVEL_CONTRACT)
         )
 
-        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = DashboardData(
+        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = DashboardQuery.Data(
             listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT)
         )
     }

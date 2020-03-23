@@ -1,16 +1,21 @@
 package com.hedvig.app.feature.dashboard.ui.contractcoverage
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
+import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.svg.buildRequestBuilder
 import e
 import kotlinx.android.synthetic.main.peril_bottom_sheet_new.*
 
 class PerilBottomSheet : BottomSheetDialogFragment() {
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.peril_bottom_sheet_new, container, false)
 
@@ -26,7 +31,11 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
             return
         }
 
-        // TODO: Load icon from url
+        val requestBuilder = buildRequestBuilder()
+       
+        requestBuilder
+            .load(iconUrl)
+            .into(icon)
         title.text = titleText
         body.text = bodyText
     }
@@ -38,11 +47,15 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
 
         val TAG = PerilBottomSheet::class.java.name
 
-        fun newInstance(peril: PerilCategoryFragment.Peril) = PerilBottomSheet().apply {
+        fun newInstance(context: Context, peril: DashboardQuery.Peril) = PerilBottomSheet().apply {
             arguments = Bundle().apply {
                 putString(TITLE, peril.title)
                 putString(BODY, peril.description)
-                putString(ICON_URL, "TODO")
+                putString(ICON_URL, "${BuildConfig.BASE_URL}${if (context.isDarkThemeActive) {
+                    peril.icon.variants.dark.svgUrl
+                } else {
+                    peril.icon.variants.light.svgUrl
+                }}")
             }
         }
     }
