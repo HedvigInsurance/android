@@ -191,6 +191,9 @@ dependencies {
     // markwon
     implementation "io.noties.markwon:core:4.2.1"
 
+    // adyen
+    implementation 'com.adyen.checkout:drop-in:3.6.4'
+
     // test
     testImplementation 'junit:junit:4.12'
 
