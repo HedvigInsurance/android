@@ -1,5 +1,7 @@
 package com.hedvig.app.mocks
 
+import com.hedvig.app.MockAdyenViewModel
+import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -20,4 +22,5 @@ val mockModule = module {
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
     viewModel<MarketingStoriesViewModel> { MockMarketingStoriesViewModel() }
+    viewModel<AdyenViewModel> { MockAdyenViewModel() }
 }
