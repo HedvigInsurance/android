@@ -16,6 +16,8 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_web_onboarding.*
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets.UTF_8
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
@@ -50,7 +52,9 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
         }
 
-        webOnboarding.loadUrl("file:///android_asset/fake_web_onboarding.html#token=${getAuthenticationToken()}") // TODO: Configurable URL. Maybe loaded from backend?
+        val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8.toString())
+
+        webOnboarding.loadUrl("file:///android_asset/fake_web_onboarding.html#token=${encodedToken}") // TODO: Configurable URL. Maybe loaded from backend?
 
     }
 
