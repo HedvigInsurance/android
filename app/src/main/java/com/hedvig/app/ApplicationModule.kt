@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -83,7 +84,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -207,7 +208,7 @@ val keyGearModule = module {
 }
 
 val adyenModule = module {
-    viewModel<AdyenViewModel> { AdyenViewModelImpl() }
+    viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
 }
 
 val serviceModule = module {
@@ -233,6 +234,7 @@ val repositoriesModule = module {
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
+    single { AdyenRepository(get()) }
 }
 
 val trackerModule = module {

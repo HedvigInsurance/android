@@ -8,9 +8,10 @@ apply plugin: 'com.apollographql.apollo'
 apollo {
     generateKotlinModels = true
     customTypeMapping = [
-            "URL"      : "kotlin.String",
-            "LocalDate": "org.threeten.bp.LocalDate",
-            "Upload"   : "com.apollographql.apollo.api.FileUpload"
+            "URL"                   : "kotlin.String",
+            "LocalDate"             : "org.threeten.bp.LocalDate",
+            "Upload"                : "com.apollographql.apollo.api.FileUpload",
+            "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse"
     ]
 }
 
