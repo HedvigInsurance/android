@@ -2,7 +2,6 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
@@ -16,9 +15,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import org.threeten.bp.format.DateTimeFormatter
 
-class ContractAdapter(
-    private val fragmentManager: FragmentManager
-) : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
+class ContractAdapter : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
     var items: List<DashboardQuery.Contract> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
@@ -27,14 +24,14 @@ class ContractAdapter(
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ContractViewHolder(parent, fragmentManager)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ContractViewHolder(parent)
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ContractViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
-    class ContractViewHolder(parent: ViewGroup, fragmentManager: FragmentManager) : RecyclerView.ViewHolder(
+    class ContractViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater
             .from(parent.context)
             .inflate(R.layout.dashboard_contract_row, parent, false)

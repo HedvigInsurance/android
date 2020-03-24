@@ -78,6 +78,12 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                         )
                     )
                 )
+            ),
+            insurableLimits = listOf(
+                DashboardQuery.InsurableLimit(
+                    label = "Utstyrene dine er forsikrat till",
+                    limit = "1 000 000 kr"
+                )
             )
         )
         private val SWEDISH_APARTMENT_CONTRACT = DashboardQuery.Contract(
@@ -181,6 +187,12 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                         )
                     )
                 )
+            ),
+            insurableLimits = listOf(
+                DashboardQuery.InsurableLimit(
+                    label = "Utstyrene dine er forsikrat till",
+                    limit = "1 000 000 kr"
+                )
             )
         )
         private val NORWEGIAN_HOME_CONTENTS_CONTRACT = DashboardQuery.Contract(
@@ -228,6 +240,12 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                         )
                     )
                 )
+            ),
+            insurableLimits = listOf(
+                DashboardQuery.InsurableLimit(
+                    label = "Utstyrene dine er forsikrat till",
+                    limit = "1 000 000 kr"
+                )
             )
         )
 
@@ -264,6 +282,12 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                             )
                         )
                     )
+                )
+            ),
+            insurableLimits = listOf(
+                DashboardQuery.InsurableLimit(
+                    label = "Utstyrene dine er forsikrat till",
+                    limit = "1 000 000 kr"
                 )
             )
         )

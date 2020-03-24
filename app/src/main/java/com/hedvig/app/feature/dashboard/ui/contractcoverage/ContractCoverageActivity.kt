@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -25,6 +26,9 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
         perils.adapter = PerilsAdapter(supportFragmentManager, buildRequestBuilder())
         perils.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
+        insurableLimits.adapter = InsurableLimitsAdapter()
+        insurableLimits.addItemDecoration((GridSpacingItemDecoration(BASE_MARGIN_DOUBLE)))
+
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -45,6 +49,7 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
         loadingSpinner.remove()
         scrollView.show()
         (perils.adapter as? PerilsAdapter)?.items = data.perils
+        (insurableLimits.adapter as? InsurableLimitsAdapter)?.items = data.insurableLimits
     }
 
     companion object {

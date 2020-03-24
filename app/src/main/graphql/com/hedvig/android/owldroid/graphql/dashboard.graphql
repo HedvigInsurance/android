@@ -55,6 +55,10 @@ query DashboardQuery($locale: Locale!) {
         }
       }
     }
+    insurableLimits(locale: $locale) {
+      label
+      limit
+    }
   }
 }
 
