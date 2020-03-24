@@ -1,0 +1,5 @@
+mutation TokenizePaymentDetails($paymentsRequest: PaymentsRequest!) {
+  tokenizePaymentDetails(req: { paymentsRequest: $paymentsRequest }) {
+    paymentsResponse
+  }
+}

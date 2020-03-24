@@ -11,7 +11,8 @@ apollo {
             "URL"                   : "kotlin.String",
             "LocalDate"             : "org.threeten.bp.LocalDate",
             "Upload"                : "com.apollographql.apollo.api.FileUpload",
-            "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse"
+            "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse",
+            "PaymentsResponse"      : "org.json.JSONObject"
     ]
 }
 

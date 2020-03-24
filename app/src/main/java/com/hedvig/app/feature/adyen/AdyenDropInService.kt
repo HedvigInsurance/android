@@ -5,7 +5,7 @@ import com.adyen.checkout.dropin.service.DropInService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
@@ -23,17 +23,32 @@ class AdyenDropInService : DropInService(), CoroutineScope {
     }
 
 
-    override fun makeDetailsCall(actionComponentData: JSONObject): CallResult {
-        TODO("Not implemented")
-    }
-
-    override fun makePaymentsCall(paymentComponentData: JSONObject): CallResult {
-        launch {
-            val response = runCatching {
-
-            }
+    override fun makeDetailsCall(actionComponentData: JSONObject) = runBlocking(coroutineContext) {
+        val response = runCatching {
+            adyenRepository
+                .submitAdditionalPaymentDetailsAsync(actionComponentData)
+                .await()
         }
-        TODO("Not implemented")
+
+        if (response.isFailure) {
+            return@runBlocking CallResult(CallResult.ResultType.ERROR, "Network error")
+        }
+
+
+        CallResult(CallResult.ResultType.ERROR, "Unknown error")
     }
 
+    override fun makePaymentsCall(paymentComponentData: JSONObject) = runBlocking(coroutineContext) {
+        val response = runCatching {
+            adyenRepository
+                .tokenizePaymentDetailsAsync(paymentComponentData)
+                .await()
+        }
+
+        if (response.isFailure) {
+            return@runBlocking CallResult(CallResult.ResultType.ERROR, "Network error")
+        }
+
+        CallResult(CallResult.ResultType.ERROR, "Unknown error")
+    }
 }
