@@ -71,7 +71,19 @@
                 android:text="Mer informasjon"
                 android:textAppearance="?textAppearanceHeadline5" />
 
-            <!-- TODO: Additional information fields -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/insurableLimits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:itemCount="3"
+                tools:listitem="@layout/coverage_insurable_limit" />
 
         </LinearLayout>
 

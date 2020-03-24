@@ -274,7 +274,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
-        fun isTerminated(contracts: List<DashboardQuery.Contract>) = contracts.all { it.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED }
+        fun isTerminated(contracts: List<DashboardQuery.Contract>) = contracts.isNotEmpty() && contracts.all { it.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
