@@ -51,12 +51,9 @@ class PaymentActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
-        var market: Market? = null
-        if (marketOrdinal == -1) {
+        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
-        } else {
-            market = Market.values()[marketOrdinal]
         }
 
 

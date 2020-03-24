@@ -125,12 +125,9 @@ class OfferSignDialog : DialogFragment() {
         requireContext().storeBoolean(IS_VIEWING_OFFER, false)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
-        var market: Market? = null
-        if (marketOrdinal == -1) {
+        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        if (market == null) {
             startActivity(MarketPickerActivity.newInstance(requireContext()))
-        } else {
-            market = Market.values()[marketOrdinal]
         }
 
         handler.postDelayed({

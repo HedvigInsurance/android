@@ -52,12 +52,9 @@ class MarketingActivity : BaseActivity() {
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
-        val market: Market
-        if (marketOrdinal == -1) {
+        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
-        } else {
-            market = Market.values()[marketOrdinal]
         }
 
         activity_marketing.useEdgeToEdge()
