@@ -5,11 +5,14 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
+import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
@@ -45,6 +48,9 @@ class PaymentActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+
 
         setContentView(R.layout.activity_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
@@ -58,11 +64,17 @@ class PaymentActivity : BaseActivity() {
         }
 
         changeBankAccount.setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this))
+            when (market) {
+                Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                Market.NO -> startActivity(AdyenActivity.newInstance(this))
+            }
         }
 
         connectBankAccount.setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this))
+            when (market) {
+                Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                Market.NO -> startActivity(AdyenActivity.newInstance(this))
+            }
         }
 
         connectBankAccountWithLink.setHapticClickListener {
@@ -208,12 +220,13 @@ class PaymentActivity : BaseActivity() {
         incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
             campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
             campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
-            monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
-                campaignInformationFieldOne.text = interpolateTextKey(
-                    getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
-                    "DISCOUNT" to amount
-                )
-            }
+            monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()
+                ?.let { amount ->
+                    campaignInformationFieldOne.text = interpolateTextKey(
+                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
+                        "DISCOUNT" to amount
+                    )
+                }
             campaignInformationContainer.show()
             campaignInformationSeparator.show()
         }

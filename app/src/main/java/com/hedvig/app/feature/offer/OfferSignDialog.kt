@@ -9,10 +9,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
+import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
@@ -119,11 +122,19 @@ class OfferSignDialog : DialogFragment() {
 
     private fun goToDirectDebit() {
         requireContext().storeBoolean(IS_VIEWING_OFFER, false)
+        val pref = PreferenceManager.getDefaultSharedPreferences(context)
+        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
         handler.postDelayed({
-            startActivity(TrustlyActivity.newInstance(requireContext(), true).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            })
+            when (market) {
+                Market.SE -> {
+                    startActivity(TrustlyActivity.newInstance(requireContext(), true).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                }
+                Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
+            }
+
         }, 1000)
     }
 
