@@ -63,4 +63,12 @@
     <attr name="colorButton" format="reference" />
     <attr name="textColorButton" format="reference" />
 
+    <style name="Hedvig.Theme.Widgets.Chat.User" parent="Hedvig.Theme">
+        <item name="colorSurface">@color/colorChatUserBackground</item>
+    </style>
+
+    <style name="Hedvig.Theme.Widgets.Chat.Input" parent="Hedvig.Theme">
+        <item name="colorSurface">@color/colorChatInputButton</item>
+    </style>
+
 </resources>

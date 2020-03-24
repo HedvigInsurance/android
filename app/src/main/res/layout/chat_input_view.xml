@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/Hedvig.Theme.Widgets.Chat.Input"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -51,7 +52,7 @@
             android:layout_marginStart="@dimen/base_margin"
             android:layout_weight="1"
             android:background="@drawable/chat_background_edit_text_rounded_corners"
-            android:drawableRight="@drawable/ic_chat_send"
+            android:drawableRight="@drawable/ic_send"
             android:hint="@string/CHAT_TEXT_INPUT_HINT"
             android:imeOptions="actionSend"
             android:paddingStart="@dimen/base_margin_double"

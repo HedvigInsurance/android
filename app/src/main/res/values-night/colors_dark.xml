@@ -22,6 +22,7 @@
     <item name="colorButton" type="color">@color/button_dark</item>
     <item name="textColorButton" type="color">@color/button_dark_text</item>
 
-    <item name="colorChatButtonBackground" type="color">@color/button_background_dark</item>
+    <item name="colorChatUserBackground" type="color">@color/hedvig_black</item>
+    <item name="colorChatInputButton" type="color">@color/button_background_dark</item>
 
 </resources>

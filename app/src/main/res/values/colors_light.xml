@@ -21,5 +21,6 @@
     <item name="colorButton" type="color">@color/mtrl_btn_bg_color_selector</item>
     <item name="textColorButton" type="color">@color/mtrl_btn_text_color_selector</item>
 
-    <item name="colorChatButtonBackground" type="color">@color/hedvig_light_gray</item>
+    <item name="colorChatUserBackground" type="color">@color/hedvig_light_gray</item>
+    <item name="colorChatInputButton" type="color">@color/hedvig_light_gray</item>
 </resources>
