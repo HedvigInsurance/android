@@ -13,6 +13,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
@@ -48,8 +49,15 @@ class PaymentActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
+        var market: Market? = null
+        if (marketOrdinal == -1) {
+            startActivity(MarketPickerActivity.newInstance(this))
+        } else {
+            market = Market.values()[marketOrdinal]
+        }
 
 
         setContentView(R.layout.activity_payment)
@@ -64,16 +72,20 @@ class PaymentActivity : BaseActivity() {
         }
 
         changeBankAccount.setHapticClickListener {
-            when (market) {
-                Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                Market.NO -> startActivity(AdyenActivity.newInstance(this))
+            market?.let { market ->
+                when (market) {
+                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
+                }
             }
         }
 
         connectBankAccount.setHapticClickListener {
-            when (market) {
-                Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                Market.NO -> startActivity(AdyenActivity.newInstance(this))
+            market?.let { market ->
+                when (market) {
+                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
+                }
             }
         }
 

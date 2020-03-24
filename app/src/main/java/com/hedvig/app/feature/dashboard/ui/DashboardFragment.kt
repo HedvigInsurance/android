@@ -19,6 +19,7 @@ import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatColor
@@ -263,8 +264,14 @@ class DashboardFragment : BaseTabFragment() {
         directDebitStatus: DirectDebitStatus,
         renewal: DashboardQuery.Renewal?
     ) {
-        val pref = PreferenceManager.getDefaultSharedPreferences(context)
-        val market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        val pref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
+        var market: Market? = null
+        if (marketOrdinal == -1) {
+            startActivity(MarketPickerActivity.newInstance(requireContext()))
+        } else {
+            market = Market.values()[marketOrdinal]
+        }
 
         if (directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
             infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
@@ -275,9 +282,11 @@ class DashboardFragment : BaseTabFragment() {
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.setupDirectDebit()
-                when (market) {
-                    Market.SE -> startActivity(TrustlyActivity.newInstance(requireContext()))
-                    Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
+                market?.let { market ->
+                    when (market) {
+                        Market.SE -> startActivity(TrustlyActivity.newInstance(requireContext()))
+                        Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
+                    }
                 }
 
             }

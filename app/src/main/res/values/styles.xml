@@ -141,7 +141,7 @@
     </style>
 
     <style name="AdyenCheckout.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/primaryColor</item>
+        <item name="boxStrokeColor">?colorPrimary</item>
         <item name="hintTextAppearance">@style/AdyenCheckout.HintTextStyle</item>
         <item name="hintTextColor">@color/primaryColor</item>
         <item name="android:minHeight">@dimen/input_layout_height</item>
