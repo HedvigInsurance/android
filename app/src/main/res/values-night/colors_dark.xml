@@ -21,4 +21,7 @@
 
     <item name="colorButton" type="color">@color/button_dark</item>
     <item name="textColorButton" type="color">@color/button_dark_text</item>
+
+    <item name="colorChatButtonBackground" type="color">@color/button_background_dark</item>
+
 </resources>

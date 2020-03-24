@@ -24,7 +24,7 @@
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin"
             android:contentDescription="@string/UPLOAD_FILE_BUTTON_HINT"
-            android:src="@drawable/ic_chat_attach_file" />
+            android:src="@drawable/ic_attach_file" />
 
         <TextView
             android:id="@+id/sendGif"
@@ -34,12 +34,11 @@
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
-            android:background="@drawable/circle_background"
-            android:backgroundTint="?colorSecondary"
+            android:background="@drawable/chat_input_button"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="?colorOnSecondary" />
+            android:textColor="?colorPrimary" />
 
         <!--
         Ignore RtlHardcoded
