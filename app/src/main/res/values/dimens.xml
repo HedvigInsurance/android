@@ -134,7 +134,7 @@
     <dimen name="offer_sign_button_off_screen_translation">100dp</dimen>
     <dimen name="offer_switch_bullet_size">40dp</dimen>
     <dimen name="image_upload_corner_radius">20dp</dimen>
-    <dimen name="chat_text_input_vertical_padding">12dp</dimen>
+    <dimen name="chat_text_input_vertical_padding">8dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
     <dimen name="bottom_sheet_handle_width">32dp</dimen>

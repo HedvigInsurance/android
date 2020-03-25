@@ -63,6 +63,14 @@
     <attr name="colorButton" format="reference" />
     <attr name="textColorButton" format="reference" />
 
+    <style name="Hedvig.Theme.Chat" parent="Hedvig.Theme">
+        <item name="android:colorBackground">@color/colorBackgroundChat</item>
+    </style>
+
+    <style name="Hedvig.Theme.Widgets.Chat.Hedvig" parent="Hedvig.Theme">
+        <item name="colorSurface">@color/colorChatHedvigBackground</item>
+    </style>
+
     <style name="Hedvig.Theme.Widgets.Chat.User" parent="Hedvig.Theme">
         <item name="colorSurface">@color/colorChatUserBackground</item>
     </style>
