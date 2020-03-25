@@ -18,6 +18,7 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -306,7 +307,7 @@ class MarketingActivity : BaseActivity() {
                     startActivity(intent)
                 }
                 Market.NO -> {
-                    //TODO open web onboarding
+                    startActivity(WebOnboardingActivity.newInstance(this))
                 }
             }
         }
