@@ -116,6 +116,8 @@
 
     <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@drawable/background_rounded_corners</item>
+        <item name="materialButtonStyle">@style/Hedvig.Button.Text</item>
+        <item name="colorButton">@color/transparent</item>
     </style>
 
     <style name="DialogNoAnimation">

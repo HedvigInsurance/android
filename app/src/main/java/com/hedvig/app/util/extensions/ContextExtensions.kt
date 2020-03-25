@@ -27,7 +27,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
@@ -142,18 +141,6 @@ fun Context.showAlert(
         }
         .show()
         .apply {
-            getButton(AlertDialog.BUTTON_POSITIVE).apply {
-                background = ColorDrawable(Color.TRANSPARENT)
-                setTextColor(resources.getColor(R.color.purple))
-            }
-            getButton(AlertDialog.BUTTON_NEGATIVE).apply {
-                background = ColorDrawable(Color.TRANSPARENT)
-                setTextColor(resources.getColor(R.color.purple))
-            }
-            getButton(AlertDialog.BUTTON_NEUTRAL).apply {
-                background = ColorDrawable(Color.TRANSPARENT)
-                setTextColor(resources.getColor(R.color.purple))
-            }
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
             getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
