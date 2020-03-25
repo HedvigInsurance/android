@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/Hedvig.Theme.Chat"
     android:background="?android:colorBackground"
     android:id="@+id/chatRoot"
     android:layout_width="match_parent"

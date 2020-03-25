@@ -26,7 +26,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
@@ -127,7 +126,7 @@ fun Context.showAlert(
     positiveAction: () -> Unit,
     negativeAction: (() -> Unit)? = null
 ): androidx.appcompat.app.AlertDialog? =
-    MaterialAlertDialogBuilder(this, R.style.AlertDialog)
+    MaterialAlertDialogBuilder(this)
         .apply {
             setTitle(resources.getString(title))
             setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
