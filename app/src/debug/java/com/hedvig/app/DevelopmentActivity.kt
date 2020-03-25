@@ -10,10 +10,12 @@ import android.widget.CheckBox
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -74,12 +76,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openWebOnboarding.setHapticClickListener {
-            startActivity(WebOnboardingActivity.newInstance(this))
-        }
-
-        openMarketPicker.setHapticClickListener {
-            startActivity(MarketPickerActivity.newInstance(this))
+        openAdyen.setHapticClickListener {
+            startActivity(AdyenActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
@@ -171,7 +169,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 offerModule,
                 profileModule,
                 directDebitModule,
-                keyGearModule
+                keyGearModule,
+                adyenModule
             )
     }
 }

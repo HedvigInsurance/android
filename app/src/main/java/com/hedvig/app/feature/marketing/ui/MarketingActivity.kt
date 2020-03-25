@@ -19,6 +19,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -54,7 +55,10 @@ class MarketingActivity : BaseActivity() {
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        market = Market.values()[pref.getInt(Market.MARKET_SHARED_PREF, -1)]
+        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        if (market == null) {
+            startActivity(MarketPickerActivity.newInstance(this))
+        }
 
         activity_marketing.useEdgeToEdge()
 

@@ -1,9 +1,12 @@
 package com.hedvig.app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
@@ -83,17 +86,41 @@ class SplashActivity : BaseActivity() {
         } ?: startDefaultActivity(loginStatus)
     }
 
+    @SuppressLint("ApplySharedPref")
     private fun startDefaultActivity(loginStatus: LoginStatus?) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val marketOrdinal = sharedPreferences.getInt(Market.MARKET_SHARED_PREF, -1)
         when (loginStatus) {
             LoginStatus.ONBOARDING -> startActivity(MarketPickerActivity.newInstance(this))
-            LoginStatus.IN_OFFER -> startActivity(Intent(this, OfferActivity::class.java))
-            LoginStatus.LOGGED_IN -> startActivity(Intent(this, LoggedInActivity::class.java))
-            LoginStatus.LOGGED_IN_TERMINATED -> startActivity(
-                Intent(
-                    this,
-                    LoggedInTerminatedActivity::class.java
+            LoginStatus.IN_OFFER -> {
+                if (marketOrdinal == -1) {
+                    sharedPreferences.edit()
+                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .commit()
+                }
+                startActivity(Intent(this, OfferActivity::class.java))
+            }
+            LoginStatus.LOGGED_IN -> {
+                if (marketOrdinal == -1) {
+                    sharedPreferences.edit()
+                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .commit()
+                }
+                startActivity(Intent(this, LoggedInActivity::class.java))
+            }
+            LoginStatus.LOGGED_IN_TERMINATED -> {
+                if (marketOrdinal == -1) {
+                    sharedPreferences.edit()
+                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .commit()
+                }
+                startActivity(
+                    Intent(
+                        this,
+                        LoggedInTerminatedActivity::class.java
+                    )
                 )
-            )
+            }
             else -> {
                 disposables += loggedInService
                     .getLoginStatus()
