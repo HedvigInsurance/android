@@ -2,11 +2,9 @@ package com.hedvig.app
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*
 
@@ -28,7 +26,6 @@ class UpsellAdapter : RecyclerView.Adapter<UpsellAdapter.ViewHolder>() {
             .from(parent.context)
             .inflate(R.layout.dashboard_upsell, parent, false)
     ) {
-        private val icon = itemView.icon
         private val title = itemView.title
         private val description = itemView.description
         private val cta = itemView.cta
@@ -40,7 +37,6 @@ class UpsellAdapter : RecyclerView.Adapter<UpsellAdapter.ViewHolder>() {
         }
 
         fun bind(model: UpsellModel) {
-            icon.setImageDrawable(icon.context.compatDrawable(model.icon))
             title.text = title.resources.getString(model.title)
             description.text = description.resources.getString(model.description)
             cta.text = cta.resources.getString(model.ctaText)
@@ -49,7 +45,6 @@ class UpsellAdapter : RecyclerView.Adapter<UpsellAdapter.ViewHolder>() {
 }
 
 data class UpsellModel(
-    @get:DrawableRes val icon: Int,
     @get:StringRes val title: Int,
     @get:StringRes val description: Int,
     @get:StringRes val ctaText: Int

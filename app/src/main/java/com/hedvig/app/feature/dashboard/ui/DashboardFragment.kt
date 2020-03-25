@@ -73,16 +73,14 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     companion object {
         private val UPSELL_HOME_CONTENTS =
-            UpsellModel( // TODO: Icon
-                android.R.drawable.btn_plus,
+            UpsellModel(
                 R.string.UPSELL_NOTIFICATION_CONTENT_TITLE,
                 R.string.UPSELL_NOTIFICATION_CONTENT_DESCRIPTION,
                 R.string.UPSELL_NOTIFICATION_CONTENT_CTA
             )
 
         private val UPSELL_TRAVEL =
-            UpsellModel( // TODO: Icon
-                android.R.drawable.btn_minus,
+            UpsellModel(
                 R.string.UPSELL_NOTIFICATION_TRAVEL_TITLE,
                 R.string.UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION,
                 R.string.UPSELL_NOTIFICATION_TRAVEL_CTA

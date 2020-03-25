@@ -6,13 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity">
 
-    <!-- TODO: Translations -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_close"
-        app:title="Mitt skydd" />
+        app:title="@string/CONTRACT_COVERAGE_MAIN_TITLE" />
 
     <ProgressBar
         android:id="@+id/loadingSpinner"
@@ -35,12 +34,13 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/perilSectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:text="Innboforsikring dekker"
-                android:textAppearance="?textAppearanceHeadline5" />
+                android:textAppearance="?textAppearanceHeadline5"
+                tools:text="@string/CONTRACT_COVERAGE_CONTRACT_TYPE" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/perils"
@@ -69,7 +69,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:text="Mer informasjon"
+                android:text="@string/CONTRACT_COVERAGE_MORE_INFO"
                 android:textAppearance="?textAppearanceHeadline5" />
 
             <androidx.recyclerview.widget.RecyclerView

@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- TODO: Translations -->
     <TextView
         android:id="@+id/contractName"
         android:layout_width="wrap_content"
@@ -61,12 +60,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
+                android:text="@string/DASHBOARD_MY_INFO_TITLE"
                 android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintBottom_toTopOf="@id/contractInformationDescription"
                 app:layout_constraintStart_toEndOf="@id/contractInformationIcon"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:text="Min informasjon" />
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
                 android:id="@+id/contractInformationDescription"
@@ -130,14 +129,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceHeadline6"
-                    tools:text="Mina dokument" />
+                    android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceBody2"
-                    tools:text="Forsikringsbevis" />
+                    android:text="@string/DASHBOARD_MY_DOCUMENTS_SUBTITLE"
+                    android:textAppearance="?textAppearanceBody2" />
 
             </LinearLayout>
 
@@ -194,16 +193,32 @@
                     android:id="@+id/categoryTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mitt skydd"
+                    android:text="@string/DASHBOARD_MY_COVERAGE_TITLE"
                     android:textAppearance="?textAppearanceHeadline6" />
 
                 <TextView
                     android:id="@+id/categorySubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tryck för att läsa"
+                    android:text="@string/DASHBOARD_MY_COVERAGE_SUBTITLE"
                     android:textAppearance="?textAppearanceBody2" />
+
+
             </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                android:tint="?colorPrimary"
+                app:srcCompat="@drawable/ic_info_purple" />
 
         </LinearLayout>
 

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_quintuple">
+    android:paddingBottom="@dimen/base_margin_quintuple"
+    android:theme="@style/Hedvig.Theme">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -23,8 +24,8 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:text="@string/MY_DOCUMENTS_INSURANCE_CERTIFICATE"
         android:visibility="gone"
-        tools:text="Försäkringsbrev ↗"
         tools:visibility="visible" />
 
     <Button
@@ -35,6 +36,6 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
-        tools:text="Fullständiga villkor ↗" />
+        android:text="@string/MY_DOCUMENTS_INSURANCE_TERMS" />
 
 </LinearLayout>

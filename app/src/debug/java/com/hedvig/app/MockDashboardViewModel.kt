@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import org.threeten.bp.LocalDate
 
@@ -39,6 +40,7 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             status = ContractStatus.ACTIVE,
             inception = LocalDate.of(2020, 1, 1),
             displayName = "Hemförsäkring",
+            typeOfContract = TypeOfContract.SE_HOUSE,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
@@ -96,6 +98,7 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             status = ContractStatus.ACTIVE,
             inception = LocalDate.of(2020, 1, 1),
             displayName = "Hemförsäkring",
+            typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
@@ -210,6 +213,7 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             status = ContractStatus.ACTIVE,
             inception = LocalDate.of(2020, 1, 1),
             displayName = "Innboforsikring",
+            typeOfContract = TypeOfContract.NO_HOME_CONTENT_RENT,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
@@ -269,6 +273,7 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             status = ContractStatus.ACTIVE,
             inception = LocalDate.of(2020, 1, 1),
             displayName = "Reiseforsikring",
+            typeOfContract = TypeOfContract.NO_TRAVEL,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(

@@ -4,6 +4,7 @@ query DashboardQuery($locale: Locale!) {
     status
     inception
     displayName
+    typeOfContract
     upcomingRenewal {
       renewalDate
       draftCertificateUrl
