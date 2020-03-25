@@ -18,8 +18,8 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -48,14 +48,14 @@ class MarketingActivity : BaseActivity() {
     private var blurDismissAnimator: ValueAnimator? = null
     private var topHideAnimation: ValueAnimator? = null
 
-    private lateinit var market: Market
+    private var market: Market? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
 
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
         }
@@ -304,14 +304,18 @@ class MarketingActivity : BaseActivity() {
                 marketingStoriesViewModel.page.value,
                 marketingStoriesViewModel.blurred.value
             )
-            when (market) {
-                Market.SE -> {
-                    val intent = Intent(this, ChatActivity::class.java)
-                    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-                    startActivity(intent)
-                }
-                Market.NO -> {
-                    startActivity(WebOnboardingActivity.newInstance(this))
+            if (market == null) {
+                startActivity(MarketPickerActivity.newInstance(this))
+            } else {
+                when (market) {
+                    Market.SE -> {
+                        val intent = Intent(this, ChatActivity::class.java)
+                        intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
+                        startActivity(intent)
+                    }
+                    Market.NO -> {
+                        startActivity(WebOnboardingActivity.newInstance(this))
+                    }
                 }
             }
         }
