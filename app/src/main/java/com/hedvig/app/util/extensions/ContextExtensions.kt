@@ -2,7 +2,6 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -139,8 +138,8 @@ fun Context.showAlert(
         }
         .show()
         .apply {
-            getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
-            getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
+            // getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
+            // getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
         }
 
 fun Context.copyToClipboard(
