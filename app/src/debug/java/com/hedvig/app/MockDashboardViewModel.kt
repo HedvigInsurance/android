@@ -44,7 +44,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null
+                    activeTo = null,
+                    certificateUrl = "https://www.example.com"
                 ),
                 asSwedishHouseAgreement = DashboardQuery.AsSwedishHouseAgreement(
                     address = DashboardQuery.Address1(
@@ -84,6 +85,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     label = "Utstyrene dine er forsikrat till",
                     limit = "1 000 000 kr"
                 )
+            ),
+            termsAndConditions = DashboardQuery.TermsAndConditions(
+                displayName = "Terms and Conditions",
+                url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
         private val SWEDISH_APARTMENT_CONTRACT = DashboardQuery.Contract(
@@ -96,7 +101,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null
+                    activeTo = null,
+                    certificateUrl = "https://www.example.com"
                 ),
                 asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
                     address = DashboardQuery.Address(
@@ -193,6 +199,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     label = "Utstyrene dine er forsikrat till",
                     limit = "1 000 000 kr"
                 )
+            ),
+            termsAndConditions = DashboardQuery.TermsAndConditions(
+                displayName = "Terms and Conditions",
+                url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
         private val NORWEGIAN_HOME_CONTENTS_CONTRACT = DashboardQuery.Contract(
@@ -205,7 +215,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null
+                    activeTo = null,
+                    certificateUrl = "https://www.example.com"
                 ),
                 asNorwegianHomeContentAgreement = DashboardQuery.AsNorwegianHomeContentAgreement(
                     address = DashboardQuery.Address2(
@@ -246,6 +257,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     label = "Utstyrene dine er forsikrat till",
                     limit = "1 000 000 kr"
                 )
+            ),
+            termsAndConditions = DashboardQuery.TermsAndConditions(
+                displayName = "Terms and Conditions",
+                url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
 
@@ -259,7 +274,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     status = AgreementStatus.ACTIVE,
                     activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null
+                    activeTo = null,
+                    certificateUrl = "https://www.example.com"
                 ),
                 asNorwegianHomeContentAgreement = null,
                 asNorwegianTravelAgreement = DashboardQuery.AsNorwegianTravelAgreement(
@@ -289,6 +305,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     label = "Utstyrene dine er forsikrat till",
                     limit = "1 000 000 kr"
                 )
+            ),
+            termsAndConditions = DashboardQuery.TermsAndConditions(
+                displayName = "Terms and Conditions",
+                url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
 

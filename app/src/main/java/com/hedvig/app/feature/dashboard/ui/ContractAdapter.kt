@@ -2,6 +2,7 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
@@ -15,7 +16,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import org.threeten.bp.format.DateTimeFormatter
 
-class ContractAdapter : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
+class ContractAdapter(
+    private val fragmentManager: FragmentManager
+) : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>() {
     var items: List<DashboardQuery.Contract> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(ContractDiffCallback(field, value))
@@ -28,7 +31,7 @@ class ContractAdapter : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ContractViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], fragmentManager)
     }
 
     class ContractViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -39,9 +42,10 @@ class ContractAdapter : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>
         private val status = itemView.contractStatus
         private val name = itemView.contractName
         private val informationCard = itemView.contractInformationCard
-        private val perilCard = itemView.perilCard
+        private val perilCard = itemView.coverageCard
+        private val documentsCard = itemView.documentsCard
 
-        fun bind(contract: DashboardQuery.Contract) {
+        fun bind(contract: DashboardQuery.Contract, fragmentManager: FragmentManager) {
             name.text = contract.displayName
             when (contract.status) {
                 ContractStatus.ACTIVE -> {
@@ -77,6 +81,12 @@ class ContractAdapter : RecyclerView.Adapter<ContractAdapter.ContractViewHolder>
 
             perilCard.setHapticClickListener {
                 perilCard.context.startActivity(ContractCoverageActivity.newInstance(perilCard.context, contract.id))
+            }
+
+            documentsCard.setHapticClickListener {
+                DocumentBottomSheet
+                    .newInstance(contract.currentAgreement.asAgreementCore?.certificateUrl, contract.termsAndConditions.url)
+                    .show(fragmentManager, DocumentBottomSheet.TAG)
             }
         }
     }

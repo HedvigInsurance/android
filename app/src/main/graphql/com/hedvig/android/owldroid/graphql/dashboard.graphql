@@ -13,6 +13,7 @@ query DashboardQuery($locale: Locale!) {
         status
         activeFrom
         activeTo
+        certificateUrl
       }
       ... on SwedishApartmentAgreement {
         address {
@@ -58,6 +59,10 @@ query DashboardQuery($locale: Locale!) {
     insurableLimits(locale: $locale) {
       label
       limit
+    }
+    termsAndConditions(locale: $locale) {
+      displayName
+      url
     }
   }
 }

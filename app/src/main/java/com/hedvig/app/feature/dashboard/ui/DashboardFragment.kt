@@ -27,7 +27,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        contracts.adapter = ContractAdapter()
+        contracts.adapter = ContractAdapter(parentFragmentManager)
         upsells.adapter = UpsellAdapter()
 
         dashboardViewModel.data.observe(this) { dashboardData ->
