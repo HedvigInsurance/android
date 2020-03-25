@@ -202,9 +202,13 @@ class TrustlyActivity : BaseActivity() {
     companion object {
         private const val WITH_EXPLAINER = "with_explainer"
 
-        fun newInstance(context: Context, withExplainer: Boolean = false) =
+        fun newInstance(context: Context, withExplainer: Boolean = false, withoutHistory: Boolean = false) =
             Intent(context, TrustlyActivity::class.java).apply {
                 putExtra(WITH_EXPLAINER, withExplainer)
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
             }
     }
 }

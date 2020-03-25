@@ -1,0 +1,30 @@
+<html>
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script>
+    //let port
+    /*
+    window.addEventListener('message', event => {
+         if (event.data === 'init') {
+            // Capture the MessagePort sent from the native side
+            port = event.ports[0]
+         } else {
+            // Handle the message normally
+         }
+    }, false)
+    */
+
+    function signComplete() {
+        //port.postMessage(JSON.stringify({type:'SIGN_COMPLETE'}))
+        window.location = '#/connect-payment'
+    }
+
+
+    </script>
+</head>
+<body>
+
+<button onclick="signComplete()">Fake sign</button>
+
+</body>
+</html>
