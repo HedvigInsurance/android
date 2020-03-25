@@ -13,6 +13,8 @@ import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActi
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.interpolateTextKey
+import e
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -42,6 +44,7 @@ class ContractAdapter(
         private val status = itemView.contractStatus
         private val name = itemView.contractName
         private val informationCard = itemView.contractInformationCard
+        private val contractInformationDescription = itemView.contractInformationDescription
         private val perilCard = itemView.coverageCard
         private val documentsCard = itemView.documentsCard
 
@@ -75,6 +78,16 @@ class ContractAdapter(
                 else -> {
                 } // TODO
             }
+
+            contractInformationDescription.text = if (contract.currentAgreement.numberCoInsured == 1) {
+                contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_NO_COINSURED)
+            } else {
+                interpolateTextKey(
+                    contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_COINSURED),
+                    "COINSURED_PEOPLE" to contract.currentAgreement.numberCoInsured - 1
+                )
+            }
+
             informationCard.setHapticClickListener {
                 informationCard.context.startActivity(ContractDetailActivity.newInstance(informationCard.context, contract.id))
             }
@@ -92,6 +105,15 @@ class ContractAdapter(
     }
 
     companion object {
+        private val DashboardQuery.CurrentAgreement.numberCoInsured: Int
+            get() {
+                asNorwegianTravelAgreement?.numberCoInsured?.let { return it }
+                asSwedishHouseAgreement?.numberCoInsured?.let { return it }
+                asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
+                asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
+                e { "Unable to infer amount coinsured for agreement: $this" }
+                return 0
+            }
         private val FORMATTER = DateTimeFormatter.ofPattern("dd, LLL YYYY")
     }
 }
