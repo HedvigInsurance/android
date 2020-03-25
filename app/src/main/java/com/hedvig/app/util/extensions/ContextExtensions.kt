@@ -137,10 +137,6 @@ fun Context.showAlert(
             message?.let { setMessage(it) }
         }
         .show()
-        .apply {
-            // getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
-            // getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
-        }
 
 fun Context.copyToClipboard(
     text: String
