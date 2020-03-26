@@ -1,7 +1,9 @@
 package com.hedvig.app.mocks
 
+import com.hedvig.app.MockAdyenViewModel
 import com.hedvig.app.MockContractDetailViewModel
 import com.hedvig.app.MockDashboardViewModel
+import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
@@ -26,4 +28,5 @@ val mockModule = module {
     viewModel<ContractDetailViewModel> { MockContractDetailViewModel(get()) }
     viewModel<ContractCoverageViewModel> { MockContractCoverageViewModel(get()) }
     viewModel<MarketingStoriesViewModel> { MockMarketingStoriesViewModel() }
+    viewModel<AdyenViewModel> { MockAdyenViewModel() }
 }

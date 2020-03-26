@@ -193,6 +193,9 @@ dependencies {
     // markwon
     implementation "io.noties.markwon:core:4.2.1"
 
+    // adyen
+    implementation 'com.adyen.checkout:drop-in:3.6.4'
+
     // test
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'

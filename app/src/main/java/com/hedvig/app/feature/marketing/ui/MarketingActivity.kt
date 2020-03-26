@@ -10,14 +10,12 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ProgressBar
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
-import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.graphql.MarketingStoriesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
@@ -25,6 +23,7 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -50,14 +49,10 @@ class MarketingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
-
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val marketOrdinal = pref.getInt(Market.MARKET_SHARED_PREF, -1)
-        val market: Market
-        if (marketOrdinal == -1) {
+        
+        val market = getMarket()
+        if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
-        } else {
-            market = Market.values()[marketOrdinal]
         }
 
         activity_marketing.useEdgeToEdge()

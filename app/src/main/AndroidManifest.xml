@@ -266,6 +266,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.AdyenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
@@ -308,6 +315,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".feature.adyen.AdyenDropInService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
 </manifest>

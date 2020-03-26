@@ -19,6 +19,7 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.showAlert
@@ -47,7 +48,7 @@ class SettingsActivity : BaseActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val market = Market.values()[sharedPreferences.getInt(Market.MARKET_SHARED_PREF, -1)]
+            val market = context?.getMarket()
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -66,15 +67,20 @@ class SettingsActivity : BaseActivity() {
             }
 
             val marketPreference = findPreference<ListPreference>(SETTINGS_MARKET)
-            marketPreference?.setValueIndex(market.ordinal)
+            if (market != null) {
+                marketPreference?.setValueIndex(market.ordinal)
+            } else {
+                MarketPickerActivity.newInstance(requireContext())
+            }
             marketPreference?.let { mp ->
                 val oldValue = mp.value
                 mp.setOnPreferenceChangeListener { _, newValue ->
                     if (oldValue != newValue) {
-                        //TODO real text for dialog
                         requireContext().showAlert(
-                            R.string.alert_title,
-                            R.string.alert_message,
+                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
+                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
+                            positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
+                            negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                             positiveAction = {
                                 sharedPreferences.edit()
                                     .putString(

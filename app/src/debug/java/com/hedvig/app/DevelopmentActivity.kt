@@ -9,12 +9,11 @@ import android.widget.Button
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
@@ -76,8 +75,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openMarketingActivity.setHapticClickListener {
-            startActivity(Intent(this, MarketingActivity::class.java))
+        openAdyen.setHapticClickListener {
+            startActivity(AdyenActivity.newInstance(this))
         }
 
         openNorwegianAuth.setHapticClickListener {
@@ -173,7 +172,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 marketingModule,
                 offerModule,
                 profileModule,
-                keyGearModule
+                keyGearModule,
+                adyenModule
             )
     }
 }

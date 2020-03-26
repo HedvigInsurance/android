@@ -188,13 +188,21 @@ class ChatInputView : FrameLayout {
         singleSelectContainer.removeAllViews()
         input.options.forEach { option ->
             option.asMessageBodyChoicesSelection?.let { selection ->
-                inflateSingleSelectButton(selection.text, selection.value, SingleSelectChoiceType.SELECTION)
+                inflateSingleSelectButton(
+                    selection.text,
+                    selection.value,
+                    SingleSelectChoiceType.SELECTION
+                )
             }
             option.asMessageBodyChoicesLink?.let { link ->
                 inflateSingleSelectButton(link.text, link.value, SingleSelectChoiceType.LINK)
             }
             option.asMessageBodyChoicesUndefined?.let { undefined ->
-                inflateSingleSelectButton(undefined.text, undefined.value, SingleSelectChoiceType.UNDEFINED)
+                inflateSingleSelectButton(
+                    undefined.text,
+                    undefined.value,
+                    SingleSelectChoiceType.UNDEFINED
+                )
             }
         }
     }
