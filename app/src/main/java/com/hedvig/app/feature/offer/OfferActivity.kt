@@ -41,13 +41,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        offerChatButton.setHapticClickListener {
-            tracker.openChat()
-            offerViewModel.triggerOpenChat {
-                startClosableChat(true)
-            }
-        }
-
         factAreaBinder = FactAreaBinder(offerFactArea as LinearLayout)
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
 
@@ -62,6 +55,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     })
                 } else {
                     val completeQuote = data.lastQuoteOfMember.asCompleteQuote!!
+                    offerViewModel.fetchPreSale(completeQuote.toContractType())
                     when {
                         completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
                             val apartmentData = data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
@@ -77,12 +71,25 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     factAreaBinder.bind(completeQuote)
                     termsBinder.bind(data.insurance, completeQuote)
                 }
-                container.show()
-                loadingSpinner.remove()
             }
         }
 
-        setupButtons()
+        offerViewModel.preSaleData.observe(lifecycleOwner = this) {
+            /* Bind perils */
+
+            /* Bind terms */
+
+            container.show()
+            loadingSpinner.remove()
+            setupButtons()
+        }
+
+        offerChatButton.setHapticClickListener {
+            tracker.openChat()
+            offerViewModel.triggerOpenChat {
+                startClosableChat(true)
+            }
+        }
     }
 
     private fun bindToolBar(address: String) {

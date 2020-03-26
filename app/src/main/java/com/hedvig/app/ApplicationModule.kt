@@ -222,7 +222,7 @@ val repositoriesModule = module {
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }
-    single { OfferRepository(get()) }
+    single { OfferRepository(get(), get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }

@@ -1,25 +1,21 @@
 package com.hedvig.app.feature.offer
 
+import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.rx2.Rx2Apollo
-import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
-import com.hedvig.android.owldroid.graphql.OfferClosedMutation
-import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
-import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.graphql.SignStatusQuery
-import com.hedvig.android.owldroid.graphql.SignStatusSubscription
+import com.hedvig.android.owldroid.graphql.*
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.defaultLocale
 import e
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 class OfferRepository(
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClientWrapper: ApolloClientWrapper,
+    private val context: Context
 ) {
     private lateinit var offerQuery: OfferQuery
 
@@ -198,5 +194,16 @@ class OfferRepository(
                 .writeAndPublish(offerQuery, newData)
                 .execute()
         }
+    }
+
+    fun fetchOfferPreSale(type: TypeOfContract): Observable<OfferPreSaleQuery.Data?> {
+        val offerPreSaleQuery = OfferPreSaleQuery(
+            contractType = type,
+            locale = defaultLocale(context)
+        )
+
+        return Rx2Apollo
+            .from(apolloClientWrapper.apolloClient.query(offerPreSaleQuery))
+            .map { it.data() }
     }
 }

@@ -5,12 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
+import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
@@ -19,6 +21,7 @@ class MockOfferViewModel(
     private val context: Context
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
+    override val preSaleData = MutableLiveData<OfferPreSaleQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -47,12 +50,13 @@ class MockOfferViewModel(
     override fun removeStartDate(id: String) {
     }
 
+    override fun fetchPreSale(contract: TypeOfContract) {
+    }
+
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
             insurance = OfferQuery.Insurance(
-                status = InsuranceStatus.PENDING,
-                presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
-                policyUrl = "http://www.africau.edu/images/default/sample.pdf"
+                status = InsuranceStatus.PENDING
             ),
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
@@ -116,9 +120,7 @@ class MockOfferViewModel(
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
             insurance = OfferQuery.Insurance(
-                status = InsuranceStatus.PENDING,
-                presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
-                policyUrl = "http://www.africau.edu/images/default/sample.pdf"
+                status = InsuranceStatus.PENDING
             ),
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
