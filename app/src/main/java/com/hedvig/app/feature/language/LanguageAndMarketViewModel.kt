@@ -63,7 +63,7 @@ class LanguageAndMarketViewModel(
 
         market?.let {
             sharedPreferences.edit()
-                .putInt(Market.MARKET_SHARED_PREF, market.ordinal)
+                .putString(Market.MARKET_SHARED_PREF, market.name)
                 .commit()
         }
 

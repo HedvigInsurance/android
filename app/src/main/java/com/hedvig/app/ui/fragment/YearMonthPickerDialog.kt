@@ -19,7 +19,7 @@ abstract class YearMonthPickerDialog : DialogFragment() {
     abstract val title: String
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(requireContext(), R.style.AlertDialog)
+        val builder = AlertDialog.Builder(requireContext())
         val view =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_year_month_picker, null)
         val today = Calendar.getInstance()
@@ -27,7 +27,7 @@ abstract class YearMonthPickerDialog : DialogFragment() {
         view.month.apply {
             minValue = 1
             maxValue = 12
-            value = savedInstanceState?.getInt(MONTH) ?: today.get(Calendar.MONTH)+1
+            value = savedInstanceState?.getInt(MONTH) ?: today.get(Calendar.MONTH) + 1
             displayedValues = DateFormatSymbols().months
             wrapSelectorWheel = false
         }

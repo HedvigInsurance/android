@@ -114,10 +114,6 @@
         </item>
     </style>
 
-    <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:background">@drawable/background_rounded_corners</item>
-    </style>
-
     <style name="DialogNoAnimation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>

@@ -101,8 +101,8 @@
 
     <dimen name="referrals_button_bottom_margin">80dp</dimen>
     <dimen name="chat_attach_icon_size">40dp</dimen>
-    <dimen name="chat_background_edit_text_rounded_corner_radius">28dp</dimen>
-    <dimen name="chat_message_corner_radius">20dp</dimen>
+    <dimen name="chat_background_edit_text_rounded_corner_radius">8dp</dimen>
+    <dimen name="chat_message_corner_radius">8dp</dimen>
     <dimen name="chat_single_select_corner_radius">32dp</dimen>
     <dimen name="default_attach_file_height">280dp</dimen>
     <dimen name="is_keyboard_brake_point_height">120dp</dimen>
@@ -134,7 +134,7 @@
     <dimen name="offer_sign_button_off_screen_translation">100dp</dimen>
     <dimen name="offer_switch_bullet_size">40dp</dimen>
     <dimen name="image_upload_corner_radius">20dp</dimen>
-    <dimen name="chat_text_input_vertical_padding">6dp</dimen>
+    <dimen name="chat_text_input_vertical_padding">7dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
     <dimen name="bottom_sheet_handle_width">32dp</dimen>

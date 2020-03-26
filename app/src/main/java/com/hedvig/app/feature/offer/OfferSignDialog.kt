@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
-import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
@@ -19,6 +18,7 @@ import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
 import kotlinx.android.synthetic.main.dialog_sign.*
@@ -123,8 +123,7 @@ class OfferSignDialog : DialogFragment() {
     private fun goToDirectDebit() {
         requireContext().storeBoolean(IS_VIEWING_OFFER, false)
 
-        val pref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        val market = context?.getMarket()
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(requireContext()))
         }
