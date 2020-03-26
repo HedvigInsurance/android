@@ -24,6 +24,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketpicker.Market
@@ -89,12 +90,8 @@ fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
 fun Context.getMarket(): Market? {
-    val marketId = getSharedPreferences().getInt(Market.MARKET_SHARED_PREF, -1)
-    return if (marketId == -1) {
-        null
-    } else {
-        Market.values()[marketId]
-    }
+    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+    return Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
 }
 
 private fun Context.getSharedPreferences() =
