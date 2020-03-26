@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -13,6 +14,7 @@ import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.getMarket
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
@@ -74,16 +76,26 @@ class SplashActivity : BaseActivity() {
             startDefaultActivity(loginStatus)
             return
         }
-        link.getQueryParameter("code")?.let { referralCode ->
-            startActivity(
-                ReferralsReceiverActivity.newInstance(
-                    this,
-                    referralCode,
-                    "10"
-                )
-            ) //Fixme "10" should not be hard coded
+        when (getMarket()) {
+            null -> {
+                startActivity(MarketPickerActivity.newInstance(this))
+            }
+            Market.SE -> {
+                link.getQueryParameter("code")?.let { referralCode ->
+                    startActivity(
+                        ReferralsReceiverActivity.newInstance(
+                            this,
+                            referralCode,
+                            "10"
+                        )
+                    ) //Fixme "10" should not be hard coded
 
-        } ?: startDefaultActivity(loginStatus)
+                } ?: startDefaultActivity(loginStatus)
+            }
+            else -> {
+                startActivity(Intent(this, MarketingActivity::class.java))
+            }
+        }
     }
 
     @SuppressLint("ApplySharedPref")
