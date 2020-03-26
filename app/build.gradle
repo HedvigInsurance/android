@@ -58,6 +58,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://giraffe.hedvig.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://giraffe.hedvig.com\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://www.hedvig.com/referrals/\""
+            buildConfigField "String", "WEB_ONBOARDING_BASE_URL", "\"https://www.hedvig.com/\""
             resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
@@ -72,6 +73,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
+            buildConfigField "String", "WEB_ONBOARDING_BASE_URL", "\"https://www.dev.hedvigit.com/\""
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
@@ -85,6 +87,7 @@ android {
             buildConfigField "String", "GRAPHQL_URL", "\"https://graphql.dev.hedvigit.com/graphql\""
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
+            buildConfigField "String", "WEB_ONBOARDING_BASE_URL", "\"https://www.dev.hedvigit.com/\""
             buildConfigField "String", "REFERRALS_LANDING_BASE_URL", "\"https://hedvig-web-onboarding-staging.herokuapp.com/referrals/\""
 
             resValue "string", "file_provider_authority", "\"com.hedvig.android.dev.file.provider\""

@@ -5,13 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -50,11 +54,21 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 }
                 super.doUpdateVisitedHistory(view, url, isReload)
             }
+
+            override fun onReceivedHttpAuthRequest(view: WebView?, handler: HttpAuthHandler?, host: String?, realm: String?) {
+                handler?.proceed("hedvig", "hedvig1234")
+            }
         }
 
         val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8.toString())
 
-        webOnboarding.loadUrl("file:///android_asset/fake_web_onboarding.html#token=${encodedToken}") // TODO: Configurable URL. Maybe loaded from backend?
+        val localePath = when (defaultLocale(this)) {
+            Locale.NB_NO -> "no/"
+            Locale.EN_NO -> "no-en/"
+            else -> "no/"
+        }
+
+        webOnboarding.loadUrl("${BuildConfig.WEB_ONBOARDING_BASE_URL}${localePath}new-member?variation=android&token=${encodedToken}")
 
     }
 
