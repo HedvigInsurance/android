@@ -22,8 +22,8 @@
 
     <RadioButton
         android:id="@+id/radioButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/checkbox_size"
+        android:layout_height="@dimen/checkbox_size"
         android:background="@drawable/ic_radio_button_unchecked"
         android:button="@color/transparent"
         android:clickable="false" />

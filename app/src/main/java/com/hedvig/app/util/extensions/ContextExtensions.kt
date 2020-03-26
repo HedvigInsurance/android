@@ -2,7 +2,6 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,8 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
@@ -27,6 +24,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
@@ -91,12 +90,9 @@ fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
 fun Context.getMarket(): Market? {
-    val marketId = getSharedPreferences().getInt(Market.MARKET_SHARED_PREF, -1)
-    return if (marketId == -1) {
-        null
-    } else {
-        Market.values()[marketId]
-    }
+    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+    val marketName = pref.getString(Market.MARKET_SHARED_PREF, null)
+    return marketName?.let { Market.valueOf(it) }
 }
 
 private fun Context.getSharedPreferences() =
@@ -126,25 +122,19 @@ fun Context.showAlert(
     @StringRes negativeLabel: Int = android.R.string.cancel,
     positiveAction: () -> Unit,
     negativeAction: (() -> Unit)? = null
-): AlertDialog =
-    AlertDialog
-        .Builder(this)
-        .setTitle(resources.getString(title))
-        .setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
-            positiveAction()
-        }
-        .setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
-            negativeAction?.let { it() }
-        }
+): androidx.appcompat.app.AlertDialog? =
+    MaterialAlertDialogBuilder(this)
         .apply {
+            setTitle(resources.getString(title))
+            setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
+                positiveAction()
+            }
+            setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
+                negativeAction?.let { it() }
+            }
             message?.let { setMessage(it) }
         }
         .show()
-        .apply {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
-            getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
-        }
 
 fun Context.copyToClipboard(
     text: String

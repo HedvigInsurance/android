@@ -24,22 +24,22 @@ class LanguageAndMarketViewModel(
     private val context: Context
 ) : ViewModel() {
     val markets = MutableLiveData<List<MarketModel>>()
-    private val preselectedMarket = MutableLiveData<String>()
+    val preselectedMarket = MutableLiveData<String>()
     val isLanguageSelected = MutableLiveData<Boolean>(false)
     val languages = MutableLiveData<List<LanguageModel>>()
 
     init {
-        markets.postValue(Market.values().map { market ->
+        markets.value = Market.values().map { market ->
             MarketModel(
                 market
             )
-        })
+        }
 
-        languages.postValue(Language.values().map { language ->
+        languages.value = Language.values().map { language ->
             LanguageModel(
                 language
             )
-        })
+        }
     }
 
     private fun isLanguageSelected() {
@@ -63,7 +63,7 @@ class LanguageAndMarketViewModel(
 
         market?.let {
             sharedPreferences.edit()
-                .putInt(Market.MARKET_SHARED_PREF, market.ordinal)
+                .putString(Market.MARKET_SHARED_PREF, market.name)
                 .commit()
         }
 

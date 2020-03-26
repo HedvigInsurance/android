@@ -8,7 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import com.hedvig.app.util.LiveEvent
+import e
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class KeyGearItemDetailViewModel : ViewModel() {
@@ -36,9 +39,9 @@ class KeyGearItemDetailViewModelImpl(
         viewModelScope.launch {
             repository
                 .keyGearItem(id)
-                .collect { response ->
-                    data.postValue(response.data()?.keyGearItem)
-                }
+                .onEach { response -> data.postValue(response.data()?.keyGearItem) }
+                .catch { e -> e(e) }
+                .collect()
         }
     }
 
@@ -46,7 +49,10 @@ class KeyGearItemDetailViewModelImpl(
         viewModelScope.launch {
             isUploading.postValue(true)
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.uploadReceipt(id, uri)
+            val result = runCatching { repository.uploadReceipt(id, uri) }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+            }
             isUploading.postValue(false)
         }
     }
@@ -54,14 +60,20 @@ class KeyGearItemDetailViewModelImpl(
     override fun updateItemName(newName: String) {
         viewModelScope.launch {
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.updateItemName(id, newName)
+            val result = runCatching { repository.updateItemName(id, newName) }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+            }
         }
     }
 
     override fun deleteItem() {
         viewModelScope.launch {
             val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
-            repository.deleteItem(id)
+            val result = runCatching { repository.deleteItem(id) }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+            }
             isDeleted.postValue(true)
         }
     }

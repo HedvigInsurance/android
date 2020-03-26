@@ -14,13 +14,17 @@ import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.animateCollapse
@@ -49,7 +53,8 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -161,7 +166,8 @@ class DashboardFragment : BaseTabFragment() {
         )
         categoryView.onAnimateExpand = { handleExpandShowEntireView(categoryView) }
         category.perils?.let { perils ->
-            categoryView.expandedContent = makePerilCategoryExpandContent(perils.filterNotNull(), category)
+            categoryView.expandedContent =
+                makePerilCategoryExpandContent(perils.filterNotNull(), category)
         }
 
         return categoryView
@@ -258,6 +264,11 @@ class DashboardFragment : BaseTabFragment() {
         directDebitStatus: DirectDebitStatus,
         renewal: DashboardQuery.Renewal?
     ) {
+        val market = context?.getMarket()
+        if (market == null) {
+            startActivity(MarketPickerActivity.newInstance(requireContext()))
+        }
+
         if (directDebitStatus == DirectDebitStatus.NEEDS_SETUP) {
             infoBoxTitle.text = getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
             infoBoxText.text =
@@ -267,7 +278,13 @@ class DashboardFragment : BaseTabFragment() {
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.setupDirectDebit()
-                startActivity(TrustlyActivity.newInstance(requireContext()))
+                market?.let { market ->
+                    when (market) {
+                        Market.SE -> startActivity(TrustlyActivity.newInstance(requireContext()))
+                        Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
+                    }
+                }
+
             }
             return
         }

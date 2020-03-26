@@ -10,11 +10,15 @@ import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenActivity
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -46,6 +50,12 @@ class PaymentActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val market = getMarket()
+        if (market == null) {
+            startActivity(MarketPickerActivity.newInstance(this))
+        }
+
+
         setContentView(R.layout.activity_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
             onBackPressed()
@@ -58,11 +68,21 @@ class PaymentActivity : BaseActivity() {
         }
 
         changeBankAccount.setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this))
+            market?.let { market ->
+                when (market) {
+                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
+                }
+            }
         }
 
         connectBankAccount.setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this))
+            market?.let { market ->
+                when (market) {
+                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
+                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
+                }
+            }
         }
 
         connectBankAccountWithLink.setHapticClickListener {
@@ -208,12 +228,13 @@ class PaymentActivity : BaseActivity() {
         incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
             campaignInformationTitle.text = getString(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
             campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
-            monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()?.let { amount ->
-                campaignInformationFieldOne.text = interpolateTextKey(
-                    getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
-                    "DISCOUNT" to amount
-                )
-            }
+            monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()
+                ?.let { amount ->
+                    campaignInformationFieldOne.text = interpolateTextKey(
+                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
+                        "DISCOUNT" to amount
+                    )
+                }
             campaignInformationContainer.show()
             campaignInformationSeparator.show()
         }
