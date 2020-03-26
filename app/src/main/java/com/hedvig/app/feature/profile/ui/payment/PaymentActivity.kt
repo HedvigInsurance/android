@@ -7,7 +7,6 @@ import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -336,7 +335,16 @@ class PaymentActivity : BaseActivity() {
     companion object {
         val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL YYYY")
 
-        fun isActive(contracts: List<ProfileQuery.Contract>) = contracts.any { it.status == ContractStatus.ACTIVE }
-        fun isPending(contracts: List<ProfileQuery.Contract>) = contracts.all { it.status == ContractStatus.PENDING }
+        fun isActive(contracts: List<ProfileQuery.Contract>) = contracts.any {
+            it.status.fragments.contractStatusFragment.asActiveStatus != null
+                || it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null
+                || it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
+        }
+
+        fun isPending(contracts: List<ProfileQuery.Contract>) = contracts.all {
+            it.status.fragments.contractStatusFragment.asPendingStatus != null
+                || it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null
+                || it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
+        }
     }
 }

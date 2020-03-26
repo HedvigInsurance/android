@@ -6,12 +6,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import e
@@ -50,34 +47,6 @@ class ContractAdapter(
 
         fun bind(contract: DashboardQuery.Contract, fragmentManager: FragmentManager) {
             name.text = contract.displayName
-            when (contract.status) {
-                ContractStatus.ACTIVE -> {
-                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_filled_checkmark_small), null, null, null)
-                    status.text = "Active TODO" // TODO: Translation
-                }
-                ContractStatus.PENDING -> {
-                    status.setCompoundDrawables(status.context.compatDrawable(R.drawable.ic_clock), null, null, null)
-                    if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
-                        status.text = "Inget startdatum valt" // TODO: Translation
-                    } else {
-                        contract.currentAgreement.asAgreementCore?.activeFrom?.let { activeFrom ->
-                            status.text = "Aktiveres ${activeFrom.format(FORMATTER)}" // TODO: Translation
-                        }
-                    }
-                }
-                ContractStatus.TERMINATED -> {
-                    status.setCompoundDrawables(status.context.compatDrawable(R.drawable.ic_cross), null, null, null)
-                    if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.TERMINATED) {
-                        status.text = "Avslutet" // TODO: Translation
-                    } else {
-                        contract.currentAgreement.asAgreementCore?.activeTo?.let { activeTo ->
-                            status.text = "Avslutes ${activeTo.format(FORMATTER)}" // TODO: Translation
-                        }
-                    }
-                }
-                else -> {
-                } // TODO
-            }
 
             contractInformationDescription.text = if (contract.currentAgreement.numberCoInsured == 1) {
                 contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_NO_COINSURED)

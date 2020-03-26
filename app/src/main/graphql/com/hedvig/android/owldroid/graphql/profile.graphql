@@ -12,11 +12,8 @@ query Profile {
     freeUntil
   }
   contracts {
-    status
-    currentAgreement {
-      ... on AgreementCore {
-        status
-      }
+    status {
+      ... ContractStatusFragment
     }
   }
   balance {

@@ -1,13 +1,12 @@
 package com.hedvig.app.mocks
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -50,10 +49,19 @@ class MockProfileViewModel : ProfileViewModel() {
                 ),
                 listOf(
                     ProfileQuery.Contract(
-                        status = ContractStatus.ACTIVE,
-                        currentAgreement = ProfileQuery.CurrentAgreement(
-                            asAgreementCore = ProfileQuery.AsAgreementCore(
-                                status = AgreementStatus.ACTIVE_IN_FUTURE
+                        status = ProfileQuery.Status(
+                            fragments = ProfileQuery.Status.Fragments(
+                                contractStatusFragment = ContractStatusFragment(
+                                    asPendingStatus = null,
+                                    asActiveInFutureStatus = null,
+                                    asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                                        pastInception = LocalDate.of(2020, 2, 1)
+                                    ),
+                                    asActiveInFutureAndTerminatedInFutureStatus = null,
+                                    asTerminatedInFutureStatus = null,
+                                    asTerminatedTodayStatus = null,
+                                    asTerminatedStatus = null
+                                )
                             )
                         )
                     )

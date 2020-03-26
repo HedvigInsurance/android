@@ -1,8 +1,9 @@
 query DashboardQuery($locale: Locale!) {
   contracts {
     id
-    status
-    inception
+    status {
+      ... ContractStatusFragment
+    }
     displayName
     typeOfContract
     upcomingRenewal {
@@ -11,9 +12,6 @@ query DashboardQuery($locale: Locale!) {
     }
     currentAgreement {
       ... on AgreementCore {
-        status
-        activeFrom
-        activeTo
         certificateUrl
       }
       ... on SwedishApartmentAgreement {

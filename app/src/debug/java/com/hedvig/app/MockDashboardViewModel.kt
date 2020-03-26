@@ -3,10 +3,9 @@ package com.hedvig.app
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
+import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
-import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.ContractStatus
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
@@ -37,16 +36,26 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     companion object {
         private val SWEDISH_HOUSE_CONTRACT = DashboardQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = ContractStatus.ACTIVE,
-            inception = LocalDate.of(2020, 1, 1),
+            status = DashboardQuery.Status(
+                fragments = DashboardQuery.Status.Fragments(
+                    contractStatusFragment = ContractStatusFragment(
+                        asPendingStatus = null,
+                        asActiveInFutureStatus = null,
+                        asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                            pastInception = LocalDate.of(2020, 2, 1)
+                        ),
+                        asActiveInFutureAndTerminatedInFutureStatus = null,
+                        asTerminatedInFutureStatus = null,
+                        asTerminatedTodayStatus = null,
+                        asTerminatedStatus = null
+                    )
+                )
+            ),
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_HOUSE,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
-                    status = AgreementStatus.ACTIVE,
-                    activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null,
                     certificateUrl = "https://www.example.com"
                 ),
                 asSwedishHouseAgreement = DashboardQuery.AsSwedishHouseAgreement(
@@ -95,16 +104,26 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
         )
         private val SWEDISH_APARTMENT_CONTRACT = DashboardQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = ContractStatus.ACTIVE,
-            inception = LocalDate.of(2020, 1, 1),
+            status = DashboardQuery.Status(
+                fragments = DashboardQuery.Status.Fragments(
+                    contractStatusFragment = ContractStatusFragment(
+                        asPendingStatus = null,
+                        asActiveInFutureStatus = null,
+                        asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                            pastInception = LocalDate.of(2020, 2, 1)
+                        ),
+                        asActiveInFutureAndTerminatedInFutureStatus = null,
+                        asTerminatedInFutureStatus = null,
+                        asTerminatedTodayStatus = null,
+                        asTerminatedStatus = null
+                    )
+                )
+            ),
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
-                    status = AgreementStatus.ACTIVE,
-                    activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null,
                     certificateUrl = "https://www.example.com"
                 ),
                 asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
@@ -210,16 +229,26 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
         )
         private val NORWEGIAN_HOME_CONTENTS_CONTRACT = DashboardQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = ContractStatus.ACTIVE,
-            inception = LocalDate.of(2020, 1, 1),
+            status = DashboardQuery.Status(
+                fragments = DashboardQuery.Status.Fragments(
+                    contractStatusFragment = ContractStatusFragment(
+                        asPendingStatus = null,
+                        asActiveInFutureStatus = null,
+                        asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                            pastInception = LocalDate.of(2020, 2, 1)
+                        ),
+                        asActiveInFutureAndTerminatedInFutureStatus = null,
+                        asTerminatedInFutureStatus = null,
+                        asTerminatedTodayStatus = null,
+                        asTerminatedStatus = null
+                    )
+                )
+            ),
             displayName = "Innboforsikring",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_RENT,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
-                    status = AgreementStatus.ACTIVE,
-                    activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null,
                     certificateUrl = "https://www.example.com"
                 ),
                 asNorwegianHomeContentAgreement = DashboardQuery.AsNorwegianHomeContentAgreement(
@@ -270,16 +299,26 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
 
         private val NORWEGIAN_TRAVEL_CONTRACT = DashboardQuery.Contract(
             id = "eaaf8b5c-5a61-44a9-91bc-3de5b6bf878e",
-            status = ContractStatus.ACTIVE,
-            inception = LocalDate.of(2020, 1, 1),
+            status = DashboardQuery.Status(
+                fragments = DashboardQuery.Status.Fragments(
+                    contractStatusFragment = ContractStatusFragment(
+                        asPendingStatus = null,
+                        asActiveInFutureStatus = null,
+                        asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                            pastInception = LocalDate.of(2020, 2, 1)
+                        ),
+                        asActiveInFutureAndTerminatedInFutureStatus = null,
+                        asTerminatedInFutureStatus = null,
+                        asTerminatedTodayStatus = null,
+                        asTerminatedStatus = null
+                    )
+                )
+            ),
             displayName = "Reiseforsikring",
             typeOfContract = TypeOfContract.NO_TRAVEL,
             upcomingRenewal = null,
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
-                    status = AgreementStatus.ACTIVE,
-                    activeFrom = LocalDate.of(2020, 1, 1),
-                    activeTo = null,
                     certificateUrl = "https://www.example.com"
                 ),
                 asNorwegianHomeContentAgreement = null,
