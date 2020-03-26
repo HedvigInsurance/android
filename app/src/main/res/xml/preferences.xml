@@ -22,7 +22,7 @@
             app:entries="@array/market_settings"
             app:entryValues="@array/market_settings_values"
             app:key="market"
-            app:title="Market"
+            app:title="@string/SETTINGS_PAGE_MARKET"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
