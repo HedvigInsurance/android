@@ -1,5 +1,10 @@
 mutation TokenizePaymentDetails($paymentsRequest: PaymentsRequest!) {
   tokenizePaymentDetails(req: { paymentsRequest: $paymentsRequest }) {
-    paymentsResponse
+    ... on TokenizationResponseFinished {
+      resultCode
+    }
+    ... on TokenizationResponseAction {
+      action
+    }
   }
 }

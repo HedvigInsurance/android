@@ -1,5 +1,9 @@
-mutation SubmitAdditionalPaymentDetails($paymentsRequest: PaymentsRequest!) {
-  submitAdditionalPaymentDetails(req: { paymentsRequest: $paymentsRequest }) {
+mutation SubmitAdditionalPaymentDetails(
+  $paymentsDetailsRequest: PaymentsDetailsRequest!
+) {
+  submitAdditionalPaymentDetails(
+    req: { paymentsDetailsRequest: $paymentsDetailsRequest }
+  ) {
     paymentsResponse
   }
 }

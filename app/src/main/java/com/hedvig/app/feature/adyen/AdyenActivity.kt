@@ -37,6 +37,10 @@ class AdyenActivity : BaseActivity(R.layout.activity_adyen) {
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+    }
+
     companion object {
         fun newInstance(context: Context) = Intent(context, AdyenActivity::class.java)
     }

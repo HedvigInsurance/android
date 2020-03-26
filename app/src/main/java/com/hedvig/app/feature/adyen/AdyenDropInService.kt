@@ -45,8 +45,15 @@ class AdyenDropInService : DropInService(), CoroutineScope {
                 .await()
         }
 
-        if (response.isFailure) {
-            return@runBlocking CallResult(CallResult.ResultType.ERROR, "Network error")
+        val result = response.getOrNull()?.data()?.tokenizePaymentDetails
+            ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+
+        result.asTokenizationResponseAction?.action?.let { action ->
+            return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
+        }
+
+        result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
+            return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
         }
 
         CallResult(CallResult.ResultType.ERROR, "Unknown error")
