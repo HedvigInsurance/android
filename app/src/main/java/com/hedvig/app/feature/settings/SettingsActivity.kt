@@ -71,10 +71,11 @@ class SettingsActivity : BaseActivity() {
                 val oldValue = mp.value
                 mp.setOnPreferenceChangeListener { _, newValue ->
                     if (oldValue != newValue) {
-                        //TODO real text for dialog
                         requireContext().showAlert(
-                            R.string.alert_title,
-                            R.string.alert_message,
+                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
+                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
+                            positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
+                            negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                             positiveAction = {
                                 sharedPreferences.edit()
                                     .putString(
