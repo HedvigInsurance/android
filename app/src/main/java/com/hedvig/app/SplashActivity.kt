@@ -9,7 +9,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
@@ -64,7 +64,7 @@ class SplashActivity : BaseActivity() {
         startActivities(
             arrayOf(
                 Intent(this, LoggedInActivity::class.java),
-                Intent(this, TrustlyActivity::class.java)
+                Intent(this, ConnectPaymentActivity::class.java)
             )
         )
     }

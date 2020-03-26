@@ -7,8 +7,7 @@ import org.json.JSONObject
 
 class MockAdyenViewModel : AdyenViewModel() {
     override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
-
-    init {
+    override fun loadPaymentMethods() {
         paymentMethods.postValue(PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject("""{
   "groups": [
     {

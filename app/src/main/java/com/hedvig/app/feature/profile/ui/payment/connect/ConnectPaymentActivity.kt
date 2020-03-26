@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.profile.ui.payment
+package com.hedvig.app.feature.profile.ui.payment.connect
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,10 +9,22 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.adyen.checkout.card.CardConfiguration
+import com.adyen.checkout.core.api.Environment
+import com.adyen.checkout.dropin.DropIn
+import com.adyen.checkout.dropin.DropInConfiguration
+import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenDropInService
+import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.payment.TrustlyJavascriptInterface
+import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
+import com.hedvig.app.feature.profile.ui.payment.TrustlyWebChromeClient
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.fadeIn
@@ -21,24 +33,43 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.viewmodel.DirectDebitViewModel
+import e
 import kotlinx.android.synthetic.main.activity_trustly.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class TrustlyActivity : BaseActivity() {
+class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
 
     private val profileViewModel: ProfileViewModel by viewModel()
     private val directDebitViewModel: DirectDebitViewModel by viewModel()
+    private val adyenViewModel: AdyenViewModel by viewModel()
 
     private val tracker: TrustlyTracker by inject()
     private var hasSuccessfullyConnectedDirectDebit = false
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trustly)
 
+        val market = getMarket()
+        if (market == null) {
+            e { "Programmer error: ${this.javaClass.name} accessed without a Market selected" }
+            return
+        }
+
+        when (market) {
+            Market.SE -> initializeSweden()
+            Market.NO -> initializeNorway()
+        }
+
+        notNow.setHapticClickListener {
+            tracker.notNow()
+            showConfirmCloseDialog()
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun initializeSweden() {
         trustlyContainer.settings.apply {
             javaScriptEnabled = true
             loadWithOverviewMode = true
@@ -51,11 +82,6 @@ class TrustlyActivity : BaseActivity() {
             TrustlyJavascriptInterface(this),
             TrustlyJavascriptInterface.NAME
         )
-
-        notNow.setHapticClickListener {
-            tracker.notNow()
-            showConfirmCloseDialog()
-        }
 
         if (isPostSignDD()) {
             loadingSpinner.remove()
@@ -70,6 +96,45 @@ class TrustlyActivity : BaseActivity() {
             }
         }
         loadUrl()
+    }
+
+    private fun initializeNorway() {
+        val cardConfig = CardConfiguration.Builder(this, "SECRET")
+            .build()
+
+        val googlePayConfig = GooglePayConfiguration.Builder(this, "SECRET").build()
+        val dropInConfiguration = DropInConfiguration
+            .Builder(this, newInstance(this, isPostSignDD()), AdyenDropInService::class.java)
+            .addCardConfiguration(cardConfig)
+            .addGooglePayConfiguration(googlePayConfig)
+            .setEnvironment(Environment.TEST)
+            .build()
+
+        if (isPostSignDD()) {
+            loadingSpinner.remove()
+            explainerScreen.show()
+            explainerButton.setHapticClickListener {
+                tracker.explainerConnect()
+                explainerScreen.fadeOut({
+                    toolbar.show()
+                    loadingSpinner.show()
+                    adyenViewModel.loadPaymentMethods()
+                }, true)
+            }
+        }
+
+        adyenViewModel.paymentMethods.observe(this) { methods ->
+            methods?.let { m ->
+                DropIn.startPayment(this, m, dropInConfiguration)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.getStringExtra(DropIn.RESULT_KEY) == "Authorised") {
+            showSuccess()
+        }
     }
 
     override fun onDestroy() {
@@ -202,8 +267,10 @@ class TrustlyActivity : BaseActivity() {
     companion object {
         private const val WITH_EXPLAINER = "with_explainer"
 
+        private const val ADYEN_RESULT_CODE_AUTHORISED = "Authorised"
+
         fun newInstance(context: Context, withExplainer: Boolean = false) =
-            Intent(context, TrustlyActivity::class.java).apply {
+            Intent(context, ConnectPaymentActivity::class.java).apply {
                 putExtra(WITH_EXPLAINER, withExplainer)
             }
     }

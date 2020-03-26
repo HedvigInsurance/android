@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 
 abstract class AdyenViewModel : ViewModel() {
     abstract val paymentMethods: LiveData<PaymentMethodsApiResponse>
+
+    abstract fun loadPaymentMethods()
 }
 
 class AdyenViewModelImpl(
@@ -17,7 +19,7 @@ class AdyenViewModelImpl(
 ) : AdyenViewModel() {
     override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
 
-    init {
+    override fun loadPaymentMethods() {
         viewModelScope.launch {
             val response = kotlin.runCatching {
                 adyenRepository

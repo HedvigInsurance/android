@@ -14,10 +14,9 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.observe
@@ -131,17 +130,10 @@ class OfferSignDialog : DialogFragment() {
         }
 
         handler.postDelayed({
-            market?.let { market ->
-                when (market) {
-                    Market.SE -> {
-                        startActivity(TrustlyActivity.newInstance(requireContext(), true).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        })
-                    }
-                    Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
-                }
-            }
+            startActivity(ConnectPaymentActivity.newInstance(requireContext(), true).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            })
 
         }, 1000)
     }

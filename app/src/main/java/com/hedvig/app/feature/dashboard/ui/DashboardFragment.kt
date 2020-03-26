@@ -15,12 +15,11 @@ import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
@@ -53,8 +52,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.util.Calendar
-import java.util.GregorianCalendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -279,13 +277,7 @@ class DashboardFragment : BaseTabFragment() {
             infoBox.show()
             infoBoxButton.setHapticClickListener {
                 tracker.setupDirectDebit()
-                market?.let { market ->
-                    when (market) {
-                        Market.SE -> startActivity(TrustlyActivity.newInstance(requireContext()))
-                        Market.NO -> startActivity(AdyenActivity.newInstance(requireContext()))
-                    }
-                }
-
+                startActivity(ConnectPaymentActivity.newInstance(requireContext()))
             }
             return
         }
