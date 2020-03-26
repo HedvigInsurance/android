@@ -304,18 +304,14 @@ class MarketingActivity : BaseActivity() {
                 marketingStoriesViewModel.page.value,
                 marketingStoriesViewModel.blurred.value
             )
-            if (market == null) {
-                startActivity(MarketPickerActivity.newInstance(this))
-            } else {
-                when (market) {
-                    Market.SE -> {
-                        val intent = Intent(this, ChatActivity::class.java)
-                        intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-                        startActivity(intent)
-                    }
-                    Market.NO -> {
-                        startActivity(WebOnboardingActivity.newInstance(this))
-                    }
+            when (market) {
+                Market.SE -> {
+                    val intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
+                    startActivity(intent)
+                }
+                Market.NO -> {
+                    startActivity(WebOnboardingActivity.newInstance(this))
                 }
             }
         }
