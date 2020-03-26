@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="?materialButtonContainedLargeStyle"
+    android:backgroundTint="@color/semi_light_gray"
+    android:layout_marginTop="@dimen/base_margin"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:padding="@dimen/base_margin_double"
+    tools:translationY="0dp" />

@@ -69,7 +69,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                     }
                     factAreaBinder.bind(completeQuote)
-                    termsBinder.bind(data.insurance, completeQuote)
                 }
             }
         }
@@ -78,7 +77,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             /* Bind perils */
 
             /* Bind terms */
-
+            it?.let { data ->
+                termsBinder.bind(data)
+            }
             container.show()
             loadingSpinner.remove()
             setupButtons()
