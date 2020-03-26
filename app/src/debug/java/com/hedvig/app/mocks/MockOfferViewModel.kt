@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.DevelopmentActivity
@@ -48,49 +49,10 @@ class MockOfferViewModel(
 
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
-            OfferQuery.Insurance(
+            insurance = OfferQuery.Insurance(
                 status = InsuranceStatus.PENDING,
-                address = "Testvägen 1",
-                personsInHousehold = 2,
-                previousInsurer = OfferQuery.PreviousInsurer(
-                    displayName = "Folksam",
-                    switchable = true
-                ),
-                livingSpace = 42,
-                type = InsuranceType.BRF,
                 presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
-                policyUrl = "http://www.africau.edu/images/default/sample.pdf",
-                ancillaryArea = null,
-                yearOfConstruction = null,
-                numberOfBathrooms = null,
-                extraBuildings = null,
-                isSubleted = null,
-                arrangedPerilCategories = OfferQuery.ArrangedPerilCategories(
-                    me = null,
-                    home = null,
-                    stuff = null
-                ),
-                cost = OfferQuery.Cost(
-                    "InsuranceCost",
-                    OfferQuery.Cost.Fragments(
-                        CostFragment(
-                            "InsuranceCost",
-                            CostFragment.MonthlyDiscount(
-                                "MonetaryAmountV2",
-                                "50.0"
-                            ),
-                            CostFragment.MonthlyNet(
-                                "MonetaryAmountV2",
-                                "50.0"
-                            ),
-                            CostFragment.MonthlyGross(
-                                "MonetaryAmountV2",
-                                "100.0"
-                            )
-                        )
-                    )
-
-                )
+                policyUrl = "http://www.africau.edu/images/default/sample.pdf"
             ),
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
@@ -102,7 +64,8 @@ class MockOfferViewModel(
                                     pdmQuantity = 3
                                 ),
                                 asFreeMonths = null,
-                                asMonthlyCostDeduction = null
+                                asMonthlyCostDeduction = null,
+                                asNoDiscount = null
                             )
                         )
                     )
@@ -113,44 +76,109 @@ class MockOfferViewModel(
                     startDate = LocalDate.of(2020, 2, 1),
                     id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                     currentInsurer = OfferQuery.CurrentInsurer(
-                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                        displayName = "Folksam",
+                        switchable = true
+                    ),
+                    quoteDetails = OfferQuery.QuoteDetails(
+                        asSwedishApartmentQuoteDetails = OfferQuery.AsSwedishApartmentQuoteDetails(
+                            type = ApartmentType.BRF,
+                            street = "Testvägen 1",
+                            zipCode = "12345",
+                            householdSize = 2,
+                            livingSpace = 42
+                        ),
+                        asSwedishHouseQuoteDetails = null
+                    ),
+                    insuranceCost = OfferQuery.InsuranceCost(
+                        "InsuranceCost",
+                        OfferQuery.InsuranceCost.Fragments(
+                            CostFragment(
+                                "InsuranceCost",
+                                CostFragment.MonthlyDiscount(
+                                    "MonetaryAmountV2",
+                                    "50.0"
+                                ),
+                                CostFragment.MonthlyNet(
+                                    "MonetaryAmountV2",
+                                    "50.0"
+                                ),
+                                CostFragment.MonthlyGross(
+                                    "MonetaryAmountV2",
+                                    "100.0"
+                                )
+                            )
+                        )
                     )
                 )
             )
         )
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
-            OfferQuery.Insurance(
+            insurance = OfferQuery.Insurance(
                 status = InsuranceStatus.PENDING,
-                address = "Testvägen 1",
-                personsInHousehold = 2,
-                previousInsurer = OfferQuery.PreviousInsurer(
-                    displayName = "Folksam",
-                    switchable = true
-                ),
-                livingSpace = 42,
-                type = InsuranceType.HOUSE,
                 presaleInformationUrl = "http://www.africau.edu/images/default/sample.pdf",
-                policyUrl = "http://www.africau.edu/images/default/sample.pdf",
-                ancillaryArea = 30,
-                yearOfConstruction = 1992,
-                numberOfBathrooms = 2,
-                extraBuildings = emptyList(),
-                isSubleted = true,
-                arrangedPerilCategories = OfferQuery.ArrangedPerilCategories(
-                    me = null,
-                    home = null,
-                    stuff = null
-                ),
-                cost = null
+                policyUrl = "http://www.africau.edu/images/default/sample.pdf"
             ),
-            emptyList(),
-            OfferQuery.LastQuoteOfMember(
+            redeemedCampaigns = listOf(
+                OfferQuery.RedeemedCampaign(
+                    fragments = OfferQuery.RedeemedCampaign.Fragments(
+                        IncentiveFragment(
+                            incentive = IncentiveFragment.Incentive(
+                                asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
+                                    percentageDiscount = 50.0,
+                                    pdmQuantity = 3
+                                ),
+                                asFreeMonths = null,
+                                asMonthlyCostDeduction = null,
+                                asNoDiscount = null
+                            )
+                        )
+                    )
+                )
+            ),
+            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
                 asCompleteQuote = OfferQuery.AsCompleteQuote(
                     startDate = LocalDate.of(2020, 2, 1),
                     id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                     currentInsurer = OfferQuery.CurrentInsurer(
-                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
+                        displayName = "Folksam",
+                        switchable = true
+                    ),
+                    quoteDetails = OfferQuery.QuoteDetails(
+                        asSwedishApartmentQuoteDetails = null,
+                        asSwedishHouseQuoteDetails = OfferQuery.AsSwedishHouseQuoteDetails(
+                            street = "Testvägen 1",
+                            zipCode = "12345",
+                            householdSize = 2,
+                            livingSpace = 42,
+                            ancillarySpace = 30,
+                            yearOfConstruction = 1992,
+                            numberOfBathrooms = 2,
+                            isSubleted = true,
+                            extraBuildings = emptyList()
+                        )
+                    ),
+                    insuranceCost = OfferQuery.InsuranceCost(
+                        "InsuranceCost",
+                        OfferQuery.InsuranceCost.Fragments(
+                            CostFragment(
+                                "InsuranceCost",
+                                CostFragment.MonthlyDiscount(
+                                    "MonetaryAmountV2",
+                                    "50.0"
+                                ),
+                                CostFragment.MonthlyNet(
+                                    "MonetaryAmountV2",
+                                    "50.0"
+                                ),
+                                CostFragment.MonthlyGross(
+                                    "MonetaryAmountV2",
+                                    "100.0"
+                                )
+                            )
+                        )
                     )
                 )
             )

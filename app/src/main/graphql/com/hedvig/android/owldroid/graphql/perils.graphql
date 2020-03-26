@@ -1,0 +1,21 @@
+query Perils(
+  $contractType: TypeOfContract!,
+  $locale: Locale!
+) {
+  perils(
+    contractType : $contractType
+    locale:  $locale
+  ) {
+    title
+    description
+    covered
+    exceptions
+    info
+    icon {
+      variants {
+        dark {svgUrl}
+        light {svgUrl}
+      }
+    }
+  }
+}

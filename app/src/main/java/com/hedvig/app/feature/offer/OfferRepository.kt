@@ -36,13 +36,16 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val newCost = cachedData.insurance.cost?.copy(
-            fragments = OfferQuery.Cost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
+            return
+
+        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
-                insurance = cachedData.insurance.copy(cost = newCost),
+                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(insuranceCost = newCost)),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
                         fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -70,7 +73,10 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val oldCostFragment = cachedData.insurance.cost?.fragments?.costFragment ?: return
+        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
+            return
+
+        val oldCostFragment = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -83,9 +89,11 @@ class OfferRepository(
 
         val newData = cachedData
             .copy(
-                insurance = cachedData.insurance.copy(
-                    cost = cachedData.insurance.cost.copy(
-                        fragments = OfferQuery.Cost.Fragments(costFragment = newCostFragment)
+                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+                            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
+                        )
                     )
                 ),
                 redeemedCampaigns = emptyList()

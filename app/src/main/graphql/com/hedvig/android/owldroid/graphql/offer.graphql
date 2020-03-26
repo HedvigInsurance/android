@@ -1,43 +1,8 @@
 query Offer {
   insurance {
     status
-    address
-    personsInHousehold
-    previousInsurer {
-      displayName
-      switchable
-    }
-    livingSpace
-    type
     presaleInformationUrl
     policyUrl
-    ancillaryArea
-    yearOfConstruction
-    numberOfBathrooms
-    extraBuildings {
-      ... on ExtraBuildingCore {
-        area
-        displayName
-        hasWaterConnected
-      }
-    }
-    isSubleted
-
-    arrangedPerilCategories {
-      me {
-        ... PerilCategoryFragment
-      }
-      home {
-        ... PerilCategoryFragment
-      }
-      stuff {
-        ... PerilCategoryFragment
-      }
-    }
-
-    cost {
-      ... CostFragment
-    }
   }
 
   redeemedCampaigns {
@@ -50,6 +15,37 @@ query Offer {
       id
       currentInsurer{
         id
+        displayName
+        switchable
+      }
+      quoteDetails {
+        ... on SwedishApartmentQuoteDetails {
+          type
+          street
+          zipCode
+          householdSize
+          livingSpace
+        }
+        ... on SwedishHouseQuoteDetails {
+          ancillarySpace
+          street
+          zipCode
+          householdSize
+          livingSpace
+          yearOfConstruction
+          isSubleted
+          numberOfBathrooms
+          extraBuildings {
+            ... on ExtraBuildingCore {
+              displayName
+              area
+              hasWaterConnected
+            }
+          }
+        }
+      }
+      insuranceCost {
+        ... CostFragment
       }
     }
   }

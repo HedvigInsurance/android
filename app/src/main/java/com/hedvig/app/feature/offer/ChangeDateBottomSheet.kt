@@ -39,25 +39,25 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             d?.let { data ->
                 lateinit var buttonText: String
                 data.lastQuoteOfMember.asCompleteQuote?.id?.let { id ->
-                    if (data.insurance.previousInsurer != null) {
-                        dialog.chooseDateButton.setOnClickListener {
-                            requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
-                                R.string.ALERT_DESCRIPTION_STARTDATE,
-                                R.string.ALERT_CONTINUE,
-                                R.string.ALERT_CANCEL,
-                                {
-                                    tracker.changeDateContinue()
-                                    offerViewModel.chooseStartDate(id, localDate)
-                                    dialog.hide()
-                                })
-                        }
-                    } else {
-                        dialog.chooseDateButton.setOnClickListener {
-                            tracker.chooseDate()
-                            offerViewModel.chooseStartDate(id, localDate)
-                            dialog.hide()
-                        }
-                    }
+//                    if (data.lastQuoteOfMember.asCompleteQuote?.quoteDetails?. != null) {
+//                        dialog.chooseDateButton.setOnClickListener {
+//                            requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
+//                                R.string.ALERT_DESCRIPTION_STARTDATE,
+//                                R.string.ALERT_CONTINUE,
+//                                R.string.ALERT_CANCEL,
+//                                {
+//                                    tracker.changeDateContinue()
+//                                    offerViewModel.chooseStartDate(id, localDate)
+//                                    dialog.hide()
+//                                })
+//                        }
+//                    } else {
+//                        dialog.chooseDateButton.setOnClickListener {
+//                            tracker.chooseDate()
+//                            offerViewModel.chooseStartDate(id, localDate)
+//                            dialog.hide()
+//                        }
+//                    }
                     if (data.lastQuoteOfMember.asCompleteQuote.currentInsurer == null) {
                         tracker.activateToday()
                         buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
