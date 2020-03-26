@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.AppBarLayout
 import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
@@ -25,6 +24,7 @@ import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.displayMetrics
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.animateCollapse
@@ -264,8 +264,7 @@ class DashboardFragment : BaseTabFragment() {
         directDebitStatus: DirectDebitStatus,
         renewal: DashboardQuery.Renewal?
     ) {
-        val pref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        val market = context?.getMarket()
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(requireContext()))
         }

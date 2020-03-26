@@ -89,29 +89,29 @@ class SplashActivity : BaseActivity() {
     @SuppressLint("ApplySharedPref")
     private fun startDefaultActivity(loginStatus: LoginStatus?) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val marketOrdinal = sharedPreferences.getInt(Market.MARKET_SHARED_PREF, -1)
+        val marketOrdinal = sharedPreferences.getString(Market.MARKET_SHARED_PREF, null)
         when (loginStatus) {
             LoginStatus.ONBOARDING -> startActivity(MarketPickerActivity.newInstance(this))
             LoginStatus.IN_OFFER -> {
-                if (marketOrdinal == -1) {
+                if (marketOrdinal == null) {
                     sharedPreferences.edit()
-                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
                 startActivity(Intent(this, OfferActivity::class.java))
             }
             LoginStatus.LOGGED_IN -> {
-                if (marketOrdinal == -1) {
+                if (marketOrdinal == null) {
                     sharedPreferences.edit()
-                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
                 startActivity(Intent(this, LoggedInActivity::class.java))
             }
             LoginStatus.LOGGED_IN_TERMINATED -> {
-                if (marketOrdinal == -1) {
+                if (marketOrdinal == null) {
                     sharedPreferences.edit()
-                        .putInt(Market.MARKET_SHARED_PREF, Market.SE.ordinal)
+                        .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
                 startActivity(

@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
-import androidx.preference.PreferenceManager
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.InsuranceStatus
@@ -19,6 +18,7 @@ import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupLargeTitle
@@ -50,8 +50,7 @@ class PaymentActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val market = Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+        val market = getMarket()
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
         }
