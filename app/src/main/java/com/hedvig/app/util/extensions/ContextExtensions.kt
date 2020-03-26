@@ -91,7 +91,8 @@ fun Context.isLoggedIn(): Boolean =
 
 fun Context.getMarket(): Market? {
     val pref = PreferenceManager.getDefaultSharedPreferences(this)
-    return Market.values().getOrNull(pref.getInt(Market.MARKET_SHARED_PREF, -1))
+    val marketName = pref.getString(Market.MARKET_SHARED_PREF, null)
+    return marketName?.let { Market.valueOf(it) }
 }
 
 private fun Context.getSharedPreferences() =
