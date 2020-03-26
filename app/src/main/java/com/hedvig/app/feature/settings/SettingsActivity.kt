@@ -71,7 +71,6 @@ class SettingsActivity : BaseActivity() {
                 val oldValue = mp.value
                 mp.setOnPreferenceChangeListener { _, newValue ->
                     if (oldValue != newValue) {
-                        //TODO real text for dialog
                         requireContext().showAlert(
                             R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
                             R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
