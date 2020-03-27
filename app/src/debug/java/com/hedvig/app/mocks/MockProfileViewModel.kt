@@ -1,13 +1,14 @@
 package com.hedvig.app.mocks
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.android.owldroid.type.InsuranceStatus
-import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
 import org.threeten.bp.LocalDate
@@ -17,6 +18,7 @@ class MockProfileViewModel : ProfileViewModel() {
         MutableLiveData<ProfileQuery.Data>()
     override val dirty = MutableLiveData<Boolean>()
     override val trustlyUrl = LiveEvent<String>()
+    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
 
     init {
         data.postValue(
@@ -29,35 +31,40 @@ class MockProfileViewModel : ProfileViewModel() {
                     phoneNumber = "07012334567",
                     features = listOf(Feature.KEYGEAR)
                 ),
-                ProfileQuery.Insurance(
-                    address = "Testvägen 1",
-                    postalNumber = "12345",
-                    type = InsuranceType.BRF,
-                    status = InsuranceStatus.ACTIVE,
-                    certificateUrl = "http://www.africau.edu/images/default/sample.pdf",
-                    personsInHousehold = 2,
-                    livingSpace = 50,
-                    ancillaryArea = null,
-                    yearOfConstruction = null,
-                    numberOfBathrooms = null,
-                    cost = ProfileQuery.Cost(
-                        freeUntil = LocalDate.of(2019, 11, 27),
-                        fragments = ProfileQuery.Cost.Fragments(
-                            CostFragment(
-                                monthlyDiscount = CostFragment.MonthlyDiscount(
-                                    amount = "10.00"
-                                ),
-                                monthlyNet = CostFragment.MonthlyNet(
-                                    amount = "119.00"
-                                ),
-                                monthlyGross = CostFragment.MonthlyGross(
-                                    amount = "129.00"
+                ProfileQuery.InsuranceCost(
+                    freeUntil = null,
+                    fragments = ProfileQuery.InsuranceCost.Fragments(
+                        CostFragment(
+                            monthlyDiscount = CostFragment.MonthlyDiscount(
+                                amount = "10.00"
+                            ),
+                            monthlyNet = CostFragment.MonthlyNet(
+                                amount = "99.00"
+                            ),
+                            monthlyGross = CostFragment.MonthlyGross(
+                                amount = "109.00"
+                            )
+                        )
+                    )
+                ),
+                listOf(
+                    ProfileQuery.Contract(
+                        status = ProfileQuery.Status(
+                            fragments = ProfileQuery.Status.Fragments(
+                                contractStatusFragment = ContractStatusFragment(
+                                    asPendingStatus = null,
+                                    asActiveInFutureStatus = null,
+                                    asActiveStatus = ContractStatusFragment.AsActiveStatus(
+                                        pastInception = LocalDate.of(2020, 2, 1)
+                                    ),
+                                    asActiveInFutureAndTerminatedInFutureStatus = null,
+                                    asTerminatedInFutureStatus = null,
+                                    asTerminatedTodayStatus = null,
+                                    asTerminatedStatus = null
                                 )
                             )
                         )
-                    ),
-                    extraBuildings = null,
-                    isSubleted = null
+                    )
                 ),
                 balance = ProfileQuery.Balance(
                     failedCharges = 3
@@ -153,6 +160,8 @@ class MockProfileViewModel : ProfileViewModel() {
                 )
             )
         )
+
+        directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
 
     override fun selectCashback(id: String) = Unit

@@ -4,11 +4,9 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
@@ -78,23 +76,20 @@ class ClaimsFragment : BaseTabFragment() {
         loadingSpinner.remove()
         claimsViewContent.show()
 
-        when (commonClaimsData.insurance.status) {
-            InsuranceStatus.ACTIVE -> {
-                claimsIllustration.show()
-                insuranceInactiveMessage.remove()
-                commonClaimCreateClaimButton.enable()
-                commonClaimCreateClaimButton.setHapticClickListener {
-                    tracker.createClaimClick("main_screen")
-                    HonestyPledgeBottomSheet
-                        .newInstance("main_screen")
-                        .show(childFragmentManager, "honestyPledge")
-                }
+        if (commonClaimsData.isEligibleToCreateClaim) {
+            claimsIllustration.show()
+            insuranceInactiveMessage.remove()
+            commonClaimCreateClaimButton.enable()
+            commonClaimCreateClaimButton.setHapticClickListener {
+                tracker.createClaimClick("main_screen")
+                HonestyPledgeBottomSheet
+                    .newInstance("main_screen")
+                    .show(childFragmentManager, "honestyPledge")
             }
-            else -> {
-                claimsIllustration.remove()
-                insuranceInactiveMessage.show()
-                commonClaimCreateClaimButton.disable()
-            }
+        } else {
+            claimsIllustration.remove()
+            insuranceInactiveMessage.show()
+            commonClaimCreateClaimButton.disable()
         }
 
         // setup common claims
@@ -104,12 +99,12 @@ class ClaimsFragment : BaseTabFragment() {
                 baseUrl = BuildConfig.BASE_URL,
                 requestBuilder = requestBuilder,
                 navigateToCommonClaimFragment = { commonClaim ->
-                    CommonClaimsData.from(commonClaim, commonClaimsData.insurance.status)?.let { ccd ->
+                    CommonClaimsData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)?.let { ccd ->
                         startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
                     }
                 },
                 navigateToEmergencyFragment = { commonClaim ->
-                    EmergencyData.from(commonClaim, commonClaimsData.insurance.status)?.let { ed ->
+                    EmergencyData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)?.let { ed ->
                         startActivity(EmergencyActivity.newInstance(requireContext(), ed))
                     }
                 }

@@ -458,6 +458,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     companion object {
+        fun newInstance(context: Context) = Intent(context, ChatActivity::class.java)
+
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
         private const val REQUEST_AUDIO_PERMISSION = 12994
