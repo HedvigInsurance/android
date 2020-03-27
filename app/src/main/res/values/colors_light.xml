@@ -25,4 +25,9 @@
     <item name="colorChatUserBackground" type="color">@color/hedvig_light_gray</item>
     <item name="colorChatHedvigBackground" type="color">@color/white</item>
     <item name="colorChatInputButton" type="color">@color/hedvig_light_gray</item>
+
+
+    <!-- Compatibility with Adyen -->
+    <item name="primaryColor" type="color">@color/colorPrimary</item>
+    <item name="textColor" type="color">@color/textColorPrimary</item>
 </resources>
