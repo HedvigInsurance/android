@@ -23,8 +23,9 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:drawablePadding="@dimen/base_margin"
+        android:gravity="center_vertical"
         android:textAppearance="?textAppearanceBody1"
-        tools:drawableStart="@drawable/ic_filled_checkmark_small"
+        tools:drawableStart="@drawable/ic_active"
         tools:text="Aktiv" />
 
     <com.hedvig.app.ui.view.HedvigCardView
@@ -51,8 +52,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_houses"
-                tools:tint="@color/black" />
+                app:srcCompat="@drawable/ic_houses" />
 
             <TextView
                 android:id="@+id/contractInformationTitle"

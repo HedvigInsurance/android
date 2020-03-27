@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.interpolateTextKey
 import e
@@ -46,6 +47,44 @@ class ContractAdapter(
         private val documentsCard = itemView.documentsCard
 
         fun bind(contract: DashboardQuery.Contract, fragmentManager: FragmentManager) {
+            contract.status.fragments.contractStatusFragment.let { contractStatus ->
+                contractStatus.asPendingStatus?.let { status.text = status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE) }
+                contractStatus.asActiveInFutureStatus?.let { activeInFuture ->
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_inactive), null, null, null)
+                    status.text = interpolateTextKey(
+                        status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE),
+                        "ACTIVATION_DATE" to dateTimeFormatter.format(activeInFuture.futureInception)
+                    )
+                }
+                contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_inactive), null, null, null)
+                    status.text = interpolateTextKey(
+                        status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE),
+                        "ACTIVATION_DATE" to activeAndTerminated.futureInception,
+                        "TERMINATION_DATE" to dateTimeFormatter.format(activeAndTerminated.futureTermination)
+                    )
+                }
+                contractStatus.asActiveStatus?.let {
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_active), null, null, null)
+                    status.text = status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+                }
+                contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_termination_in_future), null, null, null)
+                    status.text = interpolateTextKey(
+                        status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE),
+                        "TERMINATION_DATE" to dateTimeFormatter.format(terminatedInFuture.futureTermination)
+                    )
+                }
+                contractStatus.asTerminatedTodayStatus?.let {
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_termination_in_future), null, null, null)
+                    status.text = status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
+                }
+                contractStatus.asTerminatedStatus?.let {
+                    status.setCompoundDrawablesRelativeWithIntrinsicBounds(status.context.compatDrawable(R.drawable.ic_terminated), null, null, null)
+                    status.text = status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
+                }
+            }
+
             name.text = contract.displayName
 
             contractInformationDescription.text = if (contract.currentAgreement.numberCoInsured == 1) {
@@ -74,6 +113,8 @@ class ContractAdapter(
     }
 
     companion object {
+        private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MM dd")
+
         private val DashboardQuery.CurrentAgreement.numberCoInsured: Int
             get() {
                 asNorwegianTravelAgreement?.numberCoInsured?.let { return it }
@@ -83,7 +124,6 @@ class ContractAdapter(
                 e { "Unable to infer amount coinsured for agreement: $this" }
                 return 0
             }
-        private val FORMATTER = DateTimeFormatter.ofPattern("dd, LLL YYYY")
     }
 }
 
