@@ -1,9 +1,10 @@
-package com.hedvig.app
+package com.hedvig.app.feature.dashboard.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*

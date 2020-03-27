@@ -7,8 +7,6 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
-import com.hedvig.app.UpsellAdapter
-import com.hedvig.app.UpsellModel
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.observe
