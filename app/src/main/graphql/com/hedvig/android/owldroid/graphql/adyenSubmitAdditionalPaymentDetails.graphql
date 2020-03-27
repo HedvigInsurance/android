@@ -4,6 +4,11 @@ mutation SubmitAdditionalPaymentDetails(
   submitAdditionalPaymentDetails(
     req: { paymentsDetailsRequest: $paymentsDetailsRequest }
   ) {
-    paymentsResponse
+    ... on AdditionalPaymentsDetailsResponseAction {
+      action
+    }
+    ... on AdditionalPaymentsDetailsResponseFinished {
+      resultCode
+    }
   }
 }

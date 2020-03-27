@@ -22,7 +22,6 @@ class AdyenDropInService : DropInService(), CoroutineScope {
         coroutineJob.cancel()
     }
 
-
     override fun makeDetailsCall(actionComponentData: JSONObject) = runBlocking(coroutineContext) {
         val response = runCatching {
             adyenRepository
@@ -30,10 +29,16 @@ class AdyenDropInService : DropInService(), CoroutineScope {
                 .await()
         }
 
-        if (response.isFailure) {
-            return@runBlocking CallResult(CallResult.ResultType.ERROR, "Network error")
+        val result = response.getOrNull()?.data()?.submitAdditionalPaymentDetails
+            ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+
+        result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
+            return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
         }
 
+        result.asAdditionalPaymentsDetailsResponseFinished?.resultCode?.let { resultCode ->
+            return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
+        }
 
         CallResult(CallResult.ResultType.ERROR, "Unknown error")
     }
