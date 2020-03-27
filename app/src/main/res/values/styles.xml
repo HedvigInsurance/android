@@ -123,6 +123,8 @@
         <item name="android:minHeight">@dimen/input_layout_height</item>
     </style>
 
-    <style name="AdyenCheckout.BottomSheet" parent="BottomSheetDialogTheme" />
+    <style name="AdyenCheckout.BottomSheet" parent="BottomSheetDialogTheme">
+        <item name="android:background">@drawable/adyen_bottom_sheet_background</item>
+    </style>
 
 </resources>
