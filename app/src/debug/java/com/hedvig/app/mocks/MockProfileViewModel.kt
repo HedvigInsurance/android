@@ -66,36 +66,6 @@ class MockProfileViewModel : ProfileViewModel() {
                         )
                     )
                 ),
-                //ProfileQuery.Insurance(
-                //    address = "Testvägen 1",
-                //    postalNumber = "12345",
-                //    type = InsuranceType.BRF,
-                //    status = InsuranceStatus.ACTIVE,
-                //    certificateUrl = "http://www.africau.edu/images/default/sample.pdf",
-                //    personsInHousehold = 2,
-                //    livingSpace = 50,
-                //    ancillaryArea = null,
-                //    yearOfConstruction = null,
-                //    numberOfBathrooms = null,
-                //    cost = ProfileQuery.Cost(
-                //        freeUntil = LocalDate.of(2019, 11, 27),
-                //        fragments = ProfileQuery.Cost.Fragments(
-                //            CostFragment(
-                //                monthlyDiscount = CostFragment.MonthlyDiscount(
-                //                    amount = "10.00"
-                //                ),
-                //                monthlyNet = CostFragment.MonthlyNet(
-                //                    amount = "119.00"
-                //                ),
-                //                monthlyGross = CostFragment.MonthlyGross(
-                //                    amount = "129.00"
-                //                )
-                //            )
-                //        )
-                //    ),
-                //    extraBuildings = null,
-                //    isSubleted = null
-                //),
                 balance = ProfileQuery.Balance(
                     failedCharges = 3
                 ),
