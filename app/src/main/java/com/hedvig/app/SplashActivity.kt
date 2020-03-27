@@ -10,8 +10,8 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.offer.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.getMarket

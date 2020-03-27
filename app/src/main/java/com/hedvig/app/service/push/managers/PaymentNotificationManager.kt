@@ -9,7 +9,7 @@ import androidx.core.app.TaskStackBuilder
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.service.push.setupNotificationChannel
 
 object PaymentNotificationManager {

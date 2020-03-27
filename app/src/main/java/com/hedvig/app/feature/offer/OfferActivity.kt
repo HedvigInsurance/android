@@ -13,13 +13,10 @@ import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import com.hedvig.android.owldroid.fragment.PerilCategoryFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.dashboard.ui.PerilBottomSheet
-import com.hedvig.app.feature.dashboard.ui.PerilIcon
-import com.hedvig.app.feature.dashboard.ui.PerilView
+import com.hedvig.app.feature.dashboard.ui.PerilsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
 import com.hedvig.app.feature.offer.binders.FeatureBubbleBinder
@@ -30,7 +27,6 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.displayMetrics
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -55,28 +51,16 @@ import kotlinx.android.synthetic.main.offer_section_terms.view.*
 import kotlinx.android.synthetic.main.price_bubbles.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import kotlin.math.min
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
-    private val doubleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_double) }
-    private val perilTotalWidth: Int by lazy {
-        resources.getDimensionPixelSize(R.dimen.peril_width) + (doubleMargin * 2)
-    }
-    private val rowWidth: Int by lazy {
-        displayMetrics.widthPixels - (doubleMargin * 2)
-    }
-
     private val animationHandler = Handler()
     private var hasTriggeredAnimations = false
     private var lastAnimationHasCompleted = false
 
-    private val perilWidth by lazy {
-        resources.getDimensionPixelSize(R.dimen.peril_width)
-    }
 
     private lateinit var featureBubbleBinder: FeatureBubbleBinder
     private lateinit var factAreaBinder: FactAreaBinder
@@ -352,11 +336,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun bindHomeSection(data: OfferQuery.Data) {
         homeSection.title.text = data.insurance.address
-        data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                homeSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.home?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 
@@ -371,20 +355,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
             )
         }
-        data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                stuffSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.stuff?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 
     private fun bindMeSection(data: OfferQuery.Data) {
-        data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment?.let {
-            addPerils(
-                meSection.perilsContainer,
-                it
-            )
+        val pcf = data.insurance.arrangedPerilCategories.me?.fragments?.perilCategoryFragment
+        safeLet(pcf?.title, pcf?.perils) { title, perils ->
+            homeSection.perils.adapter = PerilsAdapter(supportFragmentManager).apply {
+                setData(title, perils.filterNotNull())
+            }
         }
     }
 
@@ -407,52 +391,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun addPerils(container: LinearLayout, category: PerilCategoryFragment) {
-        container.removeAllViews()
-        category.perils?.let { perils ->
-            val maxPerilsPerRow = rowWidth / perilTotalWidth
-            if (perils.size < maxPerilsPerRow) {
-                container.orientation = LinearLayout.HORIZONTAL
-                perils.filterNotNull().forEach { peril ->
-                    container.addView(makePeril(peril, category))
-                }
-            } else {
-                container.orientation = LinearLayout.VERTICAL
-                for (row in perils.indices step maxPerilsPerRow) {
-                    val rowView = LinearLayout(this)
-                    val rowPerils = perils.subList(row, min(row + maxPerilsPerRow, perils.size))
-                    rowPerils.filterNotNull().forEach { peril ->
-                        rowView.addView(makePeril(peril, category))
-                    }
-                    container.addView(rowView)
-                }
-            }
-        }
-    }
-
     override fun onPause() {
         animationHandler.removeCallbacksAndMessages(null)
         super.onPause()
     }
-
-    private fun makePeril(peril: PerilCategoryFragment.Peril, category: PerilCategoryFragment) =
-        PerilView.build(
-            this,
-            width = perilWidth,
-            name = peril.title,
-            iconId = peril.id,
-            onClick = {
-                safeLet(
-                    category.title,
-                    peril.id,
-                    peril.title,
-                    peril.description
-                ) { name, id, title, description ->
-                    PerilBottomSheet.newInstance(name, PerilIcon.from(id), title, description)
-                        .show(supportFragmentManager, PerilBottomSheet.TAG)
-                }
-            }
-        )
 
     companion object {
         private const val BASE_BUBBLE_ANIMATION_DELAY = 650L

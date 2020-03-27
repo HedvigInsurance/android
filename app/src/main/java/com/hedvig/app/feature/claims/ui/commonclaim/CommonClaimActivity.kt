@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -45,19 +44,16 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         commonClaimFirstMessageContainer.setBackgroundColor(backgroundColor)
         commonClaimFirstMessage.text = data.layoutTitle
         commonClaimCreateClaimButton.text = data.buttonText
-        when (data.insuranceStatus) {
-            InsuranceStatus.ACTIVE -> {
-                commonClaimCreateClaimButton.enable()
-                commonClaimCreateClaimButton.setHapticClickListener {
-                    tracker.createClaimClick(data.title)
-                    HonestyPledgeBottomSheet
-                        .newInstance(data.title)
-                        .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)
-                }
+        if (data.eligibleToClaim) {
+            commonClaimCreateClaimButton.enable()
+            commonClaimCreateClaimButton.setHapticClickListener {
+                tracker.createClaimClick(data.title)
+                HonestyPledgeBottomSheet
+                    .newInstance(data.title)
+                    .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)
             }
-            else -> {
-                commonClaimCreateClaimButton.disable()
-            }
+        } else {
+            commonClaimCreateClaimButton.disable()
         }
 
         bulletPointsRecyclerView.adapter =

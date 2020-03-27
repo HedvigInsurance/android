@@ -33,13 +33,6 @@
                 app:name="@string/PROFILE_ROW_MY_INFO_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/myHomeRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:iconImage="@drawable/ic_my_home"
-                app:name="@string/PROFILE_ROW_MY_HOME_TITLE" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/coinsuredRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

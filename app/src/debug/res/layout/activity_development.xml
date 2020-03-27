@@ -45,12 +45,12 @@
             android:text="Open Adyen" />
 
         <Button
-            android:id="@+id/openWhatsNew"
+            android:id="@+id/openNorwegianAuth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open What's new screen" />
+            android:text="Open Norwegian Auth" />
 
         <Button
             android:id="@+id/openNativeChat"

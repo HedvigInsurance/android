@@ -7,29 +7,14 @@ query Profile {
     phoneNumber
     features
   }
-  insurance {
-    address
-    postalNumber
-    type
-    status
-    certificateUrl
-    personsInHousehold
-    livingSpace
-    ancillaryArea
-    yearOfConstruction
-    numberOfBathrooms
-    cost {
-      ... CostFragment
-      freeUntil
+  insuranceCost {
+    ... CostFragment
+    freeUntil
+  }
+  contracts {
+    status {
+      ... ContractStatusFragment
     }
-    extraBuildings {
-      ... on ExtraBuildingCore {
-        area
-        displayName
-        hasWaterConnected
-      }
-    }
-    isSubleted
   }
   balance {
     failedCharges

@@ -1,17 +1,17 @@
 package com.hedvig.app.feature.dashboard.data
 
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.rx2.Rx2Apollo
+import android.content.Context
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.app.ApolloClientWrapper
-import io.reactivex.Observable
+import com.hedvig.app.util.apollo.defaultLocale
 
 class DashboardRepository(
-    val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClientWrapper: ApolloClientWrapper,
+    private val context: Context
 ) {
-    fun fetchDashboard(): Observable<Response<DashboardQuery.Data>> {
-        val dashboardQuery = DashboardQuery()
-
-        return Rx2Apollo.from(apolloClientWrapper.apolloClient.query(dashboardQuery))
-    }
+    fun dashboardAsync() = apolloClientWrapper
+        .apolloClient
+        .query(DashboardQuery(defaultLocale(context)))
+        .toDeferred()
 }
