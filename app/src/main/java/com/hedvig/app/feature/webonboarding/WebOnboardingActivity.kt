@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -44,6 +45,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             domStorageEnabled = true
             userAgentString = makeUserAgent(this@WebOnboardingActivity)
         }
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webOnboarding, true);
 
         webOnboarding.webViewClient = object : WebViewClient() {
             override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
