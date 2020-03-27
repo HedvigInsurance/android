@@ -170,5 +170,9 @@
     <dimen name="offer_info_icon">30dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="offer_premium_continer_height">480dp</dimen>
+    <dimen name="offer_peril_icon_size">40dp</dimen>
+    <dimen name="offer_peril_card_height">74dp</dimen>
+    <dimen name="offer_peril_card_width">180dp</dimen>
+
 
 </resources>

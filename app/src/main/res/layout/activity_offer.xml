@@ -203,8 +203,8 @@
                 layout="@layout/offer_fact_area" />
 
             <include
-                android:id="@+id/offerCoverageArea"
-                layout="@layout/offer_coverage_area" />
+                android:id="@+id/offerPerilArea"
+                layout="@layout/offer_peril_area" />
 
             <include
                 android:id="@+id/offerTermsArea"

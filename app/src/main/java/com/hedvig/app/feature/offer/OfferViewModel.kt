@@ -7,7 +7,6 @@ import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.android.owldroid.type.TypeOfContract
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -161,7 +160,7 @@ class OfferViewModelImpl(
                     Timber.e(response.errors().toString())
                     return@subscribe
                 }
-                response.data()?.let {data ->
+                response.data()?.let { data ->
                     offerRepository.removeStartDateFromCache(data)
                 }
             }, { Timber.e(it) })

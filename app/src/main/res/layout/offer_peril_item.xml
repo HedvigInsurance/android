@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="@dimen/offer_peril_card_width"
+        android:layout_height="@dimen/offer_peril_card_height"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/offer_peril_icon_size"
+            android:layout_height="@dimen/offer_peril_icon_size"
+            tools:src="@drawable/ic_shield" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceHeadline6"
+            tools:text="Water damage" />
+    </LinearLayout>
+</com.hedvig.app.ui.view.HedvigCardView>

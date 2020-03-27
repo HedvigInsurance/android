@@ -14,11 +14,23 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
+import com.hedvig.app.feature.offer.binders.PerilBinder
 import com.hedvig.app.feature.offer.binders.TermsBinder
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
-import com.hedvig.app.util.extensions.*
-import com.hedvig.app.util.extensions.view.*
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.getStringId
+import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.setStrikethrough
+import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.toContractType
+import com.hedvig.app.util.extensions.view.fadeIn
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.isSigned
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -37,12 +49,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private lateinit var factAreaBinder: FactAreaBinder
     private lateinit var termsBinder: TermsBinder
+    private lateinit var perilBinder: PerilBinder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         factAreaBinder = FactAreaBinder(offerFactArea as LinearLayout)
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
+        perilBinder = PerilBinder(offerPerilArea as LinearLayout)
 
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
@@ -58,14 +72,26 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     offerViewModel.fetchPreSale(completeQuote.toContractType())
                     when {
                         completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
-                            val apartmentData = data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
+                            val apartmentData =
+                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
                             bindToolBar(apartmentData.street)
-                            bindPremiumBox(completeQuote.toContractType(), completeQuote.insuranceCost.fragments.costFragment, completeQuote.startDate, data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive)
+                            bindPremiumBox(
+                                completeQuote.toContractType(),
+                                completeQuote.insuranceCost.fragments.costFragment,
+                                completeQuote.startDate,
+                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                            )
                         }
                         completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
-                            val houseData = data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
+                            val houseData =
+                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
                             bindToolBar(houseData.street)
-                            bindPremiumBox(completeQuote.toContractType(), completeQuote.insuranceCost.fragments.costFragment, completeQuote.startDate, data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive)
+                            bindPremiumBox(
+                                completeQuote.toContractType(),
+                                completeQuote.insuranceCost.fragments.costFragment,
+                                completeQuote.startDate,
+                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                            )
                         }
                     }
                     factAreaBinder.bind(completeQuote)
@@ -74,9 +100,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         }
 
-        offerViewModel.preSaleData.observe(lifecycleOwner = this) {
+        offerViewModel.preSaleData.observe(lifecycleOwner = this) { data ->
             /* Bind perils */
-
+            val perils =
+                data?.let {
+                    data.perils
+                }.orEmpty()
+            perilBinder.bind(perils)
             /* Bind terms */
 
             container.show()
@@ -97,13 +127,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         offerToolbar.fadeIn()
     }
 
-    private fun bindPremiumBox(type: TypeOfContract,
-                               insuranceCost: CostFragment,
-                               startDate: LocalDate?,
-                               incentive: IncentiveFragment.Incentive?) {
+    private fun bindPremiumBox(
+        type: TypeOfContract,
+        insuranceCost: CostFragment,
+        startDate: LocalDate?,
+        incentive: IncentiveFragment.Incentive?
+    ) {
 
         premiumBoxTitle.setText(type.getStringId())
-        premium.text =  BigDecimal(insuranceCost.monthlyNet.amount).toInt().toString()
+        premium.text = BigDecimal(insuranceCost.monthlyNet.amount).toInt().toString()
         if (BigDecimal(insuranceCost.monthlyDiscount.amount) > BigDecimal.ZERO) {
             grossPremium.setStrikethrough(true)
             grossPremium.text = BigDecimal(insuranceCost.monthlyGross.amount).toInt().toString()
@@ -111,7 +143,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         startDateContainer.setHapticClickListener {
             tracker.chooseStartDate()
-            ChangeDateBottomSheet.newInstance().show(supportFragmentManager, ChangeDateBottomSheet.TAG)
+            ChangeDateBottomSheet.newInstance()
+                .show(supportFragmentManager, ChangeDateBottomSheet.TAG)
         }
         startDate?.let {
             if (it != LocalDate.now()) {
@@ -131,7 +164,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
             when {
                 incentive.asFreeMonths != null -> {
-                    premiumCampaignTitle.text =  interpolateTextKey(
+                    premiumCampaignTitle.text = interpolateTextKey(
                         getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
                         "free_month" to incentive.asFreeMonths.quantity
                     )
@@ -142,18 +175,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                 }
                 incentive.asPercentageDiscountMonths != null -> {
-                    premiumCampaignTitle.text = if (incentive.asPercentageDiscountMonths.pdmQuantity == 1) {
-                        interpolateTextKey(
-                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
-                            "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
-                        )
-                    } else {
-                        interpolateTextKey(
-                            getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
-                            "months" to incentive.asPercentageDiscountMonths.pdmQuantity,
-                            "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
-                        )
-                    }
+                    premiumCampaignTitle.text =
+                        if (incentive.asPercentageDiscountMonths.pdmQuantity == 1) {
+                            interpolateTextKey(
+                                getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
+                                "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                            )
+                        } else {
+                            interpolateTextKey(
+                                getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
+                                "months" to incentive.asPercentageDiscountMonths.pdmQuantity,
+                                "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                            )
+                        }
                     grossPremium.text = interpolateTextKey(
                         getString(R.string.OFFER_GROSS_PREMIUM),
                         "GROSS_PREMIUM" to insuranceCost.monthlyGross.amount.toBigDecimal().toInt()
@@ -163,7 +197,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 incentive.asNoDiscount != null -> {
                     discountButton.remove()
                 }
-                else -> {}
+                else -> {
+                }
             }
         } ?: run {
             discountButton.text = getString(R.string.OFFER_ADD_DISCOUNT_BUTTON)
@@ -227,6 +262,5 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             Uri.parse("https://s3.eu-central-1.amazonaws.com/com-hedvig-web-content/Hedvig+-+integritetspolicy.pdf")
 
         private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.isNotEmpty()
-
     }
 }

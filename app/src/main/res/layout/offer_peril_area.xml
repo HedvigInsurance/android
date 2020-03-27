@@ -3,47 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/off_white"
     android:orientation="vertical">
 
+    <!-- TODO get correct text key -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
-        android:textAppearance="?textAppearanceHeadline5"
-        tools:text="Skyddet" />
+        android:text="Skyddet"
+        android:textAppearance="?textAppearanceHeadline5" />
 
+    <!-- TODO get correct text key -->
     <TextView
+        style="?textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center_horizontal"
-        android:text="@string/OFFER_HOUSE_SUMMARY_DESC"
-        style="?textAppearanceBody1"/>
+        android:text="@string/OFFER_HOUSE_SUMMARY_DESC" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:orientation="horizontal">
 
-        <!-- TODO shield icon -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow"/>
-
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:src="@drawable/ic_shield" />
+        <!-- TODO textKey -->
         <TextView
+            style="?textAppearanceBody1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:layout_marginEnd="@dimen/base_margin_double"
-            android:gravity="center_horizontal"
-            android:text="Innboforsikringen dekker"
-            style="?textAppearanceBody1"/>
+            android:text="Innboforsikringen dekker" />
 
     </LinearLayout>
 
@@ -51,6 +53,18 @@
         android:id="@+id/perilButtonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/perilsRecycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/offer_peril_item" />
+    </LinearLayout>
 
 </LinearLayout>
