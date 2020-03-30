@@ -56,7 +56,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         factAreaBinder = FactAreaBinder(offerFactArea as LinearLayout)
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
-        perilBinder = PerilBinder(offerPerilArea as LinearLayout)
+        perilBinder = PerilBinder(offerPerilArea as LinearLayout, supportFragmentManager)
 
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
