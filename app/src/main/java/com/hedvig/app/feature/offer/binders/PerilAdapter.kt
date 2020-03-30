@@ -23,25 +23,31 @@ class PerilAdapter : RecyclerView.Adapter<PerilAdapter.ViewHolder>() {
     override fun getItemCount() = list.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.apply {
-            val peril = list[position]
+        holder.bind(list[position])
+    }
+
+    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context)
+            .inflate(
+                R.layout.offer_peril_item,
+                parent,
+                false
+            )
+    ) {
+        private val icon = itemView.icon
+        private val title = itemView.title
+
+        fun bind(peril: OfferPreSaleQuery.Peril) {
             val iconUrl = "${BuildConfig.BASE_URL}${if (icon.context.isDarkThemeActive) {
                 peril.icon.variants.dark.svgUrl
             } else {
                 peril.icon.variants.light.svgUrl
             }}"
-            title.text = list[position].title
+
+            title.text = peril.title
             Glide.with(icon.context)
                 .load(iconUrl)
                 .into(icon)
         }
     }
-
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.offer_peril_item,
-            parent,
-            false
-        )
-    )
 }

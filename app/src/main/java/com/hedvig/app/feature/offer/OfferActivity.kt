@@ -69,6 +69,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     })
                 } else {
                     val completeQuote = data.lastQuoteOfMember.asCompleteQuote!!
+                    perilBinder.contract = completeQuote.toContractType()
                     offerViewModel.fetchPreSale(completeQuote.toContractType())
                     when {
                         completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {

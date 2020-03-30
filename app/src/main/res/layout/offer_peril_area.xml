@@ -4,28 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/off_white"
     android:orientation="vertical">
 
-    <!-- TODO get correct text key -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
-        android:text="Skyddet"
+        android:text="@string/OFFER_SCREEN_COVERAGE_TITLE"
         android:textAppearance="?textAppearanceHeadline5" />
 
-    <!-- TODO get correct text key -->
     <TextView
-        style="?textAppearanceBody1"
+        android:id="@+id/perilInfo"
+        android:textAppearance="?textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center_horizontal"
-        android:text="@string/OFFER_HOUSE_SUMMARY_DESC" />
+        tools:text="Hedvigs hemförsäkring erbjuder ett bra skydd för din lägenhet, dina saker samt dig och din familj när ni reser." />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,12 +38,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin_double"
             android:src="@drawable/ic_shield" />
-        <!-- TODO textKey -->
+
         <TextView
-            style="?textAppearanceBody1"
+            android:textAppearance="?textAppearanceBody1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Innboforsikringen dekker" />
+            android:text="@string/OFFER_SCREEN_PERIL_SECTION_TITLE" />
 
     </LinearLayout>
 
