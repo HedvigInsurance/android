@@ -106,6 +106,11 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
             .build()
 
         val googlePayConfig = GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_MERCHANT_ACCOUNT))
+            .setGooglePayEnvironment(if (isDebug()) {
+                GOOGLE_WALLET_ENVIRONMENT_TEST
+            } else {
+                GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
+            })
             .build()
         val dropInConfiguration = DropInConfiguration
             .Builder(this, newInstance(this, isPostSignDD()), AdyenDropInService::class.java)
@@ -290,6 +295,9 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
         private const val WITH_EXPLAINER = "with_explainer"
 
         private const val ADYEN_RESULT_CODE_AUTHORISED = "Authorised"
+
+        private const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
+        private const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
 
         fun newInstance(context: Context, withExplainer: Boolean = false) =
             Intent(context, ConnectPaymentActivity::class.java).apply {
