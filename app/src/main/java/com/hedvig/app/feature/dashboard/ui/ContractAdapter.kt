@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
@@ -42,6 +43,7 @@ class ContractAdapter(
         private val status = itemView.contractStatus
         private val name = itemView.contractName
         private val informationCard = itemView.contractInformationCard
+        private val contractInformationIcon = itemView.contractInformationIcon
         private val contractInformationDescription = itemView.contractInformationDescription
         private val perilCard = itemView.coverageCard
         private val documentsCard = itemView.documentsCard
@@ -87,6 +89,27 @@ class ContractAdapter(
 
             name.text = contract.displayName
 
+            when (contract.typeOfContract) {
+                TypeOfContract.NO_TRAVEL_YOUTH,
+                TypeOfContract.NO_TRAVEL -> {
+                    contractInformationIcon.setImageDrawable(contractInformationIcon.context.compatDrawable(R.drawable.ic_contract_type_travel))
+                }
+                TypeOfContract.SE_HOUSE -> {
+                    contractInformationIcon.setImageDrawable(contractInformationIcon.context.compatDrawable(R.drawable.ic_house))
+                }
+                TypeOfContract.SE_APARTMENT_BRF,
+                TypeOfContract.SE_APARTMENT_RENT,
+                TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+                TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+                TypeOfContract.NO_HOME_CONTENT_OWN,
+                TypeOfContract.NO_HOME_CONTENT_RENT,
+                TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
+                TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
+                    contractInformationIcon.setImageDrawable(contractInformationIcon.context.compatDrawable(R.drawable.ic_apartment))
+                }
+                TypeOfContract.UNKNOWN__ -> {
+                }
+            }
             contractInformationDescription.text = if (contract.currentAgreement.numberCoInsured == 1) {
                 contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_NO_COINSURED)
             } else {
