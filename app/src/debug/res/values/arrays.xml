@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="mock_personas">
-        <item>Unsigned w/ Apartment</item>
-        <item>Unsigned w/ House</item>
+        <item>Unsigned w/ Swedish Apartment</item>
+        <item>Unsigned w/ Swedish House</item>
+        <item>Signed w/ Norwegian Home Contents</item>
+        <item>Signed w/ Norwegian Travel</item>
+        <item>Signed w/ Norwegian Home Contents and Travel</item>
     </string-array>
 </resources>

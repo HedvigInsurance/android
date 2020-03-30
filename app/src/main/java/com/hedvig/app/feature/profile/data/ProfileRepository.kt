@@ -98,13 +98,13 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
         val costFragment = data.redeemCode.cost.fragments.costFragment
 
-        val newCost = cachedData.insurance.cost?.copy(
-            fragments = ProfileQuery.Cost.Fragments(costFragment = costFragment)
+        val newCost = cachedData.insuranceCost?.copy(
+            fragments = ProfileQuery.InsuranceCost.Fragments(costFragment = costFragment)
         )
 
         val newData = cachedData
             .copy(
-                insurance = cachedData.insurance.copy(cost = newCost)
+                insuranceCost = newCost
             )
 
         apolloClientWrapper.apolloClient
@@ -147,7 +147,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .copy(
                 bankAccount = newBankAccount
             )
-       
+
         apolloClientWrapper.apolloClient
             .apolloStore()
             .writeAndPublish(profileQuery, newData)

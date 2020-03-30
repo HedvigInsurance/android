@@ -23,9 +23,9 @@ import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.profile.ui.payment.TrustlyJavascriptInterface
-import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
-import com.hedvig.app.feature.profile.ui.payment.TrustlyWebChromeClient
+import com.hedvig.app.feature.trustly.TrustlyJavascriptInterface
+import com.hedvig.app.feature.trustly.TrustlyTracker
+import com.hedvig.app.feature.trustly.TrustlyWebChromeClient
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.getMarket
@@ -36,7 +36,6 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.viewmodel.DirectDebitViewModel
 import e
 import kotlinx.android.synthetic.main.activity_trustly.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -46,7 +45,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
 
     private val profileViewModel: ProfileViewModel by viewModel()
-    private val directDebitViewModel: DirectDebitViewModel by viewModel()
     private val adyenViewModel: AdyenViewModel by viewModel()
 
     private val tracker: TrustlyTracker by inject()
@@ -249,7 +247,6 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
         }
         resultClose.setHapticClickListener {
             profileViewModel.refreshBankAccountInfo()
-            directDebitViewModel.refreshDirectDebitStatus()
             close()
         }
         resultScreen.show()

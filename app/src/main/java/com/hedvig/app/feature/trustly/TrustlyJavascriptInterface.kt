@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.profile.ui.payment
+package com.hedvig.app.feature.trustly
 
 import android.app.Activity
 import android.content.Context

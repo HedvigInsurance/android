@@ -15,6 +15,7 @@
             android:id="@+id/commonClaimCellIcon"
             android:layout_width="@dimen/common_claim_icon_size"
             android:layout_height="@dimen/common_claim_icon_size"
+            android:contentDescription="@null"
             tools:src="@drawable/icon_failure" />
 
         <View

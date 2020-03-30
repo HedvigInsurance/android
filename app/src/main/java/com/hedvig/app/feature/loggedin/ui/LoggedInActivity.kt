@@ -10,8 +10,8 @@ import android.widget.ImageView
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
+import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.LoggedInTerminatedActivity
@@ -212,12 +212,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
 
         dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.insurance?.status?.let { insuranceStatus ->
-                if (insuranceStatus == InsuranceStatus.TERMINATED) {
-                    startActivity(Intent(this, LoggedInTerminatedActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    })
+            data?.let { d ->
+                if (isTerminated(d.contracts)) {
+                    startActivity(LoggedInTerminatedActivity.newInstance(this))
                 }
             }
         }
@@ -275,6 +272,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
         }
+
+        fun isTerminated(contracts: List<DashboardQuery.Contract>) = contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"

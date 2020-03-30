@@ -40,6 +40,8 @@ android {
 
         buildConfigField("String", "DEFAULT_LANGUAGE", "\"${rootProject.ext.defaultLanguage}\"")
         buildConfigField("String[]", "EXCLUDED_LANGUAGES", "{\"${rootProject.ext.excludedLanguages.join("\",\"")}\"}")
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -197,7 +199,14 @@ dependencies {
     implementation 'com.adyen.checkout:drop-in:3.6.4'
 
     // test
-    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'com.agoda.kakao:kakao:2.3.0'
+    androidTestImplementation 'org.powermock:powermock-core:2.0.6'
+    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.1.12'
+    androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }
