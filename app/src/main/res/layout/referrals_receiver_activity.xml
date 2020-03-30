@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:src="@drawable/ic_hedvig_wordmark"
-            android:tint="?colorPrimary" />
+            android:tint="?colorPrimary"
+            app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
         <ImageView
             android:layout_width="wrap_content"
