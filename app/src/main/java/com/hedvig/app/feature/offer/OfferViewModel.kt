@@ -3,11 +3,9 @@ package com.hedvig.app.feature.offer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
-import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.type.TypeOfContract
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.threeten.bp.LocalDate
@@ -15,7 +13,6 @@ import timber.log.Timber
 
 abstract class OfferViewModel : ViewModel() {
     abstract val data: MutableLiveData<OfferQuery.Data>
-    abstract val preSaleData: MutableLiveData<OfferPreSaleQuery.Data>
     abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
     abstract val signStatus: MutableLiveData<SignStatusFragment>
     abstract val signError: MutableLiveData<Boolean>
@@ -27,14 +24,12 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun manuallyRecheckSignStatus()
     abstract fun chooseStartDate(id: String, date: LocalDate)
     abstract fun removeStartDate(id: String)
-    abstract fun fetchPreSale(contract: TypeOfContract)
 }
 
 class OfferViewModelImpl(
     private val offerRepository: OfferRepository
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
-    override val preSaleData = MutableLiveData<OfferPreSaleQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -163,14 +158,6 @@ class OfferViewModelImpl(
                 response.data()?.let { data ->
                     offerRepository.removeStartDateFromCache(data)
                 }
-            }, { Timber.e(it) })
-    }
-
-    override fun fetchPreSale(contract: TypeOfContract) {
-        disposables += offerRepository
-            .fetchOfferPreSale(contract)
-            .subscribe({ response ->
-                preSaleData.postValue(response)
             }, { Timber.e(it) })
     }
 }

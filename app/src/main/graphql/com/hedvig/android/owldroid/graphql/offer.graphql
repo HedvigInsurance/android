@@ -1,4 +1,4 @@
-query Offer {
+query Offer($locale: Locale!) {
   insurance {
     status
   }
@@ -44,6 +44,35 @@ query Offer {
       }
       insuranceCost {
         ... CostFragment
+      }
+
+      perils(
+        locale:  $locale
+      ) {
+        title
+        description
+        covered
+        exceptions
+        info
+        icon {
+          variants {
+            dark {svgUrl}
+            light {svgUrl}
+          }
+        }
+      }
+      termsAndConditions(
+        locale:  $locale
+      ) {
+        displayName
+        url
+      }
+      insurableLimits(
+        locale:  $locale
+      ) {
+        label
+        limit
+        description
       }
     }
   }

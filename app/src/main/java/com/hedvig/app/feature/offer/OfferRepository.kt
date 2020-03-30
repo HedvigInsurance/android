@@ -4,8 +4,15 @@ import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.rx2.Rx2Apollo
-import com.hedvig.android.owldroid.graphql.*
-import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.OfferClosedMutation
+import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
+import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
+import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.graphql.SignStatusQuery
+import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
 import e
@@ -20,7 +27,7 @@ class OfferRepository(
     private lateinit var offerQuery: OfferQuery
 
     fun loadOffer(): Observable<Response<OfferQuery.Data>> {
-        offerQuery = OfferQuery()
+        offerQuery = OfferQuery(defaultLocale(context))
 
         return Rx2Apollo
             .from(apolloClientWrapper.apolloClient.query(offerQuery).watcher())
@@ -41,7 +48,11 @@ class OfferRepository(
 
         val newData = cachedData
             .copy(
-                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(insuranceCost = newCost)),
+                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                        insuranceCost = newCost
+                    )
+                ),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
                         fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -72,7 +83,8 @@ class OfferRepository(
         if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
             return
 
-        val oldCostFragment = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
+        val oldCostFragment =
+            cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -120,7 +132,11 @@ class OfferRepository(
         )
 
     fun fetchSignStatus() = Rx2Apollo
-        .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
+        .from(
+            apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(
+                HttpCachePolicy.NETWORK_ONLY
+            )
+        )
 
     fun chooseStartDate(id: String, date: LocalDate) = Rx2Apollo
         .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation(id, date)))
@@ -194,16 +210,5 @@ class OfferRepository(
                 .writeAndPublish(offerQuery, newData)
                 .execute()
         }
-    }
-
-    fun fetchOfferPreSale(type: TypeOfContract): Observable<OfferPreSaleQuery.Data?> {
-        val offerPreSaleQuery = OfferPreSaleQuery(
-            contractType = type,
-            locale = defaultLocale(context)
-        )
-
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.query(offerPreSaleQuery))
-            .map { it.data() }
     }
 }

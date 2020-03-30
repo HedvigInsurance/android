@@ -60,6 +60,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
+                /* Bind perils */
+                val perils = data.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
+                perilBinder.bind(perils)
+                /* Bind terms */
+
+                container.show()
+                loadingSpinner.remove()
+                setupButtons()
+
+
                 if (data.insurance.status.isSigned) {
                     storeBoolean(IS_VIEWING_OFFER, false)
                     startActivity(Intent(this, LoggedInActivity::class.java).apply {
@@ -70,7 +80,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 } else {
                     val completeQuote = data.lastQuoteOfMember.asCompleteQuote!!
                     perilBinder.contract = completeQuote.toContractType()
-                    offerViewModel.fetchPreSale(completeQuote.toContractType())
                     when {
                         completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
                             val apartmentData =
@@ -99,20 +108,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     termsBinder.bind(data.insurance, completeQuote)
                 }
             }
-        }
-
-        offerViewModel.preSaleData.observe(lifecycleOwner = this) { data ->
-            /* Bind perils */
-            val perils =
-                data?.let {
-                    data.perils
-                }.orEmpty()
-            perilBinder.bind(perils)
-            /* Bind terms */
-
-            container.show()
-            loadingSpinner.remove()
-            setupButtons()
         }
 
         offerChatButton.setHapticClickListener {

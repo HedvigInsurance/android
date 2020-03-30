@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.binders
 
 import android.widget.LinearLayout
-import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
@@ -38,7 +38,7 @@ class PerilBinder(
             }
         }
 
-    fun bind(list: List<OfferPreSaleQuery.Peril>) = root.apply {
+    fun bind(list: List<OfferQuery.Peril>) = root.apply {
         val adapter = PerilAdapter()
         perilsRecycler.apply {
             this.adapter = adapter

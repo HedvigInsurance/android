@@ -5,14 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
-import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.InsuranceStatus
-import com.hedvig.android.owldroid.type.InsuranceType
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
@@ -21,7 +18,6 @@ class MockOfferViewModel(
     private val context: Context
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
-    override val preSaleData = MutableLiveData<OfferPreSaleQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -48,9 +44,6 @@ class MockOfferViewModel(
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) = Unit
     override fun removeStartDate(id: String) {
-    }
-
-    override fun fetchPreSale(contract: TypeOfContract) {
     }
 
     companion object {
@@ -113,7 +106,13 @@ class MockOfferViewModel(
                                 )
                             )
                         )
-                    )
+                    ),
+                    perils = listOf(),
+                    termsAndConditions = OfferQuery.TermsAndConditions(
+                        displayName = "TermsAndConditions",
+                        url = "https://www.google.com/"
+                    ),
+                    insurableLimits = listOf()
                 )
             )
         )
@@ -181,7 +180,13 @@ class MockOfferViewModel(
                                 )
                             )
                         )
-                    )
+                    ),
+                    perils = listOf(),
+                    termsAndConditions = OfferQuery.TermsAndConditions(
+                        displayName = "TermsAndConditions",
+                        url = "https://www.google.com/"
+                    ),
+                    insurableLimits = listOf()
                 )
             )
         )

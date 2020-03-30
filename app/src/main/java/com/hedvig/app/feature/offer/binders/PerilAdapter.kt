@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.offer_peril_item.view.*
 
 class PerilAdapter : RecyclerView.Adapter<PerilAdapter.ViewHolder>() {
 
-    var list: List<OfferPreSaleQuery.Peril> = listOf()
+    var list: List<OfferQuery.Peril> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -37,7 +37,7 @@ class PerilAdapter : RecyclerView.Adapter<PerilAdapter.ViewHolder>() {
         private val icon = itemView.icon
         private val title = itemView.title
 
-        fun bind(peril: OfferPreSaleQuery.Peril) {
+        fun bind(peril: OfferQuery.Peril) {
             val iconUrl = "${BuildConfig.BASE_URL}${if (icon.context.isDarkThemeActive) {
                 peril.icon.variants.dark.svgUrl
             } else {
