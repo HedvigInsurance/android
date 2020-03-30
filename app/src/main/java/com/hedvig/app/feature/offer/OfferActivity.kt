@@ -105,11 +105,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                     }
                     factAreaBinder.bind(completeQuote)
-                    termsBinder.bind(data.insurance, completeQuote)
                 }
             }
         }
-
+      
         offerChatButton.setHapticClickListener {
             tracker.openChat()
             offerViewModel.triggerOpenChat {

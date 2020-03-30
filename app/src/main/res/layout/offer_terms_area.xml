@@ -29,139 +29,16 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/limitsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="?textAppearanceBody1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="Dina prylar är försäkrade till" />
-
-            <TextView
-                style="?textAppearanceHeadline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="1 000 000 kr" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="?textAppearanceBody1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="Din lägenhet är försäkrad till" />
-
-            <TextView
-                style="?textAppearanceHeadline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="Fullvärde" />
-
-        </LinearLayout>
-    </LinearLayout>
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/base_margin_double"/>
 
     <LinearLayout
+        android:id="@+id/termsButtonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="?textAppearanceBody1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="Självrisk" />
-
-            <TextView
-                style="?textAppearanceHeadline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="4 000 kr" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="?textAppearanceBody1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="Reseskyddet gäller i" />
-
-            <TextView
-                style="?textAppearanceHeadline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                tools:text="45 dagar per resa" />
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:padding="@dimen/base_margin"
-        tools:text="Fullständiga villkor ↗" />
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:padding="@dimen/base_margin"
-        tools:text="Förköpsinformation ↗" />
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:padding="@dimen/base_margin"
-        tools:text="Personuppgiftspolicy ↗" />
+        android:orientation="vertical"
+        android:paddingTop="@dimen/base_margin_octuple"/>
 </LinearLayout>
