@@ -10,12 +10,10 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenActivity
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
-import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
@@ -67,21 +65,11 @@ class PaymentActivity : BaseActivity() {
         }
 
         changeBankAccount.setHapticClickListener {
-            market?.let { market ->
-                when (market) {
-                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
-                }
-            }
+            startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
         connectBankAccount.setHapticClickListener {
-            market?.let { market ->
-                when (market) {
-                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
-                }
-            }
+            startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
         connectBankAccountWithLink.setHapticClickListener {
