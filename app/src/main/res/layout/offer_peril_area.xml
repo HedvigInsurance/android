@@ -62,7 +62,7 @@
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2"
-            tools:listitem="@layout/offer_peril_item" />
+            tools:listitem="@layout/peril_detail" />
     </LinearLayout>
 
 </LinearLayout>

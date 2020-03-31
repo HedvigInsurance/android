@@ -30,16 +30,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_alignBottom="@+id/offerPremiumFrameLayout"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:background="@mipmap/offer_background" />
+                android:layout_gravity="center_horizontal"
+                android:background="@color/hedvig_black">
 
                 <FrameLayout
                     android:id="@+id/offerPremiumFrameLayout"

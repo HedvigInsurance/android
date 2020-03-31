@@ -114,8 +114,8 @@ class MockOfferViewModel(
                         url = "https://www.example.com/"
                     ),
                     insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF
-                    // insuranceTerms = listOf()
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
+                    insuranceTerms = listOf()
                 )
             )
         )
@@ -190,7 +190,8 @@ class MockOfferViewModel(
                         url = "https://www.example.com/"
                     ),
                     insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
+                    insuranceTerms = listOf()
                 )
             )
         )

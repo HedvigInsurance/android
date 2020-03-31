@@ -17,9 +17,9 @@ class PerilBinder(
 ) {
 
     fun bind(
-        list: List<OfferQuery.Peril>,
         data: OfferQuery.Data
     ) = root.apply {
+        val list = data.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
         val typeOfContract = data.lastQuoteOfMember.asCompleteQuote?.typeOfContract
         val adapter = PerilsAdapter(fragmentManager, context.buildRequestBuilder())
         perilsRecycler.apply {

@@ -58,24 +58,9 @@ query Offer($locale: Locale!) {
         limit
         description
       }
-      #      insuranceTerms(locale: $locale) {
-      #        displayName
-      #        url
-      #      }
-    }
-  }
-}
-
-fragment PerilFragment on PerilV2 {
-  title
-  description
-  icon {
-    variants {
-      dark {
-        svgUrl
-      }
-      light {
-        svgUrl
+      insuranceTerms(locale: $locale) {
+        displayName
+        url
       }
     }
   }
