@@ -14,11 +14,11 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_web_onboarding.*
 import java.net.URLEncoder
@@ -51,7 +51,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                 if (url?.contains("connect-payment") == true) {
                     view?.stopLoading()
-                    makeToast("Should open adyen!")
+                    startActivity(ConnectPaymentActivity.newInstance(this@WebOnboardingActivity, withExplainer = true, withoutHistory = true))
                     return
                 }
                 super.doUpdateVisitedHistory(view, url, isReload)

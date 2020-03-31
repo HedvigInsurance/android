@@ -1,5 +1,14 @@
-mutation TokenizePaymentDetails($paymentsRequest: PaymentsRequest!) {
-  tokenizePaymentDetails(req: { paymentsRequest: $paymentsRequest }) {
+mutation TokenizePaymentDetails(
+  $paymentMethodDetails: PaymentMethodDetails!
+  $returnUrl: String!
+) {
+  tokenizePaymentDetails(
+    req: {
+      paymentMethodDetails: $paymentMethodDetails
+      channel: ANDROID
+      returnUrl: $returnUrl
+    }
+  ) {
     ... on TokenizationResponseFinished {
       resultCode
     }

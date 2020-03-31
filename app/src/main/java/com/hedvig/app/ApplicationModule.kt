@@ -238,7 +238,7 @@ val repositoriesModule = module {
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
-    single { AdyenRepository(get()) }
+    single { AdyenRepository(get(), get()) }
 }
 
 val trackerModule = module {
