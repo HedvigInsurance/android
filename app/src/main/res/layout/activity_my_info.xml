@@ -23,7 +23,7 @@
             <include layout="@layout/loading_spinner" />
 
             <include
-                android:id="@id/sphereContainer"
+                android:id="@+id/sphereContainer"
                 layout="@layout/sphere_container" />
 
             <LinearLayout

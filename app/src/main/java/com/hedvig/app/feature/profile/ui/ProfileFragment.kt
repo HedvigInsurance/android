@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.profile.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.NestedScrollView
@@ -12,9 +11,7 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
-import com.hedvig.app.feature.profile.ui.coinsured.CoinsuredActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
-import com.hedvig.app.feature.profile.ui.myhome.MyHomeActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
@@ -57,11 +54,8 @@ class ProfileFragment : BaseTabFragment() {
 
             profileData?.let { data ->
                 setupMyInfoRow(data)
-                setupMyHomeRow(data)
-                setupCoinsured(data)
                 setupCharity(data)
                 setupPayment(data)
-                setupCertificateUrl(data)
             }
 
             feedbackRow.setHapticClickListener {
@@ -91,31 +85,6 @@ class ProfileFragment : BaseTabFragment() {
         }
     }
 
-    private fun setupMyHomeRow(profileData: ProfileQuery.Data) {
-        myHomeRow.description = profileData.insurance.address
-        myHomeRow.setHapticClickListener {
-            startActivity(Intent(requireContext(), MyHomeActivity::class.java))
-        }
-    }
-
-    private fun setupCoinsured(profileData: ProfileQuery.Data) {
-        val personsInHousehold = profileData.insurance.personsInHousehold ?: 1
-
-        if (personsInHousehold <= 1) {
-            return
-        }
-
-
-        coinsuredRow.description = interpolateTextKey(
-            resources.getString(R.string.PROFILE_MY_COINSURED_ROW_SUBTITLE),
-            "amountCoinsured" to "${personsInHousehold - 1}"
-        )
-        coinsuredRow.setHapticClickListener {
-            startActivity(Intent(requireContext(), CoinsuredActivity::class.java))
-        }
-        coinsuredRow.show()
-    }
-
     private fun setupCharity(profileData: ProfileQuery.Data) {
         charityRow.description = profileData.cashback?.fragments?.cashbackFragment?.name
         charityRow.setHapticClickListener {
@@ -126,20 +95,10 @@ class ProfileFragment : BaseTabFragment() {
     private fun setupPayment(profileData: ProfileQuery.Data) {
         paymentRow.description = interpolateTextKey(
             resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-            "COST" to profileData.insurance.cost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
+            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
         )
         paymentRow.setHapticClickListener {
             startActivity(Intent(requireContext(), PaymentActivity::class.java))
-        }
-    }
-
-    private fun setupCertificateUrl(profileData: ProfileQuery.Data) {
-        profileData.insurance.certificateUrl?.let { policyUrl ->
-            insuranceCertificateRow.show()
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(policyUrl))
-            insuranceCertificateRow.setHapticClickListener {
-                startActivity(intent)
-            }
         }
     }
 }

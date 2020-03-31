@@ -11,17 +11,17 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.InsuranceStatus
-import com.hedvig.android.owldroid.type.InsuranceType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
 
 class MockOfferViewModel(
-    private val context: Context
+    context: Context
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
-    override val preSaleData = MutableLiveData<OfferPreSaleQuery.Data>()
+    override val preSaleData: MutableLiveData<OfferPreSaleQuery.Data>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -51,6 +51,7 @@ class MockOfferViewModel(
     }
 
     override fun fetchPreSale(contract: TypeOfContract) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
