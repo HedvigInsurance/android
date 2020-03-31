@@ -173,7 +173,6 @@
     <dimen name="offer_peril_icon_size">40dp</dimen>
     <dimen name="offer_peril_card_height">74dp</dimen>
     <dimen name="offer_peril_card_width">180dp</dimen>
-
     <dimen name="checkbox_size">24dp</dimen>
 
 </resources>
