@@ -45,28 +45,12 @@
             android:text="Open Norwegian Auth" />
 
         <Button
-            android:id="@+id/openNativeChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open native chat screen" />
-
-        <Button
             android:id="@+id/openNativeOffer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open native offer screen" />
-
-        <Button
-            android:id="@+id/openAlert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open an alert" />
 
         <Button
             android:id="@+id/openLoggedInWithWelcome"
@@ -83,6 +67,22 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open an logged in without Welcome Screen" />
+
+        <Button
+            android:id="@+id/openWebOnboarding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open in-app web onboarding" />
+
+        <Button
+            android:id="@+id/openAlert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Open alert" />
 
         <Button
             android:id="@+id/openReferralReceiver"
