@@ -224,6 +224,7 @@ textkeys {
     excludedLanguages = rootProject.ext.excludedLanguages
 }
 
+// TODO: Remove this task once everything is merged to develop
 task updateSchema(type: Exec) {
     group = 'GraphQL'
     description = 'Fetches the latest schema from our dev GraphQL-server'
