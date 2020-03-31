@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.InsuranceStatus
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
@@ -110,9 +111,11 @@ class MockOfferViewModel(
                     perils = listOf(),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
-                        url = "https://www.google.com/"
+                        url = "https://www.example.com/"
                     ),
-                    insurableLimits = listOf()
+                    insurableLimits = listOf(),
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
+                    insuranceTerms = listOf()
                 )
             )
         )
@@ -184,9 +187,11 @@ class MockOfferViewModel(
                     perils = listOf(),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
-                        url = "https://www.google.com/"
+                        url = "https://www.example.com/"
                     ),
-                    insurableLimits = listOf()
+                    insurableLimits = listOf(),
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
+                    insuranceTerms = listOf()
                 )
             )
         )

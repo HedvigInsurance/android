@@ -4,7 +4,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
-import com.hedvig.android.owldroid.graphql.OfferPreSaleQuery
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.extensions.openUri
@@ -17,35 +17,46 @@ class TermsBinder(
     private val tracker: OfferTracker
 ) {
 
-    private var previousData: OfferPreSaleQuery.Data? = null
+    private var previousData: OfferQuery.Data? = null
 
     private val layoutInflater: LayoutInflater by lazy {
         LayoutInflater.from(root.context)
     }
 
-    fun bind(data: OfferPreSaleQuery.Data) = root.apply {
+    fun bind(data: OfferQuery.Data) = root.apply {
         if (data == previousData) {
             return@apply
         }
+        val quote = data.lastQuoteOfMember.asCompleteQuote
 
-        for (i in data.insurableLimits.indices step 2) {
-            val limit = data.insurableLimits[i]
-            val secondLimit = data.insurableLimits.getOrNull(i+1)
-            val limitRow = layoutInflater.inflate(R.layout.offer_limit_row, limitsContainer, false) as LinearLayout
+        quote?.insurableLimits?.indices?.let {
+            for (i in it step 2) {
+                val limit = quote.insurableLimits[i]
+                val secondLimit = quote.insurableLimits.getOrNull(i + 1)
+                val limitRow = layoutInflater.inflate(
+                    R.layout.offer_limit_row,
+                    limitsContainer,
+                    false
+                ) as LinearLayout
 
-            limitRow.offerLimitDescription1.text = limit.description
-            limitRow.offerLimit1.text = limit.limit
+                limitRow.offerLimitDescription1.text = limit.description
+                limitRow.offerLimit1.text = limit.limit
 
-            secondLimit?.let {
-                limitRow.offerLimitDescription2.text = it.description
-                limitRow.offerLimit2.text = it.limit
+                secondLimit?.let {
+                    limitRow.offerLimitDescription2.text = it.description
+                    limitRow.offerLimit2.text = it.limit
+                }
+                limitsContainer.addView(limitRow)
             }
-            limitsContainer.addView(limitRow)
         }
 
         termsButtonContainer.removeAllViews()
-        data.insuranceTerms.forEach { terms ->
-            val button = layoutInflater.inflate(R.layout.offer_terms_area_button, termsButtonContainer, false) as MaterialButton
+        quote?.insuranceTerms?.forEach { terms ->
+            val button = layoutInflater.inflate(
+                R.layout.offer_terms_area_button,
+                termsButtonContainer,
+                false
+            ) as MaterialButton
             button.text = terms.displayName
             button.setHapticClickListener {
                 tracker.openOfferLink(terms.displayName)

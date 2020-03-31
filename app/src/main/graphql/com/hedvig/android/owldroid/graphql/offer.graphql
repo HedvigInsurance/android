@@ -4,14 +4,15 @@ query Offer($locale: Locale!) {
   }
 
   redeemedCampaigns {
-    ... IncentiveFragment
+    ...IncentiveFragment
   }
 
   lastQuoteOfMember {
     ... on CompleteQuote {
       startDate
       id
-      currentInsurer{
+      typeOfContract
+      currentInsurer {
         id
         displayName
         switchable
@@ -43,12 +44,9 @@ query Offer($locale: Locale!) {
         }
       }
       insuranceCost {
-        ... CostFragment
+        ...CostFragment
       }
-
-      perils(
-        locale:  $locale
-      ) {
+      perils(locale: $locale) {
         title
         description
         covered
@@ -56,23 +54,27 @@ query Offer($locale: Locale!) {
         info
         icon {
           variants {
-            dark {svgUrl}
-            light {svgUrl}
+            dark {
+              svgUrl
+            }
+            light {
+              svgUrl
+            }
           }
         }
       }
-      termsAndConditions(
-        locale:  $locale
-      ) {
+      termsAndConditions(locale: $locale) {
         displayName
         url
       }
-      insurableLimits(
-        locale:  $locale
-      ) {
+      insurableLimits(locale: $locale) {
         label
         limit
         description
+      }
+      insuranceTerms(locale: $locale) {
+        displayName
+        url
       }
     }
   }
