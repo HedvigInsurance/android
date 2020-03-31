@@ -7,7 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isHouse
 import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import org.threeten.bp.LocalDate
@@ -35,6 +34,7 @@ class FactAreaBinder(
 
         previousData = data
     }
+
     private fun bindApartment(data: OfferQuery.AsSwedishApartmentQuoteDetails) = root.apply {
         removeHouseViews()
         bindCommon(data.livingSpace, data.householdSize)
