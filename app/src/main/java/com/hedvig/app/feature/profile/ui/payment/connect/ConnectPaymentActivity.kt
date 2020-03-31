@@ -162,8 +162,10 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (!hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
+        if (!isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
             finish()
+        } else if (isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
+            showConfirmCloseDialog { }
         }
     }
 
@@ -183,7 +185,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
         close()
     }
 
-    private fun showConfirmCloseDialog() {
+    private fun showConfirmCloseDialog(negativeAction: (() -> Unit)? = null) {
         showAlert(
             title = R.string.TRUSTLY_ALERT_TITLE,
             message = R.string.TRUSTLY_ALERT_BODY,
@@ -191,7 +193,8 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
             negativeLabel = R.string.TRUSTLY_ALERT_NEGATIVE_ACTION,
             positiveAction = {
                 close()
-            }
+            },
+            negativeAction = negativeAction
         )
     }
 
