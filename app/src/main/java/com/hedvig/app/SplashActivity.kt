@@ -14,14 +14,17 @@ import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.extensions.avdDoOnEnd
+import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.getMarket
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_splash.*
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class SplashActivity : BaseActivity() {
+class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
 
     override fun onStart() {
@@ -63,12 +66,14 @@ class SplashActivity : BaseActivity() {
             return
         }
 
-        startActivities(
-            arrayOf(
-                Intent(this, LoggedInActivity::class.java),
-                Intent(this, ConnectPaymentActivity::class.java)
+        runSplashAnimation {
+            startActivities(
+                arrayOf(
+                    Intent(this, LoggedInActivity::class.java),
+                    Intent(this, ConnectPaymentActivity::class.java)
+                )
             )
-        )
+        }
     }
 
     private fun handleReferralsDeepLink(link: Uri, loginStatus: LoginStatus?) {
@@ -78,22 +83,28 @@ class SplashActivity : BaseActivity() {
         }
         when (getMarket()) {
             null -> {
-                startActivity(MarketPickerActivity.newInstance(this))
+                runSplashAnimation {
+                    startActivity(MarketPickerActivity.newInstance(this))
+                }
             }
             Market.SE -> {
                 link.getQueryParameter("code")?.let { referralCode ->
-                    startActivity(
-                        ReferralsReceiverActivity.newInstance(
-                            this,
-                            referralCode,
-                            "10"
-                        )
-                    ) //Fixme "10" should not be hard coded
+                    runSplashAnimation {
+                        startActivity(
+                            ReferralsReceiverActivity.newInstance(
+                                this,
+                                referralCode,
+                                "10"
+                            )
+                        ) //Fixme "10" should not be hard coded
+                    }
 
                 } ?: startDefaultActivity(loginStatus)
             }
             else -> {
-                startActivity(Intent(this, MarketingActivity::class.java))
+                runSplashAnimation {
+                    startActivity(Intent(this, MarketingActivity::class.java))
+                }
             }
         }
     }
@@ -103,14 +114,20 @@ class SplashActivity : BaseActivity() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val marketOrdinal = sharedPreferences.getString(Market.MARKET_SHARED_PREF, null)
         when (loginStatus) {
-            LoginStatus.ONBOARDING -> startActivity(MarketPickerActivity.newInstance(this))
+            LoginStatus.ONBOARDING -> {
+                runSplashAnimation {
+                    startActivity(MarketPickerActivity.newInstance(this))
+                }
+            }
             LoginStatus.IN_OFFER -> {
                 if (marketOrdinal == null) {
                     sharedPreferences.edit()
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
-                startActivity(Intent(this, OfferActivity::class.java))
+                runSplashAnimation {
+                    startActivity(Intent(this, OfferActivity::class.java))
+                }
             }
             LoginStatus.LOGGED_IN -> {
                 if (marketOrdinal == null) {
@@ -118,7 +135,9 @@ class SplashActivity : BaseActivity() {
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
-                startActivity(Intent(this, LoggedInActivity::class.java))
+                runSplashAnimation {
+                    startActivity(Intent(this, LoggedInActivity::class.java))
+                }
             }
             LoginStatus.LOGGED_IN_TERMINATED -> {
                 if (marketOrdinal == null) {
@@ -126,12 +145,14 @@ class SplashActivity : BaseActivity() {
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
                 }
-                startActivity(
-                    Intent(
-                        this,
-                        LoggedInTerminatedActivity::class.java
+                runSplashAnimation {
+                    startActivity(
+                        Intent(
+                            this,
+                            LoggedInTerminatedActivity::class.java
+                        )
                     )
-                )
+                }
             }
             else -> {
                 disposables += loggedInService
@@ -150,5 +171,10 @@ class SplashActivity : BaseActivity() {
             handleFirebaseDynamicLink(intent, loginStatus)
         }
         else -> startDefaultActivity(loginStatus)
+    }
+
+    private inline fun runSplashAnimation(crossinline andThen: () -> Unit) {
+        splashAnimation.avdDoOnEnd { andThen() }
+        splashAnimation.avdStart()
     }
 }
