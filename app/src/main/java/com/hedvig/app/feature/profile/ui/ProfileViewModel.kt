@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.profile.ui
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.util.LiveEvent
@@ -10,6 +12,7 @@ abstract class ProfileViewModel : ViewModel() {
     abstract val data: MutableLiveData<ProfileQuery.Data>
     abstract val dirty: MutableLiveData<Boolean>
     abstract val trustlyUrl: LiveEvent<String>
+    abstract val directDebitStatus: LiveData<DirectDebitQuery.Data>
 
     abstract fun startTrustlySession()
     abstract fun selectCashback(id: String)

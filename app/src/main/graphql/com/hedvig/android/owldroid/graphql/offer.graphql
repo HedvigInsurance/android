@@ -47,21 +47,7 @@ query Offer($locale: Locale!) {
         ...CostFragment
       }
       perils(locale: $locale) {
-        title
-        description
-        covered
-        exceptions
-        info
-        icon {
-          variants {
-            dark {
-              svgUrl
-            }
-            light {
-              svgUrl
-            }
-          }
-        }
+        ... PerilFragment
       }
       termsAndConditions(locale: $locale) {
         displayName
@@ -72,9 +58,24 @@ query Offer($locale: Locale!) {
         limit
         description
       }
-      insuranceTerms(locale: $locale) {
-        displayName
-        url
+      #      insuranceTerms(locale: $locale) {
+      #        displayName
+      #        url
+      #      }
+    }
+  }
+}
+
+fragment PerilFragment on PerilV2 {
+  title
+  description
+  icon {
+    variants {
+      dark {
+        svgUrl
+      }
+      light {
+        svgUrl
       }
     }
   }

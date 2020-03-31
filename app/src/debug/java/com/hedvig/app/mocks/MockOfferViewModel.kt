@@ -16,7 +16,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import org.threeten.bp.LocalDate
 
 class MockOfferViewModel(
-    private val context: Context
+    context: Context
 ) : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
@@ -114,8 +114,8 @@ class MockOfferViewModel(
                         url = "https://www.example.com/"
                     ),
                     insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
-                    insuranceTerms = listOf()
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF
+                    // insuranceTerms = listOf()
                 )
             )
         )
@@ -190,8 +190,8 @@ class MockOfferViewModel(
                         url = "https://www.example.com/"
                     ),
                     insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
-                    insuranceTerms = listOf()
+                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF
+                    // insuranceTerms = listOf()
                 )
             )
         )

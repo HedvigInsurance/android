@@ -2,6 +2,9 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
 
+    <!-- REASON: Adyen Checkout is not yet compatible with Material Components 1.1.0 -->
+    <style name="AdyenCheckout" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@color/translucent_background</item>
     </style>
@@ -49,17 +52,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <!--  TODO: Remove these once we've removed the only screen using it -->
-    <style name="ProfileFieldLabel">
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="ProfileField" parent="Widget.Design.TextInputLayout">
-        <item name="hintTextAppearance">@style/ProfileFieldLabel</item>
-        <item name="colorControlActivated">?colorSecondary</item>
-        <item name="android:textSize">16sp</item>
     </style>
 
     <!--
@@ -111,10 +103,6 @@
         </item>
     </style>
 
-    <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:background">@drawable/background_rounded_corners</item>
-    </style>
-
     <style name="DialogNoAnimation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>
@@ -137,5 +125,11 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="AdyenCheckout.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">?colorPrimary</item>
+        <item name="hintTextAppearance">@style/AdyenCheckout.HintTextStyle</item>
+        <item name="hintTextColor">@color/primaryColor</item>
+        <item name="android:minHeight">@dimen/input_layout_height</item>
+    </style>
 
 </resources>

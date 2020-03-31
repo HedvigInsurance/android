@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
 import com.hedvig.android.owldroid.fragment.CostFragment
@@ -47,6 +48,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
+    private val animationHandler = Handler()
+    private var hasTriggeredAnimations = false
+    private var lastAnimationHasCompleted = false
+
     private lateinit var factAreaBinder: FactAreaBinder
     private lateinit var termsBinder: TermsBinder
     private lateinit var perilBinder: PerilBinder
@@ -62,7 +67,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             it?.let { data ->
                 /* Bind perils */
                 val perils = data.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
-                perilBinder.bind(perils)
+                perilBinder.bind(perils, data)
                 /* Bind terms */
 
                 container.show()
@@ -79,7 +84,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     })
                 } else {
                     val completeQuote = data.lastQuoteOfMember.asCompleteQuote!!
-                    perilBinder.contract = completeQuote.toContractType()
                     when {
                         completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
                             val apartmentData =
@@ -108,7 +112,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
             }
         }
-      
+
         offerChatButton.setHapticClickListener {
             tracker.openChat()
             offerViewModel.triggerOpenChat {
