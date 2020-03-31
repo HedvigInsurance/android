@@ -10,7 +10,6 @@
         android:id="@+id/contractName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:textAppearance="?textAppearanceHeadline5"
         tools:text="Hemförsäkring" />
@@ -20,11 +19,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:drawablePadding="@dimen/base_margin"
         android:gravity="center_vertical"
-        android:textAppearance="?textAppearanceBody1"
+        android:textAppearance="?textAppearanceBody2"
         tools:drawableStart="@drawable/ic_active"
         tools:text="Aktiv" />
 

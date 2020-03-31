@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -35,7 +36,6 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
         norwegianBankIdContainer.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 if (request?.url?.toString()?.contains("success") == true) {
-                    startActivity(LoggedInActivity.newInstance(this@NorwegianAuthenticationActivity, withoutHistory = true))
                     return true
                 }
                 if (request?.url?.toString()?.contains("failure") == true) {
@@ -47,6 +47,24 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
                 return true
             }
         }
+
+        model.authStatus.observe(this) { status ->
+            status?.let { s ->
+                when (s) {
+                    AuthState.SUCCESS -> {
+                        startActivity(LoggedInActivity.newInstance(this@NorwegianAuthenticationActivity, withoutHistory = true))
+                    }
+                    AuthState.FAILED -> {
+                        // TODO: Add UI for the failure case
+                        e { "Failed to log in" }
+                    }
+                    else -> {
+                        // No-op
+                    }
+                }
+            }
+        }
+
 
         model.redirectUrl.observe(this) { redirectUrl ->
             redirectUrl?.let { ru ->

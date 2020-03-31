@@ -298,6 +298,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
             e { "Programmer error: No market set when viewing ${this.javaClass.name}" }
             return
         }
+
         login.setHapticClickListener {
             when (market) {
                 Market.SE -> {
