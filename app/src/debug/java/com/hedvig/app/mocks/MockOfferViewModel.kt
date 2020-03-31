@@ -191,7 +191,6 @@ class MockOfferViewModel(
                     ),
                     insurableLimits = listOf(),
                     typeOfContract = TypeOfContract.SE_APARTMENT_BRF
-                    // insuranceTerms = listOf()
                 )
             )
         )
