@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -17,6 +18,7 @@ import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
@@ -26,6 +28,11 @@ import timber.log.Timber
 
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        root.useEdgeToEdge()
+    }
 
     override fun onStart() {
         super.onStart()
