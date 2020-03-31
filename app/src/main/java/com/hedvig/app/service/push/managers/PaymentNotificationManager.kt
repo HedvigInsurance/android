@@ -9,7 +9,7 @@ import androidx.core.app.TaskStackBuilder
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.trustly.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.service.push.setupNotificationChannel
 
 object PaymentNotificationManager {
@@ -26,7 +26,7 @@ object PaymentNotificationManager {
                 addNextIntentWithParentStack(
                     Intent(
                         context,
-                        TrustlyActivity::class.java
+                        ConnectPaymentActivity::class.java
                     )
                 )
                 getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)

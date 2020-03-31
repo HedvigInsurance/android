@@ -9,17 +9,16 @@ import android.widget.Button
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.app.feature.adyen.AdyenActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.offer.OfferActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -75,10 +74,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openAdyen.setHapticClickListener {
-            startActivity(AdyenActivity.newInstance(this))
-        }
-
         openNorwegianAuth.setHapticClickListener {
             startActivity(NorwegianAuthenticationActivity.newInstance(this))
         }
@@ -108,7 +103,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
 
         findViewById<Button>(R.id.openPostSignDD).setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this, true))
+            startActivity(ConnectPaymentActivity.newInstance(this, true))
         }
 
         findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {

@@ -16,7 +16,9 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
+import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
@@ -31,6 +33,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import e
 import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -49,7 +52,7 @@ class MarketingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_marketing)
-        
+
         val market = getMarket()
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
@@ -290,8 +293,21 @@ class MarketingActivity : BaseActivity() {
         login.show()
         getHedvig.show()
 
+        val market = getMarket()
+        if (market == null) {
+            e { "Programmer error: Viewing ${this.javaClass.name} without a Market" }
+            return
+        }
+
         login.setHapticClickListener {
-            AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+            when (market) {
+                Market.SE -> {
+                    AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+                }
+                Market.NO -> {
+                    startActivity(NorwegianAuthenticationActivity.newInstance(this))
+                }
+            }
         }
 
         getHedvig.setHapticClickListener {
@@ -299,9 +315,16 @@ class MarketingActivity : BaseActivity() {
                 marketingStoriesViewModel.page.value,
                 marketingStoriesViewModel.blurred.value
             )
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-            startActivity(intent)
+            when (market) {
+                Market.SE -> {
+                    val intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
+                    startActivity(intent)
+                }
+                Market.NO -> {
+                    // TODO: Start norwegian web onboarding when merged
+                }
+            }
         }
     }
 
