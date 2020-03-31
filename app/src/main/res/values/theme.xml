@@ -79,4 +79,10 @@
         <item name="colorSurface">@color/colorChatInputButton</item>
     </style>
 
+    <style name="Hedvig.Theme.Widgets.Offer.Sign.Button" parent="Hedvig.Theme">
+        <item name="backgroundTint">@color/colorOfferSignButton</item>
+        <item name="iconTint">@color/colorOnPrimary</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+    </style>
+
 </resources>

@@ -14,4 +14,10 @@
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
 
     <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+
+    <style name="ThemeOverlay.Hedvig.Button.OfferSign" parent="">
+        <item name="colorButton">@color/colorOfferSignButton</item>
+        <item name="colorPrimary">@color/colorOnPrimary</item>
+        <item name="textColorButton">@color/colorOnPrimary</item>
+    </style>
 </resources>

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
     tools:context=".feature.offer.OfferActivity">
 
     <include
@@ -22,7 +21,6 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible">
@@ -45,6 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/base_margin_double"
+                        android:backgroundTint="?colorSurface"
                         android:background="@drawable/background_rounded_corners"
                         android:gravity="center"
                         android:orientation="vertical">
@@ -56,7 +55,6 @@
                             android:background="?selectableItemBackground"
                             android:layout_marginTop="@dimen/base_margin_half"
                             android:textAppearance="?textAppearanceHeadline6"
-                            android:textColor="@color/off_white"
                             tools:text="Discount" />
 
                         <TextView
@@ -153,18 +151,17 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/premiumBoxSignButton"
                             style="?attr/materialButtonContainedLargeStyle"
+                            android:theme="@style/ThemeOverlay.Hedvig.Button.OfferSign"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/base_margin_double"
                             android:layout_marginTop="@dimen/base_margin_quadruple"
-                            android:backgroundTint="@color/black"
                             android:text="@string/OFFER_SIGN_BUTTON"
                             android:textAllCaps="false"
-                            android:textColor="@color/off_white"
+                            android:textColor="?colorOnPrimary"
                             app:icon="@drawable/ic_bank_id"
                             app:iconGravity="textEnd"
                             app:iconPadding="10dp"
-                            app:iconTint="@color/off_white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
