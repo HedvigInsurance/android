@@ -301,9 +301,13 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
         private const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
         private const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
 
-        fun newInstance(context: Context, withExplainer: Boolean = false) =
+        fun newInstance(context: Context, withExplainer: Boolean = false, withoutHistory: Boolean = false) =
             Intent(context, ConnectPaymentActivity::class.java).apply {
                 putExtra(WITH_EXPLAINER, withExplainer)
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
             }
     }
 }

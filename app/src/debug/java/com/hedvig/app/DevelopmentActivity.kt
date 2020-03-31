@@ -19,6 +19,7 @@ import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -74,6 +75,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
+        openWebOnboarding.setHapticClickListener {
+            startActivity(WebOnboardingActivity.newInstance(this))
+        }
+
         openNorwegianAuth.setHapticClickListener {
             startActivity(NorwegianAuthenticationActivity.newInstance(this))
         }
@@ -92,10 +97,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         }
         findViewById<Button>(R.id.openReferralNotification).setHapticClickListener {
             startActivity(ReferralsSuccessfulInviteActivity.newInstance(this, "Fredrik", "10.00"))
-        }
-
-        findViewById<Button>(R.id.openNativeChat).setHapticClickListener {
-            startActivity(Intent(this, ChatActivity::class.java))
         }
 
         findViewById<Button>(R.id.openNativeOffer).setHapticClickListener {
