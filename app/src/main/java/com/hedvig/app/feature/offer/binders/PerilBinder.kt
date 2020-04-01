@@ -48,7 +48,8 @@ class PerilBinder(
                 root.perilInfo.text =
                     root.context.getString(R.string.OFFER_SCREEN_COVERAGE_BODY_RENTAL)
             }
-            else -> root.perilInfo.text = ""
+            else -> {
+            }
         }
     }
 }

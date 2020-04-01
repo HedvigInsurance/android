@@ -27,6 +27,6 @@
     <item name="colorChatInputButton" type="color">@color/button_background_dark</item>
     <item name="colorChatHedvigBackground" type="color">@color/button_background_dark</item>
 
-    <item name="colorOfferSignButton" type="color">@color/violet_300</item>
+    <item name="colorLargeButton" type="color">@color/violet_300</item>
 
 </resources>

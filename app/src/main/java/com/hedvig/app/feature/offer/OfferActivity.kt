@@ -61,7 +61,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
                 perilBinder.bind(data)
-                /* Bind terms */
                 termsBinder.bind(data)
 
                 container.show()

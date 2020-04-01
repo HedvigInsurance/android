@@ -58,7 +58,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/auto_set_date_text_size"
         android:textAlignment="center"
-        android:textColor="?colorSecondary"
         tool:text="@string/ACTIVATE_INSURANCE_END_BTN" />
 
 

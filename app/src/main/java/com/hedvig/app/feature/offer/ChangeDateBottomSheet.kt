@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
-import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
@@ -13,16 +13,14 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.text.DateFormatSymbols
-import java.util.*
+import java.util.Calendar
 
-class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
+class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
     private lateinit var localDate: LocalDate
-
-    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -39,25 +37,25 @@ class ChangeDateBottomSheet : RoundedBottomSheetDialogFragment() {
             d?.let { data ->
                 lateinit var buttonText: String
                 data.lastQuoteOfMember.asCompleteQuote?.id?.let { id ->
-//                    if (data.lastQuoteOfMember.asCompleteQuote?.quoteDetails?. != null) {
-//                        dialog.chooseDateButton.setOnClickListener {
-//                            requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
-//                                R.string.ALERT_DESCRIPTION_STARTDATE,
-//                                R.string.ALERT_CONTINUE,
-//                                R.string.ALERT_CANCEL,
-//                                {
-//                                    tracker.changeDateContinue()
-//                                    offerViewModel.chooseStartDate(id, localDate)
-//                                    dialog.hide()
-//                                })
-//                        }
-//                    } else {
-//                        dialog.chooseDateButton.setOnClickListener {
-//                            tracker.chooseDate()
-//                            offerViewModel.chooseStartDate(id, localDate)
-//                            dialog.hide()
-//                        }
-//                    }
+                    if (data.lastQuoteOfMember.asCompleteQuote?.quoteDetails != null) {
+                        dialog.chooseDateButton.setOnClickListener {
+                            requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
+                                R.string.ALERT_DESCRIPTION_STARTDATE,
+                                R.string.ALERT_CONTINUE,
+                                R.string.ALERT_CANCEL,
+                                {
+                                    tracker.changeDateContinue()
+                                    offerViewModel.chooseStartDate(id, localDate)
+                                    dialog.hide()
+                                })
+                        }
+                    } else {
+                        dialog.chooseDateButton.setOnClickListener {
+                            tracker.chooseDate()
+                            offerViewModel.chooseStartDate(id, localDate)
+                            dialog.hide()
+                        }
+                    }
                     if (data.lastQuoteOfMember.asCompleteQuote.currentInsurer == null) {
                         tracker.activateToday()
                         buttonText = getString(R.string.ACTIVATE_TODAY_BTN)

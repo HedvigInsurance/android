@@ -21,12 +21,17 @@
         app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
         app:srcCompat="@drawable/fade_out_gradient" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/expandableContentToggle"
-        android:layout_width="wrap_content"
+        style="?attr/materialButtonContainedLargeStyle"
+        android:theme="@style/Hedvig.Button.Large"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="100dp"
+        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:textAllCaps="false"
         android:text="@string/OFFER_HOUSE_SUMMARY_BUTTON_EXPAND"
+        android:textColor="?colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

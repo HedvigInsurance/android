@@ -66,7 +66,7 @@ class TermsBinder(
                 termsButtonContainer,
                 false
             ) as MaterialButton
-            button.text = terms.displayName
+            button.text = terms.displayName + " ↗"
             button.setHapticClickListener {
                 tracker.openOfferLink(terms.displayName)
                 it.context.openUri(Uri.parse(terms.url))
