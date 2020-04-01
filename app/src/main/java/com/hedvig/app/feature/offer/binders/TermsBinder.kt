@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -29,6 +30,12 @@ class TermsBinder(
         }
         val quote = data.lastQuoteOfMember.asCompleteQuote
 
+        insurableLimits.adapter = InsurableLimitsAdapter()
+        quote?.insurableLimits?.let { limits ->
+            (insurableLimits.adapter as InsurableLimitsAdapter).items =
+                limits.map { it.fragments.insurableLimitsFragment }
+        }
+
         quote?.insurableLimits?.indices?.let {
             for (i in it step 2) {
                 val limit = quote.insurableLimits[i]
@@ -39,12 +46,14 @@ class TermsBinder(
                     false
                 ) as LinearLayout
 
-                limitRow.offerLimitDescription1.text = limit.description
-                limitRow.offerLimit1.text = limit.limit
+                limitRow.offerLimitDescription1.text =
+                    limit.fragments.insurableLimitsFragment.description
+                limitRow.offerLimit1.text = limit.fragments.insurableLimitsFragment.limit
 
                 secondLimit?.let {
-                    limitRow.offerLimitDescription2.text = it.description
-                    limitRow.offerLimit2.text = it.limit
+                    limitRow.offerLimitDescription2.text =
+                        it.fragments.insurableLimitsFragment.description
+                    limitRow.offerLimit2.text = it.fragments.insurableLimitsFragment.limit
                 }
                 limitsContainer.addView(limitRow)
             }

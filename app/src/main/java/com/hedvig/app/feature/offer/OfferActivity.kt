@@ -62,6 +62,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             it?.let { data ->
                 perilBinder.bind(data)
                 /* Bind terms */
+                termsBinder.bind(data)
 
                 container.show()
                 loadingSpinner.remove()

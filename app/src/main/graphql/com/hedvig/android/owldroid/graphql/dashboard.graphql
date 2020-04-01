@@ -45,8 +45,7 @@ query DashboardQuery($locale: Locale!) {
       ... PerilFragment
     }
     insurableLimits(locale: $locale) {
-      label
-      limit
+      ... InsurableLimitsFragment
     }
     termsAndConditions(locale: $locale) {
       displayName

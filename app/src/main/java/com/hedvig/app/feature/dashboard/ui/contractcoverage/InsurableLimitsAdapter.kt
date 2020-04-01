@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.app.R
 import kotlinx.android.synthetic.main.coverage_insurable_limit.view.*
 
 class InsurableLimitsAdapter : RecyclerView.Adapter<InsurableLimitsAdapter.ViewHolder>() {
-    var items: List<DashboardQuery.InsurableLimit> = emptyList()
+    var items: List<InsurableLimitsFragment> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(InsurableLimitsDiffCallback(field, value))
             field = value
@@ -31,19 +31,22 @@ class InsurableLimitsAdapter : RecyclerView.Adapter<InsurableLimitsAdapter.ViewH
         private val label = itemView.label
         private val limit = itemView.limit
 
-        fun bind(data: DashboardQuery.InsurableLimit) {
+        fun bind(data: InsurableLimitsFragment) {
             label.text = data.label
             limit.text = data.limit
         }
     }
 
     class InsurableLimitsDiffCallback(
-        private val old: List<DashboardQuery.InsurableLimit>,
-        private val new: List<DashboardQuery.InsurableLimit>
+        private val old: List<InsurableLimitsFragment>,
+        private val new: List<InsurableLimitsFragment>
     ) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = old[oldItemPosition] == new[newItemPosition]
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            old[oldItemPosition] == new[newItemPosition]
+
         override fun getOldListSize() = old.size
         override fun getNewListSize() = new.size
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = areItemsTheSame(oldItemPosition, newItemPosition)
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            areItemsTheSame(oldItemPosition, newItemPosition)
     }
 }

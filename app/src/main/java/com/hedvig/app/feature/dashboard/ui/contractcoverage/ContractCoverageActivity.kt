@@ -55,7 +55,8 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
             "CONTRACT_TYPE" to data.typeOfContract.displayNameDefinite(this)
         )
         (perils.adapter as? PerilsAdapter)?.items = data.perils.map { it.fragments.perilFragment }
-        (insurableLimits.adapter as? InsurableLimitsAdapter)?.items = data.insurableLimits
+        (insurableLimits.adapter as? InsurableLimitsAdapter)?.items =
+            data.insurableLimits.map { it.fragments.insurableLimitsFragment }
     }
 
     companion object {

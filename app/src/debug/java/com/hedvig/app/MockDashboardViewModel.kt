@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
@@ -101,8 +102,14 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
+
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -251,8 +258,13 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -325,8 +337,13 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -389,8 +406,13 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(

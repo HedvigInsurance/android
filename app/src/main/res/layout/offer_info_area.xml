@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:orientation="vertical"
     tools:parentTag="android.widget.LinearLayout">
@@ -26,13 +25,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadline6"
-                tools:text="Drulleförsäkring ingår" />
+                android:text="@string/OFFER_SCREEN_USP_ONE_TITLE" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceBody1"
-                tools:text="Drulleförsäkring skyddar dina saker när du spiller läsk på din laptop" />
+                android:text="@string/OFFER_SCREEN_USP_ONE_BODY" />
 
         </LinearLayout>
 
@@ -59,13 +58,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadline6"
-                tools:text="Drulleförsäkring ingår" />
+                android:text="@string/OFFER_SCREEN_USP_TWO_TITLE" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceBody1"
-                tools:text="Drulleförsäkring skyddar dina saker när du spiller läsk på din laptop" />
+                android:text="@string/OFFER_SCREEN_USP_TWO_BODY" />
 
         </LinearLayout>
 
@@ -92,13 +91,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadline6"
-                tools:text="Drulleförsäkring ingår" />
+                android:text="@string/OFFER_SCREEN_USP_THREE_TITLE" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceBody1"
-                tools:text="Drulleförsäkring skyddar dina saker när du spiller läsk på din laptop" />
+                android:text="@string/OFFER_SCREEN_USP_THREE_BODY" />
 
         </LinearLayout>
 

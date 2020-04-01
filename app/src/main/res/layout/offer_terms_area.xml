@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/off_white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -24,21 +24,34 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
-            tools:text="Mer informasjon" />
-
+            android:text="Mer informasjon" />
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/insurableLimits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        tools:itemCount="3"
+        tools:listitem="@layout/coverage_insurable_limit" />
 
     <LinearLayout
         android:id="@+id/limitsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/base_margin_double"/>
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:orientation="vertical" />
 
     <LinearLayout
         android:id="@+id/termsButtonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="@dimen/base_margin_octuple"/>
+        android:paddingTop="@dimen/base_margin_octuple" />
 </LinearLayout>
