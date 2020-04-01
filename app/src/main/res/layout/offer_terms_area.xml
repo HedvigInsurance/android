@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_double"
-            android:text="Mer informasjon" />
+            android:text="@string/OFFER_SCREEN_INSURED_AMOUNTS_TITLE" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

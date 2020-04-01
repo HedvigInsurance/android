@@ -5,13 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!--TODO-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
-        android:text="TODO Din information"
+        android:text="@string/OFFER_SCREEN_INFORMATION_TITLE"
         android:textAppearance="?textAppearanceHeadline4" />
 
     <TextView
