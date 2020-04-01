@@ -38,12 +38,12 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import e
-import kotlinx.android.synthetic.main.activity_trustly.*
+import kotlinx.android.synthetic.main.activity_connect_payment.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ConnectPaymentActivity : BaseActivity(R.layout.activity_trustly) {
+class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     private val profileViewModel: ProfileViewModel by viewModel()
     private val adyenViewModel: AdyenViewModel by viewModel()

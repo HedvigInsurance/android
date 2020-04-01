@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.core.view.isEmpty
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -38,6 +39,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +68,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
             val id = LoggedInTabs.fromId(menuItem.itemId)
+            if (id == null) {
+                e { "Programmer error: Invalid menu item chosen" }
+                return@setOnNavigationItemSelectedListener false
+            }
             tabContentContainer.setCurrentItem(id.ordinal, false)
             setupAppBar(id)
             setupFloatingButton(id)
@@ -178,7 +184,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         whatsNewViewModel.news.observe(lifecycleOwner = this) { data ->
             data?.let {
-                if (data.news.size > 0) {
+                if (data.news.isNotEmpty()) {
                     // Yep, this is actually happening
                     GlobalScope.launch(Dispatchers.IO) {
                         FirebaseInstanceId.getInstance().deleteInstanceId()
@@ -199,14 +205,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInTracker.setMemberId(id)
             }
 
-            val keyGearEnabled = isDebug() || data?.member?.features?.contains(Feature.KEYGEAR) ?: false
+            if (bottomTabs.menu.isEmpty()) {
+                val keyGearEnabled = isDebug() || data?.member?.features?.contains(Feature.KEYGEAR) ?: false
+                val referralsEnabled = isDebug() || data?.member?.features?.contains(Feature.REFERRALS) ?: false
 
-            if (keyGearEnabled && bottomTabs.menu.size() != 5) {
-                bottomTabs.menu.clear()
-                bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
-            } else if (!keyGearEnabled && bottomTabs.menu.size() != 4) {
-                bottomTabs.menu.clear()
-                bottomTabs.inflateMenu(R.menu.logged_in_menu)
+                val menuId = when {
+                    keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+                    referralsEnabled -> R.menu.logged_in_menu
+                    !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+                    else -> R.menu.logged_in_menu
+                }
+                bottomTabs.inflateMenu(menuId)
+                setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
             }
         }
         whatsNewViewModel.fetchNews()
@@ -240,7 +250,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun setupAppBar(id: LoggedInTabs) {
+    private fun setupAppBar(id: LoggedInTabs?) {
         invalidateOptionsMenu()
         if (lastLoggedInTab != id) {
             appBarLayout.setExpanded(true, false)
@@ -262,7 +272,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 setupLargeTitle(R.string.PROFILE_TITLE)
             }
         }
-        lastLoggedInTab = id
+        if (id != null) {
+            lastLoggedInTab = id
+        }
     }
 
     companion object {

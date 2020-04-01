@@ -59,7 +59,7 @@
                     android:layout_marginTop="@dimen/base_margin_double"
                     android:contentDescription="@null"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/claims_illustration"
+                    app:srcCompat="@drawable/illustration_claims"
                     tools:visibility="visible" />
 
                 <TextView
@@ -85,7 +85,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginTop="@dimen/base_margin_triple"
-                    android:background="@drawable/button_primary"
                     android:text="@string/CLAIMS_CREATE_CLAIM_BUTTON_LABEL"
                     tools:visibility="visible" />
 
