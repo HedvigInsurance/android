@@ -101,9 +101,20 @@ class MockProfileViewModel : ProfileViewModel() {
                         date = LocalDate.of(2019, 6, 27)
                     )
                 ),
+                bankAccount = null,
+                /*
                 bankAccount = ProfileQuery.BankAccount(
                     bankName = "Testbanken",
                     descriptor = "*** 456 789"
+                ),
+                */
+                activePaymentMethods = ProfileQuery.ActivePaymentMethods(
+                    storedPaymentMethodsDetails = ProfileQuery.StoredPaymentMethodsDetails(
+                        brand = "Mastercard",
+                        lastFourDigits = "1234",
+                        expiryMonth = "01",
+                        expiryYear = "2025"
+                    )
                 ),
                 cashback = null,
                 cashbackOptions = emptyList(),

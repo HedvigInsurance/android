@@ -41,6 +41,14 @@ query Profile {
     bankName
     descriptor
   }
+  activePaymentMethods {
+    storedPaymentMethodsDetails {
+      brand
+      lastFourDigits
+      expiryMonth
+      expiryYear
+    }
+  }
   cashback {
     ... CashbackFragment
   }
