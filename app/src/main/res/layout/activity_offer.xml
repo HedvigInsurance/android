@@ -174,7 +174,7 @@
                             android:layout_marginTop="@dimen/base_margin"
                             android:layout_marginBottom="@dimen/base_margin_double"
                             android:padding="@dimen/button_border_white_padding"
-                            android:textColor="@color/purple"
+                            android:textColor="?colorSecondary"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/dateButton"
