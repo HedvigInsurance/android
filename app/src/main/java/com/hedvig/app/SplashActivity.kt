@@ -119,15 +119,21 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     @SuppressLint("ApplySharedPref")
     private fun startDefaultActivity(loginStatus: LoginStatus?) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val marketOrdinal = sharedPreferences.getString(Market.MARKET_SHARED_PREF, null)
+        val market = sharedPreferences.getString(Market.MARKET_SHARED_PREF, null)
         when (loginStatus) {
             LoginStatus.ONBOARDING -> {
-                runSplashAnimation {
-                    startActivity(MarketPickerActivity.newInstance(this))
+                if (market == null) {
+                    runSplashAnimation {
+                        startActivity(MarketPickerActivity.newInstance(this))
+                    }
+                } else {
+                    runSplashAnimation {
+                        startActivity(MarketingActivity.newInstance(this))
+                    }
                 }
             }
             LoginStatus.IN_OFFER -> {
-                if (marketOrdinal == null) {
+                if (market == null) {
                     sharedPreferences.edit()
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
@@ -137,7 +143,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                 }
             }
             LoginStatus.LOGGED_IN -> {
-                if (marketOrdinal == null) {
+                // Upcast everyone that were logged in before Norway launch to be in the Swedish market
+                if (market == null) {
                     sharedPreferences.edit()
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()
@@ -147,7 +154,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                 }
             }
             LoginStatus.LOGGED_IN_TERMINATED -> {
-                if (marketOrdinal == null) {
+                // Upcast everyone that were logged in before Norway launch to be in the Swedish market
+                if (market == null) {
                     sharedPreferences.edit()
                         .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
                         .commit()

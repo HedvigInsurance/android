@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:contentDescription="@null"
-            app:srcCompat="@drawable/ic_invite_success" />
+            app:srcCompat="@drawable/illustration_invite_success" />
 
         <TextView
             android:id="@+id/referralsReceiverTitle"

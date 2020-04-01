@@ -2,8 +2,7 @@ package com.hedvig.app.service
 
 import android.content.Context
 import com.apollographql.apollo.rx2.Rx2Apollo
-import com.hedvig.android.owldroid.graphql.InsuranceStatusQuery
-import com.hedvig.android.owldroid.type.InsuranceStatus
+import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -25,33 +24,28 @@ class LoginStatusService(
             return Observable.just(LoginStatus.IN_OFFER)
         }
 
-
         context.getAuthenticationToken() ?: return Observable.just(LoginStatus.ONBOARDING)
 
-        return Rx2Apollo.from(apolloClientWrapper.apolloClient.query(InsuranceStatusQuery()))
+        return Rx2Apollo.from(apolloClientWrapper.apolloClient.query(ContractStatusQuery()))
             .map { response ->
-                response.data()?.insurance?.status?.let { status ->
-                    when (status) {
-                        InsuranceStatus.ACTIVE,
-                        InsuranceStatus.INACTIVE,
-                        InsuranceStatus.INACTIVE_WITH_START_DATE -> {
-                            context.setIsLoggedIn(true)
-                            LoginStatus.LOGGED_IN
-                        }
-                        InsuranceStatus.TERMINATED -> {
-                            LoginStatus.LOGGED_IN_TERMINATED
-                        }
-                        InsuranceStatus.PENDING,
-                        InsuranceStatus.UNKNOWN__ -> {
-                            context.setIsLoggedIn(false)
-                            LoginStatus.ONBOARDING
-                        }
-                    }
-                } ?: LoginStatus.ONBOARDING
+                if (response.data()?.contracts?.isEmpty() == true) {
+                    return@map LoginStatus.ONBOARDING
+                }
+
+                if (isTerminated(response.data()?.contracts)) {
+                    return@map LoginStatus.LOGGED_IN_TERMINATED
+                }
+
+                context.setIsLoggedIn(true)
+
+                LoginStatus.LOGGED_IN
             }
     }
 
     companion object {
+
+        private fun isTerminated(contracts: List<ContractStatusQuery.Contract>?) = contracts?.isNotEmpty() == true && contracts.all { it.status.__typename == "TerminatedStatus" }
+
         const val IS_VIEWING_OFFER = "IS_VIEWING_OFFER"
     }
 }
