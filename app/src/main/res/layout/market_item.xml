@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?colorSurface"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/base_margin_triple"
+    android:paddingTop="@dimen/base_margin_double"
+    android:paddingEnd="@dimen/base_margin_triple"
+    android:paddingBottom="@dimen/base_margin_double">
+
+    <ImageView
+        android:id="@+id/flag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        tools:src="@drawable/ic_flag_se" />
+
+    <TextView
+        android:id="@+id/country"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_weight="1"
+        android:textAppearance="?textAppearanceBody1"
+        tools:text="Sverige" />
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="@dimen/checkbox_size"
+        android:layout_height="@dimen/checkbox_size"
+        android:background="@drawable/ic_radio_button_unchecked"
+        android:button="@color/transparent"
+        android:clickable="false" />
+
+</LinearLayout>

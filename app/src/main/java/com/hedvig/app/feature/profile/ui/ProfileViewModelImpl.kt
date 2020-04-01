@@ -1,8 +1,11 @@
 package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.app.data.debit.DirectDebitRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
@@ -12,20 +15,32 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.zipWith
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val directDebitRepository: DirectDebitRepository
 ) : ProfileViewModel() {
     override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
+    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
 
     private val disposables = CompositeDisposable()
 
     init {
         loadProfile()
+
+        viewModelScope.launch {
+            directDebitRepository
+                .directDebit()
+                .collect { response ->
+                    response.data()?.let { directDebitStatus.postValue(it) }
+                }
+        }
     }
 
     override fun refreshProfile() =
@@ -112,6 +127,11 @@ class ProfileViewModelImpl(
     }
 
     override fun refreshBankAccountInfo() {
+        viewModelScope.launch {
+            runCatching {
+                directDebitRepository.refreshDirectDebitStatus()
+            }
+        }
         disposables += profileRepository.refreshBankAccountInfo()
             .subscribe({ response ->
                 response.data()?.let { data ->

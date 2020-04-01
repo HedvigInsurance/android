@@ -20,24 +20,25 @@
 
     <TextView
         android:id="@+id/commonClaimFirstMessage"
-        style="@style/Headline.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_triple"
+        android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Blir ditt bagage försenat när du flyger ersätter Hedvig dig för att du ska kunna köpa saker du behöver. Hur mycket du får beror på hur mycket bagaget är försenat." />
 
-
     <Button
         android:id="@+id/commonClaimCreateClaimButton"
-        style="@style/HedvigButton.Purple"
-        android:layout_width="wrap_content"
+        style="?attr/materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
         app:layout_constraintBottom_toTopOf="@id/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

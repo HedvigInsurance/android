@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:theme="@style/Hedvig.Theme.Widgets.Chat.Input">
 
     <LinearLayout
         android:id="@+id/textInputContainer"
@@ -24,7 +25,7 @@
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin"
             android:contentDescription="@string/UPLOAD_FILE_BUTTON_HINT"
-            android:src="@drawable/ic_chat_attach_file" />
+            android:src="@drawable/ic_attach_file" />
 
         <TextView
             android:id="@+id/sendGif"
@@ -34,12 +35,11 @@
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
-            android:background="@drawable/circle_background"
-            android:backgroundTint="@color/link_purple"
-            android:fontFamily="@font/circular_book"
+            android:background="@drawable/chat_input_button"
             android:gravity="center"
             android:text="@string/GIF_BUTTON_TITLE"
-            android:textColor="@color/white" />
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="?colorPrimary" />
 
         <!--
         Ignore RtlHardcoded
@@ -47,13 +47,12 @@
         -->
         <com.hedvig.app.feature.chat.ui.ChatTextInput
             android:id="@+id/inputText"
-            style="@style/Body.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin"
             android:layout_weight="1"
             android:background="@drawable/chat_background_edit_text_rounded_corners"
-            android:drawableRight="@drawable/ic_chat_send"
+            android:drawableRight="@drawable/ic_send"
             android:hint="@string/CHAT_TEXT_INPUT_HINT"
             android:imeOptions="actionSend"
             android:paddingStart="@dimen/base_margin_double"
@@ -81,7 +80,7 @@
         android:contentDescription="@null"
         android:visibility="gone"
         app:srcCompat="@drawable/animation_typing"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
     <com.hedvig.app.feature.chat.ui.AudioRecorderView
         android:id="@+id/audioRecorder"

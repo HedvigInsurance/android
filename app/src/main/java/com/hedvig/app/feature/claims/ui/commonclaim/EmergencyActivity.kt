@@ -4,15 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.util.darkenColor
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.startClosableChat
@@ -20,8 +17,6 @@ import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.lightenColor
-import com.hedvig.app.util.mappedColor
 import com.hedvig.app.util.svg.buildRequestBuilder
 import e
 import kotlinx.android.synthetic.main.activity_emergency.*
@@ -47,12 +42,9 @@ class EmergencyActivity : BaseActivity() {
             return
         }
 
-        val backgroundColor = if (isDarkThemeActive) {
-            darkenColor(compatColor(data.color.mappedColor()), 0.3f)
-        } else {
-            lightenColor(compatColor(data.color.mappedColor()), 0.3f)
-        }
-        setupLargeTitle(data.title, R.font.circular_bold, R.drawable.ic_back, backgroundColor) {
+        // TODO: This surface should be themed entirely I think
+        val backgroundColor = colorAttr(R.attr.colorOnPrimary)
+        setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
             onBackPressed()
         }
         appBarLayout.setExpanded(false, false)
@@ -71,9 +63,10 @@ class EmergencyActivity : BaseActivity() {
         commonClaimFirstMessage.text = getString(R.string.CLAIMS_EMERGENCY_FIRST_MESSAGE)
         commonClaimCreateClaimButton.remove()
 
-        when (data.insuranceStatus) {
-            InsuranceStatus.ACTIVE -> showInsuranceActive()
-            else -> showInsuranceInactive()
+        if (data.eligibleToClaim) {
+            showInsuranceActive()
+        } else {
+            showInsuranceInactive()
         }
 
         thirdEmergencyButton.setHapticClickListener {
@@ -85,15 +78,8 @@ class EmergencyActivity : BaseActivity() {
     }
 
     private fun showInsuranceActive() {
-        firstEmergencyButton.enable()
         secondEmergencyButton.enable()
 
-        firstEmergencyButton.setHapticClickListener {
-            tracker.emergencyClick()
-            claimsViewModel.triggerCallMeChat {
-                startClosableChat()
-            }
-        }
         secondEmergencyButton.setHapticClickListener {
             tracker.callGlobalAssistance()
             makeACall(GLOBAL_ASSISTANCE_URI)
@@ -101,7 +87,6 @@ class EmergencyActivity : BaseActivity() {
     }
 
     private fun showInsuranceInactive() {
-        firstEmergencyButton.disable()
         secondEmergencyButton.disable()
     }
 

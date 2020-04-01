@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketing.ui
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.GestureDetector
@@ -15,12 +16,17 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketPickerActivity
+import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.OnSwipeListener
 import com.hedvig.app.util.SimpleOnSwipeListener
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.doOnEnd
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -28,13 +34,14 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import e
 import kotlinx.android.synthetic.main.activity_marketing.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class MarketingActivity : BaseActivity() {
+class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
     private val tracker: MarketingTracker by inject()
 
     private val marketingStoriesViewModel: MarketingStoriesViewModel by viewModel()
@@ -45,7 +52,11 @@ class MarketingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_marketing)
+
+        val market = getMarket()
+        if (market == null) {
+            startActivity(MarketPickerActivity.newInstance(this))
+        }
 
         activity_marketing.useEdgeToEdge()
 
@@ -282,8 +293,21 @@ class MarketingActivity : BaseActivity() {
         login.show()
         getHedvig.show()
 
+        val market = getMarket()
+        if (market == null) {
+            e { "Programmer error: No market set when viewing ${this.javaClass.name}" }
+            return
+        }
+
         login.setHapticClickListener {
-            AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+            when (market) {
+                Market.SE -> {
+                    AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+                }
+                Market.NO -> {
+                    startActivity(NorwegianAuthenticationActivity.newInstance(this))
+                }
+            }
         }
 
         getHedvig.setHapticClickListener {
@@ -291,9 +315,16 @@ class MarketingActivity : BaseActivity() {
                 marketingStoriesViewModel.page.value,
                 marketingStoriesViewModel.blurred.value
             )
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-            startActivity(intent)
+            when (market) {
+                Market.SE -> {
+                    val intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
+                    startActivity(intent)
+                }
+                Market.NO -> {
+                    startActivity(WebOnboardingActivity.newInstance(this))
+                }
+            }
         }
     }
 
@@ -301,5 +332,13 @@ class MarketingActivity : BaseActivity() {
         const val BUTTON_ANIMATION_DURATION = 500L
         const val BLUR_ANIMATION_SHOW_DURATION = 300L
         const val BLUR_ANIMATION_DISMISS_DURATION = 200L
+
+        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+            Intent(context, MarketingActivity::class.java).apply {
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+            }
     }
 }

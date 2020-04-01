@@ -18,7 +18,7 @@ mapping.txt
 # graphql
 .graphqlconfig
 
-#branch file
-branch_key.xml
+# adyen credentials
+adyen.xml
 
 open_source_licenses.html

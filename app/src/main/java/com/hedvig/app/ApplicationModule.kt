@@ -13,6 +13,9 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.adyen.AdyenViewModel
+import com.hedvig.app.feature.adyen.AdyenViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -24,6 +27,11 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
+import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
+import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -35,15 +43,19 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
+import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
-import com.hedvig.app.feature.language.LanguageViewModel
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
+import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -53,12 +65,12 @@ import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
-import com.hedvig.app.feature.profile.ui.payment.TrustlyTracker
 import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -69,8 +81,6 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.viewmodel.DirectDebitViewModel
-import com.hedvig.app.viewmodel.DirectDebitViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -162,17 +172,28 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 }
 
 val viewModelModule = module {
-    viewModel { MarketingStoriesViewModel(get()) }
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { DashboardViewModel(get()) }
     viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
     viewModel { ReferralViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { LanguageViewModel(get()) }
+    viewModel { NorwegianAuthenticationViewModel(get()) }
+}
 
+val dashboardModule = module {
+    viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
+    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
+}
+
+val marketingModule = module {
+    viewModel<MarketingStoriesViewModel> { MarketingStoriesViewModelImpl(get()) }
+}
+
+val languageAndMarketModule = module {
+    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
 }
 
 val offerModule = module {
@@ -180,11 +201,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
-}
-
-val directDebitModule = module {
-    viewModel<DirectDebitViewModel> { DirectDebitViewModelImpl(get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -192,6 +209,10 @@ val keyGearModule = module {
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
+}
+
+val adyenModule = module {
+    viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
 }
 
 val serviceModule = module {
@@ -205,7 +226,7 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { DirectDebitRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { DashboardRepository(get()) }
+    single { DashboardRepository(get(), get()) }
     single { MarketingStoriesRepository(get(), get(), get()) }
     single { ProfileRepository(get()) }
     single { ReferralRepository(get()) }
@@ -215,6 +236,9 @@ val repositoriesModule = module {
     single { OfferRepository(get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
+    single { MarketRepository(get()) }
+    single { NorwegianAuthenticationRepository(get()) }
+    single { AdyenRepository(get(), get()) }
 }
 
 val trackerModule = module {

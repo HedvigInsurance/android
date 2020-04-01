@@ -19,23 +19,26 @@
 
     <Button
         android:id="@+id/referralButton"
-        style="@style/HedvigButton.Purple"
-        android:layout_width="wrap_content"
+        style="?attr/materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/referrals_button_bottom_margin"
         android:text="@string/REFERRAL_SHAREINVITE"
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <!-- Theme attribute refused to work as a color here. -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
-        style="@style/NavigationBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
         android:layout_gravity="bottom"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:backgroundTint="@color/bottom_navigation_view_background"
         app:itemIconSize="@dimen/tab_bar_icon_size"
-        app:menu="@menu/logged_in_menu" />
+        app:labelVisibilityMode="labeled"
+        tools:menu="@menu/logged_in_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

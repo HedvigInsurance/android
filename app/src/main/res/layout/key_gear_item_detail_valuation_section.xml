@@ -19,12 +19,12 @@
 
             <TextView
                 android:id="@+id/valuationLabel"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_TITLE"
+                android:textAppearance="?textAppearanceBody2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,8 +32,6 @@
                 android:id="@+id/valuationMoreInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:contentDescription="@string/KEY_GEAR_VALUATION_MORE_INFO"
@@ -47,23 +45,22 @@
 
             <Button
                 android:id="@+id/addPurchaseInfo"
-                style="@style/Body.Small.Link"
+                style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY"
-                android:textAllCaps="false"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/valuationLabel" />
+                app:layout_constraintTop_toBottomOf="@id/valuationLabel"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/valuation"
-                style="@style/Body.XSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
@@ -71,11 +68,13 @@
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin_double"
                 android:textAlignment="textStart"
+                android:textAppearance="?textAppearanceBody3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/valuationLabel"
-                tools:text="70% av inköpspris" />
+                tools:text="70% av inköpspris"
+                tools:visibility="gone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,23 +92,23 @@
 
             <TextView
                 android:id="@+id/deductibleLabel"
-                style="@style/Body.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE"
+                android:textAppearance="?textAppearanceBody2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/deductible"
-                style="@style/Body.XSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin_double"
+                android:textAppearance="?textAppearanceBody3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/deductibleLabel"

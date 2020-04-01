@@ -22,6 +22,13 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true">
         <activity
+            android:name=".feature.marketpicker.MarketPickerActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -144,21 +151,7 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.profile.ui.payment.TrustlyActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.myhome.MyHomeActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.coinsured.CoinsuredActivity"
+            android:name=".feature.profile.ui.payment.connect.ConnectPaymentActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -221,7 +214,7 @@
             android:noHistory="true"
             android:parentActivityName=".SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Splash"
+            android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoggedInTerminatedActivity"
@@ -266,6 +259,45 @@
             android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".feature.webonboarding.WebOnboardingActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity 
+            android:name=".feature.norway.NorwegianAuthenticationActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.AdyenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_symbol_android" />
@@ -291,6 +323,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".feature.adyen.AdyenDropInService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
 </manifest>

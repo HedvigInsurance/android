@@ -43,11 +43,11 @@
                     tools:visibility="visible">
 
                     <TextView
-                        style="@style/Body.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/CLAIMS_INACTIVE_INSURANCE_MESSAGE" />
+                        android:text="@string/CLAIMS_INACTIVE_INSURANCE_MESSAGE"
+                        android:textAppearance="?attr/textAppearanceBody2" />
 
                 </com.hedvig.app.ui.view.HedvigCardView>
 
@@ -59,42 +59,41 @@
                     android:layout_marginTop="@dimen/base_margin_double"
                     android:contentDescription="@null"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/claims_illustration"
+                    app:srcCompat="@drawable/illustration_claims"
                     tools:visibility="visible" />
 
                 <TextView
-                    style="@style/Headline.Large"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:gravity="center"
-                    android:text="@string/CLAIMS_CREATE_CLAIM_TITLE" />
+                    android:text="@string/CLAIMS_CREATE_CLAIM_TITLE"
+                    android:textAppearance="?textAppearanceHeadline5" />
 
                 <TextView
-                    style="@style/Body.Small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin"
                     android:gravity="center"
-                    android:text="@string/CLAIMS_CREATE_CLAIM_DESCRIPTION" />
+                    android:text="@string/CLAIMS_CREATE_CLAIM_DESCRIPTION"
+                    android:textAppearance="?textAppearanceBody2" />
 
                 <Button
                     android:id="@+id/commonClaimCreateClaimButton"
-                    style="@style/HedvigButton.Purple"
-                    android:layout_width="wrap_content"
+                    style="?attr/materialButtonContainedLargeStyle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginTop="@dimen/base_margin_triple"
-                    android:background="@drawable/button_primary"
                     android:text="@string/CLAIMS_CREATE_CLAIM_BUTTON_LABEL"
                     tools:visibility="visible" />
 
                 <TextView
-                    style="@style/Headline.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
-                    android:text="@string/CLAIMS_QUICK_ACTIONS" />
+                    android:text="@string/CLAIMS_QUICK_ACTIONS"
+                    android:textAppearance="?textAppearanceHeadline6" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/commonClaimsRecyclerView"
@@ -103,6 +102,8 @@
                     android:layout_marginTop="@dimen/base_margin"
                     android:layout_marginBottom="@dimen/base_margin"
                     android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
                     tools:itemCount="3"

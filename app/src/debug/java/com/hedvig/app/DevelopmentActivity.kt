@@ -7,56 +7,31 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.offer.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.whatsnew.WhatsNewDialog
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
-
-    private val newsItem = WhatsNewQuery.New(
-        "News",
-        WhatsNewQuery.Illustration(
-            "Icon", WhatsNewQuery.Variants(
-            "IconVariants", WhatsNewQuery.Variants.Fragments(
-            IconVariantsFragment(
-                "IconVariants",
-                IconVariantsFragment.Dark(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward_dark.svg"
-                ),
-                IconVariantsFragment.Light(
-                    "IconVariant",
-                    "/app-content-service/whats_new_reward.svg"
-                )
-            )
-        )
-        )
-        ),
-        "Bonusregn till folket!",
-        "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får lägre månadskostnad – för varje vän ni bjuder in!"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,33 +41,27 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     }
 
     private fun initializeSpinners() {
-        findViewById<Spinner>(R.id.mockPersona).onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        mockPersona.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit()
-                        .putInt("mockPersona", position)
-                        .apply()
-                }
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt("mockPersona", position)
+                    .apply()
             }
+        }
+        val persona = getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+            .getInt("mockPersona", 0)
+        mockPersona.setSelection(persona)
     }
 
     private fun initializeButtons() {
-        findViewById<Button>(R.id.openWhatsNew).setHapticClickListener {
-            WhatsNewDialog.newInstance(
-                listOf(
-                    newsItem, newsItem, newsItem
-                )
-            ).show(supportFragmentManager, "whats_new")
-        }
-
         findViewById<Button>(R.id.openAlert).setHapticClickListener {
             showAlert(
                 R.string.alert_title,
@@ -106,8 +75,12 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openValuation.setHapticClickListener {
-            startActivity(KeyGearValuationActivity.newInstance(this, "123"))
+        openWebOnboarding.setHapticClickListener {
+            startActivity(WebOnboardingActivity.newInstance(this))
+        }
+
+        openNorwegianAuth.setHapticClickListener {
+            startActivity(NorwegianAuthenticationActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
@@ -126,20 +99,20 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(ReferralsSuccessfulInviteActivity.newInstance(this, "Fredrik", "10.00"))
         }
 
-        findViewById<Button>(R.id.openNativeChat).setHapticClickListener {
-            startActivity(Intent(this, ChatActivity::class.java))
-        }
-
         findViewById<Button>(R.id.openNativeOffer).setHapticClickListener {
             startActivity(Intent(this, OfferActivity::class.java))
         }
 
         findViewById<Button>(R.id.openPostSignDD).setHapticClickListener {
-            startActivity(TrustlyActivity.newInstance(this, true))
+            startActivity(ConnectPaymentActivity.newInstance(this, true))
         }
 
         findViewById<Button>(R.id.openVectorDrawableGallery).setHapticClickListener {
             startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+        }
+
+        openViewGallery.setHapticClickListener {
+            startActivity(ViewGalleryActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openSettings).setHapticClickListener {
@@ -190,6 +163,13 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     companion object {
         const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
         private val REAL_MODULES =
-            listOf(offerModule, profileModule, directDebitModule, keyGearModule)
+            listOf(
+                dashboardModule,
+                marketingModule,
+                offerModule,
+                profileModule,
+                keyGearModule,
+                adyenModule
+            )
     }
 }

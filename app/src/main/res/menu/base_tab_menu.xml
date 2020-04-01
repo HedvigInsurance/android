@@ -4,7 +4,6 @@
     <item
         android:id="@+id/openChat"
         android:icon="@drawable/ic_chat"
-        app:iconTint="@color/icon_tint"
         android:orderInCategory="1"
         android:title="@string/DASHBOARD_OPEN_CHAT"
         app:showAsAction="always|withText" />

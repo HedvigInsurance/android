@@ -94,7 +94,7 @@ class ChatRepository(
 
     fun writeNewMessage(message: ChatMessageFragment) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .read(messagesQuery)
             .execute()
 
@@ -110,7 +110,7 @@ class ChatRepository(
             .copy(messages = newMessages)
 
         apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(messagesQuery, newData)
             .execute()
     }

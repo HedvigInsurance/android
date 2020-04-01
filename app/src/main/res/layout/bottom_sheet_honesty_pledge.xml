@@ -21,19 +21,18 @@
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_TITLE"
-        android:textSize="@dimen/text_xlarge"
-        android:theme="@style/Header.Regular" />
+        android:textAppearance="?textAppearanceHeadline5"
+        android:textSize="@dimen/text_xlarge" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_DESCRIPTION"
-        android:theme="@style/Body.Small" />
+        android:textAppearance="?textAppearanceBody2" />
 
     <Button
         android:id="@+id/bottomSheetHonestyPledgeButton"
-        style="@style/HedvigButton.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

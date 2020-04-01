@@ -33,22 +33,6 @@
                 app:name="@string/PROFILE_ROW_MY_INFO_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/myHomeRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:iconImage="@drawable/ic_my_home"
-                app:name="@string/PROFILE_ROW_MY_HOME_TITLE" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/coinsuredRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:iconImage="@drawable/ic_coinsured"
-                app:name="@string/PROFILE_ROW_COINSURED_TITLE"
-                tools:visibility="visible" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/charityRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,16 +45,6 @@
                 android:layout_height="wrap_content"
                 app:iconImage="@drawable/ic_payment"
                 app:name="@string/PROFILE_ROW_PAYMENT_TITLE" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/insuranceCertificateRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:description="@string/PROFILE_ROW_INSURANCE_LETTER_DESCRIPTION"
-                app:iconImage="@drawable/ic_insurance_certificate"
-                app:name="@string/PROFILE_ROW_INSURANCE_LETTER_TITLE"
-                tools:visibility="visible" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/feedbackRow"
@@ -97,18 +71,13 @@
 
         <Button
             android:id="@id/logout"
-            style="?android:attr/borderlessButtonStyle"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginBottom="@dimen/base_margin_double"
-            android:fontFamily="@font/circular_book"
-            android:padding="8dp"
             android:text="@string/PROFILE_LOGOUT_BUTTON"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/pink"
-            android:textSize="16sp"
+            android:textColor="?colorError"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -42,11 +42,11 @@
 
     <TextView
         android:id="@+id/name"
-        style="@style/Body.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/base_margin_double"
+        android:textAppearance="?textAppearanceBody2"
         android:textColor="@color/white"
         tools:text="Mobiltelefon" />
 

@@ -26,10 +26,10 @@
 
         <TextView
             android:id="@+id/deductibleBubbleTitle"
-            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_TITLE"
+            android:textAppearance="?textAppearanceHeadline6"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/deductibleBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,13 +39,13 @@
 
         <TextView
             android:id="@+id/deductibleBubbleText"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
             android:text="@string/OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE"
+            android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,10 +72,10 @@
 
         <TextView
             android:id="@+id/bindingPeriodBubbleTitle"
-            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_TITLE"
+            android:textAppearance="?textAppearanceHeadline6"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/bindingPeriodBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -85,13 +85,13 @@
 
         <TextView
             android:id="@+id/bindingPeriodBubbleText"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
             android:text="@string/OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE"
+            android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -118,12 +118,12 @@
 
         <TextView
             android:id="@+id/brfOrTravel"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
+            android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/white"
             tools:text="Bostadsrätts-\ntillägg ingår" />
     </FrameLayout>
@@ -146,10 +146,10 @@
 
         <TextView
             android:id="@+id/startDateBubbleTitle"
-            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_START_DATE_TITLE"
+            android:textAppearance="?textAppearanceHeadline6"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/startDateBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -159,7 +159,6 @@
 
         <TextView
             android:id="@+id/startDateBubbleText"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -167,6 +166,7 @@
             android:lineSpacingExtra="2sp"
             android:paddingStart="@dimen/base_margin"
             android:paddingEnd="@dimen/base_margin"
+            android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -194,10 +194,10 @@
 
         <TextView
             android:id="@+id/amountInsuredBubbleTitle"
-            style="@style/Headline.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/OFFER_BUBBLES_INSURED_TITLE"
+            android:textAppearance="?textAppearanceHeadline6"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/amountInsuredBubbleText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -207,12 +207,12 @@
 
         <TextView
             android:id="@+id/amountInsuredBubbleText"
-            style="@style/Body.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:lineSpacingExtra="2sp"
+            android:textAppearance="?textAppearanceBody2"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -224,30 +224,31 @@
 
     <Button
         android:id="@+id/dateButton"
-        style="@style/HedvigButton.Outlined.White"
+        style="?materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/button_border_white_padding"
-        android:paddingEnd="@dimen/button_border_white_padding"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
-        app:layout_constraintTop_toBottomOf="@id/deductibleBubble"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="startar idag"
-        android:drawablePadding="@dimen/base_margin"
         android:drawableEnd="@drawable/ic_expand_white"
-        />
+        android:drawablePadding="@dimen/base_margin"
+        android:paddingStart="@dimen/button_border_white_padding"
+        android:paddingEnd="@dimen/button_border_white_padding"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deductibleBubble"
+        tools:text="startar idag" />
 
     <Button
         android:id="@+id/discountButton"
-        style="@style/HedvigButton.Outlined.White"
+        style="?materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/button_border_white_padding"
-        android:paddingEnd="@dimen/button_border_white_padding"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginBottom="@dimen/button_shadow_offset"
+        android:paddingStart="@dimen/button_border_white_padding"
+        android:paddingEnd="@dimen/button_border_white_padding"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dateButton"

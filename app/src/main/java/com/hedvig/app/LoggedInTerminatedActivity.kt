@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -25,6 +26,13 @@ class LoggedInTerminatedActivity : BaseActivity() {
                 val intent = Intent(this, ChatActivity::class.java)
                 startActivity(intent)
             }
+        }
+    }
+
+    companion object {
+        fun newInstance(context: Context) = Intent(context, LoggedInTerminatedActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/base_margin_quadruple"
+    tools:ignore="HardcodedText">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/bottom_sheet_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="Bottom Sheet Title"
+        android:textAppearance="?textAppearanceHeadline4" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="Bottom Sheet Content. Lorem Ipsum etc"
+        android:textAppearance="?textAppearanceBody1" />
+
+</LinearLayout>

@@ -4,13 +4,13 @@ import android.os.Bundle
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
-import com.hedvig.app.feature.dismissablepager.DismissablePager
-import com.hedvig.app.feature.dismissablepager.DismissablePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePager
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class WhatsNewDialog : DismissablePager() {
+class WhatsNewDialog : DismissiblePager() {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     override val proceedLabel = R.string.NEWS_PROCEED
@@ -19,8 +19,8 @@ class WhatsNewDialog : DismissablePager() {
     override val titleLabel = R.string.NEWS_TITLE
 
     override val tracker: WhatsNewTracker by inject()
-    override val items: List<DismissablePagerPage> by lazy {
-        arguments!!.getParcelableArrayList<DismissablePagerPage>(PAGES)!! // Enforced by newInstance()
+    override val items: List<DismissiblePagerPage> by lazy {
+        arguments!!.getParcelableArrayList<DismissiblePagerPage>(PAGES)!! // Enforced by newInstance()
     }
 
     override fun onDismiss() {
@@ -37,7 +37,7 @@ class WhatsNewDialog : DismissablePager() {
                 putParcelableArrayList(
                     PAGES,
                     ArrayList(pages.map { page ->
-                        DismissablePagerPage(
+                        DismissiblePagerPage(
                             ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
                             page.title,
                             page.paragraph

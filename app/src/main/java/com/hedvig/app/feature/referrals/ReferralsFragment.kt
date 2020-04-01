@@ -38,7 +38,7 @@ class ReferralsFragment : BaseTabFragment() {
 
         profileViewModel.data.observe(this) { data ->
             safeLet(
-                data?.insurance?.cost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt(),
+                data?.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt(),
                 data?.referralInformation
             ) { monthlyCost, referralCampaign ->
                 bindData(monthlyCost, referralCampaign)

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.chat.ui
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -34,7 +35,6 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.showRestartDialog
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -166,11 +166,17 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
             restart.setOnClickListener {
                 tracker.restartChat()
-                showRestartDialog {
-                    storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                    setAuthenticationToken(null)
-                    userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
-                }
+                showAlert(
+                    R.string.CHAT_RESET_DIALOG_TITLE,
+                    R.string.CHAT_RESET_DIALOG_MESSAGE,
+                    R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
+                    R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
+                    positiveAction = {
+                        storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+                        setAuthenticationToken(null)
+                        userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+                    }
+                )
             }
             restart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
             restart.show()
@@ -452,6 +458,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     companion object {
+        fun newInstance(context: Context) = Intent(context, ChatActivity::class.java)
+
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
         private const val REQUEST_AUDIO_PERMISSION = 12994
@@ -462,5 +470,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         const val EXTRA_SHOW_RESTART = "extra_show_restart"
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
+
+        fun newInstance(context: Context, showClose: Boolean = false) = Intent(context, ChatActivity::class.java).apply {
+            if (showClose) {
+                putExtra(EXTRA_SHOW_CLOSE, true)
+            }
+        }
     }
 }

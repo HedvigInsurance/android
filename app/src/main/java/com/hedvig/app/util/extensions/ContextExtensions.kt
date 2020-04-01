@@ -2,7 +2,6 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,12 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
@@ -24,7 +24,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.marketpicker.Market
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
@@ -36,6 +39,16 @@ const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
     "shared_preference_asked_for_permission_prefix"
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
+
+@ColorInt
+fun Context.colorAttr(
+    @AttrRes color: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+): Int {
+    theme.resolveAttribute(color, typedValue, resolveRefs)
+    return typedValue.data
+}
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 
@@ -76,6 +89,12 @@ fun Context.setIsLoggedIn(isLoggedIn: Boolean) =
 fun Context.isLoggedIn(): Boolean =
     getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
+fun Context.getMarket(): Market? {
+    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+    val marketName = pref.getString(Market.MARKET_SHARED_PREF, null)
+    return marketName?.let { Market.valueOf(it) }
+}
+
 private fun Context.getSharedPreferences() =
     this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
@@ -103,25 +122,19 @@ fun Context.showAlert(
     @StringRes negativeLabel: Int = android.R.string.cancel,
     positiveAction: () -> Unit,
     negativeAction: (() -> Unit)? = null
-): AlertDialog =
-    AlertDialog
-        .Builder(this)
-        .setTitle(resources.getString(title))
-        .setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
-            positiveAction()
-        }
-        .setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
-            negativeAction?.let { it() }
-        }
+): androidx.appcompat.app.AlertDialog? =
+    MaterialAlertDialogBuilder(this)
         .apply {
+            setTitle(resources.getString(title))
+            setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
+                positiveAction()
+            }
+            setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
+                negativeAction?.let { it() }
+            }
             message?.let { setMessage(it) }
         }
         .show()
-        .apply {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            getButton(AlertDialog.BUTTON_POSITIVE)?.isAllCaps = false
-            getButton(AlertDialog.BUTTON_NEGATIVE)?.isAllCaps = false
-        }
 
 fun Context.copyToClipboard(
     text: String

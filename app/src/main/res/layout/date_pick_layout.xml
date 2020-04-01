@@ -2,8 +2,8 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="android.widget.FrameLayout"
-    tools:layout_height="wrap_content">
+    tools:layout_height="wrap_content"
+    tools:parentTag="android.widget.FrameLayout">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/datePickLayout"
@@ -17,10 +17,10 @@
 
         <TextView
             android:id="@+id/dateText"
-            style="@style/Body.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
+            android:textAppearance="?textAppearanceBody1"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,12 +40,12 @@
 
     <TextView
         android:id="@+id/dateHint"
-        style="@style/Body.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/base_margin_double"
         android:text="@string/DATE_BTN_PLACEHOLDER"
+        android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toBottomOf="@id/datePickLayout"
         app:layout_constraintStart_toStartOf="@id/datePickLayout"
         app:layout_constraintTop_toTopOf="@+id/datePickLayout" />
