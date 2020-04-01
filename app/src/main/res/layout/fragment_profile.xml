@@ -33,15 +33,6 @@
                 app:name="@string/PROFILE_ROW_MY_INFO_TITLE" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/coinsuredRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:iconImage="@drawable/ic_coinsured"
-                app:name="@string/PROFILE_ROW_COINSURED_TITLE"
-                tools:visibility="visible" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/charityRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,16 +45,6 @@
                 android:layout_height="wrap_content"
                 app:iconImage="@drawable/ic_payment"
                 app:name="@string/PROFILE_ROW_PAYMENT_TITLE" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@id/insuranceCertificateRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:description="@string/PROFILE_ROW_INSURANCE_LETTER_DESCRIPTION"
-                app:iconImage="@drawable/ic_insurance_certificate"
-                app:name="@string/PROFILE_ROW_INSURANCE_LETTER_TITLE"
-                tools:visibility="visible" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@id/feedbackRow"

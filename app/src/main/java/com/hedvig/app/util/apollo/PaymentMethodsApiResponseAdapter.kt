@@ -1,8 +1,8 @@
 package com.hedvig.app.util.apollo
 
 import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.apollographql.apollo.response.CustomTypeAdapter
-import com.apollographql.apollo.response.CustomTypeValue
+import com.apollographql.apollo.api.CustomTypeAdapter
+import com.apollographql.apollo.api.CustomTypeValue
 import org.json.JSONObject
 
 class PaymentMethodsApiResponseAdapter : CustomTypeAdapter<PaymentMethodsApiResponse> {

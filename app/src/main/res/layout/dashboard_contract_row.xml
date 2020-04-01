@@ -50,7 +50,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_houses" />
+                tools:srcCompat="@drawable/ic_apartment" />
 
             <TextView
                 android:id="@+id/contractInformationTitle"

@@ -19,6 +19,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_web_onboarding.*
 import java.net.URLEncoder
@@ -51,6 +52,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                 if (url?.contains("connect-payment") == true) {
                     view?.stopLoading()
+                    setIsLoggedIn(true)
                     startActivity(ConnectPaymentActivity.newInstance(this@WebOnboardingActivity, withExplainer = true, withoutHistory = true))
                     return
                 }
@@ -70,8 +72,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             else -> "no/"
         }
 
-        webOnboarding.loadUrl("${BuildConfig.WEB_ONBOARDING_BASE_URL}${localePath}new-member?variation=android&token=${encodedToken}")
-
+        webOnboarding.loadUrl("${BuildConfig.WEB_ONBOARDING_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
     }
 
     override fun onDestroy() {

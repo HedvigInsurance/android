@@ -17,7 +17,7 @@ enum class LoggedInTabs {
             R.id.key_gear -> KEY_GEAR
             R.id.referrals -> REFERRALS
             R.id.profile -> PROFILE
-            else -> throw Error("Invalid Menu ID")
+            else -> null
         }
     }
 }

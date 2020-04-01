@@ -36,7 +36,7 @@ class DirectDebitRepository(
         response.data()?.let { newData ->
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .writeAndPublish(directDebitQuery, newData)
         }
     }
