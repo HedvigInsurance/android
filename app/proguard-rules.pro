@@ -18,3 +18,10 @@
 
 -keep class com.hedvig.app.react.data.** { *; }
 -keepnames class com.hedvig.app.react.data.** { *; }
+
+# Adyen
+-keep class com.adyen.checkout.base.model.** { *; }
+-keep class com.adyen.threeds2.** { *; }
+-keepclassmembers public class * implements com.adyen.checkout.base.PaymentComponent {
+   public <init>(...);
+}
