@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.adyen.checkout.base.model.PaymentMethodsApiResponse
 import com.adyen.checkout.base.model.payments.Amount
 import com.adyen.checkout.card.CardConfiguration
 import com.adyen.checkout.core.api.Environment
@@ -32,6 +33,7 @@ import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
@@ -50,6 +52,8 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     private val tracker: TrustlyTracker by inject()
     private var hasSuccessfullyConnectedDirectDebit = false
+
+    private var paymentMethods: PaymentMethodsApiResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +92,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         )
 
         if (isPostSignDD()) {
+            explainerButton.enable()
             loadingSpinner.remove()
             explainerScreen.show()
             explainerButton.setHapticClickListener {
@@ -103,6 +108,31 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
     }
 
     private fun initializeNorway() {
+        adyenViewModel.loadPaymentMethods()
+
+        if (isPostSignDD()) {
+            loadingSpinner.remove()
+            explainerScreen.show()
+            explainerButton.setHapticClickListener {
+                tracker.explainerConnect()
+                startAdyenPayment()
+            }
+        }
+
+        adyenViewModel.paymentMethods.observe(this) { methods ->
+            methods?.let { m ->
+                paymentMethods = m
+                if (!isPostSignDD()) {
+                    loadingSpinner.remove()
+                    startAdyenPayment()
+                } else {
+                    explainerButton.enable()
+                }
+            }
+        }
+    }
+
+    private fun startAdyenPayment() {
         val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_PUBLIC_KEY))
             .setShowStorePaymentField(false)
             .build()
@@ -130,26 +160,8 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
             })
             .build()
 
-        if (isPostSignDD()) {
-            loadingSpinner.remove()
-            explainerScreen.show()
-            explainerButton.setHapticClickListener {
-                tracker.explainerConnect()
-                explainerScreen.fadeOut({
-                    toolbar.show()
-                    loadingSpinner.show()
-                    adyenViewModel.loadPaymentMethods()
-                }, true)
-            }
-        } else {
-            adyenViewModel.loadPaymentMethods()
-        }
-
-        adyenViewModel.paymentMethods.observe(this) { methods ->
-            methods?.let { m ->
-                loadingSpinner.remove()
-                DropIn.startPayment(this, m, dropInConfiguration)
-            }
+        paymentMethods?.let { DropIn.startPayment(this, it, dropInConfiguration) }
+        if (paymentMethods != null) {
         }
     }
 

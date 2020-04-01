@@ -104,6 +104,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="**** 1234" />
 
+        <!-- TODO: Translation -->
         <TextView
             android:id="@+id/validUntilLabel"
             android:layout_width="wrap_content"
