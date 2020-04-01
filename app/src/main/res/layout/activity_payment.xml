@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/separator"
+                android:background="@drawable/divider"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
@@ -44,7 +44,8 @@
                 android:id="@+id/paymentHistorySeparator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/separator"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:background="@drawable/divider"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
@@ -67,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/separator"
+                android:background="@drawable/divider"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

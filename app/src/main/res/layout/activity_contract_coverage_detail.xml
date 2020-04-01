@@ -61,7 +61,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:background="@drawable/divider"
-                android:backgroundTint="@color/separator" />
+                android:backgroundTint="@drawable/divider" />
 
             <TextView
                 android:layout_width="wrap_content"
