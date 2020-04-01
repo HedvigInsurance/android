@@ -31,8 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
         android:clipToPadding="false"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/base_margin">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/no"

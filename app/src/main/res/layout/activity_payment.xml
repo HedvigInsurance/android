@@ -38,23 +38,12 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <include layout="@layout/payment_history_section" />
+            <include layout="@layout/payment_details_section" />
 
             <View
                 android:id="@+id/paymentHistorySeparator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/separator"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <include layout="@layout/payment_details_section" />
-
-            <View
-                android:id="@+id/endSeparator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/base_margin_triple"
                 android:background="@color/separator"
                 android:visibility="gone"
                 tools:visibility="visible" />
@@ -66,8 +55,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
                 android:textColor="?colorError"
+                android:visibility="gone"
+                tools:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
+                tools:visibility="visible" />
+
+            <include layout="@layout/payment_history_section" />
+
+            <View
+                android:id="@+id/endSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:background="@color/separator"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

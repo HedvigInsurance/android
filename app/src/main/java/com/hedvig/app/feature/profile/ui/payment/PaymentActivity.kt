@@ -39,7 +39,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.format.DateTimeFormatter
 
-class PaymentActivity : BaseActivity() {
+class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val profileViewModel: ProfileViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
@@ -52,8 +52,6 @@ class PaymentActivity : BaseActivity() {
             startActivity(MarketPickerActivity.newInstance(this))
         }
 
-
-        setContentView(R.layout.activity_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
@@ -278,9 +276,17 @@ class PaymentActivity : BaseActivity() {
 
     private fun bindPaymentDetails(pd: ProfileQuery.Data) {
         pd.bankAccount?.let { bankAccount ->
+            bankAccountContainer.show()
             accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
             toggleBankInfo(true)
         } ?: toggleBankInfo(false)
+
+        pd.activePaymentMethods?.let { activePaymentMethods ->
+            adyenActivePaymentMethodContainer.show()
+            cardType.text = activePaymentMethods.storedPaymentMethodsDetails.brand
+            maskedCardNumber.text = "**** ${activePaymentMethods.storedPaymentMethodsDetails.lastFourDigits}"
+            validUntil.text = "${activePaymentMethods.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.storedPaymentMethodsDetails.expiryYear}"
+        }
 
         showRedeemCodeOnNoDiscount(pd)
     }
