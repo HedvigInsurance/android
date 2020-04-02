@@ -337,7 +337,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         private const val POST_CREATE_REVEAL_DURATION = 400L
         private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
 
-        private val BUTTON_CORNER_RADIUS = 112.dp.toFloat()
+        private val BUTTON_CORNER_RADIUS = 8.dp.toFloat()
 
         private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 
