@@ -43,8 +43,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/base_margin_double"
-                        android:backgroundTint="?colorSurface"
                         android:background="@drawable/background_rounded_corners"
+                        android:backgroundTint="?colorSurface"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -52,8 +52,8 @@
                             android:id="@+id/premiumCampaignTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?selectableItemBackground"
                             android:layout_marginTop="@dimen/base_margin_half"
+                            android:background="?selectableItemBackground"
                             android:textAppearance="?textAppearanceHeadline6"
                             tools:text="Discount" />
 
@@ -151,7 +151,6 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/premiumBoxSignButton"
                             style="?attr/materialButtonContainedLargeStyle"
-                            android:theme="@style/Hedvig.Button.Large"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/base_margin_double"
@@ -159,6 +158,7 @@
                             android:text="@string/OFFER_SIGN_BUTTON"
                             android:textAllCaps="false"
                             android:textColor="?colorOnPrimary"
+                            android:theme="@style/Hedvig.Button.Large"
                             app:icon="@drawable/ic_bank_id"
                             app:iconGravity="textEnd"
                             app:iconPadding="10dp"
@@ -199,9 +199,29 @@
                 android:id="@+id/offerTermsArea"
                 layout="@layout/offer_terms_area" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/signButton"
+                style="?attr/materialButtonContainedLargeStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:text="@string/OFFER_SIGN_BUTTON"
+                android:textAllCaps="false"
+                android:textColor="?colorOnPrimary"
+                android:theme="@style/Hedvig.Button.Large"
+                app:icon="@drawable/ic_bank_id"
+                app:iconGravity="textEnd"
+                app:iconPadding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:translationY="0dp" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/offerToolbar"
@@ -270,28 +290,6 @@
 
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/signButton"
-        style="?attr/materialButtonContainedLargeStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:backgroundTint="@color/black"
-        android:text="@string/OFFER_SIGN_BUTTON"
-        android:textAllCaps="false"
-        android:textColor="@color/off_white"
-        android:visibility="gone"
-        app:icon="@drawable/ic_bank_id"
-        app:iconGravity="textEnd"
-        app:iconPadding="10dp"
-        app:iconTint="@color/off_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:translationY="0dp"
-        tools:visibility="visible" />
 
 
 </FrameLayout>

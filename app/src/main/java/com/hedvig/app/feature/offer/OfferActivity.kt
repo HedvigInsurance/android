@@ -248,6 +248,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             tracker.floatingSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
+
+        premiumBoxSignButton.setHapticClickListener {
+            tracker.floatingSign()
+            OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
+        }
     }
 
     companion object {

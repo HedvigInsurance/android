@@ -18,6 +18,9 @@ mapping.txt
 # graphql
 .graphqlconfig
 
+# adyen credentials
+adyen.xml
+
 #branch file
 branch_key.xml
 
