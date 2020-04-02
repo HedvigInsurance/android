@@ -182,8 +182,6 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         super.onActivityResult(requestCode, resultCode, data)
         if (!isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
             finish()
-        } else if (isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
-            showConfirmCloseDialog { }
         }
     }
 
@@ -263,9 +261,9 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         hasSuccessfullyConnectedDirectDebit = true
         tracker.addPaymentInfo()
         trustlyContainer.remove()
-        resultIcon.setImageResource(R.drawable.icon_success)
+        resultIcon.setImageResource(R.drawable.ic_active)
+        // TODO: New copy
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
-        resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
         notNow.remove()
         resultDoItLater.remove()
         if (isPostSignDD()) {
@@ -282,9 +280,8 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     fun showFailure() {
         trustlyContainer.remove()
-        resultIcon.setImageResource(R.drawable.icon_failure)
+        resultIcon.setImageResource(R.drawable.ic_terminated)
         resultTitle.text = resources.getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_HEADLINE)
-        resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_BODY)
         resultDoItLater.show()
         resultDoItLater.setHapticClickListener {
             tracker.doItLater()
