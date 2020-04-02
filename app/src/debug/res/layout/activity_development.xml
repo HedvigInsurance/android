@@ -37,12 +37,12 @@
             android:prompt="@string/mock_personas_prompt" />
 
         <Button
-            android:id="@+id/openNorwegianAuth"
+            android:id="@+id/openChatActivity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Open Norwegian Auth" />
+            android:text="Open ChatActivity" />
 
         <Button
             android:id="@+id/openNativeOffer"

@@ -12,7 +12,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
@@ -79,8 +78,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(WebOnboardingActivity.newInstance(this))
         }
 
-        openNorwegianAuth.setHapticClickListener {
-            startActivity(NorwegianAuthenticationActivity.newInstance(this))
+        openChatActivity.setHapticClickListener {
+            startActivity(ChatActivity.newInstance(this))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
