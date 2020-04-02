@@ -48,7 +48,10 @@ import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.FeatureRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
@@ -87,7 +90,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -182,6 +185,10 @@ val viewModelModule = module {
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 
+val loggedInModule = module {
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
+}
+
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
@@ -239,6 +246,7 @@ val repositoriesModule = module {
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
+    single { FeatureRepository(get()) }
 }
 
 val trackerModule = module {

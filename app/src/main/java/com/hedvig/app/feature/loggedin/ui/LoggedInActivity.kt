@@ -56,6 +56,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
 
+    private val loggedInViewModel: LoggedInViewModel by viewModel()
+
     private val profileTracker: ProfileTracker by inject()
     private val loggedInTracker: LoggedInTracker by inject()
 
@@ -195,6 +197,24 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
+        loggedInViewModel.data.observe(this) { features ->
+            features?.let { f ->
+                if (bottomTabs.menu.isEmpty()) {
+                    val keyGearEnabled = isDebug() || f.contains(Feature.KEYGEAR)
+                    val referralsEnabled = isDebug() || f.contains(Feature.REFERRALS)
+
+                    val menuId = when {
+                        keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+                        referralsEnabled -> R.menu.logged_in_menu
+                        !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+                        else -> R.menu.logged_in_menu
+                    }
+                    bottomTabs.inflateMenu(menuId)
+                    setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+                }
+            }
+        }
+
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
             safeLet(
                 data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toDouble(),
@@ -205,19 +225,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInTracker.setMemberId(id)
             }
 
-            if (bottomTabs.menu.isEmpty()) {
-                val keyGearEnabled = isDebug() || data?.member?.features?.contains(Feature.KEYGEAR) ?: false
-                val referralsEnabled = isDebug() || data?.member?.features?.contains(Feature.REFERRALS) ?: false
-
-                val menuId = when {
-                    keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
-                    referralsEnabled -> R.menu.logged_in_menu
-                    !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
-                    else -> R.menu.logged_in_menu
-                }
-                bottomTabs.inflateMenu(menuId)
-                setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
-            }
         }
         whatsNewViewModel.fetchNews()
 

@@ -28,8 +28,7 @@ class MockProfileViewModel : ProfileViewModel() {
                     firstName = "Test",
                     lastName = "Testerson",
                     email = "test@hedvig.com",
-                    phoneNumber = "07012334567",
-                    features = listOf(Feature.KEYGEAR)
+                    phoneNumber = "07012334567"
                 ),
                 ProfileQuery.InsuranceCost(
                     freeUntil = null,
