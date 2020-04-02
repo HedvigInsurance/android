@@ -87,7 +87,7 @@ class ChatInputView : FrameLayout {
             }
             true
         }
-        uploadFile.setHapticClickListener {
+        attach_file_background.setHapticClickListener {
             tracker.openAttachFile()
             inputText.clearFocus()
             openAttachFile()
@@ -165,10 +165,10 @@ class ChatInputView : FrameLayout {
 
     private fun bindTextInput(input: TextInput) {
         if (input.richTextSupport) {
-            uploadFile.show()
+            attach_file_background.show()
             sendGif.show()
         } else {
-            uploadFile.remove()
+            attach_file_background.remove()
             sendGif.remove()
         }
         inputText.hint = input.hint ?: ""
