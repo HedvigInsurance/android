@@ -16,7 +16,10 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.util.apollo.defaultLocale
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LanguageAndMarketViewModel(
     private val languageRepository: LanguageRepository,
@@ -25,7 +28,7 @@ class LanguageAndMarketViewModel(
 ) : ViewModel() {
     val markets = MutableLiveData<List<MarketModel>>()
     val preselectedMarket = MutableLiveData<String>()
-    val isLanguageSelected = MutableLiveData<Boolean>(false)
+    val isLanguageSelected = MutableLiveData(false)
     val languages = MutableLiveData<List<LanguageModel>>()
 
     init {
@@ -65,6 +68,7 @@ class LanguageAndMarketViewModel(
             sharedPreferences.edit()
                 .putString(Market.MARKET_SHARED_PREF, market.name)
                 .commit()
+
         }
 
         language?.let {
@@ -76,6 +80,15 @@ class LanguageAndMarketViewModel(
 
             language.apply(context)?.let { language ->
                 updateLanguage(makeLocaleString(language))
+
+                viewModelScope.launch {
+                    withContext(NonCancellable) {
+                        runCatching {
+                            marketRepository
+                                .updatePickedLocaleAsync(defaultLocale(language))
+                        }
+                    }
+                }
             }
 
             LocalBroadcastManager
