@@ -5,7 +5,6 @@ query Profile {
     lastName
     email
     phoneNumber
-    features
   }
   insuranceCost {
     ... CostFragment
