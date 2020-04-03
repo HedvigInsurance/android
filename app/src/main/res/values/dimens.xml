@@ -168,5 +168,6 @@
     <dimen name="item_detail_gradient_size">300dp</dimen>
     <dimen name="market_item_flag_padding_end">20dp</dimen>
     <dimen name="checkbox_size">24dp</dimen>
+    <dimen name="connect_payment_result_icon_size">56dp</dimen>
 
 </resources>

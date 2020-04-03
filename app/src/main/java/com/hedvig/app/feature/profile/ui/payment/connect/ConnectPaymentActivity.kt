@@ -137,23 +137,28 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
             .setShowStorePaymentField(false)
             .build()
 
-        val googlePayConfig = GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_MERCHANT_ACCOUNT))
-            .setGooglePayEnvironment(if (isDebug()) {
-                GOOGLE_WALLET_ENVIRONMENT_TEST
-            } else {
-                GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
-            })
-            .build()
+        val googlePayConfig =
+            GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_MERCHANT_ACCOUNT))
+                .setGooglePayEnvironment(
+                    if (isDebug()) {
+                        GOOGLE_WALLET_ENVIRONMENT_TEST
+                    } else {
+                        GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
+                    }
+                )
+                .build()
         val dropInConfiguration = DropInConfiguration
             .Builder(this, newInstance(this, isPostSignDD()), AdyenDropInService::class.java)
             .addCardConfiguration(cardConfig)
             .addGooglePayConfiguration(googlePayConfig)
             .setShopperLocale(getLocale(this))
-            .setEnvironment(if (isDebug()) {
-                Environment.TEST
-            } else {
-                Environment.EUROPE
-            })
+            .setEnvironment(
+                if (isDebug()) {
+                    Environment.TEST
+                } else {
+                    Environment.EUROPE
+                }
+            )
             .setAmount(Amount().apply {
                 currency = "NOK"
                 value = 0
@@ -168,6 +173,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.getStringExtra(DropIn.RESULT_KEY) == ADYEN_RESULT_CODE_AUTHORISED) {
+            explainerScreen.remove()
             showSuccess()
         }
     }
@@ -176,8 +182,6 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         super.onActivityResult(requestCode, resultCode, data)
         if (!isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
             finish()
-        } else if (isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
-            showConfirmCloseDialog { }
         }
     }
 
@@ -257,9 +261,9 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         hasSuccessfullyConnectedDirectDebit = true
         tracker.addPaymentInfo()
         trustlyContainer.remove()
-        resultIcon.setImageResource(R.drawable.icon_success)
+        resultIcon.setImageResource(R.drawable.ic_active)
+        // TODO: New copy
         resultTitle.text = resources.getString(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
-        resultParagraph.text = getString(R.string.PROFILE_TRUSTLY_SUCCESS_DESCRIPTION)
         notNow.remove()
         resultDoItLater.remove()
         if (isPostSignDD()) {
@@ -276,9 +280,8 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     fun showFailure() {
         trustlyContainer.remove()
-        resultIcon.setImageResource(R.drawable.icon_failure)
+        resultIcon.setImageResource(R.drawable.ic_terminated)
         resultTitle.text = resources.getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_HEADLINE)
-        resultParagraph.text = getString(R.string.ONBOARDING_CONNECT_DD_FAILURE_BODY)
         resultDoItLater.show()
         resultDoItLater.setHapticClickListener {
             tracker.doItLater()
@@ -316,7 +319,11 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         private const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
         private const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
 
-        fun newInstance(context: Context, withExplainer: Boolean = false, withoutHistory: Boolean = false) =
+        fun newInstance(
+            context: Context,
+            withExplainer: Boolean = false,
+            withoutHistory: Boolean = false
+        ) =
             Intent(context, ConnectPaymentActivity::class.java).apply {
                 putExtra(WITH_EXPLAINER, withExplainer)
                 if (withoutHistory) {

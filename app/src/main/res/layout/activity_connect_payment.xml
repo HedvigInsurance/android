@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ImageView
             android:id="@+id/explainerIllustration"
@@ -69,9 +69,12 @@
 
         <Button
             android:id="@+id/explainerButton"
-            android:layout_width="wrap_content"
+            style="?materialButtonContainedLargeStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:layout_marginEnd="@dimen/base_margin_double"
             android:enabled="false"
             android:text="@string/ONBOARDING_CONNECT_DD_CTA"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -130,19 +133,19 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:visibility="gone"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/resultIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/connect_payment_result_icon_size"
+                android:layout_height="@dimen/connect_payment_result_icon_size"
                 android:contentDescription="@null"
                 app:layout_constraintBottom_toTopOf="@id/resultTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                tools:src="@drawable/icon_success" />
+                tools:src="@drawable/ic_active" />
 
             <TextView
                 android:id="@+id/resultTitle"
@@ -152,52 +155,38 @@
                 android:gravity="center"
                 android:paddingStart="@dimen/base_margin_double"
                 android:paddingEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline3"
-                app:layout_constraintBottom_toTopOf="@id/resultParagraph"
+                android:textAppearance="?textAppearanceHeadline5"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/resultIcon"
                 tools:text="@string/PROFILE_TRUSTLY_SUCCESS_TITLE" />
 
-            <TextView
-                android:id="@+id/resultParagraph"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:gravity="center"
-                android:paddingStart="@dimen/base_margin_triple"
-                android:paddingEnd="@dimen/base_margin_triple"
-                android:textAppearance="?textAppearanceHeadline6"
-                app:layout_constraintBottom_toTopOf="@id/resultClose"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultTitle"
-                tools:text="@string/PROFILE_TRUSTLY_SUCCESS_DESCRIPTION" />
-
             <Button
                 android:id="@+id/resultClose"
-                android:layout_width="wrap_content"
+                style="?materialButtonContainedLargeStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginBottom="@dimen/base_margin_double"
                 android:text="@string/PROFILE_TRUSTLY_CLOSE"
                 app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultParagraph" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/resultDoItLater"
                 style="?attr/materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginBottom="@dimen/base_margin_quintuple"
                 android:text="@string/ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER"
                 android:textColor="?colorError"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultClose"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
