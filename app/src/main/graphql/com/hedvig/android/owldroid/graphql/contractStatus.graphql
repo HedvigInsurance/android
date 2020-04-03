@@ -1,0 +1,7 @@
+query ContractStatus {
+  contracts {
+    status {
+      __typename
+    }
+  }
+}

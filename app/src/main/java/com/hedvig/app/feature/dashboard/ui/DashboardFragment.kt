@@ -8,7 +8,7 @@ import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.trustly.TrustlyActivity
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -43,7 +43,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             infoBoxBody.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
             infoBoxButton.text = getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
             infoBoxButton.setHapticClickListener {
-                startActivity(TrustlyActivity.newInstance(requireContext()))
+                tracker.setupDirectDebit()
+                startActivity(ConnectPaymentActivity.newInstance(requireContext()))
             }
             infoBox.show()
         } else {

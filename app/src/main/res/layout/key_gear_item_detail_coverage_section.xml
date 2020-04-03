@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/horizontal_line_height"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:background="@color/separator" />
+        android:background="@drawable/divider" />
 
     <TextView
         android:layout_width="wrap_content"

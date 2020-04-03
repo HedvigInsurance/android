@@ -5,7 +5,6 @@ query Profile {
     lastName
     email
     phoneNumber
-    features
   }
   insuranceCost {
     ... CostFragment
@@ -40,6 +39,14 @@ query Profile {
   bankAccount {
     bankName
     descriptor
+  }
+  activePaymentMethods {
+    storedPaymentMethodsDetails {
+      brand
+      lastFourDigits
+      expiryMonth
+      expiryYear
+    }
   }
   cashback {
     ... CashbackFragment

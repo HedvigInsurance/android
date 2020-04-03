@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_line_height"
                     android:layout_marginTop="@dimen/base_margin_quintuple"
-                    android:background="@color/separator" />
+                    android:background="@drawable/divider" />
 
                 <include
                     android:id="@+id/coverageSection"
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_line_height"
                     android:layout_marginTop="@dimen/base_margin_quintuple"
-                    android:background="@color/separator" />
+                    android:background="@drawable/divider" />
 
                 <include
                     android:id="@+id/nameSection"
@@ -64,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_line_height"
                     android:layout_marginTop="@dimen/base_margin_quintuple"
-                    android:background="@color/separator" />
+                    android:background="@drawable/divider" />
 
                 <include
                     android:id="@+id/receiptSection"

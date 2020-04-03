@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.core.view.isEmpty
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -38,6 +39,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +56,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
 
+    private val loggedInViewModel: LoggedInViewModel by viewModel()
+
     private val profileTracker: ProfileTracker by inject()
     private val loggedInTracker: LoggedInTracker by inject()
 
@@ -66,6 +70,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
             val id = LoggedInTabs.fromId(menuItem.itemId)
+            if (id == null) {
+                e { "Programmer error: Invalid menu item chosen" }
+                return@setOnNavigationItemSelectedListener false
+            }
             tabContentContainer.setCurrentItem(id.ordinal, false)
             setupAppBar(id)
             setupFloatingButton(id)
@@ -178,13 +186,31 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         whatsNewViewModel.news.observe(lifecycleOwner = this) { data ->
             data?.let {
-                if (data.news.size > 0) {
+                if (data.news.isNotEmpty()) {
                     // Yep, this is actually happening
                     GlobalScope.launch(Dispatchers.IO) {
                         FirebaseInstanceId.getInstance().deleteInstanceId()
                     }
                     WhatsNewDialog.newInstance(data.news)
                         .show(supportFragmentManager, WhatsNewDialog.TAG)
+                }
+            }
+        }
+
+        loggedInViewModel.data.observe(this) { features ->
+            features?.let { f ->
+                if (bottomTabs.menu.isEmpty()) {
+                    val keyGearEnabled = isDebug() || f.contains(Feature.KEYGEAR)
+                    val referralsEnabled = isDebug() || f.contains(Feature.REFERRALS)
+
+                    val menuId = when {
+                        keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+                        referralsEnabled -> R.menu.logged_in_menu
+                        !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+                        else -> R.menu.logged_in_menu
+                    }
+                    bottomTabs.inflateMenu(menuId)
+                    setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
                 }
             }
         }
@@ -199,15 +225,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInTracker.setMemberId(id)
             }
 
-            val keyGearEnabled = isDebug() || data?.member?.features?.contains(Feature.KEYGEAR) ?: false
-
-            if (keyGearEnabled && bottomTabs.menu.size() != 5) {
-                bottomTabs.menu.clear()
-                bottomTabs.inflateMenu(R.menu.logged_in_menu_key_gear)
-            } else if (!keyGearEnabled && bottomTabs.menu.size() != 4) {
-                bottomTabs.menu.clear()
-                bottomTabs.inflateMenu(R.menu.logged_in_menu)
-            }
         }
         whatsNewViewModel.fetchNews()
 
@@ -240,7 +257,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun setupAppBar(id: LoggedInTabs) {
+    private fun setupAppBar(id: LoggedInTabs?) {
         invalidateOptionsMenu()
         if (lastLoggedInTab != id) {
             appBarLayout.setExpanded(true, false)
@@ -262,7 +279,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 setupLargeTitle(R.string.PROFILE_TITLE)
             }
         }
-        lastLoggedInTab = id
+        if (id != null) {
+            lastLoggedInTab = id
+        }
     }
 
     companion object {

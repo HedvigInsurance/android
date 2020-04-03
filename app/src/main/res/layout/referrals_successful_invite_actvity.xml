@@ -16,7 +16,7 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:contentDescription="@null"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_invite_success"
+        app:srcCompat="@drawable/illustration_invite_success"
         tools:visibility="visible" />
 
     <TextView

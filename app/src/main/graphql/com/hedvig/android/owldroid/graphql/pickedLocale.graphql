@@ -1,0 +1,5 @@
+mutation PickedLocale($locale: Locale!) {
+  updatePickedLocale(pickedLocale: $locale) {
+    __typename
+  }
+}

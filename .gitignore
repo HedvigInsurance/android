@@ -21,7 +21,4 @@ mapping.txt
 # adyen credentials
 adyen.xml
 
-#branch file
-branch_key.xml
-
 open_source_licenses.html

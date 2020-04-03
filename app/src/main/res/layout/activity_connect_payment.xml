@@ -4,26 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hedvig.app.feature.trustly.TrustlyActivity">
+    tools:context="com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/explainerScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/explainerIllustration"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:adjustViewBounds="true"
             android:contentDescription="@null"
             app:layout_constraintBottom_toTopOf="@id/explainerPreHeadline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/connect_direct_debit_illustration" />
+            app:srcCompat="@drawable/illustration_connect_payment" />
 
         <TextView
             android:id="@+id/explainerPreHeadline"
@@ -69,6 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:enabled="false"
             android:text="@string/ONBOARDING_CONNECT_DD_CTA"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -126,7 +130,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/resultIcon"
@@ -188,7 +192,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:text="@string/ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER"
-                android:textAllCaps="false"
                 android:textColor="?colorError"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"

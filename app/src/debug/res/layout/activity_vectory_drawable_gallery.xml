@@ -16,4 +16,14 @@
         android:contentDescription="@null"
         app:srcCompat="@drawable/animation_typing" />
 
+    <ImageView
+        android:id="@+id/splash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:background="#121212"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/animation_splash" />
+
 </LinearLayout>

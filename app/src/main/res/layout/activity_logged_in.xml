@@ -39,6 +39,6 @@
         android:backgroundTint="@color/bottom_navigation_view_background"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/logged_in_menu" />
+        tools:menu="@menu/logged_in_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

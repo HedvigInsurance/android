@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.response.CustomTypeAdapter
-import com.apollographql.apollo.response.CustomTypeValue
+import com.apollographql.apollo.api.CustomTypeAdapter
+import com.apollographql.apollo.api.CustomTypeValue
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeParseException
 import timber.log.Timber

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".feature.webonboarding.WebOnboardingActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/base_margin"
+        android:paddingBottom="@dimen/base_margin">
+
+        <ImageView
+            android:id="@+id/openSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_horizontal"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:clickable="true"
+            android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
+            android:focusable="true"
+            app:srcCompat="@drawable/ic_settings" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
+            android:tint="?colorPrimary"
+            app:srcCompat="@drawable/ic_hedvig_wordmark" />
+
+        <ImageView
+            android:id="@+id/openChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_horizontal"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:clickable="true"
+            android:contentDescription="@string/DASHBOARD_OPEN_CHAT"
+            android:focusable="true"
+            app:srcCompat="@drawable/ic_chat" />
+
+    </FrameLayout>
+
+    <com.hedvig.app.ui.view.SafeWebView
+        android:id="@+id/webOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

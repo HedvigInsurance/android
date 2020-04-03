@@ -128,7 +128,9 @@ class ProfileViewModelImpl(
 
     override fun refreshBankAccountInfo() {
         viewModelScope.launch {
-            directDebitRepository.refreshDirectDebitStatus()
+            runCatching {
+                directDebitRepository.refreshDirectDebitStatus()
+            }
         }
         disposables += profileRepository.refreshBankAccountInfo()
             .subscribe({ response ->

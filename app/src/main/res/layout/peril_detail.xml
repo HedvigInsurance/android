@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:orientation="horizontal"
         tools:ignore="UseCompoundDrawables">
