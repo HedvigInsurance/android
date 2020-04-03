@@ -470,5 +470,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         const val EXTRA_SHOW_RESTART = "extra_show_restart"
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
+
+        fun newInstance(context: Context, showClose: Boolean = false) = Intent(context, ChatActivity::class.java).apply {
+            if (showClose) {
+                putExtra(EXTRA_SHOW_CLOSE, true)
+            }
+        }
     }
 }

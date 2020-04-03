@@ -31,7 +31,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -86,7 +86,7 @@ class KeyGearItemsRepository(
         val cachedData =
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .read(keyGearItemQuery)
                 .execute()
 
@@ -120,7 +120,7 @@ class KeyGearItemsRepository(
 
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
 
@@ -172,7 +172,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(keyGearItemsQuery)
             .execute()
 
@@ -195,7 +195,7 @@ class KeyGearItemsRepository(
 
         apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(keyGearItemsQuery, newData)
             .execute()
 
@@ -249,7 +249,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(keyGearItemQuery)
             .execute()
 
@@ -282,7 +282,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(keyGearItemQuery)
             .execute()
 
@@ -301,7 +301,7 @@ class KeyGearItemsRepository(
 
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
         }
@@ -321,7 +321,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(keyGearItemsQuery)
             .execute()
 
@@ -333,7 +333,7 @@ class KeyGearItemsRepository(
 
         apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(keyGearItemsQuery, newData)
             .execute()
     }

@@ -28,7 +28,7 @@ class OfferRepository(
 
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .read(offerQuery)
             .execute()
 
@@ -53,7 +53,7 @@ class OfferRepository(
 
         apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(offerQuery, newData)
             .execute()
     }
@@ -65,7 +65,7 @@ class OfferRepository(
     fun removeDiscountFromCache() {
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(offerQuery)
             .execute()
 
@@ -97,7 +97,7 @@ class OfferRepository(
 
         apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(offerQuery, newData)
             .execute()
     }
@@ -128,7 +128,7 @@ class OfferRepository(
     fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(offerQuery)
             .execute()
 
@@ -153,7 +153,7 @@ class OfferRepository(
 
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .writeAndPublish(offerQuery, newData)
                 .execute()
         }
@@ -165,7 +165,7 @@ class OfferRepository(
     fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
         val cachedData = apolloClientWrapper
             .apolloClient
-            .apolloStore()
+            .apolloStore
             .read(offerQuery)
             .execute()
 
@@ -190,7 +190,7 @@ class OfferRepository(
 
             apolloClientWrapper
                 .apolloClient
-                .apolloStore()
+                .apolloStore
                 .writeAndPublish(offerQuery, newData)
                 .execute()
         }

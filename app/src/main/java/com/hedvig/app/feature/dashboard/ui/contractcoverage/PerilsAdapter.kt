@@ -40,7 +40,11 @@ class PerilsAdapter(
         private val label = itemView.label
         private val icon = itemView.icon
 
-        fun bind(peril: DashboardQuery.Peril, fragmentManager: FragmentManager, requestBuilder: RequestBuilder<PictureDrawable>) {
+        fun bind(
+            peril: DashboardQuery.Peril,
+            fragmentManager: FragmentManager,
+            requestBuilder: RequestBuilder<PictureDrawable>
+        ) {
             label.text = peril.title
             val iconUrl = "${BuildConfig.BASE_URL}${if (icon.context.isDarkThemeActive) {
                 peril.icon.variants.dark.svgUrl
@@ -64,9 +68,12 @@ class PerilsAdapter(
         private val old: List<DashboardQuery.Peril>,
         private val new: List<DashboardQuery.Peril>
     ) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = old[oldItemPosition] == new[newItemPosition]
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            old[oldItemPosition] == new[newItemPosition]
+
         override fun getOldListSize() = old.size
         override fun getNewListSize() = new.size
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = areItemsTheSame(oldItemPosition, newItemPosition)
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            areItemsTheSame(oldItemPosition, newItemPosition)
     }
 }

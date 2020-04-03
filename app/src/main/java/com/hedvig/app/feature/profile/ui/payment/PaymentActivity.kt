@@ -10,12 +10,10 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenActivity
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
-import com.hedvig.app.feature.trustly.TrustlyActivity
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
@@ -41,7 +39,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.format.DateTimeFormatter
 
-class PaymentActivity : BaseActivity() {
+class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val profileViewModel: ProfileViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
@@ -54,8 +52,6 @@ class PaymentActivity : BaseActivity() {
             startActivity(MarketPickerActivity.newInstance(this))
         }
 
-
-        setContentView(R.layout.activity_payment)
         setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
             onBackPressed()
         }
@@ -67,21 +63,11 @@ class PaymentActivity : BaseActivity() {
         }
 
         changeBankAccount.setHapticClickListener {
-            market?.let { market ->
-                when (market) {
-                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
-                }
-            }
+            startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
         connectBankAccount.setHapticClickListener {
-            market?.let { market ->
-                when (market) {
-                    Market.SE -> startActivity(TrustlyActivity.newInstance(this))
-                    Market.NO -> startActivity(AdyenActivity.newInstance(this))
-                }
-            }
+            startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
         connectBankAccountWithLink.setHapticClickListener {
@@ -290,9 +276,17 @@ class PaymentActivity : BaseActivity() {
 
     private fun bindPaymentDetails(pd: ProfileQuery.Data) {
         pd.bankAccount?.let { bankAccount ->
+            bankAccountContainer.show()
             accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
             toggleBankInfo(true)
         } ?: toggleBankInfo(false)
+
+        pd.activePaymentMethods?.let { activePaymentMethods ->
+            adyenActivePaymentMethodContainer.show()
+            cardType.text = activePaymentMethods.storedPaymentMethodsDetails.brand
+            maskedCardNumber.text = "**** ${activePaymentMethods.storedPaymentMethodsDetails.lastFourDigits}"
+            validUntil.text = "${activePaymentMethods.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.storedPaymentMethodsDetails.expiryYear}"
+        }
 
         showRedeemCodeOnNoDiscount(pd)
     }

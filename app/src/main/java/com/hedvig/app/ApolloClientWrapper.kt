@@ -8,6 +8,7 @@ import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.PaymentMethodsApiResponseAdapter
 import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import okhttp3.OkHttpClient
@@ -45,6 +46,7 @@ class ApolloClientWrapper(
             .serverUrl(BuildConfig.GRAPHQL_URL)
             .okHttpClient(okHttpClient)
             .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
+            .addCustomTypeAdapter(CustomType.PAYMENTMETHODSRESPONSE, PaymentMethodsApiResponseAdapter())
             .subscriptionConnectionParams(SubscriptionConnectionParams(mapOf("Authorization" to authToken)))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(

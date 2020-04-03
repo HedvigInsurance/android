@@ -145,7 +145,6 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:background="@drawable/divider"
-                    android:backgroundTint="@color/separator"
                     app:layout_constraintTop_toBottomOf="@id/typeLabel" />
 
                 <Button
@@ -209,7 +208,6 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:background="@drawable/divider"
-                    android:backgroundTint="@color/separator"
                     app:layout_constraintTop_toBottomOf="@id/coinsuredAmountLabel" />
 
                 <Button
