@@ -151,16 +151,15 @@ class LanguageAndMarketViewModel(
             }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                updateMarket(Market.SE)
-            } else {
-                preselectedMarket.postValue(response.getOrNull()?.data()?.geo?.countryISOCode)
-                response.getOrNull()?.data()?.geo?.let { geo ->
-                    val market: Market = try {
-                        Market.valueOf(geo.countryISOCode)
-                    } catch (e: Exception) {
-                        Market.SE
-                    }
-                    updateMarket(market)
+                return@launch
+            }
+            preselectedMarket.postValue(response.getOrNull()?.data()?.geo?.countryISOCode)
+            response.getOrNull()?.data()?.geo?.let { geo ->
+                try {
+                    updateMarket(Market.valueOf(geo.countryISOCode))
+                } catch (e: Exception) {
+                    e(e)
+                    return@launch
                 }
             }
         }
