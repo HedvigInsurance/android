@@ -158,7 +158,6 @@ class LanguageAndMarketViewModel(
                 try {
                     updateMarket(Market.valueOf(geo.countryISOCode))
                 } catch (e: Exception) {
-                    e(e)
                     return@launch
                 }
             }
