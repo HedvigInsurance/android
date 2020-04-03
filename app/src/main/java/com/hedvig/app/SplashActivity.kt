@@ -122,14 +122,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         val market = sharedPreferences.getString(Market.MARKET_SHARED_PREF, null)
         when (loginStatus) {
             LoginStatus.ONBOARDING -> {
-                if (market == null) {
-                    runSplashAnimation {
-                        startActivity(MarketPickerActivity.newInstance(this))
-                    }
-                } else {
-                    runSplashAnimation {
-                        startActivity(MarketingActivity.newInstance(this))
-                    }
+                runSplashAnimation {
+                    startActivity(MarketPickerActivity.newInstance(this))
                 }
             }
             LoginStatus.IN_OFFER -> {
