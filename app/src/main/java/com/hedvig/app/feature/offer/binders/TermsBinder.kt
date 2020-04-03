@@ -1,16 +1,11 @@
 package com.hedvig.app.feature.offer.binders
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.google.android.material.button.MaterialButton
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferTracker
-import com.hedvig.app.util.extensions.openUri
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.offer_limit_row.view.*
+import com.hedvig.app.feature.offer.TermsAdapter
 import kotlinx.android.synthetic.main.offer_terms_area.view.*
 
 class TermsBinder(
@@ -36,43 +31,9 @@ class TermsBinder(
                 limits.map { it.fragments.insurableLimitsFragment }
         }
 
-        quote?.insurableLimits?.indices?.let {
-            for (i in it step 2) {
-                val limit = quote.insurableLimits[i]
-                val secondLimit = quote.insurableLimits.getOrNull(i + 1)
-                val limitRow = layoutInflater.inflate(
-                    R.layout.offer_limit_row,
-                    limitsContainer,
-                    false
-                ) as LinearLayout
-
-                limitRow.offerLimitDescription1.text =
-                    limit.fragments.insurableLimitsFragment.description
-                limitRow.offerLimit1.text = limit.fragments.insurableLimitsFragment.limit
-
-                secondLimit?.let {
-                    limitRow.offerLimitDescription2.text =
-                        it.fragments.insurableLimitsFragment.description
-                    limitRow.offerLimit2.text = it.fragments.insurableLimitsFragment.limit
-                }
-                limitsContainer.addView(limitRow)
-            }
+        termsRecyclerView.adapter = TermsAdapter(tracker)
+        quote?.insuranceTerms?.let { terms ->
+            (termsRecyclerView.adapter as TermsAdapter).items = terms
         }
-
-        termsButtonContainer.removeAllViews()
-        quote?.insuranceTerms?.forEach { terms ->
-            val button = layoutInflater.inflate(
-                R.layout.offer_terms_area_button,
-                termsButtonContainer,
-                false
-            ) as MaterialButton
-            button.text = terms.displayName + " ↗"
-            button.setHapticClickListener {
-                tracker.openOfferLink(terms.displayName)
-                it.context.openUri(Uri.parse(terms.url))
-            }
-            termsButtonContainer.addView(button)
-        }
-        previousData = data
     }
 }

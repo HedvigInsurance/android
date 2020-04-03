@@ -2,12 +2,19 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
+import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import e
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -16,6 +23,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
     abstract val signStatus: MutableLiveData<SignStatusFragment>
     abstract val signError: MutableLiveData<Boolean>
+    abstract val contracts: MutableLiveData<ContractStatusQuery.Data>
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
     abstract fun triggerOpenChat(done: () -> Unit)
@@ -33,12 +41,26 @@ class OfferViewModelImpl(
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
+    override val contracts = MutableLiveData<ContractStatusQuery.Data>()
 
     private val disposables = CompositeDisposable()
     private val signStatusSubscriptionHandle = CompositeDisposable()
 
     init {
         load()
+        loadContracts()
+    }
+
+    private fun loadContracts() {
+        viewModelScope.launch {
+            offerRepository
+                .loadContracts()
+                .onEach { response ->
+                    contracts.postValue(response.data())
+                }
+                .catch { e -> e(e) }
+                .collect()
+        }
     }
 
     fun load() {

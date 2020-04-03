@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.BASE_MARGIN_OCTUPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -25,14 +26,12 @@ import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.toContractType
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isSigned
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -43,7 +42,6 @@ import java.math.BigDecimal
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
-    private val octupleMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin_octuple) }
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
@@ -58,6 +56,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
         perilBinder = PerilBinder(offerPerilArea as LinearLayout, supportFragmentManager)
 
+        offerViewModel.contracts.observe(this) {
+            it?.let { data ->
+                if (data.contracts.isNotEmpty()) {
+                    storeBoolean(IS_VIEWING_OFFER, false)
+                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                }
+            }
+        }
+
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
                 perilBinder.bind(data)
@@ -67,44 +78,35 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 loadingSpinner.remove()
                 setupButtons()
 
-
-                if (data.insurance.status.isSigned) {
-                    storeBoolean(IS_VIEWING_OFFER, false)
-                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
-                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    })
-                } else {
-                    val completeQuote = data.lastQuoteOfMember.asCompleteQuote
-                    completeQuote?.let {
-                        when {
-                            completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
-                                val apartmentData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
-                                bindToolBar(apartmentData.street)
-                                bindPremiumBox(
-                                    completeQuote.toContractType(),
-                                    completeQuote.insuranceCost.fragments.costFragment,
-                                    completeQuote.startDate,
-                                    data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
-                                )
-                            }
-                            completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
-                                val houseData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
-                                bindToolBar(houseData.street)
-                                bindPremiumBox(
-                                    completeQuote.toContractType(),
-                                    completeQuote.insuranceCost.fragments.costFragment,
-                                    completeQuote.startDate,
-                                    data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
-                                )
-                            }
+                val completeQuote = data.lastQuoteOfMember.asCompleteQuote
+                completeQuote?.let {
+                    when {
+                        completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
+                            val apartmentData =
+                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
+                            bindToolBar(apartmentData.street)
+                            bindPremiumBox(
+                                completeQuote.typeOfContract,
+                                completeQuote.insuranceCost.fragments.costFragment,
+                                completeQuote.startDate,
+                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                            )
                         }
-                        factAreaBinder.bind(completeQuote)
+                        completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
+                            val houseData =
+                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
+                            bindToolBar(houseData.street)
+                            bindPremiumBox(
+                                completeQuote.typeOfContract,
+                                completeQuote.insuranceCost.fragments.costFragment,
+                                completeQuote.startDate,
+                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                            )
+                        }
                     }
+                    factAreaBinder.bind(completeQuote)
                 }
+
             }
         }
 
@@ -226,7 +228,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         setSupportActionBar(offerToolbar)
         offerScroll.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
             val positionInSpan =
-                scrollY - (octupleMargin - (offerToolbar.height.toFloat()))
+                scrollY - (BASE_MARGIN_OCTUPLE - (offerToolbar.height.toFloat()))
             val percentage = positionInSpan / offerToolbar.height
 
             if (percentage < -1 || percentage > 2) {

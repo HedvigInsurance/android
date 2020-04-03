@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
+import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
-import com.hedvig.android.owldroid.type.InsuranceStatus
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentActivity
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -22,6 +22,7 @@ class MockOfferViewModel(
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
+    override val contracts = MutableLiveData<ContractStatusQuery.Data>()
 
     init {
         val activePersona = context
@@ -49,9 +50,6 @@ class MockOfferViewModel(
 
     companion object {
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
-            insurance = OfferQuery.Insurance(
-                status = InsuranceStatus.PENDING
-            ),
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
                     fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -121,9 +119,6 @@ class MockOfferViewModel(
         )
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
-            insurance = OfferQuery.Insurance(
-                status = InsuranceStatus.PENDING
-            ),
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
                     fragments = OfferQuery.RedeemedCampaign.Fragments(

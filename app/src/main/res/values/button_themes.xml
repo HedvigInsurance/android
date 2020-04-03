@@ -4,6 +4,7 @@
     <style name="Hedvig.Button" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">?colorButton</item>
         <item name="android:textColor">?textColorButton</item>
+        <item name="colorButton">@color/colorLargeButton</item>
     </style>
 
     <style name="Hedvig.Button.Large">
@@ -15,9 +16,5 @@
     </style>
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
-
-    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="strokeColor">@color/colorPrimary</item>
-    </style>
 
 </resources>

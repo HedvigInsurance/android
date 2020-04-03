@@ -174,7 +174,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:backgroundTint="@color/separator_on_surface"
                 android:background="@drawable/divider"
                 android:visibility="gone"
                 tools:visibility="visible" />
@@ -203,7 +202,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:backgroundTint="@color/separator_on_surface"
                 android:background="@drawable/divider" />
 
             <TextView

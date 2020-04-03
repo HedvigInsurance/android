@@ -3,8 +3,10 @@ package com.hedvig.app.feature.offer
 import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -17,6 +19,7 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
 import e
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -33,6 +36,12 @@ class OfferRepository(
             .from(apolloClientWrapper.apolloClient.query(offerQuery).watcher())
     }
 
+    fun loadContracts(): Flow<Response<ContractStatusQuery.Data>> = apolloClientWrapper
+        .apolloClient
+        .query(ContractStatusQuery())
+        .watcher()
+        .toFlow()
+    
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient
             .apolloStore

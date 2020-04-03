@@ -1,7 +1,4 @@
 query Offer($locale: Locale!) {
-  insurance {
-    status
-  }
 
   redeemedCampaigns {
     ...IncentiveFragment
