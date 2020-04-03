@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
@@ -28,13 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH_ONE" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH_TWO" />
+        android:textAppearance="?textAppearanceBody1"
+        tools:text="@string/REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH" />
 
     <Button
         android:id="@+id/referralMoreInfoButton"
