@@ -36,7 +36,7 @@
 
     <dimen name="dashboard_need_setup_container_height">120dp</dimen>
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
-    <dimen name="peril_icon">48dp</dimen>
+    <dimen name="peril_icon">40dp</dimen>
     <dimen name="peril_width">72dp</dimen>
     <dimen name="peril_bottom_sheet_title_height">88dp</dimen>
     <dimen name="peril_title_extra_spacing">40dp</dimen>
@@ -153,7 +153,7 @@
     <dimen name="create_key_gear_add_photo_height">250dp</dimen>
     <dimen name="auto_set_date_text_size">14dp</dimen>
 
-    <dimen name="pick_date_button_corner_radius">12dp</dimen>
+    <dimen name="pick_date_button_corner_radius">6dp</dimen>
     <dimen name="button_border_white_padding">10dp</dimen>
     <dimen name="button_border_white_corner_radius">120dp</dimen>
     <dimen name="date_pick_button_height">60dp</dimen>
@@ -167,6 +167,12 @@
     <dimen name="hedvig_edit_text_padding">14dp</dimen>
     <dimen name="item_detail_gradient_size">300dp</dimen>
     <dimen name="market_item_flag_padding_end">20dp</dimen>
+    <dimen name="offer_info_icon">30dp</dimen>
+    <dimen name="premium_box_campaign_header_height">30dp</dimen>
+    <dimen name="offer_premium_continer_height">480dp</dimen>
+    <dimen name="offer_peril_icon_size">40dp</dimen>
+    <dimen name="offer_peril_card_height">74dp</dimen>
+    <dimen name="offer_peril_card_width">180dp</dimen>
     <dimen name="checkbox_size">24dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
 

@@ -1,0 +1,5 @@
+fragment InsurableLimitsFragment on InsurableLimit {
+  label
+  limit
+  description
+}

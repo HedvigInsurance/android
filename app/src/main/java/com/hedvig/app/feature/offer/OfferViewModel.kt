@@ -155,7 +155,7 @@ class OfferViewModelImpl(
                     Timber.e(response.errors().toString())
                     return@subscribe
                 }
-                response.data()?.let {data ->
+                response.data()?.let { data ->
                     offerRepository.removeStartDateFromCache(data)
                 }
             }, { Timber.e(it) })

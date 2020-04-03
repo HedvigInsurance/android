@@ -154,7 +154,8 @@ class MockProfileViewModel : ProfileViewModel() {
                                         pdmQuantity = 1
                                     ),
                                     asMonthlyCostDeduction = null,
-                                    asFreeMonths = null
+                                    asFreeMonths = null,
+                                    asNoDiscount = null
                                 )
                             )
                         )

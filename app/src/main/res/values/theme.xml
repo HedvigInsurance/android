@@ -32,7 +32,6 @@
         <!-- Button Variants -->
         <item name="materialButtonContainedLargeStyle">@style/Hedvig.Button.Large</item>
         <item name="materialButtonTextStyle">@style/Hedvig.Button.Text</item>
-        <item name="materialButtonOutlinedStyle">@style/Hedvig.Button.Outlined</item>
 
         <!-- Material Typography variants -->
         <item name="textAppearanceHeadline3">@style/Hedvig.TextAppearance.Headline3</item>

@@ -4,26 +4,238 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/offer_background"
     tools:context=".feature.offer.OfferActivity">
 
     <include
         layout="@layout/loading_spinner"
         tools:visibility="gone" />
 
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/offerScroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/hedvig_black">
+
+                <FrameLayout
+                    android:id="@+id/offerPremiumFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/base_margin_octuple"
+                    android:paddingBottom="@dimen/base_margin_quadruple">
+
+                    <com.hedvig.app.ui.view.HedvigCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/base_margin_double">
+
+                        <LinearLayout
+                            android:id="@+id/offerPremiumContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/premiumCampaignTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/base_margin_half"
+                                android:background="@drawable/background_premium_box_with_campaign"
+                                android:textAppearance="?textAppearanceHeadline6"
+                                android:textColor="@color/white"
+                                tools:text="Discount" />
+
+                            <TextView
+                                android:id="@+id/premiumBoxTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/base_margin_double"
+                                android:layout_marginTop="@dimen/base_margin_triple"
+                                android:layout_marginEnd="@dimen/base_margin_double"
+                                android:textAppearance="?textAppearanceHeadline5"
+                                tools:text="HEDVIG BOSTADSRÄTT" />
+
+                            <TextView
+                                android:id="@+id/grossPremium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/base_margin_double"
+                                android:textAppearance="?textAppearanceHeadline6"
+                                android:visibility="gone"
+                                tools:text="179 kr/mån"
+                                tools:visibility="visible" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/base_margin_double"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/premium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?textAppearanceHeadline2"
+                                    tools:text="179" />
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginStart="@dimen/base_margin_half"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/premiumCurrency"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/OFFER_PREMIUM_CURRENCY_ABBREVIATION"
+                                        android:textAppearance="?textAppearanceHeadline6"
+                                        android:textColor="@color/gray" />
+
+                                    <TextView
+                                        android:id="@+id/premiumPeriod"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/OFFER_PREMIUM_PERIOD_ABBREVIATION"
+                                        android:textAppearance="?textAppearanceHeadline6"
+                                        android:textColor="@color/gray" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/startDateContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/base_margin_double"
+                                android:background="@drawable/background_pick_date"
+                                android:drawableEnd="@drawable/ic_expand"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/base_margin">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/START_DATE_BTN" />
+
+                                <TextView
+                                    android:id="@+id/premiumBoxStartDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/base_margin_double"
+                                    tools:text="Idag" />
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_expand" />
+
+                            </LinearLayout>
+
+                            <Button
+                                android:id="@+id/premiumBoxSignButton"
+                                style="?attr/materialButtonContainedLargeStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="@dimen/base_margin_double"
+                                android:layout_marginTop="@dimen/base_margin_quadruple"
+                                android:text="@string/OFFER_SIGN_BUTTON"
+                                android:textAllCaps="false"
+                                android:textColor="?colorOnPrimary"
+                                android:theme="@style/Hedvig.Button.Large"
+                                app:icon="@drawable/ic_bank_id"
+                                app:iconGravity="textEnd"
+                                app:iconPadding="10dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                tools:translationY="0dp" />
+
+                            <TextView
+                                android:id="@+id/discountButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/base_margin"
+                                android:layout_marginBottom="@dimen/base_margin_double"
+                                android:padding="@dimen/button_border_white_padding"
+                                android:textColor="?colorSecondary"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/dateButton"
+                                tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
+                        </LinearLayout>
+                    </com.hedvig.app.ui.view.HedvigCardView>
+                </FrameLayout>
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/offerInfoArea"
+                layout="@layout/offer_info_area" />
+
+            <include
+                android:id="@+id/offerFactArea"
+                layout="@layout/offer_fact_area" />
+
+            <include
+                android:id="@+id/offerPerilArea"
+                layout="@layout/offer_peril_area" />
+
+            <include
+                android:id="@+id/offerTermsArea"
+                layout="@layout/offer_terms_area" />
+
+            <Button
+                android:id="@+id/signButton"
+                style="?attr/materialButtonContainedLargeStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:text="@string/OFFER_SIGN_BUTTON"
+                android:textAllCaps="false"
+                android:textColor="?colorOnPrimary"
+                android:theme="@style/Hedvig.Button.Large"
+                app:icon="@drawable/ic_bank_id"
+                app:iconGravity="textEnd"
+                app:iconPadding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:translationY="0dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/offerToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_gravity="top"
-        android:background="@color/offer_background"
-        android:elevation="@dimen/toolbar_elevation"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        tools:layout_height="56dp">
+        android:layout_height="wrap_content"
+        tools:layout_height="?attr/actionBarSize">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -83,127 +295,6 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/offerScroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize"
-        tools:paddingTop="56dp">
-
-        <LinearLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <LinearLayout
-                android:id="@+id/parallaxContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/price_bubbles" />
-
-                <include
-                    android:id="@+id/featureBubbles"
-                    layout="@layout/feature_bubbles" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:contentDescription="@null"
-                app:srcCompat="@drawable/ic_arrow" />
-
-            <com.hedvig.app.ui.view.BezierView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:bottomColor="@color/midnight_700"
-                app:topColor="@android:color/transparent" />
-
-
-            <include
-                android:id="@+id/offerFactBox"
-                layout="@layout/offer_fact_area" />
-
-            <com.hedvig.app.ui.view.BezierView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:bottomColor="#E7EBF4"
-                app:topColor="@color/midnight_700" />
-
-            <include
-                android:id="@+id/homeSection"
-                layout="@layout/offer_peril_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <include
-                android:id="@+id/stuffSection"
-                layout="@layout/offer_peril_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <include
-                android:id="@+id/meSection"
-                layout="@layout/offer_peril_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <include
-                android:id="@+id/termsSection"
-                layout="@layout/offer_section_terms" />
-
-            <include layout="@layout/offer_section_switch" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@color/offer_background"
-                android:gravity="center"
-                android:text="@string/OFFER_GET_HEDVIG_TITLE"
-                android:textAppearance="?textAppearanceHeadline6"
-                android:textColor="@color/off_white_light" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/offer_background"
-                android:gravity="center"
-                android:paddingStart="@dimen/base_margin_quadruple"
-                android:paddingTop="@dimen/base_margin"
-                android:paddingEnd="@dimen/base_margin_quadruple"
-                android:paddingBottom="@dimen/offer_bottom_padding"
-                android:text="@string/OFFER_GET_HEDVIG_BODY"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-    <Button
-        android:id="@+id/signButton"
-        style="?attr/materialButtonContainedLargeStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:backgroundTint="@color/white"
-        android:drawableEnd="@drawable/ic_bank_id"
-        android:drawablePadding="@dimen/base_margin"
-        android:text="@string/OFFER_SIGN_BUTTON"
-        android:textColor="@color/off_black_dark"
-        android:translationY="@dimen/offer_sign_button_off_screen_translation"
-        android:visibility="visible"
-        app:drawableTint="@color/off_black_dark"
-        tools:translationY="0dp" />
 
 </FrameLayout>
 

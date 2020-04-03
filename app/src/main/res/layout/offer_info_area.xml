@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin_double"
+        android:orientation="horizontal">
+        <!--TODO  get real icon-->
+        <ImageView
+            android:layout_width="@dimen/offer_info_icon"
+            android:layout_height="@dimen/offer_info_icon"
+            android:src="@drawable/ic_coverage" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceHeadline6"
+                android:text="@string/OFFER_SCREEN_USP_ONE_TITLE" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody1"
+                android:text="@string/OFFER_SCREEN_USP_ONE_BODY" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin_double"
+        android:orientation="horizontal">
+
+        <!--TODO  get real icon-->
+        <ImageView
+            android:layout_width="@dimen/offer_info_icon"
+            android:layout_height="@dimen/offer_info_icon"
+            android:src="@drawable/ic_coverage" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceHeadline6"
+                android:text="@string/OFFER_SCREEN_USP_TWO_TITLE" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody1"
+                android:text="@string/OFFER_SCREEN_USP_TWO_BODY" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin_double"
+        android:orientation="horizontal">
+
+        <!--TODO  get real icon-->
+        <ImageView
+            android:layout_width="@dimen/offer_info_icon"
+            android:layout_height="@dimen/offer_info_icon"
+            android:src="@drawable/ic_coverage" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceHeadline6"
+                android:text="@string/OFFER_SCREEN_USP_THREE_TITLE" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody1"
+                android:text="@string/OFFER_SCREEN_USP_THREE_BODY" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</merge>

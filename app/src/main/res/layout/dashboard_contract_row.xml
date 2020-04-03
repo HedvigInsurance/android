@@ -113,7 +113,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:contentDescription="@null"
-                app:srcCompat="@drawable/ic_documents" />
+                app:srcCompat="@drawable/ic_my_documents" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

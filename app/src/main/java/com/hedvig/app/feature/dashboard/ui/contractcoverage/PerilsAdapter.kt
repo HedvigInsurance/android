@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -18,7 +18,7 @@ class PerilsAdapter(
     private val fragmentManager: FragmentManager,
     private val requestBuilder: RequestBuilder<PictureDrawable>
 ) : RecyclerView.Adapter<PerilsAdapter.ViewHolder>() {
-    var items: List<DashboardQuery.Peril> = emptyList()
+    var items: List<PerilFragment> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(PerilDiffCallback(field, value))
             field = value
@@ -41,7 +41,7 @@ class PerilsAdapter(
         private val icon = itemView.icon
 
         fun bind(
-            peril: DashboardQuery.Peril,
+            peril: PerilFragment,
             fragmentManager: FragmentManager,
             requestBuilder: RequestBuilder<PictureDrawable>
         ) {
@@ -65,8 +65,8 @@ class PerilsAdapter(
     }
 
     class PerilDiffCallback(
-        private val old: List<DashboardQuery.Peril>,
-        private val new: List<DashboardQuery.Peril>
+        private val old: List<PerilFragment>,
+        private val new: List<PerilFragment>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             old[oldItemPosition] == new[newItemPosition]
