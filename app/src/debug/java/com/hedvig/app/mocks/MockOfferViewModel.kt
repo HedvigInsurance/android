@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
-import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
@@ -22,7 +21,6 @@ class MockOfferViewModel(
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
-    override val contracts = MutableLiveData<ContractStatusQuery.Data>()
 
     init {
         val activePersona = context
@@ -115,7 +113,8 @@ class MockOfferViewModel(
                     typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
                     insuranceTerms = listOf()
                 )
-            )
+            ),
+            contracts = listOf()
         )
 
         private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
@@ -188,7 +187,8 @@ class MockOfferViewModel(
                     typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
                     insuranceTerms = listOf()
                 )
-            )
+            ),
+            contracts = listOf()
         )
     }
 }

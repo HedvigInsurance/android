@@ -48,13 +48,6 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:orientation="vertical" />
 
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/termsButtonContainer"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:orientation="vertical"-->
-    <!--        android:paddingTop="@dimen/base_margin_octuple" />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/termsRecyclerView"
         android:layout_width="match_parent"

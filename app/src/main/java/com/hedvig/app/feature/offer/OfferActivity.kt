@@ -56,19 +56,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
         perilBinder = PerilBinder(offerPerilArea as LinearLayout, supportFragmentManager)
 
-        offerViewModel.contracts.observe(this) {
-            it?.let { data ->
-                if (data.contracts.isNotEmpty()) {
-                    storeBoolean(IS_VIEWING_OFFER, false)
-                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
-                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    })
-                }
-            }
-        }
-
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
                 perilBinder.bind(data)
@@ -78,33 +65,42 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 loadingSpinner.remove()
                 setupButtons()
 
-                val completeQuote = data.lastQuoteOfMember.asCompleteQuote
-                completeQuote?.let {
-                    when {
-                        completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
-                            val apartmentData =
-                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
-                            bindToolBar(apartmentData.street)
-                            bindPremiumBox(
-                                completeQuote.typeOfContract,
-                                completeQuote.insuranceCost.fragments.costFragment,
-                                completeQuote.startDate,
-                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
-                            )
+                if (data.contracts.isNotEmpty()) {
+                    storeBoolean(IS_VIEWING_OFFER, false)
+                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
+                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                } else {
+                    val completeQuote = data.lastQuoteOfMember.asCompleteQuote
+                    completeQuote?.let {
+                        when {
+                            completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
+                                val apartmentData =
+                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
+                                bindToolBar(apartmentData.street)
+                                bindPremiumBox(
+                                    completeQuote.typeOfContract,
+                                    completeQuote.insuranceCost.fragments.costFragment,
+                                    completeQuote.startDate,
+                                    data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                                )
+                            }
+                            completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
+                                val houseData =
+                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
+                                bindToolBar(houseData.street)
+                                bindPremiumBox(
+                                    completeQuote.typeOfContract,
+                                    completeQuote.insuranceCost.fragments.costFragment,
+                                    completeQuote.startDate,
+                                    data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
+                                )
+                            }
                         }
-                        completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
-                            val houseData =
-                                data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
-                            bindToolBar(houseData.street)
-                            bindPremiumBox(
-                                completeQuote.typeOfContract,
-                                completeQuote.insuranceCost.fragments.costFragment,
-                                completeQuote.startDate,
-                                data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive
-                            )
-                        }
+                        factAreaBinder.bind(completeQuote)
                     }
-                    factAreaBinder.bind(completeQuote)
                 }
 
             }

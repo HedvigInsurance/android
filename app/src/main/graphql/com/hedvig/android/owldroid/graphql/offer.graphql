@@ -59,4 +59,10 @@ query Offer($locale: Locale!) {
       }
     }
   }
+
+  contracts {
+    status {
+      __typename
+    }
+  }
 }
