@@ -3,18 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/midnight_700"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
-        android:textAppearance="?textAppearanceHeadline5"
-        android:textColor="@color/violet_200"
-        tools:text="Testvägen 1" />
+        android:text="@string/OFFER_SCREEN_INFORMATION_TITLE"
+        android:textAppearance="?textAppearanceHeadline4" />
 
     <TextView
         android:layout_width="match_parent"
@@ -24,7 +21,7 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center_horizontal"
         android:text="@string/OFFER_HOUSE_SUMMARY_DESC"
-        android:textColor="@color/white" />
+        style="?textAppearanceBody1" />
 
     <com.hedvig.app.ui.view.ExpandableContentView
         android:id="@+id/expandableContentView"

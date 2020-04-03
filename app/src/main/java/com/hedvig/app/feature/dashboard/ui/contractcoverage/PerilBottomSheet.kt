@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -16,7 +16,11 @@ import kotlinx.android.synthetic.main.peril_bottom_sheet_new.*
 
 class PerilBottomSheet : BottomSheetDialogFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View =
         inflater.inflate(R.layout.peril_bottom_sheet_new, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,7 +36,7 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         }
 
         val requestBuilder = buildRequestBuilder()
-       
+
         requestBuilder
             .load(iconUrl)
             .into(icon)
@@ -47,15 +51,17 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
 
         val TAG = PerilBottomSheet::class.java.name
 
-        fun newInstance(context: Context, peril: DashboardQuery.Peril) = PerilBottomSheet().apply {
+        fun newInstance(context: Context, peril: PerilFragment) = PerilBottomSheet().apply {
             arguments = Bundle().apply {
                 putString(TITLE, peril.title)
                 putString(BODY, peril.description)
-                putString(ICON_URL, "${BuildConfig.BASE_URL}${if (context.isDarkThemeActive) {
-                    peril.icon.variants.dark.svgUrl
-                } else {
-                    peril.icon.variants.light.svgUrl
-                }}")
+                putString(
+                    ICON_URL, "${BuildConfig.BASE_URL}${if (context.isDarkThemeActive) {
+                        peril.icon.variants.dark.svgUrl
+                    } else {
+                        peril.icon.variants.light.svgUrl
+                    }}"
+                )
             }
         }
     }

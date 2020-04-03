@@ -7,7 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
-import com.hedvig.app.util.isHouse
 import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import org.threeten.bp.LocalDate
@@ -19,33 +18,34 @@ class FactAreaBinder(
         root.expandableContentView.initialize()
     }
 
-    private var previousData: OfferQuery.Insurance? = null
+    private var previousData: OfferQuery.AsCompleteQuote? = null
 
-    fun bind(data: OfferQuery.Insurance) = root.apply {
+    fun bind(data: OfferQuery.AsCompleteQuote) = root.apply {
         if (data == previousData) {
             return@apply
         }
-        address.text = data.address
 
-        if (data.type?.isHouse == true) {
-            bindHouse(data)
-        } else {
-            removeHouseViews()
+        when {
+            data.quoteDetails.asSwedishHouseQuoteDetails != null -> bindHouse(data.quoteDetails.asSwedishHouseQuoteDetails)
+            data.quoteDetails.asSwedishApartmentQuoteDetails != null -> bindApartment(data.quoteDetails.asSwedishApartmentQuoteDetails)
         }
-
-        bindCommon(data)
 
         root.expandableContentView.contentSizeChanged()
 
         previousData = data
     }
 
-    private fun bindHouse(data: OfferQuery.Insurance) = root.apply {
+    private fun bindApartment(data: OfferQuery.AsSwedishApartmentQuoteDetails) = root.apply {
+        removeHouseViews()
+        bindCommon(data.livingSpace, data.householdSize)
+    }
+
+    private fun bindHouse(data: OfferQuery.AsSwedishHouseQuoteDetails) = root.apply {
         ancillarySpaceLabel.show()
         ancillarySpace.show()
         ancillarySpace.text = interpolateTextKey(
             resources.getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS),
-            "HOUSE_INFO_AMOUNT_BIYTA" to data.ancillaryArea
+            "HOUSE_INFO_AMOUNT_BIYTA" to data.ancillarySpace
         )
 
         yearOfConstructionLabel.show()
@@ -119,12 +119,12 @@ class FactAreaBinder(
         subleted.remove()
     }
 
-    private fun bindCommon(data: OfferQuery.Insurance) = root.apply {
+    private fun bindCommon(dataLivingSpace: Int, personsInHousehold: Int) = root.apply {
         livingSpace.text = interpolateTextKey(
             resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
-            "HOUSE_INFO_AMOUNT_BOYTA" to data.livingSpace
+            "HOUSE_INFO_AMOUNT_BOYTA" to dataLivingSpace
         )
-        coinsured.text = data.personsInHousehold.toString()
+        coinsured.text = personsInHousehold.toString()
         offerExpirationDate.text = interpolateTextKey(
             resources.getString(R.string.OFFER_INFO_OFFER_EXPIRES),
             "OFFER_EXPIERY_DATE" to LocalDate.now().plusMonths(1)

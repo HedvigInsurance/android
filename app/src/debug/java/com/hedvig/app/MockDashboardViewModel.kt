@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.DirectDebitQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
@@ -21,14 +23,16 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
         val activePersona = context
             .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
-        data.postValue(when (activePersona) {
-            0 -> SWEDISH_APARTMENT
-            1 -> SWEDISH_HOUSE
-            2 -> NORWEGIAN_HOME_CONTENTS
-            3 -> NORWEGIAN_TRAVEL
-            4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-            else -> SWEDISH_APARTMENT
-        })
+        data.postValue(
+            when (activePersona) {
+                0 -> SWEDISH_APARTMENT
+                1 -> SWEDISH_HOUSE
+                2 -> NORWEGIAN_HOME_CONTENTS
+                3 -> NORWEGIAN_TRAVEL
+                4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
+                else -> SWEDISH_APARTMENT
+            }
+        )
 
         directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
@@ -77,24 +81,35 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             perils = listOf(
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 )
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
+
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -146,80 +161,110 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             perils = listOf(
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 ),
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 ),
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 ),
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 ),
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 )
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -271,24 +316,34 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             perils = listOf(
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 )
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(
@@ -330,24 +385,34 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             perils = listOf(
                 DashboardQuery.Peril(
-                    title = "Mock",
-                    description = "Mock",
-                    icon = DashboardQuery.Icon(
-                        variants = DashboardQuery.Variants(
-                            dark = DashboardQuery.Dark(
-                                svgUrl = "/app-content-service/fire_dark.svg"
-                            ),
-                            light = DashboardQuery.Light(
-                                svgUrl = "/app-content-service/fire.svg"
+                    fragments = DashboardQuery.Peril.Fragments(
+                        PerilFragment(
+                            title = "Mock",
+                            description = "Mock",
+                            icon = PerilFragment.Icon(
+                                variants = PerilFragment.Variants(
+                                    dark = PerilFragment.Dark(
+                                        svgUrl = "/app-content-service/fire_dark.svg"
+                                    ),
+                                    light = PerilFragment.Light(
+                                        svgUrl = "/app-content-service/fire.svg"
+                                    )
+                                )
                             )
                         )
                     )
+
                 )
             ),
             insurableLimits = listOf(
                 DashboardQuery.InsurableLimit(
-                    label = "Utstyrene dine er forsikrat till",
-                    limit = "1 000 000 kr"
+                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Utstyrene dine er forsikrat till",
+                            limit = "1 000 000 kr",
+                            description = "Dina prylar är försäkrade till"
+                        )
+                    )
                 )
             ),
             termsAndConditions = DashboardQuery.TermsAndConditions(

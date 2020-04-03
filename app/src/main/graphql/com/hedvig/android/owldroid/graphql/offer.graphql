@@ -1,56 +1,68 @@
-query Offer {
-  insurance {
-    status
-    address
-    personsInHousehold
-    previousInsurer {
-      displayName
-      switchable
-    }
-    livingSpace
-    type
-    presaleInformationUrl
-    policyUrl
-    ancillaryArea
-    yearOfConstruction
-    numberOfBathrooms
-    extraBuildings {
-      ... on ExtraBuildingCore {
-        area
-        displayName
-        hasWaterConnected
-      }
-    }
-    isSubleted
-
-    arrangedPerilCategories {
-      me {
-        ... PerilCategoryFragment
-      }
-      home {
-        ... PerilCategoryFragment
-      }
-      stuff {
-        ... PerilCategoryFragment
-      }
-    }
-
-    cost {
-      ... CostFragment
-    }
-  }
+query Offer($locale: Locale!) {
 
   redeemedCampaigns {
-    ... IncentiveFragment
+    ...IncentiveFragment
   }
 
   lastQuoteOfMember {
     ... on CompleteQuote {
       startDate
       id
-      currentInsurer{
+      typeOfContract
+      currentInsurer {
         id
+        displayName
+        switchable
       }
+      quoteDetails {
+        ... on SwedishApartmentQuoteDetails {
+          type
+          street
+          zipCode
+          householdSize
+          livingSpace
+        }
+        ... on SwedishHouseQuoteDetails {
+          ancillarySpace
+          street
+          zipCode
+          householdSize
+          livingSpace
+          yearOfConstruction
+          isSubleted
+          numberOfBathrooms
+          extraBuildings {
+            ... on ExtraBuildingCore {
+              displayName
+              area
+              hasWaterConnected
+            }
+          }
+        }
+      }
+      insuranceCost {
+        ...CostFragment
+      }
+      perils(locale: $locale) {
+        ... PerilFragment
+      }
+      termsAndConditions(locale: $locale) {
+        displayName
+        url
+      }
+      insurableLimits(locale: $locale) {
+        ... InsurableLimitsFragment
+      }
+      insuranceTerms(locale: $locale) {
+        displayName
+        url
+      }
+    }
+  }
+
+  contracts {
+    status {
+      __typename
     }
   }
 }

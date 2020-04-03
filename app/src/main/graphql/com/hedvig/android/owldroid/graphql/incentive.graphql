@@ -12,5 +12,8 @@ fragment IncentiveFragment on Campaign {
       percentageDiscount
       pdmQuantity: quantity
     }
+    ... on NoDiscount {
+      __typename
+    }
   }
 }

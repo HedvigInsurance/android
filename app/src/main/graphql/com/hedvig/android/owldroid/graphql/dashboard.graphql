@@ -42,22 +42,10 @@ query DashboardQuery($locale: Locale!) {
       }
     }
     perils(locale: $locale) {
-      title
-      description
-      icon {
-        variants {
-          dark {
-            svgUrl
-          }
-          light {
-            svgUrl
-          }
-        }
-      }
+      ... PerilFragment
     }
     insurableLimits(locale: $locale) {
-      label
-      limit
+      ... InsurableLimitsFragment
     }
     termsAndConditions(locale: $locale) {
       displayName

@@ -54,8 +54,9 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
             getString(R.string.CONTRACT_COVERAGE_CONTRACT_TYPE),
             "CONTRACT_TYPE" to data.typeOfContract.displayNameDefinite(this)
         )
-        (perils.adapter as? PerilsAdapter)?.items = data.perils
-        (insurableLimits.adapter as? InsurableLimitsAdapter)?.items = data.insurableLimits
+        (perils.adapter as? PerilsAdapter)?.items = data.perils.map { it.fragments.perilFragment }
+        (insurableLimits.adapter as? InsurableLimitsAdapter)?.items =
+            data.insurableLimits.map { it.fragments.insurableLimitsFragment }
     }
 
     companion object {
@@ -76,8 +77,9 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
             TypeOfContract.UNKNOWN__ -> ""
         }
 
-        fun newInstance(context: Context, id: String) = Intent(context, ContractCoverageActivity::class.java).apply {
-            putExtra(ID, id)
-        }
+        fun newInstance(context: Context, id: String) =
+            Intent(context, ContractCoverageActivity::class.java).apply {
+                putExtra(ID, id)
+            }
     }
 }

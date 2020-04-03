@@ -1,9 +1,12 @@
 package com.hedvig.app.feature.offer
 
+import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -13,36 +16,52 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.defaultLocale
 import e
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 class OfferRepository(
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClientWrapper: ApolloClientWrapper,
+    private val context: Context
 ) {
     private lateinit var offerQuery: OfferQuery
 
     fun loadOffer(): Observable<Response<OfferQuery.Data>> {
-        offerQuery = OfferQuery()
+        offerQuery = OfferQuery(defaultLocale(context))
 
         return Rx2Apollo
             .from(apolloClientWrapper.apolloClient.query(offerQuery).watcher())
     }
 
+    fun loadContracts(): Flow<Response<ContractStatusQuery.Data>> = apolloClientWrapper
+        .apolloClient
+        .query(ContractStatusQuery())
+        .watcher()
+        .toFlow()
+    
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient
             .apolloStore
             .read(offerQuery)
             .execute()
 
-        val newCost = cachedData.insurance.cost?.copy(
-            fragments = OfferQuery.Cost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
+            return
+
+        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
-                insurance = cachedData.insurance.copy(cost = newCost),
+                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                        insuranceCost = newCost
+                    )
+                ),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
                         fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -70,7 +89,11 @@ class OfferRepository(
             .read(offerQuery)
             .execute()
 
-        val oldCostFragment = cachedData.insurance.cost?.fragments?.costFragment ?: return
+        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
+            return
+
+        val oldCostFragment =
+            cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -83,9 +106,11 @@ class OfferRepository(
 
         val newData = cachedData
             .copy(
-                insurance = cachedData.insurance.copy(
-                    cost = cachedData.insurance.cost.copy(
-                        fragments = OfferQuery.Cost.Fragments(costFragment = newCostFragment)
+                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+                            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
+                        )
                     )
                 ),
                 redeemedCampaigns = emptyList()
@@ -116,7 +141,11 @@ class OfferRepository(
         )
 
     fun fetchSignStatus() = Rx2Apollo
-        .from(apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(HttpCachePolicy.NETWORK_ONLY))
+        .from(
+            apolloClientWrapper.apolloClient.query(SignStatusQuery()).httpCachePolicy(
+                HttpCachePolicy.NETWORK_ONLY
+            )
+        )
 
     fun chooseStartDate(id: String, date: LocalDate) = Rx2Apollo
         .from(apolloClientWrapper.apolloClient.mutate(ChooseStartDateMutation(id, date)))
