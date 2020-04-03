@@ -186,13 +186,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.marketing.ui.MarketingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Marketing"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.offer.OfferActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -267,7 +260,7 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity 
+        <activity
             android:name=".feature.norway.NorwegianAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -292,6 +285,14 @@
 
         <activity
             android:name=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.marketing.ui.MarketingActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

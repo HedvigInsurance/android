@@ -31,6 +31,7 @@
 
         <!-- Button Variants -->
         <item name="materialButtonContainedLargeStyle">@style/Hedvig.Button.Large</item>
+        <item name="materialButtonOutlinedLargeStyle">@style/Hedvig.Button.Outlined.Large</item>
         <item name="materialButtonTextStyle">@style/Hedvig.Button.Text</item>
         <item name="materialButtonOutlinedStyle">@style/Hedvig.Button.Outlined</item>
 
@@ -60,6 +61,7 @@
     </style>
 
     <attr name="materialButtonContainedLargeStyle" format="reference" />
+    <attr name="materialButtonOutlinedLargeStyle" format="reference" />
     <attr name="materialButtonTextStyle" format="reference" />
     <attr name="textAppearanceBody3" format="reference" />
     <attr name="colorButton" format="reference" />
@@ -79,6 +81,14 @@
 
     <style name="Hedvig.Theme.Widgets.Chat.Input" parent="Hedvig.Theme">
         <item name="colorSurface">@color/colorChatInputButton</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.MarketingActivity" parent="">
+        <item name="colorPrimary">@color/hedvig_white</item>
+        <item name="colorButton">@color/hedvig_white</item>
+        <item name="textColorButton">@color/hedvig_black</item>
+        <item name="colorOnSurface">@color/hedvig_white</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>

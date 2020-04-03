@@ -11,7 +11,7 @@ import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import org.koin.android.viewmodel.dsl.viewModel
@@ -27,6 +27,6 @@ val mockModule = module {
     viewModel<DashboardViewModel> { MockDashboardViewModel(get()) }
     viewModel<ContractDetailViewModel> { MockContractDetailViewModel(get()) }
     viewModel<ContractCoverageViewModel> { MockContractCoverageViewModel(get()) }
-    viewModel<MarketingStoriesViewModel> { MockMarketingStoriesViewModel() }
+    viewModel<MarketingViewModel> { MockMarketingViewModel() }
     viewModel<AdyenViewModel> { MockAdyenViewModel() }
 }
