@@ -17,6 +17,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.binders.FactAreaBinder
 import com.hedvig.app.feature.offer.binders.PerilBinder
 import com.hedvig.app.feature.offer.binders.TermsBinder
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
@@ -104,6 +105,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
 
             }
+        }
+
+        settings.setHapticClickListener {
+            startActivity(SettingsActivity.newInstance(this))
         }
 
         offerChatButton.setHapticClickListener {
