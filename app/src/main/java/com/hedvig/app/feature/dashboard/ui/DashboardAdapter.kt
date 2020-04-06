@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
@@ -49,7 +50,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it.inner) }
+                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it) }
             }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? DashboardModel.Contract)?.let {
@@ -60,7 +61,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                 }
             }
             is ViewHolder.UpsellViewHolder -> {
-                (items[position] as? DashboardModel.Upsell)?.let { holder.bind(it.inner) }
+                (items[position] as? DashboardModel.Upsell)?.let { holder.bind(it) }
             }
         }
     }
@@ -87,7 +88,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                 }
             }
 
-            fun bind(model: UpsellModel) {
+            fun bind(model: DashboardModel.Upsell) {
                 title.text = title.resources.getString(model.title)
                 description.text = description.resources.getString(model.description)
                 cta.text = cta.resources.getString(model.ctaText)
@@ -99,14 +100,13 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                 .from(parent.context)
                 .inflate(R.layout.dashboard_info_card, parent, false)
         ) {
-            private val root = itemView.root
             private val title = itemView.title
             private val body = itemView.body
             private val action = itemView.action
 
-            fun bind(data: InfoBoxModel) {
+            fun bind(data: DashboardModel.InfoBox) {
                 when (data) {
-                    is InfoBoxModel.ImportantInformation -> {
+                    is DashboardModel.InfoBox.ImportantInformation -> {
                         title.text = data.title
                         body.text = data.body
                         action.text = data.actionLabel
@@ -121,7 +121,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                             }
                         }
                     }
-                    is InfoBoxModel.Renewal -> {
+                    is DashboardModel.InfoBox.Renewal -> {
                         title.text =
                             title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
                         body.text = interpolateTextKey(
@@ -144,7 +144,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                             }
                         }
                     }
-                    is InfoBoxModel.ConnectPayin -> {
+                    is DashboardModel.InfoBox.ConnectPayin -> {
                         title.text =
                             title.resources.getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
                         body.text =
@@ -332,15 +332,29 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
 }
 
 sealed class DashboardModel {
-    data class InfoBox(
-        val inner: InfoBoxModel
-    ) : DashboardModel()
+    sealed class InfoBox : DashboardModel() {
+        data class ImportantInformation(
+            val title: String,
+            val body: String,
+            val actionLabel: String,
+            val actionLink: String
+        ) : InfoBox()
+
+        data class Renewal(
+            val renewalDate: LocalDate,
+            val draftCertificateUrl: String
+        ) : InfoBox()
+
+        object ConnectPayin : InfoBox()
+    }
 
     data class Contract(
         val inner: DashboardQuery.Contract
     ) : DashboardModel()
 
     data class Upsell(
-        val inner: UpsellModel
+        @get:StringRes val title: Int,
+        @get:StringRes val description: Int,
+        @get:StringRes val ctaText: Int
     ) : DashboardModel()
 }

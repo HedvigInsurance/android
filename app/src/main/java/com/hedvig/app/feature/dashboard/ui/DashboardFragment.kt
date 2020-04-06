@@ -27,7 +27,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 resources.getDimensionPixelSize(R.dimen.referral_extra_bottom_space)
             )
         )
-       
+
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
         }
@@ -41,13 +41,11 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         dashboardData?.importantMessages?.firstOrNull()?.let { importantMessage ->
             infoBoxes.add(
-                DashboardModel.InfoBox(
-                    InfoBoxModel.ImportantInformation(
-                        importantMessage.title ?: "",
-                        importantMessage.message ?: "",
-                        importantMessage.button ?: "",
-                        importantMessage.link ?: ""
-                    )
+                DashboardModel.InfoBox.ImportantInformation(
+                    importantMessage.title ?: "",
+                    importantMessage.message ?: "",
+                    importantMessage.button ?: "",
+                    importantMessage.link ?: ""
                 )
             )
         }
@@ -56,17 +54,15 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         renewals.forEach {
             infoBoxes.add(
-                DashboardModel.InfoBox(
-                    InfoBoxModel.Renewal(
-                        it.renewalDate,
-                        it.draftCertificateUrl
-                    )
+                DashboardModel.InfoBox.Renewal(
+                    it.renewalDate,
+                    it.draftCertificateUrl
                 )
             )
         }
 
         if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            infoBoxes.add(DashboardModel.InfoBox(InfoBoxModel.ConnectPayin))
+            infoBoxes.add(DashboardModel.InfoBox.ConnectPayin)
         }
 
         val contracts = dashboardData?.contracts.orEmpty().map { DashboardModel.Contract(it) }
@@ -75,9 +71,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         dashboardData?.let { dd ->
             if (isNorway(dd.contracts)) {
                 if (doesNotHaveHomeContents(dd.contracts)) {
-                    upsells.add(DashboardModel.Upsell(UPSELL_HOME_CONTENTS))
+                    upsells.add(UPSELL_HOME_CONTENTS)
                 } else if (doesNotHaveTravelInsurance(dd.contracts)) {
-                    upsells.add(DashboardModel.Upsell(UPSELL_TRAVEL))
+                    upsells.add(UPSELL_TRAVEL)
                 }
             }
         }
@@ -87,14 +83,14 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     companion object {
         private val UPSELL_HOME_CONTENTS =
-            UpsellModel(
+            DashboardModel.Upsell(
                 R.string.UPSELL_NOTIFICATION_CONTENT_TITLE,
                 R.string.UPSELL_NOTIFICATION_CONTENT_DESCRIPTION,
                 R.string.UPSELL_NOTIFICATION_CONTENT_CTA
             )
 
         private val UPSELL_TRAVEL =
-            UpsellModel(
+            DashboardModel.Upsell(
                 R.string.UPSELL_NOTIFICATION_TRAVEL_TITLE,
                 R.string.UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION,
                 R.string.UPSELL_NOTIFICATION_TRAVEL_CTA
