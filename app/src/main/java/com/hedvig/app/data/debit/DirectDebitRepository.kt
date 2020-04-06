@@ -36,6 +36,7 @@ class DirectDebitRepository(
                 .apolloClient
                 .apolloStore
                 .writeAndPublish(payinStatusQuery, newData)
+                .execute()
         }
     }
 }

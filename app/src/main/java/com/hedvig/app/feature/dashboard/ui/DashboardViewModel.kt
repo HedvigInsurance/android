@@ -52,7 +52,6 @@ class DashboardViewModelImpl(
             }
 
             dashboardData.postValue(dashboardResponse.getOrNull()?.data())
-            dashboardData.postValue(dashboardResponse.getOrNull()?.data())
         }
     }
 }
