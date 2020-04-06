@@ -153,14 +153,12 @@
 
                             <Button
                                 android:id="@+id/premiumBoxSignButton"
-                                style="?attr/materialButtonContainedLargeStyle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="@dimen/base_margin_double"
                                 android:layout_marginTop="@dimen/base_margin_quadruple"
                                 android:text="@string/OFFER_SIGN_BUTTON"
                                 android:textAllCaps="false"
-                                android:textColor="?colorOnPrimary"
                                 android:theme="@style/Hedvig.Button.Large"
                                 app:icon="@drawable/ic_bank_id"
                                 app:iconGravity="textEnd"
@@ -212,7 +210,6 @@
                 android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:text="@string/OFFER_SIGN_BUTTON"
                 android:textAllCaps="false"
-                android:textColor="?colorOnPrimary"
                 android:theme="@style/Hedvig.Button.Large"
                 app:icon="@drawable/ic_bank_id"
                 app:iconGravity="textEnd"

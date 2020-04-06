@@ -19,15 +19,13 @@
     <item name="textColorPrimary" type="color">@color/hedvig_off_white</item>
     <item name="textColorSecondary" type="color">@color/hedvig_white</item>
 
-    <item name="colorButton" type="color">@color/button_dark</item>
     <item name="textColorButton" type="color">@color/button_dark_text</item>
+    <item name="colorButton" type="color">@color/violet_300</item>
 
     <item name="colorBackgroundChat" type="color">@color/hedvig_off_black</item>
     <item name="colorChatUserBackground" type="color">@color/hedvig_off_black</item>
     <item name="colorChatInputButton" type="color">@color/button_background_dark</item>
     <item name="colorChatHedvigBackground" type="color">@color/button_background_dark</item>
-
-    <item name="colorLargeButton" type="color">@color/violet_300</item>
 
     <!-- Compatibility with Adyen -->
     <item name="primaryColor" type="color">@color/colorPrimary</item>

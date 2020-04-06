@@ -3,16 +3,13 @@
 
     <style name="Hedvig.Button" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">?colorButton</item>
-        <item name="android:textColor">?textColorButton</item>
-        <item name="colorButton">@color/colorLargeButton</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+        <item name="colorButton">@color/colorButton</item>
     </style>
 
     <style name="Hedvig.Button.Large">
         <item name="android:padding">@dimen/base_margin_double</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
-        <item name="colorButton">@color/colorLargeButton</item>
-        <item name="colorPrimary">@color/colorOnPrimary</item>
-        <item name="textColorButton">@color/colorOnPrimary</item>
     </style>
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />

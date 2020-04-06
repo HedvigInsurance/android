@@ -29,7 +29,6 @@
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:text="@string/OFFER_HOUSE_SUMMARY_BUTTON_EXPAND"
-        android:textColor="?colorOnPrimary"
         android:theme="@style/Hedvig.Button.Large"
         app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
         app:layout_constraintEnd_toEndOf="parent"

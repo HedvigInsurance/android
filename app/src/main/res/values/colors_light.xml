@@ -26,8 +26,6 @@
     <item name="colorChatHedvigBackground" type="color">@color/white</item>
     <item name="colorChatInputButton" type="color">@color/hedvig_light_gray</item>
 
-    <item name="colorLargeButton" type="color">@color/hedvig_black</item>
-
     <!-- Compatibility with Adyen -->
     <item name="primaryColor" type="color">@color/colorPrimary</item>
     <item name="textColor" type="color">@color/textColorPrimary</item>
