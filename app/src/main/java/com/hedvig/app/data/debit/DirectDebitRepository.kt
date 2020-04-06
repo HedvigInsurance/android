@@ -4,31 +4,29 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
-import com.hedvig.android.owldroid.graphql.DirectDebitQuery
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.ApolloClientWrapper
 import kotlinx.coroutines.flow.Flow
 
 class DirectDebitRepository(
     private val apolloClientWrapper: ApolloClientWrapper
 ) {
-    private lateinit var directDebitQuery: DirectDebitQuery
+    private lateinit var payinStatusQuery: PayinStatusQuery
 
-    fun directDebit(): Flow<Response<DirectDebitQuery.Data>> {
-        directDebitQuery = DirectDebitQuery()
+    fun payinStatus(): Flow<Response<PayinStatusQuery.Data>> {
+        payinStatusQuery = PayinStatusQuery()
 
         return apolloClientWrapper
             .apolloClient
-            .query(directDebitQuery)
+            .query(payinStatusQuery)
             .watcher()
             .toFlow()
     }
 
-    suspend fun refreshDirectDebitStatus() {
-        val bankAccountQuery = DirectDebitQuery()
-
+    suspend fun refreshPayinStatus() {
         val response = apolloClientWrapper
             .apolloClient
-            .query(bankAccountQuery)
+            .query(PayinStatusQuery())
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             .toDeferred()
             .await()
@@ -37,7 +35,7 @@ class DirectDebitRepository(
             apolloClientWrapper
                 .apolloClient
                 .apolloStore
-                .writeAndPublish(directDebitQuery, newData)
+                .writeAndPublish(payinStatusQuery, newData)
         }
     }
 }

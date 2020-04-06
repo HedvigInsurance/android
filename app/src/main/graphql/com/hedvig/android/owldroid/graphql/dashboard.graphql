@@ -1,4 +1,4 @@
-query DashboardQuery($locale: Locale!) {
+query DashboardQuery($locale: Locale!, $languageCode: String!) {
   contracts {
     id
     status {
@@ -51,6 +51,12 @@ query DashboardQuery($locale: Locale!) {
       displayName
       url
     }
+  }
+  importantMessages(where: { language: { code: $languageCode } }) {
+    title
+    message
+    button
+    link
   }
 }
 

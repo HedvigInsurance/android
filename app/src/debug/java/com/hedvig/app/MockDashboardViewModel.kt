@@ -7,34 +7,33 @@ import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.android.owldroid.graphql.DirectDebitQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import org.threeten.bp.LocalDate
 
 class MockDashboardViewModel(context: Context) : DashboardViewModel() {
-    override val data = MutableLiveData<DashboardQuery.Data>()
-    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
+    override val data = MutableLiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>()
 
     init {
         val activePersona = context
             .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
         data.postValue(
-            when (activePersona) {
-                0 -> SWEDISH_APARTMENT
-                1 -> SWEDISH_HOUSE
-                2 -> NORWEGIAN_HOME_CONTENTS
-                3 -> NORWEGIAN_TRAVEL
-                4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-                else -> SWEDISH_APARTMENT
-            }
+            Pair(
+                when (activePersona) {
+                    0 -> SWEDISH_APARTMENT
+                    1 -> SWEDISH_HOUSE
+                    2 -> NORWEGIAN_HOME_CONTENTS
+                    3 -> NORWEGIAN_TRAVEL
+                    4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
+                    else -> SWEDISH_APARTMENT
+                }, PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)
+            )
         )
-
-        directDebitStatus.postValue(DirectDebitQuery.Data(DirectDebitStatus.NEEDS_SETUP))
     }
 
     companion object {
@@ -422,23 +421,30 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
         )
 
         val SWEDISH_APARTMENT = DashboardQuery.Data(
-            listOf(SWEDISH_APARTMENT_CONTRACT)
+            listOf(SWEDISH_APARTMENT_CONTRACT), emptyList()
         )
 
         val SWEDISH_HOUSE = DashboardQuery.Data(
-            listOf(SWEDISH_HOUSE_CONTRACT)
+            listOf(SWEDISH_HOUSE_CONTRACT), emptyList()
         )
 
         val NORWEGIAN_HOME_CONTENTS = DashboardQuery.Data(
-            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT)
+            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT), emptyList()
         )
 
         val NORWEGIAN_TRAVEL = DashboardQuery.Data(
-            listOf(NORWEGIAN_TRAVEL_CONTRACT)
+            listOf(NORWEGIAN_TRAVEL_CONTRACT), emptyList()
         )
 
         val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = DashboardQuery.Data(
-            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT)
+            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT), listOf(
+                DashboardQuery.ImportantMessage(
+                    title = "VMA",
+                    message = "Mock mock mock",
+                    button = "Read more",
+                    link = "https://www.example.com"
+                )
+            )
         )
     }
 }

@@ -12,6 +12,6 @@ class DashboardRepository(
 ) {
     fun dashboardAsync() = apolloClientWrapper
         .apolloClient
-        .query(DashboardQuery(defaultLocale(context)))
+        .query(DashboardQuery(defaultLocale(context), defaultLocale(context).rawValue))
         .toDeferred()
 }
