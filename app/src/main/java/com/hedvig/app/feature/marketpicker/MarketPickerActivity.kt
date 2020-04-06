@@ -82,6 +82,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 
         save.setHapticClickListener {
             model.save()
+            finish()
             goToMarketingActivity()
         }
 

@@ -21,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginStart="@dimen/base_margin"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="@dimen/base_margin"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_settings" />
 
