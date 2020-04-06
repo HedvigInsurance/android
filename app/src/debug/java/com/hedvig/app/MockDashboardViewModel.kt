@@ -290,7 +290,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             displayName = "Innboforsikring",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_RENT,
-            upcomingRenewal = null,
+            upcomingRenewal = DashboardQuery.UpcomingRenewal(
+                renewalDate = LocalDate.of(2020, 6, 1),
+                draftCertificateUrl = "https://www.example.com"
+            ),
             currentAgreement = DashboardQuery.CurrentAgreement(
                 asAgreementCore = DashboardQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"

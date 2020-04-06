@@ -8,10 +8,9 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
+import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.remove
 import kotlinx.android.synthetic.main.fragment_dashboard.*
-import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -22,29 +21,33 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        contracts.adapter = ContractAdapter(parentFragmentManager)
-        upsells.adapter = UpsellAdapter()
-        infoCards.adapter = InfoBoxAdapter()
-
+        root.adapter = DashboardAdapter(parentFragmentManager)
+        root.addItemDecoration(
+            BelowRecyclerViewBottomPaddingItemDecoration(
+                resources.getDimensionPixelSize(R.dimen.referral_extra_bottom_space)
+            )
+        )
+       
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
         }
     }
 
     private fun bind(data: Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>) {
-        loadingSpinner.remove()
+        //loadingSpinner.remove()
         val (dashboardData, payinStatusData) = data
-        dashboardData?.let { bindDashboardData(it) }
 
-        val infoBoxes = mutableListOf<InfoBoxModel>()
+        val infoBoxes = mutableListOf<DashboardModel.InfoBox>()
 
         dashboardData?.importantMessages?.firstOrNull()?.let { importantMessage ->
             infoBoxes.add(
-                InfoBoxModel.ImportantInformation(
-                    importantMessage.title ?: "",
-                    importantMessage.message ?: "",
-                    importantMessage.button ?: "",
-                    importantMessage.link ?: ""
+                DashboardModel.InfoBox(
+                    InfoBoxModel.ImportantInformation(
+                        importantMessage.title ?: "",
+                        importantMessage.message ?: "",
+                        importantMessage.button ?: "",
+                        importantMessage.link ?: ""
+                    )
                 )
             )
         }
@@ -53,35 +56,33 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         renewals.forEach {
             infoBoxes.add(
-                InfoBoxModel.Renewal(
-                    it.renewalDate,
-                    it.draftCertificateUrl
+                DashboardModel.InfoBox(
+                    InfoBoxModel.Renewal(
+                        it.renewalDate,
+                        it.draftCertificateUrl
+                    )
                 )
             )
         }
 
         if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            infoBoxes.add(InfoBoxModel.ConnectPayin)
+            infoBoxes.add(DashboardModel.InfoBox(InfoBoxModel.ConnectPayin))
         }
 
-        (infoCards.adapter as? InfoBoxAdapter)?.items = infoBoxes
-    }
+        val contracts = dashboardData?.contracts.orEmpty().map { DashboardModel.Contract(it) }
 
-    private fun bindDashboardData(data: DashboardQuery.Data) {
-        (contracts.adapter as? ContractAdapter)?.items = data.contracts
-
-        if (isNorway(data.contracts)) {
-            if (doesNotHaveHomeContents(data.contracts)) {
-                (upsells.adapter as? UpsellAdapter)?.items = listOf(
-                    UPSELL_HOME_CONTENTS
-                )
-            }
-            if (doesNotHaveTravelInsurance(data.contracts)) {
-                (upsells.adapter as? UpsellAdapter)?.items = listOf(
-                    UPSELL_TRAVEL
-                )
+        val upsells = mutableListOf<DashboardModel.Upsell>()
+        dashboardData?.let { dd ->
+            if (isNorway(dd.contracts)) {
+                if (doesNotHaveHomeContents(dd.contracts)) {
+                    upsells.add(DashboardModel.Upsell(UPSELL_HOME_CONTENTS))
+                } else if (doesNotHaveTravelInsurance(dd.contracts)) {
+                    upsells.add(DashboardModel.Upsell(UPSELL_TRAVEL))
+                }
             }
         }
+
+        (root.adapter as? DashboardAdapter)?.items = infoBoxes + contracts + upsells
     }
 
     companion object {
