@@ -52,10 +52,10 @@ import com.hedvig.app.feature.loggedin.ui.FeatureRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
-import com.hedvig.app.feature.marketing.data.MarketingStoriesRepository
+import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
-import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingStoriesViewModelImpl
+import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -196,7 +196,7 @@ val dashboardModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingStoriesViewModel> { MarketingStoriesViewModelImpl(get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
 }
 
 val languageAndMarketModule = module {
@@ -234,7 +234,7 @@ val repositoriesModule = module {
     single { DirectDebitRepository(get()) }
     single { ClaimsRepository(get(), get()) }
     single { DashboardRepository(get(), get()) }
-    single { MarketingStoriesRepository(get(), get(), get()) }
+    single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single { ReferralRepository(get()) }
     single { UserRepository(get()) }

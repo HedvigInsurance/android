@@ -70,10 +70,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
-        connectBankAccountWithLink.setHapticClickListener {
-            connectDirectDebitWithLink()
-        }
-
         redeemCode.setHapticClickListener {
             tracker.clickRedeemCode()
             RefetchingRedeemCodeDialog
@@ -127,7 +123,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
                 toggleBankInfo(false)
                 connectBankAccountCard.show()
-                connectBankAccountWithLink.show()
             }
             else -> {
                 e { "Payment fragment direct debit status UNKNOWN!" }
@@ -159,7 +154,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             nextPaymentGross.text =
                 interpolateTextKey(
                     getString(R.string.PAYMENTS_FULL_PREMIUM),
-                    "FULL_PREMIUM" to data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()?.toInt()
+                    "FULL_PREMIUM" to data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()
+                        ?.toInt()
                 )
         }
 
@@ -284,8 +280,10 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         pd.activePaymentMethods?.let { activePaymentMethods ->
             adyenActivePaymentMethodContainer.show()
             cardType.text = activePaymentMethods.storedPaymentMethodsDetails.brand
-            maskedCardNumber.text = "**** ${activePaymentMethods.storedPaymentMethodsDetails.lastFourDigits}"
-            validUntil.text = "${activePaymentMethods.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.storedPaymentMethodsDetails.expiryYear}"
+            maskedCardNumber.text =
+                "**** ${activePaymentMethods.storedPaymentMethodsDetails.lastFourDigits}"
+            validUntil.text =
+                "${activePaymentMethods.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.storedPaymentMethodsDetails.expiryYear}"
         }
 
         showRedeemCodeOnNoDiscount(pd)
@@ -325,7 +323,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         changeBankAccount.remove()
         endSeparator.remove()
         bankAccountUnderChangeParagraph.remove()
-        connectBankAccountWithLink.remove()
     }
 
     private fun toggleBankInfo(show: Boolean) {
@@ -340,7 +337,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
-            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()?.toInt() == 0
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()
+                ?.toInt() == 0
             && profileData.insuranceCost.freeUntil == null
         ) {
             redeemCode.show()

@@ -2,101 +2,64 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_marketing"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    tools:context="com.hedvig.app.feature.marketing.ui.MarketingActivity">
-
-    <include layout="@layout/loading_spinner" />
-
-    <com.hedvig.app.feature.marketing.ui.StoryPager
-        android:id="@id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <View
-        android:id="@id/blurOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/transparent_white"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:id="@id/storyProgressIndicatorContainer"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:theme="@style/ThemeOverlay.Hedvig.MarketingActivity"
+    tools:context=".feature.marketing.ui.MarketingActivity">
 
     <ImageView
-        android:id="@id/marketing_hedvig_logo"
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        tools:src="#777777" />
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple"
         android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-        android:tint="?colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_hedvig_wordmark" />
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@id/hedvigFaceAnimation"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:scaleType="matrix"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/sayHello"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:lottie_rawRes="@raw/hedvig_happy_avatar" />
-
-    <TextView
-        android:id="@id/sayHello"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:text="@string/MARKETING_SCREEN_SAY_HELLO"
-        android:textAppearance="?textAppearanceBody1"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/getHedvig"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
-    <Button
-        android:id="@id/getHedvig"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/base_margin_double"
-        android:elevation="2dp"
-        android:paddingLeft="@dimen/base_margin_quadruple"
-        android:paddingRight="@dimen/base_margin_quadruple"
-        android:text="@string/MARKETING_SCREEN_CTA"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
-    <Button
-        android:id="@id/login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/base_margin_quadruple"
-        android:elevation="2dp"
-        android:paddingLeft="@dimen/base_margin_double"
-        android:paddingRight="@dimen/base_margin_double"
-        android:text="@string/MARKETING_SCREEN_LOGIN"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_wordmark_h" />
+
+    <Button
+        android:id="@+id/signUp"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin"
+        android:text="@string/MARKETING_SCREEN_CTA"
+        app:layout_constraintBottom_toTopOf="@id/logIn" />
+
+    <Button
+        android:id="@+id/logIn"
+        style="?materialButtonOutlinedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin"
+        android:text="@string/MARKETING_SCREEN_LOGIN"
+        app:layout_constraintBottom_toTopOf="@id/legal" />
+
+    <TextView
+        android:id="@+id/legal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_triple"
+        android:text="@string/MARKETING_LEGAL"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceBody3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

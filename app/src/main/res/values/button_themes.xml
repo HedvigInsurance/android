@@ -17,4 +17,11 @@
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
 
+    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+
+    <style name="Hedvig.Button.Outlined.Large">
+        <item name="android:padding">@dimen/base_margin_double</item>
+        <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
+    </style>
+
 </resources>
