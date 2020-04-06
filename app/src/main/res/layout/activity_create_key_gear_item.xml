@@ -91,7 +91,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:background="@drawable/button_primary"
-        android:backgroundTint="?colorSecondary"
+        android:backgroundTint="@color/colorLargeButton"
         android:translationY="140dp"
         android:visibility="gone"
         tools:translationY="0dp"
