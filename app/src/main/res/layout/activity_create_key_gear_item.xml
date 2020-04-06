@@ -91,7 +91,7 @@
         android:layout_marginEnd="@dimen/base_margin_quadruple"
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:background="@drawable/button_primary"
-        android:backgroundTint="?colorSecondary"
+        android:backgroundTint="?colorButton"
         android:translationY="140dp"
         android:visibility="gone"
         tools:translationY="0dp"
@@ -115,7 +115,7 @@
             android:layout_height="wrap_content"
             android:text="@string/KEY_GEAR_ADD_ITEM_SAVE_BUTTON"
             android:textAllCaps="false"
-            android:textColor="@color/white" />
+            android:textColor="?colorOnPrimary" />
 
     </FrameLayout>
 
