@@ -10,7 +10,9 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.remove
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -34,7 +36,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     }
 
     private fun bind(data: Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>) {
-        //loadingSpinner.remove()
+        loadingSpinner.remove()
         val (dashboardData, payinStatusData) = data
 
         val infoBoxes = mutableListOf<DashboardModel.InfoBox>()
