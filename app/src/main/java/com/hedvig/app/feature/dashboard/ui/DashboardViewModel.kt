@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.android.owldroid.graphql.DirectDebitQuery
-import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -15,25 +16,25 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class DashboardViewModel : ViewModel() {
-    abstract val data: LiveData<DashboardQuery.Data>
-    abstract val directDebitStatus: LiveData<DirectDebitQuery.Data>
+    abstract val data: LiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>
 }
 
 class DashboardViewModelImpl(
     private val dashboardRepository: DashboardRepository,
-    private val directDebitRepository: DirectDebitRepository
+    private val payinStatusRepository: PayinStatusRepository
 ) : DashboardViewModel() {
 
-    override val data = MutableLiveData<DashboardQuery.Data>()
-    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
+    private val payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
+    private val dashboardData = MutableLiveData<DashboardQuery.Data>()
+    override val data = combineTuple(dashboardData, payinStatusData)
 
     init {
         viewModelScope.launch {
-            directDebitRepository
-                .directDebit()
+            payinStatusRepository
+                .payinStatus()
                 .onEach { response ->
                     response.data()?.let { data ->
-                        directDebitStatus.postValue(data)
+                        payinStatusData.postValue(data)
                     }
                 }
                 .catch { e(it) }
@@ -50,7 +51,7 @@ class DashboardViewModelImpl(
                 return@launch
             }
 
-            data.postValue(dashboardResponse.getOrNull()?.data())
+            dashboardData.postValue(dashboardResponse.getOrNull()?.data())
         }
     }
 }

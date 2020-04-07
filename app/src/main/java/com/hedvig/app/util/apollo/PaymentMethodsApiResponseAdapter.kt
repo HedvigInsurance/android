@@ -1,13 +1,15 @@
 package com.hedvig.app.util.apollo
 
 import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.apollographql.apollo.api.CustomTypeAdapter
-import com.apollographql.apollo.api.CustomTypeValue
+import com.apollographql.apollo.response.CustomTypeAdapter
+import com.apollographql.apollo.response.CustomTypeValue
 import org.json.JSONObject
 
 class PaymentMethodsApiResponseAdapter : CustomTypeAdapter<PaymentMethodsApiResponse> {
     override fun encode(value: PaymentMethodsApiResponse): CustomTypeValue<*> {
-        return CustomTypeValue.fromRawValue(PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString())
+        return CustomTypeValue.fromRawValue(
+            PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString()
+        )
     }
 
     override fun decode(value: CustomTypeValue<*>): PaymentMethodsApiResponse? {

@@ -217,7 +217,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
             safeLet(
-                data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toDouble(),
+                data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()
+                    ?.toDouble(),
                 data?.referralInformation?.campaign?.code
             ) { incentive, code -> bindReferralsButton(incentive, code) }
 
@@ -229,7 +230,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
 
         dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.let { d ->
+            data?.first?.let { d ->
                 if (isTerminated(d.contracts)) {
                     startActivity(LoggedInTerminatedActivity.newInstance(this))
                 }
@@ -285,14 +286,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     companion object {
-        fun newInstance(context: Context, withoutHistory: Boolean = false) = Intent(context, LoggedInActivity::class.java).apply {
-            if (withoutHistory) {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+            Intent(context, LoggedInActivity::class.java).apply {
+                if (withoutHistory) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
             }
-        }
 
-        fun isTerminated(contracts: List<DashboardQuery.Contract>) = contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
+        fun isTerminated(contracts: List<DashboardQuery.Contract>) =
+            contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"

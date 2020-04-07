@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_double"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:padding="@dimen/base_margin_double">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="?textAppearanceHeadline6"
+            tools:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE" />
+
+        <TextView
+            android:id="@+id/body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin"
+            android:textAlignment="center"
+            android:textAppearance="?textAppearanceBody2"
+            tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION" />
+
+        <Button
+            android:id="@+id/action"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            tools:text="@string/DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL" />
+
+    </LinearLayout>
+
+</com.hedvig.app.ui.view.HedvigCardView>
