@@ -34,9 +34,7 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
@@ -95,11 +93,11 @@
 
     <Button
         android:id="@+id/save"
+        app:layout_constraintTop_toBottomOf="@id/scrollView"
         style="?materialButtonContainedLargeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="@dimen/base_margin_octuple"
         android:enabled="false"
         android:text="@string/continue_market"
         app:layout_constraintBottom_toBottomOf="parent"
