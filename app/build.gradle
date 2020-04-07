@@ -125,6 +125,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
 
+    implementation 'com.github.Zhuinden:livedata-combinetuple-kt:1.0.0'
+
     // WorkManager
     def workmanager_version = "2.3.2"
     implementation "androidx.work:work-runtime:$workmanager_version"

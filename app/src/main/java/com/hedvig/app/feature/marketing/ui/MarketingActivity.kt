@@ -13,6 +13,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.BlurHashDecoder
 import com.hedvig.app.util.extensions.getMarket
@@ -35,10 +36,18 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
+        settings.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
+        }
+
         val market = getMarket()
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
             return
+        }
+
+        settings.setHapticClickListener {
+            startActivity(SettingsActivity.newInstance(this))
         }
 
         signUp.setHapticClickListener {

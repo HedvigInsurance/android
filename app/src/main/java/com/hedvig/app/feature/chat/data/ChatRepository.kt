@@ -29,7 +29,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import io.reactivex.Observable
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class ChatRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -52,7 +52,10 @@ class ChatRepository(
     fun subscribeToChatMessages() =
         Rx2Apollo.from(apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription()))
 
-    fun sendChatMessage(id: String, message: String): Observable<Response<SendChatTextResponseMutation.Data>> {
+    fun sendChatMessage(
+        id: String,
+        message: String
+    ): Observable<Response<SendChatTextResponseMutation.Data>> {
         val input = ChatResponseTextInput(
             globalId = id,
             body = ChatResponseBodyTextInput(text = message)
@@ -66,7 +69,10 @@ class ChatRepository(
         )
     }
 
-    fun sendSingleSelect(id: String, value: String): Observable<Response<SendChatSingleSelectResponseMutation.Data>> {
+    fun sendSingleSelect(
+        id: String,
+        value: String
+    ): Observable<Response<SendChatSingleSelectResponseMutation.Data>> {
         val input = ChatResponseSingleSelectInput(
             globalId = id,
             body = ChatResponseBodySingleSelectInput(
@@ -94,7 +100,7 @@ class ChatRepository(
 
     fun writeNewMessage(message: ChatMessageFragment) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .read(messagesQuery)
             .execute()
 
@@ -104,13 +110,18 @@ class ChatRepository(
                 .Fragments(chatMessageFragment = message)
 
         val newMessages = cachedData.messages.toMutableList()
-        newMessages.add(ChatMessagesQuery.Message(message.__typename, fragments = chatMessagesFragment))
+        newMessages.add(
+            ChatMessagesQuery.Message(
+                message.__typename,
+                fragments = chatMessagesFragment
+            )
+        )
 
         val newData = cachedData
             .copy(messages = newMessages)
 
         apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .writeAndPublish(messagesQuery, newData)
             .execute()
     }
@@ -129,7 +140,10 @@ class ChatRepository(
     fun uploadFile(uri: Uri): Observable<Response<UploadFileMutation.Data>> =
         uploadFile(File(uri.path), fileService.getMimeType(uri) ?: "")
 
-    private fun uploadFile(file: File, mimeType: String): Observable<Response<UploadFileMutation.Data>> {
+    private fun uploadFile(
+        file: File,
+        mimeType: String
+    ): Observable<Response<UploadFileMutation.Data>> {
         val uploadFileMutation = UploadFileMutation(
             file = FileUpload(mimeType, file)
         )
@@ -139,7 +153,11 @@ class ChatRepository(
         )
     }
 
-    fun sendFileResponse(id: String, key: String, uri: Uri): Observable<Response<SendChatFileResponseMutation.Data>> {
+    fun sendFileResponse(
+        id: String,
+        key: String,
+        uri: Uri
+    ): Observable<Response<SendChatFileResponseMutation.Data>> {
         val mimeType = fileService.getMimeType(uri) ?: ""
 
         val input = ChatResponseFileInput(
@@ -157,7 +175,8 @@ class ChatRepository(
         )
     }
 
-    fun editLastResponse() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()))
+    fun editLastResponse() =
+        Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()))
 
     fun triggerFreeTextChat(): Observable<Response<TriggerFreeTextChatMutation.Data>> {
         val triggerFreeTextChatMutation = TriggerFreeTextChatMutation()
