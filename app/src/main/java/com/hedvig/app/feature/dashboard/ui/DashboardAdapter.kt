@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
@@ -32,8 +33,9 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
     RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
     var items: List<DashboardModel> = emptyList()
         set(value) {
+            val diff = DiffUtil.calculateDiff(DashboardDiffUtilCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -357,4 +359,17 @@ sealed class DashboardModel {
         @get:StringRes val description: Int,
         @get:StringRes val ctaText: Int
     ) : DashboardModel()
+}
+
+class DashboardDiffUtilCallback(
+    private val old: List<DashboardModel>,
+    private val new: List<DashboardModel>
+) : DiffUtil.Callback() {
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        old[oldItemPosition] == new[newItemPosition]
+
+    override fun getOldListSize() = old.size
+    override fun getNewListSize() = new.size
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        areItemsTheSame(oldItemPosition, newItemPosition)
 }

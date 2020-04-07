@@ -45,7 +45,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .read(profileQuery)
             .execute()
         val newMember = cachedData
@@ -59,7 +59,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .copy(member = newMember)
 
         apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
@@ -73,7 +73,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .read(profileQuery)
             .execute()
 
@@ -85,14 +85,14 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             )
 
         apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
 
     fun writeRedeemedCostToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .read(profileQuery)
             .execute()
 
@@ -108,7 +108,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             )
 
         apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
@@ -134,7 +134,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
     fun writeBankAccountInfoToCache(bankAccount: BankAccountQuery.BankAccount) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .read(profileQuery)
             .execute()
 
@@ -149,7 +149,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             )
 
         apolloClientWrapper.apolloClient
-            .apolloStore
+            .apolloStore()
             .writeAndPublish(profileQuery, newData)
             .execute()
     }

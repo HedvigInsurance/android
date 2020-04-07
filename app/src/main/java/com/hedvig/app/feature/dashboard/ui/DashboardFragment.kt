@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -24,11 +23,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         super.onViewCreated(view, savedInstanceState)
 
         root.adapter = DashboardAdapter(parentFragmentManager)
-        root.addItemDecoration(
-            BelowRecyclerViewBottomPaddingItemDecoration(
-                resources.getDimensionPixelSize(R.dimen.referral_extra_bottom_space)
-            )
-        )
 
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
