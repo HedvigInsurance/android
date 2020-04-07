@@ -35,7 +35,6 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/MARKETING_SCREEN_CTA"
-        android:textColor="?textColorButton"
         app:layout_constraintBottom_toTopOf="@id/logIn" />
 
     <Button

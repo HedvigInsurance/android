@@ -2,9 +2,8 @@
 <resources>
 
     <style name="Hedvig.Button" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">?colorButton</item>
         <item name="android:textColor">@color/colorOnPrimary</item>
-        <item name="colorButton">@color/colorButton</item>
+        <item name="backgroundTint">@color/hedvig_button_state</item>
     </style>
 
     <style name="Hedvig.Button.Large">

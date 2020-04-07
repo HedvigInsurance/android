@@ -5,11 +5,12 @@
         <item name="android:background">?android:colorBackground</item>
     </style>
 
-    <style name="Hedvig.Theme.BottomSheetDialog" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+    <style name="Hedvig.Theme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Hedvig.Theme.BottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">?colorSurface</item>
         <item name="android:windowIsFloating">false</item>
+        <item name="materialButtonStyle">@style/Hedvig.Button</item>
     </style>
 
     <style name="Hedvig.Theme.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
