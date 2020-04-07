@@ -93,10 +93,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     }
 
     private fun goToMarketingActivity() {
-        startActivity(Intent(this, MarketingActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
+        startActivity(MarketingActivity.newInstance(this, true))
     }
 
     companion object {
