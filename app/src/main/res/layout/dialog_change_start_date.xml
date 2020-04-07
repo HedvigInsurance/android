@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:theme="@style/Hedvig.Theme"
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
