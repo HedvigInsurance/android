@@ -6,7 +6,7 @@ import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.ApolloClientWrapper
 
-class DirectDebitRepository(
+class PayinStatusRepository(
     private val apolloClientWrapper: ApolloClientWrapper
 ) {
     private val payinStatusQuery = PayinStatusQuery()

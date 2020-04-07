@@ -12,7 +12,7 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.authenticate.AuthTracker
-import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModelImpl
@@ -231,7 +231,7 @@ val serviceModule = module {
 
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
-    single { DirectDebitRepository(get()) }
+    single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
     single { DashboardRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }

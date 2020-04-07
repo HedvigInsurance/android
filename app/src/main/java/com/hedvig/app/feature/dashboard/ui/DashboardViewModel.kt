@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
@@ -21,7 +21,7 @@ abstract class DashboardViewModel : ViewModel() {
 
 class DashboardViewModelImpl(
     private val dashboardRepository: DashboardRepository,
-    private val directDebitRepository: DirectDebitRepository
+    private val payinStatusRepository: PayinStatusRepository
 ) : DashboardViewModel() {
 
     private val payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
@@ -30,7 +30,7 @@ class DashboardViewModelImpl(
 
     init {
         viewModelScope.launch {
-            directDebitRepository
+            payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
                     response.data()?.let { data ->

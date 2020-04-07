@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
@@ -25,7 +25,7 @@ import timber.log.Timber
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
     private val chatRepository: ChatRepository,
-    private val directDebitRepository: DirectDebitRepository
+    private val payinStatusRepository: PayinStatusRepository
 ) : ProfileViewModel() {
     override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
@@ -38,7 +38,7 @@ class ProfileViewModelImpl(
         loadProfile()
 
         viewModelScope.launch {
-            directDebitRepository
+            payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
                     response.data()?.let { payinStatus.postValue(it) }
@@ -134,7 +134,7 @@ class ProfileViewModelImpl(
     override fun refreshBankAccountInfo() {
         viewModelScope.launch {
             val result = runCatching {
-                directDebitRepository.refreshPayinStatus()
+                payinStatusRepository.refreshPayinStatus()
             }
 
             result.exceptionOrNull()?.let { e(it) }
