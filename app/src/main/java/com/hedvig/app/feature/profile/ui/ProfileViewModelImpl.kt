@@ -2,32 +2,35 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.DirectDebitQuery
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.app.data.debit.DirectDebitRepository
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.Optional
 import com.hedvig.app.util.extensions.default
+import e
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.zipWith
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
     private val chatRepository: ChatRepository,
-    private val directDebitRepository: DirectDebitRepository
+    private val payinStatusRepository: PayinStatusRepository
 ) : ProfileViewModel() {
     override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
-    override val directDebitStatus = MutableLiveData<DirectDebitQuery.Data>()
+    override val payinStatus = MutableLiveData<PayinStatusQuery.Data>()
 
     private val disposables = CompositeDisposable()
 
@@ -35,11 +38,13 @@ class ProfileViewModelImpl(
         loadProfile()
 
         viewModelScope.launch {
-            directDebitRepository
-                .directDebit()
-                .collect { response ->
-                    response.data()?.let { directDebitStatus.postValue(it) }
+            payinStatusRepository
+                .payinStatus()
+                .onEach { response ->
+                    response.data()?.let { payinStatus.postValue(it) }
                 }
+                .catch { e(it) }
+                .collect()
         }
     }
 
@@ -128,9 +133,11 @@ class ProfileViewModelImpl(
 
     override fun refreshBankAccountInfo() {
         viewModelScope.launch {
-            runCatching {
-                directDebitRepository.refreshDirectDebitStatus()
+            val result = runCatching {
+                payinStatusRepository.refreshPayinStatus()
             }
+
+            result.exceptionOrNull()?.let { e(it) }
         }
         disposables += profileRepository.refreshBankAccountInfo()
             .subscribe({ response ->

@@ -5,9 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
-import com.hedvig.android.owldroid.graphql.DirectDebitQuery
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
@@ -94,29 +94,29 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             }
         }
         profileViewModel
-            .directDebitStatus
+            .payinStatus
             .observe(this) { data ->
                 data?.let { bindDirectDebitStatus(it) }
             }
     }
 
-    private fun bindDirectDebitStatus(data: DirectDebitQuery.Data) {
-        when (data.directDebitStatus) {
-            DirectDebitStatus.ACTIVE -> {
+    private fun bindDirectDebitStatus(data: PayinStatusQuery.Data) {
+        when (data.payinMethodStatus) {
+            PayinMethodStatus.ACTIVE -> {
                 paymentDetailsContainer.show()
                 directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE)
                 endSeparator.show()
                 changeBankAccount.show()
                 connectBankAccountCard.remove()
             }
-            DirectDebitStatus.PENDING -> {
+            PayinMethodStatus.PENDING -> {
                 paymentDetailsContainer.show()
                 directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
 
                 connectBankAccountCard.remove()
                 bankAccountUnderChangeParagraph.show()
             }
-            DirectDebitStatus.NEEDS_SETUP -> {
+            PayinMethodStatus.NEEDS_SETUP -> {
                 paymentDetailsContainer.show()
 
                 directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
