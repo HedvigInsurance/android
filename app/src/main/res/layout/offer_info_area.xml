@@ -9,11 +9,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double"
         android:orientation="horizontal">
-        <!--TODO  get real icon-->
+
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_coverage" />
+            android:src="@drawable/ic_no_contract" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -43,11 +43,10 @@
         android:layout_margin="@dimen/base_margin_double"
         android:orientation="horizontal">
 
-        <!--TODO  get real icon-->
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_coverage" />
+            android:src="@drawable/ic_age_deduction" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -77,11 +76,10 @@
         android:layout_margin="@dimen/base_margin_double"
         android:orientation="horizontal">
 
-        <!--TODO  get real icon-->
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_coverage" />
+            android:src="@drawable/ic_all_risk" />
 
         <LinearLayout
             android:layout_width="wrap_content"

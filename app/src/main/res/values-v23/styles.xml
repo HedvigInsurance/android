@@ -10,7 +10,7 @@
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
     <style name="Hedvig.Theme.Offer">
-        <item name="android:statusBarColor">@color/dark_purple</item>
+        <item name="android:statusBarColor">@color/hedvig_black</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
