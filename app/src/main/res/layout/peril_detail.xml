@@ -28,6 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/base_margin"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textAppearance="?textAppearanceHeadline6"
             tools:text="Fire" />
 
