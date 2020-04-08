@@ -33,19 +33,24 @@
         <item name="lineHeight">@dimen/line_height_medium</item>
     </style>
 
-    <style name="Hedvig.TextAppearance.Headline3" parent="TextAppearance.MaterialComponents.Headline3" />
+    <style name="Hedvig.TextAppearance.Headline3" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:letterSpacing">0</item>
+    </style>
 
     <style name="Hedvig.TextAppearance.Headline4" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Headline5" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Button" parent="TextAppearance.MaterialComponents.Button">
@@ -56,6 +61,7 @@
     <style name="Hedvig.TextAppearance.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/text_xsmall</item>
         <item name="lineHeight">@dimen/line_height_xsmall</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
 </resources>
