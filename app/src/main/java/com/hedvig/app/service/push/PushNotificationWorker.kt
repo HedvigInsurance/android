@@ -7,11 +7,12 @@ import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import e
+import i
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import timber.log.Timber
 
 class PushNotificationWorker(
     val context: Context,
@@ -38,27 +39,26 @@ class PushNotificationWorker(
                 return true
             }
         } catch (exception: Exception) {
-            Timber.e(exception)
+            e(exception)
         }
         return false
     }
 
     private fun registerPushToken(pushToken: String) {
-        Timber.i("Registering push token")
+        i { "Registering push token" }
         val registerPushTokenMutation = RegisterPushTokenMutation(pushToken)
 
         disposables += Rx2Apollo
             .from(apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation))
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(
-                        "Failed to handleExpandWithKeyboard push token: %s",
-                        response.errors().toString()
-                    )
+                    e {
+                        "Failed to handleExpandWithKeyboard push token: ${response.errors()}"
+                    }
                     return@subscribe
                 }
-                Timber.i("Successfully registered push token")
-            }, { Timber.e(it, "Failed to handleExpandWithKeyboard push token") })
+                i { "Successfully registered push token" }
+            }, { e { "$it Failed to handleExpandWithKeyboard push token" } })
     }
 
     companion object {

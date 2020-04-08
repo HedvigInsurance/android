@@ -161,8 +161,7 @@ dependencies {
 
     implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
 
-    // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    // Slimber
     implementation 'com.github.PaulWoitaschek:Slimber:1.0.7'
 
     // Lottie

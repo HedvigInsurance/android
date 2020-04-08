@@ -27,12 +27,12 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.interpolateTextKey
+import e
 import kotlinx.android.synthetic.main.chat_message_file_upload.view.*
 import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
 import kotlinx.android.synthetic.main.chat_message_user.view.*
 import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
 import kotlinx.android.synthetic.main.chat_message_user_image.view.*
-import timber.log.Timber
 
 class ChatAdapter(
     private val context: Context,
@@ -158,7 +158,7 @@ class ChatAdapter(
                 }
             }
         } ?: run {
-            Timber.e("Found no message to render with position: %d", position)
+            e { "Found no message to render with position: %d $position" }
             NULL_RENDER
         }
 

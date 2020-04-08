@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import e
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 
 class WelcomeViewModel(
     private val welcomeRepository: WelcomeRepository
@@ -34,7 +34,7 @@ class WelcomeViewModel(
                                 page.paragraph
                             )
                         })
-                } ?: Timber.e("No welcome data")
-            }, { Timber.e(it) })
+                } ?: e { "No welcome data" }
+            }, { e(it) })
     }
 }

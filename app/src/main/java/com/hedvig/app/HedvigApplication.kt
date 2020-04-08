@@ -14,6 +14,8 @@ import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
 import com.jakewharton.threetenabp.AndroidThreeTen
+import e
+import i
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import net.ypresto.timbertreeutils.CrashlyticsLogExceptionTree
@@ -95,15 +97,15 @@ class HedvigApplication : Application() {
             .from(apolloClientWrapper.apolloClient.mutate(NewSessionMutation()))
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e("Failed to register a hedvig token: %s", response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
                 response.data()?.createSessionV2?.token?.let { hedvigToken ->
                     setAuthenticationToken(hedvigToken)
                     apolloClientWrapper.invalidateApolloClient()
-                    Timber.i("Successfully saved hedvig token")
-                } ?: Timber.e("createSession returned no token")
-            }, { Timber.e(it) })
+                    i { "Successfully saved hedvig token" }
+                } ?: e { "createSession returned no token" }
+            }, { e(it) })
     }
 
     private fun tryToMigrateTokenFromReactDB() {

@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
+import e
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 
 class BaseTabViewModel constructor(
     private val chatRepository: ChatRepository,
@@ -24,7 +24,7 @@ class BaseTabViewModel constructor(
     fun triggerFreeTextChat(done: () -> Unit) {
         disposables += chatRepository
             .triggerFreeTextChat()
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 
     fun removeReferralNotification() {

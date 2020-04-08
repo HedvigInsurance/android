@@ -26,10 +26,10 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import e
 import kotlinx.android.synthetic.main.attach_file_image_item.view.*
 import kotlinx.android.synthetic.main.camera_and_misc_item.view.*
 import kotlinx.android.synthetic.main.loading_spinner.view.*
-import timber.log.Timber
 
 class AttachFileAdapter(
     private val context: Context,
@@ -44,7 +44,12 @@ class AttachFileAdapter(
         context.resources.getDimensionPixelSize(R.dimen.attach_file_rounded_corners_radius)
 
     val recyclerViewPreloader =
-        RecyclerViewPreloader(Glide.with(context), AttachFilePreloadModelProvider(), ViewPreloadSizeProvider(), 10)
+        RecyclerViewPreloader(
+            Glide.with(context),
+            AttachFilePreloadModelProvider(),
+            ViewPreloadSizeProvider(),
+            10
+        )
 
     var isUploadingTakenPicture: Boolean = false
         set(value) {
@@ -82,14 +87,20 @@ class AttachFileAdapter(
                 viewHolder.apply {
                     val image = attachImageData[position - 1]
                     val params = attachFileImage.layoutParams
-                    val margin = attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
+                    val margin =
+                        attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
                     params.height = pickerHeight - margin
                     params.width = pickerHeight - margin
                     attachFileImage.layoutParams = params
                     Glide
                         .with(attachFileImage.context)
                         .load(image.path)
-                        .transform(MultiTransformation(CenterCrop(), RoundedCorners(roundedCornersRadius)))
+                        .transform(
+                            MultiTransformation(
+                                CenterCrop(),
+                                RoundedCorners(roundedCornersRadius)
+                            )
+                        )
                         .into(attachFileImage)
                         .clearOnDetach()
                     attachFileSendButton.remove()
@@ -132,7 +143,7 @@ class AttachFileAdapter(
         }
 
         if (index == -1) {
-            Timber.e("Failed to update AttachImageData of: $path")
+            e { "Failed to update AttachImageData of: $path" }
             return
         }
 
@@ -181,7 +192,8 @@ class AttachFileAdapter(
         }
     }
 
-    inner class AttachFilePreloadModelProvider : ListPreloader.PreloadModelProvider<AttachImageData> {
+    inner class AttachFilePreloadModelProvider :
+        ListPreloader.PreloadModelProvider<AttachImageData> {
         override fun getPreloadItems(position: Int): List<AttachImageData> =
             attachImageData.getOrNull(position)?.let { listOf(it) } ?: emptyList()
 

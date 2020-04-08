@@ -6,10 +6,11 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import e
+import i
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 abstract class OfferViewModel : ViewModel() {
     abstract val data: MutableLiveData<OfferQuery.Data>
@@ -46,12 +47,12 @@ class OfferViewModelImpl(
             .loadOffer()
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
 
                 data.postValue(response.data())
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     override fun onCleared() {
@@ -65,12 +66,12 @@ class OfferViewModelImpl(
             .removeDiscount()
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
 
                 removeDiscountFromCache()
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     private fun removeDiscountFromCache() {
@@ -83,7 +84,7 @@ class OfferViewModelImpl(
     override fun triggerOpenChat(done: () -> Unit) {
         disposables += offerRepository
             .triggerOpenChatFromOffer()
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 
     override fun startSign() {
@@ -92,25 +93,25 @@ class OfferViewModelImpl(
                 .subscribeSignStatus()
                 .subscribe({ response ->
                     if (response.hasErrors()) {
-                        Timber.e(response.errors().toString())
+                        e { response.errors().toString() }
                         return@subscribe
                     }
-                    Timber.i("Data on signStatus subscription: %s", response.data().toString())
+                    i { "Data on signStatus subscription:  ${response.data()}" }
                     signStatus.postValue(response.data()?.signStatus?.status?.fragments?.signStatusFragment)
-                }, { Timber.e(it) })
+                }, { e(it) })
         }
 
         disposables += offerRepository
             .startSign()
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     signError.postValue(true)
                     return@subscribe
                 }
 
                 autoStartToken.postValue(response.data())
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     override fun clearPreviousErrors() {
@@ -122,12 +123,12 @@ class OfferViewModelImpl(
             .fetchSignStatus()
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     signError.postValue(true)
                     return@subscribe
                 }
                 signStatus.postValue(response.data()?.signStatus?.fragments?.signStatusFragment)
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     override fun chooseStartDate(id: String, date: LocalDate) {
@@ -135,12 +136,12 @@ class OfferViewModelImpl(
             .chooseStartDate(id, date)
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e("${response.errors()}")
+                    e { "${response.errors()}" }
                 }
                 response.data()?.let { data ->
                     offerRepository.writeStartDateToCache(data)
                 } ?: run {
-                    Timber.e("Missing data when choosing start date")
+                    e { "Missing data when choosing start date" }
                 }
             }, {
 
@@ -152,12 +153,12 @@ class OfferViewModelImpl(
             .removeStartDate(id)
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
                 response.data()?.let { data ->
                     offerRepository.removeStartDateFromCache(data)
                 }
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 }
