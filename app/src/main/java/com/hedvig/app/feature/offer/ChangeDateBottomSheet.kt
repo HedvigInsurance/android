@@ -71,7 +71,6 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
             }
         }
-
         return dialog
     }
 
