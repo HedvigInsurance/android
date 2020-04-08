@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Typeface
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
@@ -51,6 +52,15 @@ fun Context.colorAttr(
 }
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
+
+fun Context.fontAttr(
+    @AttrRes font: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+): Typeface? {
+    theme.resolveAttribute(font, typedValue, resolveRefs)
+    return ResourcesCompat.getFont(this, typedValue.resourceId)
+}
 
 fun Context.compatDrawable(@DrawableRes drawable: Int) =
     AppCompatResources.getDrawable(this, drawable)

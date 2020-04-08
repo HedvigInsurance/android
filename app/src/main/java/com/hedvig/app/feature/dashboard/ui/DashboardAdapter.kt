@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -86,7 +88,15 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
 
             init {
                 cta.setHapticClickListener {
-                    cta.context.startActivity(ChatActivity.newInstance(cta.context))
+                    val intent = ChatActivity.newInstance(cta.context, true)
+                    val options =
+                        ActivityOptionsCompat.makeCustomAnimation(
+                            cta.context,
+                            R.anim.activity_slide_up_in,
+                            R.anim.stay_in_place
+                        )
+
+                    ActivityCompat.startActivity(cta.context, intent, options.toBundle())
                 }
             }
 

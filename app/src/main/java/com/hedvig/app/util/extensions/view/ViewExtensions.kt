@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.fontAttr
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.android.synthetic.main.app_bar.view.*
@@ -144,6 +145,12 @@ fun View.setupLargeTitle(
 ) {
     activity.setSupportActionBar(toolbar)
     collapsingToolbar.title = title
+
+    val font = context.fontAttr(android.R.attr.fontFamily)
+    font?.let { f ->
+        collapsingToolbar.setExpandedTitleTypeface(f)
+        collapsingToolbar.setCollapsedTitleTypeface(f)
+    }
 
     backgroundColor?.let { color ->
         toolbar.setBackgroundColor(color)
