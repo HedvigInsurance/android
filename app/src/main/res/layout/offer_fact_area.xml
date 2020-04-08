@@ -14,22 +14,22 @@
         android:textAppearance="?textAppearanceHeadline4" />
 
     <TextView
+        style="?textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center_horizontal"
-        android:text="@string/OFFER_HOUSE_SUMMARY_DESC"
-        style="?textAppearanceBody1" />
+        android:text="@string/OFFER_HOUSE_SUMMARY_DESC" />
 
     <com.hedvig.app.ui.view.ExpandableContentView
         android:id="@+id/expandableContentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:paddingStart="@dimen/base_margin"
-        android:paddingEnd="@dimen/base_margin">
+        android:paddingStart="@dimen/base_margin_double"
+        android:paddingEnd="@dimen/base_margin_double">
 
         <LinearLayout
             android:layout_width="match_parent"
