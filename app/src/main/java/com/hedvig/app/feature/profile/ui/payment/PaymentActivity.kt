@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
@@ -117,7 +115,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 bankAccountUnderChangeParagraph.show()
             }
             PayinMethodStatus.NEEDS_SETUP -> {
-                paymentDetailsContainer.show()
+                paymentDetailsContainer.remove()
 
                 directDebitStatus.text = getString(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
 
@@ -273,29 +271,22 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private fun bindPaymentDetails(pd: ProfileQuery.Data) {
         pd.bankAccount?.let { bankAccount ->
             bankAccountContainer.show()
-            accountNumber.text = "${bankAccount.bankName} ${bankAccount.descriptor}"
+            accountNumber.text =
+                "${bankAccount.fragments.bankAccountFragment.bankName} ${bankAccount.fragments.bankAccountFragment.descriptor}"
             toggleBankInfo(true)
         } ?: toggleBankInfo(false)
 
         pd.activePaymentMethods?.let { activePaymentMethods ->
             adyenActivePaymentMethodContainer.show()
-            cardType.text = activePaymentMethods.storedPaymentMethodsDetails.brand
+            cardType.text =
+                activePaymentMethods.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand
             maskedCardNumber.text =
-                "**** ${activePaymentMethods.storedPaymentMethodsDetails.lastFourDigits}"
+                "**** ${activePaymentMethods.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits}"
             validUntil.text =
-                "${activePaymentMethods.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.storedPaymentMethodsDetails.expiryYear}"
+                "${activePaymentMethods.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryMonth}/${activePaymentMethods.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryYear}"
         }
 
         showRedeemCodeOnNoDiscount(pd)
-    }
-
-    private fun connectDirectDebitWithLink() {
-        profileViewModel.trustlyUrl.observe(lifecycleOwner = this) { url ->
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(browserIntent)
-        }
-
-        profileViewModel.startTrustlySession()
     }
 
     private fun resetViews() {

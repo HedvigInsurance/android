@@ -16,10 +16,12 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.zipWith
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class ProfileViewModelImpl(
@@ -133,22 +135,20 @@ class ProfileViewModelImpl(
 
     override fun refreshBankAccountInfo() {
         viewModelScope.launch {
-            val result = runCatching {
-                payinStatusRepository.refreshPayinStatus()
-            }
+            withContext(NonCancellable) {
+                val result = runCatching {
+                    payinStatusRepository.refreshPayinStatus()
+                }
 
-            result.exceptionOrNull()?.let { e(it) }
+                result.exceptionOrNull()?.let { e(it) }
+
+                val payinMethodResult = runCatching {
+                    profileRepository.refreshPayinMethod()
+                }
+               
+                payinMethodResult.exceptionOrNull()?.let { e(it) }
+            }
         }
-        disposables += profileRepository.refreshBankAccountInfo()
-            .subscribe({ response ->
-                response.data()?.let { data ->
-                    data.bankAccount?.let { bankAccount ->
-                        profileRepository.writeBankAccountInfoToCache(bankAccount)
-                    } ?: Timber.e("Failed to refresh bank account info")
-                } ?: Timber.e("Failed to refresh bank account info")
-            }, { error ->
-                Timber.e(error, "Failed to refresh bank account info")
-            })
     }
 
     override fun triggerFreeTextChat(done: () -> Unit) {

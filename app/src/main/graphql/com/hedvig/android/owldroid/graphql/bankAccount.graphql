@@ -1,7 +1,0 @@
-query BankAccount {
-  bankAccount {
-    bankName
-    descriptor
-  }
-  directDebitStatus
-}

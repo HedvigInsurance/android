@@ -1,6 +1,7 @@
 package com.hedvig.app.mocks
 
 import androidx.lifecycle.MutableLiveData
+import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -107,11 +108,15 @@ class MockProfileViewModel : ProfileViewModel() {
                 ),
                 */
                 activePaymentMethods = ProfileQuery.ActivePaymentMethods(
-                    storedPaymentMethodsDetails = ProfileQuery.StoredPaymentMethodsDetails(
-                        brand = "Mastercard",
-                        lastFourDigits = "1234",
-                        expiryMonth = "01",
-                        expiryYear = "2025"
+                    fragments = ProfileQuery.ActivePaymentMethods.Fragments(
+                        ActivePaymentMethodsFragment(
+                            storedPaymentMethodsDetails = ActivePaymentMethodsFragment.StoredPaymentMethodsDetails(
+                                brand = "Mastercard",
+                                lastFourDigits = "1234",
+                                expiryMonth = "01",
+                                expiryYear = "2025"
+                            )
+                        )
                     )
                 ),
                 cashback = null,

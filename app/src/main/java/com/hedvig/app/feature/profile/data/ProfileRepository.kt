@@ -1,10 +1,11 @@
 package com.hedvig.app.feature.profile.data
 
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.apollographql.apollo.rx2.Rx2Apollo
-import com.hedvig.android.owldroid.graphql.BankAccountQuery
 import com.hedvig.android.owldroid.graphql.LogoutMutation
+import com.hedvig.android.owldroid.graphql.PayinMethodQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
@@ -121,37 +122,59 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .map { it.data() }
     }
 
-    fun refreshBankAccountInfo(): Observable<Response<BankAccountQuery.Data>> {
-        val bankAccountQuery = BankAccountQuery()
+    suspend fun refreshPayinMethod() {
+        val response = apolloClientWrapper
+            .apolloClient
+            .query(PayinMethodQuery())
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .toDeferred()
+            .await()
 
-        return Rx2Apollo
-            .from(
-                apolloClientWrapper.apolloClient
-                    .query(bankAccountQuery)
-                    .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            )
-    }
+        response.data()?.let { newData ->
+            newData.bankAccount?.let { newBankAccount ->
+                val cachedData = apolloClientWrapper
+                    .apolloClient
+                    .apolloStore()
+                    .read(profileQuery)
+                    .execute()
 
-    fun writeBankAccountInfoToCache(bankAccount: BankAccountQuery.BankAccount) {
-        val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
-            .read(profileQuery)
-            .execute()
+                apolloClientWrapper
+                    .apolloClient
+                    .apolloStore()
+                    .writeAndPublish(
+                        profileQuery,
+                        cachedData.copy(
+                            bankAccount = ProfileQuery.BankAccount(
+                                fragments = ProfileQuery.BankAccount.Fragments(newBankAccount.fragments.bankAccountFragment)
+                            )
+                        )
+                    )
+                    .execute()
+            }
 
-        val newBankAccount = ProfileQuery.BankAccount(
-            bankName = bankAccount.bankName,
-            descriptor = bankAccount.descriptor
-        )
+            newData.activePaymentMethods?.let { newActivePaymentMethods ->
+                val cachedData = apolloClientWrapper
+                    .apolloClient
+                    .apolloStore()
+                    .read(profileQuery)
+                    .execute()
 
-        val newData = cachedData
-            .copy(
-                bankAccount = newBankAccount
-            )
-
-        apolloClientWrapper.apolloClient
-            .apolloStore()
-            .writeAndPublish(profileQuery, newData)
-            .execute()
+                apolloClientWrapper
+                    .apolloClient
+                    .apolloStore()
+                    .writeAndPublish(
+                        profileQuery,
+                        cachedData.copy(
+                            activePaymentMethods = ProfileQuery.ActivePaymentMethods(
+                                fragments = ProfileQuery.ActivePaymentMethods.Fragments(
+                                    newActivePaymentMethods.fragments.activePaymentMethodsFragment
+                                )
+                            )
+                        )
+                    )
+                    .execute()
+            }
+        }
     }
 
     fun logout() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(LogoutMutation()))
