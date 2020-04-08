@@ -19,7 +19,6 @@
     <item name="textColorPrimary" type="color">@color/hedvig_off_white</item>
     <item name="textColorSecondary" type="color">@color/hedvig_white</item>
 
-    <item name="textColorButton" type="color">@color/button_dark_text</item>
     <item name="colorButton" type="color">@color/violet_300</item>
 
     <item name="colorBackgroundChat" type="color">@color/hedvig_off_black</item>
