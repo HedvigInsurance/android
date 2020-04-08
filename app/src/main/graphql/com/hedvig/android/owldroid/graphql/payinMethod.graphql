@@ -1,0 +1,22 @@
+query PayinMethod {
+  bankAccount {
+    ... BankAccountFragment
+  }
+  activePaymentMethods {
+    ... ActivePaymentMethodsFragment
+  }
+}
+
+fragment BankAccountFragment on BankAccount {
+  bankName
+  descriptor
+}
+
+fragment ActivePaymentMethodsFragment on ActivePaymentMethodsResponse {
+  storedPaymentMethodsDetails {
+    brand
+    lastFourDigits
+    expiryMonth
+    expiryYear
+  }
+}

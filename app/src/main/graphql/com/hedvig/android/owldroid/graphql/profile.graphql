@@ -37,16 +37,10 @@ query Profile {
     date
   }
   bankAccount {
-    bankName
-    descriptor
+    ... BankAccountFragment
   }
   activePaymentMethods {
-    storedPaymentMethodsDetails {
-      brand
-      lastFourDigits
-      expiryMonth
-      expiryYear
-    }
+    ... ActivePaymentMethodsFragment
   }
   cashback {
     ... CashbackFragment
