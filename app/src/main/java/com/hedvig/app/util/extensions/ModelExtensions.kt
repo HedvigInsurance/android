@@ -17,7 +17,7 @@ fun TypeOfContract.getStringId() = when (this) {
     TypeOfContract.NO_HOME_CONTENT_RENT -> R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT
     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN -> R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN
     TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN
-    TypeOfContract.NO_TRAVEL -> TODO()
-    TypeOfContract.NO_TRAVEL_YOUTH -> TODO()
-    TypeOfContract.UNKNOWN__ -> TODO()
+    TypeOfContract.NO_TRAVEL -> R.string.CONTRACT_DISPLAY_NAME_NO_TRAVEL
+    TypeOfContract.NO_TRAVEL_YOUTH -> R.string.CONTRACT_DISPLAY_NAME_NO_TRAVEL_YOUTH
+    TypeOfContract.UNKNOWN__ -> R.string.dummy_string
 }
