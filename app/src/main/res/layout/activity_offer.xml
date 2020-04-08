@@ -157,7 +157,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="@dimen/base_margin_double"
                                 android:layout_marginTop="@dimen/base_margin_quadruple"
-                                android:text="@string/dummy_string"
+                                android:text="@string/OFFER_SIGN_BUTTON"
                                 android:textAllCaps="false"
                                 android:theme="@style/Hedvig.Button.Large"
                                 app:icon="@drawable/ic_bank_id"
