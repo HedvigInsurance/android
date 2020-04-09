@@ -21,4 +21,9 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="Hedvig.Theme.Splash">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
 </resources>
