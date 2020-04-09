@@ -84,11 +84,11 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import i
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import timber.log.Timber
 import java.io.File
 import java.util.Locale
 
@@ -144,7 +144,7 @@ val applicationModule = module {
         if (isDebug()) {
             val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
-                    i { "OkHttp $message" }
+                    Timber.tag("OkHttp").i(message)
                 }
             })
             logger.level = HttpLoggingInterceptor.Level.BODY

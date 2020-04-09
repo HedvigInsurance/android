@@ -97,7 +97,7 @@ class HedvigApplication : Application() {
             .from(apolloClientWrapper.apolloClient.mutate(NewSessionMutation()))
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    e { response.errors().toString() }
+                    e { "Failed to register a hedvig token: ${response.errors()}" }
                     return@subscribe
                 }
                 response.data()?.createSessionV2?.token?.let { hedvigToken ->

@@ -208,7 +208,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                 out.close()
                 file.absolutePath
             } catch (e: Exception) {
-                e { "$e Error saving image" }
+                e(e) { "Error saving image" }
                 null
             }
         }
