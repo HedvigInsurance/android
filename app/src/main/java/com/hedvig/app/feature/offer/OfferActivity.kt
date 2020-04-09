@@ -2,13 +2,11 @@ package com.hedvig.app.feature.offer
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_OCTUPLE
 import com.hedvig.app.BaseActivity
@@ -28,6 +26,7 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.fadeIn
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -162,14 +161,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             when {
                 incentive.asFreeMonths != null -> {
                     premiumCampaignTitle.text = interpolateTextKey(
-                        getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE),
+                        getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE).replace('\n', ' '),
                         "free_month" to incentive.asFreeMonths.quantity
                     )
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                    premiumCampaignTitle.show()
                 }
                 incentive.asMonthlyCostDeduction != null -> {
                     premiumCampaignTitle.text = getString(R.string.OFFER_SCREEN_INVITED_BUBBLE)
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                    premiumCampaignTitle.show()
                 }
                 incentive.asPercentageDiscountMonths != null -> {
                     premiumCampaignTitle.text =
@@ -199,6 +200,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         } ?: run {
             discountButton.text = getString(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+            premiumCampaignTitle.hide()
+            offerPremiumContainer.background = null
         }
 
         discountButton.setHapticClickListener {
@@ -256,13 +259,5 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             tracker.floatingSign()
             OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
         }
-    }
-
-    companion object {
-
-        private val PRIVACY_POLICY_URL =
-            Uri.parse("https://s3.eu-central-1.amazonaws.com/com-hedvig-web-content/Hedvig+-+integritetspolicy.pdf")
-
-        private fun hasActiveCampaign(data: OfferQuery.Data) = data.redeemedCampaigns.isNotEmpty()
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:orientation="vertical"
     tools:parentTag="android.widget.LinearLayout">
@@ -13,7 +14,8 @@
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_no_contract" />
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_no_contract" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -24,14 +26,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceHeadline6"
-                android:text="@string/OFFER_SCREEN_USP_ONE_TITLE" />
+                android:text="@string/OFFER_SCREEN_USP_ONE_TITLE"
+                android:textAppearance="?textAppearanceHeadline6" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBody1"
-                android:text="@string/OFFER_SCREEN_USP_ONE_BODY" />
+                android:text="@string/OFFER_SCREEN_USP_ONE_BODY"
+                android:textAppearance="?textAppearanceBody2" />
 
         </LinearLayout>
 
@@ -46,7 +48,8 @@
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_age_deduction" />
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_age_deduction" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -57,14 +60,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceHeadline6"
-                android:text="@string/OFFER_SCREEN_USP_TWO_TITLE" />
+                android:text="@string/OFFER_SCREEN_USP_TWO_TITLE"
+                android:textAppearance="?textAppearanceHeadline6" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBody1"
-                android:text="@string/OFFER_SCREEN_USP_TWO_BODY" />
+                android:text="@string/OFFER_SCREEN_USP_TWO_BODY"
+                android:textAppearance="?textAppearanceBody2" />
 
         </LinearLayout>
 
@@ -79,7 +82,8 @@
         <ImageView
             android:layout_width="@dimen/offer_info_icon"
             android:layout_height="@dimen/offer_info_icon"
-            android:src="@drawable/ic_all_risk" />
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_all_risk" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -90,14 +94,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceHeadline6"
-                android:text="@string/OFFER_SCREEN_USP_THREE_TITLE" />
+                android:text="@string/OFFER_SCREEN_USP_THREE_TITLE"
+                android:textAppearance="?textAppearanceHeadline6" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBody1"
-                android:text="@string/OFFER_SCREEN_USP_THREE_BODY" />
+                android:text="@string/OFFER_SCREEN_USP_THREE_BODY"
+                android:textAppearance="?textAppearanceBody2" />
 
         </LinearLayout>
 

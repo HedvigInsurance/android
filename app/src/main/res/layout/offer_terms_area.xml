@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:layout_marginTop="@dimen/base_margin_octuple"
+    android:orientation="vertical"
     android:paddingHorizontal="@dimen/base_margin_double">
 
     <LinearLayout
@@ -52,9 +52,11 @@
         android:id="@+id/termsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
         android:paddingTop="@dimen/base_margin_octuple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/offer_terms_area_button"
-        tools:itemCount="2" />
+        tools:itemCount="2"
+        tools:listitem="@layout/offer_terms_area_button" />
 
 </LinearLayout>
