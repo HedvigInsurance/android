@@ -13,20 +13,21 @@ import kotlinx.android.synthetic.main.offer_peril_area.view.*
 
 class PerilBinder(
     private val root: LinearLayout,
-    private val fragmentManager: FragmentManager
+    fragmentManager: FragmentManager
 ) {
+
+    init {
+        root.perilsRecycler.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
+        root.perilsRecycler.adapter =
+            PerilsAdapter(fragmentManager, root.context.buildRequestBuilder())
+    }
 
     fun bind(
         data: OfferQuery.Data
     ) = root.apply {
         val list = data.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
         val typeOfContract = data.lastQuoteOfMember.asCompleteQuote?.typeOfContract
-        val adapter = PerilsAdapter(fragmentManager, context.buildRequestBuilder())
-        perilsRecycler.apply {
-            this.adapter = adapter
-            addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
-        }
-        adapter.items = list.map { it.fragments.perilFragment }
+        (perilsRecycler.adapter as? PerilsAdapter)?.items = list.map { it.fragments.perilFragment }
 
         when (typeOfContract) {
             TypeOfContract.SE_HOUSE -> {

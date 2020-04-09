@@ -25,7 +25,7 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -135,55 +135,52 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="@string/START_DATE_BTN" />
+                                    android:text="@string/START_DATE_BTN"
+                                    android:textAppearance="?textAppearanceBody1" />
 
                                 <TextView
                                     android:id="@+id/premiumBoxStartDate"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="@dimen/base_margin_double"
+                                    android:textAppearance="?textAppearanceBody1"
                                     tools:text="Idag" />
 
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_expand" />
+                                    android:contentDescription="@null"
+                                    app:srcCompat="@drawable/ic_expand" />
 
                             </LinearLayout>
 
                             <Button
                                 android:id="@+id/premiumBoxSignButton"
+                                style="?materialButtonContainedLargeStyle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="@dimen/base_margin_double"
                                 android:layout_marginTop="@dimen/base_margin_quadruple"
                                 android:text="@string/OFFER_SIGN_BUTTON"
-                                android:textAllCaps="false"
-                                android:theme="@style/Hedvig.Button.Large"
                                 app:icon="@drawable/ic_bank_id"
                                 app:iconGravity="textEnd"
-                                app:iconPadding="10dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
+                                app:iconPadding="@dimen/base_margin_double"
                                 tools:translationY="0dp" />
 
-                            <TextView
+                            <Button
                                 android:id="@+id/discountButton"
+                                style="?materialButtonTextStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/base_margin"
                                 android:layout_marginBottom="@dimen/base_margin_double"
-                                android:padding="@dimen/button_border_white_padding"
                                 android:textColor="?colorSecondary"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/dateButton"
                                 tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
+
                         </LinearLayout>
                     </com.hedvig.app.ui.view.HedvigCardView>
                 </FrameLayout>
-            </RelativeLayout>
+            </FrameLayout>
 
             <include
                 android:id="@+id/offerInfoArea"
@@ -209,20 +206,13 @@
                 android:layout_marginHorizontal="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:text="@string/OFFER_SIGN_BUTTON"
-                android:textAllCaps="false"
-                android:theme="@style/Hedvig.Button.Large"
                 app:icon="@drawable/ic_bank_id"
                 app:iconGravity="textEnd"
-                app:iconPadding="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:translationY="0dp" />
+                app:iconPadding="@dimen/base_margin_double" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/offerToolbar"
@@ -258,6 +248,7 @@
                     android:textAppearance="?textAppearanceBody2"
                     android:textColor="@color/white"
                     tools:text="Storgatan 32" />
+
             </LinearLayout>
 
             <Space
@@ -290,8 +281,8 @@
                 app:srcCompat="@drawable/ic_settings" />
 
         </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
 
+    </androidx.appcompat.widget.Toolbar>
 
 </FrameLayout>
 
