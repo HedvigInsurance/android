@@ -3,6 +3,7 @@ package com.hedvig.app.feature.chat.viewmodel
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
@@ -11,12 +12,15 @@ import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
 import e
-import i
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -44,22 +48,22 @@ class ChatViewModel(
         if (chatDisposable.size() > 0) {
             chatDisposable.dispose()
         }
-        disposables += chatRepository.subscribeToChatMessages()
-            .subscribe({ response ->
-                response.data()?.message?.let {
-                    if (isSubscriptionAllowedToWrite) {
-                        chatRepository
-                            .writeNewMessage(
-                                it.fragments.chatMessageFragment
-                            )
+        viewModelScope.launch {
+            chatRepository
+                .subscribeToChatMessages()
+                .onEach { response ->
+                    response.data()?.message?.let { message ->
+                        if (isSubscriptionAllowedToWrite) {
+                            chatRepository
+                                .writeNewMessage(
+                                    message.fragments.chatMessageFragment
+                                )
+                        }
                     }
                 }
-            }, {
-                e(it)
-            }, {
-                //TODO: handle in UI
-                i { "subscribeToChatMessages was completed" }
-            })
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     fun load() {
@@ -67,26 +71,22 @@ class ChatViewModel(
         if (chatDisposable.size() > 0) {
             chatDisposable.clear()
         }
-        chatDisposable += chatRepository
-            .fetchChatMessages()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response ->
-                if (response.hasErrors()) {
+        viewModelScope.launch {
+            chatRepository
+                .fetchChatMessages()
+                .onEach { response ->
+                    postResponseValue(response)
+                    if (isFirstParagraph(response)) {
+                        waitForParagraph(getFirstParagraphDelay(response))
+                    }
+                    isSubscriptionAllowedToWrite = true
+                }.catch {
                     retryLoad()
                     isSubscriptionAllowedToWrite = true
-                    return@subscribe
+                    e(it)
                 }
-                postResponseValue(response)
-                if (isFirstParagraph(response)) {
-                    waitForParagraph(getFirstParagraphDelay(response))
-                }
-                isSubscriptionAllowedToWrite = true
-            }, {
-                retryLoad()
-                isSubscriptionAllowedToWrite = true
-                e(it)
-            })
+                .launchIn(this)
+        }
     }
 
     private fun retryLoad() {
@@ -139,27 +139,28 @@ class ChatViewModel(
     private fun uploadFile(uri: Uri, onNext: (Response<UploadFileMutation.Data>) -> Unit) {
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
-        disposables += chatRepository
-            .uploadFile(uri)
-            .subscribe({ data ->
-                data.data()?.let {
-                    respondWithFile(it.uploadFile.key, uri)
+        viewModelScope.launch {
+            chatRepository.uploadFile(uri)
+                .onEach { response ->
+                    response.data()?.uploadFile?.key?.let { respondWithFile(it, uri) }
+                    onNext(response)
                 }
-                onNext(data)
-            }, { e(it) })
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     fun uploadFileFromProvider(uri: Uri) {
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
-        disposables += chatRepository
-            .uploadFileFromProvider(uri)
-            .subscribe({ data ->
-                data.data()?.let {
-                    respondWithFile(it.uploadFile.key, uri)
-                    uploadBottomSheetResponse.postValue(data.data())
+        viewModelScope.launch {
+            chatRepository.uploadFileFromProvider(uri)
+                .onEach {
+                    it.data()?.uploadFile?.key?.let { key -> respondWithFile(key, uri) }
                 }
-            }, { e(it) })
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
@@ -173,18 +174,21 @@ class ChatViewModel(
         }
         isSendingMessage = true
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
-            .sendChatMessage(getLastId(), message)
-            .subscribe({ response ->
-                isSendingMessage = false
-                if (response.data()?.sendChatTextResponse == true) {
-                    load()
+        viewModelScope.launch {
+            chatRepository
+                .sendChatMessage(getLastId(), message)
+                .onEach { response ->
+                    isSendingMessage = false
+                    if (response.data()?.sendChatTextResponse == true) {
+                        load()
+                    }
+                    sendMessageResponse.postValue(response.data()?.sendChatTextResponse)
+                }.catch {
+                    isSendingMessage = false
+                    e(it)
                 }
-                sendMessageResponse.postValue(response.data()?.sendChatTextResponse)
-            }, {
-                isSendingMessage = false
-                e(it)
-            })
+                .launchIn(this)
+        }
     }
 
     private fun respondWithFile(key: String, uri: Uri) {
@@ -212,17 +216,21 @@ class ChatViewModel(
         }
         isSendingMessage = true
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
-            .sendSingleSelect(getLastId(), value)
-            .subscribe({ response ->
-                isSendingMessage = false
-                if (response.data()?.sendChatSingleSelectResponse == true) {
-                    load()
+        viewModelScope.launch {
+            chatRepository
+                .sendSingleSelect(getLastId(), value)
+                .onEach { response ->
+                    isSendingMessage = false
+                    if (response.data()?.sendChatSingleSelectResponse == true) {
+                        load()
+                    }
                 }
-            }, {
-                isSendingMessage = false
-                e(it)
-            })
+                .catch {
+                    isSendingMessage = false
+                    e(it)
+                }
+                .launchIn(this)
+        }
     }
 
     private fun getLastId(): String =
@@ -237,15 +245,14 @@ class ChatViewModel(
 
     fun uploadClaim(path: String) {
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
-            .uploadClaim(getLastId(), path)
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    return@subscribe
-                }
-                load()
-            }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { chatRepository.uploadClaim(getLastId(), path) }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            load()
+        }
     }
 
     fun editLastResponse() {
