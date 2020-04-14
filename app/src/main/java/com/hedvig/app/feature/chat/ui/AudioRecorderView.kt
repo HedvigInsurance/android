@@ -15,20 +15,24 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.interpolateTextKey
+import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.audio_recorder_view.view.*
 import kotlinx.android.synthetic.main.loading_spinner.view.*
-import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class AudioRecorderView : LinearLayout {
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(context, attributeSet, defStyle)
+    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
+        context,
+        attributeSet,
+        defStyle
+    )
 
     private var elapsedTime: Disposable? = null
 
@@ -97,7 +101,7 @@ class AudioRecorderView : LinearLayout {
             try {
                 stop()
             } catch (e: RuntimeException) {
-                Timber.e(e)
+                e(e)
             }
             release()
         }
@@ -107,7 +111,7 @@ class AudioRecorderView : LinearLayout {
                 stop()
                 reset()
             } catch (e: RuntimeException) {
-                Timber.e(e)
+                e(e)
             }
             release()
         }
@@ -118,7 +122,7 @@ class AudioRecorderView : LinearLayout {
 
     private fun triggerStartRecording() {
         val filePath = getFilePath() ?: run {
-            Timber.e("External cache dir is null")
+            e { "External cache dir is null" }
             return@triggerStartRecording
         }
         startRecording.remove()
@@ -132,7 +136,7 @@ class AudioRecorderView : LinearLayout {
             try {
                 prepare()
             } catch (e: IOException) {
-                Timber.e(e)
+                e(e)
             }
 
             startStopwatch(R.string.AUDIO_INPUT_RECORDING)
@@ -162,7 +166,7 @@ class AudioRecorderView : LinearLayout {
         player = MediaPlayer().apply {
             try {
                 val filePath = getFilePath() ?: run {
-                    Timber.e("External cache dir is null")
+                    e { "External cache dir is null" }
                     return@triggerPlayback
                 }
 
@@ -176,7 +180,7 @@ class AudioRecorderView : LinearLayout {
                 }
                 prepareAsync()
             } catch (iOException: IOException) {
-                Timber.e(iOException,"IOException on trigger playback")
+                e { "$iOException IOException on trigger playback" }
                 context.makeToast(R.string.CHAT_AUDIO__PLAYBACK_FAILED)
             }
         }
@@ -190,14 +194,14 @@ class AudioRecorderView : LinearLayout {
                     resources.getString(textKey),
                     "SECONDS" to time
                 )
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     private fun triggerUpload() {
         optionsContainer.remove()
         loadingSpinner.show()
         val filePath = getFilePath() ?: run {
-            Timber.e("External cache dir is null")
+            e { "External cache dir is null" }
             return@triggerUpload
         }
         uploadRecording(filePath)

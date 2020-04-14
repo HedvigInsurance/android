@@ -3,9 +3,9 @@ package com.hedvig.app.feature.whatsnew
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
+import e
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 
 class WhatsNewViewModel(
     private val whatsNewRepository: WhatsNewRepository
@@ -18,7 +18,7 @@ class WhatsNewViewModel(
     fun fetchNews(sinceVersion: String? = null) {
         disposables += whatsNewRepository
             .fetchWhatsNew(sinceVersion)
-            .subscribe({ response -> news.postValue(response.data()) }, { Timber.e(it) })
+            .subscribe({ response -> news.postValue(response.data()) }, { e(it) })
     }
 
     fun hasSeenNews(version: String) = whatsNewRepository.hasSeenNews(version)

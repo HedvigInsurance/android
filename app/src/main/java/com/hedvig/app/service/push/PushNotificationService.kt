@@ -12,7 +12,7 @@ import com.hedvig.app.service.push.managers.ChatNotificationManager
 import com.hedvig.app.service.push.managers.GenericNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
-import timber.log.Timber
+import i
 import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
@@ -30,7 +30,7 @@ class PushNotificationService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Timber.i("Got new token: $token")
+        i { "Got new token: $token" }
         val work = OneTimeWorkRequest
             .Builder(PushNotificationWorker::class.java)
             .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.SECONDS)

@@ -10,12 +10,13 @@ import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
+import e
+import i
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -54,10 +55,10 @@ class ChatViewModel(
                     }
                 }
             }, {
-                Timber.e(it)
+                e(it)
             }, {
                 //TODO: handle in UI
-                Timber.i("subscribeToChatMessages was completed")
+                i { "subscribeToChatMessages was completed" }
             })
     }
 
@@ -84,7 +85,7 @@ class ChatViewModel(
             }, {
                 retryLoad()
                 isSubscriptionAllowedToWrite = true
-                Timber.e(it)
+                e(it)
             })
     }
 
@@ -96,7 +97,7 @@ class ChatViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     load()
-                }, { Timber.e(it) })
+                }, { e(it) })
         } else {
             networkError.postValue(true)
         }
@@ -145,7 +146,7 @@ class ChatViewModel(
                     respondWithFile(it.uploadFile.key, uri)
                 }
                 onNext(data)
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     fun uploadFileFromProvider(uri: Uri) {
@@ -158,7 +159,7 @@ class ChatViewModel(
                     respondWithFile(it.uploadFile.key, uri)
                     uploadBottomSheetResponse.postValue(data.data())
                 }
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
@@ -182,7 +183,7 @@ class ChatViewModel(
                 sendMessageResponse.postValue(response.data()?.sendChatTextResponse)
             }, {
                 isSendingMessage = false
-                Timber.e(it)
+                e(it)
             })
     }
 
@@ -201,7 +202,7 @@ class ChatViewModel(
                 }
             }, {
                 isSendingMessage = false
-                Timber.e(it)
+                e(it)
             })
     }
 
@@ -220,7 +221,7 @@ class ChatViewModel(
                 }
             }, {
                 isSendingMessage = false
-                Timber.e(it)
+                e(it)
             })
     }
 
@@ -240,11 +241,11 @@ class ChatViewModel(
             .uploadClaim(getLastId(), path)
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
                 load()
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     fun editLastResponse() {
@@ -252,11 +253,11 @@ class ChatViewModel(
             .editLastResponse()
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                     return@subscribe
                 }
                 load()
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 
     fun searchGifs(query: String) {
@@ -264,10 +265,10 @@ class ChatViewModel(
             .searchGifs(query)
             .subscribe({ response ->
                 if (response.hasErrors()) {
-                    Timber.e(response.errors().toString())
+                    e { response.errors().toString() }
                 }
                 gifs.postValue(response.data())
-            }, { Timber.e(it) })
+            }, { e(it) })
     }
 }
 

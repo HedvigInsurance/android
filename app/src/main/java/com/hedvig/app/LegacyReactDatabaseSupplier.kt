@@ -4,19 +4,20 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import timber.log.Timber
+import e
 
-class LegacyReactDatabaseSupplier private constructor(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class LegacyReactDatabaseSupplier private constructor(private val context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private var database: SQLiteDatabase? = null
     private var mMaximumDatabaseSize = 6L * 1024L * 1024L // 6 MB in bytes
 
     override fun onCreate(db: SQLiteDatabase) {
-        Timber.e("This database is deprecated and should not be used. Let's not create a new one!")
+        e { "This database is deprecated and should not be used. Let's not create a new one!" }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        Timber.e("This database is deprecated and should not be used. Let's not upgrade is!")
+        e { "This database is deprecated and should not be used. Let's not upgrade is!" }
     }
 
     /* package */ @Synchronized
@@ -45,12 +46,11 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
             } catch (ie: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
-
         }
         if (database == null) {
             lastSQLiteException?.let {
-                Timber.e(it, "database could not be created :(")
-            } ?: Timber.e("database could not be created and lastSQLiteException :crying_sad_face:")
+                e { "$it database could not be created :(" }
+            } ?: e { "database could not be created and lastSQLiteException :crying_sad_face:" }
         }
 
         database?.maximumSize = mMaximumDatabaseSize
@@ -74,9 +74,8 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
                 return
             }
             // Everything failed, throw
-            Timber.e("Clearing and deleting database $DATABASE_NAME failed")
+            e { "Clearing and deleting database $DATABASE_NAME failed" }
         }
-
     }
 
     /* package */ @Synchronized

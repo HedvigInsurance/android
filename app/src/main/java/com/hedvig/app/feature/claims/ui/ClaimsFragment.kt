@@ -24,11 +24,11 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.svg.buildRequestBuilder
+import i
 import kotlinx.android.synthetic.main.fragment_claims.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
 class ClaimsFragment : BaseTabFragment() {
 
@@ -99,14 +99,16 @@ class ClaimsFragment : BaseTabFragment() {
                 baseUrl = BuildConfig.BASE_URL,
                 requestBuilder = requestBuilder,
                 navigateToCommonClaimFragment = { commonClaim ->
-                    CommonClaimsData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)?.let { ccd ->
-                        startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
-                    }
+                    CommonClaimsData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)
+                        ?.let { ccd ->
+                            startActivity(CommonClaimActivity.newInstance(requireContext(), ccd))
+                        }
                 },
                 navigateToEmergencyFragment = { commonClaim ->
-                    EmergencyData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)?.let { ed ->
-                        startActivity(EmergencyActivity.newInstance(requireContext(), ed))
-                    }
+                    EmergencyData.from(commonClaim, commonClaimsData.isEligibleToCreateClaim)
+                        ?.let { ed ->
+                            startActivity(EmergencyActivity.newInstance(requireContext(), ed))
+                        }
                 }
             )
     }
@@ -118,6 +120,6 @@ class ClaimsFragment : BaseTabFragment() {
 
     private fun handleNoQuickActions() {
         //TODO: UI
-        Timber.i("No claims quick actions found")
+        i { "No claims quick actions found" }
     }
 }

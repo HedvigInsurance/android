@@ -19,7 +19,6 @@ import com.hedvig.app.util.apollo.defaultLocale
 import e
 import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -156,7 +155,7 @@ class OfferRepository(
         val newDate = data.editQuote.asCompleteQuote?.startDate
         val newId = data.editQuote.asCompleteQuote?.id
         if (newId == null) {
-            Timber.e("Id is null")
+            e { "Id is null" }
             return
         }
 

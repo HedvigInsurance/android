@@ -35,6 +35,7 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
+import e
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -42,7 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
@@ -356,7 +356,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             ?: run {
-                Timber.e("Could not getExternalFilesDir")
+                e { "Could not getExternalFilesDir" }
                 return
             }
 
@@ -369,7 +369,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 currentPhotoPath = absolutePath
             }
         } catch (ex: IOException) {
-            Timber.e("Error occurred while creating the photo file")
+            e { "Error occurred while creating the photo file" }
             null
         }
 
@@ -471,10 +471,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
 
-        fun newInstance(context: Context, showClose: Boolean = false) = Intent(context, ChatActivity::class.java).apply {
-            if (showClose) {
-                putExtra(EXTRA_SHOW_CLOSE, true)
+        fun newInstance(context: Context, showClose: Boolean = false) =
+            Intent(context, ChatActivity::class.java).apply {
+                if (showClose) {
+                    putExtra(EXTRA_SHOW_CLOSE, true)
+                }
             }
-        }
     }
 }

@@ -10,9 +10,9 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.safeLet
+import e
 import kotlinx.android.synthetic.main.fragment_new_referral.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
 class ReferralsFragment : BaseTabFragment() {
     private val profileViewModel: ProfileViewModel by sharedViewModel()
@@ -42,7 +42,7 @@ class ReferralsFragment : BaseTabFragment() {
                 data?.referralInformation
             ) { monthlyCost, referralCampaign ->
                 bindData(monthlyCost, referralCampaign)
-            } ?: Timber.e("No data")
+            } ?: e { "No data" }
         }
     }
 
