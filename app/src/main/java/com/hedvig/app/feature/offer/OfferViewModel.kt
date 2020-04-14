@@ -69,6 +69,7 @@ class OfferViewModelImpl(
             val result = runCatching { offerRepository.removeDiscount() }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
+                return@launch
             }
             result.getOrNull()?.let { removeDiscountFromCache() }
         }
@@ -86,6 +87,7 @@ class OfferViewModelImpl(
             val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
+                return@launch
             }
             result.getOrNull()?.let { done() }
         }
@@ -101,9 +103,9 @@ class OfferViewModelImpl(
             val response = runCatching { offerRepository.startSign() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-            } else {
-                autoStartToken.postValue(response.getOrNull()?.data())
+                return@launch
             }
+            autoStartToken.postValue(response.getOrNull()?.data())
         }
     }
 
@@ -118,7 +120,6 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-
             response.getOrNull()
                 ?.let { signStatus.postValue(it.data()?.signStatus?.fragments?.signStatusFragment) }
         }
