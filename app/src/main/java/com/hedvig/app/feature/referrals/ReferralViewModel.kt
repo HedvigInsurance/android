@@ -3,9 +3,9 @@ package com.hedvig.app.feature.referrals
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import e
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 
 class ReferralViewModel(
     private val referralRepository: ReferralRepository
@@ -26,7 +26,7 @@ class ReferralViewModel(
                 }
             }, { error ->
                 redeemCodeStatus.postValue(null)
-                Timber.e(error, "Failed to redeem code")
+                e { "$error Failed to redeem code" }
             })
     }
 

@@ -6,9 +6,10 @@ import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.chat.data.UserRepository
+import e
+import i
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 
 class UserViewModel(
     private val userRepository: UserRepository,
@@ -26,10 +27,10 @@ class UserViewModel(
             .subscribe({ response ->
                 authStatus.postValue(response.data())
             }, { e ->
-                Timber.e(e)
+                e(e)
             }, {
                 //TODO: handle in UI
-                Timber.i("subscribeAuthStatus was completed")
+                i { "subscribeAuthStatus was completed" }
             })
 
         disposables += userRepository
@@ -37,7 +38,7 @@ class UserViewModel(
             .subscribe({ response ->
                 autoStartToken.postValue(response.data())
             }, { error ->
-                Timber.e(error)
+                e(error)
             })
     }
 
@@ -48,7 +49,7 @@ class UserViewModel(
                 apolloClientWrapper.invalidateApolloClient()
                 callback()
             }, { error ->
-                Timber.e(error, "Failed to log out")
+                e { "$error Failed to log out" }
             })
     }
 

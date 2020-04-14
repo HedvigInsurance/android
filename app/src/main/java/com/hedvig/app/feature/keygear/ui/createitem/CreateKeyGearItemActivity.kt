@@ -51,10 +51,10 @@ import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import e
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import kotlin.math.max
@@ -255,7 +255,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     private fun takePhoto() {
         val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             ?: run {
-                Timber.e("Could not getExternalFilesDir")
+                e { "Could not getExternalFilesDir" }
                 return
             }
 
@@ -266,7 +266,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 storageDir
             )
         } catch (ex: IOException) {
-            Timber.e("Error occurred while creating the photo file")
+            e { "Error occurred while creating the photo file" }
             null
         }?.let { tempPhotoFile ->
             tempPhotoPath = tempPhotoFile.absolutePath

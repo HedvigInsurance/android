@@ -36,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
@@ -73,7 +72,10 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 downloadFile(fileUrl)
             } else {
-                askForPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), EXTERNAL_STORAGE_REQUEST_CODE)
+                askForPermissions(
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    EXTERNAL_STORAGE_REQUEST_CODE
+                )
             }
         }
 
@@ -87,7 +89,11 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             val fileUrl = intent.getStringExtra(RECEIPT_URL)
@@ -161,7 +167,10 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         val request = DownloadManager.Request(uri).apply {
             setDescription(getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE))
             setTitle(fileService.getFileName(uri))
-            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileService.getFileName(uri))
+            setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_DOWNLOADS,
+                fileService.getFileName(uri)
+            )
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         }
 
@@ -199,7 +208,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                 out.close()
                 file.absolutePath
             } catch (e: Exception) {
-                Timber.e(e, "Error saving image")
+                e(e) { "Error saving image" }
                 null
             }
         }
@@ -216,7 +225,10 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
         private fun appearsToBeAnImage(url: String): Boolean {
             return try {
-                when (Uri.parse(url).buildUpon().clearQuery().build().toString().substringAfterLast('.', "")) {
+                when (Uri.parse(url).buildUpon().clearQuery().build().toString().substringAfterLast(
+                    '.',
+                    ""
+                )) {
                     "jpg", "jpeg", "png" -> true
                     else -> false
                 }

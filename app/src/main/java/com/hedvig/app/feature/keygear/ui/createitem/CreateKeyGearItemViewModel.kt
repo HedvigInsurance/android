@@ -11,7 +11,6 @@ import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 abstract class CreateKeyGearItemViewModel : ViewModel() {
     abstract val createResult: LiveData<CreateKeyGearItemMutation.Data>
@@ -50,7 +49,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
 
     fun deletePhoto(photo: Photo) {
         if (photos.value == null) {
-            Timber.e("Illegal state: Attempted to delete photos, but no photos exist")
+            e { "Illegal state: Attempted to delete photos, but no photos exist" }
             return
         }
 
@@ -60,7 +59,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
 
     fun setActiveCategory(category: Category) {
         if (categories.value == null) {
-            Timber.e("Illegal state: Attempted to set category, but no categories exist")
+            e { "Illegal state: Attempted to set category, but no categories exist" }
         }
 
         categories.value = categories.value?.map { c ->

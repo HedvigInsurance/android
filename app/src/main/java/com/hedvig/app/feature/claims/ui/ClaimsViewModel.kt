@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
+import e
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class ClaimsViewModel(
     private val claimsRepository: ClaimsRepository,
@@ -28,7 +28,7 @@ class ClaimsViewModel(
         disposables += claimsRepository.fetchCommonClaims().subscribe(
             { data.postValue(it) },
             { error ->
-                Timber.e(error, "Failed to fetch claims data")
+                e { "$error Failed to fetch claims data" }
             })
     }
 
@@ -37,7 +37,7 @@ class ClaimsViewModel(
             .triggerClaimsChat(claimTypeId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 
     fun triggerFreeTextChat(done: () -> Unit) {
@@ -45,7 +45,7 @@ class ClaimsViewModel(
             .triggerFreeTextChat()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 
     fun triggerCallMeChat(done: () -> Unit) {
@@ -53,6 +53,6 @@ class ClaimsViewModel(
             .triggerCallMeChat()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 }
