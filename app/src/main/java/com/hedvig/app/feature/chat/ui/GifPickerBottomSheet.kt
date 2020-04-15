@@ -11,13 +11,13 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import e
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.send_gif_dialog.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
@@ -32,12 +32,18 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setContentView(LayoutInflater.from(requireContext()).inflate(R.layout.send_gif_dialog, null))
+        dialog.setContentView(
+            LayoutInflater.from(requireContext()).inflate(
+                R.layout.send_gif_dialog,
+                null
+            )
+        )
         dialog.makeKeyboardAware()
 
         val emptyText = "\uD83D\uDC4B\n${getString(R.string.CHAT_GIPHY_PICKER_TEXT)}"
         dialog.emptyGifLabel.text = emptyText
-        val noGifsText = "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
+        val noGifsText =
+            "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
 
         disposables += Observable.create<String> { emitter ->
             dialog.gifSearchField.onChange { emitter.onNext(it) }
@@ -48,7 +54,7 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
                     return@subscribe
                 }
                 chatViewModel.searchGifs(query)
-            }, { Timber.e(it) })
+            }, { e(it) })
         val adapter = GifAdapter(requireContext(), sendGif = { url ->
             onSelectGif(url)
             dismiss()

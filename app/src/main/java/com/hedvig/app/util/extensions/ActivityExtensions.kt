@@ -18,8 +18,8 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.view.setupLargeTitle
+import e
 import kotlinx.android.synthetic.main.app_bar.*
-import timber.log.Timber
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -122,7 +122,7 @@ private fun Activity.showPermissionExplanationDialog(permission: String) {
                 positiveAction = { openAppSettings() }
             )
         else -> {
-            Timber.e("No dialog for permission $permission!")
+            e { "No dialog for permission $permission!" }
         }
     }
 }
@@ -151,7 +151,7 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
         finish()
     }
     else -> {
-        Timber.e("Can't handle the link $value")
+        e { "Can't handle the link $value" }
     }
 }
 

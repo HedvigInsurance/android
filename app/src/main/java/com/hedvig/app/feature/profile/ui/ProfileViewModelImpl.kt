@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
@@ -61,7 +60,7 @@ class ProfileViewModelImpl(
                     trustlyUrl.postValue(ddUrl.toString())
                 }
             }, { error ->
-                Timber.e(error)
+                e(error)
             })
     }
 
@@ -95,7 +94,7 @@ class ProfileViewModelImpl(
                 )
                 dirty.postValue(false)
             }, { error ->
-                Timber.e(error, "Failed to update email and/or phone number")
+                e { "$error Failed to update email and/or phone number" }
             })
     }
 
@@ -104,7 +103,7 @@ class ProfileViewModelImpl(
             .subscribe({ response ->
                 data.postValue(response)
             }, { error ->
-                Timber.e(error, "Failed to load profile data")
+                e { "$error Failed to load profile data" }
             })
     }
 
@@ -129,7 +128,7 @@ class ProfileViewModelImpl(
                     profileRepository.writeCashbackToCache(cashback)
                 }
             }, { error ->
-                Timber.e(error, "Failed to select cashback")
+                e { "$error Failed to select cashback" }
             })
     }
 
@@ -145,7 +144,7 @@ class ProfileViewModelImpl(
                 val payinMethodResult = runCatching {
                     profileRepository.refreshPayinMethod()
                 }
-               
+
                 payinMethodResult.exceptionOrNull()?.let { e(it) }
             }
         }
@@ -154,7 +153,7 @@ class ProfileViewModelImpl(
     override fun triggerFreeTextChat(done: () -> Unit) {
         disposables += chatRepository
             .triggerFreeTextChat()
-            .subscribe({ done() }, { Timber.e(it) })
+            .subscribe({ done() }, { e(it) })
     }
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {

@@ -150,11 +150,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             }
         } ?: premiumBoxStartDate.setText(R.string.START_DATE_TODAY)
 
-        premiumBoxStartDate.setHapticClickListener {
-            tracker.toolbarSign()
-            OfferSignDialog.newInstance().show(supportFragmentManager, OfferSignDialog.TAG)
-        }
-
         incentive?.let {
             discountButton.text = getString(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
 

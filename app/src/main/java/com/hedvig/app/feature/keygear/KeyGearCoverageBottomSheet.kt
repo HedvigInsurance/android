@@ -7,9 +7,9 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.svg.buildRequestBuilder
+import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.dialog_key_gear_coverage.*
-import timber.log.Timber
 
 class KeyGearCoverageBottomSheet : RoundedBottomSheetDialogFragment() {
 
@@ -30,7 +30,7 @@ class KeyGearCoverageBottomSheet : RoundedBottomSheetDialogFragment() {
 
             dialog.bulletPointsRecyclerView.adapter =
                 CoverageInfoAdapter(data.boxes, requestBuilder)
-        } ?: Timber.e("No data provided")
+        } ?: e { "No data provided" }
 
         return dialog
     }
