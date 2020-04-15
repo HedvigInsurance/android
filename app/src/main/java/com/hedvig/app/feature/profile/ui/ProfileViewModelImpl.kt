@@ -19,6 +19,7 @@ import io.reactivex.rxkotlin.zipWith
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -151,9 +152,13 @@ class ProfileViewModelImpl(
     }
 
     override fun triggerFreeTextChat(done: () -> Unit) {
-        disposables += chatRepository
-            .triggerFreeTextChat()
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            chatRepository
+                .triggerFreeTextChat()
+                .onEach { done() }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {
