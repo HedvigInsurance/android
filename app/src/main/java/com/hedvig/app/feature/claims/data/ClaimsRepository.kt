@@ -3,14 +3,14 @@ package com.hedvig.app.feature.claims.data
 import android.content.Context
 import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.graphql.TriggerCallMeChatMutation
 import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
 import com.hedvig.android.owldroid.type.TriggerClaimChatInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
-import io.reactivex.Observable
+import com.hedvig.app.util.apollo.toDeferred
+import org.jetbrains.annotations.Nullable
 
 class ClaimsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -18,24 +18,23 @@ class ClaimsRepository(
 ) {
     private lateinit var claimsQuery: CommonClaimQuery
 
-    fun fetchCommonClaims(): Observable<CommonClaimQuery.Data?> {
+    suspend fun fetchCommonClaims(): @Nullable CommonClaimQuery.Data? {
         claimsQuery = CommonClaimQuery(
             locale = defaultLocale(context)
         )
 
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.query(claimsQuery))
-            .map { it.data() }
+        return apolloClientWrapper.apolloClient.query(claimsQuery).toDeferred().await().data()
     }
 
-    fun triggerClaimsChat(claimTypeId: String?): Observable<Response<TriggerClaimChatMutation.Data>> {
+    suspend fun triggerClaimsChat(claimTypeId: String?): Response<TriggerClaimChatMutation.Data> {
         val input = TriggerClaimChatInput(claimTypeId = Input.fromNullable(claimTypeId))
         val triggerClaimsChatMutation = TriggerClaimChatMutation(input)
 
-        return Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(triggerClaimsChatMutation))
+        return apolloClientWrapper.apolloClient.mutate(triggerClaimsChatMutation).toDeferred()
+            .await()
     }
 
-    fun triggerCallMeChat() = Rx2Apollo.from(
-        apolloClientWrapper.apolloClient.mutate(TriggerCallMeChatMutation()))
+    suspend fun triggerCallMeChat() =
+        apolloClientWrapper.apolloClient.mutate(TriggerCallMeChatMutation()).toDeferred().await()
 }
 

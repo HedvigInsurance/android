@@ -7,10 +7,7 @@ import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import e
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -30,19 +27,25 @@ class ClaimsViewModel(
     }
 
     fun fetchCommonClaims() {
-        disposables += claimsRepository.fetchCommonClaims().subscribe(
-            { data.postValue(it) },
-            { error ->
-                e { "$error Failed to fetch claims data" }
-            })
+        viewModelScope.launch {
+            val response = runCatching { claimsRepository.fetchCommonClaims() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
+                return@launch
+            }
+            data.postValue(response.getOrNull())
+        }
     }
 
     fun triggerClaimsChat(claimTypeId: String? = null, done: () -> Unit) {
-        disposables += claimsRepository
-            .triggerClaimsChat(claimTypeId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { claimsRepository.triggerClaimsChat(claimTypeId) }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            done()
+        }
     }
 
     fun triggerFreeTextChat(done: () -> Unit) {
@@ -56,10 +59,13 @@ class ClaimsViewModel(
     }
 
     fun triggerCallMeChat(done: () -> Unit) {
-        disposables += claimsRepository
-            .triggerCallMeChat()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { claimsRepository.triggerCallMeChat() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            done()
+        }
     }
 }
