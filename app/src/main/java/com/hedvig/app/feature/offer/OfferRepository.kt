@@ -14,8 +14,8 @@ import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
-import com.hedvig.app.util.extensions.toDeferred
-import com.hedvig.app.util.extensions.toFlow
+import com.hedvig.app.util.apollo.toDeferred
+import com.hedvig.app.util.apollo.toFlow
 import e
 import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate

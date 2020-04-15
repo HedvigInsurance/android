@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.android.owldroid.graphql.PickedLocaleMutation
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.apollo.toDeferred
 
 class MarketRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 

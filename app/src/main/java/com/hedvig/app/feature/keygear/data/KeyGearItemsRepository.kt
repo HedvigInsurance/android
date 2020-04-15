@@ -22,10 +22,10 @@ import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.toDeferred
+import com.hedvig.app.util.apollo.toFlow
 import com.hedvig.app.util.apollo.toLocaleString
 import com.hedvig.app.util.extensions.into
-import com.hedvig.app.util.extensions.toDeferred
-import com.hedvig.app.util.extensions.toFlow
 import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow

@@ -12,7 +12,7 @@ import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.apollo.toDeferred
 import io.reactivex.Observable
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {

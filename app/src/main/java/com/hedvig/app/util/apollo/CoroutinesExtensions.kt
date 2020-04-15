@@ -1,4 +1,4 @@
-package com.hedvig.app.util.extensions
+package com.hedvig.app.util.apollo
 
 /**
  * Copied from https://github.com/apollo-android as we are unable to upgrade to v1.4.4 due to a
@@ -24,6 +24,7 @@ package com.hedvig.app.util.extensions
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloPrefetch
 import com.apollographql.apollo.ApolloQueryWatcher
@@ -107,6 +108,7 @@ fun <T> ApolloQueryWatcher<T>.toFlow(): Flow<Response<T>> = callbackFlow {
  */
 fun <T> ApolloCall<T>.toDeferred(): Deferred<Response<T>> {
     val deferred = CompletableDeferred<Response<T>>()
+
     deferred.invokeOnCompletion {
         if (deferred.isCancelled) {
             cancel()
@@ -125,6 +127,7 @@ fun <T> ApolloCall<T>.toDeferred(): Deferred<Response<T>> {
             }
         }
     })
+
     return deferred
 }
 
@@ -171,11 +174,13 @@ fun <T> ApolloSubscriptionCall<T>.toFlow(): Flow<Response<T>> = callbackFlow {
  */
 fun ApolloPrefetch.toJob(): Job {
     val deferred = CompletableDeferred<Unit>()
+
     deferred.invokeOnCompletion {
         if (deferred.isCancelled) {
             cancel()
         }
     }
+
     enqueue(object : ApolloPrefetch.Callback() {
         override fun onSuccess() {
             if (deferred.isActive) {
@@ -189,5 +194,7 @@ fun ApolloPrefetch.toJob(): Job {
             }
         }
     })
+
     return deferred
 }
+

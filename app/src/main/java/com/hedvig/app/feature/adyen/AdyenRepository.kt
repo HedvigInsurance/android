@@ -6,7 +6,7 @@ import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.apollo.toDeferred
 import org.json.JSONObject
 
 class AdyenRepository(

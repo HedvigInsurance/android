@@ -25,9 +25,9 @@ import com.hedvig.android.owldroid.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.type.ChatResponseTextInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
+import com.hedvig.app.util.apollo.toDeferred
+import com.hedvig.app.util.apollo.toFlow
 import com.hedvig.app.util.extensions.into
-import com.hedvig.app.util.extensions.toDeferred
-import com.hedvig.app.util.extensions.toFlow
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.util.UUID

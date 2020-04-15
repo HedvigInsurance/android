@@ -3,8 +3,8 @@ package com.hedvig.app.data.debit
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.extensions.toDeferred
-import com.hedvig.app.util.extensions.toFlow
+import com.hedvig.app.util.apollo.toDeferred
+import com.hedvig.app.util.apollo.toFlow
 
 class PayinStatusRepository(
     private val apolloClientWrapper: ApolloClientWrapper
