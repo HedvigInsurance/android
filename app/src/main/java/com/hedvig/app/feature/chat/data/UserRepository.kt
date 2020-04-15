@@ -1,20 +1,24 @@
 package com.hedvig.app.feature.chat.data
 
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.toDeferred
+import com.hedvig.app.util.apollo.toFlow
 
 class UserRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
-    fun newUserSession() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(NewSessionMutation()))
+    suspend fun newUserSession() =
+        apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred().await()
 
-    fun fetchAutoStartToken() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(SwedishBankIdAuthMutation()))
+    suspend fun fetchAutoStartToken() =
+        apolloClientWrapper.apolloClient.mutate(SwedishBankIdAuthMutation()).toDeferred().await()
 
     fun subscribeAuthStatus() =
-        Rx2Apollo.from(apolloClientWrapper.apolloClient.subscribe(AuthStatusSubscription()))
+        apolloClientWrapper.apolloClient.subscribe(AuthStatusSubscription()).toFlow()
 
-    fun logout() = Rx2Apollo.from(apolloClientWrapper.apolloClient.mutate(LogoutMutation()))
+    suspend fun logout() =
+        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred().await()
 }
