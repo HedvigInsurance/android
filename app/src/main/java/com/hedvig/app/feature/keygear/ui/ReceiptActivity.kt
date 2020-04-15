@@ -24,7 +24,6 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.hasPermissions
-import com.hedvig.app.util.extensions.safeLaunch
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -34,6 +33,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.android.synthetic.main.activity_receipt.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.io.File
@@ -124,11 +124,11 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                     resource: Bitmap,
                     transition: Transition<in Bitmap>?
                 ) {
-                    lifecycleScope.safeLaunch {
+                    lifecycleScope.launch {
                         val filePath = saveImage(resource)
                         if (filePath == null) {
                             e { "Failed to save image to temp file" }
-                            return@safeLaunch
+                            return@launch
                         }
 
                         withContext(Dispatchers.Main) {

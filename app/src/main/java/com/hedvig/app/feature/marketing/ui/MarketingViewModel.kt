@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
-import com.hedvig.app.util.extensions.safeLaunch
+import kotlinx.coroutines.launch
 
 abstract class MarketingViewModel : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
@@ -18,7 +18,7 @@ class MarketingViewModelImpl(
     override val marketingBackground = MutableLiveData<MarketingBackgroundQuery.AppMarketingImage>()
 
     init {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             val response = runCatching {
                 marketingRepository
                     .marketingBackgroundAsync()

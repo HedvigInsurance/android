@@ -5,8 +5,6 @@ import android.net.Uri
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.toDeferred
-import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessageSubscription
@@ -28,6 +26,8 @@ import com.hedvig.android.owldroid.type.ChatResponseTextInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
+import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.extensions.toFlow
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.util.UUID

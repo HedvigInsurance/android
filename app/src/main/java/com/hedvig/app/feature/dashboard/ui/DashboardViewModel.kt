@@ -8,12 +8,12 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import com.hedvig.app.util.extensions.safeLaunch
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 abstract class DashboardViewModel : ViewModel() {
     abstract val data: LiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>
@@ -29,7 +29,7 @@ class DashboardViewModelImpl(
     override val data = combineTuple(dashboardData, payinStatusData)
 
     init {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
@@ -48,7 +48,7 @@ class DashboardViewModelImpl(
 
             if (dashboardResponse.isFailure) {
                 dashboardResponse.exceptionOrNull()?.let { e(it) }
-                return@safeLaunch
+                return@launch
             }
 
             dashboardData.postValue(dashboardResponse.getOrNull()?.data())

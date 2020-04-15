@@ -5,8 +5,6 @@ import android.net.Uri
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.toDeferred
-import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
@@ -26,6 +24,8 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.toLocaleString
 import com.hedvig.app.util.extensions.into
+import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.extensions.toFlow
 import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow

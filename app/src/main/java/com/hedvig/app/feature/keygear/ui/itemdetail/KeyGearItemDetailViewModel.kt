@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.extensions.safeLaunch
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 abstract class KeyGearItemDetailViewModel : ViewModel() {
     abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
@@ -36,7 +36,7 @@ class KeyGearItemDetailViewModelImpl(
     override val isDeleted = LiveEvent<Boolean>()
 
     override fun loadItem(id: String) {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             repository
                 .keyGearItem(id)
                 .onEach { response -> data.postValue(response.data()?.keyGearItem) }
@@ -46,9 +46,9 @@ class KeyGearItemDetailViewModelImpl(
     }
 
     override fun uploadReceipt(uri: Uri) {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             isUploading.postValue(true)
-            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@safeLaunch
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             val result = runCatching { repository.uploadReceipt(id, uri) }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
@@ -58,8 +58,8 @@ class KeyGearItemDetailViewModelImpl(
     }
 
     override fun updateItemName(newName: String) {
-        viewModelScope.safeLaunch {
-            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@safeLaunch
+        viewModelScope.launch {
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             val result = runCatching { repository.updateItemName(id, newName) }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
@@ -68,8 +68,8 @@ class KeyGearItemDetailViewModelImpl(
     }
 
     override fun deleteItem() {
-        viewModelScope.safeLaunch {
-            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@safeLaunch
+        viewModelScope.launch {
+            val id = data.value?.fragments?.keyGearItemFragment?.id ?: return@launch
             val result = runCatching { repository.deleteItem(id) }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }

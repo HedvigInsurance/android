@@ -2,11 +2,11 @@ package com.hedvig.app.feature.adyen
 
 import android.content.Context
 import com.adyen.checkout.redirect.RedirectComponent
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.extensions.toDeferred
 import org.json.JSONObject
 
 class AdyenRepository(

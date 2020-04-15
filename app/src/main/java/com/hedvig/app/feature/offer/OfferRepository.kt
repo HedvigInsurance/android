@@ -3,8 +3,6 @@ package com.hedvig.app.feature.offer
 import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.toDeferred
-import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -16,6 +14,8 @@ import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.toDeferred
+import com.hedvig.app.util.extensions.toFlow
 import e
 import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate

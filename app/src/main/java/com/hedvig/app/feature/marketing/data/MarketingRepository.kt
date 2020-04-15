@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.toDeferred
 
 class MarketingRepository(
     private val apolloClientWrapper: ApolloClientWrapper,

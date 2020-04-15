@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.hedvig.app.util.extensions.safeLaunch
 import e
+import kotlinx.coroutines.launch
 
 abstract class AdyenViewModel : ViewModel() {
     abstract val paymentMethods: LiveData<PaymentMethodsApiResponse>
@@ -20,7 +20,7 @@ class AdyenViewModelImpl(
     override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
 
     override fun loadPaymentMethods() {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             val response = kotlin.runCatching {
                 adyenRepository
                     .paymentMethodsAsync()
@@ -29,7 +29,7 @@ class AdyenViewModelImpl(
 
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                return@safeLaunch
+                return@launch
             }
 
             paymentMethods.postValue(

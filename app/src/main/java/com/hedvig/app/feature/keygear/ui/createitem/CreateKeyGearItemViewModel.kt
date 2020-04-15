@@ -9,8 +9,8 @@ import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
-import com.hedvig.app.util.extensions.safeLaunch
 import e
+import kotlinx.coroutines.launch
 
 abstract class CreateKeyGearItemViewModel : ViewModel() {
     abstract val createResult: LiveData<CreateKeyGearItemMutation.Data>
@@ -85,8 +85,8 @@ class CreateKeyGearItemViewModelImpl(
     override val createResult = MutableLiveData<CreateKeyGearItemMutation.Data>()
 
     override fun createItem() {
-        viewModelScope.safeLaunch {
-            val category = activeCategory ?: return@safeLaunch
+        viewModelScope.launch {
+            val category = activeCategory ?: return@launch
             val photos = photos.value?.map { it.uri } ?: listOf()
             val uploads = if (photos.isNotEmpty()) {
                 val uploadsResponse = runCatching {
@@ -98,7 +98,7 @@ class CreateKeyGearItemViewModelImpl(
                 uploadsResponse.getOrNull()?.let { response ->
                     response.data()?.uploadFiles?.map {
                         S3FileInput(bucket = it.bucket, key = it.key)
-                    } ?: return@safeLaunch
+                    } ?: return@launch
                 }
             } else {
                 emptyList()

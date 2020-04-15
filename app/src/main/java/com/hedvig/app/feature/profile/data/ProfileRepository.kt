@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.profile.data
 
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.LogoutMutation
@@ -13,6 +12,7 @@ import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.extensions.toDeferred
 import io.reactivex.Observable
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {

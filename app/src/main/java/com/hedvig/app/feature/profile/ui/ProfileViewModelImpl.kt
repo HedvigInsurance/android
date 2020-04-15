@@ -11,7 +11,6 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.Optional
 import com.hedvig.app.util.extensions.default
-import com.hedvig.app.util.extensions.safeLaunch
 import e
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -20,7 +19,9 @@ import io.reactivex.rxkotlin.zipWith
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProfileViewModelImpl(
@@ -38,7 +39,7 @@ class ProfileViewModelImpl(
     init {
         loadProfile()
 
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
@@ -133,7 +134,7 @@ class ProfileViewModelImpl(
     }
 
     override fun refreshBankAccountInfo() {
-        viewModelScope.safeLaunch {
+        viewModelScope.launch {
             withContext(NonCancellable) {
                 val result = runCatching {
                     payinStatusRepository.refreshPayinStatus()
@@ -151,9 +152,13 @@ class ProfileViewModelImpl(
     }
 
     override fun triggerFreeTextChat(done: () -> Unit) {
-        disposables += chatRepository
-            .triggerFreeTextChat()
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            chatRepository
+                .triggerFreeTextChat()
+                .onEach { done() }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {

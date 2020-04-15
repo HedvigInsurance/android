@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.dashboard.data
 
 import android.content.Context
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.toDeferred
 
 class DashboardRepository(
     private val apolloClientWrapper: ApolloClientWrapper,

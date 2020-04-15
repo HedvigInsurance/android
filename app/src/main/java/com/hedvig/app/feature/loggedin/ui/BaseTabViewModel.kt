@@ -2,11 +2,15 @@ package com.hedvig.app.feature.loggedin.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import e
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class BaseTabViewModel constructor(
     private val chatRepository: ChatRepository,
@@ -22,9 +26,13 @@ class BaseTabViewModel constructor(
     }
 
     fun triggerFreeTextChat(done: () -> Unit) {
-        disposables += chatRepository
-            .triggerFreeTextChat()
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            chatRepository
+                .triggerFreeTextChat()
+                .onEach { done() }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     fun removeReferralNotification() {

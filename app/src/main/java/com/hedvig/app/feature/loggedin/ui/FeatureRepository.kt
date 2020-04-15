@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.loggedin.ui
 
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.extensions.toDeferred
 
 class FeatureRepository(
     private val apolloClientWrapper: ApolloClientWrapper

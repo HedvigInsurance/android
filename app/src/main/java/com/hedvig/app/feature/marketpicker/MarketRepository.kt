@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.marketpicker
 
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.android.owldroid.graphql.PickedLocaleMutation
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.extensions.toDeferred
 
 class MarketRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
