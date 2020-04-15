@@ -2,6 +2,7 @@ package com.hedvig.app.feature.claims.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
@@ -10,6 +11,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class ClaimsViewModel(
     private val claimsRepository: ClaimsRepository,
@@ -41,11 +46,13 @@ class ClaimsViewModel(
     }
 
     fun triggerFreeTextChat(done: () -> Unit) {
-        disposables += chatRepository
-            .triggerFreeTextChat()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            chatRepository
+                .triggerFreeTextChat()
+                .onEach { done() }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     fun triggerCallMeChat(done: () -> Unit) {

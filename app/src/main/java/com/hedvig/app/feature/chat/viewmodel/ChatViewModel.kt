@@ -140,13 +140,13 @@ class ChatViewModel(
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
         viewModelScope.launch {
-            chatRepository.uploadFile(uri)
-                .onEach { response ->
-                    response.data()?.uploadFile?.key?.let { respondWithFile(it, uri) }
-                    onNext(response)
-                }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching { chatRepository.uploadFile(uri) }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()?.data()?.uploadFile?.key?.let { respondWithFile(it, uri) }
+            response.getOrNull()?.let { onNext(it) }
         }
     }
 
@@ -154,12 +154,17 @@ class ChatViewModel(
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
         viewModelScope.launch {
-            chatRepository.uploadFileFromProvider(uri)
-                .onEach {
-                    it.data()?.uploadFile?.key?.let { key -> respondWithFile(key, uri) }
-                }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching { chatRepository.uploadFileFromProvider(uri) }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()?.data()?.uploadFile?.key?.let { key ->
+                respondWithFile(
+                    key,
+                    uri
+                )
+            }
         }
     }
 
@@ -175,19 +180,19 @@ class ChatViewModel(
         isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         viewModelScope.launch {
-            chatRepository
-                .sendChatMessage(getLastId(), message)
-                .onEach { response ->
-                    isSendingMessage = false
-                    if (response.data()?.sendChatTextResponse == true) {
-                        load()
-                    }
-                    sendMessageResponse.postValue(response.data()?.sendChatTextResponse)
-                }.catch {
-                    isSendingMessage = false
-                    e(it)
-                }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository.sendChatMessage(getLastId(), message)
+            }
+            if (response.isFailure) {
+                isSendingMessage = false
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            isSendingMessage = false
+            if (response.getOrNull()?.data()?.sendChatTextResponse == true) {
+                load()
+            }
+            sendMessageResponse.postValue(response.getOrNull()?.data()?.sendChatTextResponse)
         }
     }
 
@@ -197,17 +202,21 @@ class ChatViewModel(
         }
         isSendingMessage = true
         isSubscriptionAllowedToWrite = false
-        disposables += chatRepository
-            .sendFileResponse(getLastId(), key, uri)
-            .subscribe({ response ->
+        viewModelScope.launch {
+            val response = runCatching {
+                chatRepository
+                    .sendFileResponse(getLastId(), key, uri)
+            }
+            if (response.isFailure) {
                 isSendingMessage = false
-                if (response.data()?.sendChatFileResponse == true) {
-                    load()
-                }
-            }, {
-                isSendingMessage = false
-                e(it)
-            })
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            isSendingMessage = false
+            if (response.getOrNull()?.data()?.sendChatFileResponse == true) {
+                load()
+            }
+        }
     }
 
     fun respondWithSingleSelect(value: String) {
@@ -217,19 +226,19 @@ class ChatViewModel(
         isSendingMessage = true
         isSubscriptionAllowedToWrite = false
         viewModelScope.launch {
-            chatRepository
-                .sendSingleSelect(getLastId(), value)
-                .onEach { response ->
-                    isSendingMessage = false
-                    if (response.data()?.sendChatSingleSelectResponse == true) {
-                        load()
-                    }
-                }
-                .catch {
-                    isSendingMessage = false
-                    e(it)
-                }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository
+                    .sendSingleSelect(getLastId(), value)
+            }
+            if (response.isFailure) {
+                isSendingMessage = false
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            isSendingMessage = false
+            if (response.getOrNull()?.data()?.sendChatSingleSelectResponse == true) {
+                load()
+            }
         }
     }
 
@@ -256,26 +265,25 @@ class ChatViewModel(
     }
 
     fun editLastResponse() {
-        disposables += chatRepository
-            .editLastResponse()
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    return@subscribe
-                }
-                load()
-            }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { chatRepository.editLastResponse() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            load()
+        }
     }
 
     fun searchGifs(query: String) {
-        disposables += chatRepository
-            .searchGifs(query)
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                }
-                gifs.postValue(response.data())
-            }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { chatRepository.searchGifs(query) }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            gifs.postValue(response.getOrNull()?.data())
+        }
     }
 }
 
