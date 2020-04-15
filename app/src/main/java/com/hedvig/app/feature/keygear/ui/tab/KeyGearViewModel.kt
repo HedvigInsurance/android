@@ -7,11 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.feature.keygear.data.DeviceInformationService
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
+import com.hedvig.app.util.extensions.safeLaunch
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 abstract class KeyGearViewModel : ViewModel() {
     abstract val data: LiveData<KeyGearItemsQuery.Data>
@@ -26,7 +26,7 @@ class KeyGearViewModelImpl(
     override val data = MutableLiveData<KeyGearItemsQuery.Data>()
 
     override fun sendAutoAddedItems() {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             val deviceFingerprint = deviceInformationService.getDeviceFingerprint()
             val deviceType = deviceInformationService.getDeviceType()
             val deviceName = deviceInformationService.getDeviceName()
@@ -46,7 +46,7 @@ class KeyGearViewModelImpl(
     }
 
     init {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             repository
                 .keyGearItems()
                 .onEach { response ->

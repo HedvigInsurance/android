@@ -5,10 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.type.Feature
-import kotlinx.coroutines.launch
+import com.hedvig.app.util.extensions.safeLaunch
 
 abstract class LoggedInViewModel : ViewModel() {
-    // TODO: Data type
     abstract val data: LiveData<List<Feature>>
 }
 
@@ -18,7 +17,7 @@ class LoggedInViewModelImpl(
     override val data = MutableLiveData<List<Feature>>()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             val response = runCatching {
                 featureRepository
                     .featuresAsync()
