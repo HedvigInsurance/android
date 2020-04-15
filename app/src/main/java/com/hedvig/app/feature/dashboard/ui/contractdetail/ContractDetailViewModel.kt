@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.hedvig.app.util.extensions.safeLaunch
 import e
-import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
     abstract val data: LiveData<DashboardQuery.Contract>
@@ -21,7 +21,7 @@ class ContractDetailViewModelImpl(
     override val data = MutableLiveData<DashboardQuery.Contract>()
 
     override fun loadContract(id: String) {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             val response = runCatching {
                 dashboardRepository
                     .dashboardAsync()
@@ -30,7 +30,7 @@ class ContractDetailViewModelImpl(
 
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                return@launch
+                return@safeLaunch
             }
 
             val contract = response

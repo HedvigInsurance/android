@@ -17,9 +17,9 @@ import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.safeLaunch
 import e
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LanguageAndMarketViewModel(
@@ -82,7 +82,7 @@ class LanguageAndMarketViewModel(
             language.apply(context)?.let { language ->
                 updateLanguage(makeLocaleString(language))
 
-                viewModelScope.launch {
+                viewModelScope.safeLaunch {
                     withContext(NonCancellable) {
                         runCatching {
                             marketRepository
@@ -145,20 +145,20 @@ class LanguageAndMarketViewModel(
     }
 
     fun loadGeo() {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             val response = runCatching {
                 marketRepository.geoAsync().await()
             }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                return@launch
+                return@safeLaunch
             }
             preselectedMarket.postValue(response.getOrNull()?.data()?.geo?.countryISOCode)
             response.getOrNull()?.data()?.geo?.let { geo ->
                 try {
                     updateMarket(Market.valueOf(geo.countryISOCode))
                 } catch (e: Exception) {
-                    return@launch
+                    return@safeLaunch
                 }
             }
         }
