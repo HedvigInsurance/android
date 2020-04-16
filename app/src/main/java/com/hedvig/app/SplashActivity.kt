@@ -19,11 +19,10 @@ import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import e
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_splash.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
@@ -37,11 +36,10 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     override fun onStart() {
         super.onStart()
 
-        disposables += loggedInService
-            .getLoginStatus()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ navigateToActivity(it) }, { e(it) })
+        CoroutineScope(IO).launch {
+            val response = loggedInService.getLoginStatus()
+            navigateToActivity(response)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -170,13 +168,10 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                 }
             }
             else -> {
-                disposables += loggedInService
-                    .getLoginStatus()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ lst ->
-                        startDefaultActivity(lst)
-                    }, { e(it) })
+                CoroutineScope(IO).launch {
+                    val response = loggedInService.getLoginStatus()
+                    navigateToActivity(response)
+                }
             }
         }
     }

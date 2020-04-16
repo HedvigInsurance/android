@@ -3,11 +3,11 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
+import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -17,7 +17,9 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import e
 import i
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import net.ypresto.timbertreeutils.CrashlyticsLogExceptionTree
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -80,7 +82,9 @@ class HedvigApplication : Application() {
 
         if (getAuthenticationToken() == null) {
             whatsNewRepository.removeNewsForNewUser()
-            acquireHedvigToken()
+            CoroutineScope(IO).launch {
+                acquireHedvigToken()
+            }
         }
 
         if (isDebug()) {
@@ -92,20 +96,19 @@ class HedvigApplication : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
-    private fun acquireHedvigToken() {
-        disposables += Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(NewSessionMutation()))
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { "Failed to register a hedvig token: ${response.errors()}" }
-                    return@subscribe
-                }
-                response.data()?.createSessionV2?.token?.let { hedvigToken ->
-                    setAuthenticationToken(hedvigToken)
-                    apolloClientWrapper.invalidateApolloClient()
-                    i { "Successfully saved hedvig token" }
-                } ?: e { "createSession returned no token" }
-            }, { e(it) })
+    private suspend fun acquireHedvigToken() {
+        val query =
+            apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred().await()
+        val response = runCatching { query }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }
+            return
+        }
+        response.getOrNull()?.data()?.createSessionV2?.token?.let { hedvigToken ->
+            setAuthenticationToken(hedvigToken)
+            apolloClientWrapper.invalidateApolloClient()
+            i { "Successfully saved hedvig token" }
+        } ?: e { "createSession returned no token" }
     }
 
     private fun tryToMigrateTokenFromReactDB() {

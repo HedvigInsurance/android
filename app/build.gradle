@@ -140,7 +140,6 @@ dependencies {
     // Apollo
     implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
     implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
-    implementation "com.apollographql.apollo:apollo-rx2-support:$apollo_version"
     //implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
 
 

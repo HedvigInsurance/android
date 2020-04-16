@@ -3,14 +3,16 @@ package com.hedvig.app.service.push
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -28,7 +30,9 @@ class PushNotificationWorker(
         if (!hasHedvigToken()) {
             return Result.retry()
         }
-        registerPushToken(pushToken)
+        CoroutineScope(IO).launch {
+            registerPushToken(pushToken)
+        }
         return Result.success()
     }
 
@@ -44,21 +48,18 @@ class PushNotificationWorker(
         return false
     }
 
-    private fun registerPushToken(pushToken: String) {
+    private suspend fun registerPushToken(pushToken: String) {
         i { "Registering push token" }
         val registerPushTokenMutation = RegisterPushTokenMutation(pushToken)
-
-        disposables += Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation))
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e {
-                        "Failed to handleExpandWithKeyboard push token: ${response.errors()}"
-                    }
-                    return@subscribe
-                }
-                i { "Successfully registered push token" }
-            }, { e { "$it Failed to handleExpandWithKeyboard push token" } })
+        val query =
+            apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation).toDeferred().await()
+        val response = runCatching { query }
+        if (response.isFailure) {
+            response.exceptionOrNull()
+                ?.let { e { "Failed to handleExpandWithKeyboard push token: $it" } }
+            return
+        }
+        i { "Successfully registered push token" }
     }
 
     companion object {
