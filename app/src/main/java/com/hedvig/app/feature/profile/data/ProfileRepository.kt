@@ -13,34 +13,33 @@ import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.apollo.toFlow
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.annotations.Nullable
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     private lateinit var profileQuery: ProfileQuery
 
-    suspend fun fetchProfile(): @Nullable ProfileQuery.Data? {
+    fun fetchProfileAsync(): Deferred<Response<ProfileQuery.Data>> {
         profileQuery = ProfileQuery()
 
-        return apolloClientWrapper.apolloClient.query(profileQuery).toDeferred().await().data()
+        return apolloClientWrapper.apolloClient.query(profileQuery).toDeferred()
     }
 
     suspend fun refreshProfile() {
         apolloClientWrapper.apolloClient.clearNormalizedCache()
-        fetchProfile()
+        fetchProfileAsync().await()
     }
 
-    suspend fun updateEmail(input: String): Response<UpdateEmailMutation.Data> {
+    fun updateEmailAsync(input: String): Deferred<Response<UpdateEmailMutation.Data>> {
         val updateEmailMutation = UpdateEmailMutation(input)
 
-        return apolloClientWrapper.apolloClient.mutate(updateEmailMutation).toDeferred().await()
+        return apolloClientWrapper.apolloClient.mutate(updateEmailMutation).toDeferred()
     }
 
-    suspend fun updatePhoneNumber(input: String): Response<UpdatePhoneNumberMutation.Data> {
+    fun updatePhoneNumberAsync(input: String): Deferred<Response<UpdatePhoneNumberMutation.Data>> {
         val updatePhoneNumberMutation = UpdatePhoneNumberMutation(input)
 
         return apolloClientWrapper.apolloClient.mutate(updatePhoneNumberMutation).toDeferred()
-            .await()
     }
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
@@ -112,11 +111,11 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    suspend fun startTrustlySession(): @Nullable StartDirectDebitRegistrationMutation.Data? {
+    fun startTrustlySessionAsync(): Deferred<Response<StartDirectDebitRegistrationMutation.Data>> {
         val startDirectDebitRegistrationMutation = StartDirectDebitRegistrationMutation()
 
         return apolloClientWrapper.apolloClient.mutate(startDirectDebitRegistrationMutation)
-            .toDeferred().await().data()
+            .toDeferred()
     }
 
     suspend fun refreshPayinMethod() {
@@ -174,6 +173,6 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         }
     }
 
-    suspend fun logout() =
-        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred().await()
+    fun logoutAsync() =
+        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred()
 }

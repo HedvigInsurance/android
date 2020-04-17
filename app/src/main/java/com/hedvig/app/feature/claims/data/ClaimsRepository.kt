@@ -26,15 +26,14 @@ class ClaimsRepository(
         return apolloClientWrapper.apolloClient.query(claimsQuery).toDeferred()
     }
 
-    suspend fun triggerClaimsChat(claimTypeId: String?): Response<TriggerClaimChatMutation.Data> {
+    fun triggerClaimsChatAsync(claimTypeId: String?): Deferred<Response<TriggerClaimChatMutation.Data>> {
         val input = TriggerClaimChatInput(claimTypeId = Input.fromNullable(claimTypeId))
         val triggerClaimsChatMutation = TriggerClaimChatMutation(input)
 
         return apolloClientWrapper.apolloClient.mutate(triggerClaimsChatMutation).toDeferred()
-            .await()
     }
 
-    suspend fun triggerCallMeChat() =
-        apolloClientWrapper.apolloClient.mutate(TriggerCallMeChatMutation()).toDeferred().await()
+    fun triggerCallMeChatAsync() =
+        apolloClientWrapper.apolloClient.mutate(TriggerCallMeChatMutation()).toDeferred()
 }
 

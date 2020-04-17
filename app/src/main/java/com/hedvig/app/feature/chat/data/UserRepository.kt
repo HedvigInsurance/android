@@ -13,12 +13,12 @@ class UserRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     fun newUserSessionAsync() =
         apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred()
 
-    suspend fun fetchAutoStartToken() =
-        apolloClientWrapper.apolloClient.mutate(SwedishBankIdAuthMutation()).toDeferred().await()
+    fun fetchAutoStartTokenAsync() =
+        apolloClientWrapper.apolloClient.mutate(SwedishBankIdAuthMutation()).toDeferred()
 
     fun subscribeAuthStatus() =
         apolloClientWrapper.apolloClient.subscribe(AuthStatusSubscription()).toFlow()
 
-    suspend fun logout() =
-        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred().await()
+    fun logoutAsync() =
+        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred()
 }

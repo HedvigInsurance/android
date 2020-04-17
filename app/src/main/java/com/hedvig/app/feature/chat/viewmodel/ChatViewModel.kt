@@ -181,7 +181,7 @@ class ChatViewModel(
         isSubscriptionAllowedToWrite = false
         viewModelScope.launch {
             val response = runCatching {
-                chatRepository.sendChatMessage(getLastId(), message)
+                chatRepository.sendChatMessageAsync(getLastId(), message).await()
             }
             if (response.isFailure) {
                 isSendingMessage = false
@@ -228,7 +228,7 @@ class ChatViewModel(
         viewModelScope.launch {
             val response = runCatching {
                 chatRepository
-                    .sendSingleSelect(getLastId(), value)
+                    .sendSingleSelectAsync(getLastId(), value).await()
             }
             if (response.isFailure) {
                 isSendingMessage = false

@@ -51,7 +51,8 @@ class ProfileViewModelImpl(
 
     override fun startTrustlySession() {
         viewModelScope.launch {
-            val response = runCatching { profileRepository.startTrustlySession() }
+            val response =
+                runCatching { profileRepository.startTrustlySessionAsync().await().data() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -69,7 +70,8 @@ class ProfileViewModelImpl(
         var phoneNumber = data.value?.member?.phoneNumber
         viewModelScope.launch {
             if (email != emailInput) {
-                val response = runCatching { profileRepository.updateEmail(emailInput) }
+                val response =
+                    runCatching { profileRepository.updateEmailAsync(emailInput).await() }
                 if (response.isFailure) {
                     response.exceptionOrNull()?.let { e { "$it error updating email" } }
                     return@launch
@@ -80,7 +82,9 @@ class ProfileViewModelImpl(
             }
 
             if (phoneNumber != phoneNumberInput) {
-                val response = runCatching { profileRepository.updatePhoneNumber(phoneNumberInput) }
+                val response = runCatching {
+                    profileRepository.updatePhoneNumberAsync(phoneNumberInput).await()
+                }
                 if (response.isFailure) {
                     response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
                     return@launch
@@ -96,7 +100,7 @@ class ProfileViewModelImpl(
 
     private fun loadProfile() {
         viewModelScope.launch {
-            val response = runCatching { profileRepository.fetchProfile() }
+            val response = runCatching { profileRepository.fetchProfileAsync().await().data() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to load profile data" } }
                 return@launch

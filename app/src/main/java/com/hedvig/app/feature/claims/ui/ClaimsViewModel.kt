@@ -36,7 +36,8 @@ class ClaimsViewModel(
 
     fun triggerClaimsChat(claimTypeId: String? = null, done: () -> Unit) {
         viewModelScope.launch {
-            val response = runCatching { claimsRepository.triggerClaimsChat(claimTypeId) }
+            val response =
+                runCatching { claimsRepository.triggerClaimsChatAsync(claimTypeId).await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -57,7 +58,7 @@ class ClaimsViewModel(
 
     fun triggerCallMeChat(done: () -> Unit) {
         viewModelScope.launch {
-            val response = runCatching { claimsRepository.triggerCallMeChat() }
+            val response = runCatching { claimsRepository.triggerCallMeChatAsync().await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch

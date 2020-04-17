@@ -16,7 +16,7 @@ class WelcomeViewModel(
 
     fun fetch() {
         viewModelScope.launch {
-            val response = runCatching { welcomeRepository.fetchWelcomeScreens() }
+            val response = runCatching { welcomeRepository.fetchWelcomeScreensAsync().await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch

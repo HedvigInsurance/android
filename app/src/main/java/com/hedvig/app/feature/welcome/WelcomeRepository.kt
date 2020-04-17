@@ -6,16 +6,17 @@ import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.toDeferred
+import kotlinx.coroutines.Deferred
 
 class WelcomeRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val context: Context
 ) {
-    suspend fun fetchWelcomeScreens(): Response<WelcomeQuery.Data> {
+    fun fetchWelcomeScreensAsync(): Deferred<Response<WelcomeQuery.Data>> {
         val welcomeQuery = WelcomeQuery(
             locale = defaultLocale(context)
         )
 
-        return apolloClientWrapper.apolloClient.query(welcomeQuery).toDeferred().await()
+        return apolloClientWrapper.apolloClient.query(welcomeQuery).toDeferred()
     }
 }

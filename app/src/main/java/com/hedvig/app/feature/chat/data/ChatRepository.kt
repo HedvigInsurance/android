@@ -28,6 +28,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.apollo.toFlow
 import com.hedvig.app.util.extensions.into
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.util.UUID
@@ -52,10 +53,10 @@ class ChatRepository(
     fun subscribeToChatMessages() =
         apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription()).toFlow()
 
-    suspend fun sendChatMessage(
+    fun sendChatMessageAsync(
         id: String,
         message: String
-    ): Response<SendChatTextResponseMutation.Data> {
+    ): Deferred<Response<SendChatTextResponseMutation.Data>> {
         val input = ChatResponseTextInput(
             globalId = id,
             body = ChatResponseBodyTextInput(text = message)
@@ -64,13 +65,13 @@ class ChatRepository(
         val sendChatMessageMutation =
             SendChatTextResponseMutation(input = input)
 
-        return apolloClientWrapper.apolloClient.mutate(sendChatMessageMutation).toDeferred().await()
+        return apolloClientWrapper.apolloClient.mutate(sendChatMessageMutation).toDeferred()
     }
 
-    suspend fun sendSingleSelect(
+    fun sendSingleSelectAsync(
         id: String,
         value: String
-    ): Response<SendChatSingleSelectResponseMutation.Data> {
+    ): Deferred<Response<SendChatSingleSelectResponseMutation.Data>> {
         val input = ChatResponseSingleSelectInput(
             globalId = id,
             body = ChatResponseBodySingleSelectInput(
@@ -83,7 +84,6 @@ class ChatRepository(
         )
 
         return apolloClientWrapper.apolloClient.mutate(sendChatSingleSelectMutation).toDeferred()
-            .await()
     }
 
     suspend fun uploadClaim(id: String, path: String): Response<UploadClaimMutation.Data> {
