@@ -1,28 +1,26 @@
 package com.hedvig.app.feature.referrals
 
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.ReferralCampaignMemberInformationQuery
 import com.hedvig.app.ApolloClientWrapper
-import io.reactivex.Observable
+import com.hedvig.app.util.apollo.toDeferred
+import kotlinx.coroutines.Deferred
 
 class ReferralRepository(private val apolloClientWrapper: ApolloClientWrapper) {
-    fun redeemReferralCode(code: String): Observable<Response<RedeemReferralCodeMutation.Data>> {
+    fun redeemReferralCodeAsync(code: String): Deferred<Response<RedeemReferralCodeMutation.Data>> {
         val redeemReferralCodeMutation = RedeemReferralCodeMutation(
             code = code
         )
 
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(redeemReferralCodeMutation))
+        return apolloClientWrapper.apolloClient.mutate(redeemReferralCodeMutation).toDeferred()
     }
 
-    fun fetchReferralCampaignMemberInformation(code: String): Observable<Response<ReferralCampaignMemberInformationQuery.Data>> {
+    fun fetchReferralCampaignMemberInformationAsync(code: String): Deferred<Response<ReferralCampaignMemberInformationQuery.Data>> {
         val campaignMemberInformationQuery = ReferralCampaignMemberInformationQuery(
             code = code
         )
 
-        return Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.query(campaignMemberInformationQuery))
+        return apolloClientWrapper.apolloClient.query(campaignMemberInformationQuery).toDeferred()
     }
 }

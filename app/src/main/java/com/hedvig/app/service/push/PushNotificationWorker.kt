@@ -1,34 +1,31 @@
 package com.hedvig.app.service.push
 
 import android.content.Context
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 class PushNotificationWorker(
     val context: Context,
     params: WorkerParameters
-) : Worker(context, params), KoinComponent {
+) : CoroutineWorker(context, params), KoinComponent {
 
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
-    private val disposables = CompositeDisposable()
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         val pushToken = inputData.getString(PUSH_TOKEN) ?: throw Exception("No token provided")
         if (!hasHedvigToken()) {
             return Result.retry()
         }
         registerPushToken(pushToken)
+
         return Result.success()
     }
 
@@ -44,25 +41,21 @@ class PushNotificationWorker(
         return false
     }
 
-    private fun registerPushToken(pushToken: String) {
+    private suspend fun registerPushToken(pushToken: String) {
         i { "Registering push token" }
         val registerPushTokenMutation = RegisterPushTokenMutation(pushToken)
-
-        disposables += Rx2Apollo
-            .from(apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation))
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e {
-                        "Failed to handleExpandWithKeyboard push token: ${response.errors()}"
-                    }
-                    return@subscribe
-                }
-                i { "Successfully registered push token" }
-            }, { e { "$it Failed to handleExpandWithKeyboard push token" } })
+        val query =
+            apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation).toDeferred().await()
+        val response = runCatching { query }
+        if (response.isFailure) {
+            response.exceptionOrNull()
+                ?.let { e { "Failed to handleExpandWithKeyboard push token: $it" } }
+            return
+        }
+        i { "Successfully registered push token" }
     }
 
     companion object {
         const val PUSH_TOKEN = "push_token"
     }
 }
-

@@ -1,25 +1,23 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
-import com.apollographql.apollo.rx2.Rx2Apollo
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.toDeferred
 
 class WhatsNewRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val context: Context
 ) {
-    fun fetchWhatsNew(sinceVersion: String? = null) =
-        Rx2Apollo.from(
-            apolloClientWrapper.apolloClient.query(
-                WhatsNewQuery(
-                    locale = defaultLocale(context),
-                    sinceVersion = sinceVersion ?: latestSeenNews()
-                )
+    suspend fun fetchWhatsNew(sinceVersion: String? = null) =
+        apolloClientWrapper.apolloClient.query(
+            WhatsNewQuery(
+                locale = defaultLocale(context),
+                sinceVersion = sinceVersion ?: latestSeenNews()
             )
-        )
+        ).toDeferred().await()
 
     fun removeNewsForNewUser() {
         if (latestSeenNews() == NEWS_BASELINE_VERSION) {

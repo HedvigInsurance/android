@@ -9,7 +9,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.feature.settings.Language
-import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity {
     constructor() : super()
@@ -17,10 +16,7 @@ abstract class BaseActivity : AppCompatActivity {
 
     open val preventRecreation = false
 
-    val disposables = CompositeDisposable()
-
     override fun onDestroy() {
-        disposables.clear()
         LocalBroadcastManager
             .getInstance(this)
             .unregisterReceiver(localeListener)

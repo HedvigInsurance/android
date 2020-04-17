@@ -2,59 +2,55 @@ package com.hedvig.app.feature.chat.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.chat.data.UserRepository
 import e
-import i
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class UserViewModel(
     private val userRepository: UserRepository,
     private val apolloClientWrapper: ApolloClientWrapper
 ) : ViewModel() {
 
-    private val disposables = CompositeDisposable()
-
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
     val authStatus = MutableLiveData<AuthStatusSubscription.Data>()
 
     fun fetchBankIdStartToken() {
-        disposables += userRepository
-            .subscribeAuthStatus()
-            .subscribe({ response ->
-                authStatus.postValue(response.data())
-            }, { e ->
-                e(e)
-            }, {
-                //TODO: handle in UI
-                i { "subscribeAuthStatus was completed" }
-            })
+        viewModelScope.launch {
+            userRepository
+                .subscribeAuthStatus()
+                .onEach { response ->
+                    authStatus.postValue(response.data())
+                }
+                .catch { e(it) }
+                .launchIn(this)
 
-        disposables += userRepository
-            .fetchAutoStartToken()
-            .subscribe({ response ->
-                autoStartToken.postValue(response.data())
-            }, { error ->
-                e(error)
-            })
+            val response = runCatching { userRepository.fetchAutoStartTokenAsync().await() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            autoStartToken.postValue(response.getOrNull()?.data())
+        }
     }
 
     fun logout(callback: () -> Unit) {
-        disposables += userRepository
-            .logout()
-            .subscribe({
-                apolloClientWrapper.invalidateApolloClient()
-                callback()
-            }, { error ->
-                e { "$error Failed to log out" }
-            })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
+        CoroutineScope(IO).launch {
+            val response = runCatching { userRepository.logoutAsync().await() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
+                return@launch
+            }
+            apolloClientWrapper.invalidateApolloClient()
+            callback()
+        }
     }
 }
