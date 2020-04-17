@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
@@ -39,9 +38,6 @@ class OfferViewModelImpl(
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
-    private val disposables = CompositeDisposable()
-    private val signStatusSubscriptionHandle = CompositeDisposable()
-
     init {
         load()
     }
@@ -56,12 +52,6 @@ class OfferViewModelImpl(
                 .catch { e -> e(e) }
                 .collect()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
-        signStatusSubscriptionHandle.clear()
     }
 
     override fun removeDiscount() {

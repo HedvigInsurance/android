@@ -10,8 +10,8 @@ import com.hedvig.app.util.apollo.toFlow
 
 class UserRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
-    suspend fun newUserSession() =
-        apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred().await()
+    fun newUserSession() =
+        apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred()
 
     suspend fun fetchAutoStartToken() =
         apolloClientWrapper.apolloClient.mutate(SwedishBankIdAuthMutation()).toDeferred().await()

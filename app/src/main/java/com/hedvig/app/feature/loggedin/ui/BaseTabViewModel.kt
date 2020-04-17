@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,8 +17,6 @@ class BaseTabViewModel constructor(
 ) : ViewModel() {
 
     val tabNotification = MutableLiveData<TabNotification?>()
-
-    val disposables = CompositeDisposable()
 
     init {
         tabNotificationService.getTabNotification()?.let { tabNotification.value = it }

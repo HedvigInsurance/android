@@ -16,7 +16,6 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.jakewharton.threetenabp.AndroidThreeTen
 import e
 import i
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -30,8 +29,6 @@ import timber.log.Timber
 class HedvigApplication : Application() {
     val apolloClientWrapper: ApolloClientWrapper by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
-
-    private val disposables = CompositeDisposable()
 
     override fun attachBaseContext(base: Context?) {
         Language.DefaultLocale.initialize()

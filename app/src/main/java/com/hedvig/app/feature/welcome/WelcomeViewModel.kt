@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
@@ -14,13 +13,6 @@ class WelcomeViewModel(
 ) : ViewModel() {
 
     val data = MutableLiveData<List<DismissiblePagerPage>>()
-
-    private val disposables = CompositeDisposable()
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
-    }
 
     fun fetch() {
         viewModelScope.launch {

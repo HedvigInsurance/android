@@ -1,7 +1,7 @@
 package com.hedvig.app.service.push
 
 import android.content.Context
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
@@ -9,30 +9,23 @@ import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 class PushNotificationWorker(
     val context: Context,
     params: WorkerParameters
-) : Worker(context, params), KoinComponent {
+) : CoroutineWorker(context, params), KoinComponent {
 
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
-    private val disposables = CompositeDisposable()
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         val pushToken = inputData.getString(PUSH_TOKEN) ?: throw Exception("No token provided")
         if (!hasHedvigToken()) {
             return Result.retry()
         }
-        CoroutineScope(IO).launch {
-            registerPushToken(pushToken)
-        }
+        registerPushToken(pushToken)
+
         return Result.success()
     }
 
@@ -66,4 +59,3 @@ class PushNotificationWorker(
         const val PUSH_TOKEN = "push_token"
     }
 }
-

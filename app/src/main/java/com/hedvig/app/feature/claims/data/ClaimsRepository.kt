@@ -10,7 +10,7 @@ import com.hedvig.android.owldroid.type.TriggerClaimChatInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.toDeferred
-import org.jetbrains.annotations.Nullable
+import kotlinx.coroutines.Deferred
 
 class ClaimsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
@@ -18,12 +18,12 @@ class ClaimsRepository(
 ) {
     private lateinit var claimsQuery: CommonClaimQuery
 
-    suspend fun fetchCommonClaims(): @Nullable CommonClaimQuery.Data? {
+    fun fetchCommonClaimsAsync(): Deferred<Response<CommonClaimQuery.Data>> {
         claimsQuery = CommonClaimQuery(
             locale = defaultLocale(context)
         )
 
-        return apolloClientWrapper.apolloClient.query(claimsQuery).toDeferred().await().data()
+        return apolloClientWrapper.apolloClient.query(claimsQuery).toDeferred()
     }
 
     suspend fun triggerClaimsChat(claimTypeId: String?): Response<TriggerClaimChatMutation.Data> {

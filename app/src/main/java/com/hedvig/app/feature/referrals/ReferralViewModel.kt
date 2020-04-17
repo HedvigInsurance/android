@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 
 class ReferralViewModel(
@@ -14,7 +13,6 @@ class ReferralViewModel(
     ViewModel() {
 
     val redeemCodeStatus: MutableLiveData<RedeemReferralCodeMutation.Data> = MutableLiveData()
-    private val disposables = CompositeDisposable()
 
     fun redeemReferralCode(code: String) {
         viewModelScope.launch {
@@ -26,10 +24,5 @@ class ReferralViewModel(
             }
             response.getOrNull()?.let { redeemCodeStatus.postValue(it.data()) }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
     }
 }

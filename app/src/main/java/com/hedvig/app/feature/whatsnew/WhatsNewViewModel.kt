@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 
 class WhatsNewViewModel(
@@ -13,8 +12,6 @@ class WhatsNewViewModel(
 ) : ViewModel() {
 
     val news = LiveEvent<WhatsNewQuery.Data>()
-
-    private val disposables = CompositeDisposable()
 
     fun fetchNews(sinceVersion: String? = null) {
         viewModelScope.launch {
@@ -28,9 +25,4 @@ class WhatsNewViewModel(
     }
 
     fun hasSeenNews(version: String) = whatsNewRepository.hasSeenNews(version)
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
-    }
 }

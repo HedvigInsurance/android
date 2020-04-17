@@ -11,7 +11,6 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -29,8 +28,6 @@ class ProfileViewModelImpl(
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
     override val payinStatus = MutableLiveData<PayinStatusQuery.Data>()
-
-    private val disposables = CompositeDisposable()
 
     init {
         loadProfile()
@@ -65,11 +62,6 @@ class ProfileViewModelImpl(
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
     }
 
     override fun saveInputs(emailInput: String, phoneNumberInput: String) {

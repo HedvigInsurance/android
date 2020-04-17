@@ -7,7 +7,6 @@ import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -20,20 +19,18 @@ class ClaimsViewModel(
 
     val data: MutableLiveData<CommonClaimQuery.Data> = MutableLiveData()
 
-    private val disposables = CompositeDisposable()
-
     init {
         fetchCommonClaims()
     }
 
     fun fetchCommonClaims() {
         viewModelScope.launch {
-            val response = runCatching { claimsRepository.fetchCommonClaims() }
+            val response = runCatching { claimsRepository.fetchCommonClaimsAsync().await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
                 return@launch
             }
-            data.postValue(response.getOrNull())
+            data.postValue(response.getOrNull()?.data())
         }
     }
 

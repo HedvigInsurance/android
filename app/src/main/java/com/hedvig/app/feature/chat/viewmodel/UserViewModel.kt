@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.chat.data.UserRepository
 import e
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
@@ -20,8 +19,6 @@ class UserViewModel(
     private val userRepository: UserRepository,
     private val apolloClientWrapper: ApolloClientWrapper
 ) : ViewModel() {
-
-    private val disposables = CompositeDisposable()
 
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
     val authStatus = MutableLiveData<AuthStatusSubscription.Data>()
@@ -55,10 +52,5 @@ class UserViewModel(
             apolloClientWrapper.invalidateApolloClient()
             callback()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
     }
 }

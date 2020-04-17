@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -36,7 +37,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     override fun onStart() {
         super.onStart()
 
-        CoroutineScope(IO).launch {
+        lifecycleScope.launch {
             val response = loggedInService.getLoginStatus()
             navigateToActivity(response)
         }
