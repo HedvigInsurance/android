@@ -20,17 +20,7 @@
     <declare-styleable name="HedvigCardView">
         <attr name="android:elevation" format="dimension" />
     </declare-styleable>
-    <declare-styleable name="BezierView">
-        <attr name="topColor" format="color" />
-        <attr name="bottomColor" format="color" />
-    </declare-styleable>
     <declare-styleable name="DateInputView">
         <attr name="dateHintBackground" format="color" />
-    </declare-styleable>
-    <declare-styleable name="HedvigEditText">
-        <attr name="hintBackground" format="color" />
-        <attr name="android:imeOptions" format="flags" />
-        <attr name="android:inputType" format="flags" />
-        <attr name="hintText" format="string" />
     </declare-styleable>
 </resources>

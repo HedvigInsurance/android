@@ -6,5 +6,5 @@
     android:layout_height="@dimen/pager_indicator_hedvig_logo_size"
     android:contentDescription="@null"
     android:tint="@color/gray"
-    app:srcCompat="@drawable/ic_hedvig_symbol_android"
+    app:srcCompat="@drawable/ic_hedvig_h"
     tools:layout_gravity="center" />

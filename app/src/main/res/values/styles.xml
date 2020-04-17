@@ -10,22 +10,10 @@
         <item name="colorControlNormal">@color/white</item>
     </style>
 
-    <style name="Hedvig.Theme.Marketing">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
     <style name="Hedvig.Theme.Offer" />
 
     <style name="Hedvig.Theme.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>
-    </style>
-
-    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:padding">0dp</item>
     </style>
 
     <style name="FullScreenDialog" parent="Hedvig.Theme">

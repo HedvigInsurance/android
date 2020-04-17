@@ -267,13 +267,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.adyen.AdyenActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
@@ -301,7 +294,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_hedvig_symbol_android" />
+            android:resource="@drawable/ic_hedvig_h" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -319,7 +312,7 @@
         <service
             android:name=".service.push.PushNotificationService"
             android:exported="false"
-            android:icon="@drawable/ic_hedvig_symbol_android">
+            android:icon="@drawable/ic_hedvig_h">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
