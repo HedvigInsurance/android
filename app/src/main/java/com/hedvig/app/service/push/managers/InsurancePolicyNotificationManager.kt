@@ -31,7 +31,7 @@ object InsurancePolicyNotificationManager {
                 context,
                 INSURANCE_POLICY_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle("TODO Copy")
             .setContentText("TODO Copy")
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -65,7 +65,7 @@ object InsurancePolicyNotificationManager {
                 context,
                 INSURANCE_POLICY_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle("TODO Copy")
             .setContentText("TODO Copy")
             .setPriority(NotificationCompat.PRIORITY_MAX)

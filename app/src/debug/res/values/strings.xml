@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name" translatable="false">Hedvig Dev</string>
     <string name="APP_NAME" translatable="false">Hedvig Dev</string>
 
     <string name="APP_SCHEME" translatable="false">hedvigtest</string>

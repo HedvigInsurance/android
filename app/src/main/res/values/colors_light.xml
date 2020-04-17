@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="translucent_background" type="color">@color/translucent_off_white</item>
-    <item name="background_semi_transparent" type="color">@color/blur_white</item>
     <item name="icon_tint" type="color">@null</item>
-    <!-- TODO: Remove when we have colors for the offer screen -->
-    <item name="offer_background" type="color">@color/dark_purple</item>
 
     <item name="colorPrimary" type="color">@color/hedvig_black</item>
     <item name="colorOnPrimary" type="color">@color/hedvig_white</item>

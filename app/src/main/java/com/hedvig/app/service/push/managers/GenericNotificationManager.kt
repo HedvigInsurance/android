@@ -34,7 +34,7 @@ object GenericNotificationManager {
                 context,
                 GENERIC_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

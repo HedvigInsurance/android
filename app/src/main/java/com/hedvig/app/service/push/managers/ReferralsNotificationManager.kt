@@ -37,7 +37,7 @@ object ReferralsNotificationManager {
                 context,
                 REFERRAL_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)

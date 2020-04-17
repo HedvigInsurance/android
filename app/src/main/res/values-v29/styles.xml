@@ -8,14 +8,6 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V29" />
 
-    <style name="Hedvig.Theme.Marketing">
-        <item name="android:windowLightNavigationBar">false</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
