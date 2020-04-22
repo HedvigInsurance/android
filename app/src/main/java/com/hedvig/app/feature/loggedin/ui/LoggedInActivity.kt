@@ -30,18 +30,22 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
-import kotlinx.android.synthetic.main.app_bar.*
+import kotlinx.android.synthetic.main.hedvig_toolbar.*
+import kotlinx.android.synthetic.main.hedvig_toolbar.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -65,7 +69,24 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
+        // toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
+
+        loggedInRoot.useEdgeToEdge()
+        loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
+        toolbarRoot.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        // tabContentContainer.doOnApplyWindowInsets { view, insets, initialState ->
+        //     view.updatePadding(
+        //         top = initialState.paddings.top + toolbarRoot.measuredHeight,
+        //         bottom = bottomTabs.measuredHeight + insets.systemWindowInsetBottom
+        //     )
+        // }
+
+        bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
@@ -260,24 +281,21 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private fun setupAppBar(id: LoggedInTabs?) {
         invalidateOptionsMenu()
-        if (lastLoggedInTab != id) {
-            appBarLayout.setExpanded(true, false)
-        }
         when (id) {
             LoggedInTabs.DASHBOARD -> {
-                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE)
+                toolbarRoot.text.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
             }
             LoggedInTabs.CLAIMS -> {
-                setupLargeTitle(R.string.CLAIMS_TITLE)
+                toolbarRoot.text.text = getString(R.string.CLAIMS_TITLE)
             }
             LoggedInTabs.KEY_GEAR -> {
-                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE))
+                toolbarRoot.text.text = getString(R.string.KEY_GEAR_TAB_TITLE)
             }
             LoggedInTabs.REFERRALS -> {
-                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE)
+                toolbarRoot.text.text = getString(R.string.PROFILE_REFERRAL_TITLE)
             }
             LoggedInTabs.PROFILE -> {
-                setupLargeTitle(R.string.PROFILE_TITLE)
+                toolbarRoot.text.text = getString(R.string.PROFILE_TITLE)
             }
         }
         if (id != null) {

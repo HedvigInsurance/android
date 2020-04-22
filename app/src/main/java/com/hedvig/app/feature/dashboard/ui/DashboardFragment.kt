@@ -2,7 +2,9 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -10,6 +12,9 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.safeLet
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -21,6 +26,17 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        root.doOnApplyWindowInsets { view, insets, initialState ->
+            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
+            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+            safeLet(toolbar, navbar) { toolbar, navbar ->
+                view.updatePadding(
+                    top = initialState.paddings.top + toolbar.measuredHeight,
+                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+                )
+            }
+        }
 
         root.adapter = DashboardAdapter(parentFragmentManager)
 

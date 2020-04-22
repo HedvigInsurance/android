@@ -13,8 +13,12 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.svg.buildRequestBuilder
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_coverage_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -24,6 +28,19 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
+
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                top = initialState.paddings.top + insets.systemWindowInsetTop,
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+            )
+        }
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
 
         perils.adapter = PerilsAdapter(supportFragmentManager, buildRequestBuilder())
         perils.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))

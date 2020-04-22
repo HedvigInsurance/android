@@ -2,8 +2,10 @@ package com.hedvig.app.feature.keygear.ui.tab
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
@@ -19,7 +21,10 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.transitionPair
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -36,6 +41,17 @@ class KeyGearFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
+            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
+            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+            safeLet(toolbar, navbar) { toolbar, navbar ->
+                view.updatePadding(
+                    top = initialState.paddings.top + toolbar.measuredHeight,
+                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+                )
+            }
+        }
+
         items.adapter =
             KeyGearItemsAdapter(
                 tracker,
@@ -48,17 +64,17 @@ class KeyGearFragment : BaseTabFragment() {
                         ).toBundle()
                     )
                 }, { root, item ->
-                startActivity(
-                    KeyGearItemDetailActivity.newInstance(
-                        requireContext(),
-                        item.fragments.keyGearItemFragment
-                    ),
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        requireActivity(),
-                        Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
-                    ).toBundle()
-                )
-            })
+                    startActivity(
+                        KeyGearItemDetailActivity.newInstance(
+                            requireContext(),
+                            item.fragments.keyGearItemFragment
+                        ),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            requireActivity(),
+                            Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
+                        ).toBundle()
+                    )
+                })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
         items.itemAnimator = SlideInItemAnimator()
 

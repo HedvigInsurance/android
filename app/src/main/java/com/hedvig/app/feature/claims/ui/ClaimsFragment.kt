@@ -4,8 +4,10 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
+import android.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -23,7 +25,10 @@ import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.svg.buildRequestBuilder
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import i
 import kotlinx.android.synthetic.main.fragment_claims.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -42,6 +47,17 @@ class ClaimsFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
+            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+            safeLet(toolbar, navbar) { toolbar, navbar ->
+                view.updatePadding(
+                    top = initialState.paddings.top + toolbar.measuredHeight,
+                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+                )
+            }
+        }
 
         claimsViewModel.apply {
             loadingSpinner.show()

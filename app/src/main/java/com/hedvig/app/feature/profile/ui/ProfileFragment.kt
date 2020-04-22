@@ -3,7 +3,9 @@ package com.hedvig.app.feature.profile.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toolbar
 import androidx.core.widget.NestedScrollView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -23,7 +25,10 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.interpolateTextKey
+import com.hedvig.app.util.safeLet
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -37,6 +42,17 @@ class ProfileFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
+            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
+            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+            safeLet(toolbar, navbar) { toolbar, navbar ->
+                view.updatePadding(
+                    top = initialState.paddings.top + toolbar.measuredHeight,
+                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+                )
+            }
+        }
 
         populateData()
     }
@@ -95,7 +111,8 @@ class ProfileFragment : BaseTabFragment() {
     private fun setupPayment(profileData: ProfileQuery.Data) {
         paymentRow.description = interpolateTextKey(
             resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
+            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                ?.toInt()
         )
         paymentRow.setHapticClickListener {
             startActivity(Intent(requireContext(), PaymentActivity::class.java))
