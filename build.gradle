@@ -25,7 +25,6 @@ buildscript {
         classpath "com.apollographql.apollo:apollo-gradle-plugin:$apollo_version"
         classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
         classpath 'com.hedvig.textkeys:com.hedvig.textkeys.gradle.plugin:0.2.4'
-        classpath 'com.github.likandr:lokalise-plugin:1.3'
     }
 }
 
