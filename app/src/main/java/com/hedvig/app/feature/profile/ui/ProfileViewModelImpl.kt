@@ -2,23 +2,17 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.Optional
 import com.hedvig.app.util.extensions.default
 import e
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.zipWith
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,80 +25,74 @@ class ProfileViewModelImpl(
     override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
-    override val payinStatus = MutableLiveData<PayinStatusQuery.Data>()
-
-    private val disposables = CompositeDisposable()
 
     init {
         loadProfile()
+    }
 
+    override fun refreshProfile() {
         viewModelScope.launch {
-            payinStatusRepository
-                .payinStatus()
-                .onEach { response ->
-                    response.data()?.let { payinStatus.postValue(it) }
-                }
-                .catch { e(it) }
-                .collect()
+            runCatching { profileRepository.refreshProfileAsync().await() }
         }
     }
 
-    override fun refreshProfile() =
-        profileRepository.refreshProfile()
-
     override fun startTrustlySession() {
-        disposables += profileRepository
-            .startTrustlySession()
-            .subscribe({ url ->
-                url?.startDirectDebitRegistration?.let { ddUrl ->
-                    trustlyUrl.postValue(ddUrl.toString())
+        viewModelScope.launch {
+            val response =
+                runCatching { profileRepository.startTrustlySessionAsync().await().data() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()?.let { data ->
+                data.startDirectDebitRegistration?.let { ddUrl ->
+                    trustlyUrl.postValue(ddUrl)
                 }
-            }, { error ->
-                e(error)
-            })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
+            }
+        }
     }
 
     override fun saveInputs(emailInput: String, phoneNumberInput: String) {
-        val email = data.value?.member?.email
-        val phoneNumber = data.value?.member?.phoneNumber
+        var email = data.value?.member?.email
+        var phoneNumber = data.value?.member?.phoneNumber
+        viewModelScope.launch {
+            if (email != emailInput) {
+                val response =
+                    runCatching { profileRepository.updateEmailAsync(emailInput).await() }
+                if (response.isFailure) {
+                    response.exceptionOrNull()?.let { e { "$it error updating email" } }
+                    return@launch
+                }
+                response.getOrNull()?.let {
+                    email = it.data()?.updateEmail?.email
+                }
+            }
 
-        val emailObservable = if (email != emailInput) {
-            profileRepository
-                .updateEmail(emailInput)
-                .map { Optional.Some(it.data()?.updateEmail?.email) }
-        } else Observable.just(Optional.None)
+            if (phoneNumber != phoneNumberInput) {
+                val response = runCatching {
+                    profileRepository.updatePhoneNumberAsync(phoneNumberInput).await()
+                }
+                if (response.isFailure) {
+                    response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
+                    return@launch
+                }
+                response.getOrNull()?.let {
+                    phoneNumber = it.data()?.updatePhoneNumber?.phoneNumber
+                }
+            }
 
-        val phoneNumberObservable = if (phoneNumber != phoneNumberInput) {
-            profileRepository
-                .updatePhoneNumber(phoneNumberInput)
-                .map { Optional.Some(it.data()?.updatePhoneNumber?.phoneNumber) }
-        } else Observable.just(Optional.None)
-
-        disposables += emailObservable
-            .zipWith(phoneNumberObservable) { t1, t2 -> Pair(t1, t2) }
-            .subscribe({ (email, phoneNumber) ->
-                profileRepository.writeEmailAndPhoneNumberInCache(
-                    email.getOrNull(),
-                    phoneNumber.getOrNull()
-                )
-                dirty.postValue(false)
-            }, { error ->
-                e { "$error Failed to update email and/or phone number" }
-            })
+            profileRepository.writeEmailAndPhoneNumberInCache(email, phoneNumber)
+        }
     }
 
     private fun loadProfile() {
-        disposables += profileRepository.fetchProfile()
-            .subscribe({ response ->
-                data.postValue(response)
-            }, { error ->
-                e { "$error Failed to load profile data" }
-            })
+        viewModelScope.launch {
+            profileRepository
+                .profile()
+                .onEach { data.postValue(it.data()) }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     override fun emailChanged(newEmail: String) {
@@ -122,14 +110,16 @@ class ProfileViewModelImpl(
     }
 
     override fun selectCashback(id: String) {
-        disposables += profileRepository.selectCashback(id)
-            .subscribe({ response ->
-                response.data()?.selectCashbackOption?.let { cashback ->
-                    profileRepository.writeCashbackToCache(cashback)
+        viewModelScope.launch {
+            profileRepository.selectCashback(id)
+                .onEach { response ->
+                    response.data()?.selectCashbackOption?.let { cashback ->
+                        profileRepository.writeCashbackToCache(cashback)
+                    }
                 }
-            }, { error ->
-                e { "$error Failed to select cashback" }
-            })
+                .catch { e { "$it Failed to select cashback" } }
+                .launchIn(this)
+        }
     }
 
     override fun refreshBankAccountInfo() {
@@ -151,9 +141,13 @@ class ProfileViewModelImpl(
     }
 
     override fun triggerFreeTextChat(done: () -> Unit) {
-        disposables += chatRepository
-            .triggerFreeTextChat()
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            chatRepository
+                .triggerFreeTextChat()
+                .onEach { done() }
+                .catch { e(it) }
+                .launchIn(this)
+        }
     }
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {

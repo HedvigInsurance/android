@@ -180,8 +180,12 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (!isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
-            finish()
+        val market = getMarket()
+
+        if (market == Market.NO) {
+            if (!isPostSignDD() && !hasSuccessfullyConnectedDirectDebit && resultCode == Activity.RESULT_CANCELED) {
+                finish()
+            }
         }
     }
 

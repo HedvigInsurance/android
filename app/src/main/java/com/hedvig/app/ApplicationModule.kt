@@ -68,6 +68,8 @@ import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ReferralRepository
 import com.hedvig.app.feature.referrals.ReferralViewModel
@@ -216,6 +218,10 @@ val keyGearModule = module {
     viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
     viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
     viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
+}
+
+val paymentModule = module {
+    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get()) }
 }
 
 val adyenModule = module {

@@ -39,7 +39,7 @@ object ChatNotificationManager {
                 context,
                 CHAT_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.resources.getString(R.string.NOTIFICATION_CHAT_TITLE))
             .setContentText(context.resources.getString(R.string.NOTIFICATION_CHAT_BODY))
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -73,7 +73,7 @@ object ChatNotificationManager {
                 context,
                 PushNotificationService.NOTIFICATION_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -98,5 +98,4 @@ object ChatNotificationManager {
 
     private const val CHAT_CHANNEL_ID = "hedvig-chat"
     private const val CHAT_NOTIFICATION_ID = 1
-
 }

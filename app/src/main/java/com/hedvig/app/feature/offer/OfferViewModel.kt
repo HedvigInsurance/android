@@ -2,14 +2,17 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import e
-import i
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
@@ -35,43 +38,31 @@ class OfferViewModelImpl(
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
-    private val disposables = CompositeDisposable()
-    private val signStatusSubscriptionHandle = CompositeDisposable()
-
     init {
         load()
     }
 
     fun load() {
-        disposables += offerRepository
-            .loadOffer()
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    return@subscribe
+        viewModelScope.launch {
+            offerRepository
+                .loadOffer()
+                .onEach { response ->
+                    data.postValue(response.data())
                 }
-
-                data.postValue(response.data())
-            }, { e(it) })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
-        signStatusSubscriptionHandle.clear()
+                .catch { e -> e(e) }
+                .collect()
+        }
     }
 
     override fun removeDiscount() {
-        disposables += offerRepository
-            .removeDiscount()
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    return@subscribe
-                }
-
-                removeDiscountFromCache()
-            }, { e(it) })
+        viewModelScope.launch {
+            val result = runCatching { offerRepository.removeDiscountAsync().await() }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            result.getOrNull()?.let { removeDiscountFromCache() }
+        }
     }
 
     private fun removeDiscountFromCache() {
@@ -82,36 +73,30 @@ class OfferViewModelImpl(
         offerRepository.writeDiscountToCache(data)
 
     override fun triggerOpenChat(done: () -> Unit) {
-        disposables += offerRepository
-            .triggerOpenChatFromOffer()
-            .subscribe({ done() }, { e(it) })
+        viewModelScope.launch {
+            val result = runCatching { offerRepository.triggerOpenChatFromOfferAsync().await() }
+            if (result.isFailure) {
+                result.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            result.getOrNull()?.let { done() }
+        }
     }
 
     override fun startSign() {
-        if (signStatusSubscriptionHandle.size() == 0) {
-            signStatusSubscriptionHandle += offerRepository
-                .subscribeSignStatus()
-                .subscribe({ response ->
-                    if (response.hasErrors()) {
-                        e { response.errors().toString() }
-                        return@subscribe
-                    }
-                    i { "Data on signStatus subscription:  ${response.data()}" }
-                    signStatus.postValue(response.data()?.signStatus?.status?.fragments?.signStatusFragment)
-                }, { e(it) })
+        viewModelScope.launch {
+            offerRepository.subscribeSignStatus()
+                .onEach { signStatus.postValue(it.data()?.signStatus?.status?.fragments?.signStatusFragment) }
+                .catch { e(it) }
+                .launchIn(this)
+
+            val response = runCatching { offerRepository.startSignAsync().await() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            autoStartToken.postValue(response.getOrNull()?.data())
         }
-
-        disposables += offerRepository
-            .startSign()
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    signError.postValue(true)
-                    return@subscribe
-                }
-
-                autoStartToken.postValue(response.data())
-            }, { e(it) })
     }
 
     override fun clearPreviousErrors() {
@@ -119,46 +104,44 @@ class OfferViewModelImpl(
     }
 
     override fun manuallyRecheckSignStatus() {
-        disposables += offerRepository
-            .fetchSignStatus()
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    signError.postValue(true)
-                    return@subscribe
-                }
-                signStatus.postValue(response.data()?.signStatus?.fragments?.signStatusFragment)
-            }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching { offerRepository.fetchSignStatusAsync().await() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()
+                ?.let { signStatus.postValue(it.data()?.signStatus?.fragments?.signStatusFragment) }
+        }
     }
 
     override fun chooseStartDate(id: String, date: LocalDate) {
-        disposables += offerRepository
-            .chooseStartDate(id, date)
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { "${response.errors()}" }
-                }
-                response.data()?.let { data ->
-                    offerRepository.writeStartDateToCache(data)
-                } ?: run {
-                    e { "Missing data when choosing start date" }
-                }
-            }, {
-
-            })
+        viewModelScope.launch {
+            val response = runCatching {
+                offerRepository.chooseStartDateAsync(id, date).await()
+            }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()?.data()?.let {
+                offerRepository.writeStartDateToCache(it)
+            } ?: run {
+                e { "Missing data when choosing start date" }
+            }
+        }
     }
 
     override fun removeStartDate(id: String) {
-        disposables += offerRepository
-            .removeStartDate(id)
-            .subscribe({ response ->
-                if (response.hasErrors()) {
-                    e { response.errors().toString() }
-                    return@subscribe
-                }
-                response.data()?.let { data ->
-                    offerRepository.removeStartDateFromCache(data)
-                }
-            }, { e(it) })
+        viewModelScope.launch {
+            val response = runCatching {
+                offerRepository.removeStartDateAsync(id).await()
+            }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            response.getOrNull()?.data()?.let { offerRepository.removeStartDateFromCache(it) }
+        }
     }
 }

@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.type.Feature
 import kotlinx.coroutines.launch
 
 abstract class LoggedInViewModel : ViewModel() {
-    // TODO: Data type
     abstract val data: LiveData<List<Feature>>
 }
 

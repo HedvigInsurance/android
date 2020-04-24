@@ -2,10 +2,10 @@ package com.hedvig.app.feature.referrals
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import e
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.launch
 
 class ReferralViewModel(
     private val referralRepository: ReferralRepository
@@ -13,25 +13,16 @@ class ReferralViewModel(
     ViewModel() {
 
     val redeemCodeStatus: MutableLiveData<RedeemReferralCodeMutation.Data> = MutableLiveData()
-    private val disposables = CompositeDisposable()
 
     fun redeemReferralCode(code: String) {
-        disposables += referralRepository
-            .redeemReferralCode(code)
-            .subscribe({
-                if (it.hasErrors()) {
-                    redeemCodeStatus.postValue(null)
-                } else {
-                    redeemCodeStatus.postValue(it.data())
-                }
-            }, { error ->
+        viewModelScope.launch {
+            val response = runCatching { referralRepository.redeemReferralCodeAsync(code).await() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
                 redeemCodeStatus.postValue(null)
-                e { "$error Failed to redeem code" }
-            })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
+                return@launch
+            }
+            response.getOrNull()?.let { redeemCodeStatus.postValue(it.data()) }
+        }
     }
 }

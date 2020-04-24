@@ -13,15 +13,7 @@
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
-    <dimen name="dashboard_icon">32dp</dimen>
-
     <dimen name="bottom_sheet_dialog_fragment_title_height">40dp</dimen>
-    <dimen name="bottom_sheet_corner_radius">20dp</dimen>
-    <dimen name="bottom_sheet_corner_radius_less">8dp</dimen>
-
-
-    <dimen name="dialog_width">280dp</dimen>
-    <dimen name="dialog_height">188dp</dimen>
 
     <dimen name="profile_sphere_side_length">160dp</dimen>
     <dimen name="sphere_text_min_text_size">16sp</dimen>
@@ -34,16 +26,12 @@
     <dimen name="claim_bullet_point_row_icon">24dp</dimen>
     <dimen name="common_claim_first_message_bottom_margin">60dp</dimen>
 
-    <dimen name="dashboard_need_setup_container_height">120dp</dimen>
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
     <dimen name="peril_icon">40dp</dimen>
     <dimen name="peril_width">72dp</dimen>
     <dimen name="peril_bottom_sheet_title_height">88dp</dimen>
     <dimen name="peril_title_extra_spacing">40dp</dimen>
     <dimen name="peril_bottom_extra_spacing">48dp</dimen>
-    <dimen name="insurance_pending_loading_animation_height">40dp</dimen>
-    <dimen name="insurance_pending_loading_animation_width">189dp</dimen>
-    <dimen name="insurance_pending_countdown_text">40sp</dimen>
     <dimen name="claims_fragment_image_height">180dp</dimen>
     <dimen name="common_claim_icon_size">32dp</dimen>
 
@@ -54,14 +42,11 @@
     <dimen name="hedvig_card_view_inset_bottom">12dp</dimen>
 
     <dimen name="peril_category_icon_size">32dp</dimen>
-    <dimen name="checkmark_size">16dp</dimen>
-    <dimen name="common_claims_card_elevation">8dp</dimen>
     <dimen name="bottom_navigation_height">60dp</dimen>
     <dimen name="common_claims_cell_height">90dp</dimen>
 
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="dialog_background_radius">20dp</dimen>
     <dimen name="chat_top_bar_height">50dp</dimen>
     <dimen name="chat_top_bar_button_size">32dp</dimen>
     <dimen name="hedvig_logo_margin_top">2dp</dimen>
@@ -83,17 +68,13 @@
     <dimen name="referral_progress_text_label_radius">8dp</dimen>
     <dimen name="referral_progress_text_padding">16dp</dimen>
     <dimen name="referral_progress_arrow_square_size">4dp</dimen>
-    <dimen name="sub_sphere_size">80dp</dimen>
-    <dimen name="sub_sphere_offset">180dp</dimen>
     <dimen name="referral_receiver_continue_button_height">48dp</dimen>
-    <dimen name="referral_receiver_continue_without_button_height">32dp</dimen>
     <dimen name="referral_receiver_continue_button_padding_edge">32dp</dimen>
     <dimen name="referral_receiver_continue_without_button_padding_edge">24dp</dimen>
     <dimen name="referral_background_edit_text_rounded_corner_radius">32dp</dimen>
     <dimen name="referral_background_edit_text_stroke_width">1dp</dimen>
     <dimen name="referral_current_discount_huge_text">48sp</dimen>
 
-    <dimen name="pager_indicator_active_size">8dp</dimen>
     <dimen name="pager_indicator_inactive_size">4dp</dimen>
     <dimen name="pager_indicator_hedvig_logo_size">16dp</dimen>
     <dimen name="pager_indicator_height">32dp</dimen>
@@ -103,7 +84,6 @@
     <dimen name="chat_attach_icon_size">40dp</dimen>
     <dimen name="chat_background_edit_text_rounded_corner_radius">8dp</dimen>
     <dimen name="chat_message_corner_radius">8dp</dimen>
-    <dimen name="chat_single_select_corner_radius">32dp</dimen>
     <dimen name="default_attach_file_height">280dp</dimen>
     <dimen name="is_keyboard_brake_point_height">120dp</dimen>
     <dimen name="nav_height_div">2dp</dimen>
@@ -112,28 +92,6 @@
     <dimen name="camera_and_misc_button_background_stroke_width">1dp</dimen>
     <dimen name="attach_file_rounded_corners_radius">20dp</dimen>
     <dimen name="audio_recorder_button_size">56dp</dimen>
-    <dimen name="terms_icon_size">100dp</dimen>
-    <dimen name="offer_bottom_padding">90dp</dimen>
-    <dimen name="price_bubble_size">180dp</dimen>
-    <dimen name="discount_bubble_size">107dp</dimen>
-    <dimen name="deductible_bubble_size">99dp</dimen>
-    <dimen name="deductibe_bubble_top_offset">160dp</dimen>
-    <dimen name="deductible_bubble_end_offset">67dp</dimen>
-    <dimen name="binding_period_bubble_size">134dp</dimen>
-    <dimen name="binding_period_bubble_top_offset">60dp</dimen>
-    <dimen name="binding_period_bubble_end_offset">177dp</dimen>
-    <dimen name="coverage_or_travel_bubble_size">137dp</dimen>
-    <dimen name="coverage_or_travel_bubble_top_offset">147dp</dimen>
-    <dimen name="coverage_or_travel_bubble_start_offset">133dp</dimen>
-    <dimen name="start_date_bubble_size">120dp</dimen>
-    <dimen name="start_date_bubble_start_offset">147dp</dimen>
-    <dimen name="number_insured_bubble_size">99dp</dimen>
-    <dimen name="button_shadow_offset">2dp</dimen>
-    <dimen name="toolbar_elevation">4dp</dimen>
-    <dimen name="chat_input_min_height">60dp</dimen>
-    <dimen name="offer_sign_button_off_screen_translation">100dp</dimen>
-    <dimen name="offer_switch_bullet_size">40dp</dimen>
-    <dimen name="image_upload_corner_radius">20dp</dimen>
     <dimen name="chat_text_input_vertical_padding">7dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
@@ -154,9 +112,6 @@
     <dimen name="auto_set_date_text_size">14dp</dimen>
 
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
-    <dimen name="button_border_white_padding">10dp</dimen>
-    <dimen name="button_border_white_corner_radius">120dp</dimen>
-    <dimen name="date_pick_button_height">60dp</dimen>
     <dimen name="base_margin_sesqui">12dp</dimen>
     <dimen name="top_bar_elevation">2dp</dimen>
     <dimen name="post_create_z_translation">7dp</dimen>
@@ -166,13 +121,8 @@
     <dimen name="key_gear_item_detail_photos_height">480dp</dimen>
     <dimen name="hedvig_edit_text_padding">14dp</dimen>
     <dimen name="item_detail_gradient_size">300dp</dimen>
-    <dimen name="market_item_flag_padding_end">20dp</dimen>
     <dimen name="offer_info_icon">30dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
-    <dimen name="offer_premium_continer_height">480dp</dimen>
-    <dimen name="offer_peril_icon_size">40dp</dimen>
-    <dimen name="offer_peril_card_height">74dp</dimen>
-    <dimen name="offer_peril_card_width">180dp</dimen>
     <dimen name="checkbox_size">24dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
 

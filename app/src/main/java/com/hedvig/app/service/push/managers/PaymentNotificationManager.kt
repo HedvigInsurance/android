@@ -37,7 +37,7 @@ object PaymentNotificationManager {
                 context,
                 PAYMENTS_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
             .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -75,7 +75,7 @@ object PaymentNotificationManager {
                 context,
                 PAYMENTS_CHANNEL_ID
             )
-            .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+            .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
             .setContentText(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -108,7 +108,7 @@ object PaymentNotificationManager {
     //             context,
     //             PAYMENTS_CHANNEL_ID
     //         )
-    //         .setSmallIcon(R.drawable.ic_hedvig_symbol_android)
+    //         .setSmallIcon(R.drawable.ic_hedvig_h)
     //         .setContentTitle("TODO Copy")
     //         .setContentText("TODO Copy")
     //         .setPriority(NotificationCompat.PRIORITY_MAX)
