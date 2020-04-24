@@ -5,10 +5,8 @@ import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
 import org.threeten.bp.LocalDate
@@ -18,7 +16,6 @@ class MockProfileViewModel : ProfileViewModel() {
         MutableLiveData<ProfileQuery.Data>()
     override val dirty = MutableLiveData<Boolean>()
     override val trustlyUrl = LiveEvent<String>()
-    override val payinStatus = MutableLiveData<PayinStatusQuery.Data>()
 
     init {
         data.postValue(
@@ -175,8 +172,6 @@ class MockProfileViewModel : ProfileViewModel() {
                 )
             )
         )
-
-        payinStatus.postValue(PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP))
     }
 
     override fun selectCashback(id: String) = Unit

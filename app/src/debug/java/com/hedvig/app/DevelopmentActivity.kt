@@ -18,7 +18,6 @@ import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
@@ -74,8 +73,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             )
         }
 
-        openWebOnboarding.setHapticClickListener {
-            startActivity(WebOnboardingActivity.newInstance(this))
+        openConnectPayment.setHapticClickListener {
+            startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
         openChatActivity.setHapticClickListener {
@@ -167,6 +166,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 marketingModule,
                 offerModule,
                 profileModule,
+                paymentModule,
                 keyGearModule,
                 adyenModule
             )
