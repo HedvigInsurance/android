@@ -167,6 +167,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 marketingModule,
                 offerModule,
                 profileModule,
+                paymentModule,
                 keyGearModule,
                 adyenModule
             )

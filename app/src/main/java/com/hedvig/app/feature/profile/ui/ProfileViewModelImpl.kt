@@ -2,7 +2,6 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -13,7 +12,6 @@ import com.hedvig.app.util.extensions.default
 import e
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -27,25 +25,14 @@ class ProfileViewModelImpl(
     override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
-    override val payinStatus = MutableLiveData<PayinStatusQuery.Data>()
 
     init {
         loadProfile()
-
-        viewModelScope.launch {
-            payinStatusRepository
-                .payinStatus()
-                .onEach { response ->
-                    response.data()?.let { payinStatus.postValue(it) }
-                }
-                .catch { e(it) }
-                .collect()
-        }
     }
 
     override fun refreshProfile() {
         viewModelScope.launch {
-            profileRepository.refreshProfile()
+            runCatching { profileRepository.refreshProfileAsync().await() }
         }
     }
 
@@ -100,12 +87,11 @@ class ProfileViewModelImpl(
 
     private fun loadProfile() {
         viewModelScope.launch {
-            val response = runCatching { profileRepository.fetchProfileAsync().await().data() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e { "$it Failed to load profile data" } }
-                return@launch
-            }
-            data.postValue(response.getOrNull())
+            profileRepository
+                .profile()
+                .onEach { data.postValue(it.data()) }
+                .catch { e(it) }
+                .launchIn(this)
         }
     }
 
