@@ -5,6 +5,7 @@
     android:id="@+id/loggedInRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     android:visibility="gone"
     tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
@@ -19,10 +20,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
+        android:id="@+id/toolbarTest"
         layout="@layout/hedvig_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/parent" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <Button
         android:id="@+id/referralButton"

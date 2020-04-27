@@ -4,7 +4,10 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toolbar
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -43,21 +46,26 @@ class ClaimsFragment : BaseTabFragment() {
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
     private val baseMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin) }
 
+    private var toolbarRoot: LinearLayout? = null
+    private var toolbar: Toolbar? = null
     override val layout = R.layout.fragment_claims
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
+        toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbar, navbar) { toolbar, navbar ->
+            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
                 )
             }
         }
+
+        setupScrollListener()
 
         claimsViewModel.apply {
             loadingSpinner.show()
@@ -86,6 +94,31 @@ class ClaimsFragment : BaseTabFragment() {
                 }
             }
         })
+    }
+
+    private fun setupScrollListener() {
+        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
+        claimsNestedScrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+            val dy = oldScrollY - scrollY
+            toolbar?.let { toolbar ->
+                val toolbarHeight = toolbar.height.toFloat()
+                val offset = claimsNestedScrollView.computeVerticalScrollOffset().toFloat()
+                val percentage = if (offset < toolbarHeight) {
+                    offset / toolbarHeight
+                } else {
+                    1f
+                }
+                if (dy < 0) {
+                    // Scroll up
+                    toolbarText?.offsetTopAndBottom(dy)
+                    toolbar.elevation = percentage * 10
+                } else {
+                    // scroll down
+                    toolbarText?.offsetTopAndBottom(dy)
+                    toolbar.elevation = percentage * 10
+                }
+            }
+        }
     }
 
     private fun bindData(commonClaimsData: CommonClaimQuery.Data) {

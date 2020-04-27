@@ -1,17 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbarRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_background_85">
+    android:orientation="vertical">
+
+    <Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/hedvigToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:src="@drawable/ic_chat" />
+        </FrameLayout>
+
+    </Toolbar>
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/toolbarText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
         android:maxLines="1"
         android:textAppearance="?textAppearanceHeadline4"
         tools:text="Title" />
 
-</Toolbar>
+</LinearLayout>

@@ -45,7 +45,6 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
 import kotlinx.android.synthetic.main.hedvig_toolbar.*
-import kotlinx.android.synthetic.main.hedvig_toolbar.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -69,20 +68,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
 
         loggedInRoot.useEdgeToEdge()
         loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
-        toolbarRoot.doOnApplyWindowInsets { view, insets, initialState ->
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
-
-        // tabContentContainer.doOnApplyWindowInsets { view, insets, initialState ->
-        //     view.updatePadding(
-        //         top = initialState.paddings.top + toolbarRoot.measuredHeight,
-        //         bottom = bottomTabs.measuredHeight + insets.systemWindowInsetBottom
-        //     )
-        // }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
@@ -96,7 +87,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 return@setOnNavigationItemSelectedListener false
             }
             tabContentContainer.setCurrentItem(id.ordinal, false)
-            setupAppBar(id)
+            setupToolBar(id)
             setupFloatingButton(id)
             true
         }
@@ -124,7 +115,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bindData()
-        setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+        setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
     }
 
     private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
@@ -231,7 +222,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         else -> R.menu.logged_in_menu
                     }
                     bottomTabs.inflateMenu(menuId)
-                    setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+                    setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
                 }
             }
         }
@@ -279,23 +270,23 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun setupAppBar(id: LoggedInTabs?) {
+    private fun setupToolBar(id: LoggedInTabs?) {
         invalidateOptionsMenu()
         when (id) {
             LoggedInTabs.DASHBOARD -> {
-                toolbarRoot.text.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
+                toolbarText.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
             }
             LoggedInTabs.CLAIMS -> {
-                toolbarRoot.text.text = getString(R.string.CLAIMS_TITLE)
+                toolbarText.text = getString(R.string.CLAIMS_TITLE)
             }
             LoggedInTabs.KEY_GEAR -> {
-                toolbarRoot.text.text = getString(R.string.KEY_GEAR_TAB_TITLE)
+                toolbarText.text = getString(R.string.KEY_GEAR_TAB_TITLE)
             }
             LoggedInTabs.REFERRALS -> {
-                toolbarRoot.text.text = getString(R.string.PROFILE_REFERRAL_TITLE)
+                toolbarText.text = getString(R.string.PROFILE_REFERRAL_TITLE)
             }
             LoggedInTabs.PROFILE -> {
-                toolbarRoot.text.text = getString(R.string.PROFILE_TITLE)
+                toolbarText.text = getString(R.string.PROFILE_TITLE)
             }
         }
         if (id != null) {
