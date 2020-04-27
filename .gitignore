@@ -22,3 +22,7 @@ mapping.txt
 adyen.xml
 
 open_source_licenses.html
+
+# lokalise credentials
+lokalise.properties
+app/src/main/res/**/strings.xml
