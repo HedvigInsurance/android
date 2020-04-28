@@ -13,7 +13,7 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.onChange
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
@@ -21,6 +21,7 @@ import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.android.synthetic.main.activity_my_info.*
+import kotlinx.android.synthetic.main.hedvig_toolbar.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -34,8 +35,18 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupLargeTitle(R.string.PROFILE_MY_INFO_TITLE, R.drawable.ic_back) {
+        setupToolbar(R.string.PROFILE_MY_INFO_TITLE, R.drawable.ic_back) {
             onBackPressed()
+        }
+
+        setSupportActionBar(hedvigToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarText.text = getString(R.string.PROFILE_MY_INFO_TITLE)
+        hedvigToolbar.apply {
+            navigationIcon = getDrawable(R.drawable.ic_back)
+            setNavigationOnClickListener {
+                onBackPressed()
+            }
         }
 
         sphere.drawable.compatSetTint(compatColor(R.color.dark_purple))

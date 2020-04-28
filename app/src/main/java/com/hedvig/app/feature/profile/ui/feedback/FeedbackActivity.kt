@@ -6,15 +6,19 @@ import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.ratings.openPlayStore
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_feedback.*
 
-class FeedbackActivity : BaseActivity() {
+class FeedbackActivity : BaseActivity(R.layout.activity_feedback) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_feedback)
 
-        setupLargeTitle(R.string.PROFILE_FEEDBACK_TITLE, R.drawable.ic_back) {
+        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
+
+        setupToolbar(R.string.PROFILE_FEEDBACK_TITLE, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 

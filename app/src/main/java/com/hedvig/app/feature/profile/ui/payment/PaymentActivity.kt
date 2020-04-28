@@ -18,12 +18,14 @@ import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.campaign_information_section.*
@@ -49,8 +51,10 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
         }
+        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupLargeTitle(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_back) {
+        setupToolbar(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 
@@ -74,7 +78,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 .newInstance()
                 .show(supportFragmentManager, RefetchingRedeemCodeDialog.TAG)
         }
-
         loadData()
     }
 

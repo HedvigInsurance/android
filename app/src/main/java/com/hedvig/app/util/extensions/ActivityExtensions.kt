@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.DisplayMetrics
+import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -18,8 +19,10 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.view.setupLargeTitle
+import com.hedvig.app.util.extensions.view.setupToolbar
 import e
 import kotlinx.android.synthetic.main.app_bar.*
+import kotlinx.android.synthetic.main.hedvig_toolbar.*
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -30,6 +33,23 @@ val Activity.displayMetrics: DisplayMetrics
 
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
+
+fun AppCompatActivity.setupToolbar(
+    @StringRes title: Int,
+    @DrawableRes icon: Int? = null,
+    usingEdgeToEdge: Boolean = false,
+    rootLayout: View? = null,
+    backAction: (() -> Unit)?
+) {
+    toolbarRoot.setupToolbar(
+        title = getString(title),
+        activity = this,
+        usingEdgeToEdge = usingEdgeToEdge,
+        icon = icon,
+        rootLayout = rootLayout,
+        backAction = backAction
+    )
+}
 
 fun AppCompatActivity.setupLargeTitle(
     @StringRes title: Int,

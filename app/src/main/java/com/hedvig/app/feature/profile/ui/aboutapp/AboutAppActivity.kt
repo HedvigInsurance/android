@@ -10,25 +10,27 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.interpolateTextKey
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_about_app.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class AboutAppActivity : BaseActivity() {
+class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
 
     private val profileViewModel: ProfileViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about_app)
 
-        setupLargeTitle(
-            R.string.PROFILE_ABOUT_APP_TITLE,
-            R.drawable.ic_back
-        ) {
+
+        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
+
+        setupToolbar(R.string.PROFILE_ABOUT_APP_TITLE, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 
