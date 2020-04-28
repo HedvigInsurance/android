@@ -79,6 +79,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
+        setSupportActionBar(hedvigToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarText.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
+
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
             val id = LoggedInTabs.fromId(menuItem.itemId)
@@ -271,22 +275,25 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     private fun setupToolBar(id: LoggedInTabs?) {
-        invalidateOptionsMenu()
-        when (id) {
-            LoggedInTabs.DASHBOARD -> {
-                toolbarText.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
-            }
-            LoggedInTabs.CLAIMS -> {
-                toolbarText.text = getString(R.string.CLAIMS_TITLE)
-            }
-            LoggedInTabs.KEY_GEAR -> {
-                toolbarText.text = getString(R.string.KEY_GEAR_TAB_TITLE)
-            }
-            LoggedInTabs.REFERRALS -> {
-                toolbarText.text = getString(R.string.PROFILE_REFERRAL_TITLE)
-            }
-            LoggedInTabs.PROFILE -> {
-                toolbarText.text = getString(R.string.PROFILE_TITLE)
+        if (lastLoggedInTab != id) {
+            hedvigToolbar.elevation = 0f
+            invalidateOptionsMenu()
+            when (id) {
+                LoggedInTabs.DASHBOARD -> {
+                    toolbarText.text = getString(R.string.DASHBOARD_SCREEN_TITLE)
+                }
+                LoggedInTabs.CLAIMS -> {
+                    toolbarText.text = getString(R.string.CLAIMS_TITLE)
+                }
+                LoggedInTabs.KEY_GEAR -> {
+                    toolbarText.text = getString(R.string.KEY_GEAR_TAB_TITLE)
+                }
+                LoggedInTabs.REFERRALS -> {
+                    toolbarText.text = getString(R.string.PROFILE_REFERRAL_TITLE)
+                }
+                LoggedInTabs.PROFILE -> {
+                    toolbarText.text = getString(R.string.PROFILE_TITLE)
+                }
             }
         }
         if (id != null) {

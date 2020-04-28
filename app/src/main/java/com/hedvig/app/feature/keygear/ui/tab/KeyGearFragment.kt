@@ -2,9 +2,11 @@ package com.hedvig.app.feature.keygear.ui.tab
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toolbar
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
@@ -38,13 +40,18 @@ class KeyGearFragment : BaseTabFragment() {
 
     private var hasSentAutoAddedItems = false
 
+    private var toolbarRoot: LinearLayout? = null
+    private var toolbar: androidx.appcompat.widget.Toolbar? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
+        toolbar = activity?.findViewById(R.id.hedvigToolbar)
+
         keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
-            val toolbar = activity?.findViewById<Toolbar>(R.id.toolbarRoot)
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbar, navbar) { toolbar, navbar ->
+            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
@@ -87,6 +94,32 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
+        setupScrollListener()
+    }
+
+    private fun setupScrollListener() {
+        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
+        keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+            val dy = oldScrollY - scrollY
+            toolbar?.let { toolbar ->
+                val toolbarHeight = toolbar.height.toFloat()
+                val offset = keyGearRoot.computeVerticalScrollOffset().toFloat()
+                val percentage = if (offset < toolbarHeight) {
+                    offset / toolbarHeight
+                } else {
+                    1f
+                }
+                if (dy < 0) {
+                    // Scroll up
+                    toolbarText?.offsetTopAndBottom(dy)
+                    toolbar.elevation = percentage * 10
+                } else {
+                    // scroll down
+                    toolbarText?.offsetTopAndBottom(dy)
+                    toolbar.elevation = percentage * 10
+                }
+            }
+        }
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {
@@ -105,6 +138,11 @@ class KeyGearFragment : BaseTabFragment() {
             description.remove()
             items.updateMargin(top = BASE_MARGIN_TRIPLE)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        keyGearRoot.scrollY = 0
     }
 
     companion object {

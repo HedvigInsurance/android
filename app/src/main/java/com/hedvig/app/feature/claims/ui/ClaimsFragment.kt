@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
@@ -47,13 +46,15 @@ class ClaimsFragment : BaseTabFragment() {
     private val baseMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin) }
 
     private var toolbarRoot: LinearLayout? = null
-    private var toolbar: Toolbar? = null
+    private var toolbar: androidx.appcompat.widget.Toolbar? = null
+    private var toolbarText: TextView? = null
     override val layout = R.layout.fragment_claims
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
+        toolbarText = activity?.findViewById(R.id.toolbarText)
 
         claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
@@ -97,7 +98,6 @@ class ClaimsFragment : BaseTabFragment() {
     }
 
     private fun setupScrollListener() {
-        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
         claimsNestedScrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             val dy = oldScrollY - scrollY
             toolbar?.let { toolbar ->

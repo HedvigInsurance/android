@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -24,15 +25,19 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val tracker: DashboardTracker by inject()
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
-    private var toolbar: LinearLayout? = null
+
+    private var toolbarRoot: LinearLayout? = null
+    private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
+        toolbar = activity?.findViewById(R.id.hedvigToolbar)
+
         root.doOnApplyWindowInsets { view, insets, initialState ->
-            toolbar = activity?.findViewById(R.id.toolbarTest)
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbar, navbar) { toolbar, navbar ->
+            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
@@ -49,27 +54,29 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     private fun setupScrollListener() {
         val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
-        root.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            val dy = oldScrollY - scrollY
-            toolbar?.let { toolbar ->
-                val toolbarHeight = toolbar.height.toFloat()
-                val offset = root.computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < toolbarHeight) {
-                    offset / toolbarHeight
-                } else {
-                    1f
-                }
-                if (dy < 0) {
-                    // Scroll up
-                    toolbarText?.offsetTopAndBottom(dy)
-                    toolbar.elevation = percentage * 10
-                } else {
-                    // scroll down
-                    toolbarText?.offsetTopAndBottom(dy)
-                    toolbar.elevation = percentage * 10
+        root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                toolbar?.let { toolbar ->
+                    val toolbarHeight = toolbar.height.toFloat()
+                    val offset = root.computeVerticalScrollOffset().toFloat()
+                    val percentage = if (offset < toolbarHeight) {
+                        offset / toolbarHeight
+                    } else {
+                        1f
+                    }
+                    if (dy < 0) {
+                        // Scroll up
+                        toolbarText?.offsetTopAndBottom(-dy)
+                        toolbar.elevation = percentage * 10
+                    } else {
+                        // scroll down
+                        toolbarText?.offsetTopAndBottom(-dy)
+                        toolbar.elevation = percentage * 10
+                    }
                 }
             }
-        }
+        })
     }
 
     private fun bind(data: Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>) {
@@ -118,6 +125,11 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         (root.adapter as? DashboardAdapter)?.items = infoBoxes + contracts + upsells
+    }
+
+    override fun onResume() {
+        super.onResume()
+        root.scrollToPosition(0)
     }
 
     companion object {
