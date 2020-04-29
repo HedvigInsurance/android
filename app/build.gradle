@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.apollographql.apollo'
+apply plugin: 'com.likandr.lokalise'
 
 apollo {
     generateKotlinModels = true
@@ -33,7 +34,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '4.0.0'
+        versionName '4.0.1'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -230,10 +231,11 @@ textkeys {
     excludedLanguages = rootProject.ext.excludedLanguages
 }
 
-// TODO: Remove this task once everything is merged to develop
-task updateSchema(type: Exec) {
-    group = 'GraphQL'
-    description = 'Fetches the latest schema from our dev GraphQL-server'
+def lokaliseProperties = new Properties()
+lokaliseProperties.load(new FileInputStream(rootProject.file("lokalise.properties")))
 
-    commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
+lokalise {
+    id lokaliseProperties['id']
+    token lokaliseProperties['token']
 }
+

@@ -60,6 +60,7 @@ class HedvigApplication : Application() {
                     marketingModule,
                     offerModule,
                     profileModule,
+                    paymentModule,
                     keyGearModule,
                     languageAndMarketModule,
                     adyenModule,

@@ -9,7 +9,6 @@ import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
-import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
@@ -40,7 +39,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.format.DateTimeFormatter
 
 class PaymentActivity : BaseActivity(R.layout.activity_payment) {
-    private val profileViewModel: ProfileViewModel by viewModel()
+    private val model: PaymentViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
 
@@ -82,7 +81,13 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     }
 
     private fun loadData() {
-        profileViewModel.data.observe(lifecycleOwner = this) { profileData ->
+        model.data.observe(lifecycleOwner = this) { data ->
+            if (data == null) {
+                return@observe
+            }
+
+            val (profileData, payinStatusData) = data
+
             loadingSpinner.remove()
             resetViews()
 
@@ -93,12 +98,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 bindPaymentDetails(pd)
                 bindPaymentHistory(pd.chargeHistory)
             }
+            payinStatusData?.let { bindDirectDebitStatus(it) }
         }
-        profileViewModel
-            .payinStatus
-            .observe(this) { data ->
-                data?.let { bindDirectDebitStatus(it) }
-            }
     }
 
     private fun bindDirectDebitStatus(data: PayinStatusQuery.Data) {
@@ -273,6 +274,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun bindPaymentDetails(pd: ProfileQuery.Data) {
         pd.bankAccount?.let { bankAccount ->
+            changeBankAccount.text = getString(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
             bankAccountContainer.show()
             accountNumber.text =
                 "${bankAccount.fragments.bankAccountFragment.bankName} ${bankAccount.fragments.bankAccountFragment.descriptor}"
@@ -280,6 +282,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         } ?: toggleBankInfo(false)
 
         pd.activePaymentMethods?.let { activePaymentMethods ->
+            changeBankAccount.text = getString(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
             adyenActivePaymentMethodContainer.show()
             cardType.text =
                 activePaymentMethods.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand

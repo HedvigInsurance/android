@@ -17,18 +17,19 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
-    private lateinit var profileQuery: ProfileQuery
+    private val profileQuery = ProfileQuery()
 
-    fun fetchProfileAsync(): Deferred<Response<ProfileQuery.Data>> {
-        profileQuery = ProfileQuery()
+    fun profile() = apolloClientWrapper
+        .apolloClient
+        .query(profileQuery)
+        .watcher()
+        .toFlow()
 
-        return apolloClientWrapper.apolloClient.query(profileQuery).toDeferred()
-    }
-
-    suspend fun refreshProfile() {
-        apolloClientWrapper.apolloClient.clearNormalizedCache()
-        fetchProfileAsync().await()
-    }
+    fun refreshProfileAsync() = apolloClientWrapper
+        .apolloClient
+        .query(profileQuery)
+        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .toDeferred()
 
     fun updateEmailAsync(input: String): Deferred<Response<UpdateEmailMutation.Data>> {
         val updateEmailMutation = UpdateEmailMutation(input)
