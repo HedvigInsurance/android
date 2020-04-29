@@ -11,6 +11,9 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
+import android.view.View
+import android.view.WindowManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -34,7 +37,11 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +64,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private var systemNavHeight = 0
     private var navHeightDiff = 0
     private var isKeyboardBreakPoint = 0
+    private var initialChatPadding = 0
 
     private var isKeyboardShown = false
     private var preventOpenAttachFile = false
@@ -79,9 +87,31 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        chatRoot.useEdgeToEdge()
+        chatRoot.setEdgeToEdgeSystemUiFlags(true)
+
+        input.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
+
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        messages.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                top = initialState.paddings.top + getViewHeight(toolbar),
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
+            )
+            initialChatPadding =
+                initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
+            initializeInput()
+        }
+
         initializeToolbarButtons()
         initializeMessages()
-        initializeInput()
         initializeKeyboardVisibilityHandler()
         observeData()
     }
@@ -95,6 +125,14 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     override fun onPause() {
         storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
         super.onPause()
+    }
+
+    private fun getViewHeight(view: View): Int {
+        view.measure(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        return view.measuredHeight
     }
 
     private fun initializeInput() {
@@ -138,7 +176,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
             },
-            tracker = tracker
+            tracker = tracker,
+            chatRecyclerView = messages,
+            chatRecyclerViewInitialPadding = initialChatPadding
         )
     }
 

@@ -9,13 +9,14 @@
     tools:context=".feature.chat.ui.ChatActivity">
 
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chat_top_bar_height"
-        android:background="?colorSurface"
+        android:layout_height="wrap_content"
+        android:background="@color/color_background_85"
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingVertical="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -82,10 +83,11 @@
         android:id="@+id/messages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingBottom="@dimen/base_margin"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_double"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/input"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_weight="1"
         app:reverseLayout="true"
         tools:listitem="@layout/chat_message_hedvig" />

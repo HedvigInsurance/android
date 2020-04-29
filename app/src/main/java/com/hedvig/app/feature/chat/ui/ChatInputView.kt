@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.Audio
@@ -31,6 +33,7 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.chat_input_view.view.*
 
 class ChatInputView : FrameLayout {
@@ -48,6 +51,8 @@ class ChatInputView : FrameLayout {
     private lateinit var singleSelectLink: ((String) -> Unit)
     private lateinit var openAttachFile: (() -> Unit)
     private lateinit var openSendGif: (() -> Unit)
+    private var chatRecyclerViewInitialPadding = 0
+    private lateinit var chatRecyclerView: RecyclerView
 
     private var currentlyDisplaying: ChatInputType = NullInput
 
@@ -102,6 +107,17 @@ class ChatInputView : FrameLayout {
         hideAllViews()
     }
 
+    fun measureTextInput(): Int {
+        this.textInputContainer.show()
+        this.textInputContainer.measure(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        val height = this.textInputContainer.measuredHeight
+        this.textInputContainer.remove()
+        return height
+    }
+
     private fun hideAllViews() {
         textInputContainer.remove()
         singleSelectContainer.remove()
@@ -117,7 +133,9 @@ class ChatInputView : FrameLayout {
         requestAudioPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
         tracker: ChatTracker,
-        openSendGif: () -> Unit
+        openSendGif: () -> Unit,
+        chatRecyclerView: RecyclerView,
+        chatRecyclerViewInitialPadding: Int
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -126,6 +144,8 @@ class ChatInputView : FrameLayout {
         audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.tracker = tracker
         this.openSendGif = openSendGif
+        this.chatRecyclerView = chatRecyclerView
+        this.chatRecyclerViewInitialPadding = chatRecyclerViewInitialPadding
     }
 
     fun clearInput() {
@@ -137,7 +157,10 @@ class ChatInputView : FrameLayout {
     private fun fadeOutCurrent(fadeIn: () -> Unit) {
         when (currentlyDisplaying) {
             is TextInput -> textInputContainer.fadeOut(fadeIn)
-            is SingleSelect -> singleSelectContainer.fadeOut(fadeIn)
+            is SingleSelect -> {
+                singleSelectContainer.fadeOut(fadeIn)
+                chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
+            }
             is ParagraphInput -> {
                 paragraphView.fadeOut(endAction = {
                     paragraphView.avdStop()
@@ -229,10 +252,12 @@ class ChatInputView : FrameLayout {
                 SingleSelectChoiceType.SELECTION -> sendSingleSelect(value)
                 SingleSelectChoiceType.LINK -> singleSelectLink(value)
             }
-
         }
 
         singleSelectContainer.addView(singleSelectButton)
+
+        singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + singleSelectContainer.measuredHeight - measureTextInput())
     }
 
     private fun disableSingleButtons() {
