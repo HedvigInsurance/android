@@ -9,13 +9,13 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import e
 import kotlinx.android.synthetic.main.referrals_successful_invite_actvity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ReferralsSuccessfulInviteActivity : BaseActivity(R.layout.referrals_successful_invite_actvity) {
+class ReferralsSuccessfulInviteActivity :
+    BaseActivity(R.layout.referrals_successful_invite_actvity) {
 
     private val profileViewModel: ProfileViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
@@ -32,20 +32,19 @@ class ReferralsSuccessfulInviteActivity : BaseActivity(R.layout.referrals_succes
 
     private fun showSuccess() {
         referralSuccessImage.show()
-        referralSuccessTitle.text = interpolateTextKey(
-            getString(R.string.REFERRAL_SUCCESS_HEADLINE),
-            "USER" to intent.getStringExtra(EXTRA_REFERRAL_NAME)
+
+        referralSuccessTitle.text = getString(
+            R.string.REFERRAL_SUCCESS_HEADLINE,
+            intent.getStringExtra(EXTRA_REFERRAL_NAME)
         )
         referralSuccessTitle.show()
+       
         val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()
         if (incentive == null) {
             e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not provided to ${this.javaClass}" }
             return
         }
-        referralSuccessBody.text = interpolateTextKey(
-            getString(R.string.REFERRAL_SUCCESS_BODY),
-            "REFERRAL_VALUE" to incentive
-        )
+        referralSuccessBody.text = getString(R.string.REFERRAL_SUCCESS_BODY, incentive)
         referralSuccessBody.show()
     }
 
@@ -66,11 +65,13 @@ class ReferralsSuccessfulInviteActivity : BaseActivity(R.layout.referrals_succes
         const val EXTRA_REFERRAL_NAME = "extra_referral_name"
         const val EXTRA_REFERRAL_INCENTIVE = "extra_referral_incentive"
 
-        fun newInstance(context: Context, name: String, incentive: String) = newInstance(context).apply {
-            putExtra(EXTRA_REFERRAL_NAME, name)
-            putExtra(EXTRA_REFERRAL_INCENTIVE, incentive)
-        }
+        fun newInstance(context: Context, name: String, incentive: String) =
+            newInstance(context).apply {
+                putExtra(EXTRA_REFERRAL_NAME, name)
+                putExtra(EXTRA_REFERRAL_INCENTIVE, incentive)
+            }
 
-        fun newInstance(context: Context) = Intent(context, ReferralsSuccessfulInviteActivity::class.java)
+        fun newInstance(context: Context) =
+            Intent(context, ReferralsSuccessfulInviteActivity::class.java)
     }
 }

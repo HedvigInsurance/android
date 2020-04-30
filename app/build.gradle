@@ -39,9 +39,6 @@ android {
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        buildConfigField("String", "DEFAULT_LANGUAGE", "\"${rootProject.ext.defaultLanguage}\"")
-        buildConfigField("String[]", "EXCLUDED_LANGUAGES", "{\"${rootProject.ext.excludedLanguages.join("\",\"")}\"}")
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -221,14 +218,6 @@ dependencies {
 apply plugin: 'com.google.gms.google-services'
 googleServices {
     disableVersionCheck = true
-}
-
-apply plugin: 'com.hedvig.textkeys'
-
-textkeys {
-    graphqlEndpoint = 'https://graphql.dev.hedvigit.com/graphql'
-    defaultLanguageCode = rootProject.ext.defaultLanguage
-    excludedLanguages = rootProject.ext.excludedLanguages
 }
 
 def lokaliseProperties = new Properties()

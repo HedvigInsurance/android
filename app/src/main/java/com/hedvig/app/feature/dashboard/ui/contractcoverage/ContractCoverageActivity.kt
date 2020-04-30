@@ -13,7 +13,6 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.svg.buildRequestBuilder
 import e
 import kotlinx.android.synthetic.main.activity_contract_coverage_detail.*
@@ -50,9 +49,9 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
     private fun bind(data: DashboardQuery.Contract) {
         loadingSpinner.remove()
         scrollView.show()
-        perilSectionTitle.text = interpolateTextKey(
-            getString(R.string.CONTRACT_COVERAGE_CONTRACT_TYPE),
-            "CONTRACT_TYPE" to data.typeOfContract.displayNameDefinite(this)
+        perilSectionTitle.text = getString(
+            R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+            data.typeOfContract.displayNameDefinite(this)
         )
         (perils.adapter as? PerilsAdapter)?.items = data.perils.map { it.fragments.perilFragment }
         (insurableLimits.adapter as? InsurableLimitsAdapter)?.items =

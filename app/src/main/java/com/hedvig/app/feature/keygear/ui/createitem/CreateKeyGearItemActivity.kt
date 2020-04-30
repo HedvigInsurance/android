@@ -48,7 +48,6 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
@@ -203,10 +202,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 scrollView.remove()
 
                 createdLabel.show()
-                createdLabel.text = interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS),
-                    "ITEM_TYPE" to getString(category.label)
-                )
+                createdLabel.text =
+                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
 
                 createdIllustration.show()
                 createdIllustration.setImageResource(category.illustration)

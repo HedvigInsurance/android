@@ -10,9 +10,9 @@ import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import kotlinx.android.synthetic.main.activity_key_gear_valuation_info.*
+import java.util.Locale
 
 class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_valuation_info) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,21 +25,20 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
             setPercentage(vd.ratio)
             if (vd.valuationType == ValuationType.FIXED) {
                 body.setMarkdownText(
-                    interpolateTextKey(
-                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY),
-                        "ITEM_TYPE" to getString(c.label).toLowerCase(),
-                        "VALUATION_PERCENTAGE" to vd.ratio,
-                        "PURCHASE_PRICE" to vd.purchasePrice.toBigDecimal().toInt(),
-                        "VALUATION_PRICE" to vd.valuationAmount?.toBigDecimal()?.toInt()
+                    getString(
+                        R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
+                        getString(c.label).toLowerCase(Locale.getDefault()),
+                        vd.ratio,
+                        vd.purchasePrice.toBigDecimal().toInt(),
+                        vd.valuationAmount?.toBigDecimal()?.toInt()
                     )
                 )
             } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
-                //TODO
                 body.setMarkdownText(
-                    interpolateTextKey(
-                        getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY),
-                        "ITEM_TYPE" to getString(c.label),
-                        "VALUATION_PERCENTAGE" to vd.ratio
+                    getString(
+                        R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
+                        getString(c.label),
+                        vd.ratio
                     )
                 )
             }

@@ -1,16 +1,15 @@
 package com.hedvig.app.feature.profile.ui.charity
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import com.hedvig.app.R
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.cashback_option.view.*
 
 class CharityAdapter(
@@ -34,10 +33,8 @@ class CharityAdapter(
         holder.title.text = item.name
         holder.paragraph.text = item.paragraph
 
-        holder.button.text = interpolateTextKey(
-            holder.itemView.resources.getString(R.string.PROFILE_CHARITY_SELECT_BUTTON),
-            "CHARITY" to item.name
-        )
+        holder.button.text =
+            holder.itemView.resources.getString(R.string.PROFILE_CHARITY_SELECT_BUTTON, item.name)
         holder.button.setHapticClickListener {
             item.id?.let { id ->
                 clickListener(id)
