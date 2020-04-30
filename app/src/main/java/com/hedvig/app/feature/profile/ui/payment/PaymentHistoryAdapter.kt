@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.payment_history_item.view.*
 import kotlinx.android.synthetic.main.payout_history_header.view.*
 
@@ -51,11 +50,10 @@ class PaymentHistoryAdapter(
             is ViewHolder.ItemViewHolder -> {
                 (items[position] as? ChargeWrapper.Item)?.let { item ->
                     holder.date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
-                    holder.amount.text =
-                        interpolateTextKey(
-                            holder.amount.context.getString(R.string.PAYMENT_HISTORY_AMOUNT),
-                            "AMOUNT" to item.charge.amount.amount.toBigDecimal().toInt()
-                        )
+                    holder.amount.text = holder.amount.context.getString(
+                        R.string.PAYMENT_HISTORY_AMOUNT,
+                        item.charge.amount.amount.toBigDecimal().toInt()
+                    )
                 }
             }
         }

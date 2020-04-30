@@ -28,7 +28,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import com.hedvig.app.util.interpolateTextKey
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.android.synthetic.main.activity_receipt.*
@@ -179,11 +178,9 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         Snackbar
             .make(
                 root,
-                interpolateTextKey(
-                    getString(R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR),
-                    "FILENAME" to (
-                        filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)
-                        )
+                getString(
+                    R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR,
+                    filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)
                 ),
                 Snackbar.LENGTH_LONG
             )

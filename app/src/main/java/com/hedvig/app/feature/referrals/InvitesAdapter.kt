@@ -19,7 +19,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.getLightness
 import com.hedvig.app.util.hashColor
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.referral_header.view.*
 import kotlinx.android.synthetic.main.referral_invite_row.view.*
 import kotlinx.android.synthetic.main.referral_small_header_row.view.*
@@ -80,7 +79,8 @@ class InvitesAdapter(
         when (viewHolder.itemViewType) {
             HEADER -> (viewHolder as? HeaderViewHolder)?.apply {
                 val incentive =
-                    data.campaign.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toInt()
+                    data.campaign.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()
+                        ?.toInt()
                         ?: return@apply
                 if (monthlyCost / incentive <= PROGRESS_TANK_MAX_SEGMENTS) {
                     progressTankView.initialize(
@@ -104,14 +104,16 @@ class InvitesAdapter(
                     } else {
                         R.string.REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT
                     }
-                    referralProgressHighPremiumDiscount.text = interpolateTextKey(
-                        referralProgressHighPremiumDiscount.resources.getString(highPremiumStringKey),
-                        "DISCOUNT_VALUE" to calculateDiscount().toString()
-                    )
-                    referralProgressHighPremiumCurrentPrice.text = interpolateTextKey(
-                        referralProgressHighPremiumDiscount.resources.getString(R.string.REFERRAL_PROGRESS_HIGH_PREMIUM_DESCRIPTION),
-                        "MONTHLY_COST" to monthlyCost.toString()
-                    )
+                    referralProgressHighPremiumDiscount.text =
+                        referralProgressHighPremiumDiscount.resources.getString(
+                            highPremiumStringKey,
+                            calculateDiscount().toString()
+                        )
+                    referralProgressHighPremiumCurrentPrice.text =
+                        referralProgressHighPremiumDiscount.resources.getString(
+                            R.string.REFERRAL_PROGRESS_HIGH_PREMIUM_DESCRIPTION,
+                            monthlyCost
+                        )
                     progressTankView.remove()
                 }
                 val campaignCode = data.campaign.code
@@ -121,13 +123,10 @@ class InvitesAdapter(
                     code.context.makeToast(R.string.REFERRAL_INVITE_CODE_COPIED_MESSAGE)
                     true
                 }
-                subtitle.text = interpolateTextKey(
-                    subtitle.resources.getString(R.string.REFERRAL_PROGRESS_HEADLINE),
-                    "NUMBER_OF_FRIENDS_LEFT" to calculateInvitesLeftToFree().toString()
-                )
-                explainer.text = interpolateTextKey(
-                    explainer.resources.getString(R.string.REFERRAL_PROGRESS_BODY),
-                    "REFERRAL_VALUE" to incentive.toString()
+                subtitle.text = subtitle.resources.getString(R.string.REFERRAL_PROGRESS_HEADLINE)
+                explainer.text = explainer.resources.getString(
+                    R.string.REFERRAL_PROGRESS_BODY,
+                    incentive
                 )
 
                 if (shouldShowEmptyState()) {
@@ -165,7 +164,7 @@ class InvitesAdapter(
                     invite.asAcceptedReferral1?.let { acceptedReferralInvite ->
                         bindNotInitiated(
                             this, acceptedReferralInvite.quantity
-                            ?: 0
+                                ?: 0
                         )
                     }
                     invite.asTerminatedReferral1?.let { terminatedReferralInvite ->
@@ -197,7 +196,7 @@ class InvitesAdapter(
                 referredBy?.asAcceptedReferral?.let { acceptedReferral ->
                     bindNotInitiated(
                         this, acceptedReferral.quantity
-                        ?: 0
+                            ?: 0
                     )
                 }
             }
@@ -229,10 +228,8 @@ class InvitesAdapter(
                     R.color.light_gray
                 )
             )
-            discount.text = interpolateTextKey(
-                discount.resources.getString(R.string.REFERRAL_INVITE_ACTIVE_VALUE),
-                "REFERRAL_VALUE" to discountString
-            )
+            discount.text =
+                discount.resources.getString(R.string.REFERRAL_INVITE_ACTIVE_VALUE, discountString)
             statusIcon.setImageDrawable(statusIcon.context.compatDrawable(R.drawable.ic_filled_checkmark))
         }
 
@@ -252,10 +249,7 @@ class InvitesAdapter(
         statusText.text = if (quantity <= 1) {
             statusText.resources.getString(R.string.REFERRAL_INVITE_OPENEDSTATE)
         } else {
-            interpolateTextKey(
-                statusText.resources.getString(R.string.REFERRAL_INVITE_OPENEDSTATE_MULTIPLE),
-                "NUMBER_OF_INVITES" to quantity
-            )
+            statusText.resources.getString(R.string.REFERRAL_INVITE_OPENEDSTATE_MULTIPLE, quantity)
         }
         statusIcon.setImageDrawable(statusIcon.context.compatDrawable(R.drawable.ic_clock))
     }
@@ -306,7 +300,8 @@ class InvitesAdapter(
     private fun calculateInvitesLeftToFree(): Int {
         val amount = monthlyCost - calculateDiscount()
         val incentive =
-            data.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()?.toDouble()
+            data.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()
+                ?.toDouble()
                 ?: 0.0
         return ceil((amount / incentive)).toInt()
     }

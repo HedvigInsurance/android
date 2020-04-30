@@ -23,7 +23,6 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -93,9 +92,10 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupPayment(profileData: ProfileQuery.Data) {
-        paymentRow.description = interpolateTextKey(
-            resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
+        paymentRow.description = resources.getString(
+            R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                ?.toInt()
         )
         paymentRow.setHapticClickListener {
             startActivity(Intent(requireContext(), PaymentActivity::class.java))

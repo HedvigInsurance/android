@@ -26,7 +26,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.interpolateTextKey
 import e
 import kotlinx.android.synthetic.main.chat_message_file_upload.view.*
 import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
@@ -332,10 +331,7 @@ class ChatAdapter(
             val asUri = Uri.parse(url)
             val extension = getExtension(asUri)
 
-            label.text = interpolateTextKey(
-                label.resources.getString(R.string.CHAT_FILE_UPLOADED),
-                "EXTENSION" to extension
-            )
+            label.text = label.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
             label.setHapticClickListener {
                 tracker.openUploadedFile()
                 label.context.openUri(Uri.parse(url))

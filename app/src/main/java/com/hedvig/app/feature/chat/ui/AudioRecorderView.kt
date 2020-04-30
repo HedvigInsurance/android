@@ -14,7 +14,6 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -190,10 +189,7 @@ class AudioRecorderView : LinearLayout {
         elapsedTime = Observable.interval(0, 1, TimeUnit.SECONDS, Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ time ->
-                recordingLabel.text = interpolateTextKey(
-                    resources.getString(textKey),
-                    "SECONDS" to time
-                )
+                recordingLabel.text = resources.getString(textKey, time)
             }, { e(it) })
     }
 

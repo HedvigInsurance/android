@@ -37,7 +37,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
@@ -245,11 +244,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.apply {
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        interpolateTextKey(
-                            resources.getString(R.string.REFERRAL_SMS_MESSAGE),
-                            "REFERRAL_VALUE" to incentive.toBigDecimal().toInt().toString(),
-                            "REFERRAL_CODE" to code,
-                            "REFERRAL_LINK" to BuildConfig.REFERRALS_LANDING_BASE_URL + code
+                        resources.getString(
+                            R.string.REFERRAL_SMS_MESSAGE,
+                            incentive.toBigDecimal().toInt().toString(),
+                            BuildConfig.REFERRALS_LANDING_BASE_URL + code
                         )
                     )
                     type = "text/plain"
