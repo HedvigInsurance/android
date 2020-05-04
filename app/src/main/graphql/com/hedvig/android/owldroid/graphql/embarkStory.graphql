@@ -1,0 +1,11 @@
+query EmbarkStory($name: String!) {
+  embarkStory(name: $name) {
+    startPassage
+    passages {
+      id
+      messages {
+        text
+      }
+    }
+  }
+}
