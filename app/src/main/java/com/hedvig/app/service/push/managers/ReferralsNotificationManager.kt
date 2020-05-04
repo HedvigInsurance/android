@@ -10,7 +10,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.service.push.PushNotificationService
 import com.hedvig.app.service.push.setupNotificationChannel
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 
 object ReferralsNotificationManager {
@@ -45,13 +44,11 @@ object ReferralsNotificationManager {
             .setContentIntent(pendingIntent)
 
         val contentText = referralName?.let {
-            interpolateTextKey(
-                context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME),
-                "NAME" to it
+            context.resources.getString(
+                R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
+                it
             )
-        } ?: run {
-            context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
-        }
+        } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
         notificationBuilder.setContentText(contentText)
 
         NotificationManagerCompat

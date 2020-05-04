@@ -9,7 +9,6 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.referral_more_info_bottom_sheet.*
 
 class ReferralBottomSheet : RoundedBottomSheetDialogFragment() {
@@ -23,9 +22,9 @@ class ReferralBottomSheet : RoundedBottomSheetDialogFragment() {
         dialog.setContentView(view)
         arguments?.let { args ->
             dialog.referralMoreInfoParagraphOne.setMarkdownText(
-                interpolateTextKey(
-                    getString(R.string.REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH),
-                    "REFERRAL_VALUE" to args.getString(REFERRAL_VALUE)
+                getString(
+                    R.string.REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH,
+                    args.getString(REFERRAL_VALUE)
                 )
             )
             dialog.referralMoreInfoButton.setHapticClickListener {

@@ -23,7 +23,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import com.hedvig.app.util.interpolateTextKey
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_payment.*
@@ -135,30 +134,28 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private fun bindFailedPaymentsCard(data: ProfileQuery.Data) {
         if (data.balance.failedCharges != 0) {
             failedPaymentsCard.show()
-            failedPaymentsParagraph.text = interpolateTextKey(
-                getString(R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE),
-                "MONTHS_LATE" to data.balance.failedCharges,
-                "NEXT_PAYMENT_DATE" to data.nextChargeDate?.format(DATE_FORMAT)
+            failedPaymentsParagraph.text = getString(
+                R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+                data.balance.failedCharges,
+                data.nextChargeDate?.format(DATE_FORMAT)
             )
         }
     }
 
     private fun bindNextPaymentCard(data: ProfileQuery.Data) {
-        nextPaymentAmount.text =
-            interpolateTextKey(
-                getString(R.string.PAYMENTS_CURRENT_PREMIUM),
-                "CURRENT_PREMIUM" to data.chargeEstimation.charge.amount.toBigDecimal().toInt()
-            )
+        nextPaymentAmount.text = getString(
+            R.string.PAYMENTS_CURRENT_PREMIUM,
+            data.chargeEstimation.charge.amount.toBigDecimal().toInt()
+        )
 
         val discount = data.chargeEstimation.discount.amount.toBigDecimal().toInt()
         if (discount > 0 && data.balance.failedCharges == 0) {
             nextPaymentGross.show()
-            nextPaymentGross.text =
-                interpolateTextKey(
-                    getString(R.string.PAYMENTS_FULL_PREMIUM),
-                    "FULL_PREMIUM" to data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()
-                        ?.toInt()
-                )
+            nextPaymentGross.text = getString(
+                R.string.PAYMENTS_FULL_PREMIUM,
+                data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()
+                    ?.toInt()
+            )
         }
 
         if (isActive(data.contracts)) {
@@ -189,15 +186,15 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
         incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
             discountSphereText.text = if (percentageDiscountMonthsIncentive.pdmQuantity > 1) {
-                interpolateTextKey(
-                    "{percentage}% rabatt i {months} månader",
-                    "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
-                    "months" to percentageDiscountMonthsIncentive.pdmQuantity
+                getString(
+                    R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_MANY,
+                    percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
+                    percentageDiscountMonthsIncentive.pdmQuantity
                 )
             } else {
-                interpolateTextKey(
-                    "{percentage}% rabatt i en månad",
-                    "percentage" to percentageDiscountMonthsIncentive.percentageDiscount.toInt()
+                getString(
+                    R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_ONE,
+                    percentageDiscountMonthsIncentive.percentageDiscount.toInt()
                 )
             }
             discountSphere.show()
@@ -231,10 +228,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             campaignInformationLabelOne.text = getString(R.string.PAYMENTS_DISCOUNT_ZERO)
             monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()?.toString()
                 ?.let { amount ->
-                    campaignInformationFieldOne.text = interpolateTextKey(
-                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT),
-                        "DISCOUNT" to amount
-                    )
+                    campaignInformationFieldOne.text =
+                        getString(R.string.PAYMENTS_DISCOUNT_AMOUNT, amount)
                 }
             campaignInformationContainer.show()
             campaignInformationSeparator.show()
@@ -248,9 +243,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
         paymentHistory.getOrNull(0)?.let { lastMonthsCharge ->
             lastChargeDate.text = lastMonthsCharge.date.format(DATE_FORMAT)
-            lastChargeAmount.text = interpolateTextKey(
-                getString(R.string.PAYMENT_HISTORY_AMOUNT),
-                "AMOUNT" to lastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            lastChargeAmount.text = getString(
+                R.string.PAYMENT_HISTORY_AMOUNT,
+                lastMonthsCharge.amount.amount.toBigDecimal().toInt()
             )
             lastChargeDate.show()
             lastChargeAmount.show()
@@ -258,9 +253,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
         paymentHistory.getOrNull(1)?.let { prevLastMonthsCharge ->
             prevLastChargeDate.text = prevLastMonthsCharge.date.format(DATE_FORMAT)
-            prevLastChargeAmount.text = interpolateTextKey(
-                getString(R.string.PAYMENT_HISTORY_AMOUNT),
-                "AMOUNT" to prevLastMonthsCharge.amount.amount.toBigDecimal().toInt()
+            prevLastChargeAmount.text = getString(
+                R.string.PAYMENT_HISTORY_AMOUNT,
+                prevLastMonthsCharge.amount.amount.toBigDecimal().toInt()
             )
 
             prevLastChargeDate.show()

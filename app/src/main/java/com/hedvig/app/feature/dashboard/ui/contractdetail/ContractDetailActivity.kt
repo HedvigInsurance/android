@@ -16,7 +16,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import com.hedvig.app.util.interpolateTextKey
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -117,19 +116,13 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     ) {
         homeInformationContainer.show()
         address.text = addressData.street
-        squareMeters.text = interpolateTextKey(
-            getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT),
-            "SQUARE_METERS" to sqm
-        )
+        squareMeters.text = getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, sqm)
         type.text = typeTranslated
     }
 
     private fun bindCoinsured(amount: Int) {
         coinsuredContainer.show()
-        coinsuredAmount.text = interpolateTextKey(
-            getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT),
-            "COINSURED" to amount
-        )
+        coinsuredAmount.text = getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
     }
 
     companion object {

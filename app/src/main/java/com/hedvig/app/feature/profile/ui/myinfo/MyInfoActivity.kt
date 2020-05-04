@@ -17,7 +17,6 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.android.synthetic.main.activity_my_info.*
@@ -114,10 +113,10 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
             contactDetailsContainer.show()
 
             profileData?.let { data ->
-                sphereText.text = interpolateTextKey(
-                    resources.getString(R.string.PROFILE_MY_INFO_NAME_SPHERE),
-                    "FIRST_NAME" to data.member.firstName,
-                    "LAST_NAME" to data.member.lastName
+                sphereText.text = resources.getString(
+                    R.string.PROFILE_MY_INFO_NAME_SPHERE,
+                    data.member.firstName,
+                    data.member.lastName
                 )
                 setupEmailInput(data.member.email ?: "")
                 setupPhoneNumberInput(data.member.phoneNumber ?: "")

@@ -25,7 +25,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -134,9 +133,9 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupPayment(profileData: ProfileQuery.Data) {
-        paymentRow.description = interpolateTextKey(
-            resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+        paymentRow.description = resources.getString(
+            R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
                 ?.toInt()
         )
         paymentRow.setHapticClickListener {

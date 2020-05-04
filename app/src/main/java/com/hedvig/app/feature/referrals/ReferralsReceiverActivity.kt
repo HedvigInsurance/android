@@ -9,7 +9,6 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.interpolateTextKey
 import e
 import kotlinx.android.synthetic.main.referrals_receiver_activity.*
 import org.koin.android.ext.android.inject
@@ -52,14 +51,8 @@ class ReferralsReceiverActivity : BaseActivity() {
             e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not passed to ${this.javaClass}" }
             return
         }
-        referralsReceiverTitle.text = interpolateTextKey(
-            getString(R.string.REFERRAL_STARTSCREEN_HEADLINE),
-            "REFERRAL_VALUE" to incentive
-        )
-        referralsReceiverBody.text = interpolateTextKey(
-            getString(R.string.REFERRAL_STARTSCREEN_BODY),
-            "REFERRAL_VALUE" to incentive
-        )
+        referralsReceiverTitle.text = getString(R.string.REFERRAL_STARTSCREEN_HEADLINE, incentive)
+        referralsReceiverBody.text = getString(R.string.REFERRAL_STARTSCREEN_BODY)
     }
 
     private fun startChat() {
