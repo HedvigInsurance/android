@@ -9,8 +9,10 @@ import android.util.DisplayMetrics
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import com.hedvig.app.R
@@ -22,7 +24,6 @@ import com.hedvig.app.util.extensions.view.setupLargeTitle
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
 import kotlinx.android.synthetic.main.app_bar.*
-import kotlinx.android.synthetic.main.hedvig_toolbar.*
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -35,14 +36,14 @@ val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
 
 fun AppCompatActivity.setupToolbar(
-    @StringRes title: Int,
+    @IdRes toolbar: Int,
     @DrawableRes icon: Int? = null,
     usingEdgeToEdge: Boolean = false,
     rootLayout: View? = null,
     backAction: (() -> Unit)?
 ) {
-    toolbarRoot.setupToolbar(
-        title = getString(title),
+
+    this.findViewById<Toolbar>(toolbar).setupToolbar(
         activity = this,
         usingEdgeToEdge = usingEdgeToEdge,
         icon = icon,

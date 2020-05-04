@@ -3,8 +3,6 @@ package com.hedvig.app.feature.profile.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -41,18 +39,16 @@ class ProfileFragment : BaseTabFragment() {
 
     override val layout = R.layout.fragment_profile
 
-    private var toolbarRoot: LinearLayout? = null
     private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
+            safeLet(toolbar, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
@@ -65,7 +61,6 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupScrollListener() {
-        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
         profileRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             val dy = oldScrollY - scrollY
             toolbar?.let { toolbar ->
@@ -78,11 +73,9 @@ class ProfileFragment : BaseTabFragment() {
                 }
                 if (dy < 0) {
                     // Scroll up
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 } else {
                     // scroll down
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 }
             }

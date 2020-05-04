@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -23,7 +24,6 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.app_bar.view.*
-import kotlinx.android.synthetic.main.hedvig_toolbar.view.*
 
 fun View.show(): View {
     if (visibility != View.VISIBLE) {
@@ -140,31 +140,29 @@ fun View.setScaleXY(scale: Float) {
     scaleY = scale
 }
 
-fun View.setupToolbar(
-    title: String,
+fun Toolbar.setupToolbar(
     activity: AppCompatActivity,
     usingEdgeToEdge: Boolean = false,
     @DrawableRes icon: Int? = null,
     rootLayout: View?,
     backAction: (() -> Unit)? = null
 ) {
-    activity.setSupportActionBar(hedvigToolbar)
+    activity.setSupportActionBar(this)
     activity.supportActionBar?.setDisplayShowTitleEnabled(false)
-    toolbarText.text = title
     icon?.let { icon ->
-        hedvigToolbar.navigationIcon = hedvigToolbar.context.getDrawable(icon)
+        this.navigationIcon = this.context.getDrawable(icon)
     }
     backAction?.let {
-        hedvigToolbar.setNavigationOnClickListener { it() }
+        this.setNavigationOnClickListener { it() }
     }
     if (usingEdgeToEdge) {
-        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        this.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
         rootLayout?.let { root ->
             root.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(
-                    top = initialState.paddings.top + toolbarRoot.measuredHeight,
+                    top = initialState.paddings.top + this.measuredHeight,
                     bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
                 )
             }
@@ -172,7 +170,27 @@ fun View.setupToolbar(
             if (root is NestedScrollView) {
                 root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
                     val dy = oldScrollY - scrollY
-                    hedvigToolbar?.let { toolbar ->
+                    val toolbarHeight = this.height.toFloat()
+                    val offset = root.computeVerticalScrollOffset().toFloat()
+                    val percentage = if (offset < toolbarHeight) {
+                        offset / toolbarHeight
+                    } else {
+                        1f
+                    }
+                    if (dy < 0) {
+                        // Scroll up
+                        this.elevation = percentage * 10
+                    } else {
+                        // scroll down
+                        this.elevation = percentage * 10
+                    }
+
+                }
+            } else if (root is RecyclerView) {
+                val toolbar = this
+                root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
                         val toolbarHeight = toolbar.height.toFloat()
                         val offset = root.computeVerticalScrollOffset().toFloat()
                         val percentage = if (offset < toolbarHeight) {
@@ -182,36 +200,10 @@ fun View.setupToolbar(
                         }
                         if (dy < 0) {
                             // Scroll up
-                            toolbarText?.offsetTopAndBottom(dy)
                             toolbar.elevation = percentage * 10
                         } else {
                             // scroll down
-                            toolbarText?.offsetTopAndBottom(dy)
                             toolbar.elevation = percentage * 10
-                        }
-                    }
-                }
-            } else if (root is RecyclerView) {
-                root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        toolbar?.let { toolbar ->
-                            val toolbarHeight = toolbar.height.toFloat()
-                            val offset = root.computeVerticalScrollOffset().toFloat()
-                            val percentage = if (offset < toolbarHeight) {
-                                offset / toolbarHeight
-                            } else {
-                                1f
-                            }
-                            if (dy < 0) {
-                                // Scroll up
-                                toolbarText?.offsetTopAndBottom(-dy)
-                                toolbar.elevation = percentage * 10
-                            } else {
-                                // scroll down
-                                toolbarText?.offsetTopAndBottom(-dy)
-                                toolbar.elevation = percentage * 10
-                            }
                         }
                     }
                 })

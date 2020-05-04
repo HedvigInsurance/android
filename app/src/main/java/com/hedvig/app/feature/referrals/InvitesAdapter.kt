@@ -80,7 +80,8 @@ class InvitesAdapter(
         when (viewHolder.itemViewType) {
             HEADER -> (viewHolder as? HeaderViewHolder)?.apply {
                 val incentive =
-                    data.campaign.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()?.toInt()
+                    data.campaign.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()
+                        ?.toInt()
                         ?: return@apply
                 if (monthlyCost / incentive <= PROGRESS_TANK_MAX_SEGMENTS) {
                     progressTankView.initialize(
@@ -165,7 +166,7 @@ class InvitesAdapter(
                     invite.asAcceptedReferral1?.let { acceptedReferralInvite ->
                         bindNotInitiated(
                             this, acceptedReferralInvite.quantity
-                            ?: 0
+                                ?: 0
                         )
                     }
                     invite.asTerminatedReferral1?.let { terminatedReferralInvite ->
@@ -197,7 +198,7 @@ class InvitesAdapter(
                 referredBy?.asAcceptedReferral?.let { acceptedReferral ->
                     bindNotInitiated(
                         this, acceptedReferral.quantity
-                        ?: 0
+                            ?: 0
                     )
                 }
             }
@@ -306,7 +307,8 @@ class InvitesAdapter(
     private fun calculateInvitesLeftToFree(): Int {
         val amount = monthlyCost - calculateDiscount()
         val incentive =
-            data.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()?.toDouble()
+            data.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()
+                ?.toDouble()
                 ?: 0.0
         return ceil((amount / incentive)).toInt()
     }

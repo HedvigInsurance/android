@@ -5,7 +5,6 @@
     android:id="@+id/loggedInRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
     android:visibility="gone"
     tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
@@ -13,19 +12,21 @@
     <com.hedvig.app.feature.loggedin.ui.TabPager
         android:id="@+id/tabContentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/hedvigToolbar" />
 
-    <include
-        android:id="@+id/toolbarTest"
-        layout="@layout/hedvig_toolbar"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/hedvigToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <Button
         android:id="@+id/referralButton"

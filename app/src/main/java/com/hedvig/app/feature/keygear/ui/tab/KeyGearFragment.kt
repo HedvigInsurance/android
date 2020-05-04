@@ -2,8 +2,6 @@ package com.hedvig.app.feature.keygear.ui.tab
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.core.widget.NestedScrollView
@@ -40,18 +38,16 @@ class KeyGearFragment : BaseTabFragment() {
 
     private var hasSentAutoAddedItems = false
 
-    private var toolbarRoot: LinearLayout? = null
     private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
+            safeLet(toolbar, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
@@ -98,7 +94,6 @@ class KeyGearFragment : BaseTabFragment() {
     }
 
     private fun setupScrollListener() {
-        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
         keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             val dy = oldScrollY - scrollY
             toolbar?.let { toolbar ->
@@ -111,11 +106,9 @@ class KeyGearFragment : BaseTabFragment() {
                 }
                 if (dy < 0) {
                     // Scroll up
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 } else {
                     // scroll down
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 }
             }

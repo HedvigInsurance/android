@@ -22,7 +22,6 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_coverage_detail.*
-import kotlinx.android.synthetic.main.hedvig_toolbar.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverage_detail) {

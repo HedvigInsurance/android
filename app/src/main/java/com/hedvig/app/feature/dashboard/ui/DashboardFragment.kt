@@ -2,11 +2,8 @@ package com.hedvig.app.feature.dashboard.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -14,9 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -26,24 +21,22 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val tracker: DashboardTracker by inject()
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
 
-    private var toolbarRoot: LinearLayout? = null
     private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        root.doOnApplyWindowInsets { view, insets, initialState ->
-            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
-                view.updatePadding(
-                    top = initialState.paddings.top + toolbar.measuredHeight,
-                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-                )
-            }
-        }
+        // root.doOnApplyWindowInsets { view, insets, initialState ->
+        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+        //     safeLet(toolbar, navbar) { toolbar, navbar ->
+        //         view.updatePadding(
+        //             top = initialState.paddings.top + toolbar.measuredHeight,
+        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+        //         )
+        //     }
+        // }
         setupScrollListener()
         root.adapter = DashboardAdapter(parentFragmentManager)
 
@@ -52,8 +45,16 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
     }
 
+    private fun getViewHeight(view: View): Int {
+        view.show()
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        return view.measuredHeight
+    }
+
     private fun setupScrollListener() {
-        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
         root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -67,11 +68,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                     }
                     if (dy < 0) {
                         // Scroll up
-                        toolbarText?.offsetTopAndBottom(-dy)
                         toolbar.elevation = percentage * 10
                     } else {
                         // scroll down
-                        toolbarText?.offsetTopAndBottom(-dy)
                         toolbar.elevation = percentage * 10
                     }
                 }
@@ -124,7 +123,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             }
         }
 
-        (root.adapter as? DashboardAdapter)?.items = infoBoxes + contracts + upsells
+        (root.adapter as? DashboardAdapter)?.items =
+            listOf(DashboardModel.Header("Dashboard")) + infoBoxes + contracts + upsells
     }
 
     override fun onResume() {

@@ -1,27 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/toolbarRoot"
+
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/hedvigToolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/hedvigToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:colorBackground"
-        android:clipChildren="false"
-        android:clipToPadding="false" />
-
-    <TextView
-        android:id="@+id/toolbarText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:maxLines="1"
-        android:textAppearance="?textAppearanceHeadline4"
-        tools:text="Title" />
-
-</LinearLayout>
+    android:background="?android:colorBackground"
+    android:clipChildren="false"
+    android:clipToPadding="false" />

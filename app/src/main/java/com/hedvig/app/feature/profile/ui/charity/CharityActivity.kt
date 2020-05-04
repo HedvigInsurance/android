@@ -28,7 +28,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupToolbar(R.string.PROFILE_CHARITY_TITLE, R.drawable.ic_back) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back) {
             onBackPressed()
         }
 

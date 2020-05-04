@@ -2,8 +2,6 @@ package com.hedvig.app.feature.referrals
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
@@ -27,7 +25,6 @@ class ReferralsFragment : BaseTabFragment() {
 
     override val layout = R.layout.fragment_new_referral
 
-    private var toolbarRoot: LinearLayout? = null
     private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onResume() {
@@ -40,12 +37,11 @@ class ReferralsFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         invites.doOnApplyWindowInsets { view, insets, initialState ->
             val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
+            safeLet(toolbar, navbar) { toolbar, navbar ->
                 view.updatePadding(
                     top = initialState.paddings.top + toolbar.measuredHeight,
                     bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
@@ -73,7 +69,6 @@ class ReferralsFragment : BaseTabFragment() {
     }
 
     private fun setupScrollListener() {
-        val toolbarText = activity?.findViewById<TextView>(R.id.toolbarText)
         invites.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -87,11 +82,9 @@ class ReferralsFragment : BaseTabFragment() {
                     }
                     if (dy < 0) {
                         // Scroll up
-                        toolbarText?.offsetTopAndBottom(-dy)
                         toolbar.elevation = percentage * 10
                     } else {
                         // scroll down
-                        toolbarText?.offsetTopAndBottom(-dy)
                         toolbar.elevation = percentage * 10
                     }
                 }

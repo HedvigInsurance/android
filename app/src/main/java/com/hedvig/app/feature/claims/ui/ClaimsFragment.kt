@@ -4,12 +4,9 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -27,10 +24,7 @@ import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.svg.buildRequestBuilder
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import i
 import kotlinx.android.synthetic.main.fragment_claims.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -45,26 +39,22 @@ class ClaimsFragment : BaseTabFragment() {
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
     private val baseMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin) }
 
-    private var toolbarRoot: LinearLayout? = null
     private var toolbar: androidx.appcompat.widget.Toolbar? = null
-    private var toolbarText: TextView? = null
     override val layout = R.layout.fragment_claims
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbarRoot = activity?.findViewById(R.id.toolbarTest)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
-        toolbarText = activity?.findViewById(R.id.toolbarText)
 
-        claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbarRoot, navbar) { toolbar, navbar ->
-                view.updatePadding(
-                    top = initialState.paddings.top + toolbar.measuredHeight,
-                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-                )
-            }
-        }
+        // claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
+        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+        //     safeLet(toolbar, navbar) { toolbar, navbar ->
+        //         view.updatePadding(
+        //             top = initialState.paddings.top + toolbar.measuredHeight,
+        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+        //         )
+        //     }
+        // }
 
         setupScrollListener()
 
@@ -110,11 +100,9 @@ class ClaimsFragment : BaseTabFragment() {
                 }
                 if (dy < 0) {
                     // Scroll up
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 } else {
                     // scroll down
-                    toolbarText?.offsetTopAndBottom(dy)
                     toolbar.elevation = percentage * 10
                 }
             }

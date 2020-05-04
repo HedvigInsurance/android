@@ -53,7 +53,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.string.PROFILE_PAYMENT_TITLE, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 

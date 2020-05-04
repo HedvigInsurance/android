@@ -15,15 +15,28 @@
 
         <include layout="@layout/loading_spinner" />
 
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:text="@string/PROFILE_TITLE"
+            android:textAppearance="?textAppearanceHeadline4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--TODO fix titles for all activities-->
         <LinearLayout
             android:id="@id/rowContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin_double"
             android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
             tools:visibility="visible">
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow

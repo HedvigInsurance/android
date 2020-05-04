@@ -21,7 +21,6 @@ import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.android.synthetic.main.activity_my_info.*
-import kotlinx.android.synthetic.main.hedvig_toolbar.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -35,14 +34,13 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupToolbar(R.string.PROFILE_MY_INFO_TITLE, R.drawable.ic_back) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back) {
             onBackPressed()
         }
 
-        setSupportActionBar(hedvigToolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbarText.text = getString(R.string.PROFILE_MY_INFO_TITLE)
-        hedvigToolbar.apply {
+        toolbar.apply {
             navigationIcon = getDrawable(R.drawable.ic_back)
             setNavigationOnClickListener {
                 onBackPressed()

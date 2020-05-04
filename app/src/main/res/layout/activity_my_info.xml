@@ -8,7 +8,11 @@
     android:orientation="vertical"
     tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity">
 
-    <include layout="@layout/hedvig_toolbar" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
