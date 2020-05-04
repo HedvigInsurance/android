@@ -8,7 +8,6 @@ import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.agoda.kakao.text.KTextView
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import junit.framework.Assert.assertTrue
 import okhttp3.mockwebserver.MockResponse
@@ -16,14 +15,9 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class EmbarkActivityTest : KoinComponent {
-
-    private val apolloClientWrapper: ApolloClientWrapper by inject()
-
+class EmbarkActivityTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
