@@ -64,6 +64,13 @@ class EmbarkActivityTest {
                     }
                 }
             }
+            selectActions {
+                firstChild<SelectAction> {
+                    text {
+                        hasText("Test select action")
+                    }
+                }
+            }
         }
     }
 
@@ -76,9 +83,15 @@ class EmbarkActivityTest {
     class EmbarkScreen : Screen<EmbarkScreen>() {
         val spinner = KView { withId(R.id.loadingSpinner) }
         val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
+
+        val selectActions = KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
     }
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
+        val text = KTextView { withMatcher(parent) }
+    }
+
+    class SelectAction(parent: Matcher<View>) : KRecyclerItem<SelectAction>(parent) {
         val text = KTextView { withMatcher(parent) }
     }
 }

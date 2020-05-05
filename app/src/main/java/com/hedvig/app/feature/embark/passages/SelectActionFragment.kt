@@ -19,8 +19,12 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             return
         }
 
-        messages.adapter = MessageAdapter()
-        (messages.adapter as MessageAdapter).items = data.messages
+        messages.adapter = MessageAdapter().apply {
+            items = data.messages
+        }
+        actions.adapter = SelectActionAdapter().apply {
+            items = data.actions
+        }
     }
 
     companion object {
