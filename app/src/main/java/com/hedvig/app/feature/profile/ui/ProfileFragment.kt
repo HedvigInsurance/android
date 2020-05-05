@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.NestedScrollView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -24,9 +23,6 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -45,15 +41,15 @@ class ProfileFragment : BaseTabFragment() {
 
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
-            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbar, navbar) { toolbar, navbar ->
-                view.updatePadding(
-                    top = initialState.paddings.top + toolbar.measuredHeight,
-                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-                )
-            }
-        }
+        // profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
+        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+        //     safeLet(toolbar, navbar) { toolbar, navbar ->
+        //         view.updatePadding(
+        //             top = initialState.paddings.top + toolbar.measuredHeight,
+        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+        //         )
+        //     }
+        // }
 
         populateData()
         setupScrollListener()

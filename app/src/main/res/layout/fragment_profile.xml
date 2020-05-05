@@ -5,7 +5,9 @@
     android:id="@+id/profileRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
     android:fillViewport="true"
+    android:paddingBottom="@dimen/logged_in_tabs_bottom_padding"
     tools:context="com.hedvig.app.feature.profile.ui.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,8 +21,8 @@
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_double"
             android:text="@string/PROFILE_TITLE"
             android:textAppearance="?textAppearanceHeadline4"
             app:layout_constraintStart_toStartOf="parent"

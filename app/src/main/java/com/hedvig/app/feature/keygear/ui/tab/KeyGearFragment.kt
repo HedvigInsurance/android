@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.core.widget.NestedScrollView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
@@ -21,10 +20,7 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.transitionPair
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -45,15 +41,15 @@ class KeyGearFragment : BaseTabFragment() {
 
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
-            val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-            safeLet(toolbar, navbar) { toolbar, navbar ->
-                view.updatePadding(
-                    top = initialState.paddings.top + toolbar.measuredHeight,
-                    bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-                )
-            }
-        }
+        // keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
+        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
+        //     safeLet(toolbar, navbar) { toolbar, navbar ->
+        //         view.updatePadding(
+        //             top = initialState.paddings.top + toolbar.measuredHeight,
+        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
+        //         )
+        //     }
+        // }
 
         items.adapter =
             KeyGearItemsAdapter(

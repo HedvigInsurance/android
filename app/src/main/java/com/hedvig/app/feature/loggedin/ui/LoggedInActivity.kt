@@ -73,11 +73,11 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
-        tabContentContainer.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-            )
-        }
+        // tabContentContainer.doOnApplyWindowInsets { view, insets, initialState ->
+        //     view.updatePadding(
+        //         bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + bottomTabs.measuredHeight
+        //     )
+        // }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
