@@ -5,11 +5,15 @@ import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
+import com.hedvig.app.feature.embark.EmbarkViewModel
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_embark_select_action.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
+    private val model: EmbarkViewModel by sharedViewModel()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val data = requireArguments().getParcelable<SelectActionPassage>(DATA)
@@ -22,7 +26,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         messages.adapter = MessageAdapter().apply {
             items = data.messages
         }
-        actions.adapter = SelectActionAdapter().apply {
+        actions.adapter = SelectActionAdapter { link ->
+            model.navigateToPassage(link)
+        }.apply {
             items = data.actions
         }
     }
