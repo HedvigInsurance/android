@@ -73,18 +73,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
-        // tabContentContainer.doOnApplyWindowInsets { view, insets, initialState ->
-        //     view.updatePadding(
-        //         bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + bottomTabs.measuredHeight
-        //     )
-        // }
-
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
         setSupportActionBar(hedvigToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
@@ -133,6 +128,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
+            LoggedInTabs.KEY_GEAR,
             LoggedInTabs.CLAIMS -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
@@ -142,8 +138,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
             }
-            LoggedInTabs.KEY_GEAR -> {
-                // TODO
+            else -> {
+                menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
         }
         return super.onCreateOptionsMenu(menu)

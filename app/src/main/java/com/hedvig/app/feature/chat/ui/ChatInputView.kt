@@ -76,6 +76,7 @@ class ChatInputView : FrameLayout {
         inputText.sendClickListener = {
             tracker.sendChatMessage()
             performTextMessageSend()
+            dismissKeyboard()
         }
         inputText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {

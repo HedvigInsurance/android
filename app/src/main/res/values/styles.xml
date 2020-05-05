@@ -10,6 +10,10 @@
         <item name="android:navigationBarColor">@color/color_background_85</item>
     </style>
 
+    <style name="Hedvig.Theme.Chat">
+        <item name="android:navigationBarColor">@color/color_background_85</item>
+    </style>
+
     <style name="Hedvig.Theme.KeyGear.ItemDetail">
         <item name="colorControlNormal">@color/white</item>
     </style>
