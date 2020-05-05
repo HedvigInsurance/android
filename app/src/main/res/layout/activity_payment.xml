@@ -21,6 +21,14 @@
 
             <include layout="@layout/loading_spinner" />
 
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:text="@string/PROFILE_PAYMENT_TITLE"
+                android:textAppearance="?textAppearanceHeadline4" />
+
             <include layout="@layout/failed_payments_card" />
 
             <include layout="@layout/next_payment_card" />

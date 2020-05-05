@@ -46,16 +46,6 @@ class ClaimsFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        // claimsNestedScrollView.doOnApplyWindowInsets { view, insets, initialState ->
-        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-        //     safeLet(toolbar, navbar) { toolbar, navbar ->
-        //         view.updatePadding(
-        //             top = initialState.paddings.top + toolbar.measuredHeight,
-        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-        //         )
-        //     }
-        // }
-
         setupScrollListener()
 
         claimsViewModel.apply {

@@ -17,6 +17,14 @@
             android:layout_marginBottom="?attr/actionBarSize"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:text="@string/PROFILE_ABOUT_APP_TITLE"
+                android:textAppearance="?textAppearanceHeadline4" />
+
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@+id/licenseAttributions"
                 android:layout_width="match_parent"

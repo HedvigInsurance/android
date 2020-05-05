@@ -11,7 +11,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -27,31 +26,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
-
-        // root.doOnApplyWindowInsets { view, insets, initialState ->
-        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-        //     safeLet(toolbar, navbar) { toolbar, navbar ->
-        //         view.updatePadding(
-        //             top = initialState.paddings.top + toolbar.measuredHeight,
-        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-        //         )
-        //     }
-        // }
         setupScrollListener()
         root.adapter = DashboardAdapter(parentFragmentManager)
 
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
         }
-    }
-
-    private fun getViewHeight(view: View): Int {
-        view.show()
-        view.measure(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        return view.measuredHeight
     }
 
     private fun setupScrollListener() {

@@ -27,6 +27,16 @@
                 layout="@layout/loading_spinner"
                 tools:visibility="gone" />
 
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:text="@string/PROFILE_CHARITY_TITLE"
+                android:textAppearance="?textAppearanceHeadline4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <LinearLayout
                 android:id="@id/selectedCharityContainer"
                 android:layout_width="match_parent"
@@ -36,7 +46,7 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
                 tools:visibility="gone">
 
                 <ImageView

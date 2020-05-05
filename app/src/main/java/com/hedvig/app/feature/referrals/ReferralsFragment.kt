@@ -36,16 +36,6 @@ class ReferralsFragment : BaseTabFragment() {
 
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        // invites.doOnApplyWindowInsets { view, insets, initialState ->
-        //     val navbar = activity?.findViewById<BottomNavigationView>(R.id.bottomTabs)
-        //     safeLet(toolbar, navbar) { toolbar, navbar ->
-        //         view.updatePadding(
-        //             top = initialState.paddings.top + toolbar.measuredHeight,
-        //             bottom = initialState.paddings.bottom + navbar.measuredHeight + insets.systemWindowInsetBottom
-        //         )
-        //     }
-        // }
-
         invites.addItemDecoration(
             BelowRecyclerViewBottomPaddingItemDecoration(
                 resources.getDimensionPixelSize(R.dimen.referral_extra_bottom_space)

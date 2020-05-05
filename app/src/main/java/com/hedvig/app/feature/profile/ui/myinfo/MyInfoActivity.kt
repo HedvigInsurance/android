@@ -21,7 +21,6 @@ import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.android.synthetic.main.activity_my_info.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
