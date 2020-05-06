@@ -32,6 +32,9 @@ import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageView
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.embark.EmbarkRepository
+import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -88,6 +91,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
@@ -97,6 +101,7 @@ import java.util.Locale
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
+    single { androidApplication() as HedvigApplication }
     single { FirebaseAnalytics.getInstance(get()) }
     single { AppEventsLogger.newLogger(get()) }
     single {
@@ -155,7 +160,7 @@ val applicationModule = module {
         builder.build()
     }
     single {
-        ApolloClientWrapper(get(), get(), get())
+        ApolloClientWrapper(get(), get(), get(), get())
     }
 }
 
@@ -228,6 +233,10 @@ val adyenModule = module {
     viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
 }
 
+val embarkModule = module {
+    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -253,6 +262,7 @@ val repositoriesModule = module {
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
     single { FeatureRepository(get()) }
+    single { EmbarkRepository(get()) }
 }
 
 val trackerModule = module {

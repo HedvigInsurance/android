@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.language.LanguageSelectionActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferActivity
@@ -77,8 +77,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
-        openChatActivity.setHapticClickListener {
-            startActivity(ChatActivity.newInstance(this))
+        openEmbark.setHapticClickListener {
+            startActivity(EmbarkActivity.newInstance(this, "Web Onboarding - English Needer"))
         }
 
         findViewById<Button>(R.id.openLoggedInWithWelcome).setHapticClickListener {
@@ -168,7 +168,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 profileModule,
                 paymentModule,
                 keyGearModule,
-                adyenModule
+                adyenModule,
+                embarkModule
             )
     }
 }
