@@ -36,20 +36,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         model.data.observe(this) { data ->
-            data?.embarkStory?.let { story ->
+            data?.let { passage ->
                 loadingSpinner.remove()
 
-                val firstPassage = story.passages.find { it.id == story.startPassage }
-
-                if (firstPassage == null) {
-                    e { "Programmer error: Story has no start passage" }
-                    return@let
-                }
-
-                if (firstPassage.isSelectActionPassage()) {
-                    val options = firstPassage.action?.asEmbarkSelectAction ?: return@let
+                if (passage.isSelectActionPassage()) {
+                    val options = passage.action?.asEmbarkSelectAction ?: return@let
                     val selectActionData = SelectActionPassage(
-                        firstPassage.messages.map { it.text },
+                        passage.messages.map { it.text },
                         options.data.options.map { SelectAction(it.link.name, it.link.label) }
                     )
 

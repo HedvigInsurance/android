@@ -4,9 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.embark_select_action_item.view.*
 
-class SelectActionAdapter : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>() {
+class SelectActionAdapter(
+    private val onActionSelected: (String) -> Unit
+) : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>() {
     var items = listOf<SelectAction>()
         set(value) {
             field = value
@@ -17,7 +20,7 @@ class SelectActionAdapter : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], onActionSelected)
     }
 
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -27,8 +30,12 @@ class SelectActionAdapter : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>
     ) {
         private val action = itemView.action
 
-        fun bind(item: SelectAction) {
+        fun bind(
+            item: SelectAction,
+            onActionSelected: (String) -> Unit
+        ) {
             action.text = item.label
+            action.setHapticClickListener { onActionSelected(item.link) }
         }
     }
 }
