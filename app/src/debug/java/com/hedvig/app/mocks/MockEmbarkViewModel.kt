@@ -28,7 +28,9 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                             link = EmbarkStoryQuery.Link(
                                                 name = "TestPassage2",
                                                 label = "Test select action"
-                                            )
+                                            ),
+                                            key = "FOO",
+                                            value = "BAR"
                                         )
                                     )
                                 )
@@ -44,6 +46,9 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                             ),
                             EmbarkStoryQuery.Message(
                                 text = "456"
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "{FOO} test"
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -54,7 +59,9 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                             link = EmbarkStoryQuery.Link(
                                                 name = "TestPassage",
                                                 label = "Another test select action"
-                                            )
+                                            ),
+                                            key = null,
+                                            value = null
                                         )
                                     )
                                 )

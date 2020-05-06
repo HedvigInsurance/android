@@ -43,7 +43,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     val options = passage.action?.asEmbarkSelectAction ?: return@let
                     val selectActionData = SelectActionPassage(
                         passage.messages.map { it.text },
-                        options.data.options.map { SelectAction(it.link.name, it.link.label) }
+                        options.data.options.map {
+                            SelectAction(
+                                it.link.name,
+                                it.link.label,
+                                it.key,
+                                it.value
+                            )
+                        }
                     )
 
                     val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
