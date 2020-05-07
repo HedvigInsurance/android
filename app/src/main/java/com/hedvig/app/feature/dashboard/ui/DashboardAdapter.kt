@@ -350,9 +350,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
 }
 
 sealed class DashboardModel {
-    data class Header(
-        val title: String
-    ) : DashboardModel()
+    object Header : DashboardModel()
 
     sealed class InfoBox : DashboardModel() {
         data class ImportantInformation(

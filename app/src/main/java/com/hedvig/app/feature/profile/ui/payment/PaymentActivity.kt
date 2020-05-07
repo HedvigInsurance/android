@@ -22,7 +22,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_payment.*
@@ -49,10 +48,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         if (market == null) {
             startActivity(MarketPickerActivity.newInstance(this))
         }
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 

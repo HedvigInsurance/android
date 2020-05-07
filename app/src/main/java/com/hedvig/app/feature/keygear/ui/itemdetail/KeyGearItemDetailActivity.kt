@@ -28,9 +28,9 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
 import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
 import org.koin.android.ext.android.inject
@@ -53,7 +53,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         supportPostponeEnterTransition()
 
-        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
         initializeToolbar()
 
         photosBinder = PhotosBinder(
@@ -101,30 +101,30 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun initializeToolbar() {
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(hedvigToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         val backDrawable = compatDrawable(R.drawable.ic_back)
         backDrawable?.setTint(compatColor(R.color.white))
-        toolbar.navigationIcon = backDrawable
-        toolbar.setNavigationOnClickListener {
+        hedvigToolbar.navigationIcon = backDrawable
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
         scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
             val positionInSpan =
-                scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
-            val percentage = positionInSpan / toolbar.height
+                scrollY - (photosSection.photos.height - (hedvigToolbar.height * 2.0f))
+            val percentage = positionInSpan / hedvigToolbar.height
 
             // Avoid some unnecessary background color updates
             if (percentage < -1 || percentage > 2) {
                 return@setOnScrollChangeListener
             }
 
-            toolbar.setBackgroundColor(
+            hedvigToolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
                     compatColor(R.color.translucent_tool_bar),

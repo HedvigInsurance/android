@@ -12,7 +12,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_about_app.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -26,10 +25,9 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
         super.onCreate(savedInstanceState)
 
 
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 

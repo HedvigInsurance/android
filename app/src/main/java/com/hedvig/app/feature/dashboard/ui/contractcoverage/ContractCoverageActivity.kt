@@ -15,7 +15,6 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.svg.buildRequestBuilder
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -29,7 +28,6 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
         scrollView.doOnApplyWindowInsets { view, insets, initialState ->
@@ -48,7 +46,6 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
         insurableLimits.adapter = InsurableLimitsAdapter()
         insurableLimits.addItemDecoration((GridSpacingItemDecoration(BASE_MARGIN_DOUBLE)))
 
-        hedvigToolbar.navigationIcon = getDrawable(R.drawable.ic_close)
         hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }

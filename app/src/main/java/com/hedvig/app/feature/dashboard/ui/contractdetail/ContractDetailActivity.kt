@@ -15,7 +15,6 @@ import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -28,7 +27,6 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
         scrollView.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
@@ -37,12 +35,12 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             )
         }
 
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
 
-        toolbar.setNavigationOnClickListener {
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 

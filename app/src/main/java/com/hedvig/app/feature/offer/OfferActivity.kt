@@ -31,7 +31,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_offer.*
@@ -53,15 +52,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        offerRoot.useEdgeToEdge()
         offerRoot.setEdgeToEdgeSystemUiFlags(true)
-
         offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
-        offerHeader.doOnApplyWindowInsets { view, _, initialState ->
-            view.updatePadding(top = initialState.paddings.top + offerToolbar.measuredHeight)
+        offerHeader.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
         offerScroll.doOnApplyWindowInsets { view, insets, initialState ->

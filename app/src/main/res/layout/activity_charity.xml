@@ -9,7 +9,7 @@
     tools:context="com.hedvig.app.feature.profile.ui.charity.CharityActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/hedvigToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:colorBackground" />

@@ -9,7 +9,7 @@
     tools:context=".feature.chat.ui.ChatActivity">
 
     <FrameLayout
-        android:id="@+id/toolbar"
+        android:id="@+id/hedvigToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/color_background_85"

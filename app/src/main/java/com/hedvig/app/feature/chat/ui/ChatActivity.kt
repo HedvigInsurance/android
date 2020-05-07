@@ -38,7 +38,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -86,21 +85,20 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
-        chatRoot.useEdgeToEdge()
         chatRoot.setEdgeToEdgeSystemUiFlags(true)
 
         input.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
         messages.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
-                top = initialState.paddings.top + getViewHeight(toolbar),
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
+                top = initialState.paddings.top + getViewHeight(hedvigToolbar),
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
             )
             initialChatPadding =
                 initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()

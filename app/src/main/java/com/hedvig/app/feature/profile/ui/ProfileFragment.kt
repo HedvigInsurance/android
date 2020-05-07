@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
@@ -22,6 +23,7 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -31,6 +33,7 @@ class ProfileFragment : BaseTabFragment() {
 
     private val userViewModel: UserViewModel by sharedViewModel()
     private val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
 
     override val layout = R.layout.fragment_profile
 
@@ -42,29 +45,7 @@ class ProfileFragment : BaseTabFragment() {
         toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         populateData()
-        setupScrollListener()
-    }
-
-    private fun setupScrollListener() {
-        profileRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            val dy = oldScrollY - scrollY
-            toolbar?.let { toolbar ->
-                val toolbarHeight = toolbar.height.toFloat()
-                val offset = profileRoot.computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < toolbarHeight) {
-                    offset / toolbarHeight
-                } else {
-                    1f
-                }
-                if (dy < 0) {
-                    // Scroll up
-                    toolbar.elevation = percentage * 10
-                } else {
-                    // scroll down
-                    toolbar.elevation = percentage * 10
-                }
-            }
-        }
+        profileRoot.setupToolbarScrollListener(loggedInFragmentViewModel)
     }
 
     override fun onResume() {

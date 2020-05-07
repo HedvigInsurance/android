@@ -4,7 +4,6 @@ import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
@@ -18,11 +17,13 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.svg.buildRequestBuilder
 import i
@@ -35,18 +36,17 @@ class ClaimsFragment : BaseTabFragment() {
 
     private val tracker: ClaimsTracker by inject()
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
     private val baseMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin) }
 
-    private var toolbar: androidx.appcompat.widget.Toolbar? = null
     override val layout = R.layout.fragment_claims
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
-        setupScrollListener()
+        claimsNestedScrollView.setupToolbarScrollListener(loggedInFragmentViewModel)
 
         claimsViewModel.apply {
             loadingSpinner.show()
@@ -75,28 +75,6 @@ class ClaimsFragment : BaseTabFragment() {
                 }
             }
         })
-    }
-
-    private fun setupScrollListener() {
-        claimsNestedScrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            val dy = oldScrollY - scrollY
-            toolbar?.let { toolbar ->
-                val toolbarHeight = toolbar.height.toFloat()
-                val offset = claimsNestedScrollView.computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < toolbarHeight) {
-                    offset / toolbarHeight
-                } else {
-                    1f
-                }
-                if (dy < 0) {
-                    // Scroll up
-                    toolbar.elevation = percentage * 10
-                } else {
-                    // scroll down
-                    toolbar.elevation = percentage * 10
-                }
-            }
-        }
     }
 
     private fun bindData(commonClaimsData: CommonClaimQuery.Data) {

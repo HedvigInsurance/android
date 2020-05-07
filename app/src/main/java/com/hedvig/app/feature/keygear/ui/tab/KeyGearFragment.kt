@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
-import androidx.core.widget.NestedScrollView
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
@@ -14,10 +13,12 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.transitionPair
@@ -31,6 +32,7 @@ class KeyGearFragment : BaseTabFragment() {
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
     private val tracker: KeyGearTracker by inject()
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
 
     private var hasSentAutoAddedItems = false
 
@@ -76,29 +78,7 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-        setupScrollListener()
-    }
-
-    private fun setupScrollListener() {
-        keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            val dy = oldScrollY - scrollY
-            toolbar?.let { toolbar ->
-                val toolbarHeight = toolbar.height.toFloat()
-                val offset = keyGearRoot.computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < toolbarHeight) {
-                    offset / toolbarHeight
-                } else {
-                    1f
-                }
-                if (dy < 0) {
-                    // Scroll up
-                    toolbar.elevation = percentage * 10
-                } else {
-                    // scroll down
-                    toolbar.elevation = percentage * 10
-                }
-            }
-        }
+        keyGearRoot.setupToolbarScrollListener(loggedInFragmentViewModel)
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {

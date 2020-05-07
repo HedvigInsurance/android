@@ -3,14 +3,15 @@ package com.hedvig.app.feature.dashboard.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
+import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -19,43 +20,17 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val tracker: DashboardTracker by inject()
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
-
-    private var toolbar: androidx.appcompat.widget.Toolbar? = null
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar = activity?.findViewById(R.id.hedvigToolbar)
-        setupScrollListener()
+        root.setupToolbarScrollListener(loggedInFragmentViewModel)
         root.adapter = DashboardAdapter(parentFragmentManager)
 
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
         }
-    }
-
-    private fun setupScrollListener() {
-        root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                toolbar?.let { toolbar ->
-                    val toolbarHeight = toolbar.height.toFloat()
-                    val offset = root.computeVerticalScrollOffset().toFloat()
-                    val percentage = if (offset < toolbarHeight) {
-                        offset / toolbarHeight
-                    } else {
-                        1f
-                    }
-                    if (dy < 0) {
-                        // Scroll up
-                        toolbar.elevation = percentage * 10
-                    } else {
-                        // scroll down
-                        toolbar.elevation = percentage * 10
-                    }
-                }
-            }
-        })
     }
 
     private fun bind(data: Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>) {
@@ -104,7 +79,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         (root.adapter as? DashboardAdapter)?.items =
-            listOf(DashboardModel.Header("Dashboard")) + infoBoxes + contracts + upsells
+            listOf(DashboardModel.Header) + infoBoxes + contracts + upsells
     }
 
     override fun onResume() {

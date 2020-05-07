@@ -35,9 +35,7 @@ import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -56,6 +54,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by viewModel()
 
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
@@ -67,19 +66,21 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loggedInRoot.useEdgeToEdge()
         loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
         hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            view.updatePadding(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
         setSupportActionBar(hedvigToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        loggedInFragmentViewModel.scroll.observe(this) { elevation ->
+            elevation?.let { hedvigToolbar.elevation = it }
+        }
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->

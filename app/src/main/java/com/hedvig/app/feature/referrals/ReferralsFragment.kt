@@ -2,14 +2,15 @@ package com.hedvig.app.feature.referrals
 
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.safeLet
 import e
 import kotlinx.android.synthetic.main.fragment_new_referral.*
@@ -19,10 +20,9 @@ class ReferralsFragment : BaseTabFragment() {
     private val profileViewModel: ProfileViewModel by sharedViewModel()
 
     private val tabViewModel: BaseTabViewModel by sharedViewModel()
+    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
 
     override val layout = R.layout.fragment_new_referral
-
-    private var toolbar: androidx.appcompat.widget.Toolbar? = null
 
     override fun onResume() {
         super.onResume()
@@ -33,8 +33,6 @@ class ReferralsFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         invites.addItemDecoration(
             BelowRecyclerViewBottomPaddingItemDecoration(
@@ -52,31 +50,7 @@ class ReferralsFragment : BaseTabFragment() {
             } ?: e { "No data" }
         }
 
-        setupScrollListener()
-    }
-
-    private fun setupScrollListener() {
-        invites.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                toolbar?.let { toolbar ->
-                    val toolbarHeight = toolbar.height.toFloat()
-                    val offset = invites.computeVerticalScrollOffset().toFloat()
-                    val percentage = if (offset < toolbarHeight) {
-                        offset / toolbarHeight
-                    } else {
-                        1f
-                    }
-                    if (dy < 0) {
-                        // Scroll up
-                        toolbar.elevation = percentage * 10
-                    } else {
-                        // scroll down
-                        toolbar.elevation = percentage * 10
-                    }
-                }
-            }
-        })
+        invites.setupToolbarScrollListener(loggedInFragmentViewModel)
     }
 
     private fun bindData(monthlyCost: Int, data: ProfileQuery.ReferralInformation) {

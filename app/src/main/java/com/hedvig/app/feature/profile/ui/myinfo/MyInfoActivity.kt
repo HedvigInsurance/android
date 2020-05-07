@@ -17,7 +17,6 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -34,20 +33,10 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        myInfoRoot.useEdgeToEdge()
         myInfoRoot.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
             onBackPressed()
-        }
-
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.apply {
-            navigationIcon = getDrawable(R.drawable.ic_back)
-            setNavigationOnClickListener {
-                onBackPressed()
-            }
         }
 
         sphere.drawable.compatSetTint(compatColor(R.color.dark_purple))

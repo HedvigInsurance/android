@@ -7,7 +7,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.ratings.openPlayStore
 import com.hedvig.app.util.extensions.setupToolbar
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_feedback.*
 
@@ -15,10 +14,9 @@ class FeedbackActivity : BaseActivity(R.layout.activity_feedback) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_close, true, root) {
             onBackPressed()
         }
 

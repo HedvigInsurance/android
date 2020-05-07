@@ -15,7 +15,6 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_charity.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -30,10 +29,9 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.useEdgeToEdge()
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
             onBackPressed()
         }
 
