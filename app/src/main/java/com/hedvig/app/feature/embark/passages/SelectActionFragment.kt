@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.util.safeLet
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_embark_select_action.*
@@ -26,8 +27,11 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         messages.adapter = MessageAdapter().apply {
             items = data.messages
         }
-        actions.adapter = SelectActionAdapter { link ->
-            model.navigateToPassage(link)
+        actions.adapter = SelectActionAdapter { selectAction ->
+            safeLet(selectAction.key, selectAction.value) { key, value ->
+                model.putInStore(key, value)
+            }
+            model.navigateToPassage(selectAction.link)
         }.apply {
             items = data.actions
         }
@@ -53,5 +57,7 @@ data class SelectActionPassage(
 @Parcelize
 data class SelectAction(
     val link: String,
-    val label: String
+    val label: String,
+    val key: String?,
+    val value: String?
 ) : Parcelable

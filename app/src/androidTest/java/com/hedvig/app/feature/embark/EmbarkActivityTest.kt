@@ -2,21 +2,13 @@ package com.hedvig.app.feature.embark
 
 import android.app.Activity
 import android.content.Intent
-import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
-import com.hedvig.app.R
-import junit.framework.Assert.assertTrue
+import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.hamcrest.Matcher
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,67 +37,70 @@ class EmbarkActivityTest {
 
     @Test
     fun showsFirstPassageWhenNetworkHasLoaded() {
-        val webServer = MockWebServer()
-        webServer.start(8080)
+        MockWebServer().use { webServer ->
+            webServer.start(8080)
 
-        webServer.enqueue(MockResponse().setBody("""{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","text":"test message"},{"__typename":"EmbarkMessage","text":"123"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Test select action"}}]}}}]}}}"""))
+            webServer.enqueue(MockResponse().setBody("""{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","text":"test message"},{"__typename":"EmbarkMessage","text":"123"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Test select action"}}]}}}]}}}"""))
 
-        activityRule.launchActivity(INTENT_WITH_STORY_NAME)
+            activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
-        onScreen<EmbarkScreen> {
-            messages {
-                firstChild<MessageRow> {
-                    text {
-                        hasText("test message")
+            onScreen<EmbarkScreen> {
+                messages {
+                    firstChild<EmbarkScreen.MessageRow> {
+                        text {
+                            hasText("test message")
+                        }
+                    }
+                    childAt<EmbarkScreen.MessageRow>(1) {
+                        text {
+                            hasText("123")
+                        }
                     }
                 }
-                childAt<MessageRow>(1) {
-                    text {
-                        hasText("123")
+                selectActions {
+                    firstChild<EmbarkScreen.SelectAction> {
+                        button {
+                            hasText("Test select action")
+                        }
                     }
                 }
             }
-            selectActions {
-                firstChild<SelectAction> {
-                    button {
-                        hasText("Test select action")
-                    }
-                }
-            }
+
         }
     }
 
     @Test
     fun loadsNextPassageWhenSelectingSingleSelectAction() {
-        val webServer = MockWebServer()
-        webServer.start(8080)
+        MockWebServer().use { webServer ->
+            webServer.start(8080)
 
-        webServer.enqueue(MockResponse().setBody("""{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","text":"test message"},{"__typename":"EmbarkMessage","text":"123"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage2","label":"Test select action"}}]}}},{"__typename":"EmbarkPassage","name":"TestPassage2","id":"2","messages":[{"__typename":"EmbarkMessage","text":"another test message"},{"__typename":"EmbarkMessage","text":"456"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Another test select action"}}]}}}]}}}"""))
+            webServer.enqueue(MockResponse().setBody("""{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","text":"test message"},{"__typename":"EmbarkMessage","text":"123"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage2","label":"Test select action"}}]}}},{"__typename":"EmbarkPassage","name":"TestPassage2","id":"2","messages":[{"__typename":"EmbarkMessage","text":"another test message"},{"__typename":"EmbarkMessage","text":"456"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Another test select action"}}]}}}]}}}"""))
 
-        activityRule.launchActivity(INTENT_WITH_STORY_NAME)
+            activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
-        onScreen<EmbarkScreen> {
-            selectActions {
-                firstChild<SelectAction> {
-                    click()
-                }
-            }
-            messages {
-                firstChild<MessageRow> {
-                    text {
-                        hasText("another test message")
+            onScreen<EmbarkScreen> {
+                selectActions {
+                    firstChild<EmbarkScreen.SelectAction> {
+                        click()
                     }
                 }
-                childAt<MessageRow>(1) {
-                    text {
-                        hasText("456")
+                messages {
+                    firstChild<EmbarkScreen.MessageRow> {
+                        text {
+                            hasText("another test message")
+                        }
+                    }
+                    childAt<EmbarkScreen.MessageRow>(1) {
+                        text {
+                            hasText("456")
+                        }
                     }
                 }
-            }
-            selectActions {
-                firstChild<SelectAction> {
-                    button {
-                        hasText("Another test select action")
+                selectActions {
+                    firstChild<EmbarkScreen.SelectAction> {
+                        button {
+                            hasText("Another test select action")
+                        }
                     }
                 }
             }
@@ -116,20 +111,5 @@ class EmbarkActivityTest {
         private val INTENT_WITH_STORY_NAME = Intent().apply {
             putExtra(EmbarkActivity.STORY_NAME, "example")
         }
-    }
-
-    class EmbarkScreen : Screen<EmbarkScreen>() {
-        val spinner = KView { withId(R.id.loadingSpinner) }
-        val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
-
-        val selectActions = KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
-    }
-
-    class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
-        val text = KTextView { withMatcher(parent) }
-    }
-
-    class SelectAction(parent: Matcher<View>) : KRecyclerItem<SelectAction>(parent) {
-        val button = KButton { withMatcher(parent) }
     }
 }

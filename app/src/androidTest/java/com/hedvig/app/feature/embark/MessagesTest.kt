@@ -1,0 +1,52 @@
+package com.hedvig.app.feature.embark
+
+import android.content.Intent
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class MessagesTest {
+    @get:Rule
+    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+
+    @Test
+    fun shouldResolveTemplateValuesProvidedBySelectAction() {
+        MockWebServer().use { webServer ->
+            webServer.start(8080)
+
+            webServer.enqueue(
+                MockResponse().setBody("""{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","text":"test message"},{"__typename":"EmbarkMessage","text":"123"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage2","label":"Test select action"},"key":"FOO","value":"BAR"}]}}},{"__typename":"EmbarkPassage","name":"TestPassage2","id":"2","messages":[{"__typename":"EmbarkMessage","text":"another test message"},{"__typename":"EmbarkMessage","text":"456"},{"__typename":"EmbarkMessage","text":"{FOO} test"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Another test select action"}}]}}}]}}}""")
+            )
+
+            activityRule.launchActivity(INTENT_WITH_STORY_NAME)
+
+            onScreen<EmbarkScreen> {
+                selectActions {
+                    firstChild<EmbarkScreen.SelectAction> {
+                        click()
+                    }
+                }
+                messages {
+                    childAt<EmbarkScreen.MessageRow>(2) {
+                        text {
+                            hasText("BAR test")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        private val INTENT_WITH_STORY_NAME = Intent().apply {
+            putExtra(EmbarkActivity.STORY_NAME, "test")
+        }
+    }
+}

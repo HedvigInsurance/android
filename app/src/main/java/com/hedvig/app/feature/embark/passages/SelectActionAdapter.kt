@@ -8,7 +8,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.embark_select_action_item.view.*
 
 class SelectActionAdapter(
-    private val onActionSelected: (String) -> Unit
+    private val onActionSelected: (SelectAction) -> Unit
 ) : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>() {
     var items = listOf<SelectAction>()
         set(value) {
@@ -32,10 +32,10 @@ class SelectActionAdapter(
 
         fun bind(
             item: SelectAction,
-            onActionSelected: (String) -> Unit
+            onActionSelected: (SelectAction) -> Unit
         ) {
             action.text = item.label
-            action.setHapticClickListener { onActionSelected(item.link) }
+            action.setHapticClickListener { onActionSelected(item) }
         }
     }
 }
