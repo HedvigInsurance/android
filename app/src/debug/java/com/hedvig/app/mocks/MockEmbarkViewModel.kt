@@ -1,6 +1,7 @@
 package com.hedvig.app.mocks
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkViewModel
 
 class MockEmbarkViewModel : EmbarkViewModel() {
@@ -14,10 +15,34 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message"
+                                text = "test message",
+                                expressions = emptyList()
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "123"
+                                text = "123",
+                                expressions = emptyList()
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Unary false test",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        asEmbarkExpressionUnary = EmbarkStoryQuery.AsEmbarkExpressionUnary(
+                                            type = EmbarkExpressionTypeUnary.NEVER,
+                                            text = "Unary false test"
+                                        )
+                                    )
+                                )
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Unary true test",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        asEmbarkExpressionUnary = EmbarkStoryQuery.AsEmbarkExpressionUnary(
+                                            type = EmbarkExpressionTypeUnary.ALWAYS,
+                                            text = "Unary true test"
+                                        )
+                                    )
+                                )
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -42,13 +67,16 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message"
+                                text = "another test message",
+                                expressions = emptyList()
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "456"
+                                text = "456",
+                                expressions = emptyList()
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "{FOO} test"
+                                text = "{FOO} test",
+                                expressions = emptyList()
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

@@ -5,6 +5,12 @@ query EmbarkStory($name: String!) {
       name
       id
       messages {
+        expressions {
+          ... on EmbarkExpressionUnary {
+            type
+            text
+          }
+        }
         text
       }
       action {

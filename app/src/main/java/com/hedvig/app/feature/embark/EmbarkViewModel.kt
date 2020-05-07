@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import kotlinx.coroutines.launch
 
 abstract class EmbarkViewModel : ViewModel() {
@@ -19,7 +20,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
     protected fun displayInitialPassage() {
         storyData.embarkStory?.let { story ->
-            _data.postValue(story.passages.find { it.id == story.startPassage })
+            _data.postValue(preProcessPassage(story.passages.find { it.id == story.startPassage }))
         }
     }
 
@@ -39,10 +40,35 @@ abstract class EmbarkViewModel : ViewModel() {
             return null
         }
         return passage.copy(
-            messages = passage.messages.map { message ->
-                message.copy(text = interpolateMessage(store, message.text))
+            messages = passage.messages.mapNotNull {
+                preProcessMessage(it)
             }
         )
+    }
+
+    private fun preProcessMessage(message: EmbarkStoryQuery.Message): EmbarkStoryQuery.Message? {
+        if (message.expressions.isEmpty()) {
+            return message.copy(text = interpolateMessage(store, message.text))
+        }
+
+        val expressionText = message
+            .expressions
+            .mapNotNull(::evaluateExpression)
+            .firstOrNull()
+            ?: return null
+
+        return message.copy(text = interpolateMessage(store, expressionText))
+    }
+
+    private fun evaluateExpression(expression: EmbarkStoryQuery.Expression): String? {
+        expression.asEmbarkExpressionUnary?.let { unaryExpression ->
+            return when (unaryExpression.type) {
+                EmbarkExpressionTypeUnary.ALWAYS -> unaryExpression.text
+                EmbarkExpressionTypeUnary.NEVER -> null
+                else -> null
+            }
+        }
+        return null
     }
 
     companion object {
