@@ -9,7 +9,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
@@ -33,19 +33,15 @@ class ProfileFragment : BaseTabFragment() {
 
     private val userViewModel: UserViewModel by sharedViewModel()
     private val profileViewModel: ProfileViewModel by sharedViewModel()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     override val layout = R.layout.fragment_profile
 
-    private var toolbar: androidx.appcompat.widget.Toolbar? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        toolbar = activity?.findViewById(R.id.hedvigToolbar)
-
+        
         populateData()
-        profileRoot.setupToolbarScrollListener(loggedInFragmentViewModel)
+        profileRoot.setupToolbarScrollListener(loggedInViewModel)
     }
 
     override fun onResume() {

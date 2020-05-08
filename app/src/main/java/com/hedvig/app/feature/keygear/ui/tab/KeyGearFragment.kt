@@ -13,7 +13,7 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
@@ -32,16 +32,12 @@ class KeyGearFragment : BaseTabFragment() {
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
     private val tracker: KeyGearTracker by inject()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     private var hasSentAutoAddedItems = false
 
-    private var toolbar: androidx.appcompat.widget.Toolbar? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        toolbar = activity?.findViewById(R.id.hedvigToolbar)
 
         items.adapter =
             KeyGearItemsAdapter(
@@ -78,7 +74,7 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-        keyGearRoot.setupToolbarScrollListener(loggedInFragmentViewModel)
+        keyGearRoot.setupToolbarScrollListener(loggedInViewModel)
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {

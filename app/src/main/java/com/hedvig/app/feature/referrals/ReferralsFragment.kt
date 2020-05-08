@@ -6,7 +6,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.ui.decoration.BelowRecyclerViewBottomPaddingItemDecoration
 import com.hedvig.app.util.extensions.observe
@@ -20,7 +20,7 @@ class ReferralsFragment : BaseTabFragment() {
     private val profileViewModel: ProfileViewModel by sharedViewModel()
 
     private val tabViewModel: BaseTabViewModel by sharedViewModel()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     override val layout = R.layout.fragment_new_referral
 
@@ -50,7 +50,7 @@ class ReferralsFragment : BaseTabFragment() {
             } ?: e { "No data" }
         }
 
-        invites.setupToolbarScrollListener(loggedInFragmentViewModel)
+        invites.setupToolbarScrollListener(loggedInViewModel)
     }
 
     private fun bindData(monthlyCost: Int, data: ProfileQuery.ReferralInformation) {

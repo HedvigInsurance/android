@@ -111,6 +111,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         initializeToolbarButtons()
         initializeMessages()
+        initializeInput()
         initializeKeyboardVisibilityHandler()
         observeData()
     }

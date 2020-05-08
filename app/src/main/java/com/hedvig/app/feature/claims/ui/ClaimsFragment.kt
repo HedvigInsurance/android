@@ -17,7 +17,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
@@ -36,7 +36,7 @@ class ClaimsFragment : BaseTabFragment() {
 
     private val tracker: ClaimsTracker by inject()
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
     private val baseMargin: Int by lazy { resources.getDimensionPixelSize(R.dimen.base_margin) }
@@ -46,7 +46,7 @@ class ClaimsFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        claimsNestedScrollView.setupToolbarScrollListener(loggedInFragmentViewModel)
+        claimsNestedScrollView.setupToolbarScrollListener(loggedInViewModel)
 
         claimsViewModel.apply {
             loadingSpinner.show()

@@ -17,7 +17,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.fontAttr
@@ -255,7 +255,7 @@ fun View.setupLargeTitle(
 }
 
 fun NestedScrollView.setupToolbarScrollListener(
-    loggedInFragmentViewModel: LoggedInFragmentViewModel
+    loggedInViewModel: LoggedInViewModel
 ) {
     this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
         val dy = oldScrollY - scrollY
@@ -266,11 +266,11 @@ fun NestedScrollView.setupToolbarScrollListener(
         } else {
             1f
         }
-        loggedInFragmentViewModel.scroll.postValue(percentage * 10)
+        loggedInViewModel.scroll.postValue(percentage * 10)
     }
 }
 
-fun RecyclerView.setupToolbarScrollListener(loggedInFragmentViewModel: LoggedInFragmentViewModel) {
+fun RecyclerView.setupToolbarScrollListener(loggedInViewModel: LoggedInViewModel) {
     this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -281,7 +281,7 @@ fun RecyclerView.setupToolbarScrollListener(loggedInFragmentViewModel: LoggedInF
             } else {
                 1f
             }
-            loggedInFragmentViewModel.scroll.postValue(percentage * 10)
+            loggedInViewModel.scroll.postValue(percentage * 10)
         }
     })
 }

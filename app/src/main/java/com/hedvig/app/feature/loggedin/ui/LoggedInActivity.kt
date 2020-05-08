@@ -55,7 +55,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by viewModel()
 
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
@@ -79,7 +78,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         setSupportActionBar(hedvigToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        loggedInFragmentViewModel.scroll.observe(this) { elevation ->
+        loggedInViewModel.scroll.observe(this) { elevation ->
             elevation?.let { hedvigToolbar.elevation = it }
         }
 

@@ -8,7 +8,7 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.loggedin.ui.LoggedInFragmentViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
@@ -20,12 +20,12 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val tracker: DashboardTracker by inject()
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
-    private val loggedInFragmentViewModel: LoggedInFragmentViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        root.setupToolbarScrollListener(loggedInFragmentViewModel)
+        root.setupToolbarScrollListener(loggedInViewModel)
         root.adapter = DashboardAdapter(parentFragmentManager)
 
         dashboardViewModel.data.observe(this) { data ->
