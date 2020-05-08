@@ -47,8 +47,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             SelectAction(
                                 it.link.name,
                                 it.link.label,
-                                it.key,
-                                it.value
+                                it.keys,
+                                it.values
                             )
                         }
                     )

@@ -61,8 +61,8 @@ abstract class EmbarkViewModel : ViewModel() {
     }
 
     private fun evaluateExpression(expression: EmbarkStoryQuery.Expression): String? {
-        expression.asEmbarkExpressionUnary?.let { unaryExpression ->
-            return when (unaryExpression.type) {
+        expression.fragments.expressionFragment.asEmbarkExpressionUnary?.let { unaryExpression ->
+            return when (unaryExpression.unaryType) {
                 EmbarkExpressionTypeUnary.ALWAYS -> unaryExpression.text
                 EmbarkExpressionTypeUnary.NEVER -> null
                 else -> null

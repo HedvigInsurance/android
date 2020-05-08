@@ -1,5 +1,6 @@
 package com.hedvig.app.mocks
 
+import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -26,9 +27,15 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                 text = "Unary false test",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
-                                        asEmbarkExpressionUnary = EmbarkStoryQuery.AsEmbarkExpressionUnary(
-                                            type = EmbarkExpressionTypeUnary.NEVER,
-                                            text = "Unary false test"
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                                    unaryType = EmbarkExpressionTypeUnary.NEVER,
+                                                    text = "Unary false test"
+                                                ),
+                                                asEmbarkExpressionBinary = null,
+                                                asEmbarkExpressionMultiple = null
+                                            )
                                         )
                                     )
                                 )
@@ -37,9 +44,15 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                 text = "Unary true test",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
-                                        asEmbarkExpressionUnary = EmbarkStoryQuery.AsEmbarkExpressionUnary(
-                                            type = EmbarkExpressionTypeUnary.ALWAYS,
-                                            text = "Unary true test"
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                                    unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                    text = "Unary true test"
+                                                ),
+                                                asEmbarkExpressionBinary = null,
+                                                asEmbarkExpressionMultiple = null
+                                            )
                                         )
                                     )
                                 )
@@ -54,8 +67,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                                 name = "TestPassage2",
                                                 label = "Test select action"
                                             ),
-                                            key = "FOO",
-                                            value = "BAR"
+                                            keys = listOf("FOO"),
+                                            values = listOf("BAR")
                                         )
                                     )
                                 )
@@ -88,8 +101,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                                 name = "TestPassage",
                                                 label = "Another test select action"
                                             ),
-                                            key = null,
-                                            value = null
+                                            keys = emptyList(),
+                                            values = emptyList()
                                         )
                                     )
                                 )
