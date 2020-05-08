@@ -159,7 +159,7 @@ class ChatInputView : FrameLayout {
             is TextInput -> textInputContainer.fadeOut(fadeIn)
             is SingleSelect -> {
                 singleSelectContainer.fadeOut(fadeIn)
-                chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding)
+                chatRecyclerView.updatePadding(bottom = singleSelectContainer.measuredHeight)
             }
             is ParagraphInput -> {
                 paragraphView.fadeOut(endAction = {
@@ -203,8 +203,8 @@ class ChatInputView : FrameLayout {
             KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
-
         inputText.requestFocus()
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + measureTextInput())
     }
 
     private fun bindSingleSelect(input: SingleSelect) {
@@ -257,7 +257,7 @@ class ChatInputView : FrameLayout {
         singleSelectContainer.addView(singleSelectButton)
 
         singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + singleSelectContainer.measuredHeight - measureTextInput())
+        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + singleSelectContainer.measuredHeight)
     }
 
     private fun disableSingleButtons() {

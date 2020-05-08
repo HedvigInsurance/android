@@ -91,6 +91,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             top = messages.paddingTop + toolbarHeight,
             bottom = messages.paddingBottom + chatInputHeight
         )
+        initialChatPadding = messages.paddingBottom
 
         chatRoot.setEdgeToEdgeSystemUiFlags(true)
 
