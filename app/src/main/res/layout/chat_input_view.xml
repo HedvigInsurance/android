@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_transparent_chat_85"
+    android:background="@drawable/background_square"
+    android:backgroundTint="@color/color_background_85"
     android:theme="@style/Hedvig.Theme.Widgets.Chat.Input">
 
     <LinearLayout

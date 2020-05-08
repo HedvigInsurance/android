@@ -8,12 +8,25 @@
     android:animateLayoutChanges="true"
     tools:context=".feature.chat.ui.ChatActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_double"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="1"
+        app:reverseLayout="true"
+        tools:listitem="@layout/chat_message_hedvig" />
+
     <FrameLayout
         android:id="@+id/hedvigToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_transparent_chat_85"
-        android:elevation="2dp"
+        android:background="@drawable/background_square"
+        android:backgroundTint="@color/color_background_85"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingVertical="5dp"
@@ -78,19 +91,6 @@
             tools:visibility="visible" />
 
     </FrameLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/base_margin_double"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="1"
-        app:reverseLayout="true"
-        tools:listitem="@layout/chat_message_hedvig" />
 
     <com.hedvig.app.feature.chat.ui.ChatInputView
         android:id="@+id/input"
