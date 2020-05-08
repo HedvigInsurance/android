@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import kotlinx.coroutines.launch
 
@@ -67,6 +68,14 @@ abstract class EmbarkViewModel : ViewModel() {
                 EmbarkExpressionTypeUnary.NEVER -> null
                 else -> null
             }
+        }
+        expression.fragments.expressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
+            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.EQUALS) {
+                if (store[binaryExpression.key] == binaryExpression.value) {
+                    return binaryExpression.text
+                }
+            }
+            return null
         }
         return null
     }

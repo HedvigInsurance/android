@@ -78,9 +78,25 @@ class MessagesTest {
             webServer.start(8080)
             webServer.enqueue(
                 MockResponse().setBody(
-                    ""
+                    """{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","expressions":[],"text":"test message"},{"__typename":"EmbarkMessage","expressions":[],"text":"123"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionUnary","unaryType":"NEVER","text":"Unary false test"}],"text":"Unary false test"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionUnary","unaryType":"ALWAYS","text":"Unary true test"}],"text":"Unary true test"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage2","label":"Test select action"},"keys":["FOO"],"values":["BAR"]}]}}},{"__typename":"EmbarkPassage","name":"TestPassage2","id":"2","messages":[{"__typename":"EmbarkMessage","expressions":[],"text":"another test message"},{"__typename":"EmbarkMessage","expressions":[],"text":"456"},{"__typename":"EmbarkMessage","expressions":[],"text":"{FOO} test"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionBinary","binaryType":"EQUALS","key":"FOO","value":"BAR","text":"Binary equals test message that evaluates to true"}],"text":"Binary equals test message that evaluates to true"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionBinary","binaryType":"EQUALS","key":"BOO","value":"FAR","text":"Binary equals test message that evaluates to false"}],"text":"Binary equals test message that evaluates to false"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Another test select action"},"keys":[],"values":[]}]}}}]}}}"""
                 )
             )
+
+            activityRule.launchActivity(INTENT_WITH_STORY_NAME)
+
+            onScreen<EmbarkScreen> {
+                selectActions {
+                    firstChild<EmbarkScreen.SelectAction> { click() }
+                }
+                messages {
+                    hasSize(4)
+                    childAt<EmbarkScreen.MessageRow>(3) {
+                        text {
+                            hasText("Binary equals test message that evaluates to true")
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.hedvig.app.mocks
 
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkViewModel
 
@@ -90,6 +91,44 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                             EmbarkStoryQuery.Message(
                                 text = "{FOO} test",
                                 expressions = emptyList()
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Binary equals test message that evaluates to true",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = null,
+                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                    binaryType = EmbarkExpressionTypeBinary.EQUALS,
+                                                    key = "FOO",
+                                                    value = "BAR",
+                                                    text = "Binary equals test message that evaluates to true"
+                                                ),
+                                                asEmbarkExpressionMultiple = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Binary equals test message that evaluates to false",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = null,
+                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                    binaryType = EmbarkExpressionTypeBinary.EQUALS,
+                                                    key = "BOO",
+                                                    value = "FAR",
+                                                    text = "Binary equals test message that evaluates to false"
+                                                ),
+                                                asEmbarkExpressionMultiple = null
+                                            )
+                                        )
+                                    )
+                                )
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
