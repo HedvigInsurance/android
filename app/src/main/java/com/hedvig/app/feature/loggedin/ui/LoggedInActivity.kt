@@ -35,6 +35,7 @@ import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -72,7 +73,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
         setSupportActionBar(hedvigToolbar)

@@ -7,7 +7,7 @@
     </style>
 
     <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/color_background_85</item>
     </style>
 
     <style name="Hedvig.Theme.Chat">

@@ -85,6 +85,13 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
+        val chatInputHeight = input.measureTextInput()
+        val toolbarHeight = getViewHeight(hedvigToolbar)
+        messages.updatePadding(
+            top = messages.paddingTop + toolbarHeight,
+            bottom = messages.paddingBottom + chatInputHeight
+        )
+
         chatRoot.setEdgeToEdgeSystemUiFlags(true)
 
         input.doOnApplyWindowInsets { view, insets, initialState ->
@@ -97,12 +104,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         messages.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
-                top = initialState.paddings.top + getViewHeight(hedvigToolbar),
+                top = initialState.paddings.top + insets.systemWindowInsetTop,
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
             )
-            initialChatPadding =
-                initialState.paddings.bottom + insets.systemWindowInsetBottom + input.measureTextInput()
-            initializeInput()
         }
 
         initializeToolbarButtons()
