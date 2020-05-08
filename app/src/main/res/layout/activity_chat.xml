@@ -12,7 +12,7 @@
         android:id="@+id/hedvigToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_background_85"
+        android:background="@color/color_transparent_chat_85"
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"

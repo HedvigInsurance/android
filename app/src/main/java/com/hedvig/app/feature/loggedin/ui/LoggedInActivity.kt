@@ -150,6 +150,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
+            LoggedInTabs.KEY_GEAR,
             LoggedInTabs.CLAIMS -> {
                 claimsViewModel.triggerFreeTextChat {
                     startClosableChat()
@@ -164,9 +165,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         ReferralBottomSheet.newInstance(amount)
                             .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
-            }
-            LoggedInTabs.KEY_GEAR -> {
-                // TODO
             }
         }
         return true
