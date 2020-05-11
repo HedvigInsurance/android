@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import kotlinx.android.synthetic.main.payment_history_item.view.*
 import kotlinx.android.synthetic.main.payout_history_header.view.*
+import kotlinx.android.synthetic.main.payout_history_title.view.*
 
 class PaymentHistoryAdapter(
     private val items: List<ChargeWrapper>
@@ -17,6 +18,7 @@ class PaymentHistoryAdapter(
     override fun getItemViewType(position: Int) = when (items[position]) {
         is ChargeWrapper.Header -> HEADER
         is ChargeWrapper.Item -> ITEM
+        is ChargeWrapper.Title -> TITLE
     }
 
     override fun onCreateViewHolder(
@@ -34,6 +36,11 @@ class PaymentHistoryAdapter(
             LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.payment_history_item, parent, false)
+        )
+        TITLE -> ViewHolder.TitleViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.payout_history_title, parent, false)
         )
         else -> {
             throw RuntimeException("Invariant detected: viewType is $viewType")
@@ -60,6 +67,10 @@ class PaymentHistoryAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        class TitleViewHolder(view: View) : ViewHolder(view) {
+            val title: TextView = view.title
+        }
+
         class HeaderViewHolder(view: View) : ViewHolder(view) {
             val year: TextView = view.header
         }
@@ -71,7 +82,8 @@ class PaymentHistoryAdapter(
     }
 
     companion object {
-        private const val HEADER = 0
-        private const val ITEM = 1
+        private const val TITLE = 0
+        private const val HEADER = 1
+        private const val ITEM = 2
     }
 }

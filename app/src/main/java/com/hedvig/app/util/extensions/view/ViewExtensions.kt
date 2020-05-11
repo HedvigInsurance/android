@@ -257,8 +257,7 @@ fun View.setupLargeTitle(
 fun NestedScrollView.setupToolbarScrollListener(
     loggedInViewModel: LoggedInViewModel
 ) {
-    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-        val dy = oldScrollY - scrollY
+    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
         val maxElevationScroll = 200
         val offset = this.computeVerticalScrollOffset().toFloat()
         val percentage = if (offset < maxElevationScroll) {
@@ -267,6 +266,21 @@ fun NestedScrollView.setupToolbarScrollListener(
             1f
         }
         loggedInViewModel.scroll.postValue(percentage * 10)
+    }
+}
+
+fun NestedScrollView.setupToolbarScrollListener(
+    toolbar: Toolbar
+) {
+    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
+        val maxElevationScroll = 200
+        val offset = this.computeVerticalScrollOffset().toFloat()
+        val percentage = if (offset < maxElevationScroll) {
+            offset / maxElevationScroll
+        } else {
+            1f
+        }
+        toolbar.elevation = percentage * 10
     }
 }
 
@@ -282,6 +296,22 @@ fun RecyclerView.setupToolbarScrollListener(loggedInViewModel: LoggedInViewModel
                 1f
             }
             loggedInViewModel.scroll.postValue(percentage * 10)
+        }
+    })
+}
+
+fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
+    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val maxElevationScroll = 200
+            val offset = this@setupToolbarScrollListener.computeVerticalScrollOffset().toFloat()
+            val percentage = if (offset < maxElevationScroll) {
+                offset / maxElevationScroll
+            } else {
+                1f
+            }
+            toolbar.elevation = percentage * 10
         }
     })
 }

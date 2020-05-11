@@ -9,23 +9,24 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.makeACall
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.svg.buildRequestBuilder
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_emergency.*
-import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.common_claim_first_message.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class EmergencyActivity : BaseActivity() {
+class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val tracker: ClaimsTracker by inject()
 
@@ -33,7 +34,6 @@ class EmergencyActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_emergency)
 
         val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)
 
@@ -42,12 +42,19 @@ class EmergencyActivity : BaseActivity() {
             return
         }
 
-        // TODO: This surface should be themed entirely I think
-        val backgroundColor = colorAttr(R.attr.colorOnPrimary)
-        setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
+        root.setEdgeToEdgeSystemUiFlags(true)
+        root.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        emergencyTitle.text = data.title
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-        appBarLayout.setExpanded(false, false)
+        root.setupToolbarScrollListener(toolbar = toolbar)
 
         requestBuilder
             .load(
@@ -59,7 +66,6 @@ class EmergencyActivity : BaseActivity() {
             )
             .into(commonClaimFirstMessageIcon)
 
-        commonClaimFirstMessageContainer.setBackgroundColor(backgroundColor)
         commonClaimFirstMessage.text = getString(R.string.CLAIMS_EMERGENCY_FIRST_MESSAGE)
         commonClaimCreateClaimButton.remove()
 
