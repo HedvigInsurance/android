@@ -7,10 +7,8 @@ import android.net.Uri
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.View
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -20,10 +18,8 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.extensions.view.setupLargeTitle
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
-import kotlinx.android.synthetic.main.app_bar.*
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -49,35 +45,6 @@ fun AppCompatActivity.setupToolbar(
         icon = icon,
         rootLayout = rootLayout,
         backAction = backAction
-    )
-}
-
-fun AppCompatActivity.setupLargeTitle(
-    @StringRes title: Int,
-    @DrawableRes icon: Int? = null,
-    @ColorInt backgroundColor: Int? = null,
-    backAction: (() -> Unit)? = null
-) {
-    setupLargeTitle(
-        getString(title),
-        icon,
-        backgroundColor,
-        backAction
-    )
-}
-
-fun AppCompatActivity.setupLargeTitle(
-    title: String,
-    @DrawableRes icon: Int? = null,
-    @ColorInt backgroundColor: Int? = null,
-    backAction: (() -> Unit)? = null
-) {
-    appBarLayout.setupLargeTitle(
-        title,
-        this,
-        icon,
-        backgroundColor,
-        backAction
     )
 }
 
