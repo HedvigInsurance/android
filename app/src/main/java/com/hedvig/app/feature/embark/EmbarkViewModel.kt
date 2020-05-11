@@ -90,6 +90,14 @@ abstract class EmbarkViewModel : ViewModel() {
                     return binaryExpression.text
                 }
             }
+            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.LESS_THAN) {
+                val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
+                val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
+
+                if (storedAsInt < valueAsInt) {
+                    return binaryExpression.text
+                }
+            }
             return null
         }
         return null

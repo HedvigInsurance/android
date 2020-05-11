@@ -17,12 +17,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GreaterThanOrEqualsExpressionTest {
+class LessThanExpressionTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldShowMessageForWhenWithGreaterThanOrEqualsExpression() {
+    fun shouldShowMessageForWhenWithLessThanExpression() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
@@ -34,7 +34,7 @@ class GreaterThanOrEqualsExpressionTest {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("Binary greater than or equals test message that evaluates to true") }
+                        text { hasText("Less than test message that evaluates to true") }
                     }
                 }
             }
@@ -77,17 +77,17 @@ class GreaterThanOrEqualsExpressionTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than or equals test message that evaluates to true",
+                                text = "Less than test message that evaluates to true",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
                                             ExpressionFragment(
                                                 asEmbarkExpressionUnary = null,
                                                 asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
-                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
+                                                    binaryType = EmbarkExpressionTypeBinary.LESS_THAN,
                                                     key = "BAZ",
-                                                    value = "5",
-                                                    text = "Binary greater than or equals test message that evaluates to true"
+                                                    value = "6",
+                                                    text = "Less than test message that evaluates to true"
                                                 ),
                                                 asEmbarkExpressionMultiple = null
                                             )
@@ -96,17 +96,17 @@ class GreaterThanOrEqualsExpressionTest {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than or equals test message that evaluates to false",
+                                text = "Less than test message that evaluates to false",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
                                             ExpressionFragment(
                                                 asEmbarkExpressionUnary = null,
                                                 asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
-                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
+                                                    binaryType = EmbarkExpressionTypeBinary.LESS_THAN,
                                                     key = "BAZ",
-                                                    value = "6",
-                                                    text = "Binary greater than or equals test message that evaluates to false"
+                                                    value = "4",
+                                                    text = "Less than test message that evaluates to false"
                                                 ),
                                                 asEmbarkExpressionMultiple = null
                                             )
