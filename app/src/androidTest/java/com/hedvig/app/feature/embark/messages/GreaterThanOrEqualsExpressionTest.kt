@@ -3,7 +3,7 @@ package com.hedvig.app.feature.embark.messages
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -17,30 +17,24 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GreaterThanExpressionTest {
+class GreaterThanOrEqualsExpressionTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldShowMessageForWhenWithGreaterThanExpression() {
+    fun shouldShowMessageForWhenWithGreaterThanOrEqualsExpression() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
-            webServer.enqueue(
-                MockResponse().setBody(DATA.toJson())
-            )
+            webServer.enqueue(MockResponse().setBody(DATA.toJson()))
 
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
-            Screen.onScreen<EmbarkScreen> {
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> { click() }
-                }
+            onScreen<EmbarkScreen> {
+                selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
                 messages {
                     hasSize(1)
-                    childAt<EmbarkScreen.MessageRow>(0) {
-                        text {
-                            hasText("Binary greater than test message that evaluates to true")
-                        }
+                    firstChild<EmbarkScreen.MessageRow> {
+                        text { hasText("Binary greater than or equals test message that evaluates to true") }
                     }
                 }
             }
@@ -83,17 +77,17 @@ class GreaterThanExpressionTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than test message that evaluates to true",
+                                text = "Binary greater than or equals test message that evaluates to true",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
                                             ExpressionFragment(
                                                 asEmbarkExpressionUnary = null,
                                                 asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
-                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
+                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
                                                     key = "BAZ",
-                                                    value = "4",
-                                                    text = "Binary greater than test message that evaluates to true"
+                                                    value = "5",
+                                                    text = "Binary greater than or equals test message that evaluates to true"
                                                 ),
                                                 asEmbarkExpressionMultiple = null
                                             )
@@ -102,7 +96,7 @@ class GreaterThanExpressionTest {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than test message that evaluates to false",
+                                text = "Binary greater than or equals test message that evaluates to false",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
@@ -112,7 +106,7 @@ class GreaterThanExpressionTest {
                                                     binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
                                                     key = "BAZ",
                                                     value = "6",
-                                                    text = "Binary greater than test message that evaluates to false"
+                                                    text = "Binary greater than or equals test message that evaluates to false"
                                                 ),
                                                 asEmbarkExpressionMultiple = null
                                             )
