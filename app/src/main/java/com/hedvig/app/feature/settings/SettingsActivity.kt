@@ -33,7 +33,7 @@ class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        toolbar.setNavigationOnClickListener {
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
         supportFragmentManager
@@ -44,6 +44,7 @@ class SettingsActivity : BaseActivity() {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val userViewModel: UserViewModel by sharedViewModel()
+
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)

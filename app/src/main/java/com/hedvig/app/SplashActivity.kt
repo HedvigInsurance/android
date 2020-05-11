@@ -19,7 +19,7 @@ import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -31,7 +31,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
     }
 
     override fun onStart() {

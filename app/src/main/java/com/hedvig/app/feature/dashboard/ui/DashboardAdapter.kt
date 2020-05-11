@@ -43,6 +43,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
         R.layout.dashboard_info_card -> ViewHolder.InfoBoxViewHolder(parent)
         R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
+        R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -73,6 +74,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
         is DashboardModel.InfoBox -> R.layout.dashboard_info_card
         is DashboardModel.Contract -> R.layout.dashboard_contract_row
         is DashboardModel.Upsell -> R.layout.dashboard_upsell
+        is DashboardModel.Header -> R.layout.dashboard_header
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -324,6 +326,12 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                 }
             }
         }
+
+        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.dashboard_header, parent, false)
+        )
     }
 
     companion object {
@@ -342,6 +350,8 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
 }
 
 sealed class DashboardModel {
+    object Header : DashboardModel()
+
     sealed class InfoBox : DashboardModel() {
         data class ImportantInformation(
             val title: String,
