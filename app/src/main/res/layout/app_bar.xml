@@ -14,10 +14,10 @@
         app:collapsedTitleTextAppearance="?textAppearanceBody1"
         app:expandedTitleTextAppearance="?textAppearanceHeadline4"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
-        app:toolbarId="@id/toolbar">
+        app:toolbarId="@id/hedvigToolbar">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/hedvigToolbar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:layout_collapseMode="pin"

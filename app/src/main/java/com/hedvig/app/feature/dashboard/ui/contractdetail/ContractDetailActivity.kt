@@ -14,6 +14,9 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -24,7 +27,20 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        toolbar.setNavigationOnClickListener {
+        root.setEdgeToEdgeSystemUiFlags(true)
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                top = initialState.paddings.top + insets.systemWindowInsetTop,
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+            )
+        }
+
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 

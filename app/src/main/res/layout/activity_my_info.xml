@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/myInfoRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity">
 
-    <include layout="@layout/app_bar" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/hedvigToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -20,11 +25,54 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize">
 
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:text="@string/PROFILE_MY_INFO_TITLE"
+                android:textAppearance="?textAppearanceHeadline4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <include layout="@layout/loading_spinner" />
 
-            <include
+            <FrameLayout
                 android:id="@+id/sphereContainer"
-                layout="@layout/sphere_container" />
+                android:layout_width="@dimen/profile_sphere_side_length"
+                android:layout_height="@dimen/profile_sphere_side_length"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
+                tools:showIn="@layout/activity_my_info"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@id/sphere"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    app:srcCompat="@drawable/sphere"
+                    tools:tint="@color/dark_purple" />
+
+                <TextView
+                    android:id="@+id/sphereText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:padding="@dimen/sphere_text_padding"
+                    android:textColor="?colorOnPrimary"
+                    app:autoSizeMaxTextSize="@dimen/sphere_text_max_text_size"
+                    app:autoSizeMinTextSize="@dimen/sphere_text_min_text_size"
+                    app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
+                    app:autoSizeTextType="uniform"
+                    tools:text="Testina Testsdotteri" />
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@id/contactDetailsContainer"
@@ -86,4 +134,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
