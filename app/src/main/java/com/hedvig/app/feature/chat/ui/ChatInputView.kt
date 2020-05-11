@@ -108,13 +108,14 @@ class ChatInputView : FrameLayout {
     }
 
     fun measureTextInput(): Int {
+        val startVisibility = textInputContainer.visibility
         this.textInputContainer.show()
         this.textInputContainer.measure(
             ConstraintLayout.LayoutParams.MATCH_PARENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
         val height = this.textInputContainer.measuredHeight
-        this.textInputContainer.remove()
+        this.textInputContainer.visibility = startVisibility
         return height
     }
 
@@ -203,8 +204,8 @@ class ChatInputView : FrameLayout {
             KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
-        inputText.requestFocus()
         chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + measureTextInput())
+        inputText.requestFocus()
     }
 
     private fun bindSingleSelect(input: SingleSelect) {
