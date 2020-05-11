@@ -114,6 +114,7 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     ) {
         homeInformationContainer.show()
         address.text = addressData.street
+        postalNumber.text = addressData.postalCode
         squareMeters.text = getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, sqm)
         type.text = typeTranslated
     }
