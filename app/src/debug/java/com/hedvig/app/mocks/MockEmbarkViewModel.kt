@@ -68,8 +68,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                                 name = "TestPassage2",
                                                 label = "Test select action"
                                             ),
-                                            keys = listOf("FOO"),
-                                            values = listOf("BAR")
+                                            keys = listOf("FOO", "BAZ"),
+                                            values = listOf("BAR", "5")
                                         )
                                     )
                                 )
@@ -123,6 +123,44 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                                     key = "BOO",
                                                     value = "FAR",
                                                     text = "Binary equals test message that evaluates to false"
+                                                ),
+                                                asEmbarkExpressionMultiple = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Binary greater than test message that evaluates to true",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = null,
+                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
+                                                    key = "BAZ",
+                                                    value = "4",
+                                                    text = "Binary greater than test message that evaluates to true"
+                                                ),
+                                                asEmbarkExpressionMultiple = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "Binary greater than test message that evaluates to false",
+                                expressions = listOf(
+                                    EmbarkStoryQuery.Expression(
+                                        fragments = EmbarkStoryQuery.Expression.Fragments(
+                                            ExpressionFragment(
+                                                asEmbarkExpressionUnary = null,
+                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                    binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
+                                                    key = "BAZ",
+                                                    value = "6",
+                                                    text = "Binary greater than test message that evaluates to false"
                                                 ),
                                                 asEmbarkExpressionMultiple = null
                                             )
