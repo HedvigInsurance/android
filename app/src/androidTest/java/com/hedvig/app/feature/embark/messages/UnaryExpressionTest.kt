@@ -45,7 +45,7 @@ class UnaryExpressionTest {
 
     companion object {
         private val INTENT_WITH_STORY_NAME = Intent().apply {
-            putExtra(EmbarkActivity.STORY_NAME, "test")
+            putExtra(EmbarkActivity.STORY_NAME, this@Companion::class.java.name)
         }
     }
 }

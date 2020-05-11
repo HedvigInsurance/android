@@ -37,7 +37,7 @@ class GreaterThanExpressionTest {
                 }
                 messages {
                     hasSize(1)
-                    childAt<EmbarkScreen.MessageRow>(0) {
+                    firstChild<EmbarkScreen.MessageRow> {
                         text {
                             hasText("Binary greater than test message that evaluates to true")
                         }
@@ -142,7 +142,7 @@ class GreaterThanExpressionTest {
             )
         )
         private val INTENT_WITH_STORY_NAME = Intent().apply {
-            putExtra(EmbarkActivity.STORY_NAME, "test")
+            putExtra(EmbarkActivity.STORY_NAME, this@Companion::class.java.name)
         }
     }
 }
