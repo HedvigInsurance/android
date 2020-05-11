@@ -30,17 +30,18 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.safeLet
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_logged_in.*
-import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -64,7 +65,22 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbar.updatePadding(end = resources.getDimensionPixelSize(R.dimen.base_margin_double))
+
+        loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
+
+        setSupportActionBar(hedvigToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        loggedInViewModel.scroll.observe(this) { elevation ->
+            elevation?.let { hedvigToolbar.elevation = it }
+        }
 
         tabContentContainer.adapter = TabPagerAdapter(supportFragmentManager)
         bottomTabs.setOnNavigationItemSelectedListener { menuItem ->
@@ -74,7 +90,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 return@setOnNavigationItemSelectedListener false
             }
             tabContentContainer.setCurrentItem(id.ordinal, false)
-            setupAppBar(id)
+            setupToolBar(id)
             setupFloatingButton(id)
             true
         }
@@ -102,7 +118,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bindData()
-        setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+        setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
     }
 
     private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
@@ -113,6 +129,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
+            LoggedInTabs.KEY_GEAR,
             LoggedInTabs.CLAIMS -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
@@ -122,8 +139,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
             }
-            LoggedInTabs.KEY_GEAR -> {
-                // TODO
+            else -> {
+                menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -132,6 +149,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(bottomTabs.selectedItemId)) {
             LoggedInTabs.DASHBOARD,
+            LoggedInTabs.KEY_GEAR,
             LoggedInTabs.CLAIMS -> {
                 claimsViewModel.triggerFreeTextChat {
                     startClosableChat()
@@ -146,9 +164,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         ReferralBottomSheet.newInstance(amount)
                             .show(supportFragmentManager, ReferralBottomSheet.TAG)
                     }
-            }
-            LoggedInTabs.KEY_GEAR -> {
-                // TODO
             }
         }
         return true
@@ -209,7 +224,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         else -> R.menu.logged_in_menu
                     }
                     bottomTabs.inflateMenu(menuId)
-                    setupAppBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+                    setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
                 }
             }
         }
@@ -256,27 +271,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun setupAppBar(id: LoggedInTabs?) {
-        invalidateOptionsMenu()
+    private fun setupToolBar(id: LoggedInTabs?) {
         if (lastLoggedInTab != id) {
-            appBarLayout.setExpanded(true, false)
-        }
-        when (id) {
-            LoggedInTabs.DASHBOARD -> {
-                setupLargeTitle(R.string.DASHBOARD_SCREEN_TITLE)
-            }
-            LoggedInTabs.CLAIMS -> {
-                setupLargeTitle(R.string.CLAIMS_TITLE)
-            }
-            LoggedInTabs.KEY_GEAR -> {
-                setupLargeTitle(getString(R.string.KEY_GEAR_TAB_TITLE))
-            }
-            LoggedInTabs.REFERRALS -> {
-                setupLargeTitle(R.string.PROFILE_REFERRAL_TITLE)
-            }
-            LoggedInTabs.PROFILE -> {
-                setupLargeTitle(R.string.PROFILE_TITLE)
-            }
+            hedvigToolbar.elevation = 0f
+            invalidateOptionsMenu()
         }
         if (id != null) {
             lastLoggedInTab = id

@@ -23,7 +23,7 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        toolbar.setNavigationOnClickListener {
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
@@ -34,7 +34,10 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
         }
 
         norwegianBankIdContainer.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
                 if (request?.url?.toString()?.contains("success") == true) {
                     return true
                 }
@@ -52,7 +55,12 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
             status?.let { s ->
                 when (s) {
                     AuthState.SUCCESS -> {
-                        startActivity(LoggedInActivity.newInstance(this@NorwegianAuthenticationActivity, withoutHistory = true))
+                        startActivity(
+                            LoggedInActivity.newInstance(
+                                this@NorwegianAuthenticationActivity,
+                                withoutHistory = true
+                            )
+                        )
                     }
                     AuthState.FAILED -> {
                         // TODO: Add UI for the failure case
@@ -74,6 +82,7 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, NorwegianAuthenticationActivity::class.java)
+        fun newInstance(context: Context) =
+            Intent(context, NorwegianAuthenticationActivity::class.java)
     }
 }

@@ -13,10 +13,12 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.transitionPair
@@ -30,6 +32,7 @@ class KeyGearFragment : BaseTabFragment() {
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
     private val tracker: KeyGearTracker by inject()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     private var hasSentAutoAddedItems = false
 
@@ -48,17 +51,17 @@ class KeyGearFragment : BaseTabFragment() {
                         ).toBundle()
                     )
                 }, { root, item ->
-                startActivity(
-                    KeyGearItemDetailActivity.newInstance(
-                        requireContext(),
-                        item.fragments.keyGearItemFragment
-                    ),
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        requireActivity(),
-                        Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
-                    ).toBundle()
-                )
-            })
+                    startActivity(
+                        KeyGearItemDetailActivity.newInstance(
+                            requireContext(),
+                            item.fragments.keyGearItemFragment
+                        ),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            requireActivity(),
+                            Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
+                        ).toBundle()
+                    )
+                })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
         items.itemAnimator = SlideInItemAnimator()
 
@@ -71,6 +74,7 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
+        keyGearRoot.setupToolbarScrollListener(loggedInViewModel)
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {
@@ -89,6 +93,11 @@ class KeyGearFragment : BaseTabFragment() {
             description.remove()
             items.updateMargin(top = BASE_MARGIN_TRIPLE)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        keyGearRoot.scrollY = 0
     }
 
     companion object {

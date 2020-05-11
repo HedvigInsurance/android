@@ -125,5 +125,6 @@
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="checkbox_size">24dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
+    <dimen name="logged_in_tabs_bottom_padding">110dp</dimen>
 
 </resources>

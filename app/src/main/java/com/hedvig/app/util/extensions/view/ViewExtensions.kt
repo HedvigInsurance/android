@@ -13,12 +13,17 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.fontAttr
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.whenApiVersion
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.app_bar.view.*
 
 fun View.show(): View {
@@ -136,6 +141,78 @@ fun View.setScaleXY(scale: Float) {
     scaleY = scale
 }
 
+fun Toolbar.setupToolbar(
+    activity: AppCompatActivity,
+    usingEdgeToEdge: Boolean = false,
+    @DrawableRes icon: Int? = null,
+    rootLayout: View?,
+    backAction: (() -> Unit)? = null
+) {
+    activity.setSupportActionBar(this)
+    activity.supportActionBar?.setDisplayShowTitleEnabled(false)
+    icon?.let { icon ->
+        this.navigationIcon = this.context.getDrawable(icon)
+    }
+    backAction?.let {
+        this.setNavigationOnClickListener { it() }
+    }
+    if (usingEdgeToEdge) {
+        this.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+        rootLayout?.let { root ->
+            root.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(
+                    top = initialState.paddings.top + this.measuredHeight,
+                    bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+                )
+            }
+
+            if (root is NestedScrollView) {
+                root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+                    val dy = oldScrollY - scrollY
+                    val toolbarHeight = this.height.toFloat()
+                    val offset = root.computeVerticalScrollOffset().toFloat()
+                    val percentage = if (offset < toolbarHeight) {
+                        offset / toolbarHeight
+                    } else {
+                        1f
+                    }
+                    if (dy < 0) {
+                        // Scroll up
+                        this.elevation = percentage * 10
+                    } else {
+                        // scroll down
+                        this.elevation = percentage * 10
+                    }
+
+                }
+            } else if (root is RecyclerView) {
+                val toolbar = this
+                root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+                        val toolbarHeight = toolbar.height.toFloat()
+                        val offset = root.computeVerticalScrollOffset().toFloat()
+                        val percentage = if (offset < toolbarHeight) {
+                            offset / toolbarHeight
+                        } else {
+                            1f
+                        }
+                        if (dy < 0) {
+                            // Scroll up
+                            toolbar.elevation = percentage * 10
+                        } else {
+                            // scroll down
+                            toolbar.elevation = percentage * 10
+                        }
+                    }
+                })
+            }
+        }
+    }
+}
+
 fun View.setupLargeTitle(
     title: String,
     activity: AppCompatActivity,
@@ -143,7 +220,7 @@ fun View.setupLargeTitle(
     @ColorInt backgroundColor: Int? = null,
     backAction: (() -> Unit)? = null
 ) {
-    activity.setSupportActionBar(toolbar)
+    activity.setSupportActionBar(hedvigToolbar)
     collapsingToolbar.title = title
 
     val font = context.fontAttr(android.R.attr.fontFamily)
@@ -153,7 +230,7 @@ fun View.setupLargeTitle(
     }
 
     backgroundColor?.let { color ->
-        toolbar.setBackgroundColor(color)
+        hedvigToolbar.setBackgroundColor(color)
         collapsingToolbar.setBackgroundColor(color)
         whenApiVersion(Build.VERSION_CODES.M) {
             val flags = activity.window.decorView.systemUiVisibility
@@ -164,7 +241,7 @@ fun View.setupLargeTitle(
     }
 
     icon?.let {
-        toolbar.navigationIcon = toolbar.context.compatDrawable(it)?.apply {
+        hedvigToolbar.navigationIcon = hedvigToolbar.context.compatDrawable(it)?.apply {
             if (context.isDarkThemeActive) {
                 setTint(
                     context.compatColor(
@@ -174,7 +251,39 @@ fun View.setupLargeTitle(
             }
         }
     }
-    backAction?.let { toolbar.setNavigationOnClickListener { it() } }
+    backAction?.let { hedvigToolbar.setNavigationOnClickListener { it() } }
+}
+
+fun NestedScrollView.setupToolbarScrollListener(
+    loggedInViewModel: LoggedInViewModel
+) {
+    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+        val dy = oldScrollY - scrollY
+        val maxElevationScroll = 200
+        val offset = this.computeVerticalScrollOffset().toFloat()
+        val percentage = if (offset < maxElevationScroll) {
+            offset / maxElevationScroll
+        } else {
+            1f
+        }
+        loggedInViewModel.scroll.postValue(percentage * 10)
+    }
+}
+
+fun RecyclerView.setupToolbarScrollListener(loggedInViewModel: LoggedInViewModel) {
+    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val maxElevationScroll = 200
+            val offset = this@setupToolbarScrollListener.computeVerticalScrollOffset().toFloat()
+            val percentage = if (offset < maxElevationScroll) {
+                offset / maxElevationScroll
+            } else {
+                1f
+            }
+            loggedInViewModel.scroll.postValue(percentage * 10)
+        }
+    })
 }
 
 fun View.fadeIn(endAction: (() -> Unit)? = null) {
@@ -215,8 +324,3 @@ val View.centerX: Int
 
 val View.centerY: Int
     get() = (y + height / 2).toInt()
-
-fun View.useEdgeToEdge() {
-    systemUiVisibility =
-        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-}

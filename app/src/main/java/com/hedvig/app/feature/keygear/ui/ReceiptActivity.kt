@@ -27,8 +27,8 @@ import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_receipt.*
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +45,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
 
         topBar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
