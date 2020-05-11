@@ -70,46 +70,38 @@ abstract class EmbarkViewModel : ViewModel() {
             }
         }
         expression.fragments.expressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.EQUALS) {
-                if (store[binaryExpression.key] == binaryExpression.value) {
-                    return binaryExpression.text
+            when (binaryExpression.binaryType) {
+                EmbarkExpressionTypeBinary.EQUALS -> {
+                    if (store[binaryExpression.key] == binaryExpression.value) {
+                        return binaryExpression.text
+                    }
                 }
-            }
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.NOT_EQUALS) {
-                val stored = store[binaryExpression.key] ?: return null
-                if (stored != binaryExpression.value) {
-                    return binaryExpression.text
+                EmbarkExpressionTypeBinary.NOT_EQUALS -> {
+                    val stored = store[binaryExpression.key] ?: return null
+                    if (stored != binaryExpression.value) {
+                        return binaryExpression.text
+                    }
                 }
-            }
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.MORE_THAN) {
-                val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
-                val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
-                if (storedAsInt > valueAsInt) {
-                    return binaryExpression.text
-                }
-            }
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS) {
-                val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
-                val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
+                EmbarkExpressionTypeBinary.MORE_THAN,
+                EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
+                EmbarkExpressionTypeBinary.LESS_THAN,
+                EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS -> {
+                    val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
+                    val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
 
-                if (storedAsInt >= valueAsInt) {
-                    return binaryExpression.text
-                }
-            }
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.LESS_THAN) {
-                val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
-                val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
+                    val evaluatesToTrue = when (binaryExpression.binaryType) {
+                        EmbarkExpressionTypeBinary.MORE_THAN -> storedAsInt > valueAsInt
+                        EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS -> storedAsInt >= valueAsInt
+                        EmbarkExpressionTypeBinary.LESS_THAN -> storedAsInt < valueAsInt
+                        EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS -> storedAsInt <= valueAsInt
+                        else -> false
+                    }
 
-                if (storedAsInt < valueAsInt) {
-                    return binaryExpression.text
+                    if (evaluatesToTrue) {
+                        return binaryExpression.text
+                    }
                 }
-            }
-            if (binaryExpression.binaryType == EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS) {
-                val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
-                val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
-
-                if (storedAsInt <= valueAsInt) {
-                    return binaryExpression.text
+                else -> {
                 }
             }
             return null
