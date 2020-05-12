@@ -43,6 +43,16 @@ abstract class EmbarkViewModel : ViewModel() {
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }
+            if (nextPassage?.redirects?.isNotEmpty() == true) {
+                nextPassage.redirects.forEach { redirect ->
+                    if (evaluateExpression(redirect.into()) is ExpressionResult.True) {
+                        redirect.asEmbarkRedirectUnaryExpression?.let { unEx ->
+                            navigateToPassage(unEx.to)
+                            return@navigateToPassage
+                        }
+                    }
+                }
+            }
             _data.postValue(preProcessPassage(nextPassage))
         }
     }
@@ -200,6 +210,39 @@ abstract class EmbarkViewModel : ViewModel() {
                             )
                         },
                         asEmbarkExpressionMultiple = null
+                    )
+                )
+            )
+
+        private fun EmbarkStoryQuery.Redirect.into(): EmbarkStoryQuery.Expression =
+            EmbarkStoryQuery.Expression(
+                fragments = EmbarkStoryQuery.Expression.Fragments(
+                    ExpressionFragment(
+                        asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
+                            ExpressionFragment.AsEmbarkExpressionUnary(
+                                unaryType = it.unaryType,
+                                text = null
+                            )
+                        },
+                        asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
+                            ExpressionFragment.AsEmbarkExpressionBinary(
+                                binaryType = it.binaryType,
+                                key = it.key,
+                                value = it.value,
+                                text = null
+                            )
+                        },
+                        asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
+                            ExpressionFragment.AsEmbarkExpressionMultiple(
+                                multipleType = it.multipleExpressionType,
+                                text = null,
+                                subExpressions = it.subExpressions.map { se ->
+                                    ExpressionFragment.SubExpression(
+                                        fragments = ExpressionFragment.SubExpression.Fragments(se.fragments.subExpressionFragment)
+                                    )
+                                }
+                            )
+                        }
                     )
                 )
             )

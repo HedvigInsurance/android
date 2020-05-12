@@ -13,6 +13,7 @@ query EmbarkStory($name: String!) {
       redirects {
         ... on EmbarkRedirectUnaryExpression {
           unaryType: type
+          to
           passedExpressionKey
           passedExpressionValue
         }
@@ -26,6 +27,7 @@ query EmbarkStory($name: String!) {
         }
         ... on EmbarkRedirectMultipleExpressions {
           multipleExpressionType: type
+          to
           passedExpressionKey
           passedExpressionValue
           subExpressions {
