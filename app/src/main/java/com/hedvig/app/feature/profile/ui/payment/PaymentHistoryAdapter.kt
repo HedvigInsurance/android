@@ -10,39 +10,30 @@ import kotlinx.android.synthetic.main.payment_history_item.view.*
 import kotlinx.android.synthetic.main.payout_history_header.view.*
 import kotlinx.android.synthetic.main.payout_history_title.view.*
 
-class PaymentHistoryAdapter : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
+class PaymentHistoryAdapter(
+) : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
 
     var items: List<ChargeWrapper> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun getItemCount() = items.size
 
-    override fun getItemViewType(position: Int) = when (position) {
-        0 -> TITLE
-        1 -> HEADER
-        else -> ITEM
+    override fun getItemViewType(position: Int) = when (items[position]) {
+        is ChargeWrapper.Title -> R.layout.payout_history_title
+        is ChargeWrapper.Header -> R.layout.payout_history_header
+        is ChargeWrapper.Item -> R.layout.payment_history_item
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder = when (viewType) {
-        TITLE -> ViewHolder.TitleViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payout_history_title, parent, false)
-        )
-        HEADER -> {
-            ViewHolder.HeaderViewHolder(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.payout_history_header, parent, false)
-            )
-        }
-        ITEM -> ViewHolder.ItemViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payment_history_item, parent, false)
-        )
+        R.layout.payout_history_title -> ViewHolder.TitleViewHolder(parent)
+        R.layout.payout_history_header -> ViewHolder.HeaderViewHolder(parent)
+        R.layout.payment_history_item -> ViewHolder.ItemViewHolder(parent)
         else -> {
             throw RuntimeException("Invariant detected: viewType is $viewType")
         }
@@ -68,23 +59,29 @@ class PaymentHistoryAdapter : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHol
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class TitleViewHolder(view: View) : ViewHolder(view) {
-            val title: TextView = view.title
+        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.payout_history_title, parent, false)
+        ) {
+            val title: TextView = itemView.title
         }
 
-        class HeaderViewHolder(view: View) : ViewHolder(view) {
-            val year: TextView = view.header
+        class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.payout_history_header, parent, false)
+        ) {
+            val year: TextView = itemView.header
         }
 
-        class ItemViewHolder(view: View) : ViewHolder(view) {
-            val date: TextView = view.date
-            val amount: TextView = view.amount
+        class ItemViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.payment_history_item, parent, false)
+        ) {
+            val date: TextView = itemView.date
+            val amount: TextView = itemView.amount
         }
-    }
-
-    companion object {
-        private const val TITLE = 0
-        private const val HEADER = 1
-        private const val ITEM = 2
     }
 }
