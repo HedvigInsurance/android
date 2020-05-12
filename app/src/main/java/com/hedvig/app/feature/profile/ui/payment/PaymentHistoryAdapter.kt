@@ -10,21 +10,27 @@ import kotlinx.android.synthetic.main.payment_history_item.view.*
 import kotlinx.android.synthetic.main.payout_history_header.view.*
 import kotlinx.android.synthetic.main.payout_history_title.view.*
 
-class PaymentHistoryAdapter(
-    private val items: List<ChargeWrapper>
-) : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
+class PaymentHistoryAdapter : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
+
+    var items: List<ChargeWrapper> = listOf()
+
     override fun getItemCount() = items.size
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
-        is ChargeWrapper.Header -> HEADER
-        is ChargeWrapper.Item -> ITEM
-        is ChargeWrapper.Title -> TITLE
+    override fun getItemViewType(position: Int) = when (position) {
+        0 -> TITLE
+        1 -> HEADER
+        else -> ITEM
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder = when (viewType) {
+        TITLE -> ViewHolder.TitleViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.payout_history_title, parent, false)
+        )
         HEADER -> {
             ViewHolder.HeaderViewHolder(
                 LayoutInflater
@@ -36,11 +42,6 @@ class PaymentHistoryAdapter(
             LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.payment_history_item, parent, false)
-        )
-        TITLE -> ViewHolder.TitleViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payout_history_title, parent, false)
         )
         else -> {
             throw RuntimeException("Invariant detected: viewType is $viewType")

@@ -34,10 +34,12 @@ class PaymentHistoryActivity : BaseActivity() {
         }
         paymentHistory.setupToolbarScrollListener(toolbar)
 
+        paymentHistory.adapter = PaymentHistoryAdapter()
+
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
             data?.chargeHistory?.let { chargeHistory ->
-                paymentHistory.adapter =
-                    PaymentHistoryAdapter(listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory))
+                (paymentHistory.adapter as? PaymentHistoryAdapter)?.items =
+                    listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
             }
         }
     }
