@@ -121,12 +121,19 @@ abstract class EmbarkViewModel : ViewModel() {
             return ExpressionResult.False
         }
         expression.fragments.expressionFragment.asEmbarkExpressionMultiple?.let { multipleExpression ->
-            if (multipleExpression.multipleType == EmbarkExpressionTypeMultiple.AND) {
-                val results =
-                    multipleExpression.subExpressions.map { evaluateExpression(it.into()) }
-
-                if (results.all { it is ExpressionResult.True }) {
-                    return ExpressionResult.True(multipleExpression.text)
+            val results = multipleExpression.subExpressions.map { evaluateExpression(it.into()) }
+            when (multipleExpression.multipleType) {
+                EmbarkExpressionTypeMultiple.AND -> {
+                    if (results.all { it is ExpressionResult.True }) {
+                        return ExpressionResult.True(multipleExpression.text)
+                    }
+                }
+                EmbarkExpressionTypeMultiple.OR -> {
+                    if (results.any { it is ExpressionResult.True }) {
+                        return ExpressionResult.True(multipleExpression.text)
+                    }
+                }
+                else -> {
                 }
             }
         }
