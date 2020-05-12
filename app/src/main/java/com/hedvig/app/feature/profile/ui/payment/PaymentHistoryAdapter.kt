@@ -42,18 +42,10 @@ class PaymentHistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
-                (items[position] as? ChargeWrapper.Header)?.let { item ->
-                    holder.year.text = item.year.toString()
-                }
+                (items[position] as? ChargeWrapper.Header)?.let { holder.bind(it) }
             }
             is ViewHolder.ItemViewHolder -> {
-                (items[position] as? ChargeWrapper.Item)?.let { item ->
-                    holder.date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
-                    holder.amount.text = holder.amount.context.getString(
-                        R.string.PAYMENT_HISTORY_AMOUNT,
-                        item.charge.amount.amount.toBigDecimal().toInt()
-                    )
-                }
+                (items[position] as? ChargeWrapper.Item)?.let { holder.bind(it) }
             }
         }
     }
@@ -73,6 +65,10 @@ class PaymentHistoryAdapter(
                 .inflate(R.layout.payout_history_header, parent, false)
         ) {
             val year: TextView = itemView.header
+
+            fun bind(item: ChargeWrapper.Header) {
+                year.text = item.year.toString()
+            }
         }
 
         class ItemViewHolder(parent: ViewGroup) : ViewHolder(
@@ -82,6 +78,14 @@ class PaymentHistoryAdapter(
         ) {
             val date: TextView = itemView.date
             val amount: TextView = itemView.amount
+
+            fun bind(item: ChargeWrapper.Item) {
+                date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
+                amount.text = amount.context.getString(
+                    R.string.PAYMENT_HISTORY_AMOUNT,
+                    item.charge.amount.amount.toBigDecimal().toInt()
+                )
+            }
         }
     }
 }
