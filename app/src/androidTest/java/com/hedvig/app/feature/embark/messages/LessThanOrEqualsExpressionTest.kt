@@ -22,7 +22,7 @@ class LessThanOrEqualsExpressionTest {
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldShowMessageForWhenWithLessThanExpression() {
+    fun shouldShowMessageForWhenWithLessThanOrEqualsExpression() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))

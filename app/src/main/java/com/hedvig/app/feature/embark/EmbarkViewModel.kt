@@ -4,10 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import kotlinx.coroutines.launch
+
+sealed class ExpressionResult {
+    data class True(
+        val text: String?
+    ) : ExpressionResult()
+
+    object False : ExpressionResult()
+}
 
 abstract class EmbarkViewModel : ViewModel() {
     private val _data = MutableLiveData<EmbarkStoryQuery.Passage>()
@@ -54,40 +64,44 @@ abstract class EmbarkViewModel : ViewModel() {
 
         val expressionText = message
             .expressions
-            .mapNotNull(::evaluateExpression)
+            .map(::evaluateExpression)
+            .filterIsInstance<ExpressionResult.True>()
             .firstOrNull()
+            ?.text
             ?: return null
 
         return message.copy(text = interpolateMessage(store, expressionText))
     }
 
-    private fun evaluateExpression(expression: EmbarkStoryQuery.Expression): String? {
+    private fun evaluateExpression(expression: EmbarkStoryQuery.Expression): ExpressionResult {
         expression.fragments.expressionFragment.asEmbarkExpressionUnary?.let { unaryExpression ->
             return when (unaryExpression.unaryType) {
-                EmbarkExpressionTypeUnary.ALWAYS -> unaryExpression.text
-                EmbarkExpressionTypeUnary.NEVER -> null
-                else -> null
+                EmbarkExpressionTypeUnary.ALWAYS -> ExpressionResult.True(unaryExpression.text)
+                EmbarkExpressionTypeUnary.NEVER -> ExpressionResult.False
+                else -> ExpressionResult.False
             }
         }
         expression.fragments.expressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
             when (binaryExpression.binaryType) {
                 EmbarkExpressionTypeBinary.EQUALS -> {
                     if (store[binaryExpression.key] == binaryExpression.value) {
-                        return binaryExpression.text
+                        return ExpressionResult.True(binaryExpression.text)
                     }
                 }
                 EmbarkExpressionTypeBinary.NOT_EQUALS -> {
-                    val stored = store[binaryExpression.key] ?: return null
+                    val stored = store[binaryExpression.key] ?: return ExpressionResult.False
                     if (stored != binaryExpression.value) {
-                        return binaryExpression.text
+                        return ExpressionResult.True(binaryExpression.text)
                     }
                 }
                 EmbarkExpressionTypeBinary.MORE_THAN,
                 EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
                 EmbarkExpressionTypeBinary.LESS_THAN,
                 EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS -> {
-                    val storedAsInt = store[binaryExpression.key]?.toIntOrNull() ?: return null
-                    val valueAsInt = binaryExpression.value.toIntOrNull() ?: return null
+                    val storedAsInt =
+                        store[binaryExpression.key]?.toIntOrNull() ?: return ExpressionResult.False
+                    val valueAsInt =
+                        binaryExpression.value.toIntOrNull() ?: return ExpressionResult.False
 
                     val evaluatesToTrue = when (binaryExpression.binaryType) {
                         EmbarkExpressionTypeBinary.MORE_THAN -> storedAsInt > valueAsInt
@@ -98,15 +112,25 @@ abstract class EmbarkViewModel : ViewModel() {
                     }
 
                     if (evaluatesToTrue) {
-                        return binaryExpression.text
+                        return ExpressionResult.True(binaryExpression.text)
                     }
                 }
                 else -> {
                 }
             }
-            return null
+            return ExpressionResult.False
         }
-        return null
+        expression.fragments.expressionFragment.asEmbarkExpressionMultiple?.let { multipleExpression ->
+            if (multipleExpression.multipleType == EmbarkExpressionTypeMultiple.AND) {
+                val results =
+                    multipleExpression.subExpressions.map { evaluateExpression(it.into()) }
+
+                if (results.all { it is ExpressionResult.True }) {
+                    return ExpressionResult.True(multipleExpression.text)
+                }
+            }
+        }
+        return ExpressionResult.False
     }
 
     companion object {
@@ -119,6 +143,52 @@ abstract class EmbarkViewModel : ViewModel() {
                     val fromStore = store[curr.value.removeSurrounding("{", "}")] ?: return acc
                     acc.replace(curr.value, fromStore)
                 }
+
+        private fun ExpressionFragment.SubExpression.into() = ExpressionFragment.SubExpression1(
+            asEmbarkExpressionUnary1 = asEmbarkExpressionUnary2?.let {
+                ExpressionFragment.AsEmbarkExpressionUnary1(
+                    unaryType = it.unaryType,
+                    text = it.text
+                )
+            },
+            asEmbarkExpressionBinary1 = asEmbarkExpressionBinary2?.let {
+                ExpressionFragment.AsEmbarkExpressionBinary1(
+                    binaryType = it.binaryType,
+                    text = it.text,
+                    key = it.key,
+                    value = it.value
+                )
+            },
+            asEmbarkExpressionMultiple1 = null
+        )
+
+        private fun ExpressionFragment.SubExpression1.into() = EmbarkStoryQuery.Expression(
+            fragments = EmbarkStoryQuery.Expression.Fragments(
+                ExpressionFragment(
+                    asEmbarkExpressionUnary = asEmbarkExpressionUnary1?.let {
+                        ExpressionFragment.AsEmbarkExpressionUnary(
+                            unaryType = it.unaryType,
+                            text = it.text
+                        )
+                    },
+                    asEmbarkExpressionBinary = asEmbarkExpressionBinary1?.let {
+                        ExpressionFragment.AsEmbarkExpressionBinary(
+                            binaryType = it.binaryType,
+                            text = it.text,
+                            key = it.key,
+                            value = it.value
+                        )
+                    },
+                    asEmbarkExpressionMultiple = asEmbarkExpressionMultiple1?.let {
+                        ExpressionFragment.AsEmbarkExpressionMultiple(
+                            multipleType = it.multipleType,
+                            text = it.text,
+                            subExpressions = it.subExpressions.map { se -> se.into() }
+                        )
+                    }
+                )
+            )
+        )
     }
 }
 

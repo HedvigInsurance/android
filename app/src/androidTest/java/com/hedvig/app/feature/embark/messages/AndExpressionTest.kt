@@ -7,7 +7,8 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
@@ -17,12 +18,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class NotEqualsExpressionTest {
+class AndExpressionTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldShowMessageForWhenWithNotEqualsExpression() {
+    fun shouldShowMessageForWhenWithAndExpression() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
@@ -34,7 +35,7 @@ class NotEqualsExpressionTest {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("Not equals test message that evaluates to true") }
+                        text { hasText("And test message that evaluates to true") }
                     }
                 }
             }
@@ -77,38 +78,70 @@ class NotEqualsExpressionTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "Not equals test message that evaluates to true",
+                                text = "And test message that evaluates to true",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
                                             ExpressionFragment(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
-                                                    binaryType = EmbarkExpressionTypeBinary.NOT_EQUALS,
-                                                    key = "FOO",
-                                                    value = "BAT",
-                                                    text = "Not equals test message that evaluates to true"
-                                                ),
-                                                asEmbarkExpressionMultiple = null
+                                                asEmbarkExpressionBinary = null,
+                                                asEmbarkExpressionMultiple = ExpressionFragment.AsEmbarkExpressionMultiple(
+                                                    multipleType = EmbarkExpressionTypeMultiple.AND,
+                                                    subExpressions = listOf(
+                                                        ExpressionFragment.SubExpression1(
+                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
+                                                                unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                                text = null
+                                                            ),
+                                                            asEmbarkExpressionBinary1 = null,
+                                                            asEmbarkExpressionMultiple1 = null
+                                                        ),
+                                                        ExpressionFragment.SubExpression1(
+                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
+                                                                unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                                text = null
+                                                            ),
+                                                            asEmbarkExpressionBinary1 = null,
+                                                            asEmbarkExpressionMultiple1 = null
+                                                        )
+                                                    ),
+                                                    text = "And test message that evaluates to true"
+                                                )
                                             )
                                         )
                                     )
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Not equals test message that evaluates to false",
+                                text = "And test message that evaluates to false",
                                 expressions = listOf(
                                     EmbarkStoryQuery.Expression(
                                         fragments = EmbarkStoryQuery.Expression.Fragments(
                                             ExpressionFragment(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
-                                                    binaryType = EmbarkExpressionTypeBinary.NOT_EQUALS,
-                                                    key = "BAT",
-                                                    value = "TAB",
-                                                    text = "Not equals test message that evaluates to false"
-                                                ),
-                                                asEmbarkExpressionMultiple = null
+                                                asEmbarkExpressionBinary = null,
+                                                asEmbarkExpressionMultiple = ExpressionFragment.AsEmbarkExpressionMultiple(
+                                                    multipleType = EmbarkExpressionTypeMultiple.AND,
+                                                    subExpressions = listOf(
+                                                        ExpressionFragment.SubExpression1(
+                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
+                                                                unaryType = EmbarkExpressionTypeUnary.NEVER,
+                                                                text = null
+                                                            ),
+                                                            asEmbarkExpressionBinary1 = null,
+                                                            asEmbarkExpressionMultiple1 = null
+                                                        ),
+                                                        ExpressionFragment.SubExpression1(
+                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
+                                                                unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                                text = null
+                                                            ),
+                                                            asEmbarkExpressionBinary1 = null,
+                                                            asEmbarkExpressionMultiple1 = null
+                                                        )
+                                                    ),
+                                                    text = "And test message that evaluates to false"
+                                                )
                                             )
                                         )
                                     )
