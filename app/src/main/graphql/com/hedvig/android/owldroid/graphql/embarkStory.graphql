@@ -5,6 +5,9 @@ query EmbarkStory($name: String!) {
       name
       id
       messages {
+        expressions {
+          ...ExpressionFragment
+        }
         text
       }
       action {
@@ -15,9 +18,54 @@ query EmbarkStory($name: String!) {
                 name
                 label
               }
-              key
-              value
+              keys
+              values
             }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment ExpressionFragment on EmbarkExpression {
+  ... on EmbarkExpressionUnary {
+    unaryType: type
+    text
+  }
+  ... on EmbarkExpressionBinary {
+    binaryType: type
+    key
+    value
+    text
+  }
+  ... on EmbarkExpressionMultiple {
+    multipleType: type
+    text
+    subExpressions {
+      ... on EmbarkExpressionUnary {
+        unaryType: type
+        text
+      }
+      ... on EmbarkExpressionBinary {
+        binaryType: type
+        key
+        value
+        text
+      }
+      ... on EmbarkExpressionMultiple {
+        multipleType: type
+        text
+        subExpressions {
+          ... on EmbarkExpressionUnary {
+            unaryType: type
+            text
+          }
+          ... on EmbarkExpressionBinary {
+            binaryType: type
+            key
+            value
+            text
           }
         }
       }
