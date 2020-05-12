@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
@@ -71,7 +72,8 @@ class OrExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     ),
                     EmbarkStoryQuery.Passage(
                         name = "TestPassage2",
@@ -88,21 +90,29 @@ class OrExpressionTest {
                                                 asEmbarkExpressionMultiple = ExpressionFragment.AsEmbarkExpressionMultiple(
                                                     multipleType = EmbarkExpressionTypeMultiple.OR,
                                                     subExpressions = listOf(
-                                                        ExpressionFragment.SubExpression1(
-                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
-                                                                unaryType = EmbarkExpressionTypeUnary.ALWAYS,
-                                                                text = null
-                                                            ),
-                                                            asEmbarkExpressionBinary1 = null,
-                                                            asEmbarkExpressionMultiple1 = null
+                                                        ExpressionFragment.SubExpression(
+                                                            fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                SubExpressionFragment(
+                                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                                        unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                                        text = null
+                                                                    ),
+                                                                    asEmbarkExpressionBinary = null,
+                                                                    asEmbarkExpressionMultiple = null
+                                                                )
+                                                            )
                                                         ),
-                                                        ExpressionFragment.SubExpression1(
-                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
-                                                                unaryType = EmbarkExpressionTypeUnary.NEVER,
-                                                                text = null
-                                                            ),
-                                                            asEmbarkExpressionBinary1 = null,
-                                                            asEmbarkExpressionMultiple1 = null
+                                                        ExpressionFragment.SubExpression(
+                                                            fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                SubExpressionFragment(
+                                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                                        unaryType = EmbarkExpressionTypeUnary.NEVER,
+                                                                        text = null
+                                                                    ),
+                                                                    asEmbarkExpressionBinary = null,
+                                                                    asEmbarkExpressionMultiple = null
+                                                                )
+                                                            )
                                                         )
                                                     ),
                                                     text = "Or test message that evaluates to true"
@@ -123,21 +133,29 @@ class OrExpressionTest {
                                                 asEmbarkExpressionMultiple = ExpressionFragment.AsEmbarkExpressionMultiple(
                                                     multipleType = EmbarkExpressionTypeMultiple.OR,
                                                     subExpressions = listOf(
-                                                        ExpressionFragment.SubExpression1(
-                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
-                                                                unaryType = EmbarkExpressionTypeUnary.NEVER,
-                                                                text = null
-                                                            ),
-                                                            asEmbarkExpressionBinary1 = null,
-                                                            asEmbarkExpressionMultiple1 = null
+                                                        ExpressionFragment.SubExpression(
+                                                            fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                SubExpressionFragment(
+                                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                                        unaryType = EmbarkExpressionTypeUnary.NEVER,
+                                                                        text = null
+                                                                    ),
+                                                                    asEmbarkExpressionBinary = null,
+                                                                    asEmbarkExpressionMultiple = null
+                                                                )
+                                                            )
                                                         ),
-                                                        ExpressionFragment.SubExpression1(
-                                                            asEmbarkExpressionUnary1 = ExpressionFragment.AsEmbarkExpressionUnary1(
-                                                                unaryType = EmbarkExpressionTypeUnary.NEVER,
-                                                                text = null
-                                                            ),
-                                                            asEmbarkExpressionBinary1 = null,
-                                                            asEmbarkExpressionMultiple1 = null
+                                                        ExpressionFragment.SubExpression(
+                                                            fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                SubExpressionFragment(
+                                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                                        unaryType = EmbarkExpressionTypeUnary.NEVER,
+                                                                        text = null
+                                                                    ),
+                                                                    asEmbarkExpressionBinary = null,
+                                                                    asEmbarkExpressionMultiple = null
+                                                                )
+                                                            )
                                                         )
                                                     ),
                                                     text = "Or test message that evaluates to false"
@@ -163,7 +181,8 @@ class OrExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     )
                 )
             )

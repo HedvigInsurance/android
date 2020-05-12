@@ -74,7 +74,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     ),
                     EmbarkStoryQuery.Passage(
                         name = "TestPassage2",
@@ -184,7 +185,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     )
                 )
             )
