@@ -46,9 +46,9 @@ abstract class EmbarkViewModel : ViewModel() {
             if (nextPassage?.redirects?.isNotEmpty() == true) {
                 nextPassage.redirects.forEach { redirect ->
                     if (evaluateExpression(redirect.into()) is ExpressionResult.True) {
-                        redirect.asEmbarkRedirectUnaryExpression?.let { unEx ->
-                            navigateToPassage(unEx.to)
-                            return@navigateToPassage
+                        redirect.to?.let { to ->
+                            navigateToPassage(to)
+                            return
                         }
                     }
                 }
@@ -246,6 +246,15 @@ abstract class EmbarkViewModel : ViewModel() {
                     )
                 )
             )
+
+        private val EmbarkStoryQuery.Redirect.to: String?
+            get() {
+                asEmbarkRedirectUnaryExpression?.let { return it.to }
+                asEmbarkRedirectBinaryExpression?.let { return it.to }
+                asEmbarkRedirectMultipleExpressions?.let { return it.to }
+
+                return null
+            }
     }
 }
 

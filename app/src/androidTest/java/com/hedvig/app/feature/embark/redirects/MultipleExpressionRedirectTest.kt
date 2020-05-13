@@ -5,7 +5,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
@@ -16,12 +18,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class UnaryExpressionRedirect {
+class MultipleExpressionRedirectTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldRedirectOnPassageWithRedirect() {
+    fun shouldRedirectOnPassageWithBinaryRedirect() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
@@ -98,14 +100,40 @@ class UnaryExpressionRedirect {
                         ),
                         redirects = listOf(
                             EmbarkStoryQuery.Redirect(
-                                asEmbarkRedirectUnaryExpression = EmbarkStoryQuery.AsEmbarkRedirectUnaryExpression(
-                                    unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                asEmbarkRedirectUnaryExpression = null,
+                                asEmbarkRedirectBinaryExpression = null,
+                                asEmbarkRedirectMultipleExpressions = EmbarkStoryQuery.AsEmbarkRedirectMultipleExpressions(
+                                    multipleExpressionType = EmbarkExpressionTypeMultiple.AND,
                                     to = "TestPassage3",
                                     passedExpressionKey = null,
-                                    passedExpressionValue = null
-                                ),
-                                asEmbarkRedirectBinaryExpression = null,
-                                asEmbarkRedirectMultipleExpressions = null
+                                    passedExpressionValue = null,
+                                    subExpressions = listOf(
+                                        EmbarkStoryQuery.SubExpression(
+                                            fragments = EmbarkStoryQuery.SubExpression.Fragments(
+                                                SubExpressionFragment(
+                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                        unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                        text = null
+                                                    ),
+                                                    asEmbarkExpressionBinary = null,
+                                                    asEmbarkExpressionMultiple = null
+                                                )
+                                            )
+                                        ),
+                                        EmbarkStoryQuery.SubExpression(
+                                            fragments = EmbarkStoryQuery.SubExpression.Fragments(
+                                                SubExpressionFragment(
+                                                    asEmbarkExpressionUnary = SubExpressionFragment.AsEmbarkExpressionUnary(
+                                                        unaryType = EmbarkExpressionTypeUnary.ALWAYS,
+                                                        text = null
+                                                    ),
+                                                    asEmbarkExpressionBinary = null,
+                                                    asEmbarkExpressionMultiple = null
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
