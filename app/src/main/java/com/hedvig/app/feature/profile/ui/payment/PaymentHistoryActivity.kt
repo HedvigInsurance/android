@@ -8,7 +8,10 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.updatePadding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_payment_history.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -19,16 +22,24 @@ class PaymentHistoryActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_history)
 
-        setupLargeTitle(
-            R.string.PAYMENT_HISTORY_TITLE,
-            R.drawable.ic_back,
-            backAction = {
-                onBackPressed()
-            })
+        paymentHistory.setEdgeToEdgeSystemUiFlags(true)
+        paymentHistory.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+        paymentHistory.setupToolbarScrollListener(toolbar)
+
+        paymentHistory.adapter = PaymentHistoryAdapter()
 
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
             data?.chargeHistory?.let { chargeHistory ->
-                paymentHistory.adapter = PaymentHistoryAdapter(wrapCharges(chargeHistory))
+                (paymentHistory.adapter as? PaymentHistoryAdapter)?.items =
+                    listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
             }
         }
     }
