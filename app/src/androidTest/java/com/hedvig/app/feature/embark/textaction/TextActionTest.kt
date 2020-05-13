@@ -28,7 +28,10 @@ class TextActionTest {
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
             onScreen<EmbarkScreen> {
-                textActionInput { isVisible() }
+                textActionInput {
+                    isVisible()
+                    hasHint("Test hint")
+                }
             }
         }
     }
@@ -54,7 +57,8 @@ class TextActionTest {
                                     link = EmbarkStoryQuery.Link1(
                                         name = "TestPassage2",
                                         label = "Another test passage"
-                                    )
+                                    ),
+                                    placeholder = "Test hint"
                                 )
                             )
                         ),

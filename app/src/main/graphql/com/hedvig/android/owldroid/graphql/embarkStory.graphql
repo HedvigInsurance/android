@@ -54,6 +54,7 @@ query EmbarkStory($name: String!) {
               name
               label
             }
+            placeholder
           }
         }
       }

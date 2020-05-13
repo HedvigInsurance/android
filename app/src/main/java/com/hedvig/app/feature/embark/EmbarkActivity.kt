@@ -62,7 +62,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
 
                 passage.action?.asEmbarkTextAction?.let { textAction ->
-                    val textActionData = TextActionData(textAction.data.link.name)
+                    val textActionData = TextActionData.from(textAction.data)
 
                     val textActionFragment = TextActionFragment.newInstance(textActionData)
                     supportFragmentManager
