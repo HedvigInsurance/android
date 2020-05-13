@@ -28,10 +28,17 @@ class TextActionTest {
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
             onScreen<EmbarkScreen> {
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
                 textActionInput {
                     isVisible()
                     hasHint("Test hint")
+                    typeText("Test entry")
                 }
+                textActionSubmit {
+                    hasText("Another test passage")
+                    click()
+                }
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
             }
         }
     }
@@ -58,11 +65,40 @@ class TextActionTest {
                                         name = "TestPassage2",
                                         label = "Another test passage"
                                     ),
-                                    placeholder = "Test hint"
+                                    placeholder = "Test hint",
+                                    key = "BAR"
                                 )
                             )
                         ),
                         redirects = emptyList()
+                    ),
+                    EmbarkStoryQuery.Passage(
+                        name = "TestPassage2",
+                        id = "2",
+                        messages = listOf(
+                            EmbarkStoryQuery.Message(
+                                text = "{BAR} was entered",
+                                expressions = emptyList()
+                            )
+                        ),
+                        redirects = emptyList(),
+                        action = EmbarkStoryQuery.Action(
+                            asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
+                                data = EmbarkStoryQuery.Data1(
+                                    options = listOf(
+                                        EmbarkStoryQuery.Option(
+                                            link = EmbarkStoryQuery.Link(
+                                                name = "TestPassage",
+                                                label = "Yet another test passage"
+                                            ),
+                                            keys = emptyList(),
+                                            values = emptyList()
+                                        )
+                                    )
+                                )
+                            ),
+                            asEmbarkTextAction = null
+                        )
                     )
                 )
             )

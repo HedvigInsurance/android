@@ -6,11 +6,16 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_embark_text_action.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
+    private val model: EmbarkViewModel by sharedViewModel()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -21,7 +26,17 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             return
         }
 
+        messages.adapter = MessageAdapter().apply {
+            items = data.messages
+        }
+
         textActionInput.hint = data.hint
+
+        textActionSubmit.text = data.submitLabel
+        textActionSubmit.setHapticClickListener {
+            model.putInStore(data.key, textActionInput.text.toString())
+            model.navigateToPassage(data.link)
+        }
     }
 
     companion object {
@@ -37,12 +52,18 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 @Parcelize
 data class TextActionData(
     val link: String,
-    val hint: String
+    val hint: String,
+    val messages: List<String>,
+    val submitLabel: String,
+    val key: String
 ) : Parcelable {
     companion object {
-        fun from(data: EmbarkStoryQuery.Data2) = TextActionData(
+        fun from(messages: List<String>, data: EmbarkStoryQuery.Data2) = TextActionData(
             data.link.name,
-            data.placeholder
+            data.placeholder,
+            messages,
+            data.link.label,
+            data.key
         )
     }
 }

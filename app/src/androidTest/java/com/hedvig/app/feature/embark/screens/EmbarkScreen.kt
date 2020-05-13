@@ -20,6 +20,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
         KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
 
     val textActionInput = KEditText { withId(R.id.textActionInput) }
+    val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }
