@@ -69,7 +69,8 @@ class PassedKeyValueRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -96,7 +97,8 @@ class PassedKeyValueRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = listOf(
                             EmbarkStoryQuery.Redirect(
@@ -149,7 +151,8 @@ class PassedKeyValueRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

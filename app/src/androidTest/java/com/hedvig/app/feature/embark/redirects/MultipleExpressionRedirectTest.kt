@@ -69,7 +69,8 @@ class MultipleExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -96,7 +97,8 @@ class MultipleExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = listOf(
                             EmbarkStoryQuery.Redirect(
@@ -160,7 +162,8 @@ class MultipleExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

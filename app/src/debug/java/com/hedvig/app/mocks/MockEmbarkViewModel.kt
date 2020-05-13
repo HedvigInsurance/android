@@ -73,7 +73,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -184,7 +185,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

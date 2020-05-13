@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.screens
 
 import android.view.View
 import com.agoda.kakao.common.views.KView
+import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
@@ -17,6 +18,8 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val selectActions =
         KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
+
+    val textActionInput = KEditText { withId(R.id.textActionInput) }
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }
