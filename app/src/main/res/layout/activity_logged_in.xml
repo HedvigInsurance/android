@@ -42,18 +42,17 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
-    <!-- Theme attribute refused to work as a color here. -->
+    <!--Have to use custom background for this view, had problem with backgroundTint-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
-        android:background="@color/color_background_85"
+        android:background="@drawable/background_bottom_nav"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="@+id/tabContentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:background="@color/translucent_background"
         tools:menu="@menu/logged_in_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
