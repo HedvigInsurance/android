@@ -32,8 +32,9 @@ class TextActionTest {
                 textActionInput {
                     isVisible()
                     hasHint("Test hint")
-                    typeText("Test entry")
                 }
+                textActionSubmit { isDisabled() }
+                textActionInput { typeText("Test entry") }
                 textActionSubmit {
                     hasText("Another test passage")
                     click()

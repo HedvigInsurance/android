@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.parcel.Parcelize
@@ -31,6 +32,9 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         }
 
         textActionInput.hint = data.hint
+        textActionInput.onChange { text ->
+            textActionSubmit.isEnabled = text.isNotEmpty()
+        }
 
         textActionSubmit.text = data.submitLabel
         textActionSubmit.setHapticClickListener {
