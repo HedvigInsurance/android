@@ -10,6 +10,31 @@ query EmbarkStory($name: String!) {
         }
         text
       }
+      redirects {
+        ... on EmbarkRedirectUnaryExpression {
+          unaryType: type
+          to
+          passedExpressionKey
+          passedExpressionValue
+        }
+        ... on EmbarkRedirectBinaryExpression {
+          binaryType: type
+          to
+          key
+          value
+          passedExpressionKey
+          passedExpressionValue
+        }
+        ... on EmbarkRedirectMultipleExpressions {
+          multipleExpressionType: type
+          to
+          passedExpressionKey
+          passedExpressionValue
+          subExpressions {
+            ...SubExpressionFragment
+          }
+        }
+      }
       action {
         ... on EmbarkSelectAction {
           data {
@@ -43,6 +68,26 @@ fragment ExpressionFragment on EmbarkExpression {
     multipleType: type
     text
     subExpressions {
+      ...SubExpressionFragment
+    }
+  }
+}
+
+fragment SubExpressionFragment on EmbarkExpression {
+  ... on EmbarkExpressionUnary {
+    unaryType: type
+    text
+  }
+  ... on EmbarkExpressionBinary {
+    binaryType: type
+    key
+    value
+    text
+  }
+  ... on EmbarkExpressionMultiple {
+    multipleType: type
+    text
+    subExpressions {
       ... on EmbarkExpressionUnary {
         unaryType: type
         text
@@ -52,22 +97,6 @@ fragment ExpressionFragment on EmbarkExpression {
         key
         value
         text
-      }
-      ... on EmbarkExpressionMultiple {
-        multipleType: type
-        text
-        subExpressions {
-          ... on EmbarkExpressionUnary {
-            unaryType: type
-            text
-          }
-          ... on EmbarkExpressionBinary {
-            binaryType: type
-            key
-            value
-            text
-          }
-        }
       }
     }
   }

@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
+import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
@@ -23,9 +25,7 @@ class TemplateValuesTest {
             webServer.start(8080)
 
             webServer.enqueue(
-                MockResponse().setBody(
-                    """{"data":{"embarkStory":{"__typename":"EmbarkStory","startPassage":"1","passages":[{"__typename":"EmbarkPassage","name":"TestPassage","id":"1","messages":[{"__typename":"EmbarkMessage","expressions":[],"text":"test message"},{"__typename":"EmbarkMessage","expressions":[],"text":"123"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionUnary","unaryType":"NEVER","text":"Unary false test"}],"text":"Unary false test"},{"__typename":"EmbarkMessage","expressions":[{"__typename":"EmbarkExpressionUnary","unaryType":"ALWAYS","text":"Unary true test"}],"text":"Unary true test"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage2","label":"Test select action"},"keys":["FOO"],"values":["BAR"]}]}}},{"__typename":"EmbarkPassage","name":"TestPassage2","id":"2","messages":[{"__typename":"EmbarkMessage","expressions":[],"text":"another test message"},{"__typename":"EmbarkMessage","expressions":[],"text":"456"},{"__typename":"EmbarkMessage","expressions":[],"text":"{FOO} test"}],"action":{"__typename":"EmbarkSelectAction","data":{"__typename":"EmbarkSelectActionData","options":[{"__typename":"EmbarkSelectActionOption","link":{"__typename":"EmbarkLink","name":"TestPassage","label":"Another test select action"},"keys":[],"values":[]}]}}}]}}}"""
-                )
+                MockResponse().setBody(DATA.toJson())
             )
 
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
@@ -37,7 +37,7 @@ class TemplateValuesTest {
                     }
                 }
                 messages {
-                    childAt<EmbarkScreen.MessageRow>(2) {
+                    firstChild<EmbarkScreen.MessageRow> {
                         text {
                             hasText("BAR test")
                         }
@@ -48,6 +48,67 @@ class TemplateValuesTest {
     }
 
     companion object {
+        private val DATA = EmbarkStoryQuery.Data(
+            embarkStory = EmbarkStoryQuery.EmbarkStory(
+                startPassage = "1",
+                passages = listOf(
+                    EmbarkStoryQuery.Passage(
+                        name = "TestPassage",
+                        id = "1",
+                        messages = listOf(
+                            EmbarkStoryQuery.Message(
+                                text = "test message",
+                                expressions = emptyList()
+                            )
+                        ),
+                        action = EmbarkStoryQuery.Action(
+                            asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
+                                data = EmbarkStoryQuery.Data1(
+                                    options = listOf(
+                                        EmbarkStoryQuery.Option(
+                                            link = EmbarkStoryQuery.Link(
+                                                name = "TestPassage2",
+                                                label = "Test select action"
+                                            ),
+                                            keys = listOf("FOO"),
+                                            values = listOf("BAR")
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        redirects = emptyList()
+                    ),
+                    EmbarkStoryQuery.Passage(
+                        name = "TestPassage2",
+                        id = "2",
+                        messages = listOf(
+                            EmbarkStoryQuery.Message(
+                                text = "{FOO} test",
+                                expressions = emptyList()
+                            )
+                        ),
+                        action = EmbarkStoryQuery.Action(
+                            asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
+                                data = EmbarkStoryQuery.Data1(
+                                    options = listOf(
+                                        EmbarkStoryQuery.Option(
+                                            link = EmbarkStoryQuery.Link(
+                                                name = "TestPassage",
+                                                label = "Another test select action"
+                                            ),
+                                            keys = emptyList(),
+                                            values = emptyList()
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        redirects = emptyList()
+                    )
+                )
+            )
+        )
         private val INTENT_WITH_STORY_NAME = Intent().apply {
             putExtra(EmbarkActivity.STORY_NAME, this@Companion::class.java.name)
         }

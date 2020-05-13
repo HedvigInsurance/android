@@ -70,7 +70,8 @@ class LessThanOrEqualsExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     ),
                     EmbarkStoryQuery.Passage(
                         name = "TestPassage2",
@@ -130,7 +131,8 @@ class LessThanOrEqualsExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     )
                 )
             )

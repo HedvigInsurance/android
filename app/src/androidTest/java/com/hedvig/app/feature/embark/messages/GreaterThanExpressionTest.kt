@@ -76,7 +76,8 @@ class GreaterThanExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     ),
                     EmbarkStoryQuery.Passage(
                         name = "TestPassage2",
@@ -136,7 +137,8 @@ class GreaterThanExpressionTest {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        redirects = emptyList()
                     )
                 )
             )
