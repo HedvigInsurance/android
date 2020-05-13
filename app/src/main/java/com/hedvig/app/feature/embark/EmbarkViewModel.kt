@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.launch
 
 sealed class ExpressionResult {
@@ -46,6 +47,7 @@ abstract class EmbarkViewModel : ViewModel() {
             if (nextPassage?.redirects?.isNotEmpty() == true) {
                 nextPassage.redirects.forEach { redirect ->
                     if (evaluateExpression(redirect.into()) is ExpressionResult.True) {
+                        redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
                         redirect.to?.let { to ->
                             navigateToPassage(to)
                             return
@@ -253,6 +255,29 @@ abstract class EmbarkViewModel : ViewModel() {
                 asEmbarkRedirectBinaryExpression?.let { return it.to }
                 asEmbarkRedirectMultipleExpressions?.let { return it.to }
 
+                return null
+            }
+
+        private val EmbarkStoryQuery.Redirect.passedKeyValue: Pair<String, String>?
+            get() {
+                asEmbarkRedirectUnaryExpression?.let { asUnary ->
+                    return safeLet(
+                        asUnary.passedExpressionKey,
+                        asUnary.passedExpressionValue
+                    ) { key, value -> Pair(key, value) }
+                }
+                asEmbarkRedirectBinaryExpression?.let { asBinary ->
+                    return safeLet(
+                        asBinary.passedExpressionKey,
+                        asBinary.passedExpressionValue
+                    ) { key, value -> Pair(key, value) }
+                }
+                asEmbarkRedirectMultipleExpressions?.let { asMultiple ->
+                    return safeLet(
+                        asMultiple.passedExpressionKey,
+                        asMultiple.passedExpressionValue
+                    ) { key, value -> Pair(key, value) }
+                }
                 return null
             }
     }
