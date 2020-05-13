@@ -15,10 +15,7 @@
         android:background="?android:colorBackground"
         android:elevation="@dimen/top_bar_elevation"
         android:gravity="center_horizontal"
-        android:padding="@dimen/base_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="@dimen/base_margin">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -35,10 +32,7 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@+id/save"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,10 +92,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_octuple"
                 android:enabled="false"
-                android:text="@string/continue_market"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:text="@string/continue_market" />
 
         </LinearLayout>
 
