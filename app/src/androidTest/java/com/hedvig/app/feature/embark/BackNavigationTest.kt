@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import android.app.Activity
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -10,104 +9,28 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class EmbarkActivityTest {
+class BackNavigationTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun showsSpinnerWhileLoading() {
-        activityRule.launchActivity(INTENT_WITH_STORY_NAME)
-        onScreen<EmbarkScreen> {
-            spinner {
-                isVisible()
-            }
-        }
-    }
-
-    @Test
-    fun endsActivityIfNoStoryNameIsProvided() {
-        activityRule.launchActivity(Intent())
-        assertTrue(activityRule.activity.isFinishing)
-        assertTrue(activityRule.activityResult.resultCode == Activity.RESULT_CANCELED)
-    }
-
-    @Test
-    fun showsFirstPassageWhenNetworkHasLoaded() {
+    fun shouldNavigateBackwardsWhenPressingBackButton() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
-
-            webServer.enqueue(
-                MockResponse().setBody(DATA.toJson())
-            )
+            webServer.enqueue(MockResponse().setBody(DATA.toJson()))
 
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
             onScreen<EmbarkScreen> {
+                selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+                pressBack()
                 messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text {
-                            hasText("test message")
-                        }
-                    }
-                    childAt<EmbarkScreen.MessageRow>(1) {
-                        text {
-                            hasText("123")
-                        }
-                    }
-                }
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> {
-                        button {
-                            hasText("Test select action")
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    @Test
-    fun loadsNextPassageWhenSelectingSingleSelectAction() {
-        MockWebServer().use { webServer ->
-            webServer.start(8080)
-
-            webServer.enqueue(
-                MockResponse().setBody(DATA.toJson())
-            )
-
-            activityRule.launchActivity(INTENT_WITH_STORY_NAME)
-
-            onScreen<EmbarkScreen> {
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> {
-                        click()
-                    }
-                }
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text {
-                            hasText("another test message")
-                        }
-                    }
-                    childAt<EmbarkScreen.MessageRow>(1) {
-                        text {
-                            hasText("456")
-                        }
-                    }
-                }
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> {
-                        button {
-                            hasText("Another test select action")
-                        }
-                    }
+                    firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
                 }
             }
         }

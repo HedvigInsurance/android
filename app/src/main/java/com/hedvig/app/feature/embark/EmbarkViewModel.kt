@@ -12,6 +12,7 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.launch
+import java.util.Stack
 
 sealed class ExpressionResult {
     data class True(
@@ -30,6 +31,7 @@ abstract class EmbarkViewModel : ViewModel() {
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
     private val store = HashMap<String, String>()
+    private val backStack = Stack<String>()
 
     protected fun displayInitialPassage() {
         storyData.embarkStory?.let { story ->
@@ -55,8 +57,23 @@ abstract class EmbarkViewModel : ViewModel() {
                     }
                 }
             }
+            _data.value?.name?.let { backStack.push(it) }
             _data.postValue(preProcessPassage(nextPassage))
         }
+    }
+
+    fun navigateBack(): Boolean {
+        if (backStack.isEmpty()) {
+            return false
+        }
+        val passageName = backStack.pop()
+
+        storyData.embarkStory?.let { story ->
+            val nextPassage = story.passages.find { it.name == passageName }
+            _data.postValue(preProcessPassage(nextPassage))
+            return true
+        }
+        return false
     }
 
     private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): EmbarkStoryQuery.Passage? {
