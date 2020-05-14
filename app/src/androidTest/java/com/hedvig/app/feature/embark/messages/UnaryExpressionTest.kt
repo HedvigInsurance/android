@@ -103,7 +103,8 @@ class UnaryExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

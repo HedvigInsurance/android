@@ -4,12 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.SelectAction
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
+import com.hedvig.app.feature.embark.passages.TextActionData
+import com.hedvig.app.feature.embark.passages.TextActionFragment
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import e
@@ -39,8 +40,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             data?.let { passage ->
                 loadingSpinner.remove()
 
-                if (passage.isSelectActionPassage()) {
-                    val options = passage.action?.asEmbarkSelectAction ?: return@let
+                passage.action?.asEmbarkSelectAction?.let { options ->
                     val selectActionData = SelectActionPassage(
                         passage.messages.map { it.text },
                         options.data.options.map {
@@ -60,15 +60,23 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         .replace(R.id.passageContainer, selectActionFragment)
                         .commit()
                 }
+
+                passage.action?.asEmbarkTextAction?.let { textAction ->
+                    val textActionData =
+                        TextActionData.from(passage.messages.map { it.text }, textAction.data)
+
+                    val textActionFragment = TextActionFragment.newInstance(textActionData)
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.passageContainer, textActionFragment)
+                        .commit()
+                }
             }
         }
     }
 
     companion object {
         internal const val STORY_NAME = "STORY_NAME"
-
-        private fun EmbarkStoryQuery.Passage.isSelectActionPassage() =
-            action?.asEmbarkSelectAction != null
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {

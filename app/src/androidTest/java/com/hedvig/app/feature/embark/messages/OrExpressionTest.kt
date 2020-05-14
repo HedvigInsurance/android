@@ -71,7 +71,8 @@ class OrExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -180,7 +181,8 @@ class OrExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

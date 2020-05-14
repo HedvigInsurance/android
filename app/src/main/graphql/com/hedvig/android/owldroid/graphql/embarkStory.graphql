@@ -48,6 +48,16 @@ query EmbarkStory($name: String!) {
             }
           }
         }
+        ... on EmbarkTextAction {
+          data {
+            link {
+              name
+              label
+            }
+            placeholder
+            key
+          }
+        }
       }
     }
   }
