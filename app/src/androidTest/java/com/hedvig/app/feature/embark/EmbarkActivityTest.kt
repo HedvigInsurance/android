@@ -186,7 +186,7 @@ class EmbarkActivityTest {
             )
         )
         private val INTENT_WITH_STORY_NAME = Intent().apply {
-            putExtra(EmbarkActivity.STORY_NAME, "example")
+            putExtra(EmbarkActivity.STORY_NAME, this@Companion::class.java.name)
         }
     }
 }
