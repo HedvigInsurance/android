@@ -64,6 +64,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
+    override fun onBackPressed() {
+        val couldNavigateBack = model.navigateBack()
+        if (!couldNavigateBack) {
+            super.onBackPressed()
+        }
+    }
+
     companion object {
         internal const val STORY_NAME = "STORY_NAME"
 
