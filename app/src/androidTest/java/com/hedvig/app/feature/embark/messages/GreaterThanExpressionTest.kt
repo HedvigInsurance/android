@@ -75,7 +75,8 @@ class GreaterThanExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -136,7 +137,8 @@ class GreaterThanExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

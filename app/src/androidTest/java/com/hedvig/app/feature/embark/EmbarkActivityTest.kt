@@ -145,7 +145,8 @@ class EmbarkActivityTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -176,7 +177,8 @@ class EmbarkActivityTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

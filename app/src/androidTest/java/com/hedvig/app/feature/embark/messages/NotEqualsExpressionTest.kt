@@ -69,7 +69,8 @@ class NotEqualsExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -130,7 +131,8 @@ class NotEqualsExpressionTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

@@ -67,7 +67,8 @@ class BinaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -94,7 +95,8 @@ class BinaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = listOf(
                             EmbarkStoryQuery.Redirect(
@@ -134,7 +136,8 @@ class BinaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )

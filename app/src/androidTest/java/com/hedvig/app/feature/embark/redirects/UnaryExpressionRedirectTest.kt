@@ -67,7 +67,8 @@ class UnaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     ),
@@ -94,7 +95,8 @@ class UnaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = listOf(
                             EmbarkStoryQuery.Redirect(
@@ -132,7 +134,8 @@ class UnaryExpressionRedirectTest {
                                         )
                                     )
                                 )
-                            )
+                            ),
+                            asEmbarkTextAction = null
                         ),
                         redirects = emptyList()
                     )
