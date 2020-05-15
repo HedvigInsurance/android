@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.textaction
+package com.hedvig.app.feature.embark.response
 
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -10,21 +10,17 @@ import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.awaitility.Duration.TWO_SECONDS
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class TextActionTest {
+class DefaultSelectActionResponseTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldRenderTextAction() {
+    fun shouldShowResponseAfterSubmittingSelectAction() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
@@ -32,19 +28,10 @@ class TextActionTest {
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
             onScreen<EmbarkScreen> {
-                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-                textActionInput {
+                selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+                response {
                     isVisible()
-                    hasHint("Test hint")
-                }
-                textActionSubmit { isDisabled() }
-                textActionInput { typeText("Test entry") }
-                textActionSubmit {
-                    hasText("Another test passage")
-                    click()
-                }
-                await atMost TWO_SECONDS untilAsserted {
-                    messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
+                    hasText("Test select action")
                 }
             }
         }
@@ -62,41 +49,20 @@ class TextActionTest {
                             EmbarkStoryQuery.Message(
                                 text = "test message",
                                 expressions = emptyList()
-                            )
-                        ),
-                        action = EmbarkStoryQuery.Action(
-                            asEmbarkSelectAction = null,
-                            asEmbarkTextAction = EmbarkStoryQuery.AsEmbarkTextAction(
-                                data = EmbarkStoryQuery.Data2(
-                                    link = EmbarkStoryQuery.Link1(
-                                        name = "TestPassage2",
-                                        label = "Another test passage"
-                                    ),
-                                    placeholder = "Test hint",
-                                    key = "BAR"
-                                )
-                            )
-                        ),
-                        redirects = emptyList()
-                    ),
-                    EmbarkStoryQuery.Passage(
-                        name = "TestPassage2",
-                        id = "2",
-                        messages = listOf(
+                            ),
                             EmbarkStoryQuery.Message(
-                                text = "{BAR} was entered",
+                                text = "123",
                                 expressions = emptyList()
                             )
                         ),
-                        redirects = emptyList(),
                         action = EmbarkStoryQuery.Action(
                             asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
                                 data = EmbarkStoryQuery.Data1(
                                     options = listOf(
                                         EmbarkStoryQuery.Option(
                                             link = EmbarkStoryQuery.Link(
-                                                name = "TestPassage",
-                                                label = "Yet another test passage"
+                                                name = "TestPassage2",
+                                                label = "Test select action"
                                             ),
                                             keys = emptyList(),
                                             values = emptyList()
@@ -105,7 +71,40 @@ class TextActionTest {
                                 )
                             ),
                             asEmbarkTextAction = null
-                        )
+                        ),
+                        redirects = emptyList()
+                    ),
+                    EmbarkStoryQuery.Passage(
+                        name = "TestPassage2",
+                        id = "2",
+                        messages = listOf(
+                            EmbarkStoryQuery.Message(
+                                text = "another test message",
+                                expressions = emptyList()
+                            ),
+                            EmbarkStoryQuery.Message(
+                                text = "456",
+                                expressions = emptyList()
+                            )
+                        ),
+                        action = EmbarkStoryQuery.Action(
+                            asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
+                                data = EmbarkStoryQuery.Data1(
+                                    options = listOf(
+                                        EmbarkStoryQuery.Option(
+                                            link = EmbarkStoryQuery.Link(
+                                                name = "TestPassage",
+                                                label = "Another test select action"
+                                            ),
+                                            keys = emptyList(),
+                                            values = emptyList()
+                                        )
+                                    )
+                                )
+                            ),
+                            asEmbarkTextAction = null
+                        ),
+                        redirects = emptyList()
                     )
                 )
             )

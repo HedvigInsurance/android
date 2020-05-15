@@ -38,8 +38,10 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
         textActionSubmit.text = data.submitLabel
         textActionSubmit.setHapticClickListener {
-            model.putInStore(data.key, textActionInput.text.toString())
-            model.navigateToPassage(data.link)
+            animateResponse(response, textActionInput.text.toString()) {
+                model.putInStore(data.key, textActionInput.text.toString())
+                model.navigateToPassage(data.link)
+            }
         }
     }
 

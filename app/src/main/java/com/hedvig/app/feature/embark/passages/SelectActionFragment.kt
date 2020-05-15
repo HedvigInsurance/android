@@ -3,13 +3,9 @@ package com.hedvig.app.feature.embark.passages
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.util.boundedProgress
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.spring
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_embark_select_action.*
@@ -34,19 +30,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
                 model.putInStore(key, value)
             }
-            response.text = selectAction.label
-            response.show()
-            val initialTranslation = response.translationY
-
-            response
-                .spring(DynamicAnimation.TRANSLATION_Y)
-                .addUpdateListener { _, value, _ ->
-                    response.alpha = boundedProgress(initialTranslation, 0f, value)
-                }
-                .addEndListener { _, _, _, _ ->
-                    model.navigateToPassage(selectAction.link)
-                }
-                .animateToFinalPosition(0f)
+            animateResponse(response, selectAction.label) {
+                model.navigateToPassage(selectAction.link)
+            }
         }.apply {
             items = data.actions
         }

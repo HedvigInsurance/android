@@ -15,12 +15,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SingleResponseTest {
+class DefaultTextActionResponseTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @Test
-    fun shouldShowResponseAfterSubmitting() {
+    fun shouldShowResponseAfterSubmittingTextAction() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
@@ -28,10 +28,11 @@ class SingleResponseTest {
             activityRule.launchActivity(INTENT_WITH_STORY_NAME)
 
             onScreen<EmbarkScreen> {
-                selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+                textActionInput { typeText("Test") }
+                textActionSubmit { click() }
                 response {
                     isVisible()
-                    hasText("Test select action")
+                    hasText("Test")
                 }
             }
         }
@@ -56,21 +57,17 @@ class SingleResponseTest {
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
-                            asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
-                                data = EmbarkStoryQuery.Data1(
-                                    options = listOf(
-                                        EmbarkStoryQuery.Option(
-                                            link = EmbarkStoryQuery.Link(
-                                                name = "TestPassage2",
-                                                label = "Test select action"
-                                            ),
-                                            keys = emptyList(),
-                                            values = emptyList()
-                                        )
-                                    )
+                            asEmbarkSelectAction = null,
+                            asEmbarkTextAction = EmbarkStoryQuery.AsEmbarkTextAction(
+                                data = EmbarkStoryQuery.Data2(
+                                    link = EmbarkStoryQuery.Link1(
+                                        name = "TestPassage2",
+                                        label = ""
+                                    ),
+                                    placeholder = "",
+                                    key = "FOO"
                                 )
-                            ),
-                            asEmbarkTextAction = null
+                            )
                         ),
                         redirects = emptyList()
                     ),
