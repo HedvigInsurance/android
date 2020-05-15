@@ -14,6 +14,6 @@ class MarketPickerScreen : Screen<MarketPickerScreen>() {
         itemTypeBuilder = { itemType(::Item) })
 
     class Item(parent: Matcher<View>) : KRecyclerItem<Item>(parent) {
-        val radioButton = KView { withId(R.id.title) }
+        val radioButton = KView { withId(R.id.radioButton) }
     }
 }
