@@ -6,7 +6,7 @@ import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.hedvig.app.R
-import java.util.regex.Matcher
+import org.hamcrest.Matcher
 
 class MarketPickerScreen : Screen<MarketPickerScreen>() {
     val marketRecyclerView: KRecyclerView = KRecyclerView(
