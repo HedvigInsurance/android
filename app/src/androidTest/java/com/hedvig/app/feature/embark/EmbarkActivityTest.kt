@@ -10,6 +10,10 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -90,22 +94,24 @@ class EmbarkActivityTest {
                         click()
                     }
                 }
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text {
-                            hasText("another test message")
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text {
+                                hasText("another test message")
+                            }
+                        }
+                        childAt<EmbarkScreen.MessageRow>(1) {
+                            text {
+                                hasText("456")
+                            }
                         }
                     }
-                    childAt<EmbarkScreen.MessageRow>(1) {
-                        text {
-                            hasText("456")
-                        }
-                    }
-                }
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> {
-                        button {
-                            hasText("Another test select action")
+                    selectActions {
+                        firstChild<EmbarkScreen.SelectAction> {
+                            button {
+                                hasText("Another test select action")
+                            }
                         }
                     }
                 }

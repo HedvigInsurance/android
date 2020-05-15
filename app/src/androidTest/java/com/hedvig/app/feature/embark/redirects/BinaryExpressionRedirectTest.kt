@@ -11,6 +11,10 @@ import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,9 +34,11 @@ class BinaryExpressionRedirectTest {
 
             onScreen<EmbarkScreen> {
                 selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("a third test message") }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text { hasText("a third test message") }
+                        }
                     }
                 }
             }

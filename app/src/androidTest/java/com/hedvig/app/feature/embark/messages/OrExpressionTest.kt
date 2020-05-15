@@ -14,6 +14,10 @@ import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,10 +37,12 @@ class OrExpressionTest {
 
             onScreen<EmbarkScreen> {
                 selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-                messages {
-                    hasSize(1)
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("Or test message that evaluates to true") }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        hasSize(1)
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text { hasText("Or test message that evaluates to true") }
+                        }
                     }
                 }
             }
@@ -52,6 +58,10 @@ class OrExpressionTest {
                         name = "TestPassage",
                         id = "1",
                         messages = listOf(
+                            EmbarkStoryQuery.Message(
+                                text = "test message",
+                                expressions = emptyList()
+                            ),
                             EmbarkStoryQuery.Message(
                                 text = "test message",
                                 expressions = emptyList()

@@ -16,6 +16,8 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     val messages =
         KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
 
+    val response = KTextView { withId(R.id.response) }
+
     val selectActions =
         KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
 

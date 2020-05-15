@@ -9,6 +9,10 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,9 +32,16 @@ class BackNavigationTest {
 
             onScreen<EmbarkScreen> {
                 selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> { text { hasText("another test message") } }
+                    }
+                }
                 pressBack()
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
+                    }
                 }
             }
         }
