@@ -76,30 +76,43 @@ abstract class EmbarkViewModel : ViewModel() {
         return false
     }
 
+    fun preProcessResponse(passageName: String): String? {
+        val response = storyData
+            .embarkStory
+            ?.passages
+            ?.find { it.name == passageName }
+            ?.response
+            ?: return null
+
+        response.fragments.messageFragment?.let { message ->
+            preProcessMessage(message)?.let { return it.text }
+        }
+        return null
+    }
+
     private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): EmbarkStoryQuery.Passage? {
         if (passage == null) {
             return null
         }
         return passage.copy(
             messages = passage.messages.mapNotNull {
-                preProcessMessage(it)
+                val messageFragment =
+                    preProcessMessage(it.fragments.messageFragment) ?: return@mapNotNull null
+                it.copy(
+                    fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
+                )
             }
         )
     }
 
-    private fun preProcessMessage(message: EmbarkStoryQuery.Message): EmbarkStoryQuery.Message? {
-        if (message.fragments.messageFragment.expressions.isEmpty()) {
+    private fun preProcessMessage(message: MessageFragment): MessageFragment? {
+        if (message.expressions.isEmpty()) {
             return message.copy(
-                fragments = EmbarkStoryQuery.Message.Fragments(
-                    message.fragments.messageFragment.copy(
-                        text = interpolateMessage(store, message.fragments.messageFragment.text)
-                    )
-                )
+                text = interpolateMessage(store, message.text)
             )
         }
 
         val expressionText = message
-            .fragments.messageFragment
             .expressions
             .map(::evaluateExpression)
             .filterIsInstance<ExpressionResult.True>()
@@ -108,11 +121,7 @@ abstract class EmbarkViewModel : ViewModel() {
             ?: return null
 
         return message.copy(
-            fragments = EmbarkStoryQuery.Message.Fragments(
-                message.fragments.messageFragment.copy(
-                    text = interpolateMessage(store, expressionText)
-                )
-            )
+            text = interpolateMessage(store, expressionText)
         )
     }
 

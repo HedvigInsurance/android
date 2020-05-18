@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import e
@@ -30,7 +31,8 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
                 model.putInStore(key, value)
             }
-            animateResponse(response, selectAction.label) {
+            val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
+            animateResponse(response, responseText) {
                 model.navigateToPassage(selectAction.link)
             }
         }.apply {
@@ -52,8 +54,18 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 @Parcelize
 data class SelectActionPassage(
     val messages: List<String>,
-    val actions: List<SelectAction>
-) : Parcelable
+    val actions: List<SelectAction>,
+    val passageName: String
+) : Parcelable {
+    companion object {
+        fun from(messages: List<String>, data: EmbarkStoryQuery.Data1, passageName: String) =
+            SelectActionPassage(
+                messages,
+                data.options.map { SelectAction(it.link.name, it.link.label, it.keys, it.values) },
+                passageName
+            )
+    }
+}
 
 @Parcelize
 data class SelectAction(
