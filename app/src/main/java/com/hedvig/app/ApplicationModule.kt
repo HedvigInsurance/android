@@ -88,6 +88,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
@@ -97,6 +98,7 @@ import java.util.Locale
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
+    single { androidApplication() as HedvigApplication }
     single { FirebaseAnalytics.getInstance(get()) }
     single { AppEventsLogger.newLogger(get()) }
     single {
@@ -155,7 +157,7 @@ val applicationModule = module {
         builder.build()
     }
     single {
-        ApolloClientWrapper(get(), get(), get())
+        ApolloClientWrapper(get(), get(), get(), get())
     }
 }
 

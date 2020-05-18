@@ -39,7 +39,7 @@ android {
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "com.hedvig.app.feature.TestRunner"
+        testInstrumentationRunner "com.hedvig.app.TestRunner"
     }
 
     compileOptions {

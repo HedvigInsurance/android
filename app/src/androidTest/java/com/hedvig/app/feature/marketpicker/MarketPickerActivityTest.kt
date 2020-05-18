@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.GeoQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,23 +25,53 @@ class MarketPickerActivityTest {
         MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
+
+            activityRule.launchActivity(Intent())
+
+            onScreen<MarketPickerScreen> {
+                marketRecyclerView {
+                    firstChild<MarketPickerScreen.MarketItem> {
+                        isClickable()
+                        radioButton {
+                            isNotChecked()
+                        }
+                    }
+                    lastChild<MarketPickerScreen.MarketItem> {
+                        isClickable()
+                        radioButton {
+                            isChecked()
+                        }
+                    }
+                }
+                languageRecyclerView {
+                    firstChild<MarketPickerScreen.LanguageItem> {
+                        languageText { R.string.swedish }
+                    }
+                    lastChild<MarketPickerScreen.LanguageItem> {
+                        languageText {
+                            hasText(R.string.english_swedish)
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    @Test
+    fun checkSaveButton() {
         activityRule.launchActivity(Intent())
 
         onScreen<MarketPickerScreen> {
-            marketRecyclerView {
-                firstChild<MarketPickerScreen.Item> {
-                    isClickable()
-                    radioButton {
-                        isChecked()
-                    }
+            save {
+                isDisabled()
+            }
+            languageRecyclerView {
+                firstChild<MarketPickerScreen.LanguageItem> {
+                    click()
                 }
-                lastChild<MarketPickerScreen.Item> {
-                    isClickable()
-                    radioButton {
-                        isNotChecked()
-                    }
-                }
+            }
+            save {
+                click()
             }
         }
     }
