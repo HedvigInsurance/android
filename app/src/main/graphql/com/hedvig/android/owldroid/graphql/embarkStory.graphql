@@ -5,10 +5,10 @@ query EmbarkStory($name: String!) {
       name
       id
       messages {
-        expressions {
-          ...ExpressionFragment
-        }
-        text
+        ...MessageFragment
+      }
+      response {
+        ...MessageFragment
       }
       redirects {
         ... on EmbarkRedirectUnaryExpression {
@@ -50,12 +50,12 @@ query EmbarkStory($name: String!) {
         }
         ... on EmbarkTextAction {
           data {
+            key
             link {
               name
               label
             }
             placeholder
-            key
           }
         }
       }
@@ -63,24 +63,27 @@ query EmbarkStory($name: String!) {
   }
 }
 
-fragment ExpressionFragment on EmbarkExpression {
-  ... on EmbarkExpressionUnary {
-    unaryType: type
-    text
-  }
-  ... on EmbarkExpressionBinary {
-    binaryType: type
-    key
-    value
-    text
-  }
-  ... on EmbarkExpressionMultiple {
-    multipleType: type
-    text
-    subExpressions {
-      ...SubExpressionFragment
+fragment MessageFragment on EmbarkMessage {
+  expressions {
+    ... on EmbarkExpressionUnary {
+      unaryType: type
+      text
+    }
+    ... on EmbarkExpressionBinary {
+      binaryType: type
+      key
+      value
+      text
+    }
+    ... on EmbarkExpressionMultiple {
+      multipleType: type
+      text
+      subExpressions {
+        ...SubExpressionFragment
+      }
     }
   }
+  text
 }
 
 fragment SubExpressionFragment on EmbarkExpression {

@@ -42,7 +42,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
                 passage.action?.asEmbarkSelectAction?.let { options ->
                     val selectActionData = SelectActionPassage(
-                        passage.messages.map { it.text },
+                        passage.messages.map { it.fragments.messageFragment.text },
                         options.data.options.map {
                             SelectAction(
                                 it.link.name,
@@ -63,7 +63,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
                 passage.action?.asEmbarkTextAction?.let { textAction ->
                     val textActionData =
-                        TextActionData.from(passage.messages.map { it.text }, textAction.data)
+                        TextActionData.from(
+                            passage.messages.map { it.fragments.messageFragment.text },
+                            textAction.data
+                        )
 
                     val textActionFragment = TextActionFragment.newInstance(textActionData)
                     supportFragmentManager

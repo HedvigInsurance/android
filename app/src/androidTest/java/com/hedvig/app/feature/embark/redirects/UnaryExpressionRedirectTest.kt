@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkActivity
@@ -55,8 +56,17 @@ class UnaryExpressionRedirectTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -83,8 +93,17 @@ class UnaryExpressionRedirectTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -122,8 +141,17 @@ class UnaryExpressionRedirectTest {
                         id = "3",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "a third test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "a third test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

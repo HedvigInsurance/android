@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
@@ -57,12 +58,25 @@ class BackNavigationTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "123",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "123",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -89,12 +103,25 @@ class BackNavigationTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "456",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "456",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

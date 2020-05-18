@@ -1,6 +1,6 @@
 package com.hedvig.app.mocks
 
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
@@ -17,20 +17,28 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "123",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "123",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Unary false test",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
-                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Unary false test",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
+                                                asEmbarkExpressionUnary = MessageFragment.AsEmbarkExpressionUnary(
                                                     unaryType = EmbarkExpressionTypeUnary.NEVER,
                                                     text = "Unary false test"
                                                 ),
@@ -42,12 +50,12 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Unary true test",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
-                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Unary true test",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
+                                                asEmbarkExpressionUnary = MessageFragment.AsEmbarkExpressionUnary(
                                                     unaryType = EmbarkExpressionTypeUnary.ALWAYS,
                                                     text = "Unary true test"
                                                 ),
@@ -57,6 +65,11 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                         )
                                     )
                                 )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -83,25 +96,37 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "456",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "456",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "{FOO} test",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "{FOO} test",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary equals test message that evaluates to true",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Binary equals test message that evaluates to true",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.EQUALS,
                                                     key = "FOO",
                                                     value = "BAR",
@@ -110,17 +135,18 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                                 asEmbarkExpressionMultiple = null
                                             )
                                         )
+
                                     )
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary equals test message that evaluates to false",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Binary equals test message that evaluates to false",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.EQUALS,
                                                     key = "BOO",
                                                     value = "FAR",
@@ -133,13 +159,13 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than test message that evaluates to true",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Binary greater than test message that evaluates to true",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
                                                     key = "BAZ",
                                                     value = "4",
@@ -152,13 +178,13 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Binary greater than test message that evaluates to false",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Binary greater than test message that evaluates to false",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.MORE_THAN,
                                                     key = "BAZ",
                                                     value = "6",
@@ -169,6 +195,11 @@ class MockEmbarkViewModel : EmbarkViewModel() {
                                         )
                                     )
                                 )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
@@ -63,8 +64,17 @@ class TemplateValuesTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -91,8 +101,17 @@ class TemplateValuesTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "{FOO} test",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "{FOO} test",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

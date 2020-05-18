@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
@@ -57,8 +57,17 @@ class PassedKeyValueRedirectTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -85,8 +94,17 @@ class PassedKeyValueRedirectTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -124,13 +142,13 @@ class PassedKeyValueRedirectTest {
                         id = "3",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "conditionally shown third message",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "conditionally shown third message",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.EQUALS,
                                                     key = "BAZ",
                                                     value = "BAT",
@@ -141,6 +159,11 @@ class PassedKeyValueRedirectTest {
                                         )
                                     )
                                 )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
