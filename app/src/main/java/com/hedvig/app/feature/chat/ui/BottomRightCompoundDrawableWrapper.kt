@@ -25,10 +25,7 @@ class BottomRightCompoundDrawableWrapper(
 
         // align to bottom right
         canvas.save()
-        canvas.translate(
-            halfDrawableWidth.toFloat() - paddingEnd,
-            halfCanvas - paddingBottom - halfDrawableHeight
-        )
+        canvas.translate(halfDrawableWidth.toFloat() - paddingEnd, halfCanvas - paddingBottom - halfDrawableHeight)
         drawable.draw(canvas)
         canvas.restore()
     }

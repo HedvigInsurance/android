@@ -10,7 +10,7 @@ data class BulletPoint(
     val title: String,
     val description: String,
     val iconUrls: ThemedIconUrls
-) : Parcelable {
+): Parcelable {
     companion object {
         fun from(bulletPoints: List<CommonClaimQuery.BulletPoint>) = bulletPoints.map { bp ->
             BulletPoint(

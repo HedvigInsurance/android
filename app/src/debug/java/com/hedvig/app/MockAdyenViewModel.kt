@@ -8,10 +8,7 @@ import org.json.JSONObject
 class MockAdyenViewModel : AdyenViewModel() {
     override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
     override fun loadPaymentMethods() {
-        paymentMethods.postValue(
-            PaymentMethodsApiResponse.SERIALIZER.deserialize(
-                JSONObject(
-                    """{
+        paymentMethods.postValue(PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject("""{
   "groups": [
     {
       "name": "Credit Card",
@@ -62,9 +59,6 @@ class MockAdyenViewModel : AdyenViewModel() {
       "type": "scheme"
     }
   ]
-}"""
-                )
-            )
-        )
+}""")))
     }
 }

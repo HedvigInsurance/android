@@ -24,8 +24,7 @@ class ContractCoverageActivityTest : KoinComponent {
     @get:Rule
     val activityRule = ActivityTestRule(ContractCoverageActivity::class.java)
 
-    private val idlingResource =
-        ApolloIdlingResource.create("ApolloIdlingResource", apolloClientWrapper.apolloClient)
+    private val idlingResource = ApolloIdlingResource.create("ApolloIdlingResource", apolloClientWrapper.apolloClient)
 
     @Before
     fun setup() {

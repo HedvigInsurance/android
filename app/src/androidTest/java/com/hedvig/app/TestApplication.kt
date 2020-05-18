@@ -1,8 +1,7 @@
-package com.hedvig.app.feature
+package com.hedvig.app
 
 import androidx.test.espresso.IdlingRegistry
 import com.apollographql.apollo.test.espresso.ApolloIdlingResource
-import com.hedvig.app.HedvigApplication
 
 class TestApplication : HedvigApplication() {
     override val graphqlUrl = "http://localhost:8080/"

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature
+package com.hedvig.app
 
 import android.app.Application
 import android.content.Context
