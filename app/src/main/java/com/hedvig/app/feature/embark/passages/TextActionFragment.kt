@@ -38,8 +38,10 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
         textActionSubmit.text = data.submitLabel
         textActionSubmit.setHapticClickListener {
-            animateResponse(response, textActionInput.text.toString()) {
-                model.putInStore(data.key, textActionInput.text.toString())
+            val inputText = textActionInput.text.toString()
+            model.putInStore(data.key, inputText)
+            val responseText = model.preProcessResponse(data.passageName) ?: inputText
+            animateResponse(response, responseText) {
                 model.navigateToPassage(data.link)
             }
         }
@@ -61,15 +63,18 @@ data class TextActionData(
     val hint: String,
     val messages: List<String>,
     val submitLabel: String,
-    val key: String
+    val key: String,
+    val passageName: String
 ) : Parcelable {
     companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.Data2) = TextActionData(
-            data.link.name,
-            data.placeholder,
-            messages,
-            data.link.label,
-            data.key
-        )
+        fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =
+            TextActionData(
+                data.link.name,
+                data.placeholder,
+                messages,
+                data.link.label,
+                data.key,
+                passageName
+            )
     }
 }
