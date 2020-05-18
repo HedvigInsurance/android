@@ -15,7 +15,11 @@ import kotlinx.android.synthetic.main.fragment_news.*
 class DismissablePageFragment : androidx.fragment.app.Fragment() {
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_news, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -31,7 +35,11 @@ class DismissablePageFragment : androidx.fragment.app.Fragment() {
     }
 
     companion object {
-        fun newInstance(illustration: String, title: String, paragraph: String): DismissablePageFragment {
+        fun newInstance(
+            illustration: String,
+            title: String,
+            paragraph: String
+        ): DismissablePageFragment {
             val fragment = DismissablePageFragment()
 
             val arguments = Bundle().apply {

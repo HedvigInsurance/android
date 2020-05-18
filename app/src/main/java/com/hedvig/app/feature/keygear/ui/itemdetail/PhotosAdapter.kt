@@ -65,16 +65,26 @@ class PhotosAdapter(
                 .load(photoUrls[position])
                 .transform(CenterCrop())
                 .addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         photoDidLoad()
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         photoDidLoad()
                         return false
                     }
-
                 })
                 .into(holder.photo)
             if (position == 0) {
@@ -82,7 +92,8 @@ class PhotosAdapter(
             }
         } else {
             holder.background.setBackgroundResource(R.drawable.background_rounded_corners)
-            holder.background.backgroundTintList = ColorStateList.valueOf(holder.background.context.compatColor(R.color.dark_purple))
+            holder.background.backgroundTintList =
+                ColorStateList.valueOf(holder.background.context.compatColor(R.color.dark_purple))
             holder.photo.updateLayoutParams {
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -92,8 +103,6 @@ class PhotosAdapter(
                 holder.background.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
             }
         }
-
-
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

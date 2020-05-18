@@ -30,7 +30,8 @@ abstract class RedeemCodeDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.promotion_code_dialog, null)
+        val view =
+            LayoutInflater.from(requireContext()).inflate(R.layout.promotion_code_dialog, null)
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -40,7 +41,8 @@ abstract class RedeemCodeDialog : DialogFragment() {
             redeemPromotionCode(dialog.bottomSheetAddPromotionCodeEditText.text.toString())
         }
         dialog.bottomSheetPromotionCodeTermsAndConditionLink.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hedvig.com/invite/terms"))
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hedvig.com/invite/terms"))
             startActivity(intent)
         }
         dialog.bottomSheetAddPromotionCodeEditText.setOnEditorActionListener { v, actionId, _ ->

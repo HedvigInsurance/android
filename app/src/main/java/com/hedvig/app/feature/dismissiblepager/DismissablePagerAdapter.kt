@@ -11,7 +11,11 @@ class DismissablePagerAdapter(
 ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getItem(position: Int) = if (position < data.size) {
         data[position].let { page ->
-            DismissablePageFragment.newInstance(page.imageUrls.iconByTheme(context), page.title, page.paragraph)
+            DismissablePageFragment.newInstance(
+                page.imageUrls.iconByTheme(context),
+                page.title,
+                page.paragraph
+            )
         }
     } else {
         androidx.fragment.app.Fragment()

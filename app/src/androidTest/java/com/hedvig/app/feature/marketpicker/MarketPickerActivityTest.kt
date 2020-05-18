@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.content.Intent
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -22,23 +21,34 @@ class MarketPickerActivityTest {
 
     @Test
     fun selectCorrectMarket() {
-        val server = MockWebServer()
-        server.use { webServer ->
+        MockWebServer().use { webServer ->
             webServer.start(8080)
             webServer.enqueue(MockResponse().setBody(DATA.toJson()))
         }
         activityRule.launchActivity(Intent())
 
-        Espresso.onData(Espresso.allOf())
         onScreen<MarketPickerScreen> {
-            marketRecyclerView
+            marketRecyclerView {
+                firstChild<MarketPickerScreen.Item> {
+                    isClickable()
+                    radioButton {
+                        isChecked()
+                    }
+                }
+                lastChild<MarketPickerScreen.Item> {
+                    isClickable()
+                    radioButton {
+                        isNotChecked()
+                    }
+                }
+            }
         }
     }
 
     companion object {
         private val DATA = GeoQuery.Data(
             geo = GeoQuery.Geo(
-                countryISOCode = "SE"
+                countryISOCode = "NO"
             )
         )
     }

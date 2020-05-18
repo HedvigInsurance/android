@@ -9,5 +9,6 @@ class ReferralsTracker(
     fun skipReferralCode() = firebaseAnalytics.logEvent("REFERRAL_STARTSCREEN_BTN_SKIP", null)
     fun inviteMoreFriends() = firebaseAnalytics.logEvent("REFERRAL_SUCCESS_BTN_CTA", null)
     fun closeReferralSuccess() = firebaseAnalytics.logEvent("REFERRAL_SUCCESS_BTN_CLOSE", null)
-    fun redeemReferralCodeOverlay() = firebaseAnalytics.logEvent("REFERRAL_ADDCOUPON_BTN_SUBMIT", null)
+    fun redeemReferralCodeOverlay() =
+        firebaseAnalytics.logEvent("REFERRAL_ADDCOUPON_BTN_SUBMIT", null)
 }

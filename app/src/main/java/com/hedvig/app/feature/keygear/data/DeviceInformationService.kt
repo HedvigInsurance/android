@@ -22,7 +22,8 @@ class DeviceInformationService(
         val messageDigest = MessageDigest.getInstance(SHA256)
         messageDigest.reset()
 
-        val androidId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        val androidId =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
         messageDigest.update(androidId.toByteArray())
 
         val result = messageDigest.digest()

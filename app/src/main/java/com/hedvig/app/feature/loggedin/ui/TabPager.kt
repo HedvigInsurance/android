@@ -11,6 +11,7 @@ class TabPager : androidx.viewpager.widget.ViewPager {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     override fun onInterceptTouchEvent(ev: MotionEvent?) = false
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?) = false
 }
