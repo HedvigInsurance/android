@@ -5,12 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- TODO: Translations -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="App out of date"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:text="@string/EMBARK_UPDATE_APP_TITLE"
         android:textAppearance="?textAppearanceHeadline4"
         app:layout_constraintBottom_toTopOf="@id/body"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,10 +21,13 @@
 
     <TextView
         android:id="@+id/body"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:gravity="center"
-        android:text="To use this functionality, you must first upgrade your app to the latest version."
+        android:text="@string/EMBARK_UPDATE_APP_BODY"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toTopOf="@id/upgradeApp"
@@ -35,7 +39,10 @@
         android:id="@+id/upgradeApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upgrade app"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:text="@string/EMBARK_UPDATE_APP_BUTTON"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
