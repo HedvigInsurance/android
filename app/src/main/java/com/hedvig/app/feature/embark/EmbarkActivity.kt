@@ -10,6 +10,7 @@ import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
 import com.hedvig.app.feature.embark.passages.TextActionFragment
+import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import e
@@ -52,6 +53,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         .beginTransaction()
                         .replace(R.id.passageContainer, selectActionFragment)
                         .commit()
+                    return@observe
                 }
 
                 passage.action?.asEmbarkTextAction?.let { textAction ->
@@ -67,7 +69,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         .beginTransaction()
                         .replace(R.id.passageContainer, textActionFragment)
                         .commit()
+                    return@observe
                 }
+
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                    .commit()
             }
         }
     }
