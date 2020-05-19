@@ -30,16 +30,24 @@ class MarketPickerActivityTest {
 
             onScreen<MarketPickerScreen> {
                 marketRecyclerView {
-                    firstChild<MarketPickerScreen.MarketItem> {
-                        isClickable()
-                        radioButton {
-                            isNotChecked()
+                    childWith<MarketPickerScreen.MarketItem> {
+                        withDescendant {
+                            withText(R.string.sweden)
                         }
-                    }
-                    lastChild<MarketPickerScreen.MarketItem> {
+                    } perform {
                         isClickable()
                         radioButton {
                             isChecked()
+                        }
+                    }
+                    childWith<MarketPickerScreen.MarketItem> {
+                        withDescendant {
+                            withText(R.string.norway)
+                        }
+                    } perform {
+                        isClickable()
+                        radioButton {
+                            isNotChecked()
                         }
                     }
                 }
@@ -79,7 +87,7 @@ class MarketPickerActivityTest {
     companion object {
         private val DATA = GeoQuery.Data(
             geo = GeoQuery.Geo(
-                countryISOCode = "NO"
+                countryISOCode = "SE"
             )
         )
     }
