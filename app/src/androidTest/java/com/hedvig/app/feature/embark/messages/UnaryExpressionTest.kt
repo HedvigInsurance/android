@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.EmbarkActivity
@@ -55,12 +55,12 @@ class UnaryExpressionTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "Unary true test",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
-                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Unary true test",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
+                                                asEmbarkExpressionUnary = MessageFragment.AsEmbarkExpressionUnary(
                                                     unaryType = EmbarkExpressionTypeUnary.ALWAYS,
                                                     text = "Unary true test"
                                                 ),
@@ -72,12 +72,12 @@ class UnaryExpressionTest {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Unary false test",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
-                                                asEmbarkExpressionUnary = ExpressionFragment.AsEmbarkExpressionUnary(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Unary false test",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
+                                                asEmbarkExpressionUnary = MessageFragment.AsEmbarkExpressionUnary(
                                                     unaryType = EmbarkExpressionTypeUnary.NEVER,
                                                     text = "Unary false test"
                                                 ),
@@ -87,6 +87,11 @@ class UnaryExpressionTest {
                                         )
                                     )
                                 )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

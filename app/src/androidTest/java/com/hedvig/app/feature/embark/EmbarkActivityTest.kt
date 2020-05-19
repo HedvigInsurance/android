@@ -6,10 +6,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -90,22 +95,24 @@ class EmbarkActivityTest {
                         click()
                     }
                 }
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text {
-                            hasText("another test message")
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text {
+                                hasText("another test message")
+                            }
+                        }
+                        childAt<EmbarkScreen.MessageRow>(1) {
+                            text {
+                                hasText("456")
+                            }
                         }
                     }
-                    childAt<EmbarkScreen.MessageRow>(1) {
-                        text {
-                            hasText("456")
-                        }
-                    }
-                }
-                selectActions {
-                    firstChild<EmbarkScreen.SelectAction> {
-                        button {
-                            hasText("Another test select action")
+                    selectActions {
+                        firstChild<EmbarkScreen.SelectAction> {
+                            button {
+                                hasText("Another test select action")
+                            }
                         }
                     }
                 }
@@ -123,12 +130,25 @@ class EmbarkActivityTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "123",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "123",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -155,12 +175,25 @@ class EmbarkActivityTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "456",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "456",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

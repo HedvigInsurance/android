@@ -5,13 +5,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,10 +35,12 @@ class LessThanOrEqualsExpressionTest {
 
             onScreen<EmbarkScreen> {
                 selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-                messages {
-                    hasSize(1)
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("Less than or equals test message that evaluates to true") }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        hasSize(1)
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text { hasText("Less than or equals test message that evaluates to true") }
+                        }
                     }
                 }
             }
@@ -51,8 +57,25 @@ class LessThanOrEqualsExpressionTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            ),
+                            EmbarkStoryQuery.Message(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -79,13 +102,13 @@ class LessThanOrEqualsExpressionTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "Less than or equals test message that evaluates to true",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Less than or equals test message that evaluates to true",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
                                                     key = "BAZ",
                                                     value = "5",
@@ -98,13 +121,13 @@ class LessThanOrEqualsExpressionTest {
                                 )
                             ),
                             EmbarkStoryQuery.Message(
-                                text = "Less than or equals test message that evaluates to false",
-                                expressions = listOf(
-                                    EmbarkStoryQuery.Expression(
-                                        fragments = EmbarkStoryQuery.Expression.Fragments(
-                                            ExpressionFragment(
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "Less than or equals test message that evaluates to false",
+                                        expressions = listOf(
+                                            MessageFragment.Expression(
                                                 asEmbarkExpressionUnary = null,
-                                                asEmbarkExpressionBinary = ExpressionFragment.AsEmbarkExpressionBinary(
+                                                asEmbarkExpressionBinary = MessageFragment.AsEmbarkExpressionBinary(
                                                     binaryType = EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
                                                     key = "BAZ",
                                                     value = "4",
@@ -115,6 +138,11 @@ class LessThanOrEqualsExpressionTest {
                                         )
                                     )
                                 )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

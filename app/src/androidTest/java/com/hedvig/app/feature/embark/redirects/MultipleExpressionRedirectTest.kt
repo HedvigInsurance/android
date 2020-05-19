@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
@@ -13,6 +14,10 @@ import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.kotlin.atMost
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,9 +37,11 @@ class MultipleExpressionRedirectTest {
 
             onScreen<EmbarkScreen> {
                 selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("a third test message") }
+                await atMost TWO_SECONDS untilAsserted {
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text { hasText("a third test message") }
+                        }
                     }
                 }
             }
@@ -51,8 +58,17 @@ class MultipleExpressionRedirectTest {
                         id = "1",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -79,8 +95,17 @@ class MultipleExpressionRedirectTest {
                         id = "2",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "another test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "another test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(
@@ -144,8 +169,17 @@ class MultipleExpressionRedirectTest {
                         id = "3",
                         messages = listOf(
                             EmbarkStoryQuery.Message(
-                                text = "a third test message",
-                                expressions = emptyList()
+                                fragments = EmbarkStoryQuery.Message.Fragments(
+                                    MessageFragment(
+                                        text = "a third test message",
+                                        expressions = emptyList()
+                                    )
+                                )
+                            )
+                        ),
+                        response = EmbarkStoryQuery.Response(
+                            fragments = EmbarkStoryQuery.Response.Fragments(
+                                messageFragment = null
                             )
                         ),
                         action = EmbarkStoryQuery.Action(

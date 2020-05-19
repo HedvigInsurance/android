@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.passages.SelectAction
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
@@ -41,16 +40,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 loadingSpinner.remove()
 
                 passage.action?.asEmbarkSelectAction?.let { options ->
-                    val selectActionData = SelectActionPassage(
-                        passage.messages.map { it.text },
-                        options.data.options.map {
-                            SelectAction(
-                                it.link.name,
-                                it.link.label,
-                                it.keys,
-                                it.values
-                            )
-                        }
+                    val selectActionData = SelectActionPassage.from(
+                        passage.messages.map { it.fragments.messageFragment.text },
+                        options.data,
+                        passage.name
                     )
 
                     val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
@@ -63,7 +56,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
                 passage.action?.asEmbarkTextAction?.let { textAction ->
                     val textActionData =
-                        TextActionData.from(passage.messages.map { it.text }, textAction.data)
+                        TextActionData.from(
+                            passage.messages.map { it.fragments.messageFragment.text },
+                            textAction.data,
+                            passage.name
+                        )
 
                     val textActionFragment = TextActionFragment.newInstance(textActionData)
                     supportFragmentManager
