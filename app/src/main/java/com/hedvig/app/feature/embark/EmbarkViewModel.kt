@@ -95,10 +95,10 @@ abstract class EmbarkViewModel : ViewModel() {
             return null
         }
         return passage.copy(
-            messages = passage.messages.mapNotNull {
+            messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
-                    preProcessMessage(it.fragments.messageFragment) ?: return@mapNotNull null
-                it.copy(
+                    preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
+                message.copy(
                     fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
                 )
             }

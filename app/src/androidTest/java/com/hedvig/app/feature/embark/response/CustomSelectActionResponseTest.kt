@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class CustomSelectActionResponse {
+class CustomSelectActionResponseTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
