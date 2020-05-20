@@ -38,7 +38,7 @@ class ReferralsSuccessfulInviteActivity :
             intent.getStringExtra(EXTRA_REFERRAL_NAME)
         )
         referralSuccessTitle.show()
-       
+
         val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()
         if (incentive == null) {
             e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not provided to ${this.javaClass}" }

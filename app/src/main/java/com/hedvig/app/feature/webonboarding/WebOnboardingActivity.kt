@@ -51,13 +51,24 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 if (url?.contains("connect-payment") == true) {
                     view?.stopLoading()
                     setIsLoggedIn(true)
-                    startActivity(ConnectPaymentActivity.newInstance(this@WebOnboardingActivity, withExplainer = true, withoutHistory = true))
+                    startActivity(
+                        ConnectPaymentActivity.newInstance(
+                            this@WebOnboardingActivity,
+                            withExplainer = true,
+                            withoutHistory = true
+                        )
+                    )
                     return
                 }
                 super.doUpdateVisitedHistory(view, url, isReload)
             }
 
-            override fun onReceivedHttpAuthRequest(view: WebView?, handler: HttpAuthHandler?, host: String?, realm: String?) {
+            override fun onReceivedHttpAuthRequest(
+                view: WebView?,
+                handler: HttpAuthHandler?,
+                host: String?,
+                realm: String?
+            ) {
                 handler?.proceed("hedvig", "hedvig1234")
             }
         }

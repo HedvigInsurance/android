@@ -39,7 +39,7 @@ android {
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.hedvig.app.TestRunner"
     }
 
     compileOptions {
@@ -211,6 +211,7 @@ dependencies {
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.1.12'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
+    androidTestImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.22'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

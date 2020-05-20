@@ -17,7 +17,8 @@ class ReceiptBinder(
 ) {
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
-            root.addOrViewReceipt.text = root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
+            root.addOrViewReceipt.text =
+                root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
             root.addOrViewReceipt.setHapticClickListener {
                 tracker.showReceipt()
                 root.context.startActivity(

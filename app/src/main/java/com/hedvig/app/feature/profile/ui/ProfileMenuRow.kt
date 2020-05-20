@@ -59,7 +59,8 @@ class ProfileMenuRow : ConstraintLayout {
         }
 
     private fun setupDynamicContent() {
-        val attributes = context.obtainStyledAttributes(attributeSet, R.styleable.ProfileMenuRow, defStyle, 0)
+        val attributes =
+            context.obtainStyledAttributes(attributeSet, R.styleable.ProfileMenuRow, defStyle, 0)
 
         val iconResourceId = attributes.getResourceId(R.styleable.ProfileMenuRow_iconImage, -1)
         if (iconResourceId != -1) icon = context.compatDrawable(iconResourceId)

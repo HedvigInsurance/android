@@ -39,7 +39,7 @@ class ProfileFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         populateData()
         profileRoot.setupToolbarScrollListener(loggedInViewModel)
     }

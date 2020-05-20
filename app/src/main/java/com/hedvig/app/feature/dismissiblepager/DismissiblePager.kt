@@ -40,13 +40,20 @@ abstract class DismissiblePager : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
         dialog?.window?.setWindowAnimations(animationStyle)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_dismissable_pager, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,11 +104,12 @@ abstract class DismissiblePager : DialogFragment() {
 
         override fun onPageSelected(page: Int) {
             pager.adapter?.count?.let { count ->
-                proceed.text = if (isPositionLast(page, count) || isPositionNextToLast(page, count)) {
-                    resources.getString(dismissLabel)
-                } else {
-                    resources.getString(proceedLabel)
-                }
+                proceed.text =
+                    if (isPositionLast(page, count) || isPositionNextToLast(page, count)) {
+                        resources.getString(dismissLabel)
+                    } else {
+                        resources.getString(proceedLabel)
+                    }
             }
         }
     }

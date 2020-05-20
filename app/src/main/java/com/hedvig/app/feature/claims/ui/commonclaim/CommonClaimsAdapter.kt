@@ -47,9 +47,10 @@ class CommonClaimsAdapter(
 
             requestBuilder.load(
                 Uri.parse(
-                    baseUrl + ThemedIconUrls.from(commonClaim.icon.variants.fragments.iconVariantsFragment).iconByTheme(
-                        commonClaimIcon.context
-                    )
+                    baseUrl + ThemedIconUrls.from(commonClaim.icon.variants.fragments.iconVariantsFragment)
+                        .iconByTheme(
+                            commonClaimIcon.context
+                        )
                 )
             ).into(commonClaimIcon)
             commonClaimLabel.text = commonClaim.title

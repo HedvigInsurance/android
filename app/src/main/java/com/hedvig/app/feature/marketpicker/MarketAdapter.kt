@@ -28,9 +28,11 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (items[position].selected) {
             animateRadioButton(holder)
+            holder.button.isChecked = true
             holder.button.background =
                 holder.button.context.getDrawable(R.drawable.ic_radio_button_checked)
         } else {
+            holder.button.isChecked = false
             holder.button.background =
                 holder.button.context.getDrawable(R.drawable.ic_radio_button_unchecked)
         }

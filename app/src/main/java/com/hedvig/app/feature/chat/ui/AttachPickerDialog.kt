@@ -82,7 +82,8 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
 
     private fun animatePickerSheet(show: Boolean) {
         //maybe we should create a better animation but this is something
-        val animation = loadAnimation(context, if (show) R.anim.slide_in_up else R.anim.slide_out_down)
+        val animation =
+            loadAnimation(context, if (show) R.anim.slide_in_up else R.anim.slide_out_down)
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationEnd(animation: Animation?) {
                 if (!show) {
@@ -115,7 +116,8 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
             whenApiVersion(Build.VERSION_CODES.P) {
-                layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             }
         }
 

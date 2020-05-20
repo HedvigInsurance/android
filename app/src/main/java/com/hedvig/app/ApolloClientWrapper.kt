@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 class ApolloClientWrapper(
     private val okHttpClient: OkHttpClient,
     private val context: Context,
+    private val application: HedvigApplication,
     private val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
 ) {
 
@@ -43,10 +44,13 @@ class ApolloClientWrapper(
     ): ApolloClient {
         val builder = ApolloClient
             .builder()
-            .serverUrl(BuildConfig.GRAPHQL_URL)
+            .serverUrl(application.graphqlUrl)
             .okHttpClient(okHttpClient)
             .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
-            .addCustomTypeAdapter(CustomType.PAYMENTMETHODSRESPONSE, PaymentMethodsApiResponseAdapter())
+            .addCustomTypeAdapter(
+                CustomType.PAYMENTMETHODSRESPONSE,
+                PaymentMethodsApiResponseAdapter()
+            )
             .subscriptionConnectionParams(SubscriptionConnectionParams(mapOf("Authorization" to authToken)))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(

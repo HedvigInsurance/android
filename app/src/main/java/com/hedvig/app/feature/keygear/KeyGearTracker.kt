@@ -9,7 +9,9 @@ class KeyGearTracker(
     fun openItem() = firebaseAnalytics.logEvent("key_gear_view_item", null)
     fun saveItem() = firebaseAnalytics.logEvent("KEY_GEAR_ADD_ITEM_SAVE_BUTTON", null)
     fun addPhoto() = firebaseAnalytics.logEvent("KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON", null)
-    fun openPhotoContextMenu() = firebaseAnalytics.logEvent("key_gear_create_photo_context_menu_open", null)
+    fun openPhotoContextMenu() =
+        firebaseAnalytics.logEvent("key_gear_create_photo_context_menu_open", null)
+
     fun deletePhoto() = firebaseAnalytics.logEvent("KEY_GEAR_CREATE_DELETE_PHOTO", null)
     fun addPurchaseInfo() = firebaseAnalytics.logEvent("KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY", null)
     fun valuationMoreInfo() = firebaseAnalytics.logEvent("KEY_GEAR_VALUATION_MORE_INFO", null)
