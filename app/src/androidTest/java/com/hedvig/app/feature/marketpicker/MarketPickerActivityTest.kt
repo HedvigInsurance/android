@@ -102,7 +102,7 @@ class MarketPickerActivityTest {
     }
 
     @Test
-    fun noPreselectedMarket() {
+    fun shouldNotPreselectMarketWhenGeoOutsideAvailableMarkets() {
         val pref =
             PreferenceManager.getDefaultSharedPreferences(InstrumentationRegistry.getInstrumentation().targetContext)
 
