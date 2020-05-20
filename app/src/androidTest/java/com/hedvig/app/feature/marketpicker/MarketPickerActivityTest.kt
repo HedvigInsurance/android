@@ -5,6 +5,8 @@ import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.GeoQuery
@@ -14,8 +16,6 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.hamcrest.CoreMatchers
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,7 +30,7 @@ class MarketPickerActivityTest {
     fun selectCorrectMarket() {
         MockWebServer().use { webServer ->
             webServer.start(8080)
-            webServer.enqueue(MockResponse().setBody(DATA.toJson()))
+            webServer.enqueue(MockResponse().setBody(DATA_SE.toJson()))
 
             activityRule.launchActivity(Intent())
 
@@ -97,15 +97,111 @@ class MarketPickerActivityTest {
         val market = pref.getString(Market.MARKET_SHARED_PREF, null)
         val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
 
-        Assert.assertThat(market, CoreMatchers.containsString(MARKET))
-        Assert.assertThat(language, CoreMatchers.containsString(Language.SETTING_SV_SE))
+        assertThat(market).isEqualTo("SE")
+        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
+    }
+
+    @Test
+    fun noPreselectedMarket() {
+        val pref =
+            PreferenceManager.getDefaultSharedPreferences(InstrumentationRegistry.getInstrumentation().targetContext)
+
+        MockWebServer().use { webServer ->
+            webServer.start(8080)
+            webServer.enqueue(MockResponse().setBody(DATA_FI.toJson()))
+
+            activityRule.launchActivity(Intent())
+
+            onScreen<MarketPickerScreen> {
+                marketRecyclerView {
+                    childWith<MarketPickerScreen.MarketItem> {
+                        withDescendant {
+                            withText(R.string.sweden)
+                        }
+                    } perform {
+                        click()
+                    }
+                }
+                languageRecyclerView {
+                    childWith<MarketPickerScreen.LanguageItem> {
+                        withDescendant {
+                            withText(R.string.swedish)
+                        }
+                    } perform {
+                        click()
+                    }
+                }
+                save {
+                    click()
+                }
+            }
+        }
+
+        val market = pref.getString(Market.MARKET_SHARED_PREF, null)
+        val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+
+        assertThat(market).isEqualTo("SE")
+        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
+    }
+
+    @Test
+    fun networkProblem() {
+        val pref =
+            PreferenceManager.getDefaultSharedPreferences(InstrumentationRegistry.getInstrumentation().targetContext)
+
+        MockWebServer().use { webServer ->
+            webServer.start(8080)
+            webServer.enqueue(MockResponse().setBody(DATA_NO.toJson()))
+
+            webServer.shutdown()
+            activityRule.launchActivity(Intent())
+
+            onScreen<MarketPickerScreen> {
+                marketRecyclerView {
+                    childWith<MarketPickerScreen.MarketItem> {
+                        withDescendant {
+                            withText(R.string.sweden)
+                        }
+                    } perform {
+                        click()
+                    }
+                }
+                languageRecyclerView {
+                    childWith<MarketPickerScreen.LanguageItem> {
+                        withDescendant {
+                            withText(R.string.swedish)
+                        }
+                    } perform {
+                        click()
+                    }
+                }
+                save {
+                    click()
+                }
+            }
+        }
+
+        val market = pref.getString(Market.MARKET_SHARED_PREF, null)
+        val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+
+        assertThat(market).isEqualTo("SE")
+        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
     }
 
     companion object {
-        private const val MARKET = "SE"
-        private val DATA = GeoQuery.Data(
+        private val DATA_SE = GeoQuery.Data(
             geo = GeoQuery.Geo(
-                countryISOCode = MARKET
+                countryISOCode = "SE"
+            )
+        )
+        private val DATA_FI = GeoQuery.Data(
+            geo = GeoQuery.Geo(
+                countryISOCode = "FI"
+            )
+        )
+        private val DATA_NO = GeoQuery.Data(
+            geo = GeoQuery.Geo(
+                countryISOCode = "NO"
             )
         )
     }
