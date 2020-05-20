@@ -160,7 +160,7 @@ class MarketPickerActivityTest {
                 marketRecyclerView {
                     childWith<MarketPickerScreen.MarketItem> {
                         withDescendant {
-                            withText(R.string.sweden)
+                            withText(R.string.norway)
                         }
                     } perform {
                         click()
@@ -169,7 +169,7 @@ class MarketPickerActivityTest {
                 languageRecyclerView {
                     childWith<MarketPickerScreen.LanguageItem> {
                         withDescendant {
-                            withText(R.string.swedish)
+                            withText(R.string.norwegian)
                         }
                     } perform {
                         click()
@@ -184,8 +184,8 @@ class MarketPickerActivityTest {
         val market = pref.getString(Market.MARKET_SHARED_PREF, null)
         val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
 
-        assertThat(market).isEqualTo("SE")
-        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
+        assertThat(market).isEqualTo("NO")
+        assertThat(language).isEqualTo(Language.SETTING_NB_NO)
     }
 
     companion object {
