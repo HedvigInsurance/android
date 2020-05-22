@@ -21,7 +21,6 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.interpolateTextKey
 import e
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import kotlinx.android.synthetic.main.dashboard_info_card.view.*
@@ -44,6 +43,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
         R.layout.dashboard_info_card -> ViewHolder.InfoBoxViewHolder(parent)
         R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
+        R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -74,6 +74,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
         is DashboardModel.InfoBox -> R.layout.dashboard_info_card
         is DashboardModel.Contract -> R.layout.dashboard_contract_row
         is DashboardModel.Upsell -> R.layout.dashboard_upsell
+        is DashboardModel.Header -> R.layout.dashboard_header
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -136,9 +137,8 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                     is DashboardModel.InfoBox.Renewal -> {
                         title.text =
                             title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-                        body.text = interpolateTextKey(
-                            body.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY),
-                            "DAYS_UNTIL_RENEWAL" to ChronoUnit.DAYS.between(
+                        body.text = body.resources.getString(
+                            R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
                                 LocalDate.now(),
                                 data.renewalDate
                             )
@@ -196,9 +196,9 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                                 R.drawable.ic_inactive
                             ), null, null, null
                         )
-                        status.text = interpolateTextKey(
-                            status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE),
-                            "ACTIVATION_DATE" to dateTimeFormatter.format(activeInFuture.futureInception)
+                        status.text = status.resources.getString(
+                            R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
+                            dateTimeFormatter.format(activeInFuture.futureInception)
                         )
                     }
                     contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
@@ -207,10 +207,10 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                                 R.drawable.ic_inactive
                             ), null, null, null
                         )
-                        status.text = interpolateTextKey(
-                            status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE),
-                            "ACTIVATION_DATE" to activeAndTerminated.futureInception,
-                            "TERMINATION_DATE" to dateTimeFormatter.format(activeAndTerminated.futureTermination)
+                        status.text = status.resources.getString(
+                            R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE,
+                            activeAndTerminated.futureInception,
+                            dateTimeFormatter.format(activeAndTerminated.futureTermination)
                         )
                     }
                     contractStatus.asActiveStatus?.let {
@@ -228,9 +228,9 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                                 R.drawable.ic_termination_in_future
                             ), null, null, null
                         )
-                        status.text = interpolateTextKey(
-                            status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE),
-                            "TERMINATION_DATE" to dateTimeFormatter.format(terminatedInFuture.futureTermination)
+                        status.text = status.resources.getString(
+                            R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
+                            dateTimeFormatter.format(terminatedInFuture.futureTermination)
                         )
                     }
                     contractStatus.asTerminatedTodayStatus?.let {
@@ -292,9 +292,9 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                     if (contract.currentAgreement.numberCoInsured == 0) {
                         contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_NO_COINSURED)
                     } else {
-                        interpolateTextKey(
-                            contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_COINSURED),
-                            "COINSURED_PEOPLE" to contract.currentAgreement.numberCoInsured
+                        contractInformationDescription.resources.getString(
+                            R.string.DASHBOARD_MY_INFO_COINSURED,
+                            contract.currentAgreement.numberCoInsured
                         )
                     }
 
@@ -326,6 +326,12 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                 }
             }
         }
+
+        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.dashboard_header, parent, false)
+        )
     }
 
     companion object {
@@ -344,6 +350,8 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
 }
 
 sealed class DashboardModel {
+    object Header : DashboardModel()
+
     sealed class InfoBox : DashboardModel() {
         data class ImportantInformation(
             val title: String,

@@ -30,9 +30,10 @@ class LoggedInTerminatedActivity : BaseActivity() {
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, LoggedInTerminatedActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
+        fun newInstance(context: Context) =
+            Intent(context, LoggedInTerminatedActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
     }
 }

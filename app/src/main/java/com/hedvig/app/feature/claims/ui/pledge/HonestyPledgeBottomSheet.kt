@@ -15,14 +15,15 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class HonestyPledgeBottomSheet : RoundedBottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
-   
+
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
 
     override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.bottom_sheet_honesty_pledge, null)
+        val view = LayoutInflater.from(requireContext())
+            .inflate(R.layout.bottom_sheet_honesty_pledge, null)
         dialog.setContentView(view)
 
         dialog.bottomSheetHonestyPledgeButton.setHapticClickListener {

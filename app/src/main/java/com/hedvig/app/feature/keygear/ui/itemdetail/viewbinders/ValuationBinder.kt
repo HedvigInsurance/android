@@ -23,7 +23,8 @@ class ValuationBinder(
 ) {
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        val valuation = data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+        val valuation =
+            data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
         if (valuation == null) {
             root.valuationMoreInfo.remove()
 
@@ -48,7 +49,10 @@ class ValuationBinder(
         root.deductible.text = buildSpannedString {
             bold {
                 scale(2.0f) {
-                    append(data.fragments.keyGearItemFragment.deductible.amount.toBigDecimal().toInt().toString())
+                    append(
+                        data.fragments.keyGearItemFragment.deductible.amount.toBigDecimal().toInt()
+                            .toString()
+                    )
                 }
             }
             append(" ")
@@ -58,7 +62,8 @@ class ValuationBinder(
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+        val valuation =
+            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
         if (valuation?.asKeyGearItemValuationFixed != null) {
             return ValuationType.FIXED
         }
@@ -82,8 +87,9 @@ class ValuationBinder(
                 val type = valuationType(item)
                 if (type != null) {
                     if (type == ValuationType.FIXED) {
-                        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
-                            ?: return@safeLet
+                        val valuation =
+                            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                                ?: return@safeLet
                         root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
                                 root.context,
@@ -98,8 +104,9 @@ class ValuationBinder(
                             null
                         )
                     } else if (type == ValuationType.MARKET_PRICE) {
-                        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue
-                            ?: return@safeLet
+                        val valuation =
+                            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue
+                                ?: return@safeLet
                         root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
                                 root.context,

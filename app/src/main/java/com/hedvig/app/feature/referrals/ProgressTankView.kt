@@ -21,14 +21,17 @@ import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatFont
-import com.hedvig.app.util.interpolateTextKey
 import kotlin.math.ceil
 
 class ProgressTankView : View {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(context, attributeSet, defStyle)
+    constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
+        context,
+        attributeSet,
+        defStyle
+    )
 
     private var premium: Int = 100
     private var discountedPremium: Int = 80
@@ -52,20 +55,24 @@ class ProgressTankView : View {
     private val tankWidthHalf = tankWidth / 2
     private var animationTopPadding = 0f
 
-    private val labelsMarginFromTank = context.resources.getDimension(R.dimen.referral_progress_label_margin)
+    private val labelsMarginFromTank =
+        context.resources.getDimension(R.dimen.referral_progress_label_margin)
 
     private val roofHeight = context.resources.getDimension(R.dimen.referral_progress_roof_height)
     private val roofHeightHalf = roofHeight / 2
 
-    private val sectionSpacing = context.resources.getDimension(R.dimen.referral_progress_segment_spacing)
+    private val sectionSpacing =
+        context.resources.getDimension(R.dimen.referral_progress_segment_spacing)
     private val sectionSpacingHalf = sectionSpacing / 2
 
-    private val textLabelRadius = context.resources.getDimension(R.dimen.referral_progress_text_label_radius)
+    private val textLabelRadius =
+        context.resources.getDimension(R.dimen.referral_progress_text_label_radius)
 
     private val textSizeLabelLeft = context.resources.getDimension(R.dimen.text_xsmall)
     private val textSizeLabelRight = context.resources.getDimension(R.dimen.text_large)
     private val textPadding = context.resources.getDimension(R.dimen.referral_progress_text_padding)
-    private val textLabelArrowSquareSize = context.resources.getDimension(R.dimen.referral_progress_arrow_square_size)
+    private val textLabelArrowSquareSize =
+        context.resources.getDimension(R.dimen.referral_progress_arrow_square_size)
 
     // tile canvas
     private var polkaDrawable: BitmapDrawable
@@ -80,15 +87,12 @@ class ProgressTankView : View {
 
     // use by lazy to get premium on first draw instead of on init
     private val currentPremiumPrice by lazy {
-        interpolateTextKey(
-            context.getString(R.string.REFERRAL_PROGRESS_CURRENT_PREMIUM_PRICE),
-            "CURRENT_PREMIUM_PRICE" to premium.toString()
-        )
+        context.getString(R.string.REFERRAL_PROGRESS_CURRENT_PREMIUM_PRICE, premium.toString())
     }
     private val currentInvitedActiveValue by lazy {
-        interpolateTextKey(
-            context.getString(R.string.REFERRAL_INVITE_ACTIVE_VALUE),
-            "REFERRAL_VALUE" to (premium - discountedPremium).toString()
+        context.getString(
+            R.string.REFERRAL_INVITE_ACTIVE_VALUE,
+            (premium - discountedPremium).toString()
         )
     }
 
@@ -96,7 +100,8 @@ class ProgressTankView : View {
     private val font = context.compatFont(R.font.favorit_book)
 
     init {
-        val polkaTile = BitmapFactory.decodeResource(context.resources, R.mipmap.polka_pattern_green_tile)
+        val polkaTile =
+            BitmapFactory.decodeResource(context.resources, R.mipmap.polka_pattern_green_tile)
         polkaDrawable = BitmapDrawable(resources, polkaTile)
         polkaDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
     }
@@ -138,9 +143,11 @@ class ProgressTankView : View {
 
         // Draw tank
         if (tankSpringAnimation.isRunning) {
-            animationTopPadding = (height - roofHeight) * (tankFloatValueHolder.value / SPRING_START_VALUE)
+            animationTopPadding =
+                (height - roofHeight) * (tankFloatValueHolder.value / SPRING_START_VALUE)
         }
-        val animatedSegmentHeight = (height - roofHeight - animationTopPadding - sectionSpacing) / segments
+        val animatedSegmentHeight =
+            (height - roofHeight - animationTopPadding - sectionSpacing) / segments
         drawSegments(canvas, animatedSegmentHeight)
 
         if (hasDiscount) {
@@ -153,7 +160,12 @@ class ProgressTankView : View {
         if (runBottomTextLabelAnimation) {
             if (bottomLabelSpringAnimation.isRunning) {
                 val animationValue = bottomLabelFloatValueHolder.value / SPRING_START_VALUE
-                drawTextLabelLeft(canvas, bottomLabelText, roofHeightHalf + (segmentHeight * segments), animationValue)
+                drawTextLabelLeft(
+                    canvas,
+                    bottomLabelText,
+                    roofHeightHalf + (segmentHeight * segments),
+                    animationValue
+                )
             }
         } else {
             drawTextLabelLeft(canvas, bottomLabelText, roofHeightHalf + (segmentHeight * segments))
@@ -190,7 +202,12 @@ class ProgressTankView : View {
         }
     }
 
-    private fun drawSegment(canvas: Canvas, index: Int, segmentHeight: Float, isDiscounted: Boolean) {
+    private fun drawSegment(
+        canvas: Canvas,
+        index: Int,
+        segmentHeight: Float,
+        isDiscounted: Boolean
+    ) {
         drawLeftFace(canvas, index, segmentHeight, isDiscounted)
         drawRightFace(canvas, index, segmentHeight, isDiscounted)
         // only draw roof on last
@@ -205,15 +222,26 @@ class ProgressTankView : View {
         paint.style = Paint.Style.FILL
 
         path.moveTo(centerX, animationTopPadding + (index * segmentHeight))
-        path.lineTo(centerX + tankWidthHalf, animationTopPadding + roofHeightHalf + (index * segmentHeight))
+        path.lineTo(
+            centerX + tankWidthHalf,
+            animationTopPadding + roofHeightHalf + (index * segmentHeight)
+        )
         path.lineTo(centerX, animationTopPadding + roofHeight + (index * segmentHeight))
-        path.lineTo(centerX - tankWidthHalf, animationTopPadding + roofHeightHalf + (index * segmentHeight))
+        path.lineTo(
+            centerX - tankWidthHalf,
+            animationTopPadding + roofHeightHalf + (index * segmentHeight)
+        )
         path.close()
 
         canvas.drawPath(path, paint)
     }
 
-    private fun drawLeftFace(canvas: Canvas, index: Int, segmentHeight: Float, isDiscounted: Boolean) {
+    private fun drawLeftFace(
+        canvas: Canvas,
+        index: Int,
+        segmentHeight: Float,
+        isDiscounted: Boolean
+    ) {
         path.reset()
 
         val sectionLeft = if (isDiscounted) 0f else centerX - tankWidthHalf
@@ -263,7 +291,12 @@ class ProgressTankView : View {
         }
     }
 
-    private fun drawRightFace(canvas: Canvas, index: Int, segmentHeight: Float, isDiscounted: Boolean) {
+    private fun drawRightFace(
+        canvas: Canvas,
+        index: Int,
+        segmentHeight: Float,
+        isDiscounted: Boolean
+    ) {
         path.reset()
 
         val sectionLeft = if (isDiscounted) tankWidthHalf else centerX
@@ -314,7 +347,12 @@ class ProgressTankView : View {
         }
     }
 
-    private fun drawVerticalGreenOutline(canvas: Canvas, xPosition: Float, yTop: Float, yBottom: Float) {
+    private fun drawVerticalGreenOutline(
+        canvas: Canvas,
+        xPosition: Float,
+        yTop: Float,
+        yBottom: Float
+    ) {
         setUpPaintForLine()
         paint.color = green
         canvas.drawLine(
@@ -349,7 +387,12 @@ class ProgressTankView : View {
     }
 
     // Draw text labels
-    private fun drawTextLabelLeft(canvas: Canvas, text: String, yPosition: Float, animationValue: Float = 0f) {
+    private fun drawTextLabelLeft(
+        canvas: Canvas,
+        text: String,
+        yPosition: Float,
+        animationValue: Float = 0f
+    ) {
         paint.color = offBlackDark
         paint.style = Paint.Style.FILL
         paint.alpha = (255 - (animationValue * 255)).toInt()
@@ -385,11 +428,20 @@ class ProgressTankView : View {
         canvas.restore()
 
         paint.color = white
-        canvas.drawText(text, rectF.centerX(), rectF.centerY() - ((paint.descent() + paint.ascent()) / 2), paint)
+        canvas.drawText(
+            text,
+            rectF.centerX(),
+            rectF.centerY() - ((paint.descent() + paint.ascent()) / 2),
+            paint
+        )
         paint.alpha = 255
     }
 
-    private fun drawTextLabelRight(canvas: Canvas, segmentHeight: Float, animationValue: Float = 0f) {
+    private fun drawTextLabelRight(
+        canvas: Canvas,
+        segmentHeight: Float,
+        animationValue: Float = 0f
+    ) {
         val text = if (hasDiscount) currentInvitedActiveValue else callToAction
 
         paint.color = if (hasDiscount) green else purple
@@ -429,7 +481,12 @@ class ProgressTankView : View {
         canvas.restore()
 
         paint.color = if (hasDiscount) offBlackDark else white
-        canvas.drawText(text, rectF.centerX(), rectF.centerY() - ((paint.descent() + paint.ascent()) / 2), paint)
+        canvas.drawText(
+            text,
+            rectF.centerX(),
+            rectF.centerY() - ((paint.descent() + paint.ascent()) / 2),
+            paint
+        )
         paint.alpha = 255
     }
 

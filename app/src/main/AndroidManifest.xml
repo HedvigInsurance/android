@@ -47,7 +47,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.Chat"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SplashActivity"
@@ -113,7 +113,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.profile.ui.charity.CharityActivity"

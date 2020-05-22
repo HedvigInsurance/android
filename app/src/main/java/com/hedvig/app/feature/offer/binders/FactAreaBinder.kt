@@ -6,7 +6,6 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import org.threeten.bp.LocalDate
@@ -43,10 +42,8 @@ class FactAreaBinder(
     private fun bindHouse(data: OfferQuery.AsSwedishHouseQuoteDetails) = root.apply {
         ancillarySpaceLabel.show()
         ancillarySpace.show()
-        ancillarySpace.text = interpolateTextKey(
-            resources.getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS),
-            "HOUSE_INFO_AMOUNT_BIYTA" to data.ancillarySpace
-        )
+        ancillarySpace.text =
+            resources.getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS, data.ancillarySpace)
 
         yearOfConstructionLabel.show()
         yearOfConstruction.show()
@@ -58,20 +55,18 @@ class FactAreaBinder(
 
         subletedLabel.show()
         subleted.show()
-        subleted.text = if (data.isSubleted == true) {
+        subleted.text = if (data.isSubleted) {
             resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
         } else {
             resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
         }
 
-        data.extraBuildings?.let { extraBuildings ->
+        data.extraBuildings.let { extraBuildings ->
             if (extraBuildings.isEmpty()) {
                 removeExtraBuildingViews()
                 return@let
             }
             bindExtraBuildings(extraBuildings)
-        } ?: run {
-            removeExtraBuildingViews()
         }
     }
 
@@ -86,10 +81,8 @@ class FactAreaBinder(
                 .inflate(R.layout.additional_buildings_row, additionalBuildingsContainer, false)
             row.title.text = extraBuilding.displayName
 
-            var bodyText = interpolateTextKey(
-                resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
-                "HOUSE_INFO_AMOUNT_BOYTA" to extraBuilding.area
-            )
+            var bodyText =
+                resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS, extraBuilding.area)
             if (extraBuilding.hasWaterConnected) {
                 bodyText += ", " + resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
             }
@@ -120,14 +113,12 @@ class FactAreaBinder(
     }
 
     private fun bindCommon(dataLivingSpace: Int, personsInHousehold: Int) = root.apply {
-        livingSpace.text = interpolateTextKey(
-            resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS),
-            "HOUSE_INFO_AMOUNT_BOYTA" to dataLivingSpace
-        )
+        livingSpace.text =
+            resources.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS, dataLivingSpace)
         coinsured.text = personsInHousehold.toString()
-        offerExpirationDate.text = interpolateTextKey(
-            resources.getString(R.string.OFFER_INFO_OFFER_EXPIRES),
-            "OFFER_EXPIERY_DATE" to LocalDate.now().plusMonths(1)
+        offerExpirationDate.text = resources.getString(
+            R.string.OFFER_INFO_OFFER_EXPIRES,
+            LocalDate.now().plusMonths(1).toString()
         )
     }
 }

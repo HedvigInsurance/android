@@ -104,7 +104,8 @@ class OfferSignDialog : DialogFragment() {
                     SignState.COMPLETED -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_SUCCESSFUL)
                         tracker.userDidSign(
-                            offerViewModel.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toDouble()
+                            offerViewModel.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                                ?.toDouble()
                                 ?: 0.0
                         )
                         goToDirectDebit()
@@ -128,7 +129,13 @@ class OfferSignDialog : DialogFragment() {
         }
 
         handler.postDelayed({
-            startActivity(ConnectPaymentActivity.newInstance(requireContext(), withExplainer = true, withoutHistory = true))
+            startActivity(
+                ConnectPaymentActivity.newInstance(
+                    requireContext(),
+                    withExplainer = true,
+                    withoutHistory = true
+                )
+            )
         }, 1000)
     }
 

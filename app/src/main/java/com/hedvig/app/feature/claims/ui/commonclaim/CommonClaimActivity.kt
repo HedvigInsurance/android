@@ -10,14 +10,15 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
-import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.setupLargeTitle
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.svg.buildRequestBuilder
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_common_claim.*
-import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.common_claim_first_message.*
 import org.koin.android.ext.android.inject
 
@@ -31,17 +32,25 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
 
-        val backgroundColor = colorAttr(R.attr.colorOnPrimary)
-        setupLargeTitle(data.title, R.drawable.ic_back, backgroundColor) {
+        commonClaimTitle.text = data.title
+        root.setEdgeToEdgeSystemUiFlags(true)
+        root.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-        appBarLayout.setExpanded(false, false)
+        root.setupToolbarScrollListener(toolbar = toolbar)
+
 
         requestBuilder
             .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrls.iconByTheme(this)))
             .into(commonClaimFirstMessageIcon)
 
-        commonClaimFirstMessageContainer.setBackgroundColor(backgroundColor)
         commonClaimFirstMessage.text = data.layoutTitle
         commonClaimCreateClaimButton.text = data.buttonText
         if (data.eligibleToClaim) {

@@ -31,8 +31,8 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.interpolateTextKey
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -51,6 +51,21 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        offerRoot.setEdgeToEdgeSystemUiFlags(true)
+        offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        offerHeader.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+            )
+        }
 
         factAreaBinder = FactAreaBinder(offerFactArea as LinearLayout)
         termsBinder = TermsBinder(offerTermsArea as LinearLayout, tracker)
@@ -155,10 +170,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
             when {
                 incentive.asFreeMonths != null -> {
-                    premiumCampaignTitle.text = interpolateTextKey(
-                        getString(R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE).replace('\n', ' '),
-                        "free_month" to incentive.asFreeMonths.quantity
-                    )
+                    premiumCampaignTitle.text = getString(
+                        R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE,
+                        incentive.asFreeMonths.quantity
+                    ).replace('\n', ' ')
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                     premiumCampaignTitle.show()
                 }
@@ -170,20 +185,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 incentive.asPercentageDiscountMonths != null -> {
                     premiumCampaignTitle.text =
                         if (incentive.asPercentageDiscountMonths.pdmQuantity == 1) {
-                            interpolateTextKey(
-                                getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR),
-                                "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                            getString(
+                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
+                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
                             )
                         } else {
-                            interpolateTextKey(
-                                getString(R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL),
-                                "months" to incentive.asPercentageDiscountMonths.pdmQuantity,
-                                "percentage" to incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                            getString(
+                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
+                                incentive.asPercentageDiscountMonths.pdmQuantity,
+                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
                             )
                         }
-                    grossPremium.text = interpolateTextKey(
-                        getString(R.string.OFFER_GROSS_PREMIUM),
-                        "GROSS_PREMIUM" to insuranceCost.monthlyGross.amount.toBigDecimal().toInt()
+                    grossPremium.text = getString(
+                        R.string.OFFER_GROSS_PREMIUM,
+                        insuranceCost.monthlyGross.amount.toBigDecimal().toInt()
                     )
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                 }

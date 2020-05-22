@@ -11,6 +11,10 @@ abstract class BaseTabFragment : Fragment() {
     @get:LayoutRes
     abstract val layout: Int
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(layout, container, false)
 }

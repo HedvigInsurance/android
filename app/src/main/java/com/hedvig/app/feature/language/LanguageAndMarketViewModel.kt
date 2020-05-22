@@ -69,7 +69,6 @@ class LanguageAndMarketViewModel(
             sharedPreferences.edit()
                 .putString(Market.MARKET_SHARED_PREF, market.name)
                 .commit()
-
         }
 
         language?.let {

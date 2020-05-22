@@ -18,7 +18,8 @@ class PerilsAdapter(
     private val fragmentManager: FragmentManager
 ) : RecyclerView.Adapter<PerilsAdapter.PerilViewHolder>() {
     fun setData(subject: String, items: List<PerilCategoryFragment.Peril>) {
-        val diff = DiffUtil.calculateDiff(PerilDiffCallback(this.subject, this.items, subject, items))
+        val diff =
+            DiffUtil.calculateDiff(PerilDiffCallback(this.subject, this.items, subject, items))
         this.subject = subject
         this.items = items
 
@@ -43,7 +44,11 @@ class PerilsAdapter(
         val icon: ImageView = itemView.image
         val text: TextView = itemView.text
 
-        fun bind(subject: String, peril: PerilCategoryFragment.Peril, fragmentManager: FragmentManager) {
+        fun bind(
+            subject: String,
+            peril: PerilCategoryFragment.Peril,
+            fragmentManager: FragmentManager
+        ) {
             safeLet(peril.id, peril.title, peril.description) { id, title, description ->
                 val iconId = PerilIcon.from(id)
                 icon.setImageDrawable(icon.context.compatDrawable(iconId))
@@ -69,8 +74,11 @@ class PerilDiffCallback(
     private val newSubject: String,
     private val newItems: List<PerilCategoryFragment.Peril>
 ) : DiffUtil.Callback() {
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldItems[oldItemPosition].id == newItems[newItemPosition].id
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        oldItems[oldItemPosition].id == newItems[newItemPosition].id
+
     override fun getOldListSize() = oldItems.size
     override fun getNewListSize() = newItems.size
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldSubject == newSubject && oldItems[oldItemPosition] == newItems[newItemPosition]
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        oldSubject == newSubject && oldItems[oldItemPosition] == newItems[newItemPosition]
 }

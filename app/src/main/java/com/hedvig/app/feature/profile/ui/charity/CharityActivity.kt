@@ -11,25 +11,27 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_charity.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class CharityActivity : BaseActivity() {
+class CharityActivity : BaseActivity(R.layout.activity_charity) {
     private val tracker: ProfileTracker by inject()
 
     private val profileViewModel: ProfileViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_charity)
 
-        setupLargeTitle(R.string.PROFILE_CHARITY_TITLE, R.drawable.ic_back) {
+        root.setEdgeToEdgeSystemUiFlags(true)
+
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
             onBackPressed()
         }
 

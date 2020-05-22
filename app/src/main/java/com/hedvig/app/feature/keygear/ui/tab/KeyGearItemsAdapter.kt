@@ -87,7 +87,8 @@ class KeyGearItemsAdapter(
                         item
                     )
                 }
-                val photoUrl = item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
+                val photoUrl =
+                    item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
                 if (photoUrl != null) {
                     holder.root.setBackgroundColor(Color.TRANSPARENT)
                     holder.image.updateLayoutParams {

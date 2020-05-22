@@ -12,7 +12,8 @@ class CharityExplanationBottomSheet : RoundedBottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.bottom_sheet_charity_explanation, null)
+        val view = LayoutInflater.from(requireContext())
+            .inflate(R.layout.bottom_sheet_charity_explanation, null)
         dialog.setContentView(view)
 
         return dialog

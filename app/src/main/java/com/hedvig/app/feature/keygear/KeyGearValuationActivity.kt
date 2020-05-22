@@ -30,7 +30,6 @@ import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
 import e
@@ -39,7 +38,8 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -68,14 +68,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 val category =
                     resources.getString(d.fragments.keyGearItemFragment.category.label)
                         .toLowerCase(Locale.ROOT)
-                noCoverage.text = interpolateTextKey(
-                    getString(R.string.KEY_GEAR_NOT_COVERED),
-                    "ITEM_TYPE" to category
-                )
-                body.text = interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY),
-                    "ITEM_TYPE" to category
-                )
+                noCoverage.text = getString(R.string.KEY_GEAR_NOT_COVERED, category)
+                body.text = getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)
 
             }
         }
@@ -144,11 +138,15 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         }
 
         model.uploadResult.observe(this) { uploadResult ->
-            safeLet(uploadResult?.keyGearItem, uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount) { item, amount ->
+            safeLet(
+                uploadResult?.keyGearItem,
+                uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount
+            ) { item, amount ->
                 val type = valuationType(item)
                 if (type == ValuationType.FIXED) {
-                    val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
-                        ?: return@safeLet
+                    val valuation =
+                        item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                            ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(
                             this,
@@ -163,8 +161,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     )
                     finish()
                 } else if (type == ValuationType.MARKET_PRICE) {
-                    val ratio = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue?.ratio
-                        ?: return@safeLet
+                    val ratio =
+                        item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue?.ratio
+                            ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(
                             this,
@@ -219,7 +218,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
     }
 
     private fun valuationType(item: KeyGearItemQuery.KeyGearItem): ValuationType? {
-        val valuation = item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
+        val valuation =
+            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
 
         return when {
             valuation?.asKeyGearItemValuationFixed != null -> ValuationType.FIXED

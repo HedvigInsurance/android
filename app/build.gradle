@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.apollographql.apollo'
+apply plugin: 'com.likandr.lokalise'
 
 apollo {
     generateKotlinModels = true
@@ -33,15 +34,12 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '4.0.1'
+        versionName '4.0.2'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        buildConfigField("String", "DEFAULT_LANGUAGE", "\"${rootProject.ext.defaultLanguage}\"")
-        buildConfigField("String[]", "EXCLUDED_LANGUAGES", "{\"${rootProject.ext.excludedLanguages.join("\",\"")}\"}")
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.hedvig.app.TestRunner"
     }
 
     compileOptions {
@@ -195,8 +193,8 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.0'
 
     // insetter
-    implementation "dev.chrisbanes:insetter:0.2.0"
-    implementation "dev.chrisbanes:insetter-ktx:0.2.0"
+    implementation "dev.chrisbanes:insetter:0.2.1"
+    implementation "dev.chrisbanes:insetter-ktx:0.2.1"
 
     // markwon
     implementation "io.noties.markwon:core:4.2.1"
@@ -213,6 +211,7 @@ dependencies {
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.1.12'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
+    androidTestImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.22'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }
@@ -222,18 +221,11 @@ googleServices {
     disableVersionCheck = true
 }
 
-apply plugin: 'com.hedvig.textkeys'
+def lokaliseProperties = new Properties()
+lokaliseProperties.load(new FileInputStream(rootProject.file("lokalise.properties")))
 
-textkeys {
-    graphqlEndpoint = 'https://graphql.dev.hedvigit.com/graphql'
-    defaultLanguageCode = rootProject.ext.defaultLanguage
-    excludedLanguages = rootProject.ext.excludedLanguages
+lokalise {
+    id lokaliseProperties['id']
+    token lokaliseProperties['token']
 }
 
-// TODO: Remove this task once everything is merged to develop
-task updateSchema(type: Exec) {
-    group = 'GraphQL'
-    description = 'Fetches the latest schema from our dev GraphQL-server'
-
-    commandLine 'apollo', 'schema:download', '--endpoint=https://graphql.dev.hedvigit.com/graphql', "$projectDir/src/main/graphql/com/hedvig/android/owldroid/schema.json"
-}

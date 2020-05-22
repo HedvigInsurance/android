@@ -8,6 +8,15 @@
     android:orientation="vertical"
     android:paddingBottom="1dp">
 
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:text="@string/PROFILE_REFERRAL_TITLE"
+        android:textAppearance="?textAppearanceHeadline4" />
+
+
     <com.hedvig.app.feature.referrals.ProgressTankView
         android:id="@+id/discountView"
         android:layout_width="match_parent"

@@ -13,16 +13,15 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.onChange
-import com.hedvig.app.util.extensions.setupLargeTitle
+import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_my_info.*
 import kotlinx.android.synthetic.main.loading_spinner.*
-import kotlinx.android.synthetic.main.sphere_container.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
@@ -34,7 +33,9 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupLargeTitle(R.string.PROFILE_MY_INFO_TITLE, R.drawable.ic_back) {
+        myInfoRoot.setEdgeToEdgeSystemUiFlags(true)
+
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
             onBackPressed()
         }
 
@@ -105,10 +106,10 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
             contactDetailsContainer.show()
 
             profileData?.let { data ->
-                sphereText.text = interpolateTextKey(
-                    resources.getString(R.string.PROFILE_MY_INFO_NAME_SPHERE),
-                    "FIRST_NAME" to data.member.firstName,
-                    "LAST_NAME" to data.member.lastName
+                sphereText.text = resources.getString(
+                    R.string.PROFILE_MY_INFO_NAME_SPHERE,
+                    data.member.firstName,
+                    data.member.lastName
                 )
                 setupEmailInput(data.member.email ?: "")
                 setupPhoneNumberInput(data.member.phoneNumber ?: "")

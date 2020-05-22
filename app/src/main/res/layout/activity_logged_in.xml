@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/loggedInRoot"
@@ -9,36 +9,50 @@
     tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
 
-    <include layout="@layout/app_bar" />
-
     <com.hedvig.app.feature.loggedin.ui.TabPager
         android:id="@+id/tabContentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hedvigToolbar" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/hedvigToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/referralButton"
         style="?attr/materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/referrals_button_bottom_margin"
+        android:layout_marginBottom="@dimen/base_margin_triple"
         android:text="@string/REFERRAL_SHAREINVITE"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bottomTabs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
-    <!-- Theme attribute refused to work as a color here. -->
+    <!--Have to use custom background for this view, had problem with backgroundTint-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
-        android:layout_gravity="bottom"
-        android:backgroundTint="@color/bottom_navigation_view_background"
+        android:background="@drawable/background_bottom_nav"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="@+id/tabContentContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:menu="@menu/logged_in_menu" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

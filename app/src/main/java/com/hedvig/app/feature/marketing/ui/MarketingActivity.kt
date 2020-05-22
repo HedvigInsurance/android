@@ -20,8 +20,8 @@ import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_marketing.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -30,7 +30,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
 
         legal.doOnApplyWindowInsets { view, insets, initialState ->
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)

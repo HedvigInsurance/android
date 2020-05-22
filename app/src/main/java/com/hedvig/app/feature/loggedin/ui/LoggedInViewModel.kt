@@ -9,12 +9,14 @@ import kotlinx.coroutines.launch
 
 abstract class LoggedInViewModel : ViewModel() {
     abstract val data: LiveData<List<Feature>>
+    abstract val scroll: MutableLiveData<Float>
 }
 
 class LoggedInViewModelImpl(
     private val featureRepository: FeatureRepository
 ) : LoggedInViewModel() {
     override val data = MutableLiveData<List<Feature>>()
+    override val scroll = MutableLiveData<Float>()
 
     init {
         viewModelScope.launch {

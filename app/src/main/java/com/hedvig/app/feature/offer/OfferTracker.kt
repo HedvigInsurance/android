@@ -15,7 +15,10 @@ class OfferTracker(
 
     fun openChat() = firebaseAnalytics.logEvent("OFFER_OPEN_CHAT", null)
     fun openTerms() = firebaseAnalytics.logEvent("OFFER_PRIVACY_POLICY", null)
-    fun openOfferLink(displayName: String) = firebaseAnalytics.logEvent("OFFER_OPEN_LINK", Bundle().apply { putString("link_label", displayName) })
+    fun openOfferLink(displayName: String) = firebaseAnalytics.logEvent(
+        "OFFER_OPEN_LINK",
+        Bundle().apply { putString("link_label", displayName) })
+
     fun floatingSign() = firebaseAnalytics.logEvent("OFFER_SIGN_BUTTON", null)
     fun toolbarSign() = firebaseAnalytics.logEvent("OFFER_BANKID_SIGN_BUTTON", null)
     fun removeDiscount() = firebaseAnalytics.logEvent("OFFER_REMOVE_DISCOUNT_BUTTON", null)
@@ -35,6 +38,7 @@ class OfferTracker(
             )
         }
     }
+
     fun chooseStartDate() = firebaseAnalytics.logEvent("START_DATE_BTN", null)
     fun activateToday() = firebaseAnalytics.logEvent("ACTIVATE_TODAY_BTN", null)
     fun activateOnInsuranceEnd() = firebaseAnalytics.logEvent("ACTIVATE_INSURANCE_END_BTN", null)

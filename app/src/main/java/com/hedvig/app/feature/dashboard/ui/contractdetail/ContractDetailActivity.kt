@@ -14,7 +14,9 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
+import com.hedvig.app.util.extensions.view.updatePadding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -25,7 +27,19 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        toolbar.setNavigationOnClickListener {
+        root.setEdgeToEdgeSystemUiFlags(true)
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(
+                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+            )
+        }
+
+        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+
+        hedvigToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
@@ -63,16 +77,28 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
 
     private fun bind(data: DashboardQuery.Contract) {
         data.currentAgreement.asNorwegianHomeContentAgreement?.let { nhca ->
-            bindHomeInformation(nhca.address.fragments.addressFragment, nhca.squareMeters, nhca.nhcType?.displayName(this)
-                ?: "")
+            bindHomeInformation(
+                nhca.address.fragments.addressFragment,
+                nhca.squareMeters,
+                nhca.nhcType?.displayName(this)
+                    ?: ""
+            )
             bindCoinsured(nhca.numberCoInsured)
         }
         data.currentAgreement.asSwedishApartmentAgreement?.let { saa ->
-            bindHomeInformation(saa.address.fragments.addressFragment, saa.squareMeters, saa.saType.displayName(this))
+            bindHomeInformation(
+                saa.address.fragments.addressFragment,
+                saa.squareMeters,
+                saa.saType.displayName(this)
+            )
             bindCoinsured(saa.numberCoInsured)
         }
         data.currentAgreement.asSwedishHouseAgreement?.let { sha ->
-            bindHomeInformation(sha.address.fragments.addressFragment, sha.squareMeters, getString(R.string.SWEDISH_HOUSE_LOB))
+            bindHomeInformation(
+                sha.address.fragments.addressFragment,
+                sha.squareMeters,
+                getString(R.string.SWEDISH_HOUSE_LOB)
+            )
             bindCoinsured(sha.numberCoInsured)
         }
         data.currentAgreement.asNorwegianTravelAgreement?.let { nta ->
@@ -80,22 +106,21 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         }
     }
 
-    private fun bindHomeInformation(addressData: AddressFragment, sqm: Int, typeTranslated: String) {
+    private fun bindHomeInformation(
+        addressData: AddressFragment,
+        sqm: Int,
+        typeTranslated: String
+    ) {
         homeInformationContainer.show()
         address.text = addressData.street
-        squareMeters.text = interpolateTextKey(
-            getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT),
-            "SQUARE_METERS" to sqm
-        )
+        postalNumber.text = addressData.postalCode
+        squareMeters.text = getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, sqm)
         type.text = typeTranslated
     }
 
     private fun bindCoinsured(amount: Int) {
         coinsuredContainer.show()
-        coinsuredAmount.text = interpolateTextKey(
-            getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT),
-            "COINSURED" to amount
-        )
+        coinsuredAmount.text = getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
     }
 
     companion object {
@@ -117,8 +142,9 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
         }
 
-        fun newInstance(context: Context, id: String) = Intent(context, ContractDetailActivity::class.java).apply {
-            putExtra(ID, id)
-        }
+        fun newInstance(context: Context, id: String) =
+            Intent(context, ContractDetailActivity::class.java).apply {
+                putExtra(ID, id)
+            }
     }
 }

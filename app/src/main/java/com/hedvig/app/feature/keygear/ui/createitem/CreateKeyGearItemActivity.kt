@@ -47,10 +47,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.view.useEdgeToEdge
-import com.hedvig.app.util.interpolateTextKey
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import org.koin.android.ext.android.inject
@@ -72,7 +71,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
-        root.useEdgeToEdge()
+        root.setEdgeToEdgeSystemUiFlags(true)
         topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val topBarHeight = topBar.measuredHeight
 
@@ -203,10 +202,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 scrollView.remove()
 
                 createdLabel.show()
-                createdLabel.text = interpolateTextKey(
-                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS),
-                    "ITEM_TYPE" to getString(category.label)
-                )
+                createdLabel.text =
+                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
 
                 createdIllustration.show()
                 createdIllustration.setImageResource(category.illustration)

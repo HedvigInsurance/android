@@ -6,10 +6,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.DisplayMetrics
-import androidx.annotation.ColorInt
+import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import com.hedvig.app.R
@@ -17,9 +18,8 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.extensions.view.setupLargeTitle
+import com.hedvig.app.util.extensions.view.setupToolbar
 import e
-import kotlinx.android.synthetic.main.app_bar.*
 
 val Activity.displayMetrics: DisplayMetrics
     get() {
@@ -31,32 +31,20 @@ val Activity.displayMetrics: DisplayMetrics
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
 
-fun AppCompatActivity.setupLargeTitle(
-    @StringRes title: Int,
+fun AppCompatActivity.setupToolbar(
+    @IdRes toolbar: Int,
     @DrawableRes icon: Int? = null,
-    @ColorInt backgroundColor: Int? = null,
-    backAction: (() -> Unit)? = null
+    usingEdgeToEdge: Boolean = false,
+    rootLayout: View? = null,
+    backAction: (() -> Unit)?
 ) {
-    setupLargeTitle(
-        getString(title),
-        icon,
-        backgroundColor,
-        backAction
-    )
-}
 
-fun AppCompatActivity.setupLargeTitle(
-    title: String,
-    @DrawableRes icon: Int? = null,
-    @ColorInt backgroundColor: Int? = null,
-    backAction: (() -> Unit)? = null
-) {
-    appBarLayout.setupLargeTitle(
-        title,
-        this,
-        icon,
-        backgroundColor,
-        backAction
+    this.findViewById<Toolbar>(toolbar).setupToolbar(
+        activity = this,
+        usingEdgeToEdge = usingEdgeToEdge,
+        icon = icon,
+        rootLayout = rootLayout,
+        backAction = backAction
     )
 }
 

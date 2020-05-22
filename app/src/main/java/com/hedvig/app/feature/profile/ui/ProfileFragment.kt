@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
@@ -22,8 +23,8 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.interpolateTextKey
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -32,6 +33,7 @@ class ProfileFragment : BaseTabFragment() {
 
     private val userViewModel: UserViewModel by sharedViewModel()
     private val profileViewModel: ProfileViewModel by sharedViewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
     override val layout = R.layout.fragment_profile
 
@@ -39,6 +41,7 @@ class ProfileFragment : BaseTabFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         populateData()
+        profileRoot.setupToolbarScrollListener(loggedInViewModel)
     }
 
     override fun onResume() {
@@ -93,9 +96,10 @@ class ProfileFragment : BaseTabFragment() {
     }
 
     private fun setupPayment(profileData: ProfileQuery.Data) {
-        paymentRow.description = interpolateTextKey(
-            resources.getString(R.string.PROFILE_ROW_PAYMENT_DESCRIPTION),
-            "COST" to profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()?.toInt()
+        paymentRow.description = resources.getString(
+            R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                ?.toInt()
         )
         paymentRow.setHapticClickListener {
             startActivity(Intent(requireContext(), PaymentActivity::class.java))
