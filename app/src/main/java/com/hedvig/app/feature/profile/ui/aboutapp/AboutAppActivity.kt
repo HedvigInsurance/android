@@ -27,7 +27,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
 
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true, root) {
             onBackPressed()
         }
 

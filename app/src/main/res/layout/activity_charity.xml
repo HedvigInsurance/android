@@ -97,12 +97,20 @@
 
                 </com.hedvig.app.ui.view.HedvigCardView>
 
-                <include
+                <Button
                     android:id="@+id/charitySelectedHowDoesItWorkButton"
-                    layout="@layout/charity_how_does_it_work_button"
+                    style="?attr/materialButtonTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:paddingStart="@dimen/base_margin_half"
+                    android:paddingTop="@dimen/base_margin"
+                    android:paddingEnd="@dimen/base_margin_half"
+                    android:paddingBottom="@dimen/base_margin"
+                    android:text="@string/CHARITY_INFO_BUTTON_LABEL"
+                    android:textColor="?colorSecondary"
+                    app:icon="@drawable/ic_info_purple"
+                    app:iconTint="?colorSecondary" />
 
             </LinearLayout>
 
@@ -112,6 +120,10 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
                 tools:visibility="visible">
 
                 <ImageView
@@ -144,13 +156,21 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                <include
+                <Button
                     android:id="@+id/selectCharityHowDoesItWorkButton"
-                    layout="@layout/charity_how_does_it_work_button"
+                    style="?attr/materialButtonTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/base_margin_triple" />
+                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:paddingStart="@dimen/base_margin_half"
+                    android:paddingTop="@dimen/base_margin"
+                    android:paddingEnd="@dimen/base_margin_half"
+                    android:paddingBottom="@dimen/base_margin"
+                    android:text="@string/CHARITY_INFO_BUTTON_LABEL"
+                    android:textColor="?colorSecondary"
+                    app:icon="@drawable/ic_info_purple"
+                    app:iconTint="?colorSecondary" />
 
             </LinearLayout>
 
