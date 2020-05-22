@@ -15,7 +15,11 @@ import e
 import kotlinx.android.synthetic.main.contract_document_sheet.*
 
 class DocumentBottomSheet : BottomSheetDialogFragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.contract_document_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,11 +58,12 @@ class DocumentBottomSheet : BottomSheetDialogFragment() {
 
         const val TAG = "DocumentBottomSheet"
 
-        fun newInstance(insuranceCertificateUrl: String?, termsAndConditionsUrl: String) = DocumentBottomSheet().apply {
-            arguments = Bundle().apply {
-                insuranceCertificateUrl?.let { putString(INSURANCE_CERTIFICATE_URL, it) }
-                putString(TERMS_AND_CONDITIONS_URL, termsAndConditionsUrl)
+        fun newInstance(insuranceCertificateUrl: String?, termsAndConditionsUrl: String) =
+            DocumentBottomSheet().apply {
+                arguments = Bundle().apply {
+                    insuranceCertificateUrl?.let { putString(INSURANCE_CERTIFICATE_URL, it) }
+                    putString(TERMS_AND_CONDITIONS_URL, termsAndConditionsUrl)
+                }
             }
-        }
     }
 }

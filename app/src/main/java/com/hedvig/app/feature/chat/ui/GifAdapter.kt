@@ -24,7 +24,12 @@ class GifAdapter(
     private val sendGif: (String) -> Unit
 ) : RecyclerView.Adapter<GifAdapter.GifViewHolder>() {
 
-    val recyclerViewPreloader = RecyclerViewPreloader(Glide.with(context), GifPreloadModelProvider(), ViewPreloadSizeProvider(), 10)
+    val recyclerViewPreloader = RecyclerViewPreloader(
+        Glide.with(context),
+        GifPreloadModelProvider(),
+        ViewPreloadSizeProvider(),
+        10
+    )
 
     var items = listOf<GifQuery.Gif>()
         set(value) {

@@ -31,11 +31,11 @@ class PhotosBinder(
     }
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        val newPhotos: MutableList<String?> = data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
+        val newPhotos: MutableList<String?> =
+            data.fragments.keyGearItemFragment.photos.map { it.file.preSignedUrl }.toMutableList()
         if (newPhotos.isEmpty()) {
             newPhotos.add(firstUrl)
         }
         (root.photos.adapter as? PhotosAdapter)?.photoUrls = newPhotos
-
     }
 }

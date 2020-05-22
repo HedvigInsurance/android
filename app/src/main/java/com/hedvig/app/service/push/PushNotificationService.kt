@@ -80,6 +80,7 @@ class PushNotificationService : FirebaseMessagingService() {
         const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
         const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
+
         /*
                 const val NOTIFICATION_TYPE_CLAIM_PAID = "CLAIM_PAID"
                 const val NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED = "INSURANCE_POLICY_UPDATED"

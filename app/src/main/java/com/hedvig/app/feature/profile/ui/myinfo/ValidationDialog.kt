@@ -9,7 +9,11 @@ import com.hedvig.app.R
 import kotlinx.android.synthetic.main.dialog_validation.*
 
 class ValidationDialog : androidx.fragment.app.DialogFragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.dialog_validation, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,7 +37,11 @@ class ValidationDialog : androidx.fragment.app.DialogFragment() {
         private const val PARAGRAPH = "paragraph"
         private const val DISMISS = "dismiss"
 
-        fun newInstance(@StringRes title: Int, @StringRes paragraph: Int, @StringRes dismiss: Int): ValidationDialog {
+        fun newInstance(
+            @StringRes title: Int,
+            @StringRes paragraph: Int,
+            @StringRes dismiss: Int
+        ): ValidationDialog {
             val dialog = ValidationDialog()
             val arguments = Bundle()
             arguments.apply {
