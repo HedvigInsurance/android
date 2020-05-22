@@ -17,7 +17,6 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:configChanges="orientation"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -66,7 +65,7 @@
                     android:gravity="center"
                     android:maxLines="2"
                     android:padding="@dimen/sphere_text_padding"
-                    android:textColor="?colorOnPrimary"
+                    android:textColor="@color/hedvig_white"
                     app:autoSizeMaxTextSize="@dimen/sphere_text_max_text_size"
                     app:autoSizeMinTextSize="@dimen/sphere_text_min_text_size"
                     app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
@@ -132,6 +131,7 @@
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

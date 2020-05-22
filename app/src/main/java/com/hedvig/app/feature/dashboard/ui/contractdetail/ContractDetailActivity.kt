@@ -30,7 +30,6 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         root.setEdgeToEdgeSystemUiFlags(true)
         scrollView.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
-                top = initialState.paddings.top + insets.systemWindowInsetTop,
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
             )
         }
