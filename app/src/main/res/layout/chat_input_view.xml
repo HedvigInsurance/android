@@ -36,19 +36,27 @@
                 android:src="@drawable/ic_add" />
         </FrameLayout>
 
-        <TextView
+        <!-- This FrameLayout fixes a really strange bug -->
+        <FrameLayout
             android:id="@+id/sendGif"
             android:layout_width="@dimen/chat_attach_icon_size"
             android:layout_height="@dimen/chat_attach_icon_size"
-            android:layout_gravity="center_horizontal|bottom"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
-            android:background="@drawable/chat_input_button"
-            android:gravity="center"
-            android:text="@string/GIF_BUTTON_TITLE"
-            android:textAppearance="?textAppearanceBody1"
-            android:textColor="?colorPrimary" />
+            android:background="@drawable/chat_input_button">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/GIF_BUTTON_TITLE"
+                android:textAlignment="center"
+                android:textAppearance="?textAppearanceBody1"
+                android:textColor="?colorPrimary" />
+
+        </FrameLayout>
 
         <!--
         Ignore RtlHardcoded

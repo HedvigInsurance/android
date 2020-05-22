@@ -5,9 +5,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -34,7 +31,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
-import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.dp
@@ -144,11 +140,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
     private fun transitionToUploading() {
         loadingIndicator.show()
-        val startCornerRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ((saveContainer.background as RippleDrawable).getDrawable(0) as GradientDrawable).cornerRadius
-        } else {
-            BUTTON_CORNER_RADIUS
-        }
         ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
             interpolator = AccelerateDecelerateInterpolator()
             duration = SAVE_BUTTON_TRANSITION_DURATION
@@ -158,10 +149,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 }
                 save.alpha = 1 - va.animatedFraction
                 loadingIndicator.alpha = va.animatedFraction
-                val backgroundShape =
-                    ((saveContainer.background as? RippleDrawable)?.getDrawable(0) as? GradientDrawable)?.mutate() as? GradientDrawable
-                backgroundShape?.cornerRadius =
-                    boundedLerp(startCornerRadius, saveContainer.height / 2f, va.animatedFraction)
             }
             start()
         }
