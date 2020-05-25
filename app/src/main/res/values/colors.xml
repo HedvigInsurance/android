@@ -34,4 +34,7 @@
     <color name="hedvig_light_gray">#eaeaea</color>
     <color name="hedvig_dark_gray">#505050</color>
     <color name="hedvig_off_black">#1b1b1b</color>
+    <color name="hedvig_lavender">#be9bf3</color>
+    <color name="hedvig_error_dark">#e24646</color>
+    <color name="hedvig_error_light">#dd2727</color>
 </resources>

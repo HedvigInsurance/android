@@ -17,8 +17,10 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_my_info.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -37,6 +39,10 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
 
         setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
             onBackPressed()
+        }
+
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
         }
 
         sphere.drawable.compatSetTint(compatColor(R.color.dark_purple))

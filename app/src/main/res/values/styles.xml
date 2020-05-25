@@ -7,11 +7,11 @@
     </style>
 
     <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">@color/color_background_85</item>
+        <item name="android:navigationBarColor">@color/color_background_95</item>
     </style>
 
     <style name="Hedvig.Theme.Chat">
-        <item name="android:navigationBarColor">@color/color_background_85</item>
+        <item name="android:navigationBarColor">@color/color_background_95</item>
     </style>
 
     <style name="Hedvig.Theme.KeyGear.ItemDetail">

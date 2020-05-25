@@ -12,10 +12,12 @@
     <item name="colorSecondary" type="color">@color/violet_300</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
 
+    <item name="colorError" type="color">@color/hedvig_error_dark</item>
+
     <item name="textColorPrimary" type="color">@color/hedvig_off_white</item>
     <item name="textColorSecondary" type="color">@color/hedvig_white</item>
 
-    <item name="colorButton" type="color">@color/violet_300</item>
+    <item name="colorButton" type="color">@color/hedvig_lavender</item>
 
     <item name="colorBackgroundChat" type="color">@color/hedvig_off_black</item>
     <item name="colorChatUserBackground" type="color">@color/hedvig_off_black</item>

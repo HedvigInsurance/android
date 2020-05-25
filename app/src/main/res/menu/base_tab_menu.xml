@@ -6,5 +6,5 @@
         android:icon="@drawable/ic_chat"
         android:orderInCategory="1"
         android:title="@string/DASHBOARD_OPEN_CHAT"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always" />
 </menu>

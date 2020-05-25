@@ -12,7 +12,7 @@
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
-        <item name="colorError">@color/coral_500</item>
+        <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/hedvig_white</item>
         <item name="colorButton">@color/colorButton</item>
         <item name="android:textColorPrimary">@color/colorPrimaryVariant</item>

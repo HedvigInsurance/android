@@ -63,6 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/referral_title_spacing"
+        android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline5"
         tools:text="9 vänner kvar att bjuda in" />
 
