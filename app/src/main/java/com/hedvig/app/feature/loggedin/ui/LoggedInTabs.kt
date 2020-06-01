@@ -10,6 +10,15 @@ enum class LoggedInTabs {
     REFERRALS,
     PROFILE;
 
+    @IdRes
+    fun id() = when (this) {
+        DASHBOARD -> R.id.dashboard
+        CLAIMS -> R.id.claims
+        KEY_GEAR -> R.id.key_gear
+        REFERRALS -> R.id.referrals
+        PROFILE -> R.id.profile
+    }
+
     companion object {
         fun fromId(@IdRes id: Int) = when (id) {
             R.id.dashboard -> DASHBOARD

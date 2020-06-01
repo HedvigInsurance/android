@@ -52,6 +52,8 @@ class PushNotificationService : FirebaseMessagingService() {
                 .sendChatNotification(this)
             NOTIFICATION_TYPE_REFERRAL_SUCCESS -> ReferralsNotificationManager
                 .sendReferralNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager
+                .sendReferralsEnabledNotification(this)
             NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> PaymentNotificationManager
                 .sendDirectDebitNotification(this)
             NOTIFICATION_TYPE_PAYMENT_FAILED -> PaymentNotificationManager

@@ -19,6 +19,7 @@ import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.mocks.mockModule
+import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -132,6 +133,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         findViewById<Button>(R.id.saveToken).setHapticClickListener {
             setAuthenticationToken(findViewById<TextInputEditText>(R.id.token).text.toString())
             makeToast("Token saved")
+        }
+
+        sendReferralsEnabledNotification.setHapticClickListener {
+            ReferralsNotificationManager.sendReferralsEnabledNotification(this)
         }
     }
 

@@ -7,6 +7,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.service.push.PushNotificationService
 import com.hedvig.app.service.push.setupNotificationChannel
@@ -56,7 +58,35 @@ object ReferralsNotificationManager {
             .notify(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
     }
 
-    fun sendReferralsEnabledNotification(context: Context, remoteMessage: RemoteMessage) {
+    fun sendReferralsEnabledNotification(context: Context) {
+        val pendingIntent: PendingIntent? = TaskStackBuilder
+            .create(context)
+            .run {
+                addNextIntentWithParentStack(
+                    LoggedInActivity.newInstance(
+                        context,
+                        initialTab = LoggedInTabs.REFERRALS
+                    )
+                )
+                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
+
+        val notificationBuilder = NotificationCompat
+            .Builder(
+                context,
+                REFERRAL_CHANNEL_ID
+            )
+            .setSmallIcon(R.drawable.ic_hedvig_h)
+            .setContentTitle(context.getString(R.string.new_referral_notification_title))
+            .setContentText(context.getString(R.string.content_type_description))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setChannelId(REFERRAL_CHANNEL_ID)
+            .setContentIntent(pendingIntent)
+
+        NotificationManagerCompat
+            .from(context)
+            .notify(REFERRALS_ENABLED_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun createChannel(context: Context) {
@@ -70,4 +100,6 @@ object ReferralsNotificationManager {
 
     private const val REFERRAL_CHANNEL_ID = "hedvig-referral"
     private const val REFERRAL_NOTIFICATION_ID = 2
+
+    private const val REFERRALS_ENABLED_NOTIFICATION_ID = 8
 }
