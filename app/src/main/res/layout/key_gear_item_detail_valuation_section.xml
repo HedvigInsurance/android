@@ -51,7 +51,7 @@
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin_double"
                 android:text="@string/KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

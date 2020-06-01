@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 tools:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
                 tools:visibility="visible" />
@@ -88,7 +88,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/base_margin"
                 android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?colorSecondary"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

@@ -53,7 +53,7 @@
             android:layout_gravity="end|center|center_vertical"
             android:background="?attr/selectableItemBackground"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON"
-            android:textColor="?android:textColorSecondary" />
+            android:textColor="?colorSecondary" />
 
     </FrameLayout>
 </LinearLayout>

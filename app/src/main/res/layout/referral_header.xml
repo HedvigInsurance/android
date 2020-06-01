@@ -99,7 +99,7 @@
         android:paddingEnd="@dimen/base_margin_double"
         android:paddingBottom="@dimen/base_margin_half"
         android:textAppearance="?textAppearanceHeadline6"
-        android:textColor="?android:textColorSecondary"
+        android:textColor="?colorSecondary"
         tools:text="HDVG87" />
 
     <include

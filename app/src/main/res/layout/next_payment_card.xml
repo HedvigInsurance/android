@@ -61,7 +61,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/sphere"
-                android:backgroundTint="@color/coral_500"
+                android:backgroundTint="?colorError"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,6 +80,7 @@
                     android:textAppearance="?textAppearanceBody3"
                     android:textColor="?colorOnError"
                     tools:text="3\nGratis\nmånader" />
+
 
             </FrameLayout>
 
