@@ -9,13 +9,16 @@
     <item name="colorBackground" type="color">@color/hedvig_black</item>
     <item name="colorSurface" type="color">@color/hedvig_off_black</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
-    <item name="colorSecondary" type="color">@color/violet_300</item>
+    <item name="colorSecondary" type="color">#BE9BF3</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
+
+    <item name="colorError" type="color">#E24646</item>
 
     <item name="textColorPrimary" type="color">@color/hedvig_off_white</item>
     <item name="textColorSecondary" type="color">@color/hedvig_white</item>
 
-    <item name="colorButton" type="color">@color/violet_300</item>
+    <item name="colorButton" type="color">@color/colorSecondary</item>
+    <item name="textColorLink" type="color">@color/colorSecondary</item>
 
     <item name="colorBackgroundChat" type="color">@color/hedvig_off_black</item>
     <item name="colorChatUserBackground" type="color">@color/hedvig_off_black</item>
