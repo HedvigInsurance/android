@@ -11,7 +11,7 @@
     </style>
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">?colorButton</item>
+        <item name="android:textColor">?textColorLink</item>
     </style>
 
     <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
