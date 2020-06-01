@@ -84,6 +84,6 @@
         android:layout_marginTop="@dimen/base_margin"
         android:gravity="center"
         android:text="@string/REFERRAL_ADDCOUPON_TC_LINK"
-        android:textColor="?colorSecondary" />
+        android:textColor="?android:textColorSecondary" />
 
 </LinearLayout>
