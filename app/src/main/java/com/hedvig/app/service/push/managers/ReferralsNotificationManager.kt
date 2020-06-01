@@ -56,6 +56,9 @@ object ReferralsNotificationManager {
             .notify(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
     }
 
+    fun sendReferralsEnabledNotification(context: Context, remoteMessage: RemoteMessage) {
+    }
+
     fun createChannel(context: Context) {
         setupNotificationChannel(
             context,
