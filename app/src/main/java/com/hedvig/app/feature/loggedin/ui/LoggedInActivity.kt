@@ -21,7 +21,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.referrals.ReferralBottomSheet
+import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -155,11 +155,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 startActivity(SettingsActivity.newInstance(this))
             }
             LoggedInTabs.REFERRALS -> {
-                profileViewModel.data.value?.referralInformation?.campaign?.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()
-                    ?.toInt()?.toString()?.let { amount ->
-                        ReferralBottomSheet.newInstance(amount)
-                            .show(supportFragmentManager, ReferralBottomSheet.TAG)
-                    }
+                startActivity(
+                    ReferralsInformationActivity.newInstance(
+                        this,
+                        "https://www.hedvig.com/invites/terms"
+                    )
+                )
             }
         }
         return true
