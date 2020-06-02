@@ -4,6 +4,7 @@ import android.Manifest
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +50,7 @@ class PhotosAdapter(
                     false
                 ).apply {
                     layoutParams =
-                        ConstraintLayout.LayoutParams(
+                        FrameLayout.LayoutParams(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
                             ITEM_HEIGHT.dp
                         )
