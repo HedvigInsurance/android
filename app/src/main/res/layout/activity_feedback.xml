@@ -62,8 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
-                android:text="@string/bug_report_mail"
-                android:textColor="?colorSecondary" />
+                android:text="@string/bug_report_mail" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -79,8 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
-                android:text="@string/rate_us_link"
-                android:textColor="?colorSecondary" />
+                android:text="@string/rate_us_link" />
 
         </LinearLayout>
 
