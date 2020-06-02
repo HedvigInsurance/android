@@ -15,14 +15,15 @@
         android:background="?android:colorBackground" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/header"
@@ -30,9 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:text="@string/PROFILE_MY_INFO_TITLE"
-                android:textAppearance="?textAppearanceHeadline4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textAppearance="?textAppearanceHeadline4" />
 
             <include layout="@layout/loading_spinner" />
 
@@ -40,11 +39,9 @@
                 android:id="@+id/sphereContainer"
                 android:layout_width="@dimen/profile_sphere_side_length"
                 android:layout_height="@dimen/profile_sphere_side_length"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/header"
                 tools:showIn="@layout/activity_my_info"
                 tools:visibility="visible">
 
@@ -79,10 +76,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sphereContainer">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -130,7 +124,7 @@
 
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 

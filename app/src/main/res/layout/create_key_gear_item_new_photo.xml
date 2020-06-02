@@ -4,6 +4,7 @@
     android:id="@+id/addPhoto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/create_key_gear_add_photo_height"
+    android:layout_marginBottom="@dimen/base_margin_half"
     android:background="@drawable/background_rounded_corners_ripple"
     android:backgroundTint="?colorSurface"
     android:clickable="true"

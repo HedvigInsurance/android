@@ -99,66 +99,6 @@
     </com.hedvig.app.ui.view.HedvigCardView>
 
     <com.hedvig.app.ui.view.HedvigCardView
-        android:id="@+id/documentsCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="@dimen/peril_category_icon_size"
-                android:layout_height="@dimen/peril_category_icon_size"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:contentDescription="@null"
-                app:srcCompat="@drawable/ic_my_documents" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginBottom="@dimen/base_margin_triple"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
-                    android:textAppearance="?textAppearanceHeadline6" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_DOCUMENTS_SUBTITLE"
-                    android:textAppearance="?textAppearanceBody2" />
-
-            </LinearLayout>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:contentDescription="@null"
-                android:tint="?colorPrimary"
-                app:srcCompat="@drawable/ic_info_purple" />
-
-        </LinearLayout>
-
-    </com.hedvig.app.ui.view.HedvigCardView>
-
-    <com.hedvig.app.ui.view.HedvigCardView
         android:id="@+id/coverageCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -203,6 +143,66 @@
                     android:text="@string/DASHBOARD_MY_COVERAGE_SUBTITLE"
                     android:textAppearance="?textAppearanceBody2" />
 
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                android:tint="?colorPrimary"
+                app:srcCompat="@drawable/ic_info_purple" />
+
+        </LinearLayout>
+
+    </com.hedvig.app.ui.view.HedvigCardView>
+
+    <com.hedvig.app.ui.view.HedvigCardView
+        android:id="@+id/documentsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/peril_category_icon_size"
+                android:layout_height="@dimen/peril_category_icon_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_my_documents" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginBottom="@dimen/base_margin_triple"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
+                    android:textAppearance="?textAppearanceHeadline6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/DASHBOARD_MY_DOCUMENTS_SUBTITLE"
+                    android:textAppearance="?textAppearanceBody2" />
 
             </LinearLayout>
 

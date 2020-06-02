@@ -8,14 +8,13 @@
     android:orientation="vertical"
     android:paddingBottom="1dp">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:text="@string/PROFILE_REFERRAL_TITLE"
         android:textAppearance="?textAppearanceHeadline4" />
-
 
     <com.hedvig.app.feature.referrals.ProgressTankView
         android:id="@+id/discountView"
@@ -62,7 +61,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/referral_title_spacing"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline5"
         tools:text="9 vänner kvar att bjuda in" />
 
