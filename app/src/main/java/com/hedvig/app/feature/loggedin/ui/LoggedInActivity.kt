@@ -108,13 +108,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     loggedInRoot.postDelayed({
                         loggedInRoot.show()
                     }, resources.getInteger(R.integer.slide_in_animation_duration).toLong())
-                } else {
-                    loggedInRoot.show()
                 }
             }
             intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
-        } else {
-            loggedInRoot.show()
         }
 
         bindData()
@@ -224,7 +220,11 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         else -> R.menu.logged_in_menu
                     }
                     bottomTabs.inflateMenu(menuId)
+                    val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                        ?: LoggedInTabs.DASHBOARD
+                    bottomTabs.selectedItemId = initialTab.id()
                     setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+                    loggedInRoot.show()
                 }
             }
         }
@@ -282,12 +282,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     companion object {
-        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+        private const val INITIAL_TAB = "INITIAL_TAB"
+        fun newInstance(
+            context: Context,
+            withoutHistory: Boolean = false,
+            initialTab: LoggedInTabs = LoggedInTabs.DASHBOARD
+        ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
+                putExtra(INITIAL_TAB, initialTab)
             }
 
         fun isTerminated(contracts: List<DashboardQuery.Contract>) =
