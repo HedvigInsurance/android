@@ -52,6 +52,8 @@ class PushNotificationService : FirebaseMessagingService() {
                 .sendChatNotification(this)
             NOTIFICATION_TYPE_REFERRAL_SUCCESS -> ReferralsNotificationManager
                 .sendReferralNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager
+                .sendReferralsEnabledNotification(this)
             NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> PaymentNotificationManager
                 .sendDirectDebitNotification(this)
             NOTIFICATION_TYPE_PAYMENT_FAILED -> PaymentNotificationManager
@@ -77,7 +79,10 @@ class PushNotificationService : FirebaseMessagingService() {
 
         const val NOTIFICATION_TYPE_KEY = "TYPE"
         const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
+
         const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
+        const val NOTIFICATION_TYPE_REFERRALS_ENABLED = "REFERRALS_ENABLED"
+
         const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
 
