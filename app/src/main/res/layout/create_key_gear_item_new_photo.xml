@@ -35,7 +35,6 @@
             android:layout_marginTop="@dimen/base_margin"
             android:text="@string/KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON"
             android:textAppearance="?textAppearanceBody2"
-            android:textColor="?colorSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
