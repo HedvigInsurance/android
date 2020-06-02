@@ -304,6 +304,35 @@ class KeyGearItemsRepository(
                 .apolloStore()
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
+
+            val itemsCachedData = apolloClientWrapper
+                .apolloClient
+                .apolloStore()
+                .read(keyGearItemsQuery)
+                .execute()
+
+            itemsCachedData?.keyGearItems?.let { items ->
+                val newItemsData = itemsCachedData.copy(
+                    keyGearItems = items.map {
+                        if (it.fragments.keyGearItemFragment.id == keyGearItem.fragments.keyGearItemFragment.id) {
+                            it.copy(
+                                fragments = it.fragments.copy(
+                                    keyGearItemFragment = it.fragments.keyGearItemFragment.copy(
+                                        name = newName
+                                    )
+                                )
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                )
+                apolloClientWrapper
+                    .apolloClient
+                    .apolloStore()
+                    .writeAndPublish(keyGearItemsQuery, newItemsData)
+                    .execute()
+            }
         }
     }
 

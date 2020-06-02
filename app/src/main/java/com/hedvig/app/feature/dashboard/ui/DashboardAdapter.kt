@@ -187,6 +187,11 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
             fun bind(contract: DashboardQuery.Contract, fragmentManager: FragmentManager) {
                 contract.status.fragments.contractStatusFragment.let { contractStatus ->
                     contractStatus.asPendingStatus?.let {
+                        status.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            status.context.compatDrawable(
+                                R.drawable.ic_inactive
+                            ), null, null, null
+                        )
                         status.text =
                             status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
                     }

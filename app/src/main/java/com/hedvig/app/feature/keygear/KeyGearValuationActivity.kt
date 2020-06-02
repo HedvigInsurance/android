@@ -5,13 +5,10 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -22,7 +19,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
-import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
@@ -30,8 +26,12 @@ import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.ext.android.inject
@@ -58,7 +58,31 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         }
         var maxInsurableAmount = 0
 
-        saveContainer.show()
+        saveContainer.measure(
+            View.MeasureSpec.makeMeasureSpec(
+                root.width,
+                View.MeasureSpec.EXACTLY
+            ), View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.AT_MOST)
+        )
+
+        scrollView.updatePadding(
+            bottom = scrollView.paddingBottom + saveContainer.measuredHeight
+        )
+
+        root.setEdgeToEdgeSystemUiFlags(true)
+
+        topBar.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
+
+        saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+        }
+
         model.data.observe(this) { data ->
             safeLet(
                 data,
@@ -230,24 +254,15 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
     private fun transitionToUploading() {
         loadingIndicator.show()
-        val startCornerRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ((saveContainer.background as RippleDrawable).getDrawable(0) as GradientDrawable).cornerRadius
-        } else {
-            BUTTON_CORNER_RADIUS
-        }
         ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
             interpolator = AccelerateDecelerateInterpolator()
             duration = SAVE_BUTTON_TRANSITION_DURATION
             addUpdateListener { va ->
-                saveContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                saveContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     width = va.animatedValue as Int
                 }
                 save.alpha = 1 - va.animatedFraction
                 loadingIndicator.alpha = va.animatedFraction
-                val backgroundShape =
-                    ((saveContainer.background as? RippleDrawable)?.getDrawable(0) as? GradientDrawable)?.mutate() as? GradientDrawable
-                backgroundShape?.cornerRadius =
-                    boundedLerp(startCornerRadius, saveContainer.height / 2f, va.animatedFraction)
             }
             start()
         }
@@ -257,7 +272,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         if (hasPrice && hasDate) {
             save.isEnabled = true
             saveContainer.backgroundTintList =
-                ColorStateList.valueOf(colorAttr(R.attr.colorSecondary))
+                ColorStateList.valueOf(colorAttr(R.attr.colorButton))
         } else {
             save.isEnabled = false
             saveContainer.backgroundTintList =

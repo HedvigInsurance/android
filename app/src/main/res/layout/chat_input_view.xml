@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_square"
-    android:backgroundTint="@color/color_background_85"
+    android:backgroundTint="@color/color_background_95"
     android:theme="@style/Hedvig.Theme.Widgets.Chat.Input">
 
     <LinearLayout
