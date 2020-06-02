@@ -44,7 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin_triple"
-            android:textColor="?colorSecondary"
             tools:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON" />
 
     </LinearLayout>
