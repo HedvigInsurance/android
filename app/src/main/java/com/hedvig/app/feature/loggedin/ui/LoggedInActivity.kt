@@ -264,7 +264,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         resources.getString(
                             R.string.REFERRAL_SMS_MESSAGE,
                             incentive.toBigDecimal().toInt().toString(),
-                            "${BuildConfig.WEB_ONBOARDING_BASE_URL}${defaultLocale(this@LoggedInActivity).toWebLocaleTag()}/forever/${code}"
+                            "${BuildConfig.WEB_BASE_URL}${defaultLocale(this@LoggedInActivity).toWebLocaleTag()}/forever/${code}"
                         )
                     )
                     type = "text/plain"
