@@ -18,7 +18,7 @@
         android:layout_gravity="center_horizontal"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@null"
-        tools:src="@drawable/ic_legal" />
+        tools:src="@drawable/ic_active" />
 
     <TextView
         android:id="@+id/text"
