@@ -120,7 +120,11 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
 
     private fun bindCoinsured(amount: Int) {
         coinsuredContainer.show()
-        coinsuredAmount.text = getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
+        coinsuredAmount.text = when (amount) {
+            0 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ZERO_COINSURED)
+            1 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ONE_COINSURED)
+            else -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
+        }
     }
 
     companion object {

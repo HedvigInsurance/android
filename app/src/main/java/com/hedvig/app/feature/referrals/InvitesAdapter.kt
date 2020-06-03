@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.util.LightClass
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.copyToClipboard
@@ -224,8 +225,8 @@ class InvitesAdapter(
 
             statusIconContainer.setBackgroundResource(R.drawable.background_rounded_corners)
             statusIconContainer.background.setTint(
-                statusIconContainer.context.compatColor(
-                    R.color.light_gray
+                statusIconContainer.context.colorAttr(
+                    R.attr.colorSurface
                 )
             )
             discount.text =
@@ -286,10 +287,10 @@ class InvitesAdapter(
     //TODO: Let's get the data from backend
     private fun calculateDiscount(): Int {
         var totalDiscount = 0
-        (data.referredBy as? ProfileQuery.AsActiveReferral?)?.let {
+        (data.referredBy?.asActiveReferral)?.let {
             totalDiscount += it.discount.amount.toBigDecimal().toInt()
         }
-        data.invitations.filterIsInstance(ProfileQuery.AsActiveReferral1::class.java)
+        data.invitations.mapNotNull { it.asActiveReferral1 }
             .forEach { receiver ->
                 totalDiscount += receiver.discount.amount.toBigDecimal().toInt()
             }

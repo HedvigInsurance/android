@@ -104,63 +104,64 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/catIcon"
+                android:id="@+id/coverageCategoryIcon"
                 android:layout_width="@dimen/peril_category_icon_size"
                 android:layout_height="@dimen/peril_category_icon_size"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:contentDescription="@null"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_coverage" />
 
-            <LinearLayout
-                android:id="@+id/textContainer"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/coverageCategoryTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin"
-                android:layout_marginBottom="@dimen/base_margin_triple"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:text="@string/DASHBOARD_MY_COVERAGE_TITLE"
+                android:textAppearance="?textAppearanceHeadline6"
+                app:layout_constraintBottom_toTopOf="@id/coverageCategorySubtitle"
+                app:layout_constraintEnd_toStartOf="@id/coverageInfoIcon"
+                app:layout_constraintStart_toEndOf="@id/coverageCategoryIcon"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/categoryTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_COVERAGE_TITLE"
-                    android:textAppearance="?textAppearanceHeadline6" />
-
-                <TextView
-                    android:id="@+id/categorySubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_COVERAGE_SUBTITLE"
-                    android:textAppearance="?textAppearanceBody2" />
-
-
-            </LinearLayout>
-
-            <Space
+            <TextView
+                android:id="@+id/coverageCategorySubtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:layout_marginBottom="@dimen/base_margin_triple"
+                android:text="@string/DASHBOARD_MY_COVERAGE_SUBTITLE"
+                android:textAppearance="?textAppearanceBody2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/coverageInfoIcon"
+                app:layout_constraintStart_toEndOf="@id/coverageCategoryIcon"
+                app:layout_constraintTop_toBottomOf="@id/coverageCategoryTitle" />
 
             <ImageView
+                android:id="@+id/coverageInfoIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:contentDescription="@null"
                 android:tint="?colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_info" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.hedvig.app.ui.view.HedvigCardView>
 
@@ -170,57 +171,64 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/documentsCategoryIcon"
                 android:layout_width="@dimen/peril_category_icon_size"
                 android:layout_height="@dimen/peril_category_icon_size"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:contentDescription="@null"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_my_documents" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginBottom="@dimen/base_margin_triple"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
-                    android:textAppearance="?textAppearanceHeadline6" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/DASHBOARD_MY_DOCUMENTS_SUBTITLE"
-                    android:textAppearance="?textAppearanceBody2" />
-
-            </LinearLayout>
-
-            <Space
+            <TextView
+                android:id="@+id/documentsCategoryTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
+                android:textAppearance="?textAppearanceHeadline6"
+                app:layout_constraintBottom_toTopOf="@id/documentsCategorySubtitle"
+                app:layout_constraintEnd_toStartOf="@id/documentsInfoIcon"
+                app:layout_constraintStart_toEndOf="@id/documentsCategoryIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/documentsCategorySubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin"
+                android:layout_marginBottom="@dimen/base_margin_triple"
+                android:text="@string/DASHBOARD_MY_DOCUMENTS_SUBTITLE"
+                android:textAppearance="?textAppearanceBody2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/documentsInfoIcon"
+                app:layout_constraintStart_toEndOf="@id/documentsCategoryIcon"
+                app:layout_constraintTop_toBottomOf="@id/documentsCategoryTitle" />
 
             <ImageView
+                android:id="@+id/documentsInfoIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:contentDescription="@null"
                 android:tint="?colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_info" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.hedvig.app.ui.view.HedvigCardView>
 
