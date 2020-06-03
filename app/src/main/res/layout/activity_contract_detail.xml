@@ -150,8 +150,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:text="@string/CONTRACT_DETAIL_HOME_CHANGE_INFO"
-                    android:textAllCaps="false"
-                    android:textColor="?colorSecondary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/homeSeparator" />
@@ -214,8 +212,6 @@
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:background="?attr/selectableItemBackground"
                     android:text="@string/CONTRACT_DETAIL_COINSURED_CHANGE_INFO"
-                    android:textAllCaps="false"
-                    android:textColor="?colorSecondary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/coinsuredSeparator" />
@@ -231,7 +227,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"
-        android:backgroundTint="@color/color_background_85"
+        android:backgroundTint="@color/color_background_95"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

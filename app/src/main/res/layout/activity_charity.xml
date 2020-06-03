@@ -108,9 +108,8 @@
                     android:paddingEnd="@dimen/base_margin_half"
                     android:paddingBottom="@dimen/base_margin"
                     android:text="@string/CHARITY_INFO_BUTTON_LABEL"
-                    android:textColor="?colorSecondary"
                     app:icon="@drawable/ic_info_purple"
-                    app:iconTint="?colorSecondary" />
+                    app:iconTint="?textColorLink" />
 
             </LinearLayout>
 
@@ -168,9 +167,8 @@
                     android:paddingEnd="@dimen/base_margin_half"
                     android:paddingBottom="@dimen/base_margin"
                     android:text="@string/CHARITY_INFO_BUTTON_LABEL"
-                    android:textColor="?colorSecondary"
                     app:icon="@drawable/ic_info_purple"
-                    app:iconTint="?colorSecondary" />
+                    app:iconTint="?textColorLink" />
 
             </LinearLayout>
 
