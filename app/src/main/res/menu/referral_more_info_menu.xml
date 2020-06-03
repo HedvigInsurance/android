@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/referralMoreInfo"
+        android:icon="@drawable/ic_info"
         android:orderInCategory="1"
         android:title="@string/REFERRAL_PROGRESS_TOPBAR_BUTTON"
-        app:showAsAction="always|withText" />
+        app:iconTint="?colorPrimary"
+        app:showAsAction="always" />
 </menu>

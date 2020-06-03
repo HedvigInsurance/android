@@ -158,7 +158,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 startActivity(
                     ReferralsInformationActivity.newInstance(
                         this,
-                        "https://www.hedvig.com/invites/terms"
+                        "https://www.hedvig.com/invites/terms" // TODO: Replace with a link provided by content-service
                     )
                 )
             }
