@@ -16,7 +16,7 @@
         android:contentDescription="@null"
         tools:layout_height="200dp"
         tools:layout_width="200dp"
-        tools:src="@drawable/ic_vandalism_red" />
+        tools:src="@drawable/ic_active" />
 
     <Button
         android:id="@+id/attachFileSendButton"
