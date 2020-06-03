@@ -287,7 +287,7 @@ class InvitesAdapter(
     //TODO: Let's get the data from backend
     private fun calculateDiscount(): Int {
         var totalDiscount = 0
-        (data.referredBy as? ProfileQuery.AsActiveReferral?)?.let {
+        (data.referredBy?.asActiveReferral)?.let {
             totalDiscount += it.discount.amount.toBigDecimal().toInt()
         }
         data.invitations.mapNotNull { it.asActiveReferral1 }
