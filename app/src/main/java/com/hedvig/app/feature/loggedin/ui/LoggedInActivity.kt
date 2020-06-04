@@ -28,6 +28,8 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
+import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showShareSheet
@@ -262,7 +264,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         resources.getString(
                             R.string.REFERRAL_SMS_MESSAGE,
                             incentive.toBigDecimal().toInt().toString(),
-                            BuildConfig.REFERRALS_LANDING_BASE_URL + code
+                            "${BuildConfig.WEB_BASE_URL}${defaultLocale(this@LoggedInActivity).toWebLocaleTag()}/forever/${code}"
                         )
                     )
                     type = "text/plain"
