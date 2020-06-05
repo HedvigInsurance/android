@@ -24,6 +24,7 @@
                 android:id="@+id/illustration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_double"
                 android:contentDescription="@null"
                 app:layout_constraintBottom_toTopOf="@id/title"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +74,7 @@
         android:layout_gravity="bottom"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_triple"
+        android:layout_marginBottom="@dimen/base_margin_double"
         android:text="@string/referrals_intro_screen.button" />
 
 </FrameLayout>
