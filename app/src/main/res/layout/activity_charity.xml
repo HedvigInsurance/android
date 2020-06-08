@@ -79,7 +79,7 @@
                             android:layout_marginStart="@dimen/base_margin_double"
                             android:layout_marginTop="@dimen/base_margin_double"
                             android:layout_marginEnd="@dimen/base_margin_double"
-                            android:textAppearance="?textAppearanceHeadline6"
+                            android:textAppearance="?textAppearanceSubtitle1"
                             tools:text="SOS Barnbyar" />
 
                         <TextView

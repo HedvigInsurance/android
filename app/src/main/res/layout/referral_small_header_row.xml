@@ -7,5 +7,5 @@
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_triple"
     android:layout_marginBottom="@dimen/base_margin"
-    android:textAppearance="?textAppearanceHeadline6"
+    android:textAppearance="?textAppearanceSubtitle1"
     tools:text="@string/REFERRAL_INVITE_TITLE" />

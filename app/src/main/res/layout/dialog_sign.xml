@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/SIGN_START_BANKID"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <ImageView
         android:layout_width="wrap_content"

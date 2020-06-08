@@ -15,7 +15,7 @@
         android:id="@+id/campaignInformationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="Aktuell kampanj" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="Partner XYZ" />
 
     <TextView
@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         android:visibility="gone"
         tools:text="2019-06-28"
         tools:visibility="visible" />
@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:text="@string/PAYMENTS_NO_STARTDATE_HELP_MESSAGE"
-        android:textAppearance="?textAppearanceBody3"
+        android:textAppearance="?textAppearanceCaption""
         android:visibility="gone"
         tools:visibility="visible" />
 

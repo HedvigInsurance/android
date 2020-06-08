@@ -67,7 +67,7 @@
         android:layout_marginBottom="@dimen/base_margin_triple"
         android:text="@string/MARKETING_LEGAL"
         android:textAlignment="center"
-        android:textAppearance="?textAppearanceBody3"
+        android:textAppearance="?textAppearanceCaption""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

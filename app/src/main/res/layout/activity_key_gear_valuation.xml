@@ -28,7 +28,7 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_triple"
                 android:textAlignment="center"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -139,7 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_triple"
             android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
-            android:textAppearance="?textAppearanceHeadline6" />
+            android:textAppearance="?textAppearanceSubtitle1" />
 
     </LinearLayout>
 

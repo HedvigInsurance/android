@@ -11,11 +11,13 @@
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
     <item name="colorSecondary" type="color">#C9ABF5</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
+    <item name="colorPlaceholder" type="color">#57121212</item>
 
     <item name="colorError" type="color">#DD2727</item>
 
-    <item name="textColorPrimary" type="color">@color/hedvig_dark_gray</item>
-    <item name="textColorSecondary" type="color">@color/hedvig_black</item>
+    <item name="textColorPrimary" type="color">#AB121212</item>
+    <item name="textColorSecondary" type="color">#121212</item>
+    <item name="textColorThird" type="color">#8F121212</item>
 
     <item name="colorButton" type="color">@color/colorPrimary</item>
     <item name="textColorLink" type="color">#875EC5</item>

@@ -8,10 +8,10 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/claimsNestedScrollView"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/logged_in_tabs_bottom_padding"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/logged_in_tabs_bottom_padding">
 
 
         <FrameLayout
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_quadruple"
                     android:text="@string/CLAIMS_QUICK_ACTIONS"
-                    android:textAppearance="?textAppearanceHeadline6" />
+                    android:textAppearance="?textAppearanceSubtitle1" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/commonClaimsRecyclerView"

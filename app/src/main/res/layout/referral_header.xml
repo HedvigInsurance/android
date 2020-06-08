@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="@string/REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE"
-            android:textAppearance="?textAppearanceHeadline6" />
+            android:textAppearance="?textAppearanceSubtitle1" />
 
         <TextView
             android:id="@+id/referralProgressHighPremiumCurrentPrice"
@@ -85,7 +85,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:text="@string/REFERRAL_PROGRESS_CODE_TITLE"
-        android:textAppearance="?textAppearanceBody3" />
+        android:textAppearance="?textAppearanceCaption"" />
 
     <TextView
         android:id="@+id/code"
@@ -100,7 +100,7 @@
         android:paddingTop="@dimen/base_margin_half"
         android:paddingEnd="@dimen/base_margin_double"
         android:paddingBottom="@dimen/base_margin_half"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         android:textColor="?textColorLink"
         tools:text="HDVG87" />
 
