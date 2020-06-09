@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import e
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class BaseTabViewModel constructor(
@@ -24,11 +21,16 @@ class BaseTabViewModel constructor(
 
     fun triggerFreeTextChat(done: () -> Unit) {
         viewModelScope.launch {
-            chatRepository
-                .triggerFreeTextChat()
-                .onEach { done() }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository
+                    .triggerFreeTextChatAsync()
+                    .await()
+            }
+
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+            }
+            done()
         }
     }
 

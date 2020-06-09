@@ -142,11 +142,16 @@ class ProfileViewModelImpl(
 
     override fun triggerFreeTextChat(done: () -> Unit) {
         viewModelScope.launch {
-            chatRepository
-                .triggerFreeTextChat()
-                .onEach { done() }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository
+                    .triggerFreeTextChatAsync()
+                    .await()
+            }
+
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+            }
+            done()
         }
     }
 
