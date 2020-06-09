@@ -37,7 +37,7 @@
 
         <ImageView
             android:id="@+id/codePlaceholder"
-            android:layout_width="@dimen/placeholder_width"
+            android:layout_width="@dimen/subtitle_1_placeholder_width"
             android:layout_height="@dimen/subtitle_1_placeholder_height"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/base_margin_double"

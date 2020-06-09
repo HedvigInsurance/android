@@ -107,7 +107,7 @@
 
     <ImageView
         android:id="@+id/discountPerMonthPlaceholder"
-        android:layout_width="@dimen/placeholder_width"
+        android:layout_width="@dimen/headline_5_placeholder_width"
         android:layout_height="@dimen/headline_5_placeholder_height"
         android:layout_marginTop="@dimen/base_margin"
         android:contentDescription="@null"
@@ -137,7 +137,7 @@
 
     <ImageView
         android:id="@+id/newPricePlaceholder"
-        android:layout_width="@dimen/placeholder_width"
+        android:layout_width="@dimen/headline_5_placeholder_width"
         android:layout_height="@dimen/headline_5_placeholder_height"
         android:layout_marginTop="@dimen/base_margin"
         android:contentDescription="@null"

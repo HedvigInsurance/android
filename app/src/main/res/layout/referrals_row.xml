@@ -28,7 +28,7 @@
     <ImageView
         android:id="@+id/iconPlaceholder"
         android:layout_width="@dimen/referral_icon_placeholder_size"
-        android:layout_height="16dp"
+        android:layout_height="@dimen/referral_icon_placeholder_size"
         android:layout_marginStart="@dimen/base_margin_double"
         android:contentDescription="@null"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -38,8 +38,8 @@
 
     <ImageView
         android:id="@+id/textPlaceholder"
-        android:layout_width="@dimen/placeholder_width"
-        android:layout_height="16dp"
+        android:layout_width="@dimen/subtitle_1_placeholder_width"
+        android:layout_height="@dimen/subtitle_1_placeholder_height"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_triple"

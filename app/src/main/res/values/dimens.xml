@@ -126,9 +126,6 @@
     <dimen name="checkbox_size">24dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="logged_in_tabs_bottom_padding">110dp</dimen>
-    <dimen name="placeholder_width">60dp</dimen>
-    <dimen name="headline_5_placeholder_height">24dp</dimen>
-    <dimen name="subtitle_1_placeholder_height">16dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>
 
 </resources>

@@ -1,15 +1,17 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.referrals.ReferralScreen
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -86,6 +88,21 @@ class ReferralTabEmptyTest {
         )
 
         private val REFERRALS_DATA = ReferralsQuery.Data(
+            insuranceCost = ReferralsQuery.InsuranceCost(
+                fragments = ReferralsQuery.InsuranceCost.Fragments(
+                    CostFragment(
+                        monthlyDiscount = CostFragment.MonthlyDiscount(
+                            amount = "0.00"
+                        ),
+                        monthlyNet = CostFragment.MonthlyNet(
+                            amount = "349.00"
+                        ),
+                        monthlyGross = CostFragment.MonthlyGross(
+                            amount = "349.00"
+                        )
+                    )
+                )
+            ),
             referralInformation = ReferralsQuery.ReferralInformation(
                 campaign = ReferralsQuery.Campaign(
                     code = "TEST123"

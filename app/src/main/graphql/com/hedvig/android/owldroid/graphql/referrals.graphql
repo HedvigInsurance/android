@@ -1,4 +1,7 @@
 query Referrals {
+  insuranceCost {
+    ...CostFragment
+  }
   referralInformation {
     campaign {
       code
@@ -11,7 +14,6 @@ query Referrals {
     }
   }
 }
-
 fragment ReferralFragment on Referral {
   ... on ActiveReferral {
     name

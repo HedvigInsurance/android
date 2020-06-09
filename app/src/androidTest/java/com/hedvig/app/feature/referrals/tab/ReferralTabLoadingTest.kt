@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.referrals.ReferralScreen
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -61,6 +62,9 @@ class ReferralTabLoadingTest {
                     childAt<ReferralScreen.CodeItem>(1) {
                         placeholder { isVisible() }
                         code { isGone() }
+                    }
+                    childAt<ReferralScreen.InvitesHeaderItem>(2) {
+                        isVisible()
                     }
                     childAt<ReferralScreen.ReferralItem>(3) {
                         iconPlaceholder { isVisible() }

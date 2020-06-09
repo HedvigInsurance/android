@@ -15,6 +15,7 @@ class ReferralScreen : Screen<ReferralScreen>() {
     val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
         itemType(::HeaderItem)
         itemType(::CodeItem)
+        itemType(::InvitesHeaderItem)
         itemType(::ReferralItem)
     })
 
@@ -37,6 +38,8 @@ class ReferralScreen : Screen<ReferralScreen>() {
         val placeholder = KImageView(parent) { withId(R.id.codePlaceholder) }
         val code = KTextView(parent) { withId(R.id.code) }
     }
+
+    class InvitesHeaderItem(parent: Matcher<View>) : KRecyclerItem<InvitesHeaderItem>(parent)
 
     class ReferralItem(parent: Matcher<View>) : KRecyclerItem<ReferralItem>(parent) {
         val iconPlaceholder = KImageView(parent) { withId(R.id.iconPlaceholder) }
