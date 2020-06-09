@@ -22,7 +22,6 @@ import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_web_onboarding.*
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets.UTF_8
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
@@ -73,7 +72,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
         }
 
-        val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8.toString())
+        val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
 
         val localePath = when (defaultLocale(this)) {
             Locale.NB_NO -> "no/"
@@ -100,6 +99,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     }
 
     companion object {
+        private const val UTF_8 = "UTF-8"
+       
         fun newInstance(context: Context) = Intent(context, WebOnboardingActivity::class.java)
     }
 }

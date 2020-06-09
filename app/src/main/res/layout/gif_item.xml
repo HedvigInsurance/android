@@ -8,5 +8,5 @@
     android:layout_marginEnd="@dimen/base_margin"
     android:background="?attr/selectableItemBackground"
     android:contentDescription="@null"
-    tools:src="@drawable/ic_vandalism_red" />
+    tools:src="@drawable/ic_active" />
 
