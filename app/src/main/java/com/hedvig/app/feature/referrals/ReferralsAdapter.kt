@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.remove
@@ -19,9 +20,9 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
         ReferralsModel.Referral.LoadingReferral
     )
         set(value) {
-            //TODO
+            val diff = DiffUtil.calculateDiff(ReferralsDiffCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
@@ -162,4 +163,34 @@ sealed class ReferralsModel {
             private val todo: Void
         ) : Referral()
     }
+}
+
+class ReferralsDiffCallback(
+    private val old: List<ReferralsModel>,
+    private val new: List<ReferralsModel>
+) : DiffUtil.Callback() {
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldItem = old[oldItemPosition]
+        val newItem = new[newItemPosition]
+
+        if (oldItem is ReferralsModel.Header && newItem is ReferralsModel.Header) {
+            return true
+        }
+
+        if (oldItem is ReferralsModel.Code && newItem is ReferralsModel.Code) {
+            return true
+        }
+
+        if (oldItem is ReferralsModel.InvitesHeader && newItem is ReferralsModel.InvitesHeader) {
+            return true
+        }
+
+        return oldItem == newItem
+    }
+
+    override fun getOldListSize() = old.size
+    override fun getNewListSize() = new.size
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        old[oldItemPosition] == new[newItemPosition]
 }

@@ -27,7 +27,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                 return@observe
             }
 
-            // TODO: Animate the reveal
+            // TODO: Animate the reveal?
             share.show()
 
             if (data.referralInformation.invitations.isEmpty() && data.referralInformation.referredBy == null) {

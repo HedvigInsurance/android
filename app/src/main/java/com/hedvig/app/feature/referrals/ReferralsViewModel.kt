@@ -19,6 +19,7 @@ class ReferralsViewModelImpl(
     init {
         viewModelScope.launch {
             val result = runCatching { referralsRepository.referralsAsync().await() }
+            // TODO: Error state
             data.postValue(result.getOrNull()?.data())
         }
     }
