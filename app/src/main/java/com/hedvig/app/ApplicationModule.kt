@@ -198,7 +198,7 @@ val loggedInModule = module {
 
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
 
