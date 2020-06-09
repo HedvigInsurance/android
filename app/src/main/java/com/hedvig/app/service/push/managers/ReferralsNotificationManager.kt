@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
+import com.hedvig.app.feature.referrals.ui.ReferralsActivatedActivity
 import com.hedvig.app.service.push.PushNotificationService
 import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.safeLet
@@ -68,6 +69,7 @@ object ReferralsNotificationManager {
                         initialTab = LoggedInTabs.REFERRALS
                     )
                 )
+                addNextIntentWithParentStack(ReferralsActivatedActivity.newInstance(context))
                 getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
             }
 

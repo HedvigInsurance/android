@@ -28,4 +28,6 @@ class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() 
     override fun loadContract(id: String) {
         data.value = mockData.contracts.find { it.id == id }
     }
+
+    override suspend fun triggerFreeTextChat() = Unit
 }
