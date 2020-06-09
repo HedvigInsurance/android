@@ -138,9 +138,7 @@ class MockPaymentViewModel : PaymentViewModel() {
                         campaign = ProfileQuery.Campaign(
                             code = "ABC123",
                             incentive = null
-                        ),
-                        referredBy = null,
-                        invitations = emptyList()
+                        )
                     )
                 ),
                 PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)

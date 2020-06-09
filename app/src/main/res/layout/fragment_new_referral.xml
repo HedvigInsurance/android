@@ -25,6 +25,8 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/logged_in_tabs_bottom_padding"
-        android:text="@string/referrals_empty.share_code_button" />
+        android:text="@string/referrals_empty.share_code_button"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </FrameLayout>

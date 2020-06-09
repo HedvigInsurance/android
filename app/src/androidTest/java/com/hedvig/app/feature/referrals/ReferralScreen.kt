@@ -25,6 +25,12 @@ class ReferralScreen : Screen<ReferralScreen>() {
 
         val discountPerMonth = KTextView(parent) { withId(R.id.discountPerMonth) }
         val newPrice = KTextView(parent) { withId(R.id.newPrice) }
+
+        val discountPerMonthLabel = KTextView(parent) { withId(R.id.discountPerMonthLabel) }
+        val newPriceLabel = KTextView(parent) { withId(R.id.newPriceLabel) }
+
+        val emptyHeadline = KTextView(parent) { withId(R.id.emptyHeadline) }
+        val emptyBody = KTextView(parent) { withId(R.id.emptyBody) }
     }
 
     class CodeItem(parent: Matcher<View>) : KRecyclerItem<CodeItem>(parent) {

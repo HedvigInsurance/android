@@ -166,9 +166,7 @@ class MockProfileViewModel : ProfileViewModel() {
                     campaign = ProfileQuery.Campaign(
                         code = "ABC123",
                         incentive = null
-                    ),
-                    referredBy = null,
-                    invitations = emptyList()
+                    )
                 )
             )
         )

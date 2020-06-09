@@ -1,0 +1,31 @@
+query Referrals {
+  referralInformation {
+    campaign {
+      code
+    }
+    referredBy {
+      ...ReferralFragment
+    }
+    invitations {
+      ...ReferralFragment
+    }
+  }
+}
+
+fragment ReferralFragment on Referral {
+  ... on ActiveReferral {
+    name
+    discount {
+      amount
+    }
+  }
+  ... on InProgressReferral {
+    name
+  }
+  ... on TerminatedReferral {
+    name
+  }
+  ... on AcceptedReferral {
+    quantity
+  }
+}

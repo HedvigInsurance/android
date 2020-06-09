@@ -67,41 +67,5 @@ query Profile {
         }
       }
     }
-    referredBy {
-      __typename
-      ... on ActiveReferral {
-        name
-        discount {
-          amount
-        }
-      }
-      ... on InProgressReferral {
-        name
-      }
-      ... on TerminatedReferral {
-        name
-      }
-      ... on AcceptedReferral {
-        quantity
-      }
-    }
-    invitations {
-      __typename
-      ... on ActiveReferral {
-        name
-        discount {
-          amount
-        }
-      }
-      ... on InProgressReferral {
-        name
-      }
-      ... on TerminatedReferral {
-        name
-      }
-      ... on AcceptedReferral {
-        quantity
-      }
-    }
   }
 }

@@ -70,7 +70,7 @@
         app:constraint_referenced_ids="discountPerMonthLabel,newPriceLabel" />
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/loadingPlaceholders"
+        android:id="@+id/placeholders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="discountPerMonthPlaceholder,newPricePlaceholder"
