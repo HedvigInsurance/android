@@ -21,8 +21,7 @@
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_TITLE"
-        android:textAppearance="?textAppearanceHeadline5"
-        android:textSize="@dimen/text_xlarge" />
+        android:textAppearance="?textAppearanceHeadline5" />
 
     <TextView
         android:layout_width="wrap_content"

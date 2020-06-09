@@ -68,8 +68,7 @@
             android:layout_marginBottom="@dimen/base_margin_quadruple"
             android:paddingLeft="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_without_button_padding_edge"
-            android:text="@string/REFERRAL_STARTSCREEN_BTN_SKIP"
-            android:textSize="@dimen/text_medium" />
+            android:text="@string/REFERRAL_STARTSCREEN_BTN_SKIP" />
 
     </LinearLayout>
 </ScrollView>

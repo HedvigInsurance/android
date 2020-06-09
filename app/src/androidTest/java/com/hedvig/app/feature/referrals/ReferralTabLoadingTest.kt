@@ -18,13 +18,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsFeatureActivatedNotificationTest {
-
+class ReferralTabLoadingTest {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
     @Test
-    fun shouldOpenLoggedInScreenWithReferralsShownWhenOpeningReferralsFeatureActivatedNotification() {
+    fun shouldShowLoadingWhenDataHasNotLoaded() {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
@@ -47,7 +46,24 @@ class ReferralsFeatureActivatedNotificationTest {
             activityRule.launchActivity(intent)
 
             onScreen<ReferralScreen> {
-                recycler { isVisible() }
+                share { isGone() }
+                recycler {
+                    firstChild<ReferralScreen.HeaderItem> {
+                        discountPerMonthPlaceholder { isVisible() }
+                        newPricePlaceholder { isVisible() }
+                        discountPerMonth { isGone() }
+                        newPrice { isGone() }
+                    }
+                    childAt<ReferralScreen.CodeItem>(1) {
+                        placeholder { isVisible() }
+                        code { isGone() }
+                    }
+                    childAt<ReferralScreen.ReferralItem>(3) {
+                        iconPlaceholder { isVisible() }
+                        textPlaceholder { isVisible() }
+                        icon { isGone() }
+                    }
+                }
             }
         }
     }
@@ -56,8 +72,7 @@ class ReferralsFeatureActivatedNotificationTest {
         private val FEATURES_DATA = FeaturesQuery.Data(
             member = FeaturesQuery.Member(
                 features = listOf(
-                    Feature.KEYGEAR,
-                    Feature.REFERRALS
+                    Feature.KEYGEAR
                 )
             )
         )

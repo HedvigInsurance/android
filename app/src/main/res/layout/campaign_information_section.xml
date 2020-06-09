@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:text="@string/PAYMENTS_NO_STARTDATE_HELP_MESSAGE"
-        android:textAppearance="?textAppearanceCaption""
+        android:textAppearance="?textAppearanceCaption"
         android:visibility="gone"
         tools:visibility="visible" />
 

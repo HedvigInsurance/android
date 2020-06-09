@@ -55,6 +55,6 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER"
-        android:textAppearance="?textAppearanceCaption"" />
+        android:textAppearance="?textAppearanceCaption" />
 
 </LinearLayout>

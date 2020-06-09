@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/title"
@@ -16,10 +16,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- TODO: Fix the piechart up a bit -->
     <com.hedvig.app.feature.referrals.ui.PieChartView
         android:id="@+id/piechart"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:layout_marginStart="@dimen/base_margin_quintuple"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         android:layout_marginEnd="@dimen/base_margin_quintuple"
@@ -66,19 +67,22 @@
         android:id="@+id/nonEmptyTexts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="discountPerMonthLabel,discountPerMonth,newPriceLabel,newPrice" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/loadedTexts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="discountPerMonth,newPrice" />
+        app:constraint_referenced_ids="discountPerMonthLabel,newPriceLabel" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/loadingPlaceholders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="" />
+        app:constraint_referenced_ids="discountPerMonthPlaceholder,newPricePlaceholder"
+        tools:visibility="gone" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/loadedData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="discountPerMonth,newPrice"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/discountPerMonthLabel"
@@ -101,12 +105,23 @@
         app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel"
         tools:text="-10 kr" />
 
+    <ImageView
+        android:id="@+id/discountPerMonthPlaceholder"
+        android:layout_width="@dimen/placeholder_width"
+        android:layout_height="@dimen/headline_5_placeholder_height"
+        android:layout_marginTop="@dimen/base_margin"
+        android:contentDescription="@null"
+        app:layout_constraintStart_toStartOf="@id/discountPerMonthLabel"
+        app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel"
+        app:srcCompat="@drawable/placeholder_rectangle" />
+
     <TextView
         android:id="@+id/newPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/referrals_active.your.new.price.title"
+        android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/discountPerMonthLabel" />
 
@@ -119,5 +134,15 @@
         app:layout_constraintEnd_toEndOf="@id/newPriceLabel"
         app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
         tools:text="339 kr" />
+
+    <ImageView
+        android:id="@+id/newPricePlaceholder"
+        android:layout_width="@dimen/placeholder_width"
+        android:layout_height="@dimen/headline_5_placeholder_height"
+        android:layout_marginTop="@dimen/base_margin"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="@id/newPriceLabel"
+        app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
+        app:srcCompat="@drawable/placeholder_rectangle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

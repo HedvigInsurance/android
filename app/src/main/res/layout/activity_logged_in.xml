@@ -27,21 +27,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/referralButton"
-        style="?attr/materialButtonContainedLargeStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:text="@string/REFERRAL_SHAREINVITE"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/bottomTabs"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
     <!--Have to use custom background for this view, had problem with backgroundTint-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"

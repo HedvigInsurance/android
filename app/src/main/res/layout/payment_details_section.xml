@@ -63,7 +63,7 @@
             android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin_triple"
             android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
-            android:textAppearance="?textAppearanceCaption""
+            android:textAppearance="?textAppearanceCaption"
             android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>
