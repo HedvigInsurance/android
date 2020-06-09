@@ -171,11 +171,8 @@ class ChatRepository(
     suspend fun editLastResponse() =
         apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()).toDeferred().await()
 
-    fun triggerFreeTextChat(): Flow<Response<TriggerFreeTextChatMutation.Data>> {
-        val triggerFreeTextChatMutation = TriggerFreeTextChatMutation()
-
-        return apolloClientWrapper.apolloClient.mutate(triggerFreeTextChatMutation).toFlow()
-    }
+    fun triggerFreeTextChatAsync() =
+        apolloClientWrapper.apolloClient.mutate(TriggerFreeTextChatMutation()).toDeferred()
 
     suspend fun searchGifs(query: String) =
         apolloClientWrapper.apolloClient.query(GifQuery(query)).toDeferred().await()

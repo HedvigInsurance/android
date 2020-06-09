@@ -3,6 +3,7 @@ package com.hedvig.app.feature.dashboard.ui.contractdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
@@ -19,6 +20,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
@@ -70,7 +72,10 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CONFIRM,
             R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CANCEL,
             positiveAction = {
-                startClosableChat()
+                lifecycleScope.launch {
+                    model.triggerFreeTextChat()
+                    startClosableChat()
+                }
             }
         )
     }
