@@ -38,9 +38,18 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                 return@observe
             }
 
-            //val items = mutableListOf(
-            //    ReferralsModel.Header.LoadedHeader
-            //)
+            val items = mutableListOf(
+                ReferralsModel.Header.LoadedHeader(Unit),
+                ReferralsModel.Code.LoadedCode(data.referralInformation.campaign.code),
+                ReferralsModel.InvitesHeader
+            )
+
+            data.referralInformation.referredBy?.let {
+                items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
+            }
+
+            (invites.adapter as? ReferralsAdapter)?.items = items
+
         }
     }
 }

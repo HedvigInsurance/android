@@ -98,7 +98,7 @@ class ProfileFragment : BaseTabFragment() {
     private fun setupPayment(profileData: ProfileQuery.Data) {
         paymentRow.description = resources.getString(
             R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
-            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                 ?.toInt()
         )
         paymentRow.setHapticClickListener {

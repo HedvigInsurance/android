@@ -146,10 +146,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     ) {
 
         premiumBoxTitle.setText(type.getStringId())
-        premium.text = BigDecimal(insuranceCost.monthlyNet.amount).toInt().toString()
-        if (BigDecimal(insuranceCost.monthlyDiscount.amount) > BigDecimal.ZERO) {
+        premium.text =
+            BigDecimal(insuranceCost.monthlyNet.fragments.monetaryAmountFragment.amount).toInt()
+                .toString()
+        if (BigDecimal(insuranceCost.monthlyDiscount.fragments.monetaryAmountFragment.amount) > BigDecimal.ZERO) {
             grossPremium.setStrikethrough(true)
-            grossPremium.text = BigDecimal(insuranceCost.monthlyGross.amount).toInt().toString()
+            grossPremium.text =
+                BigDecimal(insuranceCost.monthlyGross.fragments.monetaryAmountFragment.amount).toInt()
+                    .toString()
         }
 
         startDateContainer.setHapticClickListener {
@@ -198,7 +202,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                     grossPremium.text = getString(
                         R.string.OFFER_GROSS_PREMIUM,
-                        insuranceCost.monthlyGross.amount.toBigDecimal().toInt()
+                        insuranceCost.monthlyGross.fragments.monetaryAmountFragment.amount.toBigDecimal()
+                            .toInt()
                     )
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                 }

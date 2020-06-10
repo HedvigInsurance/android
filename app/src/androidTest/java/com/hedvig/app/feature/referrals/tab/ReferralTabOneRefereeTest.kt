@@ -6,10 +6,12 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
@@ -60,15 +62,15 @@ class ReferralTabOneRefereeTest {
                     firstChild<ReferralScreen.HeaderItem> {
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
-                        discountPerMonth { isGone() }
+                        discountPerMonth { isVisible() }
                         newPrice {
                             isVisible()
                             hasText("")
                         }
-                        discountPerMonthLabel { isGone() }
-                        newPriceLabel { isGone() }
-                        emptyHeadline { isVisible() }
-                        emptyBody { isVisible() }
+                        discountPerMonthLabel { isVisible() }
+                        newPriceLabel { isVisible() }
+                        emptyHeadline { isGone() }
+                        emptyBody { isGone() }
                     }
                     childAt<ReferralScreen.CodeItem>(1) {
                         placeholder { isGone() }
@@ -81,8 +83,11 @@ class ReferralTabOneRefereeTest {
                         isVisible()
                     }
                     childAt<ReferralScreen.ReferralItem>(3) {
+                        iconPlaceholder { isGone() }
+                        textPlaceholder { isGone() }
                         name { hasText("Example") }
                         referee { isVisible() }
+                        icon { hasDrawable(R.drawable.ic_basketball) }
                     }
                 }
             }
@@ -103,13 +108,28 @@ class ReferralTabOneRefereeTest {
                 fragments = ReferralsQuery.InsuranceCost.Fragments(
                     CostFragment(
                         monthlyDiscount = CostFragment.MonthlyDiscount(
-                            amount = "0.00"
+                            fragments = CostFragment.MonthlyDiscount.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "0.00",
+                                    currency = "SEK"
+                                )
+                            )
                         ),
                         monthlyNet = CostFragment.MonthlyNet(
-                            amount = "339.00"
+                            fragments = CostFragment.MonthlyNet.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "339.00",
+                                    currency = "SEK"
+                                )
+                            )
                         ),
                         monthlyGross = CostFragment.MonthlyGross(
-                            amount = "349.00"
+                            fragments = CostFragment.MonthlyGross.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "349.00",
+                                    currency = "SEK"
+                                )
+                            )
                         )
                     )
                 )

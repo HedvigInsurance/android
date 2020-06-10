@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.type.Feature
@@ -92,13 +93,28 @@ class ReferralTabEmptyTest {
                 fragments = ReferralsQuery.InsuranceCost.Fragments(
                     CostFragment(
                         monthlyDiscount = CostFragment.MonthlyDiscount(
-                            amount = "0.00"
+                            fragments = CostFragment.MonthlyDiscount.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "0.00",
+                                    currency = "SEK"
+                                )
+                            )
                         ),
                         monthlyNet = CostFragment.MonthlyNet(
-                            amount = "349.00"
+                            fragments = CostFragment.MonthlyNet.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "349.00",
+                                    currency = "SEK"
+                                )
+                            )
                         ),
                         monthlyGross = CostFragment.MonthlyGross(
-                            amount = "349.00"
+                            fragments = CostFragment.MonthlyGross.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "349.00",
+                                    currency = "SEK"
+                                )
+                            )
                         )
                     )
                 )

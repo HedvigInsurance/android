@@ -5,12 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import e
 import kotlinx.android.synthetic.main.referrals_code.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.*
+import kotlinx.android.synthetic.main.referrals_header.view.placeholders
+import kotlinx.android.synthetic.main.referrals_row.view.*
 
 class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
     var items: List<ReferralsModel> = listOf(
@@ -74,7 +77,11 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                         nonEmptyTexts.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
-
+                        placeholders.remove()
+                        emptyTexts.remove()
+                        nonEmptyTexts.show()
+                        loadedData.show()
+                        // TODO: Show some numbers when we have them
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -121,18 +128,55 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                 .from(parent.context)
                 .inflate(R.layout.referrals_row, parent, false)
         ) {
+            private val placeholders = itemView.placeholders
+            private val texts = itemView.texts
+            private val name = itemView.name
+            private val refereeLabel = itemView.refereeLabel
+            private val icon = itemView.icon
+
             override fun bind(data: ReferralsModel) {
                 when (data) {
                     ReferralsModel.Referral.LoadingReferral -> {
-
+                        placeholders.show()
+                        texts.remove()
                     }
                     is ReferralsModel.Referral.Referee -> {
-
+                        placeholders.remove()
+                        texts.show()
+                        data.inner.name?.let { name.text = it }
+                        refereeLabel.show()
+                        setIcon(data.inner)
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
                     }
                 }
+            }
+
+            private fun setIcon(data: ReferralFragment) {
+                data.asActiveReferral?.let {
+                    icon.setImageResource(R.drawable.ic_basketball)
+                    return
+                }
+                data.asInProgressReferral?.let {
+                    icon.setImageResource(R.drawable.ic_clock_colorless)
+                    return
+                }
+                data.asTerminatedReferral?.let {
+                    icon.setImageResource(R.drawable.ic_terminated_colorless)
+                    return
+                }
+            }
+
+            companion object {
+                val ReferralFragment.name: String?
+                    get() {
+                        asActiveReferral?.name?.let { return it }
+                        asInProgressReferral?.name?.let { return it }
+                        asTerminatedReferral?.name?.let { return it }
+
+                        return null
+                    }
             }
         }
     }
@@ -160,7 +204,7 @@ sealed class ReferralsModel {
         object LoadingReferral : Referral()
 
         data class Referee(
-            private val todo: Void
+            val inner: ReferralFragment
         ) : Referral()
     }
 }

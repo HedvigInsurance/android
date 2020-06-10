@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -32,13 +33,28 @@ class MockProfileViewModel : ProfileViewModel() {
                     fragments = ProfileQuery.InsuranceCost.Fragments(
                         CostFragment(
                             monthlyDiscount = CostFragment.MonthlyDiscount(
-                                amount = "10.00"
+                                fragments = CostFragment.MonthlyDiscount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
                             ),
                             monthlyNet = CostFragment.MonthlyNet(
-                                amount = "99.00"
+                                fragments = CostFragment.MonthlyNet.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "99.00",
+                                        currency = "SEK"
+                                    )
+                                )
                             ),
                             monthlyGross = CostFragment.MonthlyGross(
-                                amount = "109.00"
+                                fragments = CostFragment.MonthlyGross.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "109.00",
+                                        currency = "SEK"
+                                    )
+                                )
                             )
                         )
                     )

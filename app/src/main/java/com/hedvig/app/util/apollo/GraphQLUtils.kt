@@ -1,9 +1,12 @@
 package com.hedvig.app.util.apollo
 
 import android.content.Context
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.getLocale
+import java.text.NumberFormat
+import java.util.Currency
 
 fun defaultLocale(context: Context) =
     when (getLocale(Language.fromSettings(context)?.apply(context) ?: context).toString()) {
@@ -29,3 +32,8 @@ fun Locale.toWebLocaleTag() = when (this) {
     Locale.EN_NO -> "no-en"
     Locale.UNKNOWN__ -> "se-en"
 }
+
+fun MonetaryAmountFragment.format(context: Context): String =
+    NumberFormat.getCurrencyInstance(getLocale(context)).also {
+        it.currency = Currency.getInstance(this.currency)
+    }.format(amount.toDouble())
