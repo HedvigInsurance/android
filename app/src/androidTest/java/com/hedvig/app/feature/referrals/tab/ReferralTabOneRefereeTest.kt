@@ -81,7 +81,8 @@ class ReferralTabOneRefereeTest {
                         isVisible()
                     }
                     childAt<ReferralScreen.ReferralItem>(3) {
-                        // TODO
+                        name { hasText("Example") }
+                        referee { isVisible() }
                     }
                 }
             }
@@ -121,7 +122,7 @@ class ReferralTabOneRefereeTest {
                     fragments = ReferralsQuery.ReferredBy.Fragments(
                         ReferralFragment(
                             asActiveReferral = ReferralFragment.AsActiveReferral(
-                                name = "Example Exampleson",
+                                name = "Example",
                                 discount = ReferralFragment.Discount(
                                     amount = "10.00"
                                 )

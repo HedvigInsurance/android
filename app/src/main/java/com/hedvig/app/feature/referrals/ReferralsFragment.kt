@@ -37,6 +37,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                 )
                 return@observe
             }
+
+            //val items = mutableListOf(
+            //    ReferralsModel.Header.LoadedHeader
+            //)
         }
     }
 }

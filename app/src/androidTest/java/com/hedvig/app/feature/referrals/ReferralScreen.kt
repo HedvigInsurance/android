@@ -44,6 +44,9 @@ class ReferralScreen : Screen<ReferralScreen>() {
     class ReferralItem(parent: Matcher<View>) : KRecyclerItem<ReferralItem>(parent) {
         val iconPlaceholder = KImageView(parent) { withId(R.id.iconPlaceholder) }
         val textPlaceholder = KImageView(parent) { withId(R.id.textPlaceholder) }
+
         val icon = KImageView(parent) { withId(R.id.icon) }
+        val name = KTextView(parent) { withId(R.id.name) }
+        val referee = KTextView(parent) { withId(R.id.refereeLabel) }
     }
 }
