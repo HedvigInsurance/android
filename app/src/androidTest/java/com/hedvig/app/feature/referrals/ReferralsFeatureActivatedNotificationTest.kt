@@ -7,21 +7,33 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.FeaturesQuery
 import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.inject
+import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsFeatureActivatedNotificationTest {
+class ReferralsFeatureActivatedNotificationTest : KoinTest {
+    private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+   
+    @Before
+    fun setup() {
+        apolloClientWrapper
+            .apolloClient
+            .clearNormalizedCache()
+    }
 
     @Test
     fun shouldOpenLoggedInScreenWithReferralsShownWhenOpeningReferralsFeatureActivatedNotification() {
