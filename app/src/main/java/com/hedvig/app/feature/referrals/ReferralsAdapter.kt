@@ -195,7 +195,7 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
             }
 
             companion object {
-                val ReferralFragment.name: String?
+                private val ReferralFragment.name: String?
                     get() {
                         asActiveReferral?.name?.let { return it }
                         asInProgressReferral?.name?.let { return it }
