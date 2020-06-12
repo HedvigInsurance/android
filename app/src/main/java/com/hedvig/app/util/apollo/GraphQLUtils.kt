@@ -33,7 +33,9 @@ fun Locale.toWebLocaleTag() = when (this) {
     Locale.UNKNOWN__ -> "se-en"
 }
 
-fun MonetaryAmountFragment.format(context: Context): String =
+// TODO for tomorrow: Shouldn't I just parse this to a MonetaryAmount and use transformation methods and then format it? Hm.
+fun MonetaryAmountFragment.format(context: Context, decimals: Int = 0): String =
     NumberFormat.getCurrencyInstance(getLocale(context)).also {
         it.currency = Currency.getInstance(this.currency)
+        it.maximumFractionDigits = decimals
     }.format(amount.toDouble())

@@ -28,7 +28,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabOneRefereeTest : KoinTest {
+class ReferralTabMultipleReferralsTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -42,7 +42,7 @@ class ReferralTabOneRefereeTest : KoinTest {
     }
 
     @Test
-    fun shouldShowActiveStateWhenUserHasOneReferee() {
+    fun shouldShowActiveStateWhenUserHasMultipleReferrals() {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
@@ -98,18 +98,9 @@ class ReferralTabOneRefereeTest : KoinTest {
                     childAt<ReferralScreen.ReferralItem>(3) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
-                        name {
-                            isVisible()
-                            hasText("Example")
-                        }
+                        name { hasText("Example") }
                         referee { isVisible() }
-                        icon {
-                            isVisible()
-                            hasDrawable(R.drawable.ic_basketball)
-                        }
-                        status {
-                            containsText("10")
-                        }
+                        icon { hasDrawable(R.drawable.ic_basketball) }
                     }
                 }
             }
@@ -160,27 +151,29 @@ class ReferralTabOneRefereeTest : KoinTest {
                 campaign = ReferralsQuery.Campaign(
                     code = "TEST123"
                 ),
-                referredBy = ReferralsQuery.ReferredBy(
-                    fragments = ReferralsQuery.ReferredBy.Fragments(
-                        ReferralFragment(
-                            asActiveReferral = ReferralFragment.AsActiveReferral(
-                                name = "Example",
-                                discount = ReferralFragment.Discount(
-                                    fragments = ReferralFragment.Discount.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "10.00",
-                                            currency = "SEK"
+                referredBy = null,
+                invitations = listOf(
+                    ReferralsQuery.Invitation(
+                        fragments = ReferralsQuery.Invitation.Fragments(
+                            ReferralFragment(
+                                asActiveReferral = ReferralFragment.AsActiveReferral(
+                                    name = "Example",
+                                    discount = ReferralFragment.Discount(
+                                        fragments = ReferralFragment.Discount.Fragments(
+                                            MonetaryAmountFragment(
+                                                amount = "10.00",
+                                                currency = "SEK"
+                                            )
                                         )
                                     )
-                                )
-                            ),
-                            asAcceptedReferral = null,
-                            asInProgressReferral = null,
-                            asTerminatedReferral = null
+                                ),
+                                asInProgressReferral = null,
+                                asTerminatedReferral = null,
+                                asAcceptedReferral = null
+                            )
                         )
                     )
-                ),
-                invitations = emptyList()
+                )
             )
         )
     }

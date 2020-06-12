@@ -81,4 +81,23 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:paddingStart="@dimen/base_margin"
+        android:paddingTop="@dimen/base_margin_half"
+        android:paddingEnd="@dimen/base_margin"
+        android:paddingBottom="@dimen/base_margin_half"
+        android:theme="@style/ThemeOverlay.Hedvig.SurfaceOnSurface"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/background_rounded_corners"
+        tools:backgroundTint="?colorSurface"
+        tools:text="-10 kr"
+        tools:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

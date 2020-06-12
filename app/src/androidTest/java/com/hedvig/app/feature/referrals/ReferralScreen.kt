@@ -48,5 +48,6 @@ class ReferralScreen : Screen<ReferralScreen>() {
         val icon = KImageView(parent) { withId(R.id.icon) }
         val name = KTextView(parent) { withId(R.id.name) }
         val referee = KTextView(parent) { withId(R.id.refereeLabel) }
+        val status = KTextView(parent) { withId(R.id.status) }
     }
 }

@@ -18,7 +18,7 @@ fragment ReferralFragment on Referral {
   ... on ActiveReferral {
     name
     discount {
-      amount
+      ...MonetaryAmountFragment
     }
   }
   ... on InProgressReferral {

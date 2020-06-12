@@ -7,6 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
+import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import e
@@ -133,19 +137,19 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
             private val name = itemView.name
             private val refereeLabel = itemView.refereeLabel
             private val icon = itemView.icon
+            private val status = itemView.status
 
             override fun bind(data: ReferralsModel) {
                 when (data) {
                     ReferralsModel.Referral.LoadingReferral -> {
                         placeholders.show()
                         texts.remove()
+                        icon.remove()
+                        status.remove()
                     }
                     is ReferralsModel.Referral.Referee -> {
-                        placeholders.remove()
-                        texts.show()
-                        data.inner.name?.let { name.text = it }
+                        bindReferral(data.inner)
                         refereeLabel.show()
-                        setIcon(data.inner)
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -153,18 +157,33 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                 }
             }
 
-            private fun setIcon(data: ReferralFragment) {
-                data.asActiveReferral?.let {
+            private fun bindReferral(data: ReferralFragment) {
+                placeholders.remove()
+                texts.show()
+                data.name?.let { name.text = it }
+                icon.show()
+                status.show()
+                data.asActiveReferral?.let { activeReferral ->
                     icon.setImageResource(R.drawable.ic_basketball)
-                    return
+                    status.background =
+                        status.context.compatDrawable(R.drawable.background_slightly_rounded_corners)
+                            ?.apply {
+                                mutate().compatSetTint(status.context.colorAttr(R.attr.colorSurface))
+                            }
+                    status.text =
+                        activeReferral.discount.fragments.monetaryAmountFragment.format(status.context)
                 }
                 data.asInProgressReferral?.let {
                     icon.setImageResource(R.drawable.ic_clock_colorless)
-                    return
+                    status.background = null
+                    status.text =
+                        status.context.getString(R.string.referalls_invitee_states_awaiting___)
                 }
                 data.asTerminatedReferral?.let {
                     icon.setImageResource(R.drawable.ic_terminated_colorless)
-                    return
+                    status.background = null
+                    status.text =
+                        status.context.getString(R.string.referalls_invitee_states_terminated)
                 }
             }
 

@@ -9,6 +9,7 @@
     <item name="colorBackground" type="color">@color/hedvig_off_white</item>
     <item name="colorSurface" type="color">@color/hedvig_white</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
+    <item name="colorSurfaceOnSurface" type="color">#EAEAEA</item>
     <item name="colorSecondary" type="color">#C9ABF5</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
     <item name="colorPlaceholder" type="color">#57121212</item>
