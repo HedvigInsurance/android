@@ -5,6 +5,13 @@ query Referrals {
   referralInformation {
     campaign {
       code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
     }
     referredBy {
       ...ReferralFragment

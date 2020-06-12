@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.referrals
 
+import android.content.Intent
 import android.view.View
 import com.agoda.kakao.image.KImageView
+import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
@@ -12,6 +14,9 @@ import org.hamcrest.Matcher
 
 class ReferralScreen : Screen<ReferralScreen>() {
     val share = KButton { withId(R.id.share) }
+    val shareIntent = KIntent {
+        hasAction(Intent.ACTION_CHOOSER)
+    }
     val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
         itemType(::HeaderItem)
         itemType(::CodeItem)

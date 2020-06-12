@@ -171,7 +171,19 @@ class ReferralTabMultipleReferralsTest : KoinTest {
             ),
             referralInformation = ReferralsQuery.ReferralInformation(
                 campaign = ReferralsQuery.Campaign(
-                    code = "TEST123"
+                    code = "TEST123",
+                    incentive = ReferralsQuery.Incentive(
+                        asMonthlyCostDeduction = ReferralsQuery.AsMonthlyCostDeduction(
+                            amount = ReferralsQuery.Amount(
+                                fragments = ReferralsQuery.Amount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            )
+                        )
+                    )
                 ),
                 referredBy = null,
                 invitations = listOf(

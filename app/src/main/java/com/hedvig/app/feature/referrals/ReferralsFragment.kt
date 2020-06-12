@@ -1,13 +1,22 @@
 package com.hedvig.app.feature.referrals
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.showShareSheet
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
+import e
 import kotlinx.android.synthetic.main.fragment_new_referral.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -28,7 +37,27 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
             }
 
             // TODO: Animate the reveal?
-            share.show()
+            val incentive =
+                data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+            if (incentive == null) {
+                e { "Invariant detected: referralInformation.campaign.incentive is null" }
+            } else {
+                val code = data.referralInformation.campaign.code
+                share.show()
+                share.setHapticClickListener {
+                    requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
+                        intent.putExtra(
+                            Intent.EXTRA_TEXT,
+                            requireContext().getString(
+                                R.string.REFERRAL_SMS_MESSAGE,
+                                incentive.format(requireContext()),
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${code}"
+                            )
+                        )
+                        intent.type = "text/plain"
+                    }
+                }
+            }
 
             if (data.referralInformation.invitations.isEmpty() && data.referralInformation.referredBy == null) {
                 (invites.adapter as? ReferralsAdapter)?.items = listOf(
