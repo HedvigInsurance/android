@@ -44,6 +44,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                 ReferralsModel.InvitesHeader
             )
 
+            items += data.referralInformation.invitations.map {
+                ReferralsModel.Referral.LoadedReferral(
+                    it.fragments.referralFragment
+                )
+            }
+
             data.referralInformation.referredBy?.let {
                 items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
             }

@@ -16,10 +16,12 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.javamoney.moneta.Money
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -71,7 +73,7 @@ class ReferralTabMultipleReferralsTest : KoinTest {
             Screen.onScreen<ReferralScreen> {
                 share { isVisible() }
                 recycler {
-                    hasSize(4)
+                    hasSize(6)
                     firstChild<ReferralScreen.HeaderItem> {
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
@@ -99,8 +101,28 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example") }
-                        referee { isVisible() }
+                        referee { isGone() }
                         icon { hasDrawable(R.drawable.ic_basketball) }
+                        status {
+                            hasText(
+                                Money.of(-10, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
+                    }
+                    childAt<ReferralScreen.ReferralItem>(4) {
+                        iconPlaceholder { isGone() }
+                        textPlaceholder { isGone() }
+                        name { hasText("Example 2") }
+                        referee { isGone() }
+                        icon { hasDrawable(R.drawable.ic_clock_colorless) }
+                    }
+                    childAt<ReferralScreen.ReferralItem>(5) {
+                        iconPlaceholder { isGone() }
+                        textPlaceholder { isGone() }
+                        name { hasText("Example 3") }
+                        referee { isGone() }
+                        icon { hasDrawable(R.drawable.ic_terminated_colorless) }
                     }
                 }
             }
@@ -169,6 +191,30 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                 ),
                                 asInProgressReferral = null,
                                 asTerminatedReferral = null,
+                                asAcceptedReferral = null
+                            )
+                        )
+                    ),
+                    ReferralsQuery.Invitation(
+                        fragments = ReferralsQuery.Invitation.Fragments(
+                            ReferralFragment(
+                                asActiveReferral = null,
+                                asInProgressReferral = ReferralFragment.AsInProgressReferral(
+                                    name = "Example 2"
+                                ),
+                                asTerminatedReferral = null,
+                                asAcceptedReferral = null
+                            )
+                        )
+                    ),
+                    ReferralsQuery.Invitation(
+                        fragments = ReferralsQuery.Invitation.Fragments(
+                            ReferralFragment(
+                                asActiveReferral = null,
+                                asInProgressReferral = null,
+                                asTerminatedReferral = ReferralFragment.AsTerminatedReferral(
+                                    name = "Example 3"
+                                ),
                                 asAcceptedReferral = null
                             )
                         )

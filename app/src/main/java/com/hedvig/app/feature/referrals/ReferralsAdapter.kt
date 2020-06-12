@@ -152,6 +152,10 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                         bindReferral(data.inner)
                         refereeLabel.show()
                     }
+                    is ReferralsModel.Referral.LoadedReferral -> {
+                        bindReferral(data.inner)
+                        refereeLabel.remove()
+                    }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
                     }
@@ -226,6 +230,10 @@ sealed class ReferralsModel {
         object LoadingReferral : Referral()
 
         data class Referee(
+            val inner: ReferralFragment
+        ) : Referral()
+
+        data class LoadedReferral(
             val inner: ReferralFragment
         ) : Referral()
     }
