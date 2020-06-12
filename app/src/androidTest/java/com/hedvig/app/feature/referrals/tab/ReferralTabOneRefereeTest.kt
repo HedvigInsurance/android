@@ -16,10 +16,12 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.javamoney.moneta.Money
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -108,7 +110,10 @@ class ReferralTabOneRefereeTest : KoinTest {
                             hasDrawable(R.drawable.ic_basketball)
                         }
                         status {
-                            containsText("10")
+                            hasText(
+                                Money.of(-10, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
                         }
                     }
                 }

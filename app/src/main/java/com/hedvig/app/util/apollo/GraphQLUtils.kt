@@ -5,8 +5,11 @@ import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.getLocale
+import org.javamoney.moneta.Money
+import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Currency
+import javax.money.MonetaryAmount
 
 fun defaultLocale(context: Context) =
     when (getLocale(Language.fromSettings(context)?.apply(context) ?: context).toString()) {
@@ -33,9 +36,11 @@ fun Locale.toWebLocaleTag() = when (this) {
     Locale.UNKNOWN__ -> "se-en"
 }
 
-// TODO for tomorrow: Shouldn't I just parse this to a MonetaryAmount and use transformation methods and then format it? Hm.
-fun MonetaryAmountFragment.format(context: Context, decimals: Int = 0): String =
+fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
+    Money.of(amount.toBigDecimal(), currency)
+
+fun MonetaryAmount.format(context: Context, minimumDecimals: Int = 0): String =
     NumberFormat.getCurrencyInstance(getLocale(context)).also {
-        it.currency = Currency.getInstance(this.currency)
-        it.maximumFractionDigits = decimals
-    }.format(amount.toDouble())
+        it.currency = Currency.getInstance(currency.currencyCode)
+        it.minimumFractionDigits = minimumDecimals
+    }.format(this.number.numberValueExact(BigDecimal::class.java))

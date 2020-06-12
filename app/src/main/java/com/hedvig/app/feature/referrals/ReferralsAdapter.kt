@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
@@ -170,8 +171,10 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                             ?.apply {
                                 mutate().compatSetTint(status.context.colorAttr(R.attr.colorSurface))
                             }
-                    status.text =
-                        activeReferral.discount.fragments.monetaryAmountFragment.format(status.context)
+                    val discountAsNegative =
+                        activeReferral.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            .negate()
+                    status.text = discountAsNegative.format(status.context)
                 }
                 data.asInProgressReferral?.let {
                     icon.setImageResource(R.drawable.ic_clock_colorless)
