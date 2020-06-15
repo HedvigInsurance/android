@@ -191,7 +191,6 @@ class ReferralTabOneRefereeTest : KoinTest {
                                     )
                                 )
                             ),
-                            asAcceptedReferral = null,
                             asInProgressReferral = null,
                             asTerminatedReferral = null
                         )

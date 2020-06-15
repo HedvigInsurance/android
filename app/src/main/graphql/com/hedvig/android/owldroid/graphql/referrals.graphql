@@ -34,7 +34,4 @@ fragment ReferralFragment on Referral {
   ... on TerminatedReferral {
     name
   }
-  ... on AcceptedReferral {
-    quantity
-  }
 }

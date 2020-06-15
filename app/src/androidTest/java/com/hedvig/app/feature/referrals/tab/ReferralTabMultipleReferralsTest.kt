@@ -202,8 +202,7 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                     )
                                 ),
                                 asInProgressReferral = null,
-                                asTerminatedReferral = null,
-                                asAcceptedReferral = null
+                                asTerminatedReferral = null
                             )
                         )
                     ),
@@ -214,8 +213,7 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                 asInProgressReferral = ReferralFragment.AsInProgressReferral(
                                     name = "Example 2"
                                 ),
-                                asTerminatedReferral = null,
-                                asAcceptedReferral = null
+                                asTerminatedReferral = null
                             )
                         )
                     ),
@@ -226,8 +224,7 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                 asInProgressReferral = null,
                                 asTerminatedReferral = ReferralFragment.AsTerminatedReferral(
                                     name = "Example 3"
-                                ),
-                                asAcceptedReferral = null
+                                )
                             )
                         )
                     )
