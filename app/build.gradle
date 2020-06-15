@@ -204,11 +204,12 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'com.agoda.kakao:kakao:2.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation 'com.agoda.kakao:kakao:2.3.2'
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
-    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.1.12'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
     androidTestImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.22'
+    androidTestImplementation "org.koin:koin-test:$koin_version"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

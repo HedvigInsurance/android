@@ -5,7 +5,7 @@
         android:id="@+id/referralMoreInfo"
         android:icon="@drawable/ic_info"
         android:orderInCategory="1"
-        android:title="@string/REFERRAL_PROGRESS_TOPBAR_BUTTON"
+        android:title="@string/REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION"
         app:iconTint="?colorPrimary"
         app:showAsAction="always" />
 </menu>

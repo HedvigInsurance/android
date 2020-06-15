@@ -65,6 +65,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
 
+    private lateinit var referralTermsUrl: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -160,7 +162,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 startActivity(
                     ReferralsInformationActivity.newInstance(
                         this,
-                        "https://www.hedvig.com/invites/terms" // TODO: Replace with a link provided by content-service
+                        referralTermsUrl
                     )
                 )
             }
@@ -210,11 +212,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
-        loggedInViewModel.data.observe(this) { features ->
-            features?.let { f ->
+        loggedInViewModel.data.observe(this) { data ->
+            data?.let { d ->
                 if (bottomTabs.menu.isEmpty()) {
-                    val keyGearEnabled = isDebug() || f.contains(Feature.KEYGEAR)
-                    val referralsEnabled = isDebug() || f.contains(Feature.REFERRALS)
+                    val keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
+                    val referralsEnabled =
+                        isDebug() || d.member.features.contains(Feature.REFERRALS)
 
                     val menuId = when {
                         keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
@@ -229,6 +232,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
                     loggedInRoot.show()
                 }
+
+                referralTermsUrl = d.referralTerms.url
             }
         }
 

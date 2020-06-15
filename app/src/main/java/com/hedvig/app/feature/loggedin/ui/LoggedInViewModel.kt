@@ -4,29 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import kotlinx.coroutines.launch
 
 abstract class LoggedInViewModel : ViewModel() {
-    abstract val data: LiveData<List<Feature>>
+    abstract val data: LiveData<LoggedInQuery.Data>
     abstract val scroll: MutableLiveData<Float>
 }
 
 class LoggedInViewModelImpl(
-    private val featureRepository: FeatureRepository
+    private val loggedInRepository: LoggedInRepository
 ) : LoggedInViewModel() {
-    override val data = MutableLiveData<List<Feature>>()
+    override val data = MutableLiveData<LoggedInQuery.Data>()
     override val scroll = MutableLiveData<Float>()
 
     init {
         viewModelScope.launch {
             val response = runCatching {
-                featureRepository
-                    .featuresAsync()
+                loggedInRepository
+                    .loggedInDataAsync()
                     .await()
             }
 
-            data.postValue(response.getOrNull()?.data()?.member?.features)
+            data.postValue(response.getOrNull()?.data())
         }
     }
 }
