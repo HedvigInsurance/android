@@ -26,6 +26,8 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:alpha="0"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         android:text="@string/referrals_empty.share_code_button"
         android:visibility="gone"
         tools:alpha="1"

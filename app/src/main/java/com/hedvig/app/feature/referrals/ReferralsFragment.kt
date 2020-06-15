@@ -72,6 +72,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 share
                     .animate()
                     .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
                     .setDuration(150)
                     .start()
             }
