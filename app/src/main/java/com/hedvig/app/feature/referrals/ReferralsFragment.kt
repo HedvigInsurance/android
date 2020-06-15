@@ -20,11 +20,11 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import e
-import kotlinx.android.synthetic.main.fragment_new_referral.*
+import kotlinx.android.synthetic.main.fragment_referrals.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
+class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val referralsViewModel: ReferralsViewModel by viewModel()
 
