@@ -49,14 +49,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                 return@observe
             }
 
-            // TODO: Animate the reveal?
             val incentive =
                 data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
             if (incentive == null) {
                 e { "Invariant detected: referralInformation.campaign.incentive is null" }
             } else {
                 val code = data.referralInformation.campaign.code
-                share.show()
                 share.setHapticClickListener {
                     requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                         intent.putExtra(
@@ -70,6 +68,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_new_referral) {
                         intent.type = "text/plain"
                     }
                 }
+                share.show()
+                share
+                    .animate()
+                    .alpha(1f)
+                    .setDuration(150)
+                    .start()
             }
 
             if (data.referralInformation.invitations.isEmpty() && data.referralInformation.referredBy == null) {
