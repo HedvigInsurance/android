@@ -10,6 +10,14 @@ import kotlinx.coroutines.launch
 abstract class LoggedInViewModel : ViewModel() {
     abstract val data: LiveData<List<Feature>>
     abstract val scroll: MutableLiveData<Float>
+
+    private val _bottomTabInset = MutableLiveData<Int>()
+    val bottomTabInset: LiveData<Int>
+        get() = _bottomTabInset
+
+    fun updateBottomTabInset(newInset: Int) {
+        _bottomTabInset.postValue(newInset)
+    }
 }
 
 class LoggedInViewModelImpl(

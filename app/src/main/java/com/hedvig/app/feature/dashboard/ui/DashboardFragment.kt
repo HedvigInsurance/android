@@ -12,6 +12,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -24,6 +25,13 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val scrollInitialBottomPadding = root.paddingBottom
+        loggedInViewModel.bottomTabInset.observe(this) { bti ->
+            bti?.let { bottomTabInset ->
+                root.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+            }
+        }
 
         root.setupToolbarScrollListener(loggedInViewModel)
         root.adapter = DashboardAdapter(parentFragmentManager)

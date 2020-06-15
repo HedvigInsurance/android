@@ -31,7 +31,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomTabs"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_navigation_height"
+        android:layout_height="wrap_content"
         android:background="@drawable/background_bottom_nav"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:labelVisibilityMode="labeled"

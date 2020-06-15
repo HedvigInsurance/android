@@ -30,7 +30,6 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -66,7 +65,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            loggedInViewModel.updateBottomTabInset(view.measuredHeight)
         }
 
         setSupportActionBar(hedvigToolbar)

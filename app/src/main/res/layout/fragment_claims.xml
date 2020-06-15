@@ -11,13 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/logged_in_tabs_bottom_padding">
-
+        android:paddingBottom="@dimen/base_margin_double">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/bottom_navigation_height">
+            android:layout_height="wrap_content">
 
             <include
                 layout="@layout/loading_spinner"
@@ -118,7 +116,9 @@
                     tools:listitem="@layout/claim_bulletpoint_row" />
 
             </LinearLayout>
+
         </FrameLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>

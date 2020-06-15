@@ -21,6 +21,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.transitionPair
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
@@ -38,6 +39,13 @@ class KeyGearFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val scrollInitialBottomPadding = keyGearRoot.paddingBottom
+        loggedInViewModel.bottomTabInset.observe(this) { bti ->
+            bti?.let { bottomTabInset ->
+                keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+            }
+        }
 
         items.adapter =
             KeyGearItemsAdapter(
