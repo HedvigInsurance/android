@@ -1,33 +1,43 @@
 package com.hedvig.app.feature.referrals
 
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import com.agoda.kakao.intent.KIntent
+import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.text.KButton
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.inject
 import org.koin.test.KoinTest
+import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsFeatureActivatedNotificationTest : KoinTest {
+class ReferralsInformationActivityTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
-   
+    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+
     @Before
     fun setup() {
         apolloClientWrapper
@@ -36,7 +46,7 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
     }
 
     @Test
-    fun shouldOpenLoggedInScreenWithReferralsShownWhenOpeningReferralsFeatureActivatedNotification() {
+    fun shouldOpenInformationActivityWhenClickingMoreInformationAction() {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
@@ -48,7 +58,6 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
                     return MockResponse()
                 }
             }
-
             webServer.start(8080)
 
             val intent = LoggedInActivity.newInstance(
@@ -59,7 +68,21 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
             activityRule.launchActivity(intent)
 
             onScreen<ReferralScreen> {
-                recycler { isVisible() }
+                moreInfo { click() }
+            }
+
+            intending(not(isInternal())).respondWith(
+                Instrumentation.ActivityResult(
+                    Activity.RESULT_OK,
+                    null
+                )
+            )
+
+            onScreen<ReferralsInformationScreen> {
+                termsAndConditions { click() }
+                termsAndConditionsIntent {
+                    intended()
+                }
             }
         }
     }
@@ -76,5 +99,13 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
                 url = "https://www.example.com"
             )
         )
+    }
+
+    class ReferralsInformationScreen : Screen<ReferralsInformationScreen>() {
+        val termsAndConditions = KButton { withId(R.id.termsAndConditions) }
+        val termsAndConditionsIntent = KIntent {
+            hasAction(Intent.ACTION_VIEW)
+            hasData("https://www.example.com")
+        }
     }
 }

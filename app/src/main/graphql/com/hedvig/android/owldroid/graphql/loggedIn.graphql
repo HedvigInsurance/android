@@ -1,0 +1,8 @@
+query LoggedInQuery($locale: Locale!) {
+  member {
+    features
+  }
+  referralTerms(locale: $locale) {
+    url
+  }
+}

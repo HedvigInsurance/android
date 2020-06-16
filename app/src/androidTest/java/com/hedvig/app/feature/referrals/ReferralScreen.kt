@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 class ReferralScreen : Screen<ReferralScreen>() {
+    val moreInfo = KButton { withId(R.id.referralMoreInfo) }
     val share = KButton { withId(R.id.share) }
     val shareIntent = KIntent {
         hasAction(Intent.ACTION_CHOOSER)

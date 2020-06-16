@@ -34,7 +34,7 @@ android {
 
         minSdkVersion 21
         versionCode 43
-        versionName '4.0.2'
+        versionName '4.0.3'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -212,7 +212,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestImplementation 'com.agoda.kakao:kakao:2.3.0'
+    androidTestImplementation 'com.agoda.kakao:kakao:2.3.2'
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
     androidTestImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.22'
