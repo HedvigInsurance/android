@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.ui.tab
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.referrals.ReferralsViewModel
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -42,7 +43,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
 
         invites.setupToolbarScrollListener(loggedInViewModel)
-        invites.adapter = ReferralsAdapter()
+        invites.adapter =
+            ReferralsAdapter()
 
         referralsViewModel.data.observe(this) { data ->
             if (data == null) {

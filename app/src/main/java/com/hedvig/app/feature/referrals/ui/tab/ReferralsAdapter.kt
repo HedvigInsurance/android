@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.ui.tab
 
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +28,12 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
         ReferralsModel.Referral.LoadingReferral
     )
         set(value) {
-            val diff = DiffUtil.calculateDiff(ReferralsDiffCallback(field, value))
+            val diff = DiffUtil.calculateDiff(
+                ReferralsDiffCallback(
+                    field,
+                    value
+                )
+            )
             field = value
             diff.dispatchUpdatesTo(this)
         }
@@ -41,10 +46,18 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.referrals_header -> ViewHolder.HeaderViewHolder(parent)
-        R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent)
-        R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
-        R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
+        R.layout.referrals_header -> ViewHolder.HeaderViewHolder(
+            parent
+        )
+        R.layout.referrals_code -> ViewHolder.CodeViewHolder(
+            parent
+        )
+        R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(
+            parent
+        )
+        R.layout.referrals_row -> ViewHolder.ReferralViewHolder(
+            parent
+        )
         else -> throw Error("Invalid viewType")
     }
 
@@ -208,63 +221,3 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
     }
 }
 
-sealed class ReferralsModel {
-    sealed class Header : ReferralsModel() {
-        object LoadingHeader : Header()
-        object LoadedEmptyHeader : Header()
-        data class LoadedHeader(
-            private val todo: Unit
-        ) : Header()
-    }
-
-    sealed class Code : ReferralsModel() {
-        object LoadingCode : Code()
-        data class LoadedCode(
-            val code: String
-        ) : Code()
-    }
-
-    object InvitesHeader : ReferralsModel()
-
-    sealed class Referral : ReferralsModel() {
-        object LoadingReferral : Referral()
-
-        data class Referee(
-            val inner: ReferralFragment
-        ) : Referral()
-
-        data class LoadedReferral(
-            val inner: ReferralFragment
-        ) : Referral()
-    }
-}
-
-class ReferralsDiffCallback(
-    private val old: List<ReferralsModel>,
-    private val new: List<ReferralsModel>
-) : DiffUtil.Callback() {
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldItem = old[oldItemPosition]
-        val newItem = new[newItemPosition]
-
-        if (oldItem is ReferralsModel.Header && newItem is ReferralsModel.Header) {
-            return true
-        }
-
-        if (oldItem is ReferralsModel.Code && newItem is ReferralsModel.Code) {
-            return true
-        }
-
-        if (oldItem is ReferralsModel.InvitesHeader && newItem is ReferralsModel.InvitesHeader) {
-            return true
-        }
-
-        return oldItem == newItem
-    }
-
-    override fun getOldListSize() = old.size
-    override fun getNewListSize() = new.size
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        old[oldItemPosition] == new[newItemPosition]
-}
