@@ -48,7 +48,7 @@ import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
-import com.hedvig.app.feature.loggedin.ui.FeatureRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
@@ -254,7 +254,7 @@ val repositoriesModule = module {
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
-    single { FeatureRepository(get()) }
+    single { LoggedInRepository(get(), get()) }
 }
 
 val trackerModule = module {
