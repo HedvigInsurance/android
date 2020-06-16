@@ -38,7 +38,7 @@ class PieChartView @JvmOverloads constructor(
                 segments = finalSegments
                     .map { it.copy(percentage = it.percentage * value / 100) }
             }
-            .animateToFinalPosition(100f)
+            .animateToFinalPosition(ONE_HUNDRED_PERCENT)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -47,7 +47,7 @@ class PieChartView @JvmOverloads constructor(
         var startPosition = 0f
 
         segments.forEach { segment ->
-            val sweep = -(segment.percentage * 3.6f)
+            val sweep = -(segment.percentage * DEGREES_PER_PERCENT_RATIO)
             val paint = colorStash[segment.color] ?: createColor(segment.color)
             canvas?.drawArc(circle, startPosition, sweep, true, paint)
             startPosition += sweep
@@ -62,6 +62,11 @@ class PieChartView @JvmOverloads constructor(
         }
         colorStash[color] = paint
         return paint
+    }
+
+    companion object {
+        private const val ONE_HUNDRED_PERCENT = 100f
+        private const val DEGREES_PER_PERCENT_RATIO = 3.6f
     }
 }
 
