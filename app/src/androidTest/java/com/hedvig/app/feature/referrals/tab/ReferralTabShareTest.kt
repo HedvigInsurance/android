@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
-import com.hedvig.android.owldroid.graphql.FeaturesQuery
+import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
@@ -49,11 +49,11 @@ class ReferralTabShareTest : KoinTest {
             webServer.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
                     val body = request.body.peek().readUtf8()
-                    if (body.contains("Features")) {
+                    if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(FEATURES_DATA.toJson())
                     }
 
-                    if (body.contains("Referrals")) {
+                    if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(REFERRALS_DATA.toJson())
                     }
 
@@ -88,11 +88,14 @@ class ReferralTabShareTest : KoinTest {
     }
 
     companion object {
-        private val FEATURES_DATA = FeaturesQuery.Data(
-            member = FeaturesQuery.Member(
+        private val FEATURES_DATA = LoggedInQuery.Data(
+            member = LoggedInQuery.Member(
                 features = listOf(
                     Feature.KEYGEAR
                 )
+            ),
+            referralTerms = LoggedInQuery.ReferralTerms(
+                url = "https://www.example.com"
             )
         )
 
