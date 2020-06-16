@@ -25,6 +25,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -39,6 +40,13 @@ class ProfileFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val scrollInitialBottomPadding = profileRoot.paddingBottom
+        loggedInViewModel.bottomTabInset.observe(this) { bti ->
+            bti?.let { bottomTabInset ->
+                profileRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+            }
+        }
 
         populateData()
         profileRoot.setupToolbarScrollListener(loggedInViewModel)
@@ -98,7 +106,7 @@ class ProfileFragment : BaseTabFragment() {
     private fun setupPayment(profileData: ProfileQuery.Data) {
         paymentRow.description = resources.getString(
             R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
-            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                 ?.toInt()
         )
         paymentRow.setHapticClickListener {

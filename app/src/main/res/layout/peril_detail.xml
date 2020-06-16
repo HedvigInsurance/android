@@ -30,7 +30,7 @@
             android:layout_marginStart="@dimen/base_margin"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             tools:text="Fire" />
 
     </LinearLayout>

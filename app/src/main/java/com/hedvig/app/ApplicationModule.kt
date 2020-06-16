@@ -71,9 +71,12 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.ratings.RatingsTracker
+import com.hedvig.app.feature.referrals.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ReferralRepository
-import com.hedvig.app.feature.referrals.ReferralViewModel
+import com.hedvig.app.feature.referrals.ReferralsRepository
 import com.hedvig.app.feature.referrals.ReferralsTracker
+import com.hedvig.app.feature.referrals.ReferralsViewModel
+import com.hedvig.app.feature.referrals.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.welcome.WelcomeRepository
@@ -184,7 +187,7 @@ val viewModelModule = module {
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
-    viewModel { ReferralViewModel(get()) }
+    viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
@@ -230,6 +233,10 @@ val adyenModule = module {
     viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
 }
 
+val referralsModule = module {
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -254,6 +261,7 @@ val repositoriesModule = module {
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
+    single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
 }
 

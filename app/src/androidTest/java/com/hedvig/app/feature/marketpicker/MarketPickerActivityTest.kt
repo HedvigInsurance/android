@@ -10,21 +10,33 @@ import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.GeoQuery
+import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.inject
+import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class MarketPickerActivityTest {
+class MarketPickerActivityTest : KoinTest {
+    private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
     val activityRule = ActivityTestRule(MarketPickerActivity::class.java, false, false)
+
+    @Before
+    fun setup() {
+        apolloClientWrapper
+            .apolloClient
+            .clearNormalizedCache()
+    }
 
     @Test
     fun selectCorrectMarket() {

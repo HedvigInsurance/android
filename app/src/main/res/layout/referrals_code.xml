@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/codeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:text="@string/referrals_empty.code.headline"
+        android:textAppearance="?textAppearanceHeadline6" />
+
+    <com.hedvig.app.ui.view.HedvigCardView
+        android:id="@+id/codeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_double">
+
+        <TextView
+            android:id="@+id/code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginBottom="@dimen/base_margin_double"
+            android:textAppearance="?textAppearanceSubtitle1"
+            android:visibility="gone"
+            tools:text="HJQ081"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/codePlaceholder"
+            android:layout_width="@dimen/subtitle_1_placeholder_width"
+            android:layout_height="@dimen/subtitle_1_placeholder_height"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginBottom="@dimen/base_margin_double"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/placeholder_rectangle"
+            tools:visibility="gone" />
+
+    </com.hedvig.app.ui.view.HedvigCardView>
+
+    <TextView
+        android:id="@+id/codeFootnote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:text="@string/referrals_empty.code.footer"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceCaption" />
+
+</LinearLayout>

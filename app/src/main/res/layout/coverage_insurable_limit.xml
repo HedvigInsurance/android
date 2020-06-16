@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="1 000 000 kr" />
 
 </LinearLayout>

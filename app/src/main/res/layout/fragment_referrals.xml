@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hedvig.app.feature.referrals.ui.tab.ReferralsFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/invites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_double"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="3"
+        tools:listitem="@layout/referrals_row" />
+
+    <Button
+        android:id="@+id/share"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:alpha="0"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:text="@string/referrals_empty.share_code_button"
+        android:visibility="gone"
+        tools:alpha="1"
+        tools:visibility="visible" />
+
+</FrameLayout>

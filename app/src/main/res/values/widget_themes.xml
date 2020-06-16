@@ -25,4 +25,8 @@
 
     <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox" />
 
+    <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
+        <item name="colorSurface">@color/colorSurfaceOnSurface</item>
+    </style>
+
 </resources>

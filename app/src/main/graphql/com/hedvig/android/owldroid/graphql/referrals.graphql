@@ -1,0 +1,34 @@
+query Referrals {
+  referralInformation {
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+    referredBy {
+      ...ReferralFragment
+    }
+    invitations {
+      ...ReferralFragment
+    }
+  }
+}
+fragment ReferralFragment on Referral {
+  ... on ActiveReferral {
+    name
+    discount {
+      ...MonetaryAmountFragment
+    }
+  }
+  ... on InProgressReferral {
+    name
+  }
+  ... on TerminatedReferral {
+    name
+  }
+}

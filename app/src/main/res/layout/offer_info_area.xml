@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/OFFER_SCREEN_USP_ONE_TITLE"
-                android:textAppearance="?textAppearanceHeadline6" />
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/OFFER_SCREEN_USP_TWO_TITLE"
-                android:textAppearance="?textAppearanceHeadline6" />
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -95,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/OFFER_SCREEN_USP_THREE_TITLE"
-                android:textAppearance="?textAppearanceHeadline6" />
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <TextView
                 android:layout_width="match_parent"

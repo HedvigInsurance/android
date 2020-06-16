@@ -77,7 +77,7 @@
                     android:layout_marginEnd="@dimen/base_margin_half"
                     android:gravity="center"
                     android:lineSpacingExtra="0sp"
-                    android:textAppearance="?textAppearanceBody3"
+                    android:textAppearance="?textAppearanceCaption"
                     android:textColor="?colorOnError"
                     tools:text="3\nGratis\nmånader" />
 

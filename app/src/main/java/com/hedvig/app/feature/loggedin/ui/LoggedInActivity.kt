@@ -14,7 +14,6 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -28,18 +27,11 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.apollo.defaultLocale
-import com.hedvig.app.util.apollo.toWebLocaleTag
-import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -76,7 +68,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            loggedInViewModel.updateBottomTabInset(view.measuredHeight)
         }
 
         setSupportActionBar(hedvigToolbar)
@@ -95,7 +88,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
             tabContentContainer.setCurrentItem(id.ordinal, false)
             setupToolBar(id)
-            setupFloatingButton(id)
             true
         }
 
@@ -119,11 +111,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         bindData()
         setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
-    }
-
-    private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
-        LoggedInTabs.REFERRALS -> referralButton.show()
-        else -> referralButton.remove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -238,12 +225,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
-            safeLet(
-                data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()
-                    ?.toDouble(),
-                data?.referralInformation?.campaign?.code
-            ) { incentive, code -> bindReferralsButton(incentive, code) }
-
             data?.member?.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
@@ -255,25 +236,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             data?.first?.let { d ->
                 if (isTerminated(d.contracts)) {
                     startActivity(LoggedInTerminatedActivity.newInstance(this))
-                }
-            }
-        }
-    }
-
-    private fun bindReferralsButton(incentive: Double, code: String) {
-        referralButton.setHapticClickListener {
-            profileTracker.clickReferral(incentive.toInt())
-            showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
-                intent.apply {
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        resources.getString(
-                            R.string.REFERRAL_SMS_MESSAGE,
-                            incentive.toBigDecimal().toInt().toString(),
-                            "${BuildConfig.WEB_BASE_URL}${defaultLocale(this@LoggedInActivity).toWebLocaleTag()}/forever/${code}"
-                        )
-                    )
-                    type = "text/plain"
                 }
             }
         }
