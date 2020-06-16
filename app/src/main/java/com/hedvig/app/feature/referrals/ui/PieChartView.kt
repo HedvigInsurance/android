@@ -17,8 +17,7 @@ class PieChartView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : View(context, attributeSet, defStyle) {
 
-    private val circle = RectF(0f, 0f, 1000f, 1000f)
-    private val colorStash = HashMap<Int, Paint>()
+    private val paintCache = HashMap<Int, Paint>()
 
     var segments: List<PieChartSegment> = emptyList()
         set(value) {
@@ -48,19 +47,19 @@ class PieChartView @JvmOverloads constructor(
 
         segments.forEach { segment ->
             val sweep = -(segment.percentage * DEGREES_PER_PERCENT_RATIO)
-            val paint = colorStash[segment.color] ?: createColor(segment.color)
+            val paint = paintCache[segment.color] ?: createPaint(segment.color)
             canvas?.drawArc(circle, startPosition, sweep, true, paint)
             startPosition += sweep
         }
     }
 
-    private fun createColor(@ColorInt color: Int): Paint {
+    private fun createPaint(@ColorInt color: Int): Paint {
         val paint = Paint().apply {
             this.color = color
             style = Paint.Style.FILL
             flags = Paint.ANTI_ALIAS_FLAG
         }
-        colorStash[color] = paint
+        paintCache[color] = paint
         return paint
     }
 
