@@ -43,20 +43,31 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
 
         invites.setupToolbarScrollListener(loggedInViewModel)
-        invites.adapter =
-            ReferralsAdapter()
+        invites.adapter = ReferralsAdapter {
+            (invites.adapter as? ReferralsAdapter)?.items = ReferralsAdapter.LOADING_STATE
+            referralsViewModel.load()
+        }
 
         referralsViewModel.data.observe(this) { data ->
             if (data == null) {
                 return@observe
             }
 
+            if (data.isFailure) {
+                (invites.adapter as? ReferralsAdapter)?.items = listOf(
+                    ReferralsModel.Title,
+                    ReferralsModel.Error
+                )
+            }
+
+            val successData = data.getOrNull() ?: return@observe
+
             val incentive =
-                data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                successData.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
             if (incentive == null) {
                 e { "Invariant detected: referralInformation.campaign.incentive is null" }
             } else {
-                val code = data.referralInformation.campaign.code
+                val code = successData.referralInformation.campaign.code
                 share.setHapticClickListener {
                     requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                         intent.putExtra(
@@ -80,27 +91,29 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                     .start()
             }
 
-            if (data.referralInformation.invitations.isEmpty() && data.referralInformation.referredBy == null) {
+            if (successData.referralInformation.invitations.isEmpty() && successData.referralInformation.referredBy == null) {
                 (invites.adapter as? ReferralsAdapter)?.items = listOf(
+                    ReferralsModel.Title,
                     ReferralsModel.Header.LoadedEmptyHeader,
-                    ReferralsModel.Code.LoadedCode(data.referralInformation.campaign.code)
+                    ReferralsModel.Code.LoadedCode(successData.referralInformation.campaign.code)
                 )
                 return@observe
             }
 
             val items = mutableListOf(
+                ReferralsModel.Title,
                 ReferralsModel.Header.LoadedHeader(Unit),
-                ReferralsModel.Code.LoadedCode(data.referralInformation.campaign.code),
+                ReferralsModel.Code.LoadedCode(successData.referralInformation.campaign.code),
                 ReferralsModel.InvitesHeader
             )
 
-            items += data.referralInformation.invitations.map {
+            items += successData.referralInformation.invitations.map {
                 ReferralsModel.Referral.LoadedReferral(
                     it.fragments.referralFragment
                 )
             }
 
-            data.referralInformation.referredBy?.let {
+            successData.referralInformation.referredBy?.let {
                 items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
             }
 

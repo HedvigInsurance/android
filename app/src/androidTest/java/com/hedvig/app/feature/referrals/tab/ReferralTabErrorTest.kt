@@ -3,7 +3,7 @@ package com.hedvig.app.feature.referrals.tab
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -23,9 +23,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.inject
 import org.koin.test.KoinTest
+import java.util.concurrent.Semaphore
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabEmptyTest : KoinTest {
+class ReferralTabErrorTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -39,19 +40,32 @@ class ReferralTabEmptyTest : KoinTest {
     }
 
     @Test
-    fun shouldShowEmptyStateWhenLoadedWithNoItems() {
+    fun shouldShowErrorWhenAnErrorOccurs() {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
+                var shouldFailureSemaphore = true
+                val semaphore = Semaphore(1)
+
                 override fun dispatch(request: RecordedRequest): MockResponse {
+                    semaphore.acquire()
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
+                        semaphore.release()
                         return MockResponse().setBody(LOGGED_IN_DATA.toJson())
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
+                        if (shouldFailureSemaphore) {
+                            shouldFailureSemaphore = false
+                            semaphore.release()
+                            return MockResponse().setBody(ERROR_JSON)
+                        }
+
+                        semaphore.release()
                         return MockResponse().setBody(REFERRALS_DATA.toJson())
                     }
 
+                    semaphore.release()
                     return MockResponse()
                 }
             }
@@ -65,9 +79,18 @@ class ReferralTabEmptyTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            Screen.onScreen<ReferralScreen> {
-                share { isVisible() }
+            onScreen<ReferralScreen> {
+                share { isGone() }
                 recycler {
+                    hasSize(2)
+                    childAt<ReferralScreen.ErrorItem>(1) {
+                        errorTitle { isVisible() }
+                        errorParagraph { isVisible() }
+                        retry {
+                            isVisible()
+                            click()
+                        }
+                    }
                     hasSize(3)
                     childAt<ReferralScreen.HeaderItem>(1) {
                         discountPerMonthPlaceholder { isGone() }
@@ -102,6 +125,9 @@ class ReferralTabEmptyTest : KoinTest {
                 url = "https://www.example.com"
             )
         )
+
+        private const val ERROR_JSON =
+            """{"data": null, "errors": [{"message": "example message"}]}"""
 
         private val REFERRALS_DATA = ReferralsQuery.Data(
             referralInformation = ReferralsQuery.ReferralInformation(
