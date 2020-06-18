@@ -72,8 +72,8 @@ class ReferralTabOneRefereeTest : KoinTest {
             Screen.onScreen<ReferralScreen> {
                 share { isVisible() }
                 recycler {
-                    hasSize(4)
-                    firstChild<ReferralScreen.HeaderItem> {
+                    hasSize(5)
+                    childAt<ReferralScreen.HeaderItem>(1) {
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
                         discountPerMonth { isVisible() }
@@ -86,17 +86,17 @@ class ReferralTabOneRefereeTest : KoinTest {
                         emptyHeadline { isGone() }
                         emptyBody { isGone() }
                     }
-                    childAt<ReferralScreen.CodeItem>(1) {
+                    childAt<ReferralScreen.CodeItem>(2) {
                         placeholder { isGone() }
                         code {
                             isVisible()
                             hasText("TEST123")
                         }
                     }
-                    childAt<ReferralScreen.InvitesHeaderItem>(2) {
+                    childAt<ReferralScreen.InvitesHeaderItem>(3) {
                         isVisible()
                     }
-                    childAt<ReferralScreen.ReferralItem>(3) {
+                    childAt<ReferralScreen.ReferralItem>(4) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name {

@@ -3,6 +3,8 @@ package com.hedvig.app.feature.referrals.ui.tab
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 
 sealed class ReferralsModel {
+    object Title : ReferralsModel()
+   
     sealed class Header : ReferralsModel() {
         object LoadingHeader : Header()
         object LoadedEmptyHeader : Header()
@@ -31,4 +33,6 @@ sealed class ReferralsModel {
             val inner: ReferralFragment
         ) : Referral()
     }
+
+    object Error : ReferralsModel()
 }
