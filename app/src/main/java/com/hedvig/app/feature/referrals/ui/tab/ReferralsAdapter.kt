@@ -37,6 +37,10 @@ class ReferralsAdapter(
             diff.dispatchUpdatesTo(this)
         }
 
+    fun setLoading() {
+        items = LOADING_STATE
+    }
+
     override fun getItemViewType(position: Int) = when (items[position]) {
         ReferralsModel.Title -> R.layout.referrals_title
         is ReferralsModel.Header -> R.layout.referrals_header
@@ -245,7 +249,7 @@ class ReferralsAdapter(
     }
 
     companion object {
-        val LOADING_STATE = listOf(
+        private val LOADING_STATE = listOf(
             ReferralsModel.Title,
             ReferralsModel.Header.LoadingHeader,
             ReferralsModel.Code.LoadingCode,

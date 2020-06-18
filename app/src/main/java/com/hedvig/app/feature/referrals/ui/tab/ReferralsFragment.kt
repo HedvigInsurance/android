@@ -44,7 +44,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
         invites.setupToolbarScrollListener(loggedInViewModel)
         invites.adapter = ReferralsAdapter {
-            (invites.adapter as? ReferralsAdapter)?.items = ReferralsAdapter.LOADING_STATE
+            (invites.adapter as? ReferralsAdapter)?.setLoading()
             referralsViewModel.load()
         }
 
