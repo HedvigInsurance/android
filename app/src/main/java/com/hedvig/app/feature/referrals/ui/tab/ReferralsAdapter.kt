@@ -13,20 +13,19 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import e
 import kotlinx.android.synthetic.main.referrals_code.view.*
+import kotlinx.android.synthetic.main.referrals_error.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.placeholders
 import kotlinx.android.synthetic.main.referrals_row.view.*
 
-class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
-    var items: List<ReferralsModel> = listOf(
-        ReferralsModel.Header.LoadingHeader,
-        ReferralsModel.Code.LoadingCode,
-        ReferralsModel.InvitesHeader,
-        ReferralsModel.Referral.LoadingReferral
-    )
+class ReferralsAdapter(
+    private val reload: () -> Unit
+) : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
+    var items: List<ReferralsModel> = LOADING_STATE
         set(value) {
             val diff = DiffUtil.calculateDiff(
                 ReferralsDiffCallback(
@@ -38,14 +37,21 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
             diff.dispatchUpdatesTo(this)
         }
 
+    fun setLoading() {
+        items = LOADING_STATE
+    }
+
     override fun getItemViewType(position: Int) = when (items[position]) {
+        ReferralsModel.Title -> R.layout.referrals_title
         is ReferralsModel.Header -> R.layout.referrals_header
         is ReferralsModel.Code -> R.layout.referrals_code
         ReferralsModel.InvitesHeader -> R.layout.referrals_invites_header
         is ReferralsModel.Referral -> R.layout.referrals_row
+        ReferralsModel.Error -> R.layout.referrals_error
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.referrals_title -> ViewHolder.TitleViewHolder(parent)
         R.layout.referrals_header -> ViewHolder.HeaderViewHolder(
             parent
         )
@@ -58,17 +64,28 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
         R.layout.referrals_row -> ViewHolder.ReferralViewHolder(
             parent
         )
+        R.layout.referrals_error -> ViewHolder.ErrorViewHolder(
+            parent
+        )
         else -> throw Error("Invalid viewType")
     }
 
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], reload)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: ReferralsModel)
+        abstract fun bind(data: ReferralsModel, reload: () -> Unit)
+
+        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.referrals_title, parent, false)
+        ) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit) = Unit
+        }
 
         class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
@@ -80,7 +97,7 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
             private val placeholders = itemView.placeholders
             private val loadedData = itemView.loadedData
 
-            override fun bind(data: ReferralsModel) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
                         emptyTexts.remove()
@@ -115,7 +132,7 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
         ) {
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
-            override fun bind(data: ReferralsModel) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Code.LoadingCode -> {
                         placeholder.show()
@@ -138,7 +155,7 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                 .from(parent.context)
                 .inflate(R.layout.referrals_invites_header, parent, false)
         ) {
-            override fun bind(data: ReferralsModel) = Unit
+            override fun bind(data: ReferralsModel, reload: () -> Unit) = Unit
         }
 
         class ReferralViewHolder(parent: ViewGroup) : ViewHolder(
@@ -153,7 +170,7 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
             private val icon = itemView.icon
             private val status = itemView.status
 
-            override fun bind(data: ReferralsModel) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Referral.LoadingReferral -> {
                         placeholders.show()
@@ -218,6 +235,26 @@ class ReferralsAdapter : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
                     }
             }
         }
+
+        class ErrorViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.referrals_error, parent, false)
+        ) {
+            private val retry = itemView.retry
+            override fun bind(data: ReferralsModel, reload: () -> Unit) {
+                retry.setHapticClickListener { reload() }
+            }
+        }
+    }
+
+    companion object {
+        private val LOADING_STATE = listOf(
+            ReferralsModel.Title,
+            ReferralsModel.Header.LoadingHeader,
+            ReferralsModel.Code.LoadingCode,
+            ReferralsModel.InvitesHeader,
+            ReferralsModel.Referral.LoadingReferral
+        )
     }
 }
-

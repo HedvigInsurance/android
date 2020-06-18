@@ -72,8 +72,8 @@ class ReferralTabMultipleReferralsTest : KoinTest {
             Screen.onScreen<ReferralScreen> {
                 share { isVisible() }
                 recycler {
-                    hasSize(6)
-                    firstChild<ReferralScreen.HeaderItem> {
+                    hasSize(7)
+                    childAt<ReferralScreen.HeaderItem>(1) {
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
                         discountPerMonth { isVisible() }
@@ -86,17 +86,17 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                         emptyHeadline { isGone() }
                         emptyBody { isGone() }
                     }
-                    childAt<ReferralScreen.CodeItem>(1) {
+                    childAt<ReferralScreen.CodeItem>(2) {
                         placeholder { isGone() }
                         code {
                             isVisible()
                             hasText("TEST123")
                         }
                     }
-                    childAt<ReferralScreen.InvitesHeaderItem>(2) {
+                    childAt<ReferralScreen.InvitesHeaderItem>(3) {
                         isVisible()
                     }
-                    childAt<ReferralScreen.ReferralItem>(3) {
+                    childAt<ReferralScreen.ReferralItem>(4) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example") }
@@ -109,14 +109,14 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                             )
                         }
                     }
-                    childAt<ReferralScreen.ReferralItem>(4) {
+                    childAt<ReferralScreen.ReferralItem>(5) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example 2") }
                         referee { isGone() }
                         icon { hasDrawable(R.drawable.ic_clock_colorless) }
                     }
-                    childAt<ReferralScreen.ReferralItem>(5) {
+                    childAt<ReferralScreen.ReferralItem>(6) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example 3") }

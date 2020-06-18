@@ -18,11 +18,13 @@ class ReferralScreen : Screen<ReferralScreen>() {
     val shareIntent = KIntent {
         hasAction(Intent.ACTION_CHOOSER)
     }
+
     val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
         itemType(::HeaderItem)
         itemType(::CodeItem)
         itemType(::InvitesHeaderItem)
         itemType(::ReferralItem)
+        itemType(::ErrorItem)
     })
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
@@ -55,5 +57,11 @@ class ReferralScreen : Screen<ReferralScreen>() {
         val name = KTextView(parent) { withId(R.id.name) }
         val referee = KTextView(parent) { withId(R.id.refereeLabel) }
         val status = KTextView(parent) { withId(R.id.status) }
+    }
+
+    class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
+        val errorTitle = KTextView(parent) { withId(R.id.errorTitle) }
+        val errorParagraph = KTextView(parent) { withId(R.id.errorParagraph) }
+        val retry = KTextView(parent) { withId(R.id.retry) }
     }
 }
