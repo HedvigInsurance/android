@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.ui.PieChartSegment
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.view.remove
@@ -96,16 +98,31 @@ class ReferralsAdapter(
             private val nonEmptyTexts = itemView.nonEmptyTexts
             private val placeholders = itemView.placeholders
             private val loadedData = itemView.loadedData
+            private val piechart = itemView.piechart
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
+                        piechart.segments = listOf(
+                            PieChartSegment(
+                                100f,
+                                piechart.context.colorAttr(R.attr.colorPlaceholder)
+                            )
+                        )
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         placeholders.show()
                         loadedData.remove()
                     }
                     ReferralsModel.Header.LoadedEmptyHeader -> {
+                        piechart.reveal(
+                            listOf(
+                                PieChartSegment(
+                                    95f,
+                                    piechart.context.compatColor(R.color.yellow) // TODO: The correct color
+                                )
+                            )
+                        )
                         placeholders.remove()
                         emptyTexts.show()
                         loadedData.remove()

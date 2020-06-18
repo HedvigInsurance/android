@@ -17,6 +17,7 @@ class PieChartView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : View(context, attributeSet, defStyle) {
 
+    private val circle = RectF()
     private val paintCache = HashMap<Int, Paint>()
 
     var segments: List<PieChartSegment> = emptyList()
@@ -40,13 +41,42 @@ class PieChartView @JvmOverloads constructor(
             .animateToFinalPosition(ONE_HUNDRED_PERCENT)
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val desiredWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val desiredHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+
+        val size = when {
+            widthMode == MeasureSpec.EXACTLY && desiredWidth > 0 -> desiredWidth
+            heightMode == MeasureSpec.EXACTLY && desiredHeight > 0 -> desiredHeight
+            else -> if (desiredWidth < desiredHeight) {
+                desiredWidth
+            } else {
+                desiredHeight
+            }
+        }
+
+        val resolvedWidth = resolveSize(size, widthMeasureSpec)
+        val resolvedHeight = resolveSize(size, heightMeasureSpec)
+
+        circle.set(
+            0f,
+            0f,
+            resolvedWidth.toFloat(),
+            resolvedHeight.toFloat()
+        )
+
+        setMeasuredDimension(resolvedWidth, resolvedHeight)
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        var startPosition = 0f
+        var startPosition = 270f
 
         segments.forEach { segment ->
-            val sweep = -(segment.percentage * DEGREES_PER_PERCENT_RATIO)
+            val sweep = segment.percentage * DEGREES_PER_PERCENT_RATIO
             val paint = paintCache[segment.color] ?: createPaint(segment.color)
             canvas?.drawArc(circle, startPosition, sweep, true, paint)
             startPosition += sweep
