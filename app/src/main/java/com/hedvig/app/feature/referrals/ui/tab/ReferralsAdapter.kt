@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.format
@@ -142,6 +143,15 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
+                        code.setHapticClickListener {
+                            Snackbar
+                                .make(
+                                    code,
+                                    R.string.referrals_active__toast_text,
+                                    Snackbar.LENGTH_SHORT
+                                )
+                                .show()
+                        }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
