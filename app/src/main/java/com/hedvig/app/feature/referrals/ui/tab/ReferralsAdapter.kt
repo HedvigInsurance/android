@@ -152,6 +152,7 @@ class ReferralsAdapter(
                                     R.string.referrals_active__toast_text,
                                     Snackbar.LENGTH_SHORT
                                 )
+                                .setAnchorView(R.id.bottomTabs)
                                 .show()
                         }
                     }
