@@ -75,12 +75,28 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                 recycler {
                     hasSize(7)
                     childAt<ReferralScreen.HeaderItem>(1) {
+                        grossPrice {
+                            isVisible()
+                            hasText(
+                                Money.of(349, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
-                        discountPerMonth { isVisible() }
+                        discountPerMonth {
+                            isVisible()
+                            hasText(
+                                Money.of(-10, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
                         newPrice {
                             isVisible()
-                            hasText("")
+                            hasText(
+                                Money.of(339, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
                         }
                         discountPerMonthLabel { isVisible() }
                         newPriceLabel { isVisible() }
