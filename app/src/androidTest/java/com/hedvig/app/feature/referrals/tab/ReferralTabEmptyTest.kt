@@ -14,10 +14,12 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.javamoney.moneta.Money
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -71,6 +73,13 @@ class ReferralTabEmptyTest : KoinTest {
                 recycler {
                     hasSize(3)
                     childAt<ReferralScreen.HeaderItem>(1) {
+                        grossPrice {
+                            isVisible()
+                            hasText(
+                                Money.of(349, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
                         discountPerMonth { isGone() }
