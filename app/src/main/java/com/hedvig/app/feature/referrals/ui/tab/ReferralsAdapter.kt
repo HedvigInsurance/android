@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.format
@@ -13,6 +14,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.copyToClipboard
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -156,6 +158,8 @@ class ReferralsAdapter(
         ) {
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
+            private val container = itemView.codeContainer
+
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Code.LoadingCode -> {
@@ -166,6 +170,17 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
+                        container.setHapticClickListener {
+                            code.context.copyToClipboard(data.code)
+                            Snackbar
+                                .make(
+                                    code,
+                                    R.string.referrals_active__toast_text,
+                                    Snackbar.LENGTH_SHORT
+                                )
+                                .setAnchorView(R.id.bottomTabs)
+                                .show()
+                        }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }

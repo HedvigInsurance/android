@@ -22,6 +22,7 @@
 
     <item name="colorButton" type="color">@color/colorPrimary</item>
     <item name="textColorLink" type="color">#875EC5</item>
+    <item name="textColorLargeButton" type="color">@color/colorPrimary</item>
 
     <item name="colorBackgroundChat" type="color">@color/hedvig_off_white</item>
     <item name="colorChatUserBackground" type="color">@color/hedvig_light_gray</item>

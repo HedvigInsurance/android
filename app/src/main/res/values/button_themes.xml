@@ -8,8 +8,10 @@
     </style>
 
     <style name="Hedvig.Button.Large">
+        <item name="backgroundTint">@color/hedvig_large_button_state</item>
         <item name="android:padding">@dimen/base_margin_double</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
+        <item name="android:textColor">@color/hedvig_large_button_text_color_selector</item>
     </style>
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
