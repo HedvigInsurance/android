@@ -1,4 +1,7 @@
 query Referrals {
+  insuranceCost {
+    ...CostFragment
+  }
   referralInformation {
     campaign {
       code
@@ -9,6 +12,9 @@ query Referrals {
           }
         }
       }
+    }
+    costReducedIndefiniteDiscount {
+      ...CostFragment
     }
     referredBy {
       ...ReferralFragment
