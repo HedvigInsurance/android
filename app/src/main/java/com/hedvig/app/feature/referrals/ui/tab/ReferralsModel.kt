@@ -1,15 +1,19 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
 import com.hedvig.android.owldroid.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.ReferralsQuery
 
 sealed class ReferralsModel {
     object Title : ReferralsModel()
-   
+
     sealed class Header : ReferralsModel() {
         object LoadingHeader : Header()
-        object LoadedEmptyHeader : Header()
+        data class LoadedEmptyHeader(
+            val inner: ReferralsQuery.Data
+        ) : Header()
+
         data class LoadedHeader(
-            private val todo: Unit
+            val inner: ReferralsQuery.Data
         ) : Header()
     }
 

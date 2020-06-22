@@ -3,7 +3,7 @@ package com.hedvig.app.feature.referrals.tab
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
@@ -70,17 +70,33 @@ class ReferralTabOneRefereeTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            Screen.onScreen<ReferralScreen> {
+            onScreen<ReferralScreen> {
                 share { isVisible() }
                 recycler {
                     hasSize(5)
                     childAt<ReferralScreen.HeaderItem>(1) {
+                        grossPrice {
+                            isVisible()
+                            hasText(
+                                Money.of(349, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
-                        discountPerMonth { isVisible() }
+                        discountPerMonth {
+                            isVisible()
+                            hasText(
+                                Money.of(-10, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
+                        }
                         newPrice {
                             isVisible()
-                            hasText("")
+                            hasText(
+                                Money.of(339, "SEK")
+                                    .format(ApplicationProvider.getApplicationContext())
+                            )
                         }
                         discountPerMonthLabel { isVisible() }
                         newPriceLabel { isVisible() }

@@ -12,6 +12,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -96,27 +97,42 @@ class ReferralsAdapter(
             private val nonEmptyTexts = itemView.nonEmptyTexts
             private val placeholders = itemView.placeholders
             private val loadedData = itemView.loadedData
+            private val grossPrice = itemView.grossPrice
+            private val discountPerMonth = itemView.discountPerMonth
+            private val newPrice = itemView.newPrice
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
+                        grossPrice.hide()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         placeholders.show()
                         loadedData.remove()
                     }
-                    ReferralsModel.Header.LoadedEmptyHeader -> {
+                    is ReferralsModel.Header.LoadedEmptyHeader -> {
+                        grossPrice.show()
+                        grossPrice.text =
+                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                                ?.format(grossPrice.context)
                         placeholders.remove()
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
+                        grossPrice.show()
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.format(grossPrice.context)?.let { grossPrice.text = it }
                         placeholders.remove()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         loadedData.show()
-                        // TODO: Show some numbers when we have them
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.negate()?.format(discountPerMonth.context)
+                            ?.let { discountPerMonth.text = it }
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.format(newPrice.context)?.let { newPrice.text = it }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }

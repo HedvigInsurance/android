@@ -6,11 +6,16 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/grossPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:textAppearance="?textAppearanceCaption"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="349 kr" />
 
     <!-- TODO: Fix the piechart up a bit -->
     <com.hedvig.app.feature.referrals.ui.PieChartView
@@ -18,11 +23,11 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="@dimen/base_margin_quintuple"
-        android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_quintuple"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/grossPrice" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/emptyTexts"

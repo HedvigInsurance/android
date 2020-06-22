@@ -32,6 +32,8 @@ class ReferralScreen : Screen<ReferralScreen>() {
             KImageView(parent) { withId(R.id.discountPerMonthPlaceholder) }
         val newPricePlaceholder = KImageView(parent) { withId(R.id.newPricePlaceholder) }
 
+        val grossPrice = KTextView(parent) { withId(R.id.grossPrice) }
+
         val discountPerMonth = KTextView(parent) { withId(R.id.discountPerMonth) }
         val newPrice = KTextView(parent) { withId(R.id.newPrice) }
 
