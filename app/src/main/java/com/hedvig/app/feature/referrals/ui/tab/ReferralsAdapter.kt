@@ -158,6 +158,8 @@ class ReferralsAdapter(
         ) {
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
+            private val container = itemView.codeContainer
+
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Code.LoadingCode -> {
@@ -168,7 +170,7 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
-                        code.setHapticClickListener {
+                        container.setHapticClickListener {
                             code.context.copyToClipboard(data.code)
                             Snackbar
                                 .make(
