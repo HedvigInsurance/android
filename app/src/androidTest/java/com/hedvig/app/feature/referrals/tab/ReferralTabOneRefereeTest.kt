@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -133,6 +134,36 @@ class ReferralTabOneRefereeTest : KoinTest {
         )
 
         private val REFERRALS_DATA = ReferralsQuery.Data(
+            insuranceCost = ReferralsQuery.InsuranceCost(
+                fragments = ReferralsQuery.InsuranceCost.Fragments(
+                    CostFragment(
+                        monthlyDiscount = CostFragment.MonthlyDiscount(
+                            fragments = CostFragment.MonthlyDiscount.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "10.00",
+                                    currency = "SEK"
+                                )
+                            )
+                        ),
+                        monthlyNet = CostFragment.MonthlyNet(
+                            fragments = CostFragment.MonthlyNet.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "339.00",
+                                    currency = "SEK"
+                                )
+                            )
+                        ),
+                        monthlyGross = CostFragment.MonthlyGross(
+                            fragments = CostFragment.MonthlyGross.Fragments(
+                                MonetaryAmountFragment(
+                                    amount = "349.00",
+                                    currency = "SEK"
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
             referralInformation = ReferralsQuery.ReferralInformation(
                 campaign = ReferralsQuery.Campaign(
                     code = "TEST123",
@@ -142,6 +173,36 @@ class ReferralTabOneRefereeTest : KoinTest {
                                 fragments = ReferralsQuery.Amount.Fragments(
                                     MonetaryAmountFragment(
                                         amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                costReducedIndefiniteDiscount = ReferralsQuery.CostReducedIndefiniteDiscount(
+                    fragments = ReferralsQuery.CostReducedIndefiniteDiscount.Fragments(
+                        CostFragment(
+                            monthlyDiscount = CostFragment.MonthlyDiscount(
+                                fragments = CostFragment.MonthlyDiscount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            ),
+                            monthlyNet = CostFragment.MonthlyNet(
+                                fragments = CostFragment.MonthlyNet.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "339.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            ),
+                            monthlyGross = CostFragment.MonthlyGross(
+                                fragments = CostFragment.MonthlyGross.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "349.00",
                                         currency = "SEK"
                                     )
                                 )
