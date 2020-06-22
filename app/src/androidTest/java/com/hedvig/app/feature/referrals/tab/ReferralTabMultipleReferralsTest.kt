@@ -102,6 +102,7 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                         newPriceLabel { isVisible() }
                         emptyHeadline { isGone() }
                         emptyBody { isGone() }
+                        otherDiscountBox { isGone() }
                     }
                     childAt<ReferralScreen.CodeItem>(2) {
                         placeholder { isGone() }

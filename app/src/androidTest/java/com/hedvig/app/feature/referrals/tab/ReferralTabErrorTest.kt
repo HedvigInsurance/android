@@ -102,6 +102,7 @@ class ReferralTabErrorTest : KoinTest {
                         newPriceLabel { isGone() }
                         emptyHeadline { isVisible() }
                         emptyBody { isVisible() }
+                        otherDiscountBox { isGone() }
                     }
                     childAt<ReferralScreen.CodeItem>(2) {
                         placeholder { isGone() }
