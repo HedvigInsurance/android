@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.tab
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.fragment.ReferralFragment
@@ -100,6 +101,7 @@ class ReferralsAdapter(
             private val grossPrice = itemView.grossPrice
             private val discountPerMonth = itemView.discountPerMonth
             private val newPrice = itemView.newPrice
+            private val otherDiscountBox = itemView.otherDiscountBox
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
@@ -109,6 +111,7 @@ class ReferralsAdapter(
                         nonEmptyTexts.show()
                         placeholders.show()
                         loadedData.remove()
+                        otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedEmptyHeader -> {
                         grossPrice.show()
@@ -119,6 +122,7 @@ class ReferralsAdapter(
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
+                        otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
                         grossPrice.show()
@@ -132,7 +136,11 @@ class ReferralsAdapter(
                             ?.negate()?.format(discountPerMonth.context)
                             ?.let { discountPerMonth.text = it }
                         data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                            ?.format(newPrice.context)?.let { newPrice.text = it }
+                            ?.let { referralNet ->
+                                newPrice.text = referralNet.format(newPrice.context)
+                                otherDiscountBox.isVisible =
+                                    data.inner.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount() != referralNet
+                            }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }

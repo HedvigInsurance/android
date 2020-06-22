@@ -146,4 +146,28 @@
         app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
         app:srcCompat="@drawable/placeholder_rectangle" />
 
+    <com.hedvig.app.ui.view.HedvigCardView
+        android:id="@+id/otherDiscountBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:backgroundTint="?colorSecondary"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/discountPerMonth"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/base_margin_double"
+            android:text="@string/referrals_another_discount_message"
+            android:textAlignment="center"
+            android:textAppearance="?textAppearanceBody2" />
+
+    </com.hedvig.app.ui.view.HedvigCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
