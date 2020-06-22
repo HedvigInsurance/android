@@ -2,6 +2,7 @@ package com.hedvig.app.feature.referrals
 
 import android.content.Intent
 import android.view.View
+import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -35,6 +36,8 @@ class ReferralScreen : Screen<ReferralScreen>() {
             KImageView(parent) { withId(R.id.discountPerMonthPlaceholder) }
         val newPricePlaceholder = KImageView(parent) { withId(R.id.newPricePlaceholder) }
 
+        val grossPrice = KTextView(parent) { withId(R.id.grossPrice) }
+
         val discountPerMonth = KTextView(parent) { withId(R.id.discountPerMonth) }
         val newPrice = KTextView(parent) { withId(R.id.newPrice) }
 
@@ -43,6 +46,8 @@ class ReferralScreen : Screen<ReferralScreen>() {
 
         val emptyHeadline = KTextView(parent) { withId(R.id.emptyHeadline) }
         val emptyBody = KTextView(parent) { withId(R.id.emptyBody) }
+
+        val otherDiscountBox = KView(parent) { withId(R.id.otherDiscountBox) }
     }
 
     class CodeItem(parent: Matcher<View>) : KRecyclerItem<CodeItem>(parent) {

@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.tab
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -14,6 +15,7 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -98,27 +100,49 @@ class ReferralsAdapter(
             private val nonEmptyTexts = itemView.nonEmptyTexts
             private val placeholders = itemView.placeholders
             private val loadedData = itemView.loadedData
+            private val grossPrice = itemView.grossPrice
+            private val discountPerMonth = itemView.discountPerMonth
+            private val newPrice = itemView.newPrice
+            private val otherDiscountBox = itemView.otherDiscountBox
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
+                        grossPrice.hide()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         placeholders.show()
                         loadedData.remove()
+                        otherDiscountBox.remove()
                     }
-                    ReferralsModel.Header.LoadedEmptyHeader -> {
+                    is ReferralsModel.Header.LoadedEmptyHeader -> {
+                        grossPrice.show()
+                        grossPrice.text =
+                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                                ?.format(grossPrice.context)
                         placeholders.remove()
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
+                        otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
+                        grossPrice.show()
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.format(grossPrice.context)?.let { grossPrice.text = it }
                         placeholders.remove()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         loadedData.show()
-                        // TODO: Show some numbers when we have them
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.negate()?.format(discountPerMonth.context)
+                            ?.let { discountPerMonth.text = it }
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.let { referralNet ->
+                                newPrice.text = referralNet.format(newPrice.context)
+                                otherDiscountBox.isVisible =
+                                    data.inner.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount() != referralNet
+                            }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
