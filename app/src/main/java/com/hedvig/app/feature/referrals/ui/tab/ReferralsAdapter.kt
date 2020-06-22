@@ -13,6 +13,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.copyToClipboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -144,6 +145,7 @@ class ReferralsAdapter(
                         code.show()
                         code.text = data.code
                         code.setHapticClickListener {
+                            code.context.copyToClipboard(data.code)
                             Snackbar
                                 .make(
                                     code,

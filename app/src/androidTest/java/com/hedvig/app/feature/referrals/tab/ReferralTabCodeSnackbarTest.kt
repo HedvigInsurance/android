@@ -1,8 +1,13 @@
 package com.hedvig.app.feature.referrals.tab
 
+import android.content.ClipboardManager
+import android.content.Context
+import androidx.core.content.getSystemService
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
@@ -33,6 +38,8 @@ class ReferralTabCodeSnackbarTest : KoinTest {
 
     @Before
     fun setup() {
+        ApplicationProvider.getApplicationContext<Context>().getSystemService<ClipboardManager>()
+            ?.clearPrimaryClip()
         apolloClientWrapper
             .apolloClient
             .clearNormalizedCache()
@@ -82,6 +89,11 @@ class ReferralTabCodeSnackbarTest : KoinTest {
                     isDisplayed()
                 }
             }
+
+            val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
+                .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
+
+            assertThat(clipboardContent).isEqualTo("TEST123")
         }
     }
 
