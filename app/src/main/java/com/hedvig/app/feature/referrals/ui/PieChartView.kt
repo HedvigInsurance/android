@@ -30,7 +30,7 @@ class PieChartView @JvmOverloads constructor(
         SpringAnimation(FloatValueHolder())
             .apply {
                 spring = SpringForce().apply {
-                    dampingRatio = 0.65f
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
                     stiffness = SpringForce.STIFFNESS_VERY_LOW
                 }
             }
