@@ -1,12 +1,13 @@
 package com.hedvig.app.feature.referrals.tab
 
-import android.app.Activity
-import android.app.Instrumentation
+import android.content.ClipboardManager
+import android.content.Context
+import androidx.core.content.getSystemService
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.CostFragment
@@ -22,7 +23,6 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,27 +31,29 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabShareTest : KoinTest {
+class ReferralTabCodeSnackbarTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
     @Before
     fun setup() {
+        ApplicationProvider.getApplicationContext<Context>().getSystemService<ClipboardManager>()
+            ?.clearPrimaryClip()
         apolloClientWrapper
             .apolloClient
             .clearNormalizedCache()
     }
 
     @Test
-    fun shouldOpenShareWhenClickingShare() {
+    fun shouldShowSnackbarWhenClickingCode() {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(FEATURES_DATA.toJson())
+                        return MockResponse().setBody(LOGGED_IN_DATA.toJson())
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
@@ -71,25 +73,33 @@ class ReferralTabShareTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            intending(not(isInternal())).respondWith(
-                Instrumentation.ActivityResult(
-                    Activity.RESULT_OK,
-                    null
-                )
-            )
-
             Screen.onScreen<ReferralScreen> {
-                share {
-                    isVisible()
-                    click()
+                share { isVisible() }
+                recycler {
+                    hasSize(3)
+                    childAt<ReferralScreen.CodeItem>(2) {
+                        placeholder { isGone() }
+                        code {
+                            isVisible()
+                            hasText("TEST123")
+                            click()
+                        }
+                    }
                 }
-                shareIntent { intended() }
+                codeCopied {
+                    isDisplayed()
+                }
             }
+
+            val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
+                .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
+
+            assertThat(clipboardContent).isEqualTo("TEST123")
         }
     }
 
     companion object {
-        private val FEATURES_DATA = LoggedInQuery.Data(
+        private val LOGGED_IN_DATA = LoggedInQuery.Data(
             member = LoggedInQuery.Member(
                 features = listOf(
                     Feature.KEYGEAR

@@ -17,6 +17,7 @@
         <item name="colorButton">@color/colorButton</item>
         <item name="colorPlaceholder">@color/colorPlaceholder</item>
         <item name="textColorLink">@color/textColorLink</item>
+        <item name="textColorLargeButton">@color/textColorLargeButton</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="textColorThird">@color/textColorThird</item>
@@ -65,6 +66,7 @@
     <attr name="materialButtonTextStyle" format="reference" />
     <attr name="colorButton" format="reference" />
     <attr name="textColorLink" format="reference" />
+    <attr name="textColorLargeButton" format="reference" />
     <attr name="textColorThird" format="reference" />
     <attr name="colorPlaceholder" format="reference" />
 

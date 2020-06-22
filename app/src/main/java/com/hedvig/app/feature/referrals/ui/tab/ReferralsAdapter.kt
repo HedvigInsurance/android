@@ -3,8 +3,10 @@ package com.hedvig.app.feature.referrals.ui.tab
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.PieChartSegment
@@ -14,6 +16,8 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
+import com.hedvig.app.util.extensions.copyToClipboard
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -99,6 +103,10 @@ class ReferralsAdapter(
             private val placeholders = itemView.placeholders
             private val loadedData = itemView.loadedData
             private val piechart = itemView.piechart
+            private val grossPrice = itemView.grossPrice
+            private val discountPerMonth = itemView.discountPerMonth
+            private val newPrice = itemView.newPrice
+            private val otherDiscountBox = itemView.otherDiscountBox
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
@@ -109,12 +117,14 @@ class ReferralsAdapter(
                                 piechart.context.colorAttr(R.attr.colorPlaceholder)
                             )
                         )
+                        grossPrice.hide()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         placeholders.show()
                         loadedData.remove()
+                        otherDiscountBox.remove()
                     }
-                    ReferralsModel.Header.LoadedEmptyHeader -> {
+                    is ReferralsModel.Header.LoadedEmptyHeader -> {
                         piechart.reveal(
                             listOf(
                                 PieChartSegment(
@@ -123,17 +133,33 @@ class ReferralsAdapter(
                                 )
                             )
                         )
+                        grossPrice.show()
+                        grossPrice.text =
+                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                                ?.format(grossPrice.context)
                         placeholders.remove()
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
+                        otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
+                        grossPrice.show()
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.format(grossPrice.context)?.let { grossPrice.text = it }
                         placeholders.remove()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
                         loadedData.show()
-                        // TODO: Show some numbers when we have them
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.negate()?.format(discountPerMonth.context)
+                            ?.let { discountPerMonth.text = it }
+                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.let { referralNet ->
+                                newPrice.text = referralNet.format(newPrice.context)
+                                otherDiscountBox.isVisible =
+                                    data.inner.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount() != referralNet
+                            }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -149,6 +175,8 @@ class ReferralsAdapter(
         ) {
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
+            private val container = itemView.codeContainer
+
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Code.LoadingCode -> {
@@ -159,6 +187,17 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
+                        container.setHapticClickListener {
+                            code.context.copyToClipboard(data.code)
+                            Snackbar
+                                .make(
+                                    code,
+                                    R.string.referrals_active__toast_text,
+                                    Snackbar.LENGTH_SHORT
+                                )
+                                .setAnchorView(R.id.bottomTabs)
+                                .show()
+                        }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }

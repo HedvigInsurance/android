@@ -96,7 +96,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             if (successData.referralInformation.invitations.isEmpty() && successData.referralInformation.referredBy == null) {
                 (invites.adapter as? ReferralsAdapter)?.items = listOf(
                     ReferralsModel.Title,
-                    ReferralsModel.Header.LoadedEmptyHeader,
+                    ReferralsModel.Header.LoadedEmptyHeader(successData),
                     ReferralsModel.Code.LoadedCode(successData.referralInformation.campaign.code)
                 )
                 return@observe
@@ -104,7 +104,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
             val items = mutableListOf(
                 ReferralsModel.Title,
-                ReferralsModel.Header.LoadedHeader(Unit),
+                ReferralsModel.Header.LoadedHeader(successData),
                 ReferralsModel.Code.LoadedCode(successData.referralInformation.campaign.code),
                 ReferralsModel.InvitesHeader
             )

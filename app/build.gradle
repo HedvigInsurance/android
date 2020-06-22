@@ -212,6 +212,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'com.agoda.kakao:kakao:2.3.2'
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"
