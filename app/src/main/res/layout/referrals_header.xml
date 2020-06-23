@@ -152,7 +152,6 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:backgroundTint="?colorSecondary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

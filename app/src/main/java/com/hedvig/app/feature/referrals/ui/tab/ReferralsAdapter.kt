@@ -1,19 +1,24 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
+import android.animation.ValueAnimator
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.PieChartSegment
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
@@ -21,6 +26,7 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.safeLet
 import e
 import kotlinx.android.synthetic.main.referrals_code.view.*
 import kotlinx.android.synthetic.main.referrals_error.view.*
@@ -111,8 +117,10 @@ class ReferralsAdapter(
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
+                        (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
                         piechart.segments = listOf(
                             PieChartSegment(
+                                LOADING_SLICE,
                                 100f,
                                 piechart.context.colorAttr(R.attr.colorPlaceholder)
                             )
@@ -125,18 +133,7 @@ class ReferralsAdapter(
                         otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedEmptyHeader -> {
-                        piechart.reveal(
-                            listOf(
-                                PieChartSegment(
-                                    95f,
-                                    piechart.context.compatColor(R.color.yellow) // TODO: The correct color
-                                )
-                            )
-                        )
-                        grossPrice.show()
-                        grossPrice.text =
-                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                                ?.format(grossPrice.context)
+                        bindPiechart(data.inner)
                         placeholders.remove()
                         emptyTexts.show()
                         loadedData.remove()
@@ -144,9 +141,7 @@ class ReferralsAdapter(
                         otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
-                        grossPrice.show()
-                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                            ?.format(grossPrice.context)?.let { grossPrice.text = it }
+                        bindPiechart(data.inner)
                         placeholders.remove()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
@@ -165,6 +160,87 @@ class ReferralsAdapter(
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
                     }
                 }
+            }
+
+            private fun bindPiechart(data: ReferralsQuery.Data) {
+                (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
+                grossPrice.show()
+                val grossPriceAmount =
+                    data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                grossPriceAmount?.let { grossPrice.text = it.format(grossPrice.context) }
+                val potentialDiscountAmount =
+                    data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                val currentDiscountAmount =
+                    data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+
+
+                safeLet(
+                    grossPriceAmount,
+                    potentialDiscountAmount,
+                    currentDiscountAmount
+                ) { gpa, pda, cda ->
+                    val pdaAsPercentage =
+                        (pda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
+                    val cdaAsPercentage =
+                        (cda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
+                    val rest = 100f - (pdaAsPercentage + cdaAsPercentage)
+
+                    val segments = listOfNotNull(
+                        if (cdaAsPercentage != 0f) {
+                            PieChartSegment(
+                                CURRENT_DISCOUNT_SLICE,
+                                cdaAsPercentage,
+                                piechart.context.colorAttr(R.attr.colorOnPrimary)
+                            )
+                        } else {
+                            null
+                        },
+                        PieChartSegment(
+                            POTENTIAL_DISCOUNT_SLICE,
+                            pdaAsPercentage,
+                            Color.RED
+                        ),
+                        PieChartSegment(
+                            REST_SLICE,
+                            rest,
+                            Color.BLUE
+                        )
+                    )
+                    piechart.reveal(
+                        segments
+                    ) {
+                        val animator = ValueAnimator.ofFloat(1f, 0f).apply {
+                            duration = 800
+                            repeatCount = ValueAnimator.INFINITE
+                            repeatMode = ValueAnimator.REVERSE
+                            interpolator = AccelerateDecelerateInterpolator()
+                            addUpdateListener { va ->
+                                piechart.segments = segments.map { segment ->
+                                    if (segment.color == Color.RED) {
+                                        return@map segment.copy(
+                                            color = boundedColorLerp(
+                                                Color.RED,
+                                                Color.TRANSPARENT,
+                                                va.animatedFraction
+                                            )
+                                        )
+                                    }
+                                    segment
+                                }
+                            }
+                            start()
+                        }
+                        piechart.setTag(R.id.slice_blink_animation, animator)
+                        piechart.doOnDetach { animator.cancel() }
+                    }
+                }
+            }
+
+            companion object {
+                private const val CURRENT_DISCOUNT_SLICE = 0
+                private const val POTENTIAL_DISCOUNT_SLICE = 1
+                private const val REST_SLICE = 2
+                private const val LOADING_SLICE = 3
             }
         }
 

@@ -26,8 +26,8 @@ class PieChartView @JvmOverloads constructor(
             invalidate()
         }
 
-    fun reveal(finalSegments: List<PieChartSegment>) {
-        SpringAnimation(FloatValueHolder())
+    fun reveal(finalSegments: List<PieChartSegment>, onEnd: (() -> Unit)? = null) {
+        val animation = SpringAnimation(FloatValueHolder())
             .apply {
                 spring = SpringForce().apply {
                     dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
@@ -38,7 +38,15 @@ class PieChartView @JvmOverloads constructor(
                 segments = finalSegments
                     .map { it.copy(percentage = it.percentage * value / 100) }
             }
-            .animateToFinalPosition(ONE_HUNDRED_PERCENT)
+
+        onEnd?.let {
+            animation.addEndListener { _, canceled, _, _ ->
+                if (!canceled) {
+                    onEnd()
+                }
+            }
+        }
+        animation.animateToFinalPosition(ONE_HUNDRED_PERCENT)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -100,6 +108,7 @@ class PieChartView @JvmOverloads constructor(
 }
 
 data class PieChartSegment(
+    val id: Int,
     val percentage: Float,
     @ColorInt val color: Int
 )
