@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.tab
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.hedvig.app.BuildConfig
@@ -30,16 +31,26 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val referralsViewModel: ReferralsViewModel by viewModel()
 
+    private var shareHeight = 0
+    private var bottomTabInset = 0
+    private var shareInitialBottomMargin = 0
+    private var invitesInitialBottomPadding = 0
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val shareInitialBottomMargin = share.marginBottom
-        val invitesInitialBottomPadding = invites.paddingBottom
+        shareInitialBottomMargin = share.marginBottom
+        invitesInitialBottomPadding = invites.paddingBottom
 
-        loggedInViewModel.bottomTabInset.observe(this) { bti ->
-            bti?.let { bottomTabInset ->
-                share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
-                invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + share.height)
+        share.doOnLayout {
+            shareHeight = it.height
+            applyInsets()
+        }
+
+        loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bti ->
+            bti?.let {
+                bottomTabInset = it
+                applyInsets()
             }
         }
 
@@ -50,7 +61,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             referralsViewModel.load()
         }
 
-        referralsViewModel.data.observe(this) { data ->
+        referralsViewModel.data.observe(viewLifecycleOwner) { data ->
             if (data == null) {
                 return@observe
             }
@@ -122,5 +133,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             (invites.adapter as? ReferralsAdapter)?.items = items
 
         }
+    }
+
+    private fun applyInsets() {
+        share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
+        invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
     }
 }
