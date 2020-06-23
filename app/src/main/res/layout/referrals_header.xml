@@ -106,15 +106,21 @@
         app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel"
         tools:text="-10 kr" />
 
-    <ImageView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/discountPerMonthPlaceholder"
-        android:layout_width="@dimen/headline_5_placeholder_width"
-        android:layout_height="@dimen/headline_5_placeholder_height"
-        android:layout_marginTop="@dimen/base_margin"
-        android:contentDescription="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/discountPerMonthLabel"
-        app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel"
-        app:srcCompat="@drawable/placeholder_rectangle" />
+        app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel">
+
+        <ImageView
+            android:layout_width="@dimen/headline_5_placeholder_width"
+            android:layout_height="@dimen/headline_5_placeholder_height"
+            android:layout_marginTop="@dimen/base_margin"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/placeholder_rectangle" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <TextView
         android:id="@+id/newPriceLabel"
@@ -136,15 +142,21 @@
         app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
         tools:text="339 kr" />
 
-    <ImageView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/newPricePlaceholder"
-        android:layout_width="@dimen/headline_5_placeholder_width"
-        android:layout_height="@dimen/headline_5_placeholder_height"
-        android:layout_marginTop="@dimen/base_margin"
-        android:contentDescription="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@id/newPriceLabel"
-        app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
-        app:srcCompat="@drawable/placeholder_rectangle" />
+        app:layout_constraintTop_toBottomOf="@id/newPriceLabel">
+
+        <ImageView
+            android:layout_width="@dimen/headline_5_placeholder_width"
+            android:layout_height="@dimen/headline_5_placeholder_height"
+            android:layout_marginTop="@dimen/base_margin"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/placeholder_rectangle" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:id="@+id/otherDiscountBox"

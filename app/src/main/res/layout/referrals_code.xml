@@ -35,16 +35,22 @@
             tools:text="HJQ081"
             tools:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/codePlaceholder"
-            android:layout_width="@dimen/subtitle_1_placeholder_width"
-            android:layout_height="@dimen/subtitle_1_placeholder_height"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:layout_marginBottom="@dimen/base_margin_double"
-            android:contentDescription="@null"
-            app:srcCompat="@drawable/placeholder_rectangle"
-            tools:visibility="gone" />
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/codePlaceholder"
+                android:layout_width="@dimen/subtitle_1_placeholder_width"
+                android:layout_height="@dimen/subtitle_1_placeholder_height"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginBottom="@dimen/base_margin_double"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/placeholder_rectangle"
+                tools:visibility="gone" />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
     </com.hedvig.app.ui.view.HedvigCardView>
 
