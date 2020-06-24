@@ -107,6 +107,7 @@ class ReferralsAdapter(
             private val emptyTexts = itemView.emptyTexts
             private val nonEmptyTexts = itemView.nonEmptyTexts
             private val placeholders = itemView.placeholders
+            private val piechartPlaceholder = itemView.piechartPlaceholder
             private val loadedData = itemView.loadedData
             private val piechart = itemView.piechart
             private val grossPrice = itemView.grossPrice
@@ -125,6 +126,7 @@ class ReferralsAdapter(
                                 piechart.context.colorAttr(R.attr.colorPlaceholder)
                             )
                         )
+                        piechartPlaceholder.showShimmer(true)
                         grossPrice.hide()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
@@ -164,6 +166,7 @@ class ReferralsAdapter(
 
             private fun bindPiechart(data: ReferralsQuery.Data) {
                 (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
+                piechartPlaceholder.hideShimmer()
                 grossPrice.show()
                 val grossPriceAmount =
                     data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
