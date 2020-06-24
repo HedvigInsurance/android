@@ -69,6 +69,14 @@
             android:text="Open an logged in without Welcome Screen" />
 
         <Button
+            android:id="@+id/notifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margin_double"
+            android:text="Test notifications" />
+
+        <Button
             android:id="@+id/openConnectPayment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -147,14 +155,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="Open language selector" />
-
-        <Button
-            android:id="@+id/sendReferralsEnabledNotification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:text="Send referrals enabled notification" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
