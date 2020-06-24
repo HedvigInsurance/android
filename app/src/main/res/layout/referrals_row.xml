@@ -26,29 +26,41 @@
         app:constraint_referenced_ids="iconPlaceholder,textPlaceholder"
         tools:visibility="gone" />
 
-    <ImageView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/iconPlaceholder"
-        android:layout_width="@dimen/referral_icon_placeholder_size"
-        android:layout_height="@dimen/referral_icon_placeholder_size"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:contentDescription="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/placeholder_circle" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
+        <ImageView
+            android:layout_width="@dimen/referral_icon_placeholder_size"
+            android:layout_height="@dimen/referral_icon_placeholder_size"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/placeholder_circle" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/textPlaceholder"
-        android:layout_width="@dimen/subtitle_1_placeholder_width"
-        android:layout_height="@dimen/subtitle_1_placeholder_height"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:contentDescription="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/iconPlaceholder"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/placeholder_rectangle" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="@dimen/subtitle_1_placeholder_width"
+            android:layout_height="@dimen/subtitle_1_placeholder_height"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin_triple"
+            android:layout_marginBottom="@dimen/base_margin_triple"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/placeholder_rectangle" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <LinearLayout
         android:id="@+id/texts"
