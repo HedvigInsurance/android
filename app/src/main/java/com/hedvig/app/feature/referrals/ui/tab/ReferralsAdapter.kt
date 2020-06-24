@@ -266,7 +266,7 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
-                        container.setHapticClickListener {
+                        container.setOnLongClickListener {
                             code.context.copyToClipboard(data.code)
                             Snackbar
                                 .make(
@@ -276,6 +276,7 @@ class ReferralsAdapter(
                                 )
                                 .setAnchorView(R.id.bottomTabs)
                                 .show()
+                            true
                         }
                     }
                     else -> {

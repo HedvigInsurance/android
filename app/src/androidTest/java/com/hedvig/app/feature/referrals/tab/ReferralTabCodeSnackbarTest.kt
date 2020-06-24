@@ -82,7 +82,7 @@ class ReferralTabCodeSnackbarTest : KoinTest {
                         code {
                             isVisible()
                             hasText("TEST123")
-                            click()
+                            longClick()
                         }
                     }
                 }
