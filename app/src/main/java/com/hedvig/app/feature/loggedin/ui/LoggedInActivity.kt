@@ -27,6 +27,7 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
+import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
@@ -41,6 +42,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -58,6 +60,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
 
     private lateinit var referralTermsUrl: String
+    private lateinit var referralsIncentive: MonetaryAmount
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,7 +152,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 startActivity(
                     ReferralsInformationActivity.newInstance(
                         this,
-                        referralTermsUrl
+                        referralTermsUrl,
+                        referralsIncentive
                     )
                 )
             }
@@ -221,6 +225,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
 
                 referralTermsUrl = d.referralTerms.url
+                d.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                    ?.let { referralsIncentive = it }
             }
         }
 

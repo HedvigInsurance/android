@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -15,15 +16,20 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_referrals_information.*
+import org.javamoney.moneta.Money
+import java.math.BigDecimal
+import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val termsUrl = intent.getStringExtra(TERMS_URL)
+        val incentiveAmount = intent.getSerializableExtra(INCENTIVE_AMOUNT) as? BigDecimal
+        val incentiveCurrency = intent.getStringExtra(INCENTIVE_CURRENCY)
 
-        if (termsUrl == null) {
-            e { "Programmer error: TERMS_URL not provided to ${this.javaClass.name}" }
+        if (termsUrl == null || incentiveAmount == null || incentiveCurrency == null) {
+            e { "Programmer error: TERMS_URL || INCENTIVE_AMOUNT || INCENTIVE_CURRENCY not provided to ${this.javaClass.name}" }
             return
         }
 
@@ -33,11 +39,16 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
+        toolbar.setNavigationOnClickListener { onBackPressed() }
+
         scrollView.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
         }
 
         scrollView.setupToolbarScrollListener(toolbar)
+
+        val incentive = Money.of(incentiveAmount, incentiveCurrency)
+        body.text = getString(R.string.referrals_info_sheet_body, incentive.format(this))
 
         val termsAsUri = Uri.parse(termsUrl)
 
@@ -50,9 +61,18 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
 
     companion object {
         private const val TERMS_URL = "TERMS_URL"
-        fun newInstance(context: Context, termsUrl: String) =
+
+        private const val INCENTIVE_AMOUNT = "INCENTIVE_AMOUNT"
+        private const val INCENTIVE_CURRENCY = "INCENTIVE_CURRENCY"
+
+        fun newInstance(context: Context, termsUrl: String, incentive: MonetaryAmount) =
             Intent(context, ReferralsInformationActivity::class.java).apply {
                 putExtra(TERMS_URL, termsUrl)
+                putExtra(
+                    INCENTIVE_AMOUNT,
+                    incentive.number.numberValueExact(BigDecimal::class.java)
+                )
+                putExtra(INCENTIVE_CURRENCY, incentive.currency.currencyCode)
             }
     }
 }

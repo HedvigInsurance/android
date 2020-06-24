@@ -107,6 +107,22 @@ class ReferralTabCodeSnackbarTest : KoinTest {
             ),
             referralTerms = LoggedInQuery.ReferralTerms(
                 url = "https://www.example.com"
+            ),
+            referralInformation = LoggedInQuery.ReferralInformation(
+                campaign = LoggedInQuery.Campaign(
+                    incentive = LoggedInQuery.Incentive(
+                        asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
+                            amount = LoggedInQuery.Amount(
+                                fragments = LoggedInQuery.Amount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
         )
 
