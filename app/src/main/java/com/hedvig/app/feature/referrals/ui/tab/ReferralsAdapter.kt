@@ -193,7 +193,7 @@ class ReferralsAdapter(
                             PieChartSegment(
                                 CURRENT_DISCOUNT_SLICE,
                                 cdaAsPercentage,
-                                piechart.context.colorAttr(R.attr.colorOnPrimary)
+                                piechart.context.colorAttr(R.attr.colorSurface)
                             )
                         } else {
                             null
@@ -212,8 +212,8 @@ class ReferralsAdapter(
                     piechart.reveal(
                         segments
                     ) {
-                        val animator = ValueAnimator.ofFloat(1f, 0f).apply {
-                            duration = 800
+                        ValueAnimator.ofFloat(1f, 0f).apply {
+                            duration = SLICE_BLINK_DURATION
                             repeatCount = ValueAnimator.INFINITE
                             repeatMode = ValueAnimator.REVERSE
                             interpolator = AccelerateDecelerateInterpolator()
@@ -231,10 +231,10 @@ class ReferralsAdapter(
                                     segment
                                 }
                             }
+                            piechart.setTag(R.id.slice_blink_animation, this)
+                            piechart.doOnDetach { cancel() }
                             start()
                         }
-                        piechart.setTag(R.id.slice_blink_animation, animator)
-                        piechart.doOnDetach { animator.cancel() }
                     }
                 }
             }
@@ -244,6 +244,8 @@ class ReferralsAdapter(
                 private const val POTENTIAL_DISCOUNT_SLICE = 1
                 private const val REST_SLICE = 2
                 private const val LOADING_SLICE = 3
+
+                private const val SLICE_BLINK_DURATION = 800L
             }
         }
 
