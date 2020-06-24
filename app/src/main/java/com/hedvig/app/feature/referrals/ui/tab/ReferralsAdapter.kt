@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.referrals_error.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.placeholders
 import kotlinx.android.synthetic.main.referrals_row.view.*
+import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit
@@ -109,8 +110,9 @@ class ReferralsAdapter(
             private val placeholders = itemView.placeholders
             private val piechartPlaceholder = itemView.piechartPlaceholder
             private val loadedData = itemView.loadedData
-            private val piechart = itemView.piechart
             private val grossPrice = itemView.grossPrice
+            private val piechart = itemView.piechart
+            private val emptyBody = itemView.emptyBody
             private val discountPerMonth = itemView.discountPerMonth
             private val newPrice = itemView.newPrice
             private val otherDiscountBox = itemView.otherDiscountBox
@@ -137,6 +139,15 @@ class ReferralsAdapter(
                     is ReferralsModel.Header.LoadedEmptyHeader -> {
                         bindPiechart(data.inner)
                         placeholders.remove()
+                        data.inner.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.let { incentiveAmount ->
+                                emptyBody.text = emptyBody.context.getString(
+                                    R.string.referrals_empty_body,
+                                    incentiveAmount.format(emptyBody.context),
+                                    Money.of(0, incentiveAmount.currency.currencyCode)
+                                        .format(emptyBody.context)
+                                )
+                            }
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
