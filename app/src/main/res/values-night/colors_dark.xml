@@ -10,7 +10,7 @@
     <item name="colorSurface" type="color">@color/hedvig_off_black</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
     <item name="colorSurfaceOnSurface" type="color">#505050</item>
-    <item name="colorSecondary" type="color">#BE9BF3</item>
+    <item name="colorSecondary" type="color">@color/lavender_400</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
     <item name="colorPlaceholder" type="color">#45FAFAFA</item>
 
@@ -28,6 +28,8 @@
     <item name="colorChatUserBackground" type="color">@color/hedvig_off_black</item>
     <item name="colorChatInputButton" type="color">@color/button_background_dark</item>
     <item name="colorChatHedvigBackground" type="color">@color/button_background_dark</item>
+
+    <item name="colorInfoCardSurface" type="color">@color/lavender_900</item>
 
     <!-- Compatibility with Adyen -->
     <item name="primaryColor" type="color">@color/colorPrimary</item>

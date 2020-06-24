@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
 import android.animation.ValueAnimator
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
@@ -188,6 +188,10 @@ class ReferralsAdapter(
                         (cda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
                     val rest = 100f - (pdaAsPercentage + cdaAsPercentage)
 
+                    val potentialDiscountColor =
+                        piechart.context.compatColor(R.color.forever_orange_300)
+                    val restColor = piechart.context.compatColor(R.color.forever_orange_500)
+
                     val segments = listOfNotNull(
                         if (cdaAsPercentage != 0f) {
                             PieChartSegment(
@@ -201,12 +205,12 @@ class ReferralsAdapter(
                         PieChartSegment(
                             POTENTIAL_DISCOUNT_SLICE,
                             pdaAsPercentage,
-                            Color.RED
+                            potentialDiscountColor
                         ),
                         PieChartSegment(
                             REST_SLICE,
                             rest,
-                            Color.BLUE
+                            restColor
                         )
                     )
                     piechart.reveal(
@@ -218,12 +222,12 @@ class ReferralsAdapter(
                             repeatMode = ValueAnimator.REVERSE
                             interpolator = AccelerateDecelerateInterpolator()
                             addUpdateListener { va ->
-                                piechart.segments = segments.map { segment ->
-                                    if (segment.color == Color.RED) {
+                                piechart.segments = piechart.segments.map { segment ->
+                                    if (segment.id == POTENTIAL_DISCOUNT_SLICE) {
                                         return@map segment.copy(
                                             color = boundedColorLerp(
-                                                Color.RED,
-                                                Color.TRANSPARENT,
+                                                potentialDiscountColor,
+                                                restColor,
                                                 va.animatedFraction
                                             )
                                         )
