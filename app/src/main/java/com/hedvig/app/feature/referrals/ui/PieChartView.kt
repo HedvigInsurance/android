@@ -81,7 +81,7 @@ class PieChartView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        var startPosition = 270f
+        var startPosition = ANGLE_UP
 
         segments.forEach { segment ->
             val sweep = segment.percentage * DEGREES_PER_PERCENT_RATIO
@@ -104,6 +104,7 @@ class PieChartView @JvmOverloads constructor(
     companion object {
         private const val ONE_HUNDRED_PERCENT = 100f
         private const val DEGREES_PER_PERCENT_RATIO = 3.6f
+        private const val ANGLE_UP = 270f
     }
 }
 
