@@ -78,6 +78,10 @@ object ReferralsNotificationManager {
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.getString(R.string.referrals_notification_feature_added_title))
             .setContentText(context.getString(R.string.referrals_notification_feature_added_description))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(context.getString(R.string.referrals_notification_feature_added_description))
+            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setChannelId(REFERRAL_CHANNEL_ID)
