@@ -272,6 +272,7 @@ class ReferralsAdapter(
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
             private val container = itemView.codeContainer
+            private val footnote = itemView.codeFootnote
 
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
@@ -282,9 +283,9 @@ class ReferralsAdapter(
                     is ReferralsModel.Code.LoadedCode -> {
                         placeholder.remove()
                         code.show()
-                        code.text = data.code
+                        code.text = data.inner.referralInformation.campaign.code
                         container.setOnLongClickListener {
-                            code.context.copyToClipboard(data.code)
+                            code.context.copyToClipboard(data.inner.referralInformation.campaign.code)
                             Snackbar
                                 .make(
                                     code,
@@ -295,6 +296,13 @@ class ReferralsAdapter(
                                 .show()
                             true
                         }
+                        data.inner.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.let { incentiveAmount ->
+                                footnote.text = footnote.resources.getString(
+                                    R.string.referrals_empty_code_footer,
+                                    incentiveAmount.format(footnote.context)
+                                )
+                            }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }

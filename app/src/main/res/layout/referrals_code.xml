@@ -61,8 +61,8 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:text="@string/referrals_empty.code.footer"
         android:textAlignment="center"
-        android:textAppearance="?textAppearanceCaption" />
+        android:textAppearance="?textAppearanceCaption"
+        tools:text="@string/referrals_empty.code.footer" />
 
 </LinearLayout>
