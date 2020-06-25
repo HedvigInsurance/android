@@ -25,6 +25,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                             .putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
                     )
                 },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Notifications-gallery") {
+                    startActivity(Intent(this, NotificationsActivity::class.java))
+                },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
                 },

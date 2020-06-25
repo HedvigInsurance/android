@@ -9,28 +9,22 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.referrals.ui.ReferralsActivatedActivity
-import com.hedvig.app.service.push.PushNotificationService
 import com.hedvig.app.service.push.setupNotificationChannel
-import com.hedvig.app.util.safeLet
 
 object ReferralsNotificationManager {
     fun sendReferralNotification(context: Context, remoteMessage: RemoteMessage) {
         createChannel(context)
 
-        val referralName =
-            remoteMessage.data[PushNotificationService.DATA_MESSAGE_REFERRED_SUCCESS_NAME]
-        val referralIncentive =
-            remoteMessage.data[PushNotificationService.DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT]
-        val referralsIntent = safeLet(referralName, referralIncentive) { name, incentive ->
-            ReferralsSuccessfulInviteActivity.newInstance(context, name, incentive)
-        } ?: ReferralsSuccessfulInviteActivity.newInstance(context)
-
         val pendingIntent: PendingIntent? = TaskStackBuilder
             .create(context)
             .run {
-                addNextIntentWithParentStack(referralsIntent)
+                addNextIntentWithParentStack(
+                    LoggedInActivity.newInstance(
+                        context,
+                        initialTab = LoggedInTabs.REFERRALS
+                    )
+                )
                 getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
             }
 
@@ -45,6 +39,9 @@ object ReferralsNotificationManager {
             .setAutoCancel(true)
             .setChannelId(REFERRAL_CHANNEL_ID)
             .setContentIntent(pendingIntent)
+
+        val referralName =
+            remoteMessage.data[DATA_MESSAGE_REFERRED_SUCCESS_NAME]
 
         val contentText = referralName?.let {
             context.resources.getString(
@@ -81,6 +78,10 @@ object ReferralsNotificationManager {
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.getString(R.string.referrals_notification_feature_added_title))
             .setContentText(context.getString(R.string.referrals_notification_feature_added_description))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(context.getString(R.string.referrals_notification_feature_added_description))
+            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setChannelId(REFERRAL_CHANNEL_ID)
@@ -104,4 +105,6 @@ object ReferralsNotificationManager {
     private const val REFERRAL_NOTIFICATION_ID = 2
 
     private const val REFERRALS_ENABLED_NOTIFICATION_ID = 8
+
+    internal const val DATA_MESSAGE_REFERRED_SUCCESS_NAME = "DATA_MESSAGE_REFERRED_SUCCESS_NAME"
 }

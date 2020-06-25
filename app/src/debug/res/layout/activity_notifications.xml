@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".DevelopmentActivity"
     tools:itemCount="3"
-    tools:listitem="@layout/development_row" />
+    tools:listitem="@layout/notification_row">
+
+</androidx.recyclerview.widget.RecyclerView>
