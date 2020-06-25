@@ -84,7 +84,7 @@
                     android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginTop="@dimen/base_margin_triple"
                     android:text="@string/PROFILE_MY_INFO_SECTION_TITLE_CONTACT_DETAILS"
-                    android:textAppearance="?textAppearanceHeadline6" />
+                    android:textAppearance="?textAppearanceSubtitle1" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@id/emailInputContainer"

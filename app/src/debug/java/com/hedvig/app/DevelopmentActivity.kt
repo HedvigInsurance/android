@@ -16,7 +16,6 @@ import com.hedvig.app.feature.offer.OfferActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.ratings.RatingsDialog
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
-import com.hedvig.app.feature.referrals.ReferralsSuccessfulInviteActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.extensions.getAuthenticationToken
@@ -93,9 +92,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         findViewById<Button>(R.id.openReferralReceiver).setHapticClickListener {
             startActivity(ReferralsReceiverActivity.newInstance(this, "CODE12", "10.00"))
         }
-        findViewById<Button>(R.id.openReferralNotification).setHapticClickListener {
-            startActivity(ReferralsSuccessfulInviteActivity.newInstance(this, "Fredrik", "10.00"))
-        }
 
         findViewById<Button>(R.id.openNativeOffer).setHapticClickListener {
             startActivity(Intent(this, OfferActivity::class.java))
@@ -132,6 +128,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
         findViewById<Button>(R.id.saveToken).setHapticClickListener {
             setAuthenticationToken(findViewById<TextInputEditText>(R.id.token).text.toString())
             makeToast("Token saved")
+        }
+
+        notifications.setHapticClickListener {
+            startActivity(Intent(this, NotificationsActivity::class.java))
         }
     }
 

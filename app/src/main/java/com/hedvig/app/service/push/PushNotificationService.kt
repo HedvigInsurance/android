@@ -52,6 +52,8 @@ class PushNotificationService : FirebaseMessagingService() {
                 .sendChatNotification(this)
             NOTIFICATION_TYPE_REFERRAL_SUCCESS -> ReferralsNotificationManager
                 .sendReferralNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager
+                .sendReferralsEnabledNotification(this)
             NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> PaymentNotificationManager
                 .sendDirectDebitNotification(this)
             NOTIFICATION_TYPE_PAYMENT_FAILED -> PaymentNotificationManager
@@ -77,19 +79,13 @@ class PushNotificationService : FirebaseMessagingService() {
 
         const val NOTIFICATION_TYPE_KEY = "TYPE"
         const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
+
         const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
+        const val NOTIFICATION_TYPE_REFERRALS_ENABLED = "REFERRALS_ENABLED"
+
         const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
 
-        /*
-                const val NOTIFICATION_TYPE_CLAIM_PAID = "CLAIM_PAID"
-                const val NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED = "INSURANCE_POLICY_UPDATED"
-                const val NOTIFICATION_TYPE_INSURANCE_RENEWED = "INSURANCE_RENEWED"
-        */
         const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
-
-        const val DATA_MESSAGE_REFERRED_SUCCESS_NAME = "DATA_MESSAGE_REFERRED_SUCCESS_NAME"
-        const val DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT =
-            "DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT"
     }
 }

@@ -7,10 +7,9 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import e
 import kotlinx.coroutines.launch
 
-class ReferralViewModel(
+class RedeemCodeViewModel(
     private val referralRepository: ReferralRepository
-) :
-    ViewModel() {
+) : ViewModel() {
 
     val redeemCodeStatus: MutableLiveData<RedeemReferralCodeMutation.Data> = MutableLiveData()
 

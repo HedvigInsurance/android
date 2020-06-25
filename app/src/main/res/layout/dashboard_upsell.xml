@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/base_margin_triple"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="Worried about leaving the house?" />
 
             <TextView

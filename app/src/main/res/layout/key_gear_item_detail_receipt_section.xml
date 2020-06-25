@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,6 +55,6 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:text="@string/KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER"
-        android:textAppearance="?textAppearanceBody3" />
+        android:textAppearance="?textAppearanceCaption" />
 
 </LinearLayout>

@@ -1,11 +1,16 @@
 fragment CostFragment on InsuranceCost {
   monthlyDiscount {
-    amount
+    ...MonetaryAmountFragment
   }
   monthlyNet {
-    amount
+    ...MonetaryAmountFragment
   }
   monthlyGross {
-    amount
+    ...MonetaryAmountFragment
   }
+}
+
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
 }

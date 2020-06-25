@@ -19,7 +19,7 @@
         android:gravity="center"
         android:paddingBottom="@dimen/base_margin_double"
         android:text="@string/BANK_ID_AUTH_TITLE_INITIATED"
-        android:textAppearance="?textAppearanceHeadline6"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="@string/BANK_ID_NOT_INSTALLED" />
 
     <ImageView

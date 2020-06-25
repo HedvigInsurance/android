@@ -1,0 +1,19 @@
+query LoggedInQuery($locale: Locale!) {
+  member {
+    features
+  }
+  referralTerms(locale: $locale) {
+    url
+  }
+  referralInformation {
+    campaign {
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+  }
+}

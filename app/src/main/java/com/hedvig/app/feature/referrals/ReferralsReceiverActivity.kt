@@ -16,7 +16,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsReceiverActivity : BaseActivity() {
 
-    private val referralViewModel: ReferralViewModel by viewModel()
+    private val referralViewModel: RedeemCodeViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -31,7 +31,7 @@
             android:id="@id/profile_menu_row_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             tools:text="Mitt hem" />
 
         <TextView

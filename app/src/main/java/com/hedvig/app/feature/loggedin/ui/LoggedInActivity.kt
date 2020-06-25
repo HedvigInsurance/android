@@ -14,30 +14,25 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.referrals.ReferralBottomSheet
+import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.extensions.monthlyCostDeductionIncentive
+import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -47,6 +42,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -63,6 +59,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private var lastLoggedInTab = LoggedInTabs.DASHBOARD
 
+    private lateinit var referralTermsUrl: String
+    private lateinit var referralsIncentive: MonetaryAmount
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,7 +71,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         bottomTabs.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            loggedInViewModel.updateBottomTabInset(view.measuredHeight)
         }
 
         setSupportActionBar(hedvigToolbar)
@@ -91,7 +91,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
             tabContentContainer.setCurrentItem(id.ordinal, false)
             setupToolBar(id)
-            setupFloatingButton(id)
             true
         }
 
@@ -108,22 +107,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     loggedInRoot.postDelayed({
                         loggedInRoot.show()
                     }, resources.getInteger(R.integer.slide_in_animation_duration).toLong())
-                } else {
-                    loggedInRoot.show()
                 }
             }
             intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
-        } else {
-            loggedInRoot.show()
         }
 
         bindData()
         setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
-    }
-
-    private fun setupFloatingButton(id: LoggedInTabs) = when (id) {
-        LoggedInTabs.REFERRALS -> referralButton.show()
-        else -> referralButton.remove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -159,11 +149,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 startActivity(SettingsActivity.newInstance(this))
             }
             LoggedInTabs.REFERRALS -> {
-                profileViewModel.data.value?.referralInformation?.campaign?.incentive?.asMonthlyCostDeduction?.amount?.amount?.toBigDecimal()
-                    ?.toInt()?.toString()?.let { amount ->
-                        ReferralBottomSheet.newInstance(amount)
-                            .show(supportFragmentManager, ReferralBottomSheet.TAG)
-                    }
+                startActivity(
+                    ReferralsInformationActivity.newInstance(
+                        this,
+                        referralTermsUrl,
+                        referralsIncentive
+                    )
+                )
             }
         }
         return true
@@ -211,11 +203,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
-        loggedInViewModel.data.observe(this) { features ->
-            features?.let { f ->
+        loggedInViewModel.data.observe(this) { data ->
+            data?.let { d ->
                 if (bottomTabs.menu.isEmpty()) {
-                    val keyGearEnabled = isDebug() || f.contains(Feature.KEYGEAR)
-                    val referralsEnabled = isDebug() || f.contains(Feature.REFERRALS)
+                    val keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
+                    val referralsEnabled =
+                        isDebug() || d.member.features.contains(Feature.REFERRALS)
 
                     val menuId = when {
                         keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
@@ -224,18 +217,20 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         else -> R.menu.logged_in_menu
                     }
                     bottomTabs.inflateMenu(menuId)
+                    val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                        ?: LoggedInTabs.DASHBOARD
+                    bottomTabs.selectedItemId = initialTab.id()
                     setupToolBar(LoggedInTabs.fromId(bottomTabs.selectedItemId))
+                    loggedInRoot.show()
                 }
+
+                referralTermsUrl = d.referralTerms.url
+                d.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                    ?.let { referralsIncentive = it }
             }
         }
 
         profileViewModel.data.observe(lifecycleOwner = this) { data ->
-            safeLet(
-                data?.referralInformation?.campaign?.monthlyCostDeductionIncentive()?.amount?.amount?.toBigDecimal()
-                    ?.toDouble(),
-                data?.referralInformation?.campaign?.code
-            ) { incentive, code -> bindReferralsButton(incentive, code) }
-
             data?.member?.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
@@ -252,25 +247,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun bindReferralsButton(incentive: Double, code: String) {
-        referralButton.setHapticClickListener {
-            profileTracker.clickReferral(incentive.toInt())
-            showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
-                intent.apply {
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        resources.getString(
-                            R.string.REFERRAL_SMS_MESSAGE,
-                            incentive.toBigDecimal().toInt().toString(),
-                            BuildConfig.REFERRALS_LANDING_BASE_URL + code
-                        )
-                    )
-                    type = "text/plain"
-                }
-            }
-        }
-    }
-
     private fun setupToolBar(id: LoggedInTabs?) {
         if (lastLoggedInTab != id) {
             hedvigToolbar.elevation = 0f
@@ -282,12 +258,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     companion object {
-        fun newInstance(context: Context, withoutHistory: Boolean = false) =
+        private const val INITIAL_TAB = "INITIAL_TAB"
+        fun newInstance(
+            context: Context,
+            withoutHistory: Boolean = false,
+            initialTab: LoggedInTabs = LoggedInTabs.DASHBOARD
+        ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
+                putExtra(INITIAL_TAB, initialTab)
             }
 
         fun isTerminated(contracts: List<DashboardQuery.Contract>) =

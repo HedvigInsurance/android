@@ -23,7 +23,7 @@
             android:layout_marginStart="@dimen/base_margin_double"
             android:layout_marginTop="@dimen/base_margin_double"
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
