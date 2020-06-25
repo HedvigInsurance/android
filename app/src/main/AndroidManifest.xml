@@ -201,15 +201,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.referrals.ReferralsSuccessfulInviteActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:noHistory="true"
-            android:parentActivityName=".SplashActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".LoggedInTerminatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
