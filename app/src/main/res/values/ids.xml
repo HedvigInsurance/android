@@ -90,6 +90,8 @@
     <item name="phoneNumberInputContainer" type="id" />
     <item name="profileReferralRow" type="id" />
     <item name="iconNavigateNext" type="id" />
+
+    <!-- SpringUtils-tags -->
     <item name="translation_x" type="id" />
     <item name="translation_y" type="id" />
     <item name="translation_z" type="id" />
@@ -104,4 +106,7 @@
     <item name="alpha" type="id" />
     <item name="scroll_x" type="id" />
     <item name="scroll_y" type="id" />
+
+    <!-- PieChartView-tags -->
+    <item name="slice_blink_animation" type="id" />
 </resources>

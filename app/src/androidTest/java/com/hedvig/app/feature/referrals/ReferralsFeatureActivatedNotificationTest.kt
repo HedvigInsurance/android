@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
@@ -27,7 +28,7 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
-   
+
     @Before
     fun setup() {
         apolloClientWrapper
@@ -74,6 +75,22 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
             ),
             referralTerms = LoggedInQuery.ReferralTerms(
                 url = "https://www.example.com"
+            ),
+            referralInformation = LoggedInQuery.ReferralInformation(
+                campaign = LoggedInQuery.Campaign(
+                    incentive = LoggedInQuery.Incentive(
+                        asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
+                            amount = LoggedInQuery.Amount(
+                                fragments = LoggedInQuery.Amount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
         )
     }

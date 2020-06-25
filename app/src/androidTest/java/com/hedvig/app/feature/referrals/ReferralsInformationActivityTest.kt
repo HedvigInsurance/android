@@ -12,18 +12,22 @@ import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.agoda.kakao.text.KButton
+import com.agoda.kakao.text.KTextView
 import com.apollographql.apollo.api.toJson
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.hamcrest.CoreMatchers.not
+import org.javamoney.moneta.Money
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -79,6 +83,11 @@ class ReferralsInformationActivityTest : KoinTest {
             )
 
             onScreen<ReferralsInformationScreen> {
+                body {
+                    containsText(
+                        Money.of(10, "SEK").format(ApplicationProvider.getApplicationContext())
+                    )
+                }
                 termsAndConditions { click() }
                 termsAndConditionsIntent {
                     intended()
@@ -97,11 +106,28 @@ class ReferralsInformationActivityTest : KoinTest {
             ),
             referralTerms = LoggedInQuery.ReferralTerms(
                 url = "https://www.example.com"
+            ),
+            referralInformation = LoggedInQuery.ReferralInformation(
+                campaign = LoggedInQuery.Campaign(
+                    incentive = LoggedInQuery.Incentive(
+                        asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
+                            amount = LoggedInQuery.Amount(
+                                fragments = LoggedInQuery.Amount.Fragments(
+                                    MonetaryAmountFragment(
+                                        amount = "10.00",
+                                        currency = "SEK"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
         )
     }
 
     class ReferralsInformationScreen : Screen<ReferralsInformationScreen>() {
+        val body = KTextView { withId(R.id.body) }
         val termsAndConditions = KButton { withId(R.id.termsAndConditions) }
         val termsAndConditionsIntent = KIntent {
             hasAction(Intent.ACTION_VIEW)
