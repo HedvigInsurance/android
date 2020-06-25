@@ -34,4 +34,14 @@
     <color name="hedvig_light_gray">#eaeaea</color>
     <color name="hedvig_dark_gray">#505050</color>
     <color name="hedvig_off_black">#1b1b1b</color>
+
+    <color name="lavender_100">#F4EEFD</color>
+    <color name="lavender_300">#C9ABF5</color>
+    <color name="lavender_400">#BE9BF3</color>
+    <color name="lavender_600">#875EC5</color>
+    <color name="lavender_900">#1C1724</color>
+
+    <color name="forever_orange_300">#FCBA8D</color>
+    <color name="forever_orange_500">#FE9650</color>
+
 </resources>

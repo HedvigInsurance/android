@@ -1,17 +1,24 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
+import android.animation.ValueAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.ui.PieChartSegment
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
@@ -19,12 +26,14 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.safeLet
 import e
 import kotlinx.android.synthetic.main.referrals_code.view.*
 import kotlinx.android.synthetic.main.referrals_error.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.*
 import kotlinx.android.synthetic.main.referrals_header.view.placeholders
 import kotlinx.android.synthetic.main.referrals_row.view.*
+import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit
@@ -99,8 +108,11 @@ class ReferralsAdapter(
             private val emptyTexts = itemView.emptyTexts
             private val nonEmptyTexts = itemView.nonEmptyTexts
             private val placeholders = itemView.placeholders
+            private val piechartPlaceholder = itemView.piechartPlaceholder
             private val loadedData = itemView.loadedData
             private val grossPrice = itemView.grossPrice
+            private val piechart = itemView.piechart
+            private val emptyBody = itemView.emptyBody
             private val discountPerMonth = itemView.discountPerMonth
             private val newPrice = itemView.newPrice
             private val otherDiscountBox = itemView.otherDiscountBox
@@ -108,6 +120,15 @@ class ReferralsAdapter(
             override fun bind(data: ReferralsModel, reload: () -> Unit) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
+                        (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
+                        piechart.segments = listOf(
+                            PieChartSegment(
+                                LOADING_SLICE,
+                                100f,
+                                piechart.context.colorAttr(R.attr.colorPlaceholder)
+                            )
+                        )
+                        piechartPlaceholder.showShimmer(true)
                         grossPrice.hide()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
@@ -116,20 +137,24 @@ class ReferralsAdapter(
                         otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedEmptyHeader -> {
-                        grossPrice.show()
-                        grossPrice.text =
-                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                                ?.format(grossPrice.context)
+                        bindPiechart(data.inner)
                         placeholders.remove()
+                        data.inner.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            ?.let { incentiveAmount ->
+                                emptyBody.text = emptyBody.context.getString(
+                                    R.string.referrals_empty_body,
+                                    incentiveAmount.format(emptyBody.context),
+                                    Money.of(0, incentiveAmount.currency.currencyCode)
+                                        .format(emptyBody.context)
+                                )
+                            }
                         emptyTexts.show()
                         loadedData.remove()
                         nonEmptyTexts.remove()
                         otherDiscountBox.remove()
                     }
                     is ReferralsModel.Header.LoadedHeader -> {
-                        grossPrice.show()
-                        data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                            ?.format(grossPrice.context)?.let { grossPrice.text = it }
+                        bindPiechart(data.inner)
                         placeholders.remove()
                         emptyTexts.remove()
                         nonEmptyTexts.show()
@@ -148,6 +173,94 @@ class ReferralsAdapter(
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
                     }
                 }
+            }
+
+            private fun bindPiechart(data: ReferralsQuery.Data) {
+                (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
+                piechartPlaceholder.hideShimmer()
+                grossPrice.show()
+                val grossPriceAmount =
+                    data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                grossPriceAmount?.let { grossPrice.text = it.format(grossPrice.context) }
+                val potentialDiscountAmount =
+                    data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                val currentDiscountAmount =
+                    data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+
+
+                safeLet(
+                    grossPriceAmount,
+                    potentialDiscountAmount,
+                    currentDiscountAmount
+                ) { gpa, pda, cda ->
+                    val pdaAsPercentage =
+                        (pda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
+                    val cdaAsPercentage =
+                        (cda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
+                    val rest = 100f - (pdaAsPercentage + cdaAsPercentage)
+
+                    val potentialDiscountColor =
+                        piechart.context.compatColor(R.color.forever_orange_300)
+                    val restColor = piechart.context.compatColor(R.color.forever_orange_500)
+
+                    val segments = listOfNotNull(
+                        if (cdaAsPercentage != 0f) {
+                            PieChartSegment(
+                                CURRENT_DISCOUNT_SLICE,
+                                cdaAsPercentage,
+                                piechart.context.colorAttr(R.attr.colorSurface)
+                            )
+                        } else {
+                            null
+                        },
+                        PieChartSegment(
+                            POTENTIAL_DISCOUNT_SLICE,
+                            pdaAsPercentage,
+                            potentialDiscountColor
+                        ),
+                        PieChartSegment(
+                            REST_SLICE,
+                            rest,
+                            restColor
+                        )
+                    )
+                    piechart.reveal(
+                        segments
+                    ) {
+                        ValueAnimator.ofFloat(1f, 0f).apply {
+                            duration = SLICE_BLINK_DURATION
+                            repeatCount = ValueAnimator.INFINITE
+                            repeatMode = ValueAnimator.REVERSE
+                            interpolator = AccelerateDecelerateInterpolator()
+                            addUpdateListener { va ->
+                                piechart.segments = piechart.segments.map { segment ->
+                                    if (segment.id == POTENTIAL_DISCOUNT_SLICE) {
+                                        return@map segment.copy(
+                                            color = boundedColorLerp(
+                                                potentialDiscountColor,
+                                                restColor,
+                                                va.animatedFraction
+                                            )
+                                        )
+                                    }
+                                    segment
+                                }
+                            }
+                            piechart.setTag(R.id.slice_blink_animation, this)
+                            piechart.doOnDetach { cancel() }
+                            start()
+                        }
+                    }
+                }
+            }
+
+            companion object {
+                private const val CURRENT_DISCOUNT_SLICE = 0
+                private const val POTENTIAL_DISCOUNT_SLICE = 1
+                private const val REST_SLICE = 2
+                private const val LOADING_SLICE = 3
+
+                private const val SLICE_BLINK_DURATION = 800L
             }
         }
 
@@ -170,7 +283,7 @@ class ReferralsAdapter(
                         placeholder.remove()
                         code.show()
                         code.text = data.code
-                        container.setHapticClickListener {
+                        container.setOnLongClickListener {
                             code.context.copyToClipboard(data.code)
                             Snackbar
                                 .make(
@@ -180,6 +293,7 @@ class ReferralsAdapter(
                                 )
                                 .setAnchorView(R.id.bottomTabs)
                                 .show()
+                            true
                         }
                     }
                     else -> {

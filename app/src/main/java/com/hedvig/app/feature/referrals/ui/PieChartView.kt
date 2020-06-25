@@ -17,8 +17,8 @@ class PieChartView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : View(context, attributeSet, defStyle) {
 
-    private val circle = RectF(0f, 0f, 1000f, 1000f)
-    private val colorStash = HashMap<Int, Paint>()
+    private val circle = RectF()
+    private val paintCache = HashMap<Int, Paint>()
 
     var segments: List<PieChartSegment> = emptyList()
         set(value) {
@@ -26,11 +26,11 @@ class PieChartView @JvmOverloads constructor(
             invalidate()
         }
 
-    fun reveal(finalSegments: List<PieChartSegment>) {
-        SpringAnimation(FloatValueHolder())
+    fun reveal(finalSegments: List<PieChartSegment>, onEnd: (() -> Unit)? = null) {
+        val animation = SpringAnimation(FloatValueHolder())
             .apply {
                 spring = SpringForce().apply {
-                    dampingRatio = 0.65f
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
                     stiffness = SpringForce.STIFFNESS_VERY_LOW
                 }
             }
@@ -38,39 +38,78 @@ class PieChartView @JvmOverloads constructor(
                 segments = finalSegments
                     .map { it.copy(percentage = it.percentage * value / 100) }
             }
-            .animateToFinalPosition(ONE_HUNDRED_PERCENT)
+
+        onEnd?.let {
+            animation.addEndListener { _, canceled, _, _ ->
+                if (!canceled) {
+                    onEnd()
+                }
+            }
+        }
+        animation.animateToFinalPosition(ONE_HUNDRED_PERCENT)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val desiredWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val desiredHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+
+        val size = when {
+            widthMode == MeasureSpec.EXACTLY && desiredWidth > 0 -> desiredWidth
+            heightMode == MeasureSpec.EXACTLY && desiredHeight > 0 -> desiredHeight
+            else -> if (desiredWidth < desiredHeight) {
+                desiredWidth
+            } else {
+                desiredHeight
+            }
+        }
+
+        val resolvedWidth = resolveSize(size, widthMeasureSpec)
+        val resolvedHeight = resolveSize(size, heightMeasureSpec)
+
+        circle.set(
+            0f,
+            0f,
+            resolvedWidth.toFloat(),
+            resolvedHeight.toFloat()
+        )
+
+        setMeasuredDimension(resolvedWidth, resolvedHeight)
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        var startPosition = 0f
+        var startPosition = ANGLE_UP
 
         segments.forEach { segment ->
-            val sweep = -(segment.percentage * DEGREES_PER_PERCENT_RATIO)
-            val paint = colorStash[segment.color] ?: createColor(segment.color)
+            val sweep = segment.percentage * DEGREES_PER_PERCENT_RATIO
+            val paint = paintCache[segment.color] ?: createPaint(segment.color)
             canvas?.drawArc(circle, startPosition, sweep, true, paint)
             startPosition += sweep
         }
     }
 
-    private fun createColor(@ColorInt color: Int): Paint {
+    private fun createPaint(@ColorInt color: Int): Paint {
         val paint = Paint().apply {
             this.color = color
             style = Paint.Style.FILL
             flags = Paint.ANTI_ALIAS_FLAG
         }
-        colorStash[color] = paint
+        paintCache[color] = paint
         return paint
     }
 
     companion object {
         private const val ONE_HUNDRED_PERCENT = 100f
         private const val DEGREES_PER_PERCENT_RATIO = 3.6f
+        private const val ANGLE_UP = 270f
     }
 }
 
 data class PieChartSegment(
+    val id: Int,
     val percentage: Float,
     @ColorInt val color: Int
 )

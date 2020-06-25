@@ -17,17 +17,23 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="349 kr" />
 
-    <!-- TODO: Fix the piechart up a bit -->
-    <com.hedvig.app.feature.referrals.ui.PieChartView
-        android:id="@+id/piechart"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/piechartPlaceholder"
         android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/base_margin_quintuple"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin_quintuple"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grossPrice" />
+        app:layout_constraintTop_toBottomOf="@id/grossPrice">
+
+        <com.hedvig.app.feature.referrals.ui.PieChartView
+            android:id="@+id/piechart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_septuple"
+            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginEnd="@dimen/base_margin_septuple" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/emptyTexts"
@@ -48,7 +54,7 @@
         android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/piechart" />
+        app:layout_constraintTop_toBottomOf="@id/piechartPlaceholder" />
 
     <TextView
         android:id="@+id/emptyBody"
@@ -57,12 +63,12 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        android:text="@string/referrals_empty.body"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emptyHeadline" />
+        app:layout_constraintTop_toBottomOf="@id/emptyHeadline"
+        tools:text="@string/referrals_empty.body" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/nonEmptyTexts"
@@ -94,7 +100,7 @@
         android:text="@string/referrals_active.discount.per.month.title"
         android:textAppearance="?textAppearanceBody2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/piechart" />
+        app:layout_constraintTop_toBottomOf="@id/piechartPlaceholder" />
 
     <TextView
         android:id="@+id/discountPerMonth"
@@ -165,7 +171,7 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:backgroundTint="?colorSecondary"
+        android:theme="@style/ThemeOverlay.Hedvig.InfoCard"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
