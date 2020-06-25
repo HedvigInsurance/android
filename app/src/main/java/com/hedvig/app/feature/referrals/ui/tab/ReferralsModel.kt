@@ -20,7 +20,7 @@ sealed class ReferralsModel {
     sealed class Code : ReferralsModel() {
         object LoadingCode : Code()
         data class LoadedCode(
-            val code: String
+            val inner: ReferralsQuery.Data
         ) : Code()
     }
 
