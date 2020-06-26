@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 abstract class LoggedInViewModel : ViewModel() {
     abstract val data: LiveData<LoggedInQuery.Data>
-    abstract val scroll: MutableLiveData<Float>
+    val scroll = MutableLiveData<Float>()
 
     private val _bottomTabInset = MutableLiveData<Int>()
     val bottomTabInset: LiveData<Int>
@@ -24,7 +24,6 @@ class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository
 ) : LoggedInViewModel() {
     override val data = MutableLiveData<LoggedInQuery.Data>()
-    override val scroll = MutableLiveData<Float>()
 
     init {
         viewModelScope.launch {

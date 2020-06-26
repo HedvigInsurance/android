@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
 
@@ -24,6 +25,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                         LoggedInActivity.newInstance(this)
                             .putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
                     )
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals Tab") {
+                    startActivity(Intent(this, ReferralsMockActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Notifications-gallery") {
                     startActivity(Intent(this, NotificationsActivity::class.java))
