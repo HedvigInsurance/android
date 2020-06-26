@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals.builders
+package com.hedvig.app.testdatabuilders.feature.referrals
 
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment

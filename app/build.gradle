@@ -103,6 +103,9 @@ android {
 dependencies {
     implementation project(':apollo')
 
+    androidTestImplementation project(':testdatabuilders')
+    debugImplementation project(':testdatabuilders')
+
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'nl.littlerobots.rxlint:rxlint:1.7.3'
