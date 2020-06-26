@@ -15,7 +15,9 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.feature.referrals.builders.CostBuilder
 import com.hedvig.app.feature.referrals.builders.LoggedInDataBuilder
+import com.hedvig.app.feature.referrals.builders.ReferralsDataBuilder
 import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -54,7 +56,33 @@ class ReferralTabOneRefereeTest : KoinTest {
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(REFERRALS_DATA.toJson())
+                        return MockResponse().setBody(
+                            ReferralsDataBuilder(
+                                insuranceCost = CostBuilder(
+                                    discountAmount = "10.00",
+                                    netAmount = "339.00"
+                                ).build(),
+                                costReducedIndefiniteDiscount = CostBuilder(
+                                    discountAmount = "10.00",
+                                    netAmount = "339.00"
+                                ).build(),
+                                referredBy = ReferralFragment(
+                                    asActiveReferral = ReferralFragment.AsActiveReferral(
+                                        name = "Example",
+                                        discount = ReferralFragment.Discount(
+                                            fragments = ReferralFragment.Discount.Fragments(
+                                                MonetaryAmountFragment(
+                                                    amount = "10.00",
+                                                    currency = "SEK"
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    asTerminatedReferral = null,
+                                    asInProgressReferral = null
+                                )
+                            ).build().toJson()
+                        )
                     }
 
                     return MockResponse()
