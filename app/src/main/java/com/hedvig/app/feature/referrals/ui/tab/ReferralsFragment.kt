@@ -120,11 +120,17 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 ReferralsModel.InvitesHeader
             )
 
-            items += successData.referralInformation.invitations.map {
-                ReferralsModel.Referral.LoadedReferral(
-                    it.fragments.referralFragment
-                )
-            }
+            items += successData.referralInformation.invitations
+                .filter {
+                    it.fragments.referralFragment.asActiveReferral != null
+                        || it.fragments.referralFragment.asInProgressReferral != null
+                        || it.fragments.referralFragment.asTerminatedReferral != null
+                }
+                .map {
+                    ReferralsModel.Referral.LoadedReferral(
+                        it.fragments.referralFragment
+                    )
+                }
 
             successData.referralInformation.referredBy?.let {
                 items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))

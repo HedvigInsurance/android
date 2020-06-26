@@ -293,6 +293,16 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                 )
                             )
                         )
+                    ),
+                    ReferralsQuery.Invitation(
+                        fragments = ReferralsQuery.Invitation.Fragments(
+                            ReferralFragment(
+                                __typename = "AcceptedReferral",
+                                asActiveReferral = null,
+                                asInProgressReferral = null,
+                                asTerminatedReferral = null
+                            )
+                        )
                     )
                 )
             )
