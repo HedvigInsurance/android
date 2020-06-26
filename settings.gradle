@@ -1,1 +1,2 @@
+include ':apollo'
 include ':app'
