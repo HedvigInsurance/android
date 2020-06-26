@@ -1,5 +1,53 @@
-apply plugin: 'kotlin'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.apollographql.apollo'
 
+apollo {
+    generateKotlinModels = true
+    customTypeMapping = [
+            "URL"                   : "kotlin.String",
+            "LocalDate"             : "org.threeten.bp.LocalDate",
+            "Upload"                : "com.apollographql.apollo.api.FileUpload",
+            "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse",
+            "CheckoutPaymentsAction": "kotlin.String"
+    ]
+}
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        debug {}
+        staging {}
+        release {}
+    }
+}
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Apollo
+    api "com.apollographql.apollo:apollo-runtime:$apollo_version"
+    api "com.apollographql.apollo:apollo-android-support:$apollo_version"
+
+    // ThreeTen
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.0'
+
+    // adyen
+    implementation 'com.adyen.checkout:drop-in:3.6.4'
 }

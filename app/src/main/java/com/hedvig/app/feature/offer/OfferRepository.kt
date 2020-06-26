@@ -46,14 +46,14 @@ class OfferRepository(
         if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
             return
 
-        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
             fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
                 lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
                         insuranceCost = newCost
                     )
                 ),
@@ -89,7 +89,7 @@ class OfferRepository(
             return
 
         val oldCostFragment =
-            cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
+            cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -115,8 +115,8 @@ class OfferRepository(
         val newData = cachedData
             .copy(
                 lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
-                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
                             fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
                         )
                     )
