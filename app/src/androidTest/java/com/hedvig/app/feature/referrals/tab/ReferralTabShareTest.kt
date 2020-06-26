@@ -13,11 +13,11 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
-import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.feature.referrals.builders.LoggedInDataBuilder
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -51,7 +51,7 @@ class ReferralTabShareTest : KoinTest {
                 override fun dispatch(request: RecordedRequest): MockResponse {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(FEATURES_DATA.toJson())
+                        return MockResponse().setBody(LoggedInDataBuilder().build().toJson())
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
@@ -89,33 +89,6 @@ class ReferralTabShareTest : KoinTest {
     }
 
     companion object {
-        private val FEATURES_DATA = LoggedInQuery.Data(
-            member = LoggedInQuery.Member(
-                features = listOf(
-                    Feature.KEYGEAR
-                )
-            ),
-            referralTerms = LoggedInQuery.ReferralTerms(
-                url = "https://www.example.com"
-            ),
-            referralInformation = LoggedInQuery.ReferralInformation(
-                campaign = LoggedInQuery.Campaign(
-                    incentive = LoggedInQuery.Incentive(
-                        asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
-                            amount = LoggedInQuery.Amount(
-                                fragments = LoggedInQuery.Amount.Fragments(
-                                    MonetaryAmountFragment(
-                                        amount = "10.00",
-                                        currency = "SEK"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
         private val REFERRALS_DATA = ReferralsQuery.Data(
             insuranceCost = ReferralsQuery.InsuranceCost(
                 fragments = ReferralsQuery.InsuranceCost.Fragments(
