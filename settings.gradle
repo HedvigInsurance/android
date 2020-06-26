@@ -1,1 +1,3 @@
+include ':testdatabuilders'
+include ':apollo'
 include ':app'

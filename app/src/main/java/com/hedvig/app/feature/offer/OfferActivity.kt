@@ -93,7 +93,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         when {
                             completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
                                 val apartmentData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
+                                    data.lastQuoteOfMember.asCompleteQuote!!.quoteDetails.asSwedishApartmentQuoteDetails!!
                                 bindToolBar(apartmentData.street)
                                 bindPremiumBox(
                                     completeQuote.typeOfContract,
@@ -104,7 +104,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             }
                             completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
                                 val houseData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
+                                    data.lastQuoteOfMember.asCompleteQuote!!.quoteDetails.asSwedishHouseQuoteDetails!!
                                 bindToolBar(houseData.street)
                                 bindPremiumBox(
                                     completeQuote.typeOfContract,
@@ -176,7 +176,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 incentive.asFreeMonths != null -> {
                     premiumCampaignTitle.text = getString(
                         R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE,
-                        incentive.asFreeMonths.quantity
+                        incentive.asFreeMonths?.quantity
                     ).replace('\n', ' ')
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                     premiumCampaignTitle.show()
@@ -188,16 +188,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
                 incentive.asPercentageDiscountMonths != null -> {
                     premiumCampaignTitle.text =
-                        if (incentive.asPercentageDiscountMonths.pdmQuantity == 1) {
+                        if (incentive.asPercentageDiscountMonths?.pdmQuantity == 1) {
                             getString(
                                 R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                                incentive.asPercentageDiscountMonths?.percentageDiscount?.toInt()
                             )
                         } else {
                             getString(
                                 R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                incentive.asPercentageDiscountMonths.pdmQuantity,
-                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                                incentive.asPercentageDiscountMonths?.pdmQuantity,
+                                incentive.asPercentageDiscountMonths?.percentageDiscount?.toInt()
                             )
                         }
                     grossPremium.text = getString(

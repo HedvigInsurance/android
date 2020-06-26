@@ -8,7 +8,7 @@
     - `lokalise.properties`
 3. Download the schema (required to consume any changes in schema as well):
 ```bash
-$ ./gradlew app:downloadApolloSchema
+$ ./gradlew apollo:downloadApolloSchema
 ```
 4. Download lokalise translations (required to consume latest translations as well):
 ```bash
