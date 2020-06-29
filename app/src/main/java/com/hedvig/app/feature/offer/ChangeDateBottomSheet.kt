@@ -48,7 +48,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                                 dialog.hide()
                             })
                     }
-                    if (data.lastQuoteOfMember.asCompleteQuote.currentInsurer == null) {
+                    if (data.lastQuoteOfMember.asCompleteQuote?.currentInsurer == null) {
                         tracker.activateToday()
                         buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
                         dialog.autoSetDateText.text = buttonText

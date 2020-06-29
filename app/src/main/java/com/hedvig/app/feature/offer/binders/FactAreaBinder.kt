@@ -25,8 +25,8 @@ class FactAreaBinder(
         }
 
         when {
-            data.quoteDetails.asSwedishHouseQuoteDetails != null -> bindHouse(data.quoteDetails.asSwedishHouseQuoteDetails)
-            data.quoteDetails.asSwedishApartmentQuoteDetails != null -> bindApartment(data.quoteDetails.asSwedishApartmentQuoteDetails)
+            data.quoteDetails.asSwedishHouseQuoteDetails != null -> bindHouse(data.quoteDetails.asSwedishHouseQuoteDetails!!)
+            data.quoteDetails.asSwedishApartmentQuoteDetails != null -> bindApartment(data.quoteDetails.asSwedishApartmentQuoteDetails!!)
         }
 
         root.expandableContentView.contentSizeChanged()

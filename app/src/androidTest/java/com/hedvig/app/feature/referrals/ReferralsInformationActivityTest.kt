@@ -19,7 +19,7 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.builders.LoggedInDataBuilder
+import com.hedvig.app.testdatabuilders.feature.referrals.LoggedInDataBuilder
 import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse

@@ -329,7 +329,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         if (
             profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                 ?.toInt() == 0
-            && profileData.insuranceCost.freeUntil == null
+            && profileData.insuranceCost?.freeUntil == null
         ) {
             redeemCode.show()
         }

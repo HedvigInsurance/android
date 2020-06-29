@@ -101,6 +101,11 @@ android {
 }
 
 dependencies {
+    implementation project(':apollo')
+
+    androidTestImplementation project(':testdatabuilders')
+    debugImplementation project(':testdatabuilders')
+
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'nl.littlerobots.rxlint:rxlint:1.7.3'
@@ -135,12 +140,6 @@ dependencies {
     def okhttp3_version = '4.0.1'
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp3_version"
-
-    // Apollo
-    implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
-    implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
-    //implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
-
 
     // Firebase
     implementation 'com.google.android.gms:play-services-base:17.2.1'
