@@ -13,7 +13,6 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
-import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
@@ -21,10 +20,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.apollo.format
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import com.hedvig.app.util.apolloMockServer
 import org.hamcrest.CoreMatchers.not
 import org.javamoney.moneta.Money
 import org.junit.Before
@@ -50,19 +46,10 @@ class ReferralsInformationActivityTest : KoinTest {
 
     @Test
     fun shouldOpenInformationActivityWhenClickingMoreInformationAction() {
-        MockWebServer().use { webServer ->
-            webServer.dispatcher = object : Dispatcher() {
-                override fun dispatch(request: RecordedRequest): MockResponse {
-                    val body = request.body.peek().readUtf8()
-                    if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(
-                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
-                        )
-                    }
+        apolloMockServer(
+            LoggedInQuery.OPERATION_NAME.name() to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 
-                    return MockResponse()
-                }
-            }
+        ).use { webServer ->
             webServer.start(8080)
 
             val intent = LoggedInActivity.newInstance(

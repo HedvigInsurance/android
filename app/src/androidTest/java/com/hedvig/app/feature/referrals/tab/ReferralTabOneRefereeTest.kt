@@ -4,7 +4,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
@@ -18,10 +17,7 @@ import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.util.apollo.format
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import com.hedvig.app.util.apolloMockServer
 import org.javamoney.moneta.Money
 import org.junit.Before
 import org.junit.Rule
@@ -46,26 +42,10 @@ class ReferralTabOneRefereeTest : KoinTest {
 
     @Test
     fun shouldShowActiveStateWhenUserHasOneReferee() {
-        MockWebServer().use { webServer ->
-            webServer.dispatcher = object : Dispatcher() {
-                override fun dispatch(request: RecordedRequest): MockResponse {
-                    val body = request.body.peek().readUtf8()
-                    if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(
-                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
-                        )
-                    }
-
-                    if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(
-                            REFERRALS_DATA_WITH_ONE_REFEREE.toJson()
-                        )
-                    }
-
-                    return MockResponse()
-                }
-            }
-
+        apolloMockServer(
+            LoggedInQuery.OPERATION_NAME.name() to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
+            ReferralsQuery.OPERATION_NAME.name() to REFERRALS_DATA_WITH_ONE_REFEREE
+        ).use { webServer ->
             webServer.start(8080)
 
             val intent = LoggedInActivity.newInstance(

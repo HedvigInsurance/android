@@ -9,7 +9,6 @@ import androidx.test.rule.ActivityTestRule
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen
-import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
@@ -18,10 +17,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import com.hedvig.app.util.apolloMockServer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -47,26 +43,10 @@ class ReferralTabCodeSnackbarTest : KoinTest {
 
     @Test
     fun shouldShowSnackbarWhenClickingCode() {
-        MockWebServer().use { webServer ->
-            webServer.dispatcher = object : Dispatcher() {
-                override fun dispatch(request: RecordedRequest): MockResponse {
-                    val body = request.body.peek().readUtf8()
-                    if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(
-                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
-                        )
-                    }
-
-                    if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(
-                            REFERRALS_DATA_WITH_NO_DISCOUNTS.toJson()
-                        )
-                    }
-
-                    return MockResponse()
-                }
-            }
-
+        apolloMockServer(
+            LoggedInQuery.OPERATION_NAME.name() to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
+            ReferralsQuery.OPERATION_NAME.name() to REFERRALS_DATA_WITH_NO_DISCOUNTS
+        ).use { webServer ->
             webServer.start(8080)
 
             val intent = LoggedInActivity.newInstance(
