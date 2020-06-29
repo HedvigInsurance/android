@@ -77,6 +77,8 @@ import com.hedvig.app.feature.referrals.ReferralsRepository
 import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.referrals.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ReferralsViewModelImpl
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModelImpl
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.welcome.WelcomeRepository
@@ -235,6 +237,7 @@ val adyenModule = module {
 
 val referralsModule = module {
     viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
+    viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
 }
 
 val serviceModule = module {

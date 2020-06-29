@@ -9,7 +9,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ui.ReferralsActivatedActivity
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.service.push.setupNotificationChannel
 
 object ReferralsNotificationManager {
