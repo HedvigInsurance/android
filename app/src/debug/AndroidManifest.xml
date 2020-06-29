@@ -30,8 +30,8 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity
-            android:name=".NotificationsActivity"
-            android:label="Notifications"
+            android:name=".feature.referrals.ReferralsMockActivity"
+            android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
     </application>

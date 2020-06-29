@@ -6,4 +6,4 @@
     android:background="?selectableItemBackground"
     android:padding="@dimen/base_margin_double"
     android:textAppearance="?textAppearanceSubtitle1"
-    tools:text="Referral Success-Notification" />
+    tools:text="Open some screen" />

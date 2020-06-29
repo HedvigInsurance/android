@@ -3,7 +3,7 @@ package com.hedvig.app.mocks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.app.DevelopmentActivity
+import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.MockDashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
 
@@ -14,7 +14,7 @@ class MockContractCoverageViewModel(context: Context) : ContractCoverageViewMode
 
     init {
         val mockPersona = context
-            .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
 
         mockData = when (mockPersona) {
