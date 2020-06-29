@@ -5,12 +5,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.referrals.builders.LoggedInDataBuilder
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -43,7 +42,7 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
                 override fun dispatch(request: RecordedRequest): MockResponse {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
-                        return MockResponse().setBody(LOGGED_IN_DATA.toJson())
+                        return MockResponse().setBody(LoggedInDataBuilder().build().toJson())
                     }
 
                     return MockResponse()
@@ -63,35 +62,5 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
                 recycler { isVisible() }
             }
         }
-    }
-
-    companion object {
-        private val LOGGED_IN_DATA = LoggedInQuery.Data(
-            member = LoggedInQuery.Member(
-                features = listOf(
-                    Feature.KEYGEAR,
-                    Feature.REFERRALS
-                )
-            ),
-            referralTerms = LoggedInQuery.ReferralTerms(
-                url = "https://www.example.com"
-            ),
-            referralInformation = LoggedInQuery.ReferralInformation(
-                campaign = LoggedInQuery.Campaign(
-                    incentive = LoggedInQuery.Incentive(
-                        asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
-                            amount = LoggedInQuery.Amount(
-                                fragments = LoggedInQuery.Amount.Fragments(
-                                    MonetaryAmountFragment(
-                                        amount = "10.00",
-                                        currency = "SEK"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
     }
 }
