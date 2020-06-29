@@ -1,4 +1,4 @@
-package com.hedvig.app.testdatabuilders.feature.referrals
+package com.hedvig.app.testdata.feature.referrals.builders
 
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery

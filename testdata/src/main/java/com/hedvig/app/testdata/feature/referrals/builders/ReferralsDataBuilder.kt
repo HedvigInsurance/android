@@ -1,4 +1,4 @@
-package com.hedvig.app.testdatabuilders.feature.referrals
+package com.hedvig.app.testdata.feature.referrals.builders
 
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
@@ -6,11 +6,13 @@ import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 
 data class ReferralsDataBuilder(
-    val insuranceCost: CostFragment = CostBuilder().build(),
+    val insuranceCost: CostFragment = CostBuilder()
+        .build(),
     val code: String = "TEST123",
     val incentiveAmount: String = "10.00",
     val incentiveCurrency: String = "SEK",
-    val costReducedIndefiniteDiscount: CostFragment = CostBuilder().build(),
+    val costReducedIndefiniteDiscount: CostFragment = CostBuilder()
+        .build(),
     val referredBy: ReferralFragment? = null,
     val invitations: List<ReferralFragment> = emptyList()
 ) {

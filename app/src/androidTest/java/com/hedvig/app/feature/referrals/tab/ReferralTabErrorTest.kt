@@ -11,8 +11,8 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
-import com.hedvig.app.testdatabuilders.feature.referrals.LoggedInDataBuilder
-import com.hedvig.app.testdatabuilders.feature.referrals.ReferralsDataBuilder
+import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
+import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -51,7 +51,10 @@ class ReferralTabErrorTest : KoinTest {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
                         semaphore.release()
-                        return MockResponse().setBody(LoggedInDataBuilder().build().toJson())
+                        return MockResponse().setBody(
+                            LoggedInDataBuilder()
+                                .build().toJson()
+                        )
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
@@ -62,7 +65,10 @@ class ReferralTabErrorTest : KoinTest {
                         }
 
                         semaphore.release()
-                        return MockResponse().setBody(ReferralsDataBuilder().build().toJson())
+                        return MockResponse().setBody(
+                            ReferralsDataBuilder()
+                                .build().toJson()
+                        )
                     }
 
                     semaphore.release()
