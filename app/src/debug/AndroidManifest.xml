@@ -34,11 +34,6 @@
             android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
-        <activity
-            android:name=".NotificationsActivity"
-            android:label="Notifications"
-            android:theme="@style/Hedvig.Theme" />
-
     </application>
 
 </manifest>
