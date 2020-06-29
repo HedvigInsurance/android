@@ -21,18 +21,18 @@
     <dimen name="subtitle_1_placeholder_height">16sp</dimen>
 
     <style name="Hedvig.TextAppearance.Headline3" parent="TextAppearance.MaterialComponents.Headline3">
-        <item name="android:letterSpacing">0.1</item>
+        <item name="android:letterSpacing">-0.05</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Headline4" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="lineHeight">41sp</item>
-        <item name="android:letterSpacing">-0.05</item>
+        <item name="android:letterSpacing">-0.025</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Headline5" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="lineHeight">32sp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:letterSpacing">-0.025</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <dimen name="headline_5_placeholder_width">72sp</dimen>
