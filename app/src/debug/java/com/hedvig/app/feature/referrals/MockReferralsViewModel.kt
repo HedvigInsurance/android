@@ -2,7 +2,7 @@ package com.hedvig.app.feature.referrals
 
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
-import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 
 class MockReferralsViewModel : ReferralsViewModel() {
     override val data = MutableLiveData<Result<ReferralsQuery.Data>>()
@@ -25,7 +25,6 @@ class MockReferralsViewModel : ReferralsViewModel() {
     companion object {
         var loadInitially = false
         var shouldSucceed = false
-        var referralsData = ReferralsDataBuilder()
-            .build()
+        var referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
     }
 }

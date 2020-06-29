@@ -9,6 +9,9 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import kotlinx.android.synthetic.debug.activity_generic_development.*
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -41,6 +44,30 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                    }
+                    startScreen()
+                },
+                GenericDevelopmentAdapter.Item("One Referee") {
+                    MockReferralsViewModel.apply {
+                        loadInitially = true
+                        shouldSucceed = true
+                        referralsData = REFERRALS_DATA_WITH_ONE_REFEREE
+                    }
+                    startScreen()
+                },
+                GenericDevelopmentAdapter.Item("Multiple Referrals") {
+                    MockReferralsViewModel.apply {
+                        loadInitially = true
+                        shouldSucceed = true
+                        referralsData = REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+                    }
+                    startScreen()
+                },
+                GenericDevelopmentAdapter.Item("One Referee + Another Discount") {
+                    MockReferralsViewModel.apply {
+                        loadInitially = true
+                        shouldSucceed = true
+                        referralsData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
                     }
                     startScreen()
                 }
