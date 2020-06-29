@@ -5,8 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.apollographql.apollo.api.toJson
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
-import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
@@ -14,9 +12,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
-import com.hedvig.app.testdata.feature.referrals.builders.CostBuilder
-import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
-import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -52,60 +49,13 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(
-                            LoggedInDataBuilder()
-                                .build().toJson()
+                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
                         )
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(
-                            ReferralsDataBuilder(
-                                insuranceCost = CostBuilder(
-                                    discountAmount = "10.00",
-                                    netAmount = "339.00"
-                                ).build(),
-                                costReducedIndefiniteDiscount = CostBuilder(
-                                    discountAmount = "10.00",
-                                    netAmount = "339.00"
-                                ).build(),
-                                invitations = listOf(
-                                    ReferralFragment(
-                                        asActiveReferral = ReferralFragment.AsActiveReferral(
-                                            name = "Example",
-                                            discount = ReferralFragment.Discount(
-                                                fragments = ReferralFragment.Discount.Fragments(
-                                                    MonetaryAmountFragment(
-                                                        amount = "10.00",
-                                                        currency = "SEK"
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        asInProgressReferral = null,
-                                        asTerminatedReferral = null
-                                    ),
-                                    ReferralFragment(
-                                        asActiveReferral = null,
-                                        asInProgressReferral = ReferralFragment.AsInProgressReferral(
-                                            name = "Example 2"
-                                        ),
-                                        asTerminatedReferral = null
-                                    ),
-                                    ReferralFragment(
-                                        asActiveReferral = null,
-                                        asInProgressReferral = null,
-                                        asTerminatedReferral = ReferralFragment.AsTerminatedReferral(
-                                            name = "Example 3"
-                                        )
-                                    ),
-                                    ReferralFragment(
-                                        __typename = "AcceptedReferral",
-                                        asActiveReferral = null,
-                                        asInProgressReferral = null,
-                                        asTerminatedReferral = null
-                                    )
-                                )
-                            ).build().toJson()
+                            REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES.toJson()
                         )
                     }
 

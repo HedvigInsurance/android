@@ -9,7 +9,7 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -43,8 +43,7 @@ class ReferralsFeatureActivatedNotificationTest : KoinTest {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(
-                            LoggedInDataBuilder()
-                                .build().toJson()
+                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
                         )
                     }
 

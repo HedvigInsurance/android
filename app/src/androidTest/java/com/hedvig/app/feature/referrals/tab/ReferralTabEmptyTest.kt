@@ -11,8 +11,8 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
-import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
-import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.apollo.format
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -48,15 +48,13 @@ class ReferralTabEmptyTest : KoinTest {
                     val body = request.body.peek().readUtf8()
                     if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(
-                            LoggedInDataBuilder()
-                                .build().toJson()
+                            LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED.toJson()
                         )
                     }
 
                     if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
                         return MockResponse().setBody(
-                            ReferralsDataBuilder()
-                                .build().toJson()
+                            REFERRALS_DATA_WITH_NO_DISCOUNTS.toJson()
                         )
                     }
 
