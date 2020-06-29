@@ -94,6 +94,12 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                                         asTerminatedReferral = ReferralFragment.AsTerminatedReferral(
                                             name = "Example 3"
                                         )
+                                    ),
+                                    ReferralFragment(
+                                        __typename = "AcceptedReferral",
+                                        asActiveReferral = null,
+                                        asInProgressReferral = null,
+                                        asTerminatedReferral = null
                                     )
                                 )
                             ).build().toJson()
