@@ -27,9 +27,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
 
         root.adapter = GenericDevelopmentAdapter(
             listOf(
-                GenericDevelopmentAdapter.Item(
-                    "Loading"
-                ) {
+                GenericDevelopmentAdapter.Item("Loading") {
                     MockReferralsViewModel.loadInitially = false
                     startScreen()
                 },
