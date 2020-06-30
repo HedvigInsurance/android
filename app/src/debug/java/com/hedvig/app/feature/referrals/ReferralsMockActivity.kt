@@ -9,6 +9,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
@@ -33,21 +35,21 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 GenericDevelopmentAdapter.Item.Header("Referrals Tab"),
                 GenericDevelopmentAdapter.Item.ClickableItem("Loading") {
                     MockReferralsViewModel.loadInitially = false
-                    startScreen()
+                    startReferralsTab()
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Error") {
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = false
                     }
-                    startScreen()
+                    startReferralsTab()
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Empty") {
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
                     }
-                    startScreen()
+                    startReferralsTab()
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("One Referee") {
                     MockReferralsViewModel.apply {
@@ -55,7 +57,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                         shouldSucceed = true
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE
                     }
-                    startScreen()
+                    startReferralsTab()
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Multiple Referrals") {
                     MockReferralsViewModel.apply {
@@ -63,7 +65,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                         shouldSucceed = true
                         referralsData = REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
                     }
-                    startScreen()
+                    startReferralsTab()
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("One Referee + Another Discount") {
                     MockReferralsViewModel.apply {
@@ -71,7 +73,16 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                         shouldSucceed = true
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
                     }
-                    startScreen()
+                    startReferralsTab()
+                },
+                GenericDevelopmentAdapter.Item.Header("Referrals Activated Screen"),
+                GenericDevelopmentAdapter.Item.ClickableItem("Load quickly") {
+                    MockReferralsActivatedViewModel.loadDelay = 1000
+                    startActivity(ReferralsActivatedActivity.newInstance(this))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Load slowly") {
+                    MockReferralsActivatedViewModel.loadDelay = 5000
+                    startActivity(ReferralsActivatedActivity.newInstance(this))
                 },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
@@ -92,7 +103,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
         )
     }
 
-    private fun startScreen() = startActivity(
+    private fun startReferralsTab() = startActivity(
         LoggedInActivity.newInstance(
             this,
             initialTab = LoggedInTabs.REFERRALS
@@ -109,6 +120,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
         private val MOCK_MODULE = module {
             viewModel<ReferralsViewModel> { MockReferralsViewModel() }
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
+            viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
         }
     }
 }

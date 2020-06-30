@@ -16,7 +16,7 @@ fun apolloMockServer(vararg mocks: Pair<String, Operation.Data>) = MockWebServer
             val operationName = bodyAsJson.getString("operationName")
 
             val data =
-                mocks.firstOrNull { it.first == operationName }?.second ?: return MockResponse()
+                mocks.firstOrNull { it.first == operationName }?.second ?: return super.peek()
 
             return MockResponse().setBody(data.toJson())
         }
