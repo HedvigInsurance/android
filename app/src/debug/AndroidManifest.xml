@@ -34,6 +34,11 @@
             android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.chat.ChatMockActivity"
+            android:label="Chat Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>
