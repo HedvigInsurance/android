@@ -98,6 +98,7 @@ object ChatNotificationManager {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true)
             .setChannelId(CHAT_CHANNEL_ID)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(alertOnlyOnce)
             .build()
