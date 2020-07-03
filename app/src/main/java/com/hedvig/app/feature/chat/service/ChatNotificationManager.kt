@@ -99,6 +99,7 @@ object ChatNotificationManager {
             .setAutoCancel(true)
             .setChannelId(CHAT_CHANNEL_ID)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(alertOnlyOnce)
             .build()
