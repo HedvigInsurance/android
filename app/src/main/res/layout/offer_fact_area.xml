@@ -52,7 +52,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="150 square meters" />
 
             <TextView
@@ -74,7 +74,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="150 kvadratmeter" />
 
             <TextView
@@ -96,7 +96,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 android:visibility="gone"
                 tools:text="1987"
                 tools:visibility="visible" />
@@ -120,7 +120,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 android:visibility="gone"
                 tools:text="2"
                 tools:visibility="visible" />
@@ -144,7 +144,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 android:visibility="gone"
                 tools:text="Nej"
                 tools:visibility="visible" />
@@ -166,7 +166,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="4" />
 
             <View
@@ -186,7 +186,7 @@
                 android:layout_marginTop="@dimen/base_margin_quadruple"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:text="@string/HOUSE_INFO_EXTRABUILDINGS"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

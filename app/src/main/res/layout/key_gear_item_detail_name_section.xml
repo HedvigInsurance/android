@@ -11,7 +11,7 @@
         android:layout_marginStart="@dimen/base_margin_triple"
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <FrameLayout
         android:layout_width="match_parent"

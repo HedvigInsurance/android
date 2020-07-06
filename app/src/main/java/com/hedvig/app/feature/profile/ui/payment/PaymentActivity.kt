@@ -151,7 +151,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             nextPaymentGross.show()
             nextPaymentGross.text = getString(
                 R.string.PAYMENTS_FULL_PREMIUM,
-                data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()
+                data.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                     ?.toInt()
             )
         }
@@ -327,9 +327,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
-            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                 ?.toInt() == 0
-            && profileData.insuranceCost.freeUntil == null
+            && profileData.insuranceCost?.freeUntil == null
         ) {
             redeemCode.show()
         }

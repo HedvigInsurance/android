@@ -29,6 +29,11 @@
             android:label="View Gallery"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.referrals.ReferralsMockActivity"
+            android:label="Referrals Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>

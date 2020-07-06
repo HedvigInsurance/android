@@ -25,4 +25,12 @@
 
     <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox" />
 
+    <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
+        <item name="colorSurface">@color/colorSurfaceOnSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.InfoCard" parent="">
+        <item name="colorSurface">@color/colorInfoCardSurface</item>
+    </style>
+
 </resources>

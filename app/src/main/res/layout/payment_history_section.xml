@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:text="@string/PAYMENTS_SUBTITLE_PREVIOUS_PAYMENTS"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <LinearLayout
         android:id="@+id/prevPaymentsList"
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             android:visibility="gone"
             tools:text="179 kr"
             tools:visibility="visible" />
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             android:visibility="gone"
             tools:text="179 kr"
             tools:visibility="visible" />

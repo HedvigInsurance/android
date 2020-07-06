@@ -61,7 +61,7 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:text="@string/DASHBOARD_MY_INFO_TITLE"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 app:layout_constraintBottom_toTopOf="@id/contractInformationDescription"
                 app:layout_constraintStart_toEndOf="@id/contractInformationIcon"
                 app:layout_constraintTop_toTopOf="parent"
@@ -92,7 +92,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info_purple" />
+                app:srcCompat="@drawable/ic_info" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -128,7 +128,7 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin"
                 android:text="@string/DASHBOARD_MY_COVERAGE_TITLE"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 app:layout_constraintBottom_toTopOf="@id/coverageCategorySubtitle"
                 app:layout_constraintEnd_toStartOf="@id/coverageInfoIcon"
                 app:layout_constraintStart_toEndOf="@id/coverageCategoryIcon"
@@ -159,7 +159,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info_purple" />
+                app:srcCompat="@drawable/ic_info" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -195,7 +195,7 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin"
                 android:text="@string/DASHBOARD_MY_DOCUMENTS_TITLE"
-                android:textAppearance="?textAppearanceHeadline6"
+                android:textAppearance="?textAppearanceSubtitle1"
                 app:layout_constraintBottom_toTopOf="@id/documentsCategorySubtitle"
                 app:layout_constraintEnd_toStartOf="@id/documentsInfoIcon"
                 app:layout_constraintStart_toEndOf="@id/documentsCategoryIcon"
@@ -226,7 +226,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info_purple" />
+                app:srcCompat="@drawable/ic_info" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -13,7 +13,7 @@
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/covered"
@@ -38,7 +38,7 @@
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:text="@string/KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE"
-        android:textAppearance="?textAppearanceHeadline6" />
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exceptions"

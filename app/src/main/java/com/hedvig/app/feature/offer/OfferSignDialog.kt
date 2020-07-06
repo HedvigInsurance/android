@@ -77,7 +77,7 @@ class OfferSignDialog : DialogFragment() {
     private fun bindStatus(d: SignStatusFragment) {
         when (d.collectStatus?.status) {
             BankIdStatus.PENDING -> {
-                when (d.collectStatus.code) {
+                when (d.collectStatus!!.code) {
                     "noClient" -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
                     }
@@ -87,7 +87,7 @@ class OfferSignDialog : DialogFragment() {
                 }
             }
             BankIdStatus.FAILED -> {
-                when (d.collectStatus.code) {
+                when (d.collectStatus!!.code) {
                     "userCancel", "cancelled" -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_CANCELED)
                     }
@@ -104,7 +104,7 @@ class OfferSignDialog : DialogFragment() {
                     SignState.COMPLETED -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_SUCCESSFUL)
                         tracker.userDidSign(
-                            offerViewModel.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.amount?.toBigDecimal()
+                            offerViewModel.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                                 ?.toDouble()
                                 ?: 0.0
                         )

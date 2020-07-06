@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer
 import android.content.Context
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
+import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -45,14 +46,14 @@ class OfferRepository(
         if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
             return
 
-        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
             fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
                 lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
                         insuranceCost = newCost
                     )
                 ),
@@ -88,22 +89,34 @@ class OfferRepository(
             return
 
         val oldCostFragment =
-            cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.fragments.costFragment
+            cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
                     .monthlyDiscount
-                    .copy(amount = "0.00"),
+                    .copy(
+                        fragments = CostFragment.MonthlyDiscount.Fragments(
+                            oldCostFragment.monthlyDiscount.fragments.monetaryAmountFragment.copy(
+                                amount = "0.00"
+                            )
+                        )
+                    ),
                 monthlyNet = oldCostFragment
                     .monthlyNet
-                    .copy(amount = oldCostFragment.monthlyGross.amount)
+                    .copy(
+                        fragments = CostFragment.MonthlyNet.Fragments(
+                            oldCostFragment.monthlyNet.fragments.monetaryAmountFragment.copy(
+                                amount = oldCostFragment.monthlyGross.fragments.monetaryAmountFragment.amount
+                            )
+                        )
+                    )
             )
 
         val newData = cachedData
             .copy(
                 lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote.copy(
-                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote.insuranceCost.copy(
+                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
                             fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
                         )
                     )

@@ -32,7 +32,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/base_margin_triple"
             android:text="@string/KEY_GEAR_ADD_ITEM_PAGE_TITLE"
-            android:textAppearance="?textAppearanceHeadline6" />
+            android:textAppearance="?textAppearanceSubtitle1" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView

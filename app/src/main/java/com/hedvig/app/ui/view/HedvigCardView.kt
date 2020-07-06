@@ -16,7 +16,7 @@ open class HedvigCardView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : FrameLayout(context, attributeSet, defStyle) {
     init {
-        background = context.compatDrawable(R.drawable.hedvig_card_view)
+        background = context.compatDrawable(R.drawable.hedvig_card_view_ripple)
         val attributes = context.obtainStyledAttributes(
             attributeSet,
             R.styleable.HedvigCardView,

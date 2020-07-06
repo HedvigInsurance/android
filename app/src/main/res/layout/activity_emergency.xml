@@ -55,7 +55,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_TITLE"
-                        android:textAppearance="?textAppearanceHeadline6" />
+                        android:textAppearance="?textAppearanceSubtitle1" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -98,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_TITLE"
-                        android:textAppearance="?textAppearanceHeadline6" />
+                        android:textAppearance="?textAppearanceSubtitle1" />
 
                     <TextView
                         android:layout_width="wrap_content"

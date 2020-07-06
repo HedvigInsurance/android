@@ -1,0 +1,71 @@
+query Profile {
+  member {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+  insuranceCost {
+    ... CostFragment
+    freeUntil
+  }
+  contracts {
+    status {
+      ... ContractStatusFragment
+    }
+  }
+  balance {
+    failedCharges
+  }
+  chargeEstimation {
+    charge {
+      amount
+    }
+    discount {
+      amount
+    }
+    subscription {
+      amount
+    }
+  }
+  nextChargeDate
+  chargeHistory {
+    amount {
+      amount
+    }
+    date
+  }
+  bankAccount {
+    ... BankAccountFragment
+  }
+  activePaymentMethods {
+    ... ActivePaymentMethodsFragment
+  }
+  cashback {
+    ... CashbackFragment
+  }
+  cashbackOptions {
+    id
+    name
+    paragraph
+  }
+  redeemedCampaigns {
+    ... IncentiveFragment
+    owner {
+      displayName
+    }
+  }
+  referralInformation {
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            amount
+          }
+        }
+      }
+    }
+  }
+}

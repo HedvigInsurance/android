@@ -80,7 +80,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             else -> "no/"
         }
 
-        webOnboarding.loadUrl("${BuildConfig.WEB_ONBOARDING_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+        webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
     }
 
     override fun onDestroy() {
