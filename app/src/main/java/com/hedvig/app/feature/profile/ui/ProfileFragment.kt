@@ -26,12 +26,15 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : BaseTabFragment() {
 
+    private val mixpanel: MixpanelAPI by inject()
     private val userViewModel: UserViewModel by sharedViewModel()
     private val profileViewModel: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
@@ -81,6 +84,7 @@ class ProfileFragment : BaseTabFragment() {
                     requireContext().setAuthenticationToken(null)
                     requireContext().setIsLoggedIn(false)
                     FirebaseInstanceId.getInstance().deleteInstanceId()
+                    mixpanel.reset()
                     requireActivity().triggerRestartActivity()
                 }
             }
