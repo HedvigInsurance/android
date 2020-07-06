@@ -1,13 +1,12 @@
 package com.hedvig.app.feature.trustly
 
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class TrustlyTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun addPaymentInfo() = firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_PAYMENT_INFO, null)
-    fun explainerConnect() = firebaseAnalytics.logEvent("ONBOARDING_CONNECT_DD_CTA", null)
-    fun doItLater() = firebaseAnalytics.logEvent("ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER", null)
-    fun retry() = firebaseAnalytics.logEvent("ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY", null)
-    fun notNow() = firebaseAnalytics.logEvent("TRUSTLY_SKIP_BUTTON", null)
+    fun explainerConnect() = mixpanel.track("ONBOARDING_CONNECT_DD_CTA")
+    fun doItLater() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER")
+    fun retry() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY")
+    fun notNow() = mixpanel.track("TRUSTLY_SKIP_BUTTON")
 }

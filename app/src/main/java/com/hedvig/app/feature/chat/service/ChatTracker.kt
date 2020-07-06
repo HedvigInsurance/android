@@ -1,22 +1,22 @@
 package com.hedvig.app.feature.chat.service
 
-import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.hedvig.app.util.jsonObjectOf
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class ChatTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun closeChat() = firebaseAnalytics.logEvent("CHAT_CLOSE", null)
-    fun restartChat() = firebaseAnalytics.logEvent("CHAT_RESTART", null)
-    fun editMessage() = firebaseAnalytics.logEvent("CHAT_EDIT_MESSAGE", null)
-    fun openUploadedFile() = firebaseAnalytics.logEvent("chat_open_file_upload", null)
-    fun sendChatMessage() = firebaseAnalytics.logEvent("chat_click_send_message", null)
-    fun openAttachFile() = firebaseAnalytics.logEvent("CHAT_UPLOAD_FILE", null)
-    fun openSendGif() = firebaseAnalytics.logEvent("GIF_BUTTON_TITLE", null)
-    fun singleSelect(label: String) =
-        firebaseAnalytics.logEvent("chat_single_select", Bundle().apply {
-            putString("label", label)
-        })
+    fun closeChat() = mixpanel.track("CHAT_CLOSE")
+    fun restartChat() = mixpanel.track("CHAT_RESTART")
+    fun editMessage() = mixpanel.track("CHAT_EDIT_MESSAGE")
+    fun openUploadedFile() = mixpanel.track("chat_open_file_upload")
+    fun sendChatMessage() = mixpanel.track("chat_click_send_message")
+    fun openAttachFile() = mixpanel.track("CHAT_UPLOAD_FILE")
+    fun openSendGif() = mixpanel.track("GIF_BUTTON_TITLE")
+    fun singleSelect(label: String) = mixpanel.track(
+        "chat_single_select",
+        jsonObjectOf("label" to label)
+    )
 
-    fun settings() = firebaseAnalytics.logEvent("SETTINGS_ACCESSIBILITY_HINT", null)
+    fun settings() = mixpanel.track("SETTINGS_ACCESSIBILITY_HINT")
 }

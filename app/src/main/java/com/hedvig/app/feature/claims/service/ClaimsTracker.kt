@@ -1,25 +1,12 @@
 package com.hedvig.app.feature.claims.service
 
-import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class ClaimsTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun createClaimClick(origin: String) = firebaseAnalytics.logEvent(
-        "create_claim_click",
-        Bundle().apply {
-            putString("origin", origin)
-        })
-
-    fun emergencyClick() = firebaseAnalytics.logEvent("emergency_click", null)
-    fun callGlobalAssistance() = firebaseAnalytics.logEvent("call_global_assistance", null)
-    fun emergencyChat() = firebaseAnalytics.logEvent("emergency_chat", null)
-
-    fun pledgeHonesty(origin: String?) = firebaseAnalytics.logEvent(
-        "honesty_pledge_click",
-        Bundle().apply {
-            origin?.let { putString("origin", it) }
-        }
-    )
+    fun createClaimClick() = mixpanel.track("CLAIMS_CREATE_CLAIM_BUTTON_LABEL")
+    fun callGlobalAssistance() = mixpanel.track("CLAIMS_EMERGENCY_SECOND_BOX_BUTTON_LABEL")
+    fun emergencyChat() = mixpanel.track("CLAIMS_EMERGENCY_THIRD_BOX_BUTTON_LABEL")
+    fun pledgeHonesty() = mixpanel.track("CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL")
 }

@@ -9,19 +9,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     private val model: LanguageAndMarketViewModel by viewModel()
-    private val tracker: LanguageSelectionTracker by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +94,6 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     }
 
     companion object {
-        const val CHANGED_MARKET = "changedMarket"
         fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
     }
 }

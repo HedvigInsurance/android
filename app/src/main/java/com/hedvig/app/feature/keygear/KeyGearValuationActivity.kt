@@ -101,7 +101,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
 
         dateInput.setHapticClickListener {
-            tracker.addDate()
             val calendar = Calendar.getInstance()
             DatePickerDialog(
                 this,
@@ -130,7 +129,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             if (isUploading) {
                 return@setHapticClickListener
             }
-            tracker.saveValuation()
             isUploading = true
             transitionToUploading()
 

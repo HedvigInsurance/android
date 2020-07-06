@@ -263,7 +263,6 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     fun showSuccess() {
         hasSuccessfullyConnectedDirectDebit = true
-        tracker.addPaymentInfo()
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.ic_active)
         // TODO: New copy

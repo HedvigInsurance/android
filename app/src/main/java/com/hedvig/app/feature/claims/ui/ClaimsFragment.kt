@@ -46,7 +46,7 @@ class ClaimsFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       
+
         val scrollInitialBottomPadding = claimsNestedScrollView.paddingBottom
         loggedInViewModel.bottomTabInset.observe(this) { bti ->
             bti?.let { bottomTabInset ->
@@ -94,7 +94,7 @@ class ClaimsFragment : BaseTabFragment() {
             insuranceInactiveMessage.remove()
             commonClaimCreateClaimButton.enable()
             commonClaimCreateClaimButton.setHapticClickListener {
-                tracker.createClaimClick("main_screen")
+                tracker.createClaimClick()
                 HonestyPledgeBottomSheet
                     .newInstance("main_screen")
                     .show(childFragmentManager, "honestyPledge")
