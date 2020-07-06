@@ -146,7 +146,6 @@ dependencies {
     releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
-    implementation "com.google.firebase:firebase-core:17.4.3"
     implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
     implementation 'com.google.firebase:firebase-config:19.1.4'
     implementation "com.google.firebase:firebase-messaging:20.2.1"
