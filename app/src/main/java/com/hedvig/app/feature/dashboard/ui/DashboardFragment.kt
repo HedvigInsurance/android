@@ -7,6 +7,7 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
@@ -14,11 +15,13 @@ import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val dashboardViewModel: DashboardViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+    private val tracker: DashboardTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,7 +34,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         root.setupToolbarScrollListener(loggedInViewModel)
-        root.adapter = DashboardAdapter(parentFragmentManager)
+        root.adapter = DashboardAdapter(parentFragmentManager, tracker)
 
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
