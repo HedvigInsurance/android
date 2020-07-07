@@ -9,4 +9,5 @@ class TrustlyTracker(
     fun doItLater() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER")
     fun retry() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY")
     fun notNow() = mixpanel.track("TRUSTLY_SKIP_BUTTON")
+    fun close() = mixpanel.track("PROFILE_TRUSTLY_CLOSE")
 }
