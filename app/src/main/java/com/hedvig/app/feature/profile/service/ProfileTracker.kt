@@ -1,17 +1,9 @@
 package com.hedvig.app.feature.profile.service
 
-import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class ProfileTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun clickReferral(incentive: Int?) = firebaseAnalytics.logEvent(
-        "click_referral",
-        Bundle().apply {
-            incentive?.let { putInt("incentive", it) }
-        }
-    )
-
-    fun howDoesItWorkClick() = firebaseAnalytics.logEvent("click_charity_how_does_it_work", null)
+    fun howDoesItWorkClick() = mixpanel.track("CHARITY_INFO_BUTTON_LABEL")
 }

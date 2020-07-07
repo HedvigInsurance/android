@@ -10,8 +10,6 @@ import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
@@ -25,7 +23,6 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
@@ -45,7 +42,6 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
-import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -53,7 +49,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
-import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
@@ -91,6 +86,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -104,7 +100,12 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single { FirebaseAnalytics.getInstance(get()) }
+    single {
+        MixpanelAPI.getInstance(
+            get(),
+            get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
+        )
+    }
     single { AppEventsLogger.newLogger(get()) }
     single {
         SimpleCache(
@@ -270,8 +271,6 @@ val repositoriesModule = module {
 
 val trackerModule = module {
     single { ClaimsTracker(get()) }
-    single { DashboardTracker(get()) }
-    single { MarketingTracker(get()) }
     single { ProfileTracker(get()) }
     single { WhatsNewTracker(get()) }
     single { ReferralsTracker(get()) }
@@ -279,10 +278,8 @@ val trackerModule = module {
     single { WelcomeTracker(get()) }
     single { OfferTracker(get(), get()) }
     single { ChatTracker(get()) }
-    single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
-    single { LanguageSelectionTracker(get()) }
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }

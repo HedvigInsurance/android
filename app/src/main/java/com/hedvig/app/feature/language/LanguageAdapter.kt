@@ -22,7 +22,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.language_item.view.*
 
 class LanguageAdapter(
-    private val tracker: LanguageSelectionTracker,
     private val languageAndMarketViewModel: LanguageAndMarketViewModel
 ) : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
@@ -39,7 +38,6 @@ class LanguageAdapter(
                     language.resources.getString(R.string.SETTINGS_LANGUAGE_SYSTEM_DEFAULT)
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_global))
                 parent.setHapticClickListener {
-                    tracker.selectLanguage("system_default")
                     parent.context.setLanguage(Language.SYSTEM_DEFAULT, languageAndMarketViewModel)
                     parent.context.goToMarketingActivity()
                 }
@@ -48,7 +46,6 @@ class LanguageAdapter(
                 language.text = language.resources.getString(R.string.SETTINGS_LANGUAGE_SWEDISH)
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_se))
                 parent.setHapticClickListener {
-                    tracker.selectLanguage("se")
                     parent.context.setLanguage(Language.SV_SE, languageAndMarketViewModel)
                     parent.context.goToMarketingActivity()
                 }
@@ -57,7 +54,6 @@ class LanguageAdapter(
                 language.text = language.resources.getString(R.string.SETTINGS_LANGUAGE_ENGLISH)
                 flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_flag_en))
                 parent.setHapticClickListener {
-                    tracker.selectLanguage("en")
                     parent.context.setLanguage(Language.EN_SE, languageAndMarketViewModel)
                     parent.context.goToMarketingActivity()
                 }

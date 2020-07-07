@@ -56,7 +56,6 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         if (data.eligibleToClaim) {
             commonClaimCreateClaimButton.enable()
             commonClaimCreateClaimButton.setHapticClickListener {
-                tracker.createClaimClick(data.title)
                 HonestyPledgeBottomSheet
                     .newInstance(data.title)
                     .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)

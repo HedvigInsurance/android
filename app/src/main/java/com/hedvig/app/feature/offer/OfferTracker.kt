@@ -1,37 +1,31 @@
 package com.hedvig.app.feature.offer
 
-import android.os.Bundle
 import com.facebook.appevents.AppEventsLogger
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.hedvig.app.util.jsonObjectOf
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import java.math.BigDecimal
 import java.util.Currency
 
 class OfferTracker(
-    private val firebaseAnalytics: FirebaseAnalytics,
-    private val facebookAnalytics: AppEventsLogger
+    private val facebookAnalytics: AppEventsLogger,
+    private val mixpanel: MixpanelAPI
 ) {
 
     private var hasSigned = false
 
-    fun openChat() = firebaseAnalytics.logEvent("OFFER_OPEN_CHAT", null)
-    fun openTerms() = firebaseAnalytics.logEvent("OFFER_PRIVACY_POLICY", null)
-    fun openOfferLink(displayName: String) = firebaseAnalytics.logEvent(
+    fun openChat() = mixpanel.track("OFFER_OPEN_CHAT")
+    fun openOfferLink(displayName: String) = mixpanel.track(
         "OFFER_OPEN_LINK",
-        Bundle().apply { putString("link_label", displayName) })
+        jsonObjectOf("link_label" to displayName)
+    )
 
-    fun floatingSign() = firebaseAnalytics.logEvent("OFFER_SIGN_BUTTON", null)
-    fun toolbarSign() = firebaseAnalytics.logEvent("OFFER_BANKID_SIGN_BUTTON", null)
-    fun removeDiscount() = firebaseAnalytics.logEvent("OFFER_REMOVE_DISCOUNT_BUTTON", null)
-    fun addDiscount() = firebaseAnalytics.logEvent("OFFER_ADD_DISCOUNT_BUTTON", null)
-    fun presaleInformation() = firebaseAnalytics.logEvent("OFFER_PRESALE_INFORMATION", null)
-    fun terms() = firebaseAnalytics.logEvent("OFFER_TERMS", null)
+    fun floatingSign() = mixpanel.track("OFFER_SIGN_BUTTON")
+    fun removeDiscount() = mixpanel.track("OFFER_REMOVE_DISCOUNT_BUTTON")
+    fun addDiscount() = mixpanel.track("OFFER_ADD_DISCOUNT_BUTTON")
+    fun terms() = mixpanel.track("OFFER_TERMS")
     fun userDidSign(price: Double) {
         if (!hasSigned) {
             hasSigned = true
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, Bundle().apply {
-                putDouble(FirebaseAnalytics.Param.VALUE, price)
-                putString(FirebaseAnalytics.Param.CURRENCY, "SEK")
-            })
             facebookAnalytics.logPurchase(
                 BigDecimal(price),
                 Currency.getInstance("SEK")
@@ -39,9 +33,8 @@ class OfferTracker(
         }
     }
 
-    fun chooseStartDate() = firebaseAnalytics.logEvent("START_DATE_BTN", null)
-    fun activateToday() = firebaseAnalytics.logEvent("ACTIVATE_TODAY_BTN", null)
-    fun activateOnInsuranceEnd() = firebaseAnalytics.logEvent("ACTIVATE_INSURANCE_END_BTN", null)
-    fun chooseDate() = firebaseAnalytics.logEvent("CHOOSE_DATE_BTN", null)
-    fun changeDateContinue() = firebaseAnalytics.logEvent("ALERT_CONTINUE", null)
+    fun chooseStartDate() = mixpanel.track("START_DATE_BTN")
+    fun activateToday() = mixpanel.track("ACTIVATE_TODAY_BTN")
+    fun activateOnInsuranceEnd() = mixpanel.track("ACTIVATE_INSURANCE_END_BTN")
+    fun changeDateContinue() = mixpanel.track("ALERT_CONTINUE")
 }
