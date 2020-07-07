@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
@@ -21,10 +22,12 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     private val model: ContractDetailViewModel by viewModel()
+    private val tracker: DashboardTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +55,12 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         }
 
         homeChangeInfo.setHapticClickListener {
+            tracker.changeHomeInfo()
             showChangeInfoDialog()
         }
 
         coinsuredChangeInfo.setHapticClickListener {
+            tracker.changeCoinsuredInfo()
             showChangeInfoDialog()
         }
 

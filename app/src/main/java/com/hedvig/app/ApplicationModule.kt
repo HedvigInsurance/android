@@ -23,6 +23,7 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
@@ -49,6 +50,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
+import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
@@ -283,4 +285,6 @@ val trackerModule = module {
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }
+    single { DashboardTracker(get()) }
+    single { MarketingTracker(get()) }
 }

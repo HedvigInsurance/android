@@ -13,9 +13,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
-class LanguageAdapterNew(
+class LanguageAdapter(
     private val model: LanguageAndMarketViewModel
-) : RecyclerView.Adapter<LanguageAdapterNew.ViewHolder>() {
+) : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
     private var lastCheckedPos = 0
     private var lastChecked: RadioButton? = null
 

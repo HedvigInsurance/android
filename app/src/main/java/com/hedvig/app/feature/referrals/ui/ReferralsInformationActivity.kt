@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
@@ -17,10 +18,13 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_referrals_information.*
 import org.javamoney.moneta.Money
+import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
+    private val tracker: ReferralsTracker by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +57,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
         val termsAsUri = Uri.parse(termsUrl)
 
         termsAndConditions.setHapticClickListener {
+            tracker.termsAndConditions()
             if (canOpenUri(termsAsUri)) {
                 openUri(termsAsUri)
             }

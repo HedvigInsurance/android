@@ -37,4 +37,5 @@ class OfferTracker(
     fun activateToday() = mixpanel.track("ACTIVATE_TODAY_BTN")
     fun activateOnInsuranceEnd() = mixpanel.track("ACTIVATE_INSURANCE_END_BTN")
     fun changeDateContinue() = mixpanel.track("ALERT_CONTINUE")
+    fun settings() = mixpanel.track("SETTINGS_ACCESSIBILITY_HINT")
 }
