@@ -40,14 +40,32 @@ object ChatNotificationManager {
             hedvigPerson
         )
 
-        val messagingStyle = NotificationCompat.MessagingStyle(youPerson(context))
-            .addMessage(message)
+        val messagingStyle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val notificationManager = context.getSystemService<NotificationManager>()
+
+            notificationManager
+                ?.activeNotifications
+                ?.firstOrNull { it.id == CHAT_NOTIFICATION_ID }
+                ?.notification
+                ?.let { existingNotification ->
+                    NotificationCompat.MessagingStyle
+                        .extractMessagingStyleFromNotification(existingNotification)
+                        ?.addMessage(message)
+                } ?: defaultMessagingStyle(context, message)
+        } else {
+            defaultMessagingStyle(context, message)
+        }
 
         sendChatNotificationInner(
             context,
             messagingStyle
         )
     }
+
+    private fun defaultMessagingStyle(
+        context: Context,
+        message: NotificationCompat.MessagingStyle.Message
+    ) = NotificationCompat.MessagingStyle(youPerson(context)).addMessage(message)
 
     private fun sendChatNotificationInner(
         context: Context,
