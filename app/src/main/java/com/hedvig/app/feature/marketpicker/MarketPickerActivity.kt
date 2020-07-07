@@ -52,7 +52,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             model.loadGeo()
         }
 
-        val languageAdapter = LanguageAdapterNew(model)
+        val languageAdapter = LanguageAdapter(model)
         languageList.adapter = languageAdapter
         model.markets.observe(this) { markets ->
             markets?.let {
