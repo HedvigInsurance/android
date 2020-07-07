@@ -50,6 +50,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
+import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
@@ -285,4 +286,5 @@ val trackerModule = module {
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }
     single { DashboardTracker(get()) }
+    single { MarketingTracker(get()) }
 }

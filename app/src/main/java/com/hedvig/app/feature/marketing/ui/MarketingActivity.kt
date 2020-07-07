@@ -10,6 +10,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
@@ -23,10 +24,12 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_marketing.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
     private val model: MarketingViewModel by viewModel()
+    private val tracker: MarketingTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +54,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
 
         signUp.setHapticClickListener {
+            tracker.signUp()
             when (market) {
                 Market.SE -> startActivity(
                     ChatActivity.newInstance(this)
@@ -62,6 +66,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
 
         logIn.setHapticClickListener {
+            tracker.logIn()
             when (market) {
                 Market.SE -> {
                     AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
