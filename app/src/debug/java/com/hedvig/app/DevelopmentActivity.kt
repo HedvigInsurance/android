@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.viewgallery.ViewGalleryActivity
@@ -28,6 +29,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
                     startActivity(Intent(this, ReferralsMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Chat") {
+                    startActivity(Intent(this, ChatMockActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))

@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
+import com.hedvig.android.owldroid.graphql.ChatMessageIdQuery
 import com.hedvig.android.owldroid.graphql.ChatMessageSubscription
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.EditLastResponseMutation
@@ -49,6 +50,13 @@ class ChatRepository(
             .watcher()
             .toFlow()
     }
+
+    fun messageIdsAsync() = apolloClientWrapper
+        .apolloClient
+        .query(ChatMessageIdQuery())
+        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .toDeferred()
 
     fun subscribeToChatMessages() =
         apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription()).toFlow()
