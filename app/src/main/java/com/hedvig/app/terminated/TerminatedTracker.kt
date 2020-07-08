@@ -1,9 +1,9 @@
 package com.hedvig.app.terminated
 
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class TerminatedTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun openChat() = firebaseAnalytics.logEvent("INSURANCE_STATUS_TERMINATED_ALERT_CTA", null)
+    fun openChat() = mixpanel.track("INSURANCE_STATUS_TERMINATED_ALERT_CTA")
 }

@@ -26,3 +26,6 @@ open_source_licenses.html
 # lokalise credentials
 lokalise.properties
 app/src/main/res/**/strings.xml
+
+# mixpanel credentials
+mixpanel.xml

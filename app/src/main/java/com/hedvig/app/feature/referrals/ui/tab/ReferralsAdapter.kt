@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.PieChartSegment
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -36,7 +37,8 @@ import kotlinx.android.synthetic.main.referrals_row.view.*
 import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
-    private val reload: () -> Unit
+    private val reload: () -> Unit,
+    private val tracker: ReferralsTracker
 ) : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
     var items: List<ReferralsModel> = LOADING_STATE
         set(value) {
@@ -86,18 +88,19 @@ class ReferralsAdapter(
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], reload)
+        holder.bind(items[position], reload, tracker)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: ReferralsModel, reload: () -> Unit)
+        abstract fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker)
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.referrals_title, parent, false)
         ) {
-            override fun bind(data: ReferralsModel, reload: () -> Unit) = Unit
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) =
+                Unit
         }
 
         class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
@@ -117,7 +120,7 @@ class ReferralsAdapter(
             private val newPrice = itemView.newPrice
             private val otherDiscountBox = itemView.otherDiscountBox
 
-            override fun bind(data: ReferralsModel, reload: () -> Unit) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 when (data) {
                     ReferralsModel.Header.LoadingHeader -> {
                         (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
@@ -274,7 +277,7 @@ class ReferralsAdapter(
             private val container = itemView.codeContainer
             private val footnote = itemView.codeFootnote
 
-            override fun bind(data: ReferralsModel, reload: () -> Unit) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 when (data) {
                     ReferralsModel.Code.LoadingCode -> {
                         placeholder.show()
@@ -316,7 +319,8 @@ class ReferralsAdapter(
                 .from(parent.context)
                 .inflate(R.layout.referrals_invites_header, parent, false)
         ) {
-            override fun bind(data: ReferralsModel, reload: () -> Unit) = Unit
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) =
+                Unit
         }
 
         class ReferralViewHolder(parent: ViewGroup) : ViewHolder(
@@ -331,7 +335,7 @@ class ReferralsAdapter(
             private val icon = itemView.icon
             private val status = itemView.status
 
-            override fun bind(data: ReferralsModel, reload: () -> Unit) {
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 when (data) {
                     ReferralsModel.Referral.LoadingReferral -> {
                         placeholders.show()
@@ -403,8 +407,11 @@ class ReferralsAdapter(
                 .inflate(R.layout.referrals_error, parent, false)
         ) {
             private val retry = itemView.retry
-            override fun bind(data: ReferralsModel, reload: () -> Unit) {
-                retry.setHapticClickListener { reload() }
+            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
+                retry.setHapticClickListener {
+                    tracker.reload()
+                    reload()
+                }
             }
         }
     }

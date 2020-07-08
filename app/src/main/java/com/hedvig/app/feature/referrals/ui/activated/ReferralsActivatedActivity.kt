@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
@@ -17,10 +18,12 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_referrals_activated.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_activated) {
     private val model: ReferralsActivatedViewModel by viewModel()
+    private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
         }
 
         close.setHapticClickListener {
+            tracker.closeActivated()
             finish()
         }
 

@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import com.hedvig.app.R
+import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.remove
@@ -40,6 +41,7 @@ class AudioRecorderView : LinearLayout {
 
     private lateinit var requestPermission: () -> Unit
     private lateinit var uploadRecording: (String) -> Unit
+    private lateinit var tracker: ChatTracker
 
     init {
         inflate(context, R.layout.audio_recorder_view, this)
@@ -49,6 +51,7 @@ class AudioRecorderView : LinearLayout {
         (upload as TextView).text = resources.getString(R.string.AUDIO_INPUT_SAVE)
 
         startRecording.setHapticClickListener {
+            tracker.recordClaim()
             if (context.hasPermissions(Manifest.permission.RECORD_AUDIO)) {
                 triggerStartRecording()
             } else {
@@ -57,18 +60,22 @@ class AudioRecorderView : LinearLayout {
         }
 
         stopRecording.setHapticClickListener {
+            tracker.stopRecording()
             triggerStopRecording()
         }
 
         redo.setHapticClickListener {
+            tracker.redoClaim()
             triggerRedo()
         }
 
         playback.setHapticClickListener {
+            tracker.playClaim()
             triggerPlayback()
         }
 
         upload.setHapticClickListener {
+            tracker.uploadClaim()
             triggerUpload()
         }
     }
@@ -81,9 +88,14 @@ class AudioRecorderView : LinearLayout {
         player = null
     }
 
-    fun initialize(requestPermission: () -> Unit, uploadRecording: (String) -> Unit) {
+    fun initialize(
+        requestPermission: () -> Unit,
+        uploadRecording: (String) -> Unit,
+        tracker: ChatTracker
+    ) {
         this.requestPermission = requestPermission
         this.uploadRecording = uploadRecording
+        this.tracker = tracker
     }
 
     fun permissionGranted() {

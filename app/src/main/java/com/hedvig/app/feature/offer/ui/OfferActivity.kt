@@ -77,6 +77,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
 
         settings.setHapticClickListener {
+            tracker.settings()
             startActivity(SettingsActivity.newInstance(this))
         }
 

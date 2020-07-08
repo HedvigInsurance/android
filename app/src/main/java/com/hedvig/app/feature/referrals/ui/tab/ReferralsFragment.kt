@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.referrals.ReferralsViewModel
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.apollo.defaultLocale
@@ -24,12 +25,14 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import e
 import kotlinx.android.synthetic.main.fragment_referrals.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val referralsViewModel: ReferralsViewModel by viewModel()
+    private val tracker: ReferralsTracker by inject()
 
     private var shareHeight = 0
     private var bottomTabInset = 0
@@ -56,10 +59,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
         invites.setupToolbarScrollListener(loggedInViewModel)
         invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-        invites.adapter = ReferralsAdapter {
+        invites.adapter = ReferralsAdapter({
             (invites.adapter as? ReferralsAdapter)?.setLoading()
             referralsViewModel.load()
-        }
+        }, tracker)
 
         referralsViewModel.data.observe(viewLifecycleOwner) { data ->
             if (data == null) {
@@ -82,6 +85,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             } else {
                 val code = successData.referralInformation.campaign.code
                 share.setHapticClickListener {
+                    tracker.share()
                     requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                         intent.putExtra(
                             Intent.EXTRA_TEXT,

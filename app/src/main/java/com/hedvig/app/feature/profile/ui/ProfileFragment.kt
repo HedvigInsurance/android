@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
@@ -28,10 +29,11 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : BaseTabFragment() {
-
+    private val tracker: ProfileTracker by inject()
     private val userViewModel: UserViewModel by sharedViewModel()
     private val profileViewModel: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
@@ -70,13 +72,16 @@ class ProfileFragment : BaseTabFragment() {
             }
 
             feedbackRow.setHapticClickListener {
+                tracker.feedbackRow()
                 startActivity(Intent(requireContext(), FeedbackActivity::class.java))
             }
             aboutAppRow.setHapticClickListener {
+                tracker.aboutAppRow()
                 startActivity(Intent(requireActivity(), AboutAppActivity::class.java))
             }
             logout.setHapticClickListener {
                 userViewModel.logout {
+                    tracker.logout()
                     requireContext().storeBoolean(IS_VIEWING_OFFER, false)
                     requireContext().setAuthenticationToken(null)
                     requireContext().setIsLoggedIn(false)
@@ -92,6 +97,7 @@ class ProfileFragment : BaseTabFragment() {
         val lastName = profileData.member.lastName ?: ""
         myInfoRow.description = "$firstName $lastName"
         myInfoRow.setHapticClickListener {
+            tracker.myInfoRow()
             startActivity(Intent(requireContext(), MyInfoActivity::class.java))
         }
     }
@@ -99,6 +105,7 @@ class ProfileFragment : BaseTabFragment() {
     private fun setupCharity(profileData: ProfileQuery.Data) {
         charityRow.description = profileData.cashback?.fragments?.cashbackFragment?.name
         charityRow.setHapticClickListener {
+            tracker.charityRow()
             startActivity(Intent(requireContext(), CharityActivity::class.java))
         }
     }
@@ -110,6 +117,7 @@ class ProfileFragment : BaseTabFragment() {
                 ?.toInt()
         )
         paymentRow.setHapticClickListener {
+            tracker.paymentRow()
             startActivity(Intent(requireContext(), PaymentActivity::class.java))
         }
     }

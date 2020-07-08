@@ -1,14 +1,15 @@
 package com.hedvig.app.feature.referrals
 
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class ReferralsTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) {
-    fun redeemReferralCode() = firebaseAnalytics.logEvent("REFERRAL_STARTSCREEN_BTN_CTA", null)
-    fun skipReferralCode() = firebaseAnalytics.logEvent("REFERRAL_STARTSCREEN_BTN_SKIP", null)
-    fun inviteMoreFriends() = firebaseAnalytics.logEvent("REFERRAL_SUCCESS_BTN_CTA", null)
-    fun closeReferralSuccess() = firebaseAnalytics.logEvent("REFERRAL_SUCCESS_BTN_CLOSE", null)
-    fun redeemReferralCodeOverlay() =
-        firebaseAnalytics.logEvent("REFERRAL_ADDCOUPON_BTN_SUBMIT", null)
+    fun redeemReferralCode() = mixpanel.track("REFERRAL_STARTSCREEN_BTN_CTA")
+    fun skipReferralCode() = mixpanel.track("REFERRAL_STARTSCREEN_BTN_SKIP")
+    fun redeemReferralCodeOverlay() = mixpanel.track("REFERRAL_ADDCOUPON_BTN_SUBMIT")
+    fun termsAndConditions() = mixpanel.track("referrals_info_sheet.full_terms_and_conditions")
+    fun closeActivated() = mixpanel.track("referrals_intro_screen.button")
+    fun share() = mixpanel.track("referrals_empty.share_code_button")
+    fun reload() = mixpanel.track("referrals_error_button")
 }

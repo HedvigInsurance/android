@@ -263,7 +263,6 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
 
     fun showSuccess() {
         hasSuccessfullyConnectedDirectDebit = true
-        tracker.addPaymentInfo()
         trustlyContainer.remove()
         resultIcon.setImageResource(R.drawable.ic_active)
         // TODO: New copy
@@ -276,6 +275,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
             resultClose.text = getString(R.string.PROFILE_TRUSTLY_CLOSE)
         }
         resultClose.setHapticClickListener {
+            tracker.close()
             profileViewModel.refreshBankAccountInfo()
             close()
         }
