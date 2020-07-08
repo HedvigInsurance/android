@@ -322,6 +322,8 @@
             </intent-filter>
         </service>
 
+        <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
+
         <service
             android:name=".feature.adyen.AdyenDropInService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
