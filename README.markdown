@@ -6,6 +6,8 @@
     - `app/src/${debug|staging|release}/res/values/adyen.xml`
 2. Acquire Lokalise credentials (you can find them in 1Password), place in the following file:
     - `lokalise.properties`
+3. Acquire Mixpanel credentials (you can find them in 1Password), place in the following paths:
+    - `app/src/${debug|staging|release}/res/values/mixpanel.xml`
 3. Download the schema (required to consume any changes in schema as well):
 ```bash
 $ ./gradlew apollo:downloadApolloSchema
