@@ -8,7 +8,7 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
     override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()

@@ -11,8 +11,8 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dialog_year_month_picker.*
 import kotlinx.android.synthetic.main.dialog_year_month_picker.view.*
-import org.threeten.bp.YearMonth
 import java.text.DateFormatSymbols
+import java.time.YearMonth
 import java.util.Calendar
 
 abstract class YearMonthPickerDialog : DialogFragment() {

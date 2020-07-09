@@ -37,8 +37,8 @@ import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.LocalDate
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
