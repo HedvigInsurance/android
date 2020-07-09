@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.feature.offer.OfferViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockOfferViewModel(
     context: Context

@@ -13,7 +13,6 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
-import com.jakewharton.threetenabp.AndroidThreeTen
 import e
 import i
 import kotlinx.coroutines.CoroutineScope
@@ -45,8 +44,6 @@ open class HedvigApplication : Application() {
         Theme
             .fromSettings(this)
             ?.apply()
-
-        AndroidThreeTen.init(this)
 
         startKoin {
             androidLogger()

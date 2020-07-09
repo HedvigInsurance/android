@@ -10,7 +10,7 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockPaymentViewModel : PaymentViewModel() {
     override val data = MutableLiveData<Pair<ProfileQuery.Data?, PayinStatusQuery.Data?>>()

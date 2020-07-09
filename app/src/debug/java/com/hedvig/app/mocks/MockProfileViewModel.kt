@@ -10,7 +10,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.LiveEvent
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockProfileViewModel : ProfileViewModel() {
     override val data =

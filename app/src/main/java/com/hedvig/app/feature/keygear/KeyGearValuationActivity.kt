@@ -36,8 +36,8 @@ import e
 import kotlinx.android.synthetic.main.activity_key_gear_valuation.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.LocalDate
 import java.text.DateFormatSymbols
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 
