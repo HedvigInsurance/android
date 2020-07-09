@@ -6,7 +6,7 @@ apollo {
     generateKotlinModels = true
     customTypeMapping = [
             "URL"                   : "kotlin.String",
-            "LocalDate"             : "org.threeten.bp.LocalDate",
+            "LocalDate"             : "java.time.LocalDate",
             "Upload"                : "com.apollographql.apollo.api.FileUpload",
             "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse",
             "CheckoutPaymentsAction": "kotlin.String"
@@ -47,9 +47,6 @@ dependencies {
     // Apollo
     api "com.apollographql.apollo:apollo-runtime:$apollo_version"
     api "com.apollographql.apollo:apollo-android-support:$apollo_version"
-
-    // ThreeTen
-    api 'com.jakewharton.threetenabp:threetenabp:1.2.0'
 
     // adyen
     implementation 'com.adyen.checkout:drop-in:3.6.4'

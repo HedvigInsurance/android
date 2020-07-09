@@ -3,8 +3,8 @@ package com.hedvig.app.util.apollo
 import com.apollographql.apollo.response.CustomTypeAdapter
 import com.apollographql.apollo.response.CustomTypeValue
 import e
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeParseException
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 class PromiscuousLocalDateAdapter : CustomTypeAdapter<LocalDate> {
     override fun encode(value: LocalDate): CustomTypeValue<*> =

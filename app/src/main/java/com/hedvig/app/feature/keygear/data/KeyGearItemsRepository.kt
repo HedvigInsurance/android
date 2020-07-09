@@ -29,8 +29,8 @@ import com.hedvig.app.util.extensions.into
 import e
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
-import org.threeten.bp.LocalDate
 import java.io.File
+import java.time.LocalDate
 import java.util.UUID
 
 class KeyGearItemsRepository(

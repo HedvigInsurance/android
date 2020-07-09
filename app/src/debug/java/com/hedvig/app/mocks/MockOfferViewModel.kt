@@ -12,7 +12,7 @@ import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()

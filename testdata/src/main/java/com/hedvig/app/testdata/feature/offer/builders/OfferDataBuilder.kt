@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 data class OfferDataBuilder(
     private val startDate: LocalDate? = null,

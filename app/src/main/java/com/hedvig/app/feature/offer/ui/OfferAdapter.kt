@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.offer_header.view.*
 import kotlinx.android.synthetic.main.offer_header.view.title
 import kotlinx.android.synthetic.main.offer_peril_area.view.*
 import kotlinx.android.synthetic.main.offer_terms_area.view.*
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,

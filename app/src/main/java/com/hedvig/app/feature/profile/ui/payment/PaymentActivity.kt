@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.payment_details_section.*
 import kotlinx.android.synthetic.main.payment_history_section.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter
 
 class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val model: PaymentViewModel by viewModel()
