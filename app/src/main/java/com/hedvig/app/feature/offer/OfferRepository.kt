@@ -19,7 +19,7 @@ import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.apollo.toFlow
 import e
 import kotlinx.coroutines.flow.Flow
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper,

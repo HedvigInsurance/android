@@ -10,9 +10,9 @@ import com.hedvig.app.util.extensions.showAlert
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
 import java.text.DateFormatSymbols
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {

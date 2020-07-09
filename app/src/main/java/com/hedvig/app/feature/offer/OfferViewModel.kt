@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     abstract val data: MutableLiveData<OfferQuery.Data>

@@ -27,9 +27,9 @@ import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import kotlinx.android.synthetic.main.dashboard_info_card.view.*
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*
 import kotlinx.android.synthetic.main.dashboard_upsell.view.title
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.temporal.ChronoUnit
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class DashboardAdapter(
     private val fragmentManager: FragmentManager,

@@ -14,7 +14,7 @@ import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     override val data = MutableLiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>()
