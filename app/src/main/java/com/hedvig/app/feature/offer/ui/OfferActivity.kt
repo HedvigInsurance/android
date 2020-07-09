@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.offer.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -13,13 +16,11 @@ import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.fadeIn
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_offer.*
-import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -32,6 +33,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         super.onCreate(savedInstanceState)
 
         offerRoot.setEdgeToEdgeSystemUiFlags(true)
+        offerToolbar.measure(
+            View.MeasureSpec.makeMeasureSpec(offerRoot.width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(offerRoot.height, View.MeasureSpec.UNSPECIFIED)
+        )
+
+        offerScroll.updatePadding(top = offerScroll.paddingTop + offerToolbar.measuredHeight)
+
         offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
@@ -52,9 +60,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         offerViewModel.data.observe(lifecycleOwner = this) {
             it?.let { data ->
-                loadingSpinner.remove()
-
-                data.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishHouseQuoteDetails?.street
+                data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
+                    offerToolbarAddress.text = street
+                }
 
                 if (data.contracts.isNotEmpty()) {
                     storeBoolean(IS_VIEWING_OFFER, false)
@@ -117,6 +125,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     companion object {
+        fun newInstance(context: Context) = Intent(context, OfferActivity::class.java)
 
+        val OfferQuery.AsCompleteQuote.street: String?
+            get() {
+                quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
+                quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
+                return null
+            }
     }
 }

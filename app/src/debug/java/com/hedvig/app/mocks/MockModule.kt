@@ -19,7 +19,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val mockModule = module {
-    viewModel<OfferViewModel> { MockOfferViewModel(get()) }
+    viewModel<OfferViewModel> { MockOfferViewModel() }
     viewModel<ProfileViewModel> { MockProfileViewModel() }
     viewModel<PaymentViewModel> { MockPaymentViewModel() }
     viewModel<KeyGearViewModel> { MockKeyGearViewModel() }
