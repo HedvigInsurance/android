@@ -1,5 +1,6 @@
 package com.hedvig.app.mocks
 
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -21,7 +22,9 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        data.postValue(mockData)
+        Handler().postDelayed({
+            data.postValue(mockData)
+        }, 500)
     }
 
     override fun removeDiscount() = Unit

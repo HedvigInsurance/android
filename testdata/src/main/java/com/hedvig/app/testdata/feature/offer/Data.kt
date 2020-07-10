@@ -5,10 +5,10 @@ import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
 
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
 
-val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER = OfferDataBuilder(
+val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuilder(
     currentInsurer = OfferQuery.CurrentInsurer(
         id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080c",
         displayName = "Annat Försäkringsbolag",
-        switchable = false
+        switchable = true
     )
 ).build()

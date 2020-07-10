@@ -8,6 +8,7 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.mocks.MockOfferViewModel
 import com.hedvig.app.offerModule
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
 import kotlinx.android.synthetic.debug.activity_generic_development.*
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -26,6 +27,11 @@ class OfferMockActivity : AppCompatActivity(R.layout.activity_generic_developmen
                 GenericDevelopmentAdapter.Item.Header("Offer Screen"),
                 GenericDevelopmentAdapter.Item.ClickableItem("Swedish Apartment, No previous insurer") {
                     MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT
+                    startActivity(OfferActivity.newInstance(this))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Swedish Apartment, Previous insurer, Switchable") {
+                    MockOfferViewModel.mockData =
+                        OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
                     startActivity(OfferActivity.newInstance(this))
                 }
             )

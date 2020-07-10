@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer
 
 import android.content.Context
-import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
@@ -18,24 +17,19 @@ import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.apollo.toFlow
 import e
-import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
-    private val context: Context
+    context: Context
 ) {
-    private lateinit var offerQuery: OfferQuery
+    private val offerQuery = OfferQuery(defaultLocale(context))
 
-    fun loadOffer(): Flow<Response<OfferQuery.Data>> {
-        offerQuery = OfferQuery(defaultLocale(context))
-
-        return apolloClientWrapper
-            .apolloClient
-            .query(offerQuery)
-            .watcher()
-            .toFlow()
-    }
+    fun offer() = apolloClientWrapper
+        .apolloClient
+        .query(offerQuery)
+        .watcher()
+        .toFlow()
 
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient

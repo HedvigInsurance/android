@@ -2,10 +2,12 @@ package com.hedvig.app.feature.offer
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
 import com.hedvig.app.util.apolloMockServer
 import org.junit.Before
 import org.junit.Rule
@@ -29,14 +31,21 @@ class OfferActivityTest : KoinComponent {
     }
 
     @Test
-    fun shouldShowSwitcherSectionWhenUserHasExistingInsurance() {
+    fun shouldShowSwitcherSectionWhenUserHasExistingSwitchableInsurance() {
         apolloMockServer(
-            OfferQuery.OPERATION_NAME.name() to OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER
+            OfferQuery.OPERATION_NAME.name() to OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
         ).use { webServer ->
             webServer.start(8080)
 
             activityRule.launchActivity(null)
 
+            onScreen<OfferScreen> {
+                scroll {
+                    childAt<OfferScreen.HeaderItem>(0) {
+                        startDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
+                    }
+                }
+            }
         }
     }
 }

@@ -13,21 +13,21 @@ class ApolloTimberLogger : Logger {
                 if (t.isPresent) {
                     d(t.get())
                 } else {
-                    d { "$message $args" }
+                    d { String.format(message, *args) }
                 }
             }
             Logger.WARN -> {
                 if (t.isPresent) {
                     w(t.get())
                 } else {
-                    w { "$message, $args" }
+                    w { String.format(message, *args) }
                 }
             }
             Logger.ERROR -> {
                 if (t.isPresent) {
                     e(t.get())
                 } else {
-                    e { "$message $args" }
+                    e { String.format(message, *args) }
                 }
             }
         }
