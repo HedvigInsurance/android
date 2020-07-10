@@ -50,7 +50,7 @@ class KeyGearViewModelImpl(
             repository
                 .keyGearItems()
                 .onEach { response ->
-                    data.postValue(response.data())
+                    data.postValue(response.data)
                 }
                 .catch { e -> e(e) }
                 .collect()

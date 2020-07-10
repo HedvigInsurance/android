@@ -152,8 +152,8 @@ class LanguageAndMarketViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            preselectedMarket.postValue(response.getOrNull()?.data()?.geo?.countryISOCode)
-            response.getOrNull()?.data()?.geo?.let { geo ->
+            preselectedMarket.postValue(response.getOrNull()?.data?.geo?.countryISOCode)
+            response.getOrNull()?.data?.geo?.let { geo ->
                 try {
                     updateMarket(Market.valueOf(geo.countryISOCode))
                 } catch (e: Exception) {

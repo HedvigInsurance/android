@@ -1,9 +1,9 @@
 package com.hedvig.app.service
 
 import android.content.Context
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.isLoggedIn
@@ -28,11 +28,11 @@ class LoginStatusService(
         val response =
             apolloClientWrapper.apolloClient.query(ContractStatusQuery()).toDeferred().await()
 
-        if (response.data()?.contracts?.isEmpty() == true) {
+        if (response.data?.contracts?.isEmpty() == true) {
             return LoginStatus.ONBOARDING
         }
 
-        if (isTerminated(response.data()?.contracts)) {
+        if (isTerminated(response.data?.contracts)) {
             return LoginStatus.LOGGED_IN_TERMINATED
         }
 

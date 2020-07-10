@@ -32,13 +32,13 @@ class PaymentViewModelImpl(
         viewModelScope.launch {
             profileRepository
                 .profile()
-                .onEach { profileData.postValue(it.data()) }
+                .onEach { profileData.postValue(it.data) }
                 .catch { e(it) }
                 .launchIn(this)
 
             payinStatusRepository
                 .payinStatus()
-                .onEach { payinStatusData.postValue(it.data()) }
+                .onEach { payinStatusData.postValue(it.data) }
                 .catch { e(it) }
                 .launchIn(this)
         }

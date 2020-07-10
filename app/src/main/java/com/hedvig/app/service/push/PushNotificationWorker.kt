@@ -3,9 +3,9 @@ package com.hedvig.app.service.push
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
@@ -43,13 +43,14 @@ class PushNotificationWorker(
 
     private suspend fun registerPushToken(pushToken: String) {
         i { "Registering push token" }
-        val registerPushTokenMutation = RegisterPushTokenMutation(pushToken)
-        val query =
-            apolloClientWrapper.apolloClient.mutate(registerPushTokenMutation).toDeferred().await()
-        val response = runCatching { query }
+
+        val response = runCatching {
+            apolloClientWrapper.apolloClient.mutate(RegisterPushTokenMutation(pushToken))
+                .toDeferred().await()
+        }
         if (response.isFailure) {
             response.exceptionOrNull()
-                ?.let { e { "Failed to handleExpandWithKeyboard push token: $it" } }
+                ?.let { e { "Failed to register push token: $it" } }
             return
         }
         i { "Successfully registered push token" }

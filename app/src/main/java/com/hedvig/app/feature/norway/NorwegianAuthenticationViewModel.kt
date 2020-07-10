@@ -20,7 +20,7 @@ class NorwegianAuthenticationViewModel(
         viewModelScope.launch {
             repository
                 .authStatus()
-                .onEach { authStatus.postValue(it.data()?.authStatus?.status) }
+                .onEach { authStatus.postValue(it.data?.authStatus?.status) }
                 .catch { e(it) }
                 .launchIn(this)
 
@@ -34,7 +34,7 @@ class NorwegianAuthenticationViewModel(
                 response.exceptionOrNull()?.let { e(it) }
             }
 
-            redirectUrl.postValue(response.getOrNull()?.data()?.norwegianBankIdAuth?.redirectUrl)
+            redirectUrl.postValue(response.getOrNull()?.data?.norwegianBankIdAuth?.redirectUrl)
         }
     }
 }

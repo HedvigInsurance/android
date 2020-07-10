@@ -33,7 +33,7 @@ class AdyenViewModelImpl(
             }
 
             paymentMethods.postValue(
-                response.getOrNull()?.data()?.availablePaymentMethods?.paymentMethodsResponse
+                response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse
             )
         }
     }

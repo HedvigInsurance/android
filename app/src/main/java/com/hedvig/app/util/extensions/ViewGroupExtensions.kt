@@ -49,5 +49,5 @@ fun ViewGroup.calculateNonFullscreenHeightDiff(): Int {
     return heightDifference
 }
 
-fun ViewGroup.inflate(@LayoutRes layout: Int, attachToParent: Boolean = false): View =
-    LayoutInflater.from(context).inflate(layout, this, false)
+fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
+    LayoutInflater.from(context).inflate(layout, this, attachToRoot)

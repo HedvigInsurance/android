@@ -3,11 +3,11 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.util.apollo.toDeferred
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -100,7 +100,7 @@ open class HedvigApplication : Application() {
             response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }
             return
         }
-        response.getOrNull()?.data()?.createSessionV2?.token?.let { hedvigToken ->
+        response.getOrNull()?.data?.createSessionV2?.token?.let { hedvigToken ->
             setAuthenticationToken(hedvigToken)
             apolloClientWrapper.invalidateApolloClient()
             i { "Successfully saved hedvig token" }

@@ -3,13 +3,13 @@ package com.hedvig.app.feature.claims.data
 import android.content.Context
 import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.graphql.TriggerCallMeChatMutation
 import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
 import com.hedvig.android.owldroid.type.TriggerClaimChatInput
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
-import com.hedvig.app.util.apollo.toDeferred
 import kotlinx.coroutines.Deferred
 
 class ClaimsRepository(

@@ -35,7 +35,7 @@ class ContractCoverageViewModelImpl(
 
             val contract = response
                 .getOrNull()
-                ?.data()
+                ?.data
                 ?.contracts
                 ?.first { it.id == id }
 

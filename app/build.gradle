@@ -3,19 +3,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.apollographql.apollo'
 apply plugin: 'com.likandr.lokalise'
-
-apollo {
-    generateKotlinModels = true
-    customTypeMapping = [
-            "URL"                   : "kotlin.String",
-            "LocalDate"             : "java.time.LocalDate",
-            "Upload"                : "com.apollographql.apollo.api.FileUpload",
-            "PaymentMethodsResponse": "com.adyen.checkout.base.model.PaymentMethodsApiResponse",
-            "CheckoutPaymentsAction": "kotlin.String"
-    ]
-}
 
 apply plugin: 'com.jaredsburrows.license'
 licenseReport {
@@ -140,7 +128,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
     // Okhttp
-    def okhttp3_version = '4.0.1'
+    def okhttp3_version = '4.7.2'
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp3_version"
 
@@ -150,8 +138,8 @@ dependencies {
     stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
-    implementation 'com.google.firebase:firebase-config:19.1.4'
-    implementation "com.google.firebase:firebase-messaging:20.2.1"
+    implementation 'com.google.firebase:firebase-config:19.2.0'
+    implementation "com.google.firebase:firebase-messaging:20.2.3"
 
     implementation "com.mixpanel.android:mixpanel-android:5.8.4"
 

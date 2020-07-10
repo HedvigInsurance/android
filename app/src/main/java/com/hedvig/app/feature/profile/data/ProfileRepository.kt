@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.profile.data
 
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.PayinMethodQuery
@@ -11,8 +13,6 @@ import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.toDeferred
-import com.hedvig.app.util.apollo.toFlow
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 
@@ -45,7 +45,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .read(profileQuery)
             .execute()
         val newMember = cachedData
@@ -59,7 +59,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .copy(member = newMember)
 
         apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
@@ -72,7 +72,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .read(profileQuery)
             .execute()
 
@@ -84,14 +84,14 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             )
 
         apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
 
     fun writeRedeemedCostToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .read(profileQuery)
             .execute()
 
@@ -107,7 +107,7 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             )
 
         apolloClientWrapper.apolloClient
-            .apolloStore()
+            .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
@@ -127,17 +127,17 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .toDeferred()
             .await()
 
-        response.data()?.let { newData ->
+        response.data?.let { newData ->
             newData.bankAccount?.let { newBankAccount ->
                 val cachedData = apolloClientWrapper
                     .apolloClient
-                    .apolloStore()
+                    .apolloStore
                     .read(profileQuery)
                     .execute()
 
                 apolloClientWrapper
                     .apolloClient
-                    .apolloStore()
+                    .apolloStore
                     .writeAndPublish(
                         profileQuery,
                         cachedData.copy(
@@ -152,13 +152,13 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             newData.activePaymentMethods?.let { newActivePaymentMethods ->
                 val cachedData = apolloClientWrapper
                     .apolloClient
-                    .apolloStore()
+                    .apolloStore
                     .read(profileQuery)
                     .execute()
 
                 apolloClientWrapper
                     .apolloClient
-                    .apolloStore()
+                    .apolloStore
                     .writeAndPublish(
                         profileQuery,
                         cachedData.copy(
