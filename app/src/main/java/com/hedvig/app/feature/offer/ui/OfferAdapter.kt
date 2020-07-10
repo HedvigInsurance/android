@@ -497,12 +497,31 @@ class OfferDiffCallback(
     private val old: List<OfferModel>,
     private val new: List<OfferModel>
 ) : DiffUtil.Callback() {
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        old[oldItemPosition] == new[newItemPosition]
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldItem = old[oldItemPosition]
+        val newItem = new[newItemPosition]
+        if (oldItem is OfferModel.Header && newItem is OfferModel.Header) {
+            return true
+        }
+
+        if (oldItem is OfferModel.Facts && newItem is OfferModel.Facts) {
+            return true
+        }
+
+        if (oldItem is OfferModel.Perils && newItem is OfferModel.Perils) {
+            return true
+        }
+
+        if (oldItem is OfferModel.Terms && newItem is OfferModel.Terms) {
+            return true
+        }
+
+        return oldItem == newItem
+    }
 
     override fun getOldListSize() = old.size
     override fun getNewListSize() = new.size
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        areItemsTheSame(oldItemPosition, newItemPosition)
+        old[oldItemPosition] == new[newItemPosition]
 }

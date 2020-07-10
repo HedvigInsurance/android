@@ -2,8 +2,10 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View
+import androidx.core.view.doOnLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -12,10 +14,11 @@ import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
+import com.hedvig.app.util.boundedColorLerp
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -29,27 +32,45 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val offerViewModel: OfferViewModel by viewModel()
     private val tracker: OfferTracker by inject()
 
+    private var scrollInitialPaddingTop = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         offerRoot.setEdgeToEdgeSystemUiFlags(true)
-        offerToolbar.measure(
-            View.MeasureSpec.makeMeasureSpec(offerRoot.width, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(offerRoot.height, View.MeasureSpec.UNSPECIFIED)
-        )
-
-        offerScroll.updatePadding(top = offerScroll.paddingTop + offerToolbar.measuredHeight)
+        scrollInitialPaddingTop = offerScroll.paddingTop
+        offerToolbar.doOnLayout { applyInsets(it.height) }
 
         offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            applyInsets(view.height)
         }
         setSupportActionBar(offerToolbar)
 
         offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-            )
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
         }
+
+        offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var scrollY = 0
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                scrollY += dy
+
+                val percentage = scrollY.toFloat() / offerToolbar.height
+
+                if (percentage < -1 || percentage > 2) {
+                    return
+                }
+
+                offerToolbar.setBackgroundColor(
+                    boundedColorLerp(
+                        Color.TRANSPARENT,
+                        compatColor(R.color.translucent_tool_bar),
+                        percentage
+                    )
+                )
+            }
+        })
 
         offerScroll.adapter = OfferAdapter(
             supportFragmentManager,
@@ -97,31 +118,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun bindToolBar(address: String) {
-        offerToolbarAddress.text = address
-        offerToolbar.fadeIn()
-    }
-
-    private fun initializeToolbar() {
-/*
-        offerScroll.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
-            val positionInSpan =
-                scrollY - (BASE_MARGIN_OCTUPLE - (offerToolbar.height.toFloat()))
-            val percentage = positionInSpan / offerToolbar.height
-
-            if (percentage < -1 || percentage > 2) {
-                return@setOnScrollChangeListener
-            }
-
-            offerToolbar.setBackgroundColor(
-                boundedColorLerp(
-                    Color.TRANSPARENT,
-                    compatColor(R.color.translucent_tool_bar),
-                    percentage
-                )
-            )
-        }
-*/
+    private fun applyInsets(height: Int) {
+        offerScroll.updatePadding(top = height + scrollInitialPaddingTop)
     }
 
     companion object {
@@ -129,7 +127,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         val OfferQuery.AsCompleteQuote.street: String?
             get() {
-                quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
+                quoteDetails.asSwedishApartmentQuoteDetails?.street?.let { return it }
                 quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
                 return null
             }

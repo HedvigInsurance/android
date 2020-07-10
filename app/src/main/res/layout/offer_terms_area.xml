@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/base_margin_octuple"
+    android:background="?android:colorBackground"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/base_margin_double">
+    android:paddingHorizontal="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin_octuple">
 
     <TextView
         style="?textAppearanceBody1"
