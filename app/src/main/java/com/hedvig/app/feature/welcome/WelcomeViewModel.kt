@@ -21,7 +21,7 @@ class WelcomeViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data()?.let { response ->
+            response.getOrNull()?.data?.let { response ->
                 data.postValue(
                     response.welcome.map { page ->
                         DismissiblePagerPage(

@@ -28,7 +28,7 @@ class UserViewModel(
             userRepository
                 .subscribeAuthStatus()
                 .onEach { response ->
-                    authStatus.postValue(response.data())
+                    authStatus.postValue(response.data)
                 }
                 .catch { e(it) }
                 .launchIn(this)
@@ -38,7 +38,7 @@ class UserViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data())
+            autoStartToken.postValue(response.getOrNull()?.data)
         }
     }
 

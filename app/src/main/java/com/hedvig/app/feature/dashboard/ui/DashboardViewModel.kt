@@ -33,7 +33,7 @@ class DashboardViewModelImpl(
             payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
-                    response.data()?.let { data ->
+                    response.data?.let { data ->
                         payinStatusData.postValue(data)
                     }
                 }
@@ -51,7 +51,7 @@ class DashboardViewModelImpl(
                 return@launch
             }
 
-            dashboardData.postValue(dashboardResponse.getOrNull()?.data())
+            dashboardData.postValue(dashboardResponse.getOrNull()?.data)
         }
     }
 }

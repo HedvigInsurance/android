@@ -21,7 +21,7 @@ class RedeemCodeViewModel(
                 redeemCodeStatus.postValue(null)
                 return@launch
             }
-            response.getOrNull()?.let { redeemCodeStatus.postValue(it.data()) }
+            response.getOrNull()?.let { redeemCodeStatus.postValue(it.data) }
         }
     }
 }

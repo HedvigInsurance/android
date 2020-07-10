@@ -53,7 +53,7 @@ class KeyGearValuationViewModelImpl(
             repository
                 .keyGearItem(id)
                 .onEach { response ->
-                    data.postValue(response.data()?.keyGearItem)
+                    data.postValue(response.data?.keyGearItem)
                 }
                 .catch { e -> e(e) }
                 .collect()
