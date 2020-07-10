@@ -127,13 +127,21 @@ class OfferAdapter(
                                 )
                         }
 
-                        quote.startDate?.let { sd ->
-                            startDate.text = if (sd != LocalDate.now()) {
-                                sd.toString()
+                        val sd = quote.startDate
+
+                        if (sd != null) {
+                            if (sd == LocalDate.now()) {
+                                startDate.text = sd.toString()
                             } else {
-                                startDate.resources.getString(R.string.START_DATE_TODAY)
+                                startDate.setText(R.string.START_DATE_TODAY)
                             }
-                        } ?: startDate.setText(R.string.START_DATE_TODAY)
+                        } else {
+                            if (quote.currentInsurer?.switchable == true) {
+                                startDate.setText(R.string.ACTIVATE_INSURANCE_END_BTN)
+                            } else {
+                                startDate.setText(R.string.START_DATE_TODAY)
+                            }
+                        }
 
                         data.inner.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.let { incentive ->
                             discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
