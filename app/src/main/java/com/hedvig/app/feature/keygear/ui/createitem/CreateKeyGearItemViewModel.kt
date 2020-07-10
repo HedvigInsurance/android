@@ -96,7 +96,7 @@ class CreateKeyGearItemViewModelImpl(
                     uploadsResponse.exceptionOrNull()?.let { e(it) }
                 }
                 uploadsResponse.getOrNull()?.let { response ->
-                    response.data()?.uploadFiles?.map {
+                    response.data?.uploadFiles?.map {
                         S3FileInput(bucket = it.bucket, key = it.key)
                     } ?: return@launch
                 }
@@ -114,7 +114,7 @@ class CreateKeyGearItemViewModelImpl(
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
             }
-            result.getOrNull()?.let { createResult.postValue(it.data()) }
+            result.getOrNull()?.let { createResult.postValue(it.data) }
         }
     }
 }

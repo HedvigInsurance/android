@@ -47,6 +47,7 @@ dependencies {
     // Apollo
     api "com.apollographql.apollo:apollo-runtime:$apollo_version"
     api "com.apollographql.apollo:apollo-android-support:$apollo_version"
+    api "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
 
     // adyen
     implementation 'com.adyen.checkout:drop-in:3.6.4'

@@ -38,7 +38,7 @@ class ContractDetailViewModelImpl(
 
             val contract = response
                 .getOrNull()
-                ?.data()
+                ?.data
                 ?.contracts
                 ?.firstOrNull { it.id == id }
 

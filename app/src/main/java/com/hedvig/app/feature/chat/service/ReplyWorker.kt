@@ -32,7 +32,7 @@ class ReplyWorker(
         }
 
         val lastChatMessage =
-            idsResponse.getOrNull()?.data()?.messages?.first() ?: return Result.failure()
+            idsResponse.getOrNull()?.data?.messages?.first() ?: return Result.failure()
         val sendChatMessageResponse = runCatching {
             chatRepository
                 .sendChatMessageAsync(

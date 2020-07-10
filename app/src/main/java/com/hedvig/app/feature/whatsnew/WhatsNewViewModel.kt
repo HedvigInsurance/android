@@ -15,12 +15,12 @@ class WhatsNewViewModel(
 
     fun fetchNews(sinceVersion: String? = null) {
         viewModelScope.launch {
-            val response = runCatching { whatsNewRepository.fetchWhatsNew(sinceVersion) }
+            val response = runCatching { whatsNewRepository.whatsNewAsync(sinceVersion).await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.let { news.postValue(it.data()) }
+            response.getOrNull()?.let { news.postValue(it.data) }
         }
     }
 

@@ -33,7 +33,7 @@ class LoggedInViewModelImpl(
                     .await()
             }
 
-            data.postValue(response.getOrNull()?.data())
+            data.postValue(response.getOrNull()?.data)
         }
     }
 }
