@@ -116,6 +116,7 @@ class ChatRepository(
 
         val newMessages = cachedData.messages.toMutableList()
         newMessages.add(
+            0,
             ChatMessagesQuery.Message(
                 message.__typename,
                 fragments = chatMessagesFragment

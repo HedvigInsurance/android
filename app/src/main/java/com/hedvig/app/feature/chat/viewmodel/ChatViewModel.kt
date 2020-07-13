@@ -37,7 +37,6 @@ class ChatViewModel(
     val gifs = MutableLiveData<GifQuery.Data>()
 
     private val disposables = CompositeDisposable()
-    private val chatDisposable = CompositeDisposable()
 
     private var isSubscriptionAllowedToWrite = true
     private var isWaitingForParagraph = false
@@ -45,9 +44,6 @@ class ChatViewModel(
     private var loadRetries = 0L
 
     fun subscribe() {
-        if (chatDisposable.size() > 0) {
-            chatDisposable.dispose()
-        }
         viewModelScope.launch {
             chatRepository
                 .subscribeToChatMessages()
@@ -68,9 +64,6 @@ class ChatViewModel(
 
     fun load() {
         isSubscriptionAllowedToWrite = false
-        if (chatDisposable.size() > 0) {
-            chatDisposable.clear()
-        }
         viewModelScope.launch {
             chatRepository
                 .fetchChatMessages()
@@ -249,7 +242,6 @@ class ChatViewModel(
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
-        chatDisposable.clear()
     }
 
     fun uploadClaim(path: String) {
