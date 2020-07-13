@@ -51,7 +51,7 @@ class ReferralsActivatedActivityTest : KoinTest {
     @Test
     fun shouldShowCorrectDiscountAmount() {
         apolloMockServer(
-            LoggedInQuery.OPERATION_NAME.name() to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+            LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
         ).use { webServer ->
             webServer.start(8080)
 
