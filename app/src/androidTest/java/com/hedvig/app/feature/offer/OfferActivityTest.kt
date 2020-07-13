@@ -44,6 +44,7 @@ class OfferActivityTest : KoinComponent {
                     childAt<OfferScreen.HeaderItem>(0) {
                         startDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
                     }
+                    childAt<OfferScreen.SwitcherItem>(5) { title { containsText("Annat Försäkringsbolag") } }
                 }
             }
         }

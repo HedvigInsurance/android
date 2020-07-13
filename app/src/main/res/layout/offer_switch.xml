@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:colorBackground">
+
+    <TextView
+        android:id="@+id/switchTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceHeadline6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/OFFER_SWITCH_TITLE_APP" />
+
+    <TextView
+        android:id="@+id/bulletOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="1"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintEnd_toStartOf="@id/bulletOneText"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switchTitle" />
+
+    <TextView
+        android:id="@+id/bulletOneText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:text="@string/SIGN_MOBILE_BANK_ID"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintBottom_toBottomOf="@id/bulletOne"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bulletOne"
+        app:layout_constraintTop_toTopOf="@id/bulletOne" />
+
+    <TextView
+        android:id="@+id/bulletTwo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="2"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bulletOne" />
+
+    <TextView
+        android:id="@+id/bulletTwoText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/OFFER_SWITCH_COL_PARAGRAPH_ONE_APP"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintBottom_toBottomOf="@id/bulletTwo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bulletTwo"
+        app:layout_constraintTop_toTopOf="@id/bulletTwo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

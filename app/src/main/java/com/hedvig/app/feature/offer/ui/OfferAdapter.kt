@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.offer_fact_area.view.*
 import kotlinx.android.synthetic.main.offer_header.view.*
 import kotlinx.android.synthetic.main.offer_header.view.title
 import kotlinx.android.synthetic.main.offer_peril_area.view.*
+import kotlinx.android.synthetic.main.offer_switch.view.*
 import kotlinx.android.synthetic.main.offer_terms_area.view.*
 import java.time.LocalDate
 
@@ -61,6 +62,7 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_terms_area -> ViewHolder.Terms(parent)
+        R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -71,6 +73,7 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Terms -> R.layout.offer_terms_area
+        is OfferModel.Switcher -> R.layout.offer_switch
         OfferModel.Footer -> R.layout.offer_footer
     }
 
@@ -460,6 +463,25 @@ class OfferAdapter(
             }
         }
 
+        class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
+            private val title = itemView.switchTitle
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit
+            ) {
+                if (data is OfferModel.Switcher) {
+                    val insurer = data.displayName
+                        ?: title.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
+                    title.text = title.resources.getString(R.string.OFFER_SWITCH_TITLE_APP, insurer)
+                    return
+                }
+
+                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
+            }
+        }
+
         class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             override fun bind(
                 data: OfferModel,
@@ -496,6 +518,10 @@ sealed class OfferModel {
 
     data class Terms(
         val inner: OfferQuery.Data
+    ) : OfferModel()
+
+    data class Switcher(
+        val displayName: String?
     ) : OfferModel()
 
     object Footer : OfferModel()

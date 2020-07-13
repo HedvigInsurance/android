@@ -93,12 +93,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
                 } else {
-                    (offerScroll.adapter as? OfferAdapter)?.items = listOf(
+                    (offerScroll.adapter as? OfferAdapter)?.items = listOfNotNull(
                         OfferModel.Header(data),
                         OfferModel.Info,
                         OfferModel.Facts(data),
                         OfferModel.Perils(data),
                         OfferModel.Terms(data),
+                        data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
+                            if (currentInsurer.switchable == true) {
+                                OfferModel.Switcher(currentInsurer.displayName)
+                            } else {
+                                null
+                            }
+                        },
                         OfferModel.Footer
                     )
                 }
