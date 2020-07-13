@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.referrals.ui.editcode.ReferralsEditCodeActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/scrollViewContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                android:text="@string/referrals_change_code_sheet.headline"
+                android:textAlignment="center"
+                android:textAppearance="?textAppearanceHeadline5" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                android:text="@string/referrals_change_code_sheet.body"
+                android:textAlignment="center"
+                android:textAppearance="?textAppearanceBody1" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginEnd="@dimen/base_margin_double">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/code"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/referrals_change_code_sheet.input_hint" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_height="?actionBarSize" />
+
+</FrameLayout>

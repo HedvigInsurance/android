@@ -15,6 +15,13 @@
         android:text="@string/referrals_empty.code.headline"
         android:textAppearance="?textAppearanceHeadline6" />
 
+    <Button
+        android:id="@+id/edit"
+        style="?materialButtonTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/referrals_empty.edit.code.button" />
+
     <com.hedvig.app.ui.view.HedvigCardView
         android:id="@+id/codeContainer"
         android:layout_width="match_parent"

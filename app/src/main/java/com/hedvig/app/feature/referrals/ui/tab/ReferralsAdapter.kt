@@ -15,6 +15,7 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.PieChartSegment
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedColorLerp
@@ -274,6 +275,7 @@ class ReferralsAdapter(
         ) {
             private val placeholder = itemView.codePlaceholder
             private val code = itemView.code
+            private val edit = itemView.edit
             private val container = itemView.codeContainer
             private val footnote = itemView.codeFootnote
 
@@ -306,6 +308,10 @@ class ReferralsAdapter(
                                     incentiveAmount.format(footnote.context)
                                 )
                             }
+                        edit.setHapticClickListener {
+                            tracker.editCode()
+                            edit.context.startActivity(ReferralsEditCodeActivity.newInstance(edit.context))
+                        }
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
