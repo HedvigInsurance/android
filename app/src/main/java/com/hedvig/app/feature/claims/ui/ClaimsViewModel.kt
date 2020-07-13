@@ -27,7 +27,7 @@ class ClaimsViewModel(
                 response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
                 return@launch
             }
-            data.postValue(response.getOrNull()?.data())
+            data.postValue(response.getOrNull()?.data)
         }
     }
 

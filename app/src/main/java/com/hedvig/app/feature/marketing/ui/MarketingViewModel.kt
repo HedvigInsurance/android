@@ -25,7 +25,7 @@ class MarketingViewModelImpl(
                     .await()
             }
 
-            response.getOrNull()?.data()?.appMarketingImages?.firstOrNull()
+            response.getOrNull()?.data?.appMarketingImages?.firstOrNull()
                 ?.let { marketingBackground.postValue(it) }
         }
     }

@@ -31,7 +31,7 @@ class ReferralsActivatedViewModelImpl(
                 return@launch
             }
 
-            data.postValue(response.getOrNull()?.data())
+            data.postValue(response.getOrNull()?.data)
         }
     }
 }

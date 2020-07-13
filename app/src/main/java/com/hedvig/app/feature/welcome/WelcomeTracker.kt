@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.welcome
 
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.app.feature.dismissiblepager.DismissablePageTracker
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class WelcomeTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val mixpanel: MixpanelAPI
 ) : DismissablePageTracker {
-    override fun clickProceed() = firebaseAnalytics.logEvent("NEWS_PROCEED", null)
+    override fun clickProceed() = mixpanel.track("NEWS_PROCEED")
 }

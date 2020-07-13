@@ -25,7 +25,9 @@ import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.activity_settings.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SettingsActivity : BaseActivity() {
@@ -43,6 +45,7 @@ class SettingsActivity : BaseActivity() {
     }
 
     class PreferenceFragment : PreferenceFragmentCompat() {
+        private val mixpanel: MixpanelAPI by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
 
         @SuppressLint("ApplySharedPref")
@@ -99,6 +102,7 @@ class SettingsActivity : BaseActivity() {
                                     requireContext().setAuthenticationToken(null)
                                     requireContext().setIsLoggedIn(false)
                                     FirebaseInstanceId.getInstance().deleteInstanceId()
+                                    mixpanel.reset()
                                     requireActivity().triggerRestartActivity(MarketPickerActivity::class.java)
                                 }
                             },

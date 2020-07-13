@@ -14,6 +14,7 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
@@ -30,7 +31,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class DashboardAdapter(private val fragmentManager: FragmentManager) :
+class DashboardAdapter(
+    private val fragmentManager: FragmentManager,
+    private val tracker: DashboardTracker
+) :
     RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
     var items: List<DashboardModel> = emptyList()
         set(value) {
@@ -54,7 +58,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it) }
+                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it, tracker) }
             }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? DashboardModel.Contract)?.let {
@@ -117,7 +121,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
             private val body = itemView.body
             private val action = itemView.action
 
-            fun bind(data: DashboardModel.InfoBox) {
+            fun bind(data: DashboardModel.InfoBox, tracker: DashboardTracker) {
                 when (data) {
                     is DashboardModel.InfoBox.ImportantInformation -> {
                         title.text = data.title
@@ -149,6 +153,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                             Uri.parse(data.draftCertificateUrl)
                         }
                         action.setHapticClickListener {
+                            tracker.showRenewal()
                             maybeLinkUri.getOrNull()?.let { uri ->
                                 if (action.context.canOpenUri(uri)) {
                                     action.context.openUri(uri)
@@ -164,6 +169,7 @@ class DashboardAdapter(private val fragmentManager: FragmentManager) :
                         action.text =
                             body.resources.getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
                         action.setHapticClickListener {
+                            tracker.connectPayment()
                             action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
                         }
                     }

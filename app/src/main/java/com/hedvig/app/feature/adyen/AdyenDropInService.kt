@@ -29,7 +29,7 @@ class AdyenDropInService : DropInService(), CoroutineScope {
                 .await()
         }
 
-        val result = response.getOrNull()?.data()?.submitAdditionalPaymentDetails
+        val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
             ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
 
         result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
@@ -43,24 +43,25 @@ class AdyenDropInService : DropInService(), CoroutineScope {
         CallResult(CallResult.ResultType.ERROR, "Unknown error")
     }
 
-    override fun makePaymentsCall(paymentComponentData: JSONObject) = runBlocking(coroutineContext) {
-        val response = runCatching {
-            adyenRepository
-                .tokenizePaymentDetailsAsync(paymentComponentData)
-                .await()
+    override fun makePaymentsCall(paymentComponentData: JSONObject) =
+        runBlocking(coroutineContext) {
+            val response = runCatching {
+                adyenRepository
+                    .tokenizePaymentDetailsAsync(paymentComponentData)
+                    .await()
+            }
+
+            val result = response.getOrNull()?.data?.tokenizePaymentDetails
+                ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+
+            result.asTokenizationResponseAction?.action?.let { action ->
+                return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
+            }
+
+            result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
+                return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
+            }
+
+            CallResult(CallResult.ResultType.ERROR, "Unknown error")
         }
-
-        val result = response.getOrNull()?.data()?.tokenizePaymentDetails
-            ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
-
-        result.asTokenizationResponseAction?.action?.let { action ->
-            return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
-        }
-
-        result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
-            return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
-        }
-
-        CallResult(CallResult.ResultType.ERROR, "Unknown error")
-    }
 }

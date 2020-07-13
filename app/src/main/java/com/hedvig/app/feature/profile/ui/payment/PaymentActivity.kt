@@ -57,6 +57,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         nextPaymentGross.setStrikethrough(true)
 
         seePaymentHistory.setHapticClickListener {
+            tracker.seePaymentHistory()
             startActivity(PaymentHistoryActivity.newInstance(this))
         }
 
@@ -65,6 +66,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
 
         connectBankAccount.setHapticClickListener {
+            tracker.connectBankAccount()
             startActivity(ConnectPaymentActivity.newInstance(this))
         }
 

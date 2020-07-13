@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import java.util.Locale
 
 class FileService(
     private val context: Context
@@ -29,19 +30,23 @@ class FileService(
         return uri.path
     }
 
-    fun getMimeType(uri: Uri): String? {
+    fun getMimeType(uri: Uri): String {
         if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            return context.contentResolver.getType(uri)
+            val resolvedMimeType = context.contentResolver.getType(uri)
+            if (resolvedMimeType != null) {
+                return resolvedMimeType
+            }
         }
 
         return getMimeType(uri.toString())
     }
 
-    fun getMimeType(path: String): String? {
+    fun getMimeType(path: String): String {
         val fileExtension = getFileExtension(path)
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase())
+        return MimeTypeMap.getSingleton()
+            .getMimeTypeFromExtension(fileExtension.toLowerCase(Locale.getDefault()))
+            ?: ""
     }
 
     fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
-
 }

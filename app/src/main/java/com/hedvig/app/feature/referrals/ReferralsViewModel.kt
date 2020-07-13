@@ -32,12 +32,12 @@ class ReferralsViewModelImpl(
                 result.exceptionOrNull()?.let { data.postValue(Result.failure(it)) }
                 return@launch
             }
-            if (result.getOrNull()?.errors()?.isNotEmpty() == true) {
+            if (result.getOrNull()?.errors?.isNotEmpty() == true) {
                 data.postValue(Result.failure(Error()))
                 return@launch
             }
 
-            result.getOrNull()?.data()?.let { data.postValue(Result.success(it)) }
+            result.getOrNull()?.data?.let { data.postValue(Result.success(it)) }
         }
     }
 }

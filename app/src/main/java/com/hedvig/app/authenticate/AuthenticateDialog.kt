@@ -21,13 +21,11 @@ import kotlinx.android.synthetic.main.dialog_authenticate.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class AuthenticateDialog : DialogFragment() {
 
     private val userViewModel: UserViewModel by viewModel()
-    private val tracker: AuthTracker by inject()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -79,7 +77,6 @@ class AuthenticateDialog : DialogFragment() {
         }
         AuthState.SUCCESS -> {
             dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-            tracker.login()
             requireContext().setIsLoggedIn(true)
             GlobalScope.launch(Dispatchers.IO) {
                 FirebaseInstanceId.getInstance().deleteInstanceId()

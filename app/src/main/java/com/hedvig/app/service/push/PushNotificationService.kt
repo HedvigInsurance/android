@@ -7,8 +7,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.app.feature.chat.service.ChatNotificationManager
 import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.service.push.managers.ChatNotificationManager
 import com.hedvig.app.service.push.managers.GenericNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
@@ -49,7 +49,7 @@ class PushNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         when (remoteMessage.data[NOTIFICATION_TYPE_KEY]) {
             NOTIFICATION_TYPE_NEW_MESSAGE -> ChatNotificationManager
-                .sendChatNotification(this)
+                .sendChatNotification(this, remoteMessage)
             NOTIFICATION_TYPE_REFERRAL_SUCCESS -> ReferralsNotificationManager
                 .sendReferralNotification(this, remoteMessage)
             NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager

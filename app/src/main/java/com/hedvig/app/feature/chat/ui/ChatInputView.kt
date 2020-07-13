@@ -142,7 +142,7 @@ class ChatInputView : FrameLayout {
         this.sendSingleSelect = sendSingleSelect
         this.singleSelectLink = sendSingleSelectLink
         this.openAttachFile = openAttachFile
-        audioRecorder.initialize(requestAudioPermission, uploadRecording)
+        audioRecorder.initialize(requestAudioPermission, uploadRecording, tracker)
         this.tracker = tracker
         this.openSendGif = openSendGif
         this.chatRecyclerView = chatRecyclerView

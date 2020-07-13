@@ -114,7 +114,6 @@ class PhotosAdapter(
                     .into(photo)
 
                 photo.setOnCreateContextMenuListener { _, v, _ ->
-                    tracker.openPhotoContextMenu()
                     v.performOnLongPressHapticFeedback()
                     val popup = PopupMenu(v.context, v)
                     popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
