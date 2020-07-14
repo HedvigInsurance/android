@@ -3,8 +3,6 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.lifecycle.observe
@@ -34,10 +32,18 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
         }
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.setNavigationOnClickListener {
             onBackPressed()
+        }
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.save -> {
+                    // TODO: Check that everything is valid before making call
+                    model.changeCode(code.text.toString())
+                    true
+                }
+                else -> false
+            }
         }
 
         val currentCode = intent.getStringExtra(CODE)
@@ -53,20 +59,6 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 finish()
             }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.referrals_edit_code_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.save -> {
-            // TODO: Check that everything is valid before making call
-            model.changeCode(code.text.toString())
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
     }
 
     private fun applyInsets(toolbarHeight: Int) {

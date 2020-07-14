@@ -5,6 +5,10 @@
         <item name="android:background">?android:colorBackground</item>
     </style>
 
+    <style name="Hedvig.Theme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="textAllCaps">false</item>
+    </style>
+
     <style name="Hedvig.Theme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Hedvig.Theme.BottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
