@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.text.KButton
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
@@ -63,12 +64,15 @@ class ReferralsEditCodeActivityTest : KoinComponent {
             onScreen<ReferralsEditCodeScreen> {
                 edit {
                     hasText("TEST123")
+                    replaceText("EDITEDCODE123")
                 }
+                save { click() }
             }
         }
     }
 
     class ReferralsEditCodeScreen : Screen<ReferralsEditCodeScreen>() {
         val edit = KEditText { withId(R.id.code) }
+        val save = KButton { withId(R.id.save) }
     }
 }

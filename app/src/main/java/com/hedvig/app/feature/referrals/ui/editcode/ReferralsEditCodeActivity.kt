@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import e
@@ -12,6 +13,8 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setSupportActionBar(toolbar)
+
         val currentCode = intent.getStringExtra(CODE)
 
         if (currentCode == null) {
@@ -19,6 +22,11 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         }
 
         code.setText(currentCode)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.referrals_edit_code_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     companion object {
