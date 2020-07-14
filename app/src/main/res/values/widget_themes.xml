@@ -20,10 +20,16 @@
     </style>
 
     <style name="Hedvig.Theme.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputEditText</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.FilledBox">
         <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText</item>
     </style>
 
-    <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox" />
+    <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
 
     <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
         <item name="colorSurface">@color/colorSurfaceOnSurface</item>
