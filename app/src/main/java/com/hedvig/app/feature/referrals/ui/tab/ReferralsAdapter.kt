@@ -284,6 +284,7 @@ class ReferralsAdapter(
                     ReferralsModel.Code.LoadingCode -> {
                         placeholder.show()
                         code.remove()
+                        edit.remove()
                     }
                     is ReferralsModel.Code.LoadedCode -> {
                         placeholder.remove()
@@ -317,6 +318,7 @@ class ReferralsAdapter(
                                 )
                             )
                         }
+                        edit.show()
                     }
                     else -> {
                         e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
