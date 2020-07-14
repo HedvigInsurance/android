@@ -11,6 +11,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
