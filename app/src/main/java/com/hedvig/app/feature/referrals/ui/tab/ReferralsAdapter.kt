@@ -310,7 +310,12 @@ class ReferralsAdapter(
                             }
                         edit.setHapticClickListener {
                             tracker.editCode()
-                            edit.context.startActivity(ReferralsEditCodeActivity.newInstance(edit.context))
+                            edit.context.startActivity(
+                                ReferralsEditCodeActivity.newInstance(
+                                    edit.context,
+                                    data.inner.referralInformation.campaign.code
+                                )
+                            )
                         }
                     }
                     else -> {

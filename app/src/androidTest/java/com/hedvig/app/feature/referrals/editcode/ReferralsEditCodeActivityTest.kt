@@ -62,8 +62,7 @@ class ReferralsEditCodeActivityTest : KoinComponent {
 
             onScreen<ReferralsEditCodeScreen> {
                 edit {
-                    isDisplayed()
-                    hasHint(R.string.referrals_change_code_sheet_input_hint)
+                    hasText("TEST123")
                 }
             }
         }
