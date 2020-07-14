@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals.editcode
+package com.hedvig.app.feature.referrals.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -25,7 +25,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeActivityTest : KoinComponent {
+class ReferralTabOpenEditCodeTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -64,9 +64,7 @@ class ReferralsEditCodeActivityTest : KoinComponent {
             onScreen<ReferralsEditCodeScreen> {
                 edit {
                     hasText("TEST123")
-                    replaceText("EDITEDCODE123")
                 }
-                save { click() }
             }
         }
     }
