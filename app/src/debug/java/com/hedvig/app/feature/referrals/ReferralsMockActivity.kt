@@ -11,6 +11,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
@@ -122,6 +123,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
             viewModel<ReferralsViewModel> { MockReferralsViewModel() }
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
+            viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
         }
     }
 }
