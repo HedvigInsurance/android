@@ -9,9 +9,9 @@ import com.hedvig.app.feature.referrals.ReferralsRepository
 import kotlinx.coroutines.launch
 
 abstract class ReferralsEditCodeViewModel : ViewModel() {
-    protected val _data = MutableLiveData<UpdateReferralCampaignCodeMutation.Data>()
+    protected val _data = MutableLiveData<Result<UpdateReferralCampaignCodeMutation.Data>>()
 
-    val data: LiveData<UpdateReferralCampaignCodeMutation.Data>
+    val data: LiveData<Result<UpdateReferralCampaignCodeMutation.Data>>
         get() = _data
 
     abstract fun changeCode(newCode: String)
@@ -25,10 +25,18 @@ class ReferralsEditCodeViewModelImpl(
             val response = runCatching { referralsRepository.updateCode(newCode) }
 
             if (response.isFailure) {
-                // TODO In another PR: Implement the generic error state
+                response.exceptionOrNull()?.let { _data.postValue(Result.failure(it)) }
+                return@launch
             }
 
-            _data.postValue(response.getOrNull()?.data)
+            if (response.getOrNull()?.hasErrors() == true) {
+                _data.postValue(Result.failure(Error()))
+                return@launch
+            }
+
+            val data = response.getOrNull()?.data ?: return@launch
+
+            _data.postValue(Result.success(data))
         }
     }
 }
