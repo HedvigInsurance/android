@@ -40,7 +40,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             when (menuItem.itemId) {
                 R.id.save -> {
                     val enteredCode = code.text.toString()
-                    if (validate(enteredCode)) {
+                    if (validate(enteredCode) == ValidationResult.VALID) {
                         model.changeCode(enteredCode)
                     }
                     true
@@ -56,7 +56,21 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         }
 
         code.onChange { newValue ->
-            toolbar.menu.findItem(R.id.save).isEnabled = validate(newValue)
+            when (validate(newValue)) {
+                ValidationResult.VALID -> {
+                    toolbar.menu.findItem(R.id.save).isEnabled = true
+                    codeContainer.error = null
+                }
+                ValidationResult.TOO_SHORT -> {
+                    toolbar.menu.findItem(R.id.save).isEnabled = false
+                    codeContainer.error = null
+                }
+                ValidationResult.TOO_LONG -> {
+                    toolbar.menu.findItem(R.id.save).isEnabled = false
+                    codeContainer.error =
+                        getString(R.string.referrals_change_code_sheet_error_max_length)
+                }
+            }
         }
         code.setText(currentCode)
 
@@ -95,12 +109,22 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     }
 
     companion object {
-        private fun validate(code: String): Boolean {
+        private enum class ValidationResult {
+            VALID,
+            TOO_SHORT,
+            TOO_LONG
+        }
+
+        private fun validate(code: String): ValidationResult {
             if (code.isBlank()) {
-                return false
+                return ValidationResult.TOO_SHORT
             }
 
-            return true
+            if (code.length >= 24) {
+                return ValidationResult.TOO_LONG
+            }
+
+            return ValidationResult.VALID
         }
 
         private const val CODE = "CODE"
