@@ -118,3 +118,7 @@ val EDIT_CODE_DATA_ALREADY_TAKEN = EditCodeDataBuilder(
 val EDIT_CODE_DATA_TOO_SHORT = EditCodeDataBuilder(
     variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
 ).build()
+
+val EDIT_CODE_DATA_TOO_LONG = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
+).build()
