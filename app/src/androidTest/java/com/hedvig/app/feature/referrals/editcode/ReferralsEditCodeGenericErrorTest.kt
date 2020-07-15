@@ -22,7 +22,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeErrorTest : KoinComponent {
+class ReferralsEditCodeGenericErrorTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
