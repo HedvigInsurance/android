@@ -110,6 +110,10 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                         getString(R.string.referrals_change_code_sheet_general_error)
                     return@observe
                 }
+
+                codeContainer.error =
+                    getString(R.string.referrals_change_code_sheet_general_error)
+                return@observe
             }
         }
     }

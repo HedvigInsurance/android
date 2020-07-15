@@ -7,6 +7,7 @@ import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_SUCCESS
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_LONG
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_MANY_CHANGES
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_SHORT
+import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_UNKNOWN_RESULT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 
 class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
@@ -25,6 +26,7 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
                         EditCodeDataBuilder.ResultVariant.TOO_SHORT -> EDIT_CODE_DATA_TOO_SHORT
                         EditCodeDataBuilder.ResultVariant.TOO_LONG -> EDIT_CODE_DATA_TOO_LONG
                         EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES -> EDIT_CODE_DATA_TOO_MANY_CHANGES
+                        EditCodeDataBuilder.ResultVariant.UNKNOWN -> EDIT_CODE_DATA_UNKNOWN_RESULT
                     }
                 )
             )

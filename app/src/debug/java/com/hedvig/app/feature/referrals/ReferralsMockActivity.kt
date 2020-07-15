@@ -131,6 +131,13 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
+                GenericDevelopmentAdapter.Item.ClickableItem("Unknown result type") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.UNKNOWN
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
                     "Referrals Enabled"
