@@ -8,6 +8,7 @@ import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.onChange
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -38,8 +39,10 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.save -> {
-                    // TODO: Check that everything is valid before making call
-                    model.changeCode(code.text.toString())
+                    val enteredCode = code.text.toString()
+                    if (validate(enteredCode)) {
+                        model.changeCode(enteredCode)
+                    }
                     true
                 }
                 else -> false
@@ -52,6 +55,9 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             e { "Programmer error: `CODE` not passed to ${this.javaClass.name}" }
         }
 
+        code.onChange { newValue ->
+            toolbar.menu.findItem(R.id.save).isEnabled = validate(newValue)
+        }
         code.setText(currentCode)
 
         model.data.observe(this) { data ->
@@ -84,6 +90,14 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     }
 
     companion object {
+        private fun validate(code: String): Boolean {
+            if (code.isBlank()) {
+                return false
+            }
+
+            return true
+        }
+
         private const val CODE = "CODE"
         fun newInstance(context: Context, currentCode: String) =
             Intent(context, ReferralsEditCodeActivity::class.java).apply {
