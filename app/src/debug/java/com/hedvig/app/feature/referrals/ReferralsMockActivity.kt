@@ -11,6 +11,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.loggedInModule
@@ -85,6 +86,15 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 GenericDevelopmentAdapter.Item.ClickableItem("Load slowly") {
                     MockReferralsActivatedViewModel.loadDelay = 5000
                     startActivity(ReferralsActivatedActivity.newInstance(this))
+                },
+                GenericDevelopmentAdapter.Item.Header("Edit Code Screen"),
+                GenericDevelopmentAdapter.Item.ClickableItem("Success") {
+                    MockReferralsEditCodeViewModel.shouldSucceed = true
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Error") {
+                    MockReferralsEditCodeViewModel.shouldSucceed = false
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
