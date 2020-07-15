@@ -124,6 +124,13 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
+                GenericDevelopmentAdapter.Item.ClickableItem("Too many code changes") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
                     "Referrals Enabled"

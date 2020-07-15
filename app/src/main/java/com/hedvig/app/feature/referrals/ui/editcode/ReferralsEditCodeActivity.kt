@@ -105,6 +105,11 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                         getString(R.string.referrals_change_code_sheet_error_max_length)
                     return@observe
                 }
+                urcc.asExceededMaximumUpdates?.let {
+                    codeContainer.error =
+                        getString(R.string.referrals_change_code_sheet_general_error)
+                    return@observe
+                }
             }
         }
     }
