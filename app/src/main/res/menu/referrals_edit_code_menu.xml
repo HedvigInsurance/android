@@ -5,5 +5,6 @@
         android:id="@+id/save"
         android:orderInCategory="1"
         app:showAsAction="always|withText"
+        android:enabled="false"
         android:title="@string/nav_bar.save" />
 </menu>

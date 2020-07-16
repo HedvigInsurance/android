@@ -61,6 +61,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             e { "Programmer error: `CODE` not passed to ${this.javaClass.name}" }
         }
 
+        code.setText(currentCode)
         code.onChange { newValue ->
             when (validate(newValue)) {
                 ValidationResult.VALID -> {
@@ -78,7 +79,6 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 }
             }
         }
-        code.setText(currentCode)
 
         model.isSubmitting.observe(this) { iss ->
             if (iss == null) {
