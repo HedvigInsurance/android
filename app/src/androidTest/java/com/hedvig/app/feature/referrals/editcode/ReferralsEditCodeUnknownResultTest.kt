@@ -35,7 +35,7 @@ class ReferralsEditCodeUnknownResultTest : KoinComponent {
     @Test
     fun shouldShowGenericErrorWhenResultTypeIsNotKnown() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_UNKNOWN_RESULT
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_UNKNOWN_RESULT }
         ).use { webServer ->
 
             webServer.start(8080)

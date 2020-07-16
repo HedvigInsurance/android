@@ -35,7 +35,7 @@ class ReferralsEditCodeTooShortErrorTest : KoinComponent {
     @Test
     fun shouldShowGenericErrorWhenCodeIsTooShort() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_TOO_SHORT
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_TOO_SHORT }
         ).use { webServer ->
 
             webServer.start(8080)

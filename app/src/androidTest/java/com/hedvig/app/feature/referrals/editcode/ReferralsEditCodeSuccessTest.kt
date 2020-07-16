@@ -39,9 +39,9 @@ class ReferralsEditCodeSuccessTest : KoinComponent {
     @Test
     fun shouldUpdateCodeWhenCodeIsAccepted() {
         apolloMockServer(
-            LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
-            ReferralsQuery.OPERATION_NAME to REFERRALS_DATA_WITH_NO_DISCOUNTS,
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_SUCCESS
+            LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
+            ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_NO_DISCOUNTS },
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_SUCCESS }
         ).use { webServer ->
             webServer.start(8080)
 

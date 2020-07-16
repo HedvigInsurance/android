@@ -35,7 +35,7 @@ class ReferralsEditCodeMaxChangesTest : KoinComponent {
     @Test
     fun shouldShowGenericErrorWhenTooManyCodeChangesHaveBeenPerformed() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_TOO_MANY_CHANGES
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_TOO_MANY_CHANGES }
         ).use { webServer ->
 
             webServer.start(8080)

@@ -35,7 +35,7 @@ class ReferralsEditCodeAlreadyTakenTest : KoinComponent {
     @Test
     fun shouldShowAlreadyTakenErrorWhenCodeIsAlreadyTaken() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_ALREADY_TAKEN
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_ALREADY_TAKEN }
         ).use { webServer ->
 
             webServer.start(8080)

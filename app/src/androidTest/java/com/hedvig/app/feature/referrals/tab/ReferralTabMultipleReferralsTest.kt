@@ -40,8 +40,8 @@ class ReferralTabMultipleReferralsTest : KoinTest {
     @Test
     fun shouldShowActiveStateWhenUserHasMultipleReferrals() {
         apolloMockServer(
-            LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
-            ReferralsQuery.OPERATION_NAME to REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+            LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
+            ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES }
         ).use { webServer ->
             webServer.start(8080)
 
