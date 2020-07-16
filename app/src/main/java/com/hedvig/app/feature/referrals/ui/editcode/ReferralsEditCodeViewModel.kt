@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.app.feature.referrals.ReferralsRepository
+import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import kotlinx.coroutines.launch
 
 abstract class ReferralsEditCodeViewModel : ViewModel() {

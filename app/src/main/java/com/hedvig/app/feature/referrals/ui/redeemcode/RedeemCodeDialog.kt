@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.ui.redeemcode
 
 import android.app.Dialog
 import android.content.Intent
@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.DialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove

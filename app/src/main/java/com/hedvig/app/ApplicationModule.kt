@@ -68,14 +68,14 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.ratings.RatingsTracker
-import com.hedvig.app.feature.referrals.RedeemCodeViewModel
-import com.hedvig.app.feature.referrals.ReferralRepository
-import com.hedvig.app.feature.referrals.ReferralsRepository
-import com.hedvig.app.feature.referrals.ReferralsTracker
+import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
+import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModelImpl
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
@@ -194,7 +194,11 @@ val viewModelModule = module {
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
-    viewModel { RedeemCodeViewModel(get()) }
+    viewModel {
+        RedeemCodeViewModel(
+            get()
+        )
+    }
     viewModel { WelcomeViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
@@ -264,7 +268,11 @@ val repositoriesModule = module {
     single { DashboardRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
-    single { ReferralRepository(get()) }
+    single {
+        RedeemReferralCodeRepository(
+            get()
+        )
+    }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }

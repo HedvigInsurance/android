@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.app.feature.referrals.RedeemCodeDialog
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class OfferRedeemCodeDialog : RedeemCodeDialog() {
