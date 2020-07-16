@@ -3,7 +3,6 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ProgressBar
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
@@ -89,7 +88,10 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
 
             toolbar.menu.findItem(R.id.save).let { save ->
                 if (isSubmitting) {
-                    save.actionView = ProgressBar(this)
+                    save.actionView = layoutInflater.inflate(
+                        R.layout.toolbar_loading_spinner,
+                        null
+                    )
                     save.isEnabled = false
                 } else {
                     save.actionView = null

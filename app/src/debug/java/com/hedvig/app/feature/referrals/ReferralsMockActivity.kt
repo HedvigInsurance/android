@@ -111,8 +111,13 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     startActivity(ReferralsActivatedActivity.newInstance(this))
                 },
                 GenericDevelopmentAdapter.Item.Header("Edit Code Screen"),
+                GenericDevelopmentAdapter.Item.ClickableItem("Stay in Submit") {
+                    MockReferralsEditCodeViewModel.shouldLoad = false
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
                 GenericDevelopmentAdapter.Item.ClickableItem("Success") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.SUCCESS
                     }
@@ -120,6 +125,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Error") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = false
                         variant = EditCodeDataBuilder.ResultVariant.SUCCESS
                     }
@@ -127,6 +133,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Code already taken") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN
                     }
@@ -134,6 +141,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Code too short") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
                     }
@@ -141,6 +149,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Code too long") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
                     }
@@ -148,6 +157,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Too many code changes") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES
                     }
@@ -155,6 +165,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Unknown result type") {
                     MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
                         shouldSucceed = true
                         variant = EditCodeDataBuilder.ResultVariant.UNKNOWN
                     }

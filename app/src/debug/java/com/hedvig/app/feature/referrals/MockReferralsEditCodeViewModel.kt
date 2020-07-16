@@ -13,6 +13,9 @@ import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
     override fun changeCode(newCode: String) {
         _isSubmitting.postValue(true)
+        if (!shouldLoad) {
+            return
+        }
         Handler().postDelayed({
             _isSubmitting.postValue(false)
             if (!shouldSucceed) {
@@ -36,6 +39,7 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
     }
 
     companion object {
+        var shouldLoad = false
         var shouldSucceed = false
         var variant = EditCodeDataBuilder.ResultVariant.SUCCESS
     }
