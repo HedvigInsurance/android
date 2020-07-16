@@ -54,7 +54,8 @@
                     android:id="@+id/code"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="@string/referrals_change_code_sheet.input_hint" />
+                    android:hint="@string/referrals_change_code_sheet.input_hint"
+                    android:imeOptions="actionDone" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

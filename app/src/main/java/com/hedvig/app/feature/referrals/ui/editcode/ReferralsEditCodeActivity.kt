@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
@@ -42,13 +43,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.save -> {
-                    if (isSubmitting) {
-                        return@setOnMenuItemClickListener true
-                    }
-                    val enteredCode = code.text.toString()
-                    if (validate(enteredCode) == ValidationResult.VALID) {
-                        model.changeCode(enteredCode)
-                    }
+                    submit()
                     true
                 }
                 else -> false
@@ -78,6 +73,13 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                         getString(R.string.referrals_change_code_sheet_error_max_length)
                 }
             }
+        }
+        code.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                submit()
+                return@setOnEditorActionListener true
+            }
+            false
         }
 
         model.isSubmitting.observe(this) { iss ->
@@ -141,6 +143,16 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                     getString(R.string.referrals_change_code_sheet_general_error)
                 return@observe
             }
+        }
+    }
+
+    private fun submit() {
+        if (isSubmitting) {
+            return
+        }
+        val enteredCode = code.text.toString()
+        if (validate(enteredCode) == ValidationResult.VALID) {
+            model.changeCode(enteredCode)
         }
     }
 
