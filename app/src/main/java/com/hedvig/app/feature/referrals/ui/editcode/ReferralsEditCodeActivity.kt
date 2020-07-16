@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ProgressBar
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
@@ -17,6 +18,9 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
     private val model: ReferralsEditCodeViewModel by viewModel()
+
+    private var isSubmitting = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,6 +43,9 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.save -> {
+                    if (isSubmitting) {
+                        return@setOnMenuItemClickListener true
+                    }
                     val enteredCode = code.text.toString()
                     if (validate(enteredCode) == ValidationResult.VALID) {
                         model.changeCode(enteredCode)
@@ -73,6 +80,23 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             }
         }
         code.setText(currentCode)
+
+        model.isSubmitting.observe(this) { iss ->
+            if (iss == null) {
+                return@observe
+            }
+            isSubmitting = iss
+
+            toolbar.menu.findItem(R.id.save).let { save ->
+                if (isSubmitting) {
+                    save.actionView = ProgressBar(this)
+                    save.isEnabled = false
+                } else {
+                    save.actionView = null
+                    save.isEnabled = true
+                }
+            }
+        }
 
         model.data.observe(this) { data ->
             if (data == null) {

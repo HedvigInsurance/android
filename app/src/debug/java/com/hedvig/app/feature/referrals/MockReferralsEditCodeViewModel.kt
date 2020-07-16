@@ -12,7 +12,9 @@ import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 
 class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
     override fun changeCode(newCode: String) {
+        _isSubmitting.postValue(true)
         Handler().postDelayed({
+            _isSubmitting.postValue(false)
             if (!shouldSucceed) {
                 _data.postValue(Result.failure(Error()))
                 return@postDelayed

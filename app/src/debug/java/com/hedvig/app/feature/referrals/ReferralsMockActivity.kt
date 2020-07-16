@@ -120,7 +120,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Error") {
                     MockReferralsEditCodeViewModel.apply {
-                        shouldSucceed = true
+                        shouldSucceed = false
                         variant = EditCodeDataBuilder.ResultVariant.SUCCESS
                     }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))

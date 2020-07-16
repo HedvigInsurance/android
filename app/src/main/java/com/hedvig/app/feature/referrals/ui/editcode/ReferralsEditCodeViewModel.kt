@@ -14,6 +14,11 @@ abstract class ReferralsEditCodeViewModel : ViewModel() {
     val data: LiveData<Result<UpdateReferralCampaignCodeMutation.Data>>
         get() = _data
 
+    protected val _isSubmitting = MutableLiveData<Boolean>()
+
+    val isSubmitting: LiveData<Boolean>
+        get() = _isSubmitting
+
     abstract fun changeCode(newCode: String)
 }
 
@@ -22,7 +27,9 @@ class ReferralsEditCodeViewModelImpl(
 ) : ReferralsEditCodeViewModel() {
     override fun changeCode(newCode: String) {
         viewModelScope.launch {
+            _isSubmitting.postValue(true)
             val response = runCatching { referralsRepository.updateCode(newCode) }
+            _isSubmitting.postValue(false)
 
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { _data.postValue(Result.failure(it)) }
