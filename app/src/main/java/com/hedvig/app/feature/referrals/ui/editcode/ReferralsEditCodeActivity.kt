@@ -10,6 +10,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.view.dismissKeyboard
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -76,6 +77,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         }
         code.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                code.dismissKeyboard()
                 submit()
                 return@setOnEditorActionListener true
             }
