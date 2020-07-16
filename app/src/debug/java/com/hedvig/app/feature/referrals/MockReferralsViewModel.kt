@@ -18,7 +18,12 @@ class MockReferralsViewModel : ReferralsViewModel() {
     override fun load() {
         if (shouldSucceed) {
             Handler().postDelayed({
-                data.postValue(Result.success(referralsData))
+                if (!hasLoadedOnce) {
+                    hasLoadedOnce = true
+                    data.postValue(Result.success(referralsData))
+                } else {
+                    data.postValue(Result.success(afterRefreshData))
+                }
             }, 1000)
         } else {
             shouldSucceed = true
@@ -30,5 +35,7 @@ class MockReferralsViewModel : ReferralsViewModel() {
         var loadInitially = false
         var shouldSucceed = false
         var referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
+        var hasLoadedOnce = false
+        var afterRefreshData = referralsData
     }
 }

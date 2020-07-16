@@ -18,6 +18,7 @@ import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
@@ -52,6 +53,8 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
+                        afterRefreshData = REFERRALS_DATA_WITH_NO_DISCOUNTS
                     }
                     startReferralsTab()
                 },
@@ -59,7 +62,9 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
                     }
                     startReferralsTab()
                 },
@@ -67,7 +72,10 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+                        afterRefreshData =
+                            REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
                     }
                     startReferralsTab()
                 },
@@ -75,7 +83,19 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+                    }
+                    startReferralsTab()
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Pull to Refresh, Empty then One Referee") {
+                    MockReferralsViewModel.apply {
+                        loadInitially = true
+                        shouldSucceed = true
+                        referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
+                        hasLoadedOnce = false
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
                     }
                     startReferralsTab()
                 },
