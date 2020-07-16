@@ -10,12 +10,10 @@ import kotlinx.coroutines.launch
 
 abstract class ReferralsEditCodeViewModel : ViewModel() {
     protected val _data = MutableLiveData<Result<UpdateReferralCampaignCodeMutation.Data>>()
-
     val data: LiveData<Result<UpdateReferralCampaignCodeMutation.Data>>
         get() = _data
 
     protected val _isSubmitting = MutableLiveData<Boolean>()
-
     val isSubmitting: LiveData<Boolean>
         get() = _isSubmitting
 
