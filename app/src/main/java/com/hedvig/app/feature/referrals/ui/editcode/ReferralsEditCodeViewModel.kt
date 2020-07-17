@@ -5,14 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.app.feature.referrals.ReferralsRepository
+import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import kotlinx.coroutines.launch
 
 abstract class ReferralsEditCodeViewModel : ViewModel() {
     protected val _data = MutableLiveData<Result<UpdateReferralCampaignCodeMutation.Data>>()
-
     val data: LiveData<Result<UpdateReferralCampaignCodeMutation.Data>>
         get() = _data
+
+    protected val _isSubmitting = MutableLiveData<Boolean>()
+    val isSubmitting: LiveData<Boolean>
+        get() = _isSubmitting
 
     abstract fun changeCode(newCode: String)
 }
@@ -22,7 +25,9 @@ class ReferralsEditCodeViewModelImpl(
 ) : ReferralsEditCodeViewModel() {
     override fun changeCode(newCode: String) {
         viewModelScope.launch {
+            _isSubmitting.postValue(true)
             val response = runCatching { referralsRepository.updateCode(newCode) }
+            _isSubmitting.postValue(false)
 
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { _data.postValue(Result.failure(it)) }

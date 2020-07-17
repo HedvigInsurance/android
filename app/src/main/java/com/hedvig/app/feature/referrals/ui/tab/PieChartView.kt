@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals.ui
+package com.hedvig.app.feature.referrals.ui.tab
 
 import android.content.Context
 import android.graphics.Canvas
@@ -81,7 +81,8 @@ class PieChartView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        var startPosition = ANGLE_UP
+        var startPosition =
+            ANGLE_UP
 
         segments.forEach { segment ->
             val sweep = segment.percentage * DEGREES_PER_PERCENT_RATIO

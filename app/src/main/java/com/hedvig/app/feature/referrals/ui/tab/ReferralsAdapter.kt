@@ -13,8 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
-import com.hedvig.app.feature.referrals.ReferralsTracker
-import com.hedvig.app.feature.referrals.ui.PieChartSegment
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount

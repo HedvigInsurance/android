@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.ui.redeemcode
 
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -15,6 +15,7 @@ class RefetchingRedeemCodeDialog : RedeemCodeDialog() {
     companion object {
         val TAG = "RefetchingRedeemCodeDialog"
 
-        fun newInstance() = RefetchingRedeemCodeDialog()
+        fun newInstance() =
+            RefetchingRedeemCodeDialog()
     }
 }

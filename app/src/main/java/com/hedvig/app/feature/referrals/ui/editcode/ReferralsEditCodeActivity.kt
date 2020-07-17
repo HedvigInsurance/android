@@ -3,12 +3,14 @@ package com.hedvig.app.feature.referrals.ui.editcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.view.dismissKeyboard
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -17,6 +19,9 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
     private val model: ReferralsEditCodeViewModel by viewModel()
+
+    private var isSubmitting = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,10 +44,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.save -> {
-                    val enteredCode = code.text.toString()
-                    if (validate(enteredCode) == ValidationResult.VALID) {
-                        model.changeCode(enteredCode)
-                    }
+                    submit()
                     true
                 }
                 else -> false
@@ -55,6 +57,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             e { "Programmer error: `CODE` not passed to ${this.javaClass.name}" }
         }
 
+        code.setText(currentCode)
         code.onChange { newValue ->
             when (validate(newValue)) {
                 ValidationResult.VALID -> {
@@ -72,7 +75,34 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 }
             }
         }
-        code.setText(currentCode)
+        code.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                code.dismissKeyboard()
+                submit()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+
+        model.isSubmitting.observe(this) { iss ->
+            if (iss == null) {
+                return@observe
+            }
+            isSubmitting = iss
+
+            toolbar.menu.findItem(R.id.save).let { save ->
+                if (isSubmitting) {
+                    save.actionView = layoutInflater.inflate(
+                        R.layout.toolbar_loading_spinner,
+                        null
+                    )
+                    save.isEnabled = false
+                } else {
+                    save.actionView = null
+                    save.isEnabled = true
+                }
+            }
+        }
 
         model.data.observe(this) { data ->
             if (data == null) {
@@ -115,6 +145,16 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                     getString(R.string.referrals_change_code_sheet_general_error)
                 return@observe
             }
+        }
+    }
+
+    private fun submit() {
+        if (isSubmitting) {
+            return
+        }
+        val enteredCode = code.text.toString()
+        if (validate(enteredCode) == ValidationResult.VALID) {
+            model.changeCode(enteredCode)
         }
     }
 
