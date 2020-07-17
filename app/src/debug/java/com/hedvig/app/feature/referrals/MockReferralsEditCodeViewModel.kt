@@ -5,7 +5,9 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_SUCCESS
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_LONG
+import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_MANY_CHANGES
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_SHORT
+import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_UNKNOWN_RESULT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 
 class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
@@ -23,7 +25,8 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
                         EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN -> EDIT_CODE_DATA_ALREADY_TAKEN
                         EditCodeDataBuilder.ResultVariant.TOO_SHORT -> EDIT_CODE_DATA_TOO_SHORT
                         EditCodeDataBuilder.ResultVariant.TOO_LONG -> EDIT_CODE_DATA_TOO_LONG
-                        else -> throw Error("No mock provided for this variant")
+                        EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES -> EDIT_CODE_DATA_TOO_MANY_CHANGES
+                        EditCodeDataBuilder.ResultVariant.UNKNOWN -> EDIT_CODE_DATA_UNKNOWN_RESULT
                     }
                 )
             )

@@ -48,6 +48,7 @@ data class EditCodeDataBuilder(
         ALREADY_TAKEN,
         TOO_LONG,
         TOO_SHORT,
-        EXCEEDED_MAX_UPDATES
+        EXCEEDED_MAX_UPDATES,
+        UNKNOWN
     }
 }

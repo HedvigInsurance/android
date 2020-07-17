@@ -122,3 +122,11 @@ val EDIT_CODE_DATA_TOO_SHORT = EditCodeDataBuilder(
 val EDIT_CODE_DATA_TOO_LONG = EditCodeDataBuilder(
     variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
 ).build()
+
+val EDIT_CODE_DATA_TOO_MANY_CHANGES = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES
+).build()
+
+val EDIT_CODE_DATA_UNKNOWN_RESULT = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.UNKNOWN
+).build()
