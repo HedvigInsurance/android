@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,10 +32,18 @@ class ReferralsEditCodeConfirmDismissDirtyTest {
                 }
             }
             pressBack()
-            confirmDismiss { isDisplayed() }
+            confirmDismiss {
+                isDisplayed()
+                negativeButton { click() }
+            }
+            up { click() }
+            confirmDismiss {
+                isDisplayed()
+                positiveButton { click() }
+            }
         }
 
-        assertFalse(activityRule.activity.isFinishing)
+        assertTrue(activityRule.activity.isFinishing)
     }
 }
 
