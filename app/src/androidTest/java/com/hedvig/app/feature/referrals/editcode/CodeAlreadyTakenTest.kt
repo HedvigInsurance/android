@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -11,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
 import com.hedvig.app.util.apolloMockServer
+import com.hedvig.app.util.hasError
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -56,10 +56,7 @@ class CodeAlreadyTakenTest : KoinComponent {
                 save { click() }
                 editLayout {
                     isErrorEnabled()
-                    hasError(
-                        ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.referrals_change_code_sheet_error_claimed_code)
-                    )
+                    hasError(R.string.referrals_change_code_sheet_error_claimed_code)
                 }
             }
         }

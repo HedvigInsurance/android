@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -9,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
+import com.hedvig.app.util.hasError
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -70,10 +70,7 @@ class GenericErrorTest : KoinComponent {
                 save { click() }
                 editLayout {
                     isErrorEnabled()
-                    hasError(
-                        ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.referrals_change_code_sheet_general_error)
-                    )
+                    hasError(R.string.referrals_change_code_sheet_general_error)
                 }
             }
         }
