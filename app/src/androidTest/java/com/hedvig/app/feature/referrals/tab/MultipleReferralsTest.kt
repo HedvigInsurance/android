@@ -10,7 +10,6 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.util.apollo.format
@@ -24,7 +23,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabMultipleReferralsTest : KoinTest {
+class MultipleReferralsTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -52,11 +51,11 @@ class ReferralTabMultipleReferralsTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            Screen.onScreen<ReferralScreen> {
+            Screen.onScreen<ReferralTabScreen> {
                 share { isVisible() }
                 recycler {
                     hasSize(7)
-                    childAt<ReferralScreen.HeaderItem>(1) {
+                    childAt<ReferralTabScreen.HeaderItem>(1) {
                         grossPrice {
                             isVisible()
                             hasText(
@@ -86,17 +85,17 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                         emptyBody { isGone() }
                         otherDiscountBox { isGone() }
                     }
-                    childAt<ReferralScreen.CodeItem>(2) {
+                    childAt<ReferralTabScreen.CodeItem>(2) {
                         placeholder { isGone() }
                         code {
                             isVisible()
                             hasText("TEST123")
                         }
                     }
-                    childAt<ReferralScreen.InvitesHeaderItem>(3) {
+                    childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
                         isVisible()
                     }
-                    childAt<ReferralScreen.ReferralItem>(4) {
+                    childAt<ReferralTabScreen.ReferralItem>(4) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example") }
@@ -109,14 +108,14 @@ class ReferralTabMultipleReferralsTest : KoinTest {
                             )
                         }
                     }
-                    childAt<ReferralScreen.ReferralItem>(5) {
+                    childAt<ReferralTabScreen.ReferralItem>(5) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example 2") }
                         referee { isGone() }
                         icon { hasDrawable(R.drawable.ic_clock_colorless) }
                     }
-                    childAt<ReferralScreen.ReferralItem>(6) {
+                    childAt<ReferralTabScreen.ReferralItem>(6) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name { hasText("Example 3") }

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.tab
 
 import android.content.Intent
 import android.view.View
@@ -15,7 +15,7 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import org.hamcrest.Matcher
 
-class ReferralScreen : Screen<ReferralScreen>() {
+class ReferralTabScreen : Screen<ReferralTabScreen>() {
     val moreInfo = KButton { withId(R.id.referralMoreInfo) }
     val share = KButton { withId(R.id.share) }
     val shareIntent = KIntent {
@@ -27,11 +27,11 @@ class ReferralScreen : Screen<ReferralScreen>() {
     val swipeToRefresh = KSwipeRefreshLayout { withId(R.id.swipeToRefresh) }
 
     val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
-        itemType(::HeaderItem)
-        itemType(::CodeItem)
-        itemType(::InvitesHeaderItem)
-        itemType(::ReferralItem)
-        itemType(::ErrorItem)
+        itemType(ReferralTabScreen::HeaderItem)
+        itemType(ReferralTabScreen::CodeItem)
+        itemType(ReferralTabScreen::InvitesHeaderItem)
+        itemType(ReferralTabScreen::ReferralItem)
+        itemType(ReferralTabScreen::ErrorItem)
     })
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {

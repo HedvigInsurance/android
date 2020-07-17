@@ -19,7 +19,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeMaxChangesTest : KoinComponent {
+class MaxChangesErrorTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule

@@ -14,7 +14,7 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
-import com.hedvig.app.feature.referrals.ReferralScreen
+import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.apolloMockServer
@@ -76,7 +76,7 @@ class ForeverDeepLinkTest : KoinComponent {
                     animation { doesNotExist() }
                 }
             }
-            onScreen<ReferralScreen> {
+            onScreen<ReferralTabScreen> {
                 recycler {
                     isDisplayed()
                 }

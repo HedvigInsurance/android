@@ -9,8 +9,11 @@ import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
-import com.hedvig.app.util.apolloMockServer
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,7 +22,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeAlreadyTakenTest : KoinComponent {
+class GenericErrorTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -33,10 +36,21 @@ class ReferralsEditCodeAlreadyTakenTest : KoinComponent {
     }
 
     @Test
-    fun shouldShowAlreadyTakenErrorWhenCodeIsAlreadyTaken() {
-        apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_ALREADY_TAKEN }
-        ).use { webServer ->
+    fun shouldShowErrorWhenNetworkErrorOccurs() {
+        MockWebServer().use { webServer ->
+            webServer.dispatcher = object : Dispatcher() {
+                override fun dispatch(request: RecordedRequest): MockResponse {
+                    val body = request.body.peek().readUtf8()
+                    val bodyAsJson = JSONObject(body)
+                    val operationName = bodyAsJson.getString("operationName")
+
+                    if (operationName == UpdateReferralCampaignCodeMutation.OPERATION_NAME.name()) {
+                        return MockResponse().setBody(ERROR_JSON)
+                    }
+
+                    return super.peek()
+                }
+            }
 
             webServer.start(8080)
 
@@ -58,10 +72,15 @@ class ReferralsEditCodeAlreadyTakenTest : KoinComponent {
                     isErrorEnabled()
                     hasError(
                         ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.referrals_change_code_sheet_error_claimed_code)
+                            .getString(R.string.referrals_change_code_sheet_general_error)
                     )
                 }
             }
         }
+    }
+
+    companion object {
+        private const val ERROR_JSON =
+            """{"data": null, "errors": [{"message": "example message"}]}"""
     }
 }

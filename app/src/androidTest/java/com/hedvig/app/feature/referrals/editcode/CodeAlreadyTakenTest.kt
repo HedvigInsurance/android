@@ -9,7 +9,7 @@ import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_UNKNOWN_RESULT
+import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
 import com.hedvig.app.util.apolloMockServer
 import org.junit.Before
 import org.junit.Rule
@@ -19,7 +19,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeUnknownResultTest : KoinComponent {
+class CodeAlreadyTakenTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -33,9 +33,9 @@ class ReferralsEditCodeUnknownResultTest : KoinComponent {
     }
 
     @Test
-    fun shouldShowGenericErrorWhenResultTypeIsNotKnown() {
+    fun shouldShowAlreadyTakenErrorWhenCodeIsAlreadyTaken() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_UNKNOWN_RESULT }
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_ALREADY_TAKEN }
         ).use { webServer ->
 
             webServer.start(8080)
@@ -58,7 +58,7 @@ class ReferralsEditCodeUnknownResultTest : KoinComponent {
                     isErrorEnabled()
                     hasError(
                         ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.referrals_change_code_sheet_general_error)
+                            .getString(R.string.referrals_change_code_sheet_error_claimed_code)
                     )
                 }
             }
