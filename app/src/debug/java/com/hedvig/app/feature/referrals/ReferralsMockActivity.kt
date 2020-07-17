@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.referrals
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -172,6 +174,13 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                             )
                         )
                     )
+                },
+                GenericDevelopmentAdapter.Item.Header("Deep Links"),
+                GenericDevelopmentAdapter.Item.ClickableItem("`/forever`-Deep Link") {
+                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data =
+                            Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/forever")
+                    })
                 }
             )
         )
