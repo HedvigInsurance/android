@@ -20,6 +20,7 @@ import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import kotlinx.android.synthetic.debug.activity_generic_development.*
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -89,11 +90,24 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 },
                 GenericDevelopmentAdapter.Item.Header("Edit Code Screen"),
                 GenericDevelopmentAdapter.Item.ClickableItem("Success") {
-                    MockReferralsEditCodeViewModel.shouldSucceed = true
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.SUCCESS
+                    }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
                 GenericDevelopmentAdapter.Item.ClickableItem("Error") {
-                    MockReferralsEditCodeViewModel.shouldSucceed = false
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.SUCCESS
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code already taken") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN
+                    }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),

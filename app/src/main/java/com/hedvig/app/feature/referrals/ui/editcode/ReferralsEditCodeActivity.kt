@@ -61,11 +61,20 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
 
             if (data.isFailure) {
                 codeContainer.error = getString(R.string.referrals_change_code_sheet_general_error)
+                return@observe
             }
 
-            data.getOrNull()?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.let {
-                codeContainer.error = null
-                finish()
+            data.getOrNull()?.updateReferralCampaignCode?.let { urcc ->
+                urcc.asSuccessfullyUpdatedCode?.let {
+                    codeContainer.error = null
+                    finish()
+                    return@observe
+                }
+                urcc.asCodeAlreadyTaken?.let {
+                    codeContainer.error =
+                        getString(R.string.referrals_change_code_sheet_error_claimed_code)
+                    return@observe
+                }
             }
         }
     }
