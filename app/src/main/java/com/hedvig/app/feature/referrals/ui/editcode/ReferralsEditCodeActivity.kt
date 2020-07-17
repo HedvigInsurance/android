@@ -52,6 +52,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             when (menuItem.itemId) {
                 R.id.save -> {
                     tracker.submitCode()
+                    toolbar.dismissKeyboard()
                     submit()
                     true
                 }
