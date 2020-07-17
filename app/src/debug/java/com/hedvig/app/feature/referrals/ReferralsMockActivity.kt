@@ -110,6 +110,20 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     }
                     startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code too short") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code too long") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
                     "Referrals Enabled"

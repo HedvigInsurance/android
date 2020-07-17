@@ -56,7 +56,7 @@
         <item name="textInputStyle">@style/Hedvig.Theme.TextInputLayout</item>
 
         <item name="actionButtonStyle">@style/Hedvig.Theme.Toolbar.ActionButton</item>
-        <item name="actionMenuTextColor">?textColorLink</item>
+        <item name="actionMenuTextColor">@color/hedvig_text_button_state</item>
 
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

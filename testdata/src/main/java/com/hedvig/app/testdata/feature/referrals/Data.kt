@@ -111,7 +111,14 @@ val REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES = ReferralsDataBu
 ).build()
 
 val EDIT_CODE_DATA_SUCCESS = EditCodeDataBuilder().build()
-
 val EDIT_CODE_DATA_ALREADY_TAKEN = EditCodeDataBuilder(
     variant = EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN
+).build()
+
+val EDIT_CODE_DATA_TOO_SHORT = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
+).build()
+
+val EDIT_CODE_DATA_TOO_LONG = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
 ).build()
