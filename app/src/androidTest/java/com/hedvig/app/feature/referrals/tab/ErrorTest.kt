@@ -10,7 +10,6 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import okhttp3.mockwebserver.Dispatcher
@@ -26,7 +25,7 @@ import org.koin.test.KoinTest
 import java.util.concurrent.Semaphore
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabErrorTest : KoinTest {
+class ErrorTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -83,11 +82,11 @@ class ReferralTabErrorTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            onScreen<ReferralScreen> {
+            onScreen<ReferralTabScreen> {
                 share { isGone() }
                 recycler {
                     hasSize(2)
-                    childAt<ReferralScreen.ErrorItem>(1) {
+                    childAt<ReferralTabScreen.ErrorItem>(1) {
                         errorTitle { isVisible() }
                         errorParagraph { isVisible() }
                         retry {
@@ -96,7 +95,7 @@ class ReferralTabErrorTest : KoinTest {
                         }
                     }
                     hasSize(3)
-                    childAt<ReferralScreen.HeaderItem>(1) {
+                    childAt<ReferralTabScreen.HeaderItem>(1) {
                         discountPerMonthPlaceholder { isGone() }
                         newPricePlaceholder { isGone() }
                         discountPerMonth { isGone() }
@@ -107,7 +106,7 @@ class ReferralTabErrorTest : KoinTest {
                         emptyBody { isVisible() }
                         otherDiscountBox { isGone() }
                     }
-                    childAt<ReferralScreen.CodeItem>(2) {
+                    childAt<ReferralTabScreen.CodeItem>(2) {
                         placeholder { isGone() }
                         code {
                             isVisible()

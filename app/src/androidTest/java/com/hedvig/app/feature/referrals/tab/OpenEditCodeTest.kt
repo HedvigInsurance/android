@@ -1,17 +1,18 @@
-package com.hedvig.app.feature.referrals.editcode
+package com.hedvig.app.feature.referrals.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.agoda.kakao.edit.KEditText
+import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.text.KButton
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
-import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralScreen
-import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_SUCCESS
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.apolloMockServer
@@ -23,7 +24,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeSubmitUsingImeTest : KoinComponent {
+class OpenEditCodeTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -37,11 +38,10 @@ class ReferralsEditCodeSubmitUsingImeTest : KoinComponent {
     }
 
     @Test
-    fun shouldSubmitCorrectlyUsingImeSubmit() {
+    fun shouldOpenEditCodeScreenWhenPressingEdit() {
         apolloMockServer(
             LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
-            ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_NO_DISCOUNTS },
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_SUCCESS }
+            ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_NO_DISCOUNTS }
         ).use { webServer ->
             webServer.start(8080)
 
@@ -52,31 +52,24 @@ class ReferralsEditCodeSubmitUsingImeTest : KoinComponent {
                 )
             )
 
-            onScreen<ReferralScreen> {
+            onScreen<ReferralTabScreen> {
                 recycler {
-                    childAt<ReferralScreen.CodeItem>(2) {
+                    childAt<ReferralTabScreen.CodeItem>(2) {
                         edit { click() }
                     }
                 }
             }
 
             onScreen<ReferralsEditCodeScreen> {
-                editLayout {
-                    edit {
-                        hasText("TEST123")
-                        replaceText("EDITEDCODE123")
-                        pressImeAction()
-                    }
-                }
-            }
-
-            onScreen<ReferralScreen> {
-                recycler {
-                    childAt<ReferralScreen.CodeItem>(2) {
-                        code { hasText("EDITEDCODE123") }
-                    }
+                edit {
+                    hasText("TEST123")
                 }
             }
         }
+    }
+
+    class ReferralsEditCodeScreen : Screen<ReferralsEditCodeScreen>() {
+        val edit = KEditText { withId(R.id.code) }
+        val save = KButton { withId(R.id.save) }
     }
 }

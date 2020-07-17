@@ -13,7 +13,6 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.apolloMockServer
@@ -26,7 +25,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabShareTest : KoinTest {
+class ShareTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -61,7 +60,7 @@ class ReferralTabShareTest : KoinTest {
                 )
             )
 
-            Screen.onScreen<ReferralScreen> {
+            Screen.onScreen<ReferralTabScreen> {
                 share {
                     isVisible()
                     click()

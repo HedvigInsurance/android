@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.moreinfo
 
 import android.app.Activity
 import android.app.Instrumentation
@@ -18,6 +18,7 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloMockServer
@@ -59,7 +60,7 @@ class ReferralsInformationActivityTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            onScreen<ReferralScreen> {
+            onScreen<ReferralTabScreen> {
                 moreInfo { click() }
             }
 

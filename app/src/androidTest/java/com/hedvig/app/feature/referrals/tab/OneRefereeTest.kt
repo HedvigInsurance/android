@@ -13,7 +13,6 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.referrals.ReferralScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.util.apollo.format
@@ -27,7 +26,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabOneRefereeTest : KoinTest {
+class OneRefereeTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -55,11 +54,11 @@ class ReferralTabOneRefereeTest : KoinTest {
 
             activityRule.launchActivity(intent)
 
-            onScreen<ReferralScreen> {
+            onScreen<ReferralTabScreen> {
                 share { isVisible() }
                 recycler {
                     hasSize(5)
-                    childAt<ReferralScreen.HeaderItem>(1) {
+                    childAt<ReferralTabScreen.HeaderItem>(1) {
                         grossPrice {
                             isVisible()
                             hasText(
@@ -89,17 +88,17 @@ class ReferralTabOneRefereeTest : KoinTest {
                         emptyBody { isGone() }
                         otherDiscountBox { isGone() }
                     }
-                    childAt<ReferralScreen.CodeItem>(2) {
+                    childAt<ReferralTabScreen.CodeItem>(2) {
                         placeholder { isGone() }
                         code {
                             isVisible()
                             hasText("TEST123")
                         }
                     }
-                    childAt<ReferralScreen.InvitesHeaderItem>(3) {
+                    childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
                         isVisible()
                     }
-                    childAt<ReferralScreen.ReferralItem>(4) {
+                    childAt<ReferralTabScreen.ReferralItem>(4) {
                         iconPlaceholder { isGone() }
                         textPlaceholder { isGone() }
                         name {

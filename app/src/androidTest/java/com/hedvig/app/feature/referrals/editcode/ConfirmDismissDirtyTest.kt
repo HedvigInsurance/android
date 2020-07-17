@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsEditCodeConfirmDismissDirtyTest {
+class ConfirmDismissDirtyTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)

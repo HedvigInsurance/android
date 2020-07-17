@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals
+package com.hedvig.app.feature.referrals.activated
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
