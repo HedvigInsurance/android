@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.referrals
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.app.testdata.feature.referrals.builders.CostBuilder
+import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
 
@@ -107,4 +108,25 @@ val REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES = ReferralsDataBu
             asTerminatedReferral = null
         )
     )
+).build()
+
+val EDIT_CODE_DATA_SUCCESS = EditCodeDataBuilder().build()
+val EDIT_CODE_DATA_ALREADY_TAKEN = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN
+).build()
+
+val EDIT_CODE_DATA_TOO_SHORT = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
+).build()
+
+val EDIT_CODE_DATA_TOO_LONG = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
+).build()
+
+val EDIT_CODE_DATA_TOO_MANY_CHANGES = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES
+).build()
+
+val EDIT_CODE_DATA_UNKNOWN_RESULT = EditCodeDataBuilder(
+    variant = EditCodeDataBuilder.ResultVariant.UNKNOWN
 ).build()

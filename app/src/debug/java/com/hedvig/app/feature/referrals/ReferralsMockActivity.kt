@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.referrals
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -11,12 +13,17 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import kotlinx.android.synthetic.debug.activity_generic_development.*
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -48,6 +55,8 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
+                        afterRefreshData = REFERRALS_DATA_WITH_NO_DISCOUNTS
                     }
                     startReferralsTab()
                 },
@@ -55,7 +64,9 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
                     }
                     startReferralsTab()
                 },
@@ -63,7 +74,10 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+                        afterRefreshData =
+                            REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
                     }
                     startReferralsTab()
                 },
@@ -71,7 +85,19 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                     MockReferralsViewModel.apply {
                         loadInitially = true
                         shouldSucceed = true
+                        hasLoadedOnce = false
                         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+                    }
+                    startReferralsTab()
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Pull to Refresh, Empty then One Referee") {
+                    MockReferralsViewModel.apply {
+                        loadInitially = true
+                        shouldSucceed = true
+                        referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
+                        hasLoadedOnce = false
+                        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
                     }
                     startReferralsTab()
                 },
@@ -83,6 +109,67 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                 GenericDevelopmentAdapter.Item.ClickableItem("Load slowly") {
                     MockReferralsActivatedViewModel.loadDelay = 5000
                     startActivity(ReferralsActivatedActivity.newInstance(this))
+                },
+                GenericDevelopmentAdapter.Item.Header("Edit Code Screen"),
+                GenericDevelopmentAdapter.Item.ClickableItem("Stay in Submit") {
+                    MockReferralsEditCodeViewModel.shouldLoad = false
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Success") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.SUCCESS
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Error") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = false
+                        variant = EditCodeDataBuilder.ResultVariant.SUCCESS
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code already taken") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code too short") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.TOO_SHORT
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Code too long") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.TOO_LONG
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Too many code changes") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
+                },
+                GenericDevelopmentAdapter.Item.ClickableItem("Unknown result type") {
+                    MockReferralsEditCodeViewModel.apply {
+                        shouldLoad = true
+                        shouldSucceed = true
+                        variant = EditCodeDataBuilder.ResultVariant.UNKNOWN
+                    }
+                    startActivity(ReferralsEditCodeActivity.newInstance(this, "TEST123"))
                 },
                 GenericDevelopmentAdapter.Item.Header("Notifications"),
                 GenericDevelopmentAdapter.Item.ClickableItem(
@@ -98,6 +185,13 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
                             )
                         )
                     )
+                },
+                GenericDevelopmentAdapter.Item.Header("Deep Links"),
+                GenericDevelopmentAdapter.Item.ClickableItem("`/forever`-Deep Link") {
+                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data =
+                            Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/forever")
+                    })
                 }
             )
         )
@@ -121,6 +215,7 @@ class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_develo
             viewModel<ReferralsViewModel> { MockReferralsViewModel() }
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
+            viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
         }
     }
 }
