@@ -4,6 +4,7 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
+import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.ApolloClientWrapper
@@ -23,6 +24,7 @@ class ReferralsRepository(
         .apolloClient
         .query(referralsQuery)
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
         .toDeferred()
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {

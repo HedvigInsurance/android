@@ -41,8 +41,8 @@ class ReferralTabOpenEditCodeTest : KoinComponent {
     @Test
     fun shouldOpenEditCodeScreenWhenPressingEdit() {
         apolloMockServer(
-            LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
-            ReferralsQuery.OPERATION_NAME to REFERRALS_DATA_WITH_NO_DISCOUNTS
+            LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
+            ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_NO_DISCOUNTS }
         ).use { webServer ->
             webServer.start(8080)
 

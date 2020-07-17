@@ -35,7 +35,7 @@ class ReferralsEditCodeTooLongErrorTest : KoinComponent {
     @Test
     fun shouldShowErrorWhenCodeIsTooLong() {
         apolloMockServer(
-            UpdateReferralCampaignCodeMutation.OPERATION_NAME to EDIT_CODE_DATA_TOO_LONG
+            UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_TOO_LONG }
         ).use { webServer ->
 
             webServer.start(8080)

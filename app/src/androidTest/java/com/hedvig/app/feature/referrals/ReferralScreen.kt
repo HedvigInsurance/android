@@ -8,6 +8,7 @@ import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KSnackbar
 import com.agoda.kakao.text.KTextView
@@ -22,6 +23,8 @@ class ReferralScreen : Screen<ReferralScreen>() {
     }
 
     val codeCopied = KSnackbar()
+
+    val swipeToRefresh = KSwipeRefreshLayout { withId(R.id.swipeToRefresh) }
 
     val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
         itemType(::HeaderItem)

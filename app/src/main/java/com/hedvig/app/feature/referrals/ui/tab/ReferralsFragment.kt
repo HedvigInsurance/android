@@ -63,10 +63,16 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             referralsViewModel.load()
         }, tracker)
 
+        swipeToRefresh.setOnRefreshListener {
+            referralsViewModel.load()
+        }
+
         referralsViewModel.data.observe(viewLifecycleOwner) { data ->
             if (data == null) {
                 return@observe
             }
+
+            swipeToRefresh.isRefreshing = false
 
             if (data.isFailure) {
                 (invites.adapter as? ReferralsAdapter)?.items = listOf(
