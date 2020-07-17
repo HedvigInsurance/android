@@ -13,4 +13,10 @@ class ReferralsTracker(
     fun share() = mixpanel.track("referrals_empty.share_code_button")
     fun reload() = mixpanel.track("referrals_error_button")
     fun editCode() = mixpanel.track("referrals_empty.edit.code.button")
+    fun submitCode() = mixpanel.track("nav_bar.save")
+    fun editCodeConfirmDismissContinue() =
+        mixpanel.track("referrals_edit_code_confirm_dismiss_continue")
+
+    fun editCodeConfirmDismissCancel() =
+        mixpanel.track("referrals_edit_code_confirm_dismiss_cancel")
 }
