@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.referrals.ui.editcode
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +11,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -21,7 +23,9 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     private val model: ReferralsEditCodeViewModel by viewModel()
 
     private var isSubmitting = false
+    private var dirty = false
 
+    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,6 +63,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
 
         code.setText(currentCode)
         code.onChange { newValue ->
+            model.setIsDirty()
             when (validate(newValue)) {
                 ValidationResult.VALID -> {
                     toolbar.menu.findItem(R.id.save).isEnabled = true
@@ -103,6 +108,11 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 }
             }
         }
+        model.dirty.observe(this) {
+            if (it != null) {
+                dirty = it
+            }
+        }
 
         model.data.observe(this) { data ->
             if (data == null) {
@@ -145,6 +155,25 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                     getString(R.string.referrals_change_code_sheet_general_error)
                 return@observe
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if (isSubmitting) {
+            return
+        }
+        if (dirty) {
+            showAlert(
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
+                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+                positiveAction = {
+                    super.onBackPressed()
+                }
+            )
+        } else {
+            super.onBackPressed()
         }
     }
 
