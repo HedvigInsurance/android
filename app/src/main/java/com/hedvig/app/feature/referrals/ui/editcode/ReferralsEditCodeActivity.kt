@@ -9,6 +9,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.showAlert
@@ -17,9 +18,11 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_referrals_edit_code.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
+    private val tracker: ReferralsTracker by inject()
     private val model: ReferralsEditCodeViewModel by viewModel()
 
     private var isSubmitting = false
@@ -48,6 +51,8 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.save -> {
+                    tracker.submitCode()
+                    toolbar.dismissKeyboard()
                     submit()
                     true
                 }
@@ -169,7 +174,11 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 R.string.referrals_edit_code_confirm_dismiss_continue,
                 R.string.referrals_edit_code_confirm_dismiss_cancel,
                 positiveAction = {
+                    tracker.editCodeConfirmDismissContinue()
                     super.onBackPressed()
+                },
+                negativeAction = {
+                    tracker.editCodeConfirmDismissCancel()
                 }
             )
         } else {
