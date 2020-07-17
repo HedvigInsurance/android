@@ -5,9 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
-import androidx.lifecycle.observe
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.observe
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
@@ -55,7 +55,16 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         code.setText(currentCode)
 
         model.data.observe(this) { data ->
-            data.updateReferralCampaignCode.asSuccessfullyUpdatedCode?.let {
+            if (data == null) {
+                return@observe
+            }
+
+            if (data.isFailure) {
+                codeContainer.error = getString(R.string.referrals_change_code_sheet_general_error)
+            }
+
+            data.getOrNull()?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.let {
+                codeContainer.error = null
                 finish()
             }
         }
