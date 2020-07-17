@@ -164,10 +164,10 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         }
         if (dirty) {
             showAlert(
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
-                R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+                R.string.referrals_edit_code_confirm_dismiss_title,
+                R.string.referrals_edit_code_confirm_dismiss_body,
+                R.string.referrals_edit_code_confirm_dismiss_continue,
+                R.string.referrals_edit_code_confirm_dismiss_cancel,
                 positiveAction = {
                     super.onBackPressed()
                 }
