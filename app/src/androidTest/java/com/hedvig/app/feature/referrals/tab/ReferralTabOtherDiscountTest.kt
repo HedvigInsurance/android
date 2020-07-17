@@ -40,8 +40,8 @@ class ReferralTabOtherDiscountTest : KoinTest {
     @Test
     fun shouldShowOtherDiscountWhenUserHasNonReferralDiscounts() {
         apolloMockServer(
-            LoggedInQuery.OPERATION_NAME.name() to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
-            ReferralsQuery.OPERATION_NAME.name() to REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+            LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
+            ReferralsQuery.OPERATION_NAME to REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
         ).use { webServer ->
             webServer.start(8080)
 

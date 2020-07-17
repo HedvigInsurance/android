@@ -10,7 +10,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ReferralsTracker
-import com.hedvig.app.feature.referrals.ReferralsViewModel
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format

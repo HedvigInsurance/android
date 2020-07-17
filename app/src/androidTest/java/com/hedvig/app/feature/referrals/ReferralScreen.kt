@@ -53,6 +53,7 @@ class ReferralScreen : Screen<ReferralScreen>() {
     class CodeItem(parent: Matcher<View>) : KRecyclerItem<CodeItem>(parent) {
         val placeholder = KImageView(parent) { withId(R.id.codePlaceholder) }
         val code = KTextView(parent) { withId(R.id.code) }
+        val edit = KButton(parent) { withId(R.id.edit) }
     }
 
     class InvitesHeaderItem(parent: Matcher<View>) : KRecyclerItem<InvitesHeaderItem>(parent)

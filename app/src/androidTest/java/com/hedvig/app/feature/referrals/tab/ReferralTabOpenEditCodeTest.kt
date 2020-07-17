@@ -1,17 +1,16 @@
 package com.hedvig.app.feature.referrals.tab
 
-import android.content.ClipboardManager
-import android.content.Context
-import androidx.core.content.getSystemService
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import assertk.assertThat
-import assertk.assertions.isEqualTo
+import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.text.KButton
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ReferralScreen
@@ -22,11 +21,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.KoinComponent
 import org.koin.core.inject
-import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class ReferralTabCodeSnackbarTest : KoinTest {
+class ReferralTabOpenEditCodeTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -34,50 +33,44 @@ class ReferralTabCodeSnackbarTest : KoinTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Context>().getSystemService<ClipboardManager>()
-            ?.clearPrimaryClip()
         apolloClientWrapper
             .apolloClient
             .clearNormalizedCache()
     }
 
     @Test
-    fun shouldShowSnackbarWhenClickingCode() {
+    fun shouldOpenEditCodeScreenWhenPressingEdit() {
         apolloMockServer(
             LoggedInQuery.OPERATION_NAME to LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED,
             ReferralsQuery.OPERATION_NAME to REFERRALS_DATA_WITH_NO_DISCOUNTS
         ).use { webServer ->
             webServer.start(8080)
 
-            val intent = LoggedInActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                initialTab = LoggedInTabs.REFERRALS
+            activityRule.launchActivity(
+                LoggedInActivity.newInstance(
+                    ApplicationProvider.getApplicationContext(),
+                    initialTab = LoggedInTabs.REFERRALS
+                )
             )
 
-            activityRule.launchActivity(intent)
-
-            Screen.onScreen<ReferralScreen> {
-                share { isVisible() }
+            onScreen<ReferralScreen> {
                 recycler {
-                    hasSize(3)
                     childAt<ReferralScreen.CodeItem>(2) {
-                        placeholder { isGone() }
-                        code {
-                            isVisible()
-                            hasText("TEST123")
-                            longClick()
-                        }
+                        edit { click() }
                     }
-                }
-                codeCopied {
-                    isDisplayed()
                 }
             }
 
-            val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
-                .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
-
-            assertThat(clipboardContent).isEqualTo("TEST123")
+            onScreen<ReferralsEditCodeScreen> {
+                edit {
+                    hasText("TEST123")
+                }
+            }
         }
+    }
+
+    class ReferralsEditCodeScreen : Screen<ReferralsEditCodeScreen>() {
+        val edit = KEditText { withId(R.id.code) }
+        val save = KButton { withId(R.id.save) }
     }
 }

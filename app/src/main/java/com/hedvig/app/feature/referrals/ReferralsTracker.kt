@@ -12,4 +12,5 @@ class ReferralsTracker(
     fun closeActivated() = mixpanel.track("referrals_intro_screen.button")
     fun share() = mixpanel.track("referrals_empty.share_code_button")
     fun reload() = mixpanel.track("referrals_error_button")
+    fun editCode() = mixpanel.track("referrals_empty.edit.code.button")
 }
