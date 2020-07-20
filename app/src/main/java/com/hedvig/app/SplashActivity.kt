@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
@@ -53,9 +54,10 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
             .addOnSuccessListener { pendingDynamicLinkData ->
                 if (pendingDynamicLinkData != null && pendingDynamicLinkData.link != null) {
                     val link = pendingDynamicLinkData.link
-                    when (link?.pathSegments?.get(0)) {
+                    when (link?.pathSegments?.getOrNull(0)) {
                         "referrals" -> handleReferralsDeepLink(link, loginStatus)
                         "direct-debit" -> handleDirectDebitDeepLink(loginStatus)
+                        "forever" -> handleForeverDeepLink(loginStatus)
                         else -> startDefaultActivity(loginStatus)
                     }
                 } else {
@@ -64,6 +66,17 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
             }.addOnFailureListener {
                 startDefaultActivity(loginStatus)
             }
+    }
+
+    private fun handleForeverDeepLink(loginStatus: LoginStatus?) {
+        if (loginStatus != LoginStatus.LOGGED_IN) {
+            startDefaultActivity(loginStatus)
+            return
+        }
+
+        runSplashAnimation {
+            startActivity(LoggedInActivity.newInstance(this, initialTab = LoggedInTabs.REFERRALS))
+        }
     }
 
     private fun handleDirectDebitDeepLink(loginStatus: LoginStatus?) {
