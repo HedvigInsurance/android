@@ -7,3 +7,6 @@ import com.agoda.kakao.edit.KTextInputLayout
 
 fun KTextInputLayout.hasError(@StringRes resId: Int) =
     hasError(ApplicationProvider.getApplicationContext<Context>().getString(resId))
+
+fun KTextInputLayout.hasError(@StringRes resId: Int, vararg formatArgs: Any) =
+    hasError(ApplicationProvider.getApplicationContext<Context>().getString(resId, *formatArgs))

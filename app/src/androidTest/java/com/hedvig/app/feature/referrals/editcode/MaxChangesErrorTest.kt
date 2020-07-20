@@ -33,7 +33,7 @@ class MaxChangesErrorTest : KoinComponent {
     }
 
     @Test
-    fun shouldShowGenericErrorWhenTooManyCodeChangesHaveBeenPerformed() {
+    fun shouldShowErrorWhenTooManyCodeChangesHaveBeenPerformed() {
         apolloMockServer(
             UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_TOO_MANY_CHANGES }
         ).use { webServer ->
@@ -56,7 +56,7 @@ class MaxChangesErrorTest : KoinComponent {
                 save { click() }
                 editLayout {
                     isErrorEnabled()
-                    hasError(R.string.referrals_change_code_sheet_general_error)
+                    hasError(R.string.referrals_change_code_sheet_error_change_limit_reached, 3)
                 }
             }
         }
