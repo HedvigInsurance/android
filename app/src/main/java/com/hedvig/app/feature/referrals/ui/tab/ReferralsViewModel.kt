@@ -12,7 +12,17 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
-    abstract val data: LiveData<Result<ReferralsQuery.Data>>
+    protected val _data = MutableLiveData<Result<ReferralsQuery.Data>>()
+    val data: LiveData<Result<ReferralsQuery.Data>> = _data
+
+    protected val _isRefreshing = MutableLiveData<Boolean>()
+
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
+    fun setRefreshing(refreshing: Boolean) {
+        _isRefreshing.postValue(true)
+    }
+
     abstract fun load()
 
     fun retry() {
@@ -23,21 +33,19 @@ abstract class ReferralsViewModel : ViewModel() {
 class ReferralsViewModelImpl(
     private val referralsRepository: ReferralsRepository
 ) : ReferralsViewModel() {
-    override val data = MutableLiveData<Result<ReferralsQuery.Data>>()
-
     init {
         viewModelScope.launch {
             referralsRepository
                 .referrals()
                 .onEach { response ->
                     if (response.errors?.isNotEmpty() == true) {
-                        data.postValue(Result.failure(Error()))
+                        _data.postValue(Result.failure(Error()))
                         return@onEach
                     }
-                    response.data?.let { data.postValue(Result.success(it)) }
+                    response.data?.let { _data.postValue(Result.success(it)) }
                 }
                 .catch { e ->
-                    data.postValue(Result.failure(e))
+                    _data.postValue(Result.failure(e))
                 }
                 .launchIn(this)
         }
@@ -46,6 +54,7 @@ class ReferralsViewModelImpl(
     override fun load() {
         viewModelScope.launch {
             runCatching { referralsRepository.reloadReferralsAsync().await() }
+            _isRefreshing.postValue(false)
         }
     }
 }

@@ -21,7 +21,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
-class SwipeToRefreshTest : KoinTest {
+class SwipeToRefreshNewDataTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -35,7 +35,7 @@ class SwipeToRefreshTest : KoinTest {
     }
 
     @Test
-    fun shouldRefreshDataWhenSwipingDownToRefresh() {
+    fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() {
         var firstLoadFlag = false
         apolloMockServer(
             LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
