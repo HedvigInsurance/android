@@ -150,9 +150,12 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                         getString(R.string.referrals_change_code_sheet_error_max_length)
                     return@observe
                 }
-                urcc.asExceededMaximumUpdates?.let {
+                urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
                     codeContainer.error =
-                        getString(R.string.referrals_change_code_sheet_general_error)
+                        getString(
+                            R.string.referrals_change_code_sheet_error_change_limit_reached,
+                            maximumNumberOfUpdates
+                        )
                     return@observe
                 }
 
