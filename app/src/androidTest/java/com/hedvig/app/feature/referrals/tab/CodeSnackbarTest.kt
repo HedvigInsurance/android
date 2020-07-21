@@ -33,8 +33,11 @@ class CodeSnackbarTest : KoinTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Context>().getSystemService<ClipboardManager>()
-            ?.clearPrimaryClip()
+        runCatching {
+            ApplicationProvider.getApplicationContext<Context>()
+                .getSystemService<ClipboardManager>()
+                ?.clearPrimaryClip()
+        }
         apolloClientWrapper
             .apolloClient
             .clearNormalizedCache()
@@ -73,10 +76,12 @@ class CodeSnackbarTest : KoinTest {
                 }
             }
 
-            val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
-                .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
+            activityRule.runOnUiThread {
+                val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
+                    .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
+                assertThat(clipboardContent).isEqualTo("TEST123")
+            }
 
-            assertThat(clipboardContent).isEqualTo("TEST123")
         }
     }
 }
