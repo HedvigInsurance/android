@@ -9,8 +9,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.referrals.ReferralsTracker
-import com.hedvig.app.feature.referrals.ReferralsViewModel
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format
@@ -63,6 +62,15 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             (invites.adapter as? ReferralsAdapter)?.setLoading()
             referralsViewModel.load()
         }, tracker)
+
+        swipeToRefresh.setOnRefreshListener {
+            referralsViewModel.setRefreshing(true)
+            referralsViewModel.load()
+        }
+
+        referralsViewModel.isRefreshing.observe(viewLifecycleOwner) { isRefreshing ->
+            isRefreshing?.let { swipeToRefresh.isRefreshing = it }
+        }
 
         referralsViewModel.data.observe(viewLifecycleOwner) { data ->
             if (data == null) {

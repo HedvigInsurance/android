@@ -1,13 +1,10 @@
 package com.hedvig.app.feature.referrals
 
 import android.os.Handler
-import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.graphql.ReferralsQuery
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 
 class MockReferralsViewModel : ReferralsViewModel() {
-    override val data = MutableLiveData<Result<ReferralsQuery.Data>>()
-
     init {
         if (loadInitially) {
             load()
@@ -17,17 +14,25 @@ class MockReferralsViewModel : ReferralsViewModel() {
     override fun load() {
         if (shouldSucceed) {
             Handler().postDelayed({
-                data.postValue(Result.success(referralsData))
+                if (!hasLoadedOnce) {
+                    hasLoadedOnce = true
+                    _data.postValue(Result.success(referralsData))
+                } else {
+                    _data.postValue(Result.success(afterRefreshData))
+                }
             }, 1000)
         } else {
             shouldSucceed = true
-            data.postValue(Result.failure(Error("Something went wrong")))
+            _data.postValue(Result.failure(Error("Something went wrong")))
         }
+        _isRefreshing.postValue(false)
     }
 
     companion object {
         var loadInitially = false
         var shouldSucceed = false
         var referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
+        var hasLoadedOnce = false
+        var afterRefreshData = referralsData
     }
 }

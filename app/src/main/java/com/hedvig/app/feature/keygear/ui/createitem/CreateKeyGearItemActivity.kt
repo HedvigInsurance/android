@@ -33,7 +33,6 @@ import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.centerX
@@ -320,8 +319,6 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         private const val POST_CREATE_REVEAL_DURATION = 400L
         private const val POST_CREATE_LABEL_REVEAL_DELAY = 150L
-
-        private val BUTTON_CORNER_RADIUS = 8.dp.toFloat()
 
         private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 
