@@ -7,6 +7,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -27,7 +28,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
         dialog.setContentView(R.layout.dialog_change_start_date)
 
-        dialog.datePickButton.setOnClickListener {
+        dialog.datePickButton.setHapticClickListener {
             showDatePickerDialog()
         }
 
@@ -35,7 +36,6 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
         offerViewModel.data.observe(this) { d ->
             d?.let { data ->
-                lateinit var buttonText: String
                 data.lastQuoteOfMember.asCompleteQuote?.id?.let { id ->
                     dialog.chooseDateButton.setOnClickListener {
                         requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
@@ -48,22 +48,20 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                                 dialog.hide()
                             })
                     }
-                    if (data.lastQuoteOfMember.asCompleteQuote?.currentInsurer == null) {
-                        tracker.activateToday()
-                        buttonText = getString(R.string.ACTIVATE_TODAY_BTN)
-                        dialog.autoSetDateText.text = buttonText
+                    if (data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.switchable == true) {
+                        dialog.autoSetDateText.text = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
 
-                        dialog.autoSetDateText.setOnClickListener {
-                            offerViewModel.chooseStartDate(id, LocalDate.now())
+                        dialog.autoSetDateText.setHapticClickListener {
+                            tracker.activateOnInsuranceEnd()
+                            offerViewModel.removeStartDate(id)
                             dialog.hide()
                         }
                     } else {
-                        tracker.activateOnInsuranceEnd()
-                        buttonText = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
-                        dialog.autoSetDateText.text = buttonText
+                        dialog.autoSetDateText.text = getString(R.string.ACTIVATE_TODAY_BTN)
 
-                        dialog.autoSetDateText.setOnClickListener {
-                            offerViewModel.removeStartDate(id)
+                        dialog.autoSetDateText.setHapticClickListener {
+                            tracker.activateToday()
+                            offerViewModel.chooseStartDate(id, LocalDate.now())
                             dialog.hide()
                         }
                     }

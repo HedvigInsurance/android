@@ -41,11 +41,15 @@ class ExistingSwitchableInsuranceTest : KoinComponent {
 
             onScreen<OfferScreen> {
                 scroll {
-                    childAt<OfferScreen.HeaderItem>(0) {
-                        startDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
-                    }
                     childAt<OfferScreen.SwitcherItem>(5) { title { containsText("Annat Försäkringsbolag") } }
+                    childAt<OfferScreen.HeaderItem>(0) {
+                        startDate {
+                            hasText(R.string.ACTIVATE_INSURANCE_END_BTN)
+                            click()
+                        }
+                    }
                 }
+                autoSetDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
             }
         }
     }

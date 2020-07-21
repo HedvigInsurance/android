@@ -4,11 +4,14 @@ import android.view.View
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 class OfferScreen : Screen<OfferScreen>() {
+    val autoSetDate = KButton { withId(R.id.autoSetDateText) }
+   
     val scroll = KRecyclerView({ withId(R.id.offerScroll) }, {
         itemType(::HeaderItem)
         itemType(::SwitcherItem)

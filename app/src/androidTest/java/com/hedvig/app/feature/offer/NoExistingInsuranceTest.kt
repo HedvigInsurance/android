@@ -43,9 +43,13 @@ class NoExistingInsuranceTest : KoinComponent {
                 scroll {
                     hasSize(6)
                     childAt<OfferScreen.HeaderItem>(0) {
-                        startDate { hasText(R.string.START_DATE_TODAY) }
+                        startDate {
+                            hasText(R.string.START_DATE_TODAY)
+                            click()
+                        }
                     }
                 }
+                autoSetDate { hasText(R.string.ACTIVATE_TODAY_BTN) }
             }
         }
     }
