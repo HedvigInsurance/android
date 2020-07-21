@@ -48,6 +48,8 @@
                 android:layout_marginTop="@dimen/base_margin_quintuple"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin_double"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
