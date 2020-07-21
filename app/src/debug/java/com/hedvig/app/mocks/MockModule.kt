@@ -12,6 +12,7 @@ import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.offer.MockOfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel

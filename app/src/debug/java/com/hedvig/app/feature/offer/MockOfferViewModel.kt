@@ -1,4 +1,4 @@
-package com.hedvig.app.mocks
+package com.hedvig.app.feature.offer
 
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,6 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 

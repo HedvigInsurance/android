@@ -17,7 +17,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class OfferActivityTest : KoinComponent {
+class ExistingSwitchableInsuranceTest : KoinComponent {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
     @get:Rule
@@ -33,7 +33,7 @@ class OfferActivityTest : KoinComponent {
     @Test
     fun shouldShowSwitcherSectionWhenUserHasExistingSwitchableInsurance() {
         apolloMockServer(
-            OfferQuery.OPERATION_NAME.name() to OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
+            OfferQuery.OPERATION_NAME to { OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE }
         ).use { webServer ->
             webServer.start(8080)
 

@@ -12,3 +12,11 @@ val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuil
         switchable = true
     )
 ).build()
+
+val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE = OfferDataBuilder(
+    currentInsurer = OfferQuery.CurrentInsurer(
+        id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
+        displayName = "Annat Försäkringsbolag",
+        switchable = false
+    )
+).build()
