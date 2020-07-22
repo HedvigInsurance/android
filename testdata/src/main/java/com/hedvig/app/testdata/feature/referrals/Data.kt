@@ -62,6 +62,12 @@ val REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT = ReferralsDataBuilder(
     )
 ).build()
 
+const val COMPLEX_REFERRAL_CODE = "CODE $ \uD83E\uDD11"
+
+val REFERRALS_DATA_WITH_COMPLEX_CODE = ReferralsDataBuilder(
+    code = COMPLEX_REFERRAL_CODE
+).build()
+
 val REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES = ReferralsDataBuilder(
     insuranceCost = CostBuilder(
         discountAmount = "10.00",
