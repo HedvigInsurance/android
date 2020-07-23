@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.fragment_referrals.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.net.URLEncoder
 
 class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
@@ -100,7 +101,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${code}"
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${URLEncoder.encode(
+                                    code,
+                                    UTF_8
+                                )}"
                             )
                         )
                         intent.type = "text/plain"
@@ -156,5 +160,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private fun applyInsets() {
         share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
         invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
+    }
+
+    companion object {
+        private const val UTF_8 = "UTF-8"
     }
 }
