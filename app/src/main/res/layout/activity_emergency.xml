@@ -2,15 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.claims.ui.commonclaim.EmergencyActivity">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/root"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -53,7 +55,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_TITLE"
-                        android:textAppearance="?textAppearanceHeadline6" />
+                        android:textAppearance="?textAppearanceSubtitle1" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -73,6 +75,7 @@
                         tools:visibility="visible" />
 
                 </LinearLayout>
+
             </com.hedvig.app.ui.view.HedvigCardView>
 
             <com.hedvig.app.ui.view.HedvigCardView
@@ -95,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/CLAIMS_EMERGENCY_THIRD_BOX_TITLE"
-                        android:textAppearance="?textAppearanceHeadline6" />
+                        android:textAppearance="?textAppearanceSubtitle1" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -118,6 +121,7 @@
             </com.hedvig.app.ui.view.HedvigCardView>
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <androidx.appcompat.widget.Toolbar

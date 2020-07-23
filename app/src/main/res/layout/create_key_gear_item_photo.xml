@@ -6,4 +6,4 @@
     android:layout_height="@dimen/create_key_gear_add_photo_height"
     android:contentDescription="@null"
     android:elevation="@dimen/key_gear_item_elevation"
-    tools:src="@drawable/ic_fire_green" />
+    tools:src="@drawable/ic_active" />

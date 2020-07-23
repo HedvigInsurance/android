@@ -46,13 +46,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Headline 6"
-                android:textAppearance="?textAppearanceHeadline6" />
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Subtitle 1"
-                android:textAppearance="?textAppearanceHeadline6" />
+                android:textAppearance="?textAppearanceSubtitle1" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Body 3"
-                android:textAppearance="?textAppearanceBody3" />
+                android:textAppearance="?textAppearanceCaption" />
 
             <TextView
                 android:layout_width="wrap_content"

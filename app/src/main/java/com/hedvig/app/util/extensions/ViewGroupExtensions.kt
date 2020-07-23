@@ -1,8 +1,10 @@
 package com.hedvig.app.util.extensions
 
 import android.graphics.Rect
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 
 fun ViewGroup.addViews(vararg views: View) = views.forEach { addView(it) }
 
@@ -14,7 +16,7 @@ val ViewGroup.firstChild
 val ViewGroup.children
     get() = ViewIterator(this)
 
-class ViewIterator(private val parent: ViewGroup): Iterator<View> {
+class ViewIterator(private val parent: ViewGroup) : Iterator<View> {
 
     var length = parent.childCount
     var current = 0
@@ -36,11 +38,16 @@ fun ViewGroup.calculateNonFullscreenHeightDiff(): Int {
     val screenHeight = this.rootView.height
     var heightDifference = screenHeight - (r.bottom - r.top)
     val resourceId = resources
-        .getIdentifier("status_bar_height",
-            "dimen", "android")
+        .getIdentifier(
+            "status_bar_height",
+            "dimen", "android"
+        )
     if (resourceId > 0) {
         heightDifference -= resources
             .getDimensionPixelSize(resourceId)
     }
     return heightDifference
 }
+
+fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
+    LayoutInflater.from(context).inflate(layout, this, attachToRoot)

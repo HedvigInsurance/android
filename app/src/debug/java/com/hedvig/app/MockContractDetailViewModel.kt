@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
 
 class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() {
@@ -12,7 +13,7 @@ class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() 
 
     init {
         val mockPersona = context
-            .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
 
         mockData = when (mockPersona) {
@@ -28,4 +29,6 @@ class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() 
     override fun loadContract(id: String) {
         data.value = mockData.contracts.find { it.id == id }
     }
+
+    override suspend fun triggerFreeTextChat() = Unit
 }

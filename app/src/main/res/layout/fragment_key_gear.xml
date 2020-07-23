@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/logged_in_tabs_bottom_padding"
+    android:paddingBottom="@dimen/base_margin_double"
     tools:context=".feature.keygear.ui.tab.KeyGearFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout

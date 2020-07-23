@@ -43,7 +43,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         }
 
         root.setEdgeToEdgeSystemUiFlags(true)
-        root.doOnApplyWindowInsets { view, insets, initialState ->
+        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
         }
         toolbar.doOnApplyWindowInsets { view, insets, initialState ->
@@ -54,7 +54,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-        root.setupToolbarScrollListener(toolbar = toolbar)
+        scrollView.setupToolbarScrollListener(toolbar = toolbar)
 
         requestBuilder
             .load(

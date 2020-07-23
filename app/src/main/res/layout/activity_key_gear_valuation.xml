@@ -1,90 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/topBar"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chat_top_bar_height"
-        android:background="?android:colorBackground"
-        android:elevation="@dimen/top_bar_elevation"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/base_margin"
-        android:paddingEnd="@dimen/base_margin">
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/base_margin_sextuple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
-        <ImageView
-            android:id="@+id/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
-            android:padding="@dimen/base_margin"
-            android:tint="@color/icon_tint"
-            app:srcCompat="@drawable/ic_close" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_triple"
-            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
-            android:textAppearance="?textAppearanceHeadline6" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:textAlignment="center"
-        android:textAppearance="?textAppearanceHeadline6"
-        tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:inputType="numberDecimal">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/priceInput"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE"
-            android:imeOptions="actionDone" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                android:textAlignment="center"
+                android:textAppearance="?textAppearanceSubtitle1"
+                tools:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY" />
 
-    <TextView
-        android:id="@+id/noCoverage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_quadruple"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin_quadruple"
-        android:text="@string/KEY_GEAR_NOT_COVERED"
-        android:textAlignment="center"
-        android:textColor="@color/coral_700"
-        android:visibility="gone"
-        tools:visibility="visible" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                android:inputType="numberDecimal">
 
-    <com.hedvig.app.ui.view.DateInputView
-        android:id="@+id/dateInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        app:dateHintBackground="?android:colorBackground" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/priceInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE"
+                    android:imeOptions="actionDone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/noCoverage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_quadruple"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_quadruple"
+                android:text="@string/KEY_GEAR_NOT_COVERED"
+                android:textAlignment="center"
+                android:textColor="@color/coral_700"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <com.hedvig.app.ui.view.DateInputView
+                android:id="@+id/dateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_triple"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginEnd="@dimen/base_margin_triple"
+                app:dateHintBackground="?android:colorBackground" />
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/saveContainer"
@@ -97,8 +86,9 @@
         android:layout_marginBottom="@dimen/base_margin_quadruple"
         android:background="@drawable/button_primary"
         android:backgroundTint="@color/semi_light_gray"
-        android:visibility="gone"
-        tools:visibility="visible">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ProgressBar
             android:id="@+id/loadingIndicator"
@@ -123,4 +113,34 @@
 
     </FrameLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:elevation="@dimen/top_bar_elevation"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/base_margin"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
+            android:padding="@dimen/base_margin"
+            android:tint="@color/icon_tint"
+            app:srcCompat="@drawable/ic_close" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_margin_triple"
+            android:text="@string/KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_PAGE_TITLE"
+            android:textAppearance="?textAppearanceSubtitle1" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

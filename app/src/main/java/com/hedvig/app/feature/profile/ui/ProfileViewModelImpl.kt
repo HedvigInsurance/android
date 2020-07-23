@@ -39,15 +39,13 @@ class ProfileViewModelImpl(
     override fun startTrustlySession() {
         viewModelScope.launch {
             val response =
-                runCatching { profileRepository.startTrustlySessionAsync().await().data() }
+                runCatching { profileRepository.startTrustlySessionAsync().await().data }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
             response.getOrNull()?.let { data ->
-                data.startDirectDebitRegistration?.let { ddUrl ->
-                    trustlyUrl.postValue(ddUrl)
-                }
+                trustlyUrl.postValue(data.startDirectDebitRegistration)
             }
         }
     }
@@ -64,7 +62,7 @@ class ProfileViewModelImpl(
                     return@launch
                 }
                 response.getOrNull()?.let {
-                    email = it.data()?.updateEmail?.email
+                    email = it.data?.updateEmail?.email
                 }
             }
 
@@ -77,7 +75,7 @@ class ProfileViewModelImpl(
                     return@launch
                 }
                 response.getOrNull()?.let {
-                    phoneNumber = it.data()?.updatePhoneNumber?.phoneNumber
+                    phoneNumber = it.data?.updatePhoneNumber?.phoneNumber
                 }
             }
 
@@ -89,7 +87,7 @@ class ProfileViewModelImpl(
         viewModelScope.launch {
             profileRepository
                 .profile()
-                .onEach { data.postValue(it.data()) }
+                .onEach { data.postValue(it.data) }
                 .catch { e(it) }
                 .launchIn(this)
         }
@@ -113,7 +111,7 @@ class ProfileViewModelImpl(
         viewModelScope.launch {
             profileRepository.selectCashback(id)
                 .onEach { response ->
-                    response.data()?.selectCashbackOption?.let { cashback ->
+                    response.data?.selectCashbackOption?.let { cashback ->
                         profileRepository.writeCashbackToCache(cashback)
                     }
                 }
@@ -142,11 +140,16 @@ class ProfileViewModelImpl(
 
     override fun triggerFreeTextChat(done: () -> Unit) {
         viewModelScope.launch {
-            chatRepository
-                .triggerFreeTextChat()
-                .onEach { done() }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository
+                    .triggerFreeTextChatAsync()
+                    .await()
+            }
+
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+            }
+            done()
         }
     }
 

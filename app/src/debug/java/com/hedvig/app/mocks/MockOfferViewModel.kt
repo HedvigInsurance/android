@@ -4,15 +4,16 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.DevelopmentActivity
+import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.feature.offer.OfferViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockOfferViewModel(
     context: Context
@@ -24,7 +25,7 @@ class MockOfferViewModel(
 
     init {
         val activePersona = context
-            .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
 
         data.postValue(
@@ -85,21 +86,32 @@ class MockOfferViewModel(
                         asSwedishHouseQuoteDetails = null
                     ),
                     insuranceCost = OfferQuery.InsuranceCost(
-                        "InsuranceCost",
-                        OfferQuery.InsuranceCost.Fragments(
+                        fragments = OfferQuery.InsuranceCost.Fragments(
                             CostFragment(
                                 "InsuranceCost",
                                 CostFragment.MonthlyDiscount(
-                                    "MonetaryAmountV2",
-                                    "50.0"
+                                    fragments = CostFragment.MonthlyDiscount.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "50.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
                                 CostFragment.MonthlyNet(
-                                    "MonetaryAmountV2",
-                                    "50.0"
+                                    fragments = CostFragment.MonthlyNet.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "50.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
                                 CostFragment.MonthlyGross(
-                                    "MonetaryAmountV2",
-                                    "100.0"
+                                    fragments = CostFragment.MonthlyGross.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "100.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -159,21 +171,31 @@ class MockOfferViewModel(
                         )
                     ),
                     insuranceCost = OfferQuery.InsuranceCost(
-                        "InsuranceCost",
-                        OfferQuery.InsuranceCost.Fragments(
+                        fragments = OfferQuery.InsuranceCost.Fragments(
                             CostFragment(
-                                "InsuranceCost",
-                                CostFragment.MonthlyDiscount(
-                                    "MonetaryAmountV2",
-                                    "50.0"
+                                monthlyDiscount = CostFragment.MonthlyDiscount(
+                                    fragments = CostFragment.MonthlyDiscount.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "50.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
-                                CostFragment.MonthlyNet(
-                                    "MonetaryAmountV2",
-                                    "50.0"
+                                monthlyNet = CostFragment.MonthlyNet(
+                                    fragments = CostFragment.MonthlyNet.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "50.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
-                                CostFragment.MonthlyGross(
-                                    "MonetaryAmountV2",
-                                    "100.0"
+                                monthlyGross = CostFragment.MonthlyGross(
+                                    fragments = CostFragment.MonthlyGross.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "100.0",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 )
                             )
                         )

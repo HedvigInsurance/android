@@ -39,7 +39,7 @@ class KeyGearItemDetailViewModelImpl(
         viewModelScope.launch {
             repository
                 .keyGearItem(id)
-                .onEach { response -> data.postValue(response.data()?.keyGearItem) }
+                .onEach { response -> data.postValue(response.data?.keyGearItem) }
                 .catch { e -> e(e) }
                 .collect()
         }

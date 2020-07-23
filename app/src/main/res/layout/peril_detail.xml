@@ -20,7 +20,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:contentDescription="@null"
-            tools:src="@drawable/ic_fire_green" />
+            tools:src="@drawable/ic_active" />
 
         <TextView
             android:id="@+id/label"
@@ -30,7 +30,7 @@
             android:layout_marginStart="@dimen/base_margin"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             tools:text="Fire" />
 
     </LinearLayout>

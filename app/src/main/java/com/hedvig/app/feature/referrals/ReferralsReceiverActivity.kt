@@ -6,6 +6,8 @@ import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -16,7 +18,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsReceiverActivity : BaseActivity() {
 
-    private val referralViewModel: ReferralViewModel by viewModel()
+    private val referralViewModel: RedeemCodeViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

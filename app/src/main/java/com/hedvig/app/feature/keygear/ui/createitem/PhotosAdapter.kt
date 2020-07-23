@@ -4,6 +4,7 @@ import android.Manifest
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +50,7 @@ class PhotosAdapter(
                     false
                 ).apply {
                     layoutParams =
-                        ConstraintLayout.LayoutParams(
+                        FrameLayout.LayoutParams(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
                             ITEM_HEIGHT.dp
                         )
@@ -113,7 +114,6 @@ class PhotosAdapter(
                     .into(photo)
 
                 photo.setOnCreateContextMenuListener { _, v, _ ->
-                    tracker.openPhotoContextMenu()
                     v.performOnLongPressHapticFeedback()
                     val popup = PopupMenu(v.context, v)
                     popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)

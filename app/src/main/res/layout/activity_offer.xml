@@ -58,7 +58,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/base_margin_half"
                                 android:background="@drawable/background_premium_box_with_campaign"
-                                android:textAppearance="?textAppearanceHeadline6"
+                                android:textAppearance="?textAppearanceSubtitle1"
                                 android:textColor="@color/white"
                                 tools:text="Discount" />
 
@@ -77,7 +77,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/base_margin_double"
-                                android:textAppearance="?textAppearanceHeadline6"
+                                android:textAppearance="?textAppearanceSubtitle1"
                                 android:visibility="gone"
                                 tools:text="179 kr/mån"
                                 tools:visibility="visible" />
@@ -107,7 +107,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/OFFER_PREMIUM_CURRENCY_ABBREVIATION"
-                                        android:textAppearance="?textAppearanceHeadline6"
+                                        android:textAppearance="?textAppearanceSubtitle1"
                                         android:textColor="@color/gray" />
 
                                     <TextView
@@ -115,7 +115,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/OFFER_PREMIUM_PERIOD_ABBREVIATION"
-                                        android:textAppearance="?textAppearanceHeadline6"
+                                        android:textAppearance="?textAppearanceSubtitle1"
                                         android:textColor="@color/gray" />
 
                                 </LinearLayout>
@@ -176,7 +176,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/base_margin"
                                 android:layout_marginBottom="@dimen/base_margin_double"
-                                android:textColor="?colorSecondary"
                                 tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
 
                         </LinearLayout>
@@ -240,7 +239,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/OFFER_TITLE"
-                    android:textAppearance="?textAppearanceHeadline6"
+                    android:textAppearance="?textAppearanceSubtitle1"
                     android:textColor="@color/white" />
 
                 <TextView

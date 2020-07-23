@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark
 
+import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.toDeferred
 
 class EmbarkRepository(
     private val apolloClientWrapper: ApolloClientWrapper

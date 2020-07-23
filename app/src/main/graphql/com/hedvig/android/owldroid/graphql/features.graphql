@@ -1,5 +1,0 @@
-query Features {
-  member {
-    features
-  }
-}

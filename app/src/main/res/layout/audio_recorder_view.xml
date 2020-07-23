@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/base_margin"
             android:text="@string/AUDIO_INPUT_START_RECORDING"
-            android:textAppearance="?textAppearanceBody3" />
+            android:textAppearance="?textAppearanceCaption" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/stopRecording"

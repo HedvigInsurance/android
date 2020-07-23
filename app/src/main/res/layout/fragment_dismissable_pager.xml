@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin_double"
             android:gravity="center"
-            android:textAppearance="?textAppearanceHeadline6"
+            android:textAppearance="?textAppearanceSubtitle1"
             android:visibility="gone"
             tools:text="@string/NEWS_TITLE"
             tools:visibility="visible" />

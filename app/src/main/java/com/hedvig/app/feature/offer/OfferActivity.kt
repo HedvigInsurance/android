@@ -37,8 +37,8 @@ import kotlinx.android.synthetic.main.activity_offer.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.LocalDate
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
@@ -93,7 +93,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         when {
                             completeQuote.quoteDetails.asSwedishApartmentQuoteDetails != null -> {
                                 val apartmentData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishApartmentQuoteDetails!!
+                                    data.lastQuoteOfMember.asCompleteQuote!!.quoteDetails.asSwedishApartmentQuoteDetails!!
                                 bindToolBar(apartmentData.street)
                                 bindPremiumBox(
                                     completeQuote.typeOfContract,
@@ -104,7 +104,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             }
                             completeQuote.quoteDetails.asSwedishHouseQuoteDetails != null -> {
                                 val houseData =
-                                    data.lastQuoteOfMember.asCompleteQuote.quoteDetails.asSwedishHouseQuoteDetails!!
+                                    data.lastQuoteOfMember.asCompleteQuote!!.quoteDetails.asSwedishHouseQuoteDetails!!
                                 bindToolBar(houseData.street)
                                 bindPremiumBox(
                                     completeQuote.typeOfContract,
@@ -122,6 +122,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
 
         settings.setHapticClickListener {
+            tracker.settings()
             startActivity(SettingsActivity.newInstance(this))
         }
 
@@ -146,10 +147,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     ) {
 
         premiumBoxTitle.setText(type.getStringId())
-        premium.text = BigDecimal(insuranceCost.monthlyNet.amount).toInt().toString()
-        if (BigDecimal(insuranceCost.monthlyDiscount.amount) > BigDecimal.ZERO) {
+        premium.text =
+            BigDecimal(insuranceCost.monthlyNet.fragments.monetaryAmountFragment.amount).toInt()
+                .toString()
+        if (BigDecimal(insuranceCost.monthlyDiscount.fragments.monetaryAmountFragment.amount) > BigDecimal.ZERO) {
             grossPremium.setStrikethrough(true)
-            grossPremium.text = BigDecimal(insuranceCost.monthlyGross.amount).toInt().toString()
+            grossPremium.text =
+                BigDecimal(insuranceCost.monthlyGross.fragments.monetaryAmountFragment.amount).toInt()
+                    .toString()
         }
 
         startDateContainer.setHapticClickListener {
@@ -172,7 +177,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 incentive.asFreeMonths != null -> {
                     premiumCampaignTitle.text = getString(
                         R.string.OFFER_SCREEN_FREE_MONTHS_BUBBLE,
-                        incentive.asFreeMonths.quantity
+                        incentive.asFreeMonths?.quantity
                     ).replace('\n', ' ')
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                     premiumCampaignTitle.show()
@@ -184,21 +189,22 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
                 incentive.asPercentageDiscountMonths != null -> {
                     premiumCampaignTitle.text =
-                        if (incentive.asPercentageDiscountMonths.pdmQuantity == 1) {
+                        if (incentive.asPercentageDiscountMonths?.pdmQuantity == 1) {
                             getString(
                                 R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                                incentive.asPercentageDiscountMonths?.percentageDiscount?.toInt()
                             )
                         } else {
                             getString(
                                 R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                incentive.asPercentageDiscountMonths.pdmQuantity,
-                                incentive.asPercentageDiscountMonths.percentageDiscount.toInt()
+                                incentive.asPercentageDiscountMonths?.pdmQuantity,
+                                incentive.asPercentageDiscountMonths?.percentageDiscount?.toInt()
                             )
                         }
                     grossPremium.text = getString(
                         R.string.OFFER_GROSS_PREMIUM,
-                        insuranceCost.monthlyGross.amount.toBigDecimal().toInt()
+                        insuranceCost.monthlyGross.fragments.monetaryAmountFragment.amount.toBigDecimal()
+                            .toInt()
                     )
                     offerPremiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
                 }

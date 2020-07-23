@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     abstract val data: MutableLiveData<OfferQuery.Data>
@@ -47,7 +47,7 @@ class OfferViewModelImpl(
             offerRepository
                 .loadOffer()
                 .onEach { response ->
-                    data.postValue(response.data())
+                    data.postValue(response.data)
                 }
                 .catch { e -> e(e) }
                 .collect()
@@ -86,7 +86,7 @@ class OfferViewModelImpl(
     override fun startSign() {
         viewModelScope.launch {
             offerRepository.subscribeSignStatus()
-                .onEach { signStatus.postValue(it.data()?.signStatus?.status?.fragments?.signStatusFragment) }
+                .onEach { signStatus.postValue(it.data?.signStatus?.status?.fragments?.signStatusFragment) }
                 .catch { e(it) }
                 .launchIn(this)
 
@@ -95,7 +95,7 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data())
+            autoStartToken.postValue(response.getOrNull()?.data)
         }
     }
 
@@ -111,7 +111,7 @@ class OfferViewModelImpl(
                 return@launch
             }
             response.getOrNull()
-                ?.let { signStatus.postValue(it.data()?.signStatus?.fragments?.signStatusFragment) }
+                ?.let { signStatus.postValue(it.data?.signStatus?.fragments?.signStatusFragment) }
         }
     }
 
@@ -124,7 +124,7 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data()?.let {
+            response.getOrNull()?.data?.let {
                 offerRepository.writeStartDateToCache(it)
             } ?: run {
                 e { "Missing data when choosing start date" }
@@ -141,7 +141,7 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data()?.let { offerRepository.removeStartDateFromCache(it) }
+            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(it) }
         }
     }
 }

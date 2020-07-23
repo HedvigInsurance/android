@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.chat.data
 
+import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.toDeferred
-import com.hedvig.app.util.apollo.toFlow
 
 class UserRepository(private val apolloClientWrapper: ApolloClientWrapper) {
 

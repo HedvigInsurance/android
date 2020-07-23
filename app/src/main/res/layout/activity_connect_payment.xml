@@ -35,7 +35,7 @@
             android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
             android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
             android:textAppearance="?textAppearanceHeadline5"
-            android:textColor="?colorSecondary"
+            android:textColor="?textColorLink"
             app:layout_constraintBottom_toTopOf="@id/explainerTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -105,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:text="@string/DASHBOARD_SETUP_DIRECT_DEBIT_TITLE"
-                    android:textAppearance="?textAppearanceHeadline6" />
+                    android:textAppearance="?textAppearanceSubtitle1" />
 
                 <Button
                     android:id="@+id/notNow"

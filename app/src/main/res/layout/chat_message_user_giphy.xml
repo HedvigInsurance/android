@@ -45,7 +45,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/base_margin"
                 android:text="@string/CHAT_GIPHY_TITLE"
-                android:textAppearance="?textAppearanceBody3" />
+                android:textAppearance="?textAppearanceCaption" />
 
         </LinearLayout>
     </LinearLayout>

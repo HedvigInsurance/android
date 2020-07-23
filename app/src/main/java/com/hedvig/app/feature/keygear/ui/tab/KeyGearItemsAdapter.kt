@@ -81,7 +81,6 @@ class KeyGearItemsAdapter(
             is ViewHolder.Item -> {
                 val item = items[position - 1]
                 holder.root.setHapticClickListener {
-                    tracker.openItem()
                     openItem(
                         holder.root,
                         item

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 abstract class KeyGearValuationViewModel : ViewModel() {
     abstract val uploadResult: LiveData<KeyGearItemQuery.Data>
@@ -53,7 +53,7 @@ class KeyGearValuationViewModelImpl(
             repository
                 .keyGearItem(id)
                 .onEach { response ->
-                    data.postValue(response.data()?.keyGearItem)
+                    data.postValue(response.data?.keyGearItem)
                 }
                 .catch { e -> e(e) }
                 .collect()

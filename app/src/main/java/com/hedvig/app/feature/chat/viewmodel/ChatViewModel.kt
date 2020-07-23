@@ -37,7 +37,6 @@ class ChatViewModel(
     val gifs = MutableLiveData<GifQuery.Data>()
 
     private val disposables = CompositeDisposable()
-    private val chatDisposable = CompositeDisposable()
 
     private var isSubscriptionAllowedToWrite = true
     private var isWaitingForParagraph = false
@@ -45,14 +44,11 @@ class ChatViewModel(
     private var loadRetries = 0L
 
     fun subscribe() {
-        if (chatDisposable.size() > 0) {
-            chatDisposable.dispose()
-        }
         viewModelScope.launch {
             chatRepository
                 .subscribeToChatMessages()
                 .onEach { response ->
-                    response.data()?.message?.let { message ->
+                    response.data?.message?.let { message ->
                         if (isSubscriptionAllowedToWrite) {
                             chatRepository
                                 .writeNewMessage(
@@ -68,9 +64,6 @@ class ChatViewModel(
 
     fun load() {
         isSubscriptionAllowedToWrite = false
-        if (chatDisposable.size() > 0) {
-            chatDisposable.clear()
-        }
         viewModelScope.launch {
             chatRepository
                 .fetchChatMessages()
@@ -104,10 +97,10 @@ class ChatViewModel(
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
-        (response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.asMessageBodyCore)?.type == "paragraph"
+        (response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.asMessageBodyCore)?.type == "paragraph"
 
     private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
-        response.data()?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
+        response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
             ?: 0L
 
     private fun waitForParagraph(delay: Long) {
@@ -145,7 +138,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data()?.uploadFile?.key?.let { respondWithFile(it, uri) }
+            response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
             response.getOrNull()?.let { onNext(it) }
         }
     }
@@ -159,7 +152,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data()?.uploadFile?.key?.let { key ->
+            response.getOrNull()?.data?.uploadFile?.key?.let { key ->
                 respondWithFile(
                     key,
                     uri
@@ -169,7 +162,7 @@ class ChatViewModel(
     }
 
     private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
-        val data = response.data()
+        val data = response.data
         messages.postValue(data)
     }
 
@@ -189,10 +182,10 @@ class ChatViewModel(
                 return@launch
             }
             isSendingMessage = false
-            if (response.getOrNull()?.data()?.sendChatTextResponse == true) {
+            if (response.getOrNull()?.data?.sendChatTextResponse == true) {
                 load()
             }
-            sendMessageResponse.postValue(response.getOrNull()?.data()?.sendChatTextResponse)
+            sendMessageResponse.postValue(response.getOrNull()?.data?.sendChatTextResponse)
         }
     }
 
@@ -213,7 +206,7 @@ class ChatViewModel(
                 return@launch
             }
             isSendingMessage = false
-            if (response.getOrNull()?.data()?.sendChatFileResponse == true) {
+            if (response.getOrNull()?.data?.sendChatFileResponse == true) {
                 load()
             }
         }
@@ -236,7 +229,7 @@ class ChatViewModel(
                 return@launch
             }
             isSendingMessage = false
-            if (response.getOrNull()?.data()?.sendChatSingleSelectResponse == true) {
+            if (response.getOrNull()?.data?.sendChatSingleSelectResponse == true) {
                 load()
             }
         }
@@ -249,7 +242,6 @@ class ChatViewModel(
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
-        chatDisposable.clear()
     }
 
     fun uploadClaim(path: String) {
@@ -282,7 +274,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            gifs.postValue(response.getOrNull()?.data())
+            gifs.postValue(response.getOrNull()?.data)
         }
     }
 }

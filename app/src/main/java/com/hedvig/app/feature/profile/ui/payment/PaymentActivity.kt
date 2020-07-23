@@ -10,7 +10,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.feature.referrals.RefetchingRedeemCodeDialog
+import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.payment_details_section.*
 import kotlinx.android.synthetic.main.payment_history_section.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.threeten.bp.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter
 
 class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val model: PaymentViewModel by viewModel()
@@ -50,13 +50,14 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_close, true, root) {
+        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true, root) {
             onBackPressed()
         }
 
         nextPaymentGross.setStrikethrough(true)
 
         seePaymentHistory.setHapticClickListener {
+            tracker.seePaymentHistory()
             startActivity(PaymentHistoryActivity.newInstance(this))
         }
 
@@ -65,6 +66,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
 
         connectBankAccount.setHapticClickListener {
+            tracker.connectBankAccount()
             startActivity(ConnectPaymentActivity.newInstance(this))
         }
 
@@ -151,7 +153,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             nextPaymentGross.show()
             nextPaymentGross.text = getString(
                 R.string.PAYMENTS_FULL_PREMIUM,
-                data.insuranceCost?.fragments?.costFragment?.monthlyGross?.amount?.toBigDecimal()
+                data.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                     ?.toInt()
             )
         }
@@ -327,9 +329,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun showRedeemCodeOnNoDiscount(profileData: ProfileQuery.Data) {
         if (
-            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.amount?.toBigDecimal()
+            profileData.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                 ?.toInt() == 0
-            && profileData.insuranceCost.freeUntil == null
+            && profileData.insuranceCost?.freeUntil == null
         ) {
             redeemCode.show()
         }

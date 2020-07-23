@@ -27,7 +27,7 @@ class HonestyPledgeBottomSheet : RoundedBottomSheetDialogFragment() {
         dialog.setContentView(view)
 
         dialog.bottomSheetHonestyPledgeButton.setHapticClickListener {
-            tracker.pledgeHonesty(arguments?.getString(ARGS_CLAIM_KEY))
+            tracker.pledgeHonesty()
             claimsViewModel.triggerClaimsChat {
                 dismiss()
                 requireActivity().startClosableChat()

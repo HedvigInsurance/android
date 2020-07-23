@@ -4,7 +4,7 @@
     <string name="APP_NAME" translatable="false">Hedvig Dev</string>
 
     <string name="APP_SCHEME" translatable="false">hedvigtest</string>
-    <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvigdev.page.link</string>
+    <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvigtest.page.link</string>
 
     <string name="alert_title" translatable="false">Title</string>
     <string name="alert_message" translatable="false">Message</string>

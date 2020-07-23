@@ -7,9 +7,6 @@ import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import e
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class ClaimsViewModel(
@@ -30,7 +27,7 @@ class ClaimsViewModel(
                 response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
                 return@launch
             }
-            data.postValue(response.getOrNull()?.data())
+            data.postValue(response.getOrNull()?.data)
         }
     }
 
@@ -48,11 +45,15 @@ class ClaimsViewModel(
 
     fun triggerFreeTextChat(done: () -> Unit) {
         viewModelScope.launch {
-            chatRepository
-                .triggerFreeTextChat()
-                .onEach { done() }
-                .catch { e(it) }
-                .launchIn(this)
+            val response = runCatching {
+                chatRepository
+                    .triggerFreeTextChatAsync().await()
+            }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e(it) }
+                return@launch
+            }
+            done()
         }
     }
 

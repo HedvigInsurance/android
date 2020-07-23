@@ -5,6 +5,10 @@
         <item name="android:background">?android:colorBackground</item>
     </style>
 
+    <style name="Hedvig.Theme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="textAllCaps">false</item>
+    </style>
+
     <style name="Hedvig.Theme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Hedvig.Theme.BottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -20,9 +24,23 @@
     </style>
 
     <style name="Hedvig.Theme.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputEditText</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.FilledBox">
         <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText</item>
     </style>
 
-    <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox" />
+    <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
+        <item name="colorSurface">@color/colorSurfaceOnSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.InfoCard" parent="">
+        <item name="colorSurface">@color/colorInfoCardSurface</item>
+    </style>
 
 </resources>

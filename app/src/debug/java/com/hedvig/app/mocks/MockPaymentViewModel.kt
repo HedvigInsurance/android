@@ -5,11 +5,12 @@ import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockPaymentViewModel : PaymentViewModel() {
     override val data = MutableLiveData<Pair<ProfileQuery.Data?, PayinStatusQuery.Data?>>()
@@ -30,13 +31,28 @@ class MockPaymentViewModel : PaymentViewModel() {
                         fragments = ProfileQuery.InsuranceCost.Fragments(
                             CostFragment(
                                 monthlyDiscount = CostFragment.MonthlyDiscount(
-                                    amount = "10.00"
+                                    fragments = CostFragment.MonthlyDiscount.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "10.00",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
                                 monthlyNet = CostFragment.MonthlyNet(
-                                    amount = "99.00"
+                                    fragments = CostFragment.MonthlyNet.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "99.00",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 ),
                                 monthlyGross = CostFragment.MonthlyGross(
-                                    amount = "109.00"
+                                    fragments = CostFragment.MonthlyGross.Fragments(
+                                        MonetaryAmountFragment(
+                                            amount = "109.00",
+                                            currency = "SEK"
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -138,9 +154,7 @@ class MockPaymentViewModel : PaymentViewModel() {
                         campaign = ProfileQuery.Campaign(
                             code = "ABC123",
                             incentive = null
-                        ),
-                        referredBy = null,
-                        invitations = emptyList()
+                        )
                     )
                 ),
                 PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)

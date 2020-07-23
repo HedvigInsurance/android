@@ -3,12 +3,14 @@ package com.hedvig.app.feature.dashboard.ui.contractdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.startClosableChat
@@ -19,10 +21,13 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_contract_detail.*
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
     private val model: ContractDetailViewModel by viewModel()
+    private val tracker: DashboardTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +35,6 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         root.setEdgeToEdgeSystemUiFlags(true)
         scrollView.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(
-                top = initialState.paddings.top + insets.systemWindowInsetTop,
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
             )
         }
@@ -51,10 +55,12 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
         }
 
         homeChangeInfo.setHapticClickListener {
+            tracker.changeHomeInfo()
             showChangeInfoDialog()
         }
 
         coinsuredChangeInfo.setHapticClickListener {
+            tracker.changeCoinsuredInfo()
             showChangeInfoDialog()
         }
 
@@ -71,7 +77,10 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CONFIRM,
             R.string.PROFILE_MY_HOME_CHANGE_DIALOG_CANCEL,
             positiveAction = {
-                startClosableChat()
+                lifecycleScope.launch {
+                    model.triggerFreeTextChat()
+                    startClosableChat()
+                }
             }
         )
     }
@@ -121,7 +130,11 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
 
     private fun bindCoinsured(amount: Int) {
         coinsuredContainer.show()
-        coinsuredAmount.text = getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
+        coinsuredAmount.text = when (amount) {
+            0 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ZERO_COINSURED)
+            1 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ONE_COINSURED)
+            else -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
+        }
     }
 
     companion object {

@@ -12,11 +12,15 @@
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
-        <item name="colorError">@color/coral_500</item>
+        <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/hedvig_white</item>
         <item name="colorButton">@color/colorButton</item>
-        <item name="android:textColorPrimary">@color/colorPrimaryVariant</item>
+        <item name="colorPlaceholder">@color/colorPlaceholder</item>
+        <item name="textColorLink">@color/textColorLink</item>
+        <item name="textColorLargeButton">@color/textColorLargeButton</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
+        <item name="textColorThird">@color/textColorThird</item>
         <item name="fontFamily">@font/favorit_book</item>
         <item name="android:fontFamily">@font/favorit_book</item>
 
@@ -43,7 +47,6 @@
 
         <item name="textAppearanceBody1">@style/Hedvig.TextAppearance.Body1</item>
         <item name="textAppearanceBody2">@style/Hedvig.TextAppearance.Body2</item>
-        <item name="textAppearanceBody3">@style/Hedvig.TextAppearance.Body3</item>
 
         <item name="textAppearanceCaption">@style/Hedvig.TextAppearance.Caption</item>
 
@@ -51,6 +54,9 @@
         <item name="appBarLayoutStyle">@style/Hedvig.Theme.AppBarLayout</item>
         <item name="bottomSheetDialogTheme">@style/Hedvig.Theme.BottomSheetDialog</item>
         <item name="textInputStyle">@style/Hedvig.Theme.TextInputLayout</item>
+
+        <item name="actionButtonStyle">@style/Hedvig.Theme.Toolbar.ActionButton</item>
+        <item name="actionMenuTextColor">@color/hedvig_text_button_state</item>
 
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -61,11 +67,16 @@
     <attr name="materialButtonContainedLargeStyle" format="reference" />
     <attr name="materialButtonOutlinedLargeStyle" format="reference" />
     <attr name="materialButtonTextStyle" format="reference" />
-    <attr name="textAppearanceBody3" format="reference" />
     <attr name="colorButton" format="reference" />
+    <attr name="textColorLink" format="reference" />
+    <attr name="textColorLargeButton" format="reference" />
+    <attr name="textColorThird" format="reference" />
+    <attr name="colorPlaceholder" format="reference" />
 
     <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="buttonBarButtonStyle">?materialButtonTextStyle</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="Hedvig.Theme.Widgets.Chat.Hedvig" parent="Hedvig.Theme">

@@ -12,15 +12,16 @@ import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     override val data = MutableLiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>()
 
     init {
         val activePersona = context
-            .getSharedPreferences(DevelopmentActivity.DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
+            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
         data.postValue(
             Pair(

@@ -10,8 +10,6 @@ import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.hedvig.app.authenticate.AuthTracker
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
@@ -48,10 +46,9 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
-import com.hedvig.app.feature.language.LanguageSelectionTracker
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
-import com.hedvig.app.feature.loggedin.ui.FeatureRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
@@ -74,9 +71,16 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.ratings.RatingsTracker
-import com.hedvig.app.feature.referrals.ReferralRepository
-import com.hedvig.app.feature.referrals.ReferralViewModel
-import com.hedvig.app.feature.referrals.ReferralsTracker
+import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
+import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
+import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModelImpl
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
+import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.welcome.WelcomeRepository
@@ -89,6 +93,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -102,7 +107,12 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single { FirebaseAnalytics.getInstance(get()) }
+    single {
+        MixpanelAPI.getInstance(
+            get(),
+            get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
+        )
+    }
     single { AppEventsLogger.newLogger(get()) }
     single {
         SimpleCache(
@@ -187,7 +197,11 @@ val viewModelModule = module {
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
-    viewModel { ReferralViewModel(get()) }
+    viewModel {
+        RedeemCodeViewModel(
+            get()
+        )
+    }
     viewModel { WelcomeViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
@@ -198,7 +212,7 @@ val loggedInModule = module {
 
 val dashboardModule = module {
     viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
 
@@ -237,6 +251,16 @@ val embarkModule = module {
     viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get()) }
 }
 
+val referralsModule = module {
+    viewModel<ReferralsViewModel> {
+        ReferralsViewModelImpl(
+            get()
+        )
+    }
+    viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
+    viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -251,7 +275,11 @@ val repositoriesModule = module {
     single { DashboardRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
-    single { ReferralRepository(get()) }
+    single {
+        RedeemReferralCodeRepository(
+            get()
+        )
+    }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }
@@ -261,14 +289,13 @@ val repositoriesModule = module {
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
-    single { FeatureRepository(get()) }
     single { EmbarkRepository(get()) }
+    single { ReferralsRepository(get()) }
+    single { LoggedInRepository(get(), get()) }
 }
 
 val trackerModule = module {
     single { ClaimsTracker(get()) }
-    single { DashboardTracker(get()) }
-    single { MarketingTracker(get()) }
     single { ProfileTracker(get()) }
     single { WhatsNewTracker(get()) }
     single { ReferralsTracker(get()) }
@@ -276,11 +303,11 @@ val trackerModule = module {
     single { WelcomeTracker(get()) }
     single { OfferTracker(get(), get()) }
     single { ChatTracker(get()) }
-    single { AuthTracker(get()) }
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
-    single { LanguageSelectionTracker(get()) }
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }
+    single { DashboardTracker(get()) }
+    single { MarketingTracker(get()) }
 }

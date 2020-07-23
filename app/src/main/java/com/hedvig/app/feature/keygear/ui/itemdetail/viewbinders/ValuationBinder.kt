@@ -21,7 +21,6 @@ class ValuationBinder(
     private val root: LinearLayout,
     private val tracker: KeyGearTracker
 ) {
-
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val valuation =
             data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation

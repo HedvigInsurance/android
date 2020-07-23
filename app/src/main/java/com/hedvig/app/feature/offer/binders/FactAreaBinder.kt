@@ -8,7 +8,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import kotlinx.android.synthetic.main.additional_buildings_row.view.*
 import kotlinx.android.synthetic.main.offer_fact_area.view.*
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class FactAreaBinder(
     private val root: LinearLayout
@@ -25,8 +25,8 @@ class FactAreaBinder(
         }
 
         when {
-            data.quoteDetails.asSwedishHouseQuoteDetails != null -> bindHouse(data.quoteDetails.asSwedishHouseQuoteDetails)
-            data.quoteDetails.asSwedishApartmentQuoteDetails != null -> bindApartment(data.quoteDetails.asSwedishApartmentQuoteDetails)
+            data.quoteDetails.asSwedishHouseQuoteDetails != null -> bindHouse(data.quoteDetails.asSwedishHouseQuoteDetails!!)
+            data.quoteDetails.asSwedishApartmentQuoteDetails != null -> bindApartment(data.quoteDetails.asSwedishApartmentQuoteDetails!!)
         }
 
         root.expandableContentView.contentSizeChanged()

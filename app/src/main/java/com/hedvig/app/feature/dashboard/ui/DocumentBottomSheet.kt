@@ -7,14 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import e
 import kotlinx.android.synthetic.main.contract_document_sheet.*
+import org.koin.android.ext.android.inject
 
 class DocumentBottomSheet : BottomSheetDialogFragment() {
+    private val tracker: DashboardTracker by inject()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +40,7 @@ class DocumentBottomSheet : BottomSheetDialogFragment() {
         if (insuranceCertificateUrl != null) {
             val insuranceCertificateUri = Uri.parse(insuranceCertificateUrl)
             insuranceCertificate.setHapticClickListener {
+                tracker.insuranceCertificate()
                 if (requireContext().canOpenUri(insuranceCertificateUri)) {
                     requireContext().openUri(insuranceCertificateUri)
                 }
@@ -46,6 +51,7 @@ class DocumentBottomSheet : BottomSheetDialogFragment() {
 
 
         termsAndConditions.setHapticClickListener {
+            tracker.termsAndConditions()
             if (requireContext().canOpenUri(termsAndConditionsUri)) {
                 requireContext().openUri(termsAndConditionsUri)
             }
