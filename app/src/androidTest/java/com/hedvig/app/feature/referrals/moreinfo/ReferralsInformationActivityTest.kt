@@ -14,73 +14,63 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.util.ApolloCacheClearRule
+import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
-import com.hedvig.app.util.apolloMockServer
 import org.hamcrest.CoreMatchers.not
 import org.javamoney.moneta.Money
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.KoinTest
-import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
-class ReferralsInformationActivityTest : KoinTest {
-    private val apolloClientWrapper: ApolloClientWrapper by inject()
+class ReferralsInformationActivityTest {
 
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
-    @Before
-    fun setup() {
-        apolloClientWrapper
-            .apolloClient
-            .clearNormalizedCache()
-    }
+    @get:Rule
+    val mockServerRule = ApolloMockServerRule(
+        LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED }
+    )
+
+    @get:Rule
+    val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
     fun shouldOpenInformationActivityWhenClickingMoreInformationAction() {
-        apolloMockServer(
-            LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED }
+        val intent = LoggedInActivity.newInstance(
+            ApplicationProvider.getApplicationContext(),
+            initialTab = LoggedInTabs.REFERRALS
+        )
 
-        ).use { webServer ->
-            webServer.start(8080)
+        activityRule.launchActivity(intent)
 
-            val intent = LoggedInActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                initialTab = LoggedInTabs.REFERRALS
+        onScreen<ReferralTabScreen> {
+            moreInfo { click() }
+        }
+
+        intending(not(isInternal())).respondWith(
+            Instrumentation.ActivityResult(
+                Activity.RESULT_OK,
+                null
             )
+        )
 
-            activityRule.launchActivity(intent)
-
-            onScreen<ReferralTabScreen> {
-                moreInfo { click() }
-            }
-
-            intending(not(isInternal())).respondWith(
-                Instrumentation.ActivityResult(
-                    Activity.RESULT_OK,
-                    null
+        onScreen<ReferralsInformationScreen> {
+            body {
+                containsText(
+                    Money.of(10, "SEK").format(ApplicationProvider.getApplicationContext())
                 )
-            )
-
-            onScreen<ReferralsInformationScreen> {
-                body {
-                    containsText(
-                        Money.of(10, "SEK").format(ApplicationProvider.getApplicationContext())
-                    )
-                }
-                termsAndConditions { click() }
-                termsAndConditionsIntent {
-                    intended()
-                }
+            }
+            termsAndConditions { click() }
+            termsAndConditionsIntent {
+                intended()
             }
         }
     }
