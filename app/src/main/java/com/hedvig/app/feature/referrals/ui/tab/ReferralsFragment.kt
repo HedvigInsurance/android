@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
@@ -27,7 +28,6 @@ import kotlinx.android.synthetic.main.fragment_referrals.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.net.URLEncoder
 
 class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
@@ -101,9 +101,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${URLEncoder.encode(
-                                    code,
-                                    UTF_8
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${Uri.encode(
+                                    code
                                 )}"
                             )
                         )
