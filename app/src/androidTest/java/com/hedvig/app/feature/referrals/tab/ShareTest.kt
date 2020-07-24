@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals.tab
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
@@ -28,7 +29,6 @@ import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.net.URLEncoder
 
 @RunWith(AndroidJUnit4::class)
 class ShareTest {
@@ -76,7 +76,7 @@ class ShareTest {
                         hasAction(Intent.ACTION_SEND),
                         hasExtra(
                             equalTo(Intent.EXTRA_TEXT),
-                            containsString(URLEncoder.encode(COMPLEX_REFERRAL_CODE, "UTF-8"))
+                            containsString(Uri.encode(COMPLEX_REFERRAL_CODE))
                         )
                     )
                 )
