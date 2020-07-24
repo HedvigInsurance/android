@@ -4,7 +4,7 @@ import androidx.test.espresso.IdlingRegistry
 import com.apollographql.apollo.test.espresso.ApolloIdlingResource
 
 class TestApplication : HedvigApplication() {
-    override val graphqlUrl = "http://localhost:8080/"
+    override val graphqlUrl = "http://localhost:$PORT/"
 
     override fun onCreate() {
         super.onCreate()
@@ -14,5 +14,9 @@ class TestApplication : HedvigApplication() {
         IdlingRegistry
             .getInstance()
             .register(idlingResource)
+    }
+
+    companion object {
+        const val PORT = 8080
     }
 }
