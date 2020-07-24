@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
@@ -100,7 +101,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${code}"
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${Uri.encode(
+                                    code
+                                )}"
                             )
                         )
                         intent.type = "text/plain"
@@ -156,5 +159,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private fun applyInsets() {
         share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
         invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
+    }
+
+    companion object {
+        private const val UTF_8 = "UTF-8"
     }
 }

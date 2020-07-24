@@ -7,36 +7,28 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
+import com.hedvig.app.util.ApolloCacheClearRule
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.inject
-import org.koin.test.KoinTest
 import java.util.concurrent.Semaphore
 
 @RunWith(AndroidJUnit4::class)
-class ErrorTest : KoinTest {
-    private val apolloClientWrapper: ApolloClientWrapper by inject()
+class ErrorTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
-    @Before
-    fun setup() {
-        apolloClientWrapper
-            .apolloClient
-            .clearNormalizedCache()
-    }
+    @get:Rule
+    val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
     fun shouldShowErrorWhenAnErrorOccurs() {
