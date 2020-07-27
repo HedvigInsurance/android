@@ -110,3 +110,22 @@ val STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
         STANDARD_SECOND_PASSAGE_BUILDER.build()
     )
 ).build()
+
+val STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                response = MessageBuilder(text = "{FOO} response").build(),
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf("FOO" to "BAR")
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
