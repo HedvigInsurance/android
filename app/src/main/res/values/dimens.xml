@@ -126,5 +126,6 @@
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>
     <dimen name="small_component_corner_radius">4dp</dimen>
+    <dimen name="numbered_bullet_background_sphere_size">32sp</dimen>
 
 </resources>

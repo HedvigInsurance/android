@@ -55,12 +55,12 @@
         <item name="bottomSheetDialogTheme">@style/Hedvig.Theme.BottomSheetDialog</item>
         <item name="textInputStyle">@style/Hedvig.Theme.TextInputLayout</item>
 
+        <item name="android:windowBackground">?android:colorBackground</item>
         <item name="actionButtonStyle">@style/Hedvig.Theme.Toolbar.ActionButton</item>
         <item name="actionMenuTextColor">@color/hedvig_text_button_state</item>
 
-        <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@color/colorBackground</item>
+        <item name="android:statusBarColor">?android:colorBackground</item>
         <item name="materialAlertDialogTheme">@style/AlertDialog</item>
     </style>
 

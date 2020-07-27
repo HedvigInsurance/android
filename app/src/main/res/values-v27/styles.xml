@@ -8,10 +8,12 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V27" />
 
-    <style name="Hedvig.Theme.Offer">
+    <style name="Hedvig.Theme.Offer.V27" parent="Hedvig.Theme.Offer.V23">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
     </style>
+
+    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.V27" />
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog">
         <item name="android:statusBarColor">@android:color/transparent</item>

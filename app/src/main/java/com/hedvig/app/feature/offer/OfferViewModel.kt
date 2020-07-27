@@ -45,7 +45,7 @@ class OfferViewModelImpl(
     fun load() {
         viewModelScope.launch {
             offerRepository
-                .loadOffer()
+                .offer()
                 .onEach { response ->
                     data.postValue(response.data)
                 }
