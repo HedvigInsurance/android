@@ -385,3 +385,48 @@ val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf("FOO" to "5")
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "Less than or equals test message that evaluates to true",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
+                                text = "Less than or equals test message that evaluates to true",
+                                key = "FOO",
+                                value = "5"
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "Less than or equals test message that evaluates to false",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
+                                text = "Less than or equals test message that evaluates to false",
+                                key = "FOO",
+                                value = "4"
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()
