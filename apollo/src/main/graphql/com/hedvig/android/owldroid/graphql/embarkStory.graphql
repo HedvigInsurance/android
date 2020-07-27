@@ -63,6 +63,11 @@ query EmbarkStory($name: String!) {
   }
 }
 
+fragment EmbarkLinkFragment on EmbarkLink {
+  name
+  label
+}
+
 fragment MessageFragment on EmbarkMessage {
   expressions {
     ... on EmbarkExpressionUnary {
