@@ -31,6 +31,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
                 model.putInStore(key, value)
             }
+            model.putInStore("${data.passageName}Result", selectAction.label)
             val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
             animateResponse(response, responseText) {
                 model.navigateToPassage(selectAction.link)
