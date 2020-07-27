@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.embark
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
+import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
@@ -127,5 +128,32 @@ val STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
+
+val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "Unary true test", expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                text = "Unary true test"
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "Unary false test", expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NEVER,
+                                text = "Unary false test"
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
     )
 ).build()
