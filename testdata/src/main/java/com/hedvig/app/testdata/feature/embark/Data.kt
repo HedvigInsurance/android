@@ -202,3 +202,51 @@ val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_NOT_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf(
+                                "FOO" to "BAR",
+                                "BAZ" to "5"
+                            )
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "Not equals test message that evaluates to true",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
+                                text = "Not equals test message that evaluates to true",
+                                key = "FOO",
+                                value = "BAZ"
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "Not equals test message that evaluates to false",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
+                                text = "Not equals test message that evaluates to false",
+                                key = "BAZ",
+                                value = "5"
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()
