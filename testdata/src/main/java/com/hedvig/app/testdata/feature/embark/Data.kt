@@ -96,3 +96,17 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                response = MessageBuilder(text = "{BAR} response").build(),
+                action = TextActionBuilder(
+                    key = "BAR", link = STANDARD_FIRST_LINK
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
