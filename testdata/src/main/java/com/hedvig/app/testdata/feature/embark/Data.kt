@@ -386,6 +386,100 @@ val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "Or test message that evaluates to true",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.OR,
+                                text = "Or test message that evaluates to true",
+                                subExpressions = listOf(
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                    ).buildSubExpression(),
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.NEVER
+                                    ).buildSubExpression()
+                                )
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "Or test message that evaluates to false",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.OR,
+                                text = "Or test message that evaluates to false",
+                                subExpressions = listOf(
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.NEVER
+                                    ).buildSubExpression(),
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.NEVER
+                                    ).buildSubExpression()
+                                )
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()
+
+val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "And test message that evaluates to true",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.AND,
+                                text = "And test message that evaluates to true",
+                                subExpressions = listOf(
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                    ).buildSubExpression(),
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                    ).buildSubExpression()
+                                )
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "And test message that evaluates to false",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.AND,
+                                text = "And test message that evaluates to false",
+                                subExpressions = listOf(
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                    ).buildSubExpression(),
+                                    ExpressionBuilder(
+                                        type = ExpressionBuilder.ExpressionType.NEVER
+                                    ).buildSubExpression()
+                                )
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()
+
 val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER

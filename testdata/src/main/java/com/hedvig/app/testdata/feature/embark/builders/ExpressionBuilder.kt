@@ -65,6 +65,10 @@ data class ExpressionBuilder(
         }
     )
 
+    fun buildSubExpression() = build().intoSubExpression()
+
+    fun buildSubSubExpression() = build().intoSubExpression().intoSubSubExpression()
+
     enum class ExpressionType {
         ALWAYS,
         NEVER,
@@ -78,4 +82,45 @@ data class ExpressionBuilder(
         OR
     }
 }
+
+fun MessageFragment.Expression.intoSubExpression() = SubExpressionFragment(
+    asEmbarkExpressionUnary = this.asEmbarkExpressionUnary?.let {
+        SubExpressionFragment.AsEmbarkExpressionUnary(
+            unaryType = it.unaryType,
+            text = it.text
+        )
+    },
+    asEmbarkExpressionBinary = this.asEmbarkExpressionBinary?.let {
+        SubExpressionFragment.AsEmbarkExpressionBinary(
+            binaryType = it.binaryType,
+            key = it.key,
+            value = it.value,
+            text = it.text
+        )
+    },
+    asEmbarkExpressionMultiple = this.asEmbarkExpressionMultiple?.let {
+        SubExpressionFragment.AsEmbarkExpressionMultiple(
+            multipleType = it.multipleType,
+            text = it.text,
+            subExpressions = it.subExpressions.map { se -> se.fragments.subExpressionFragment.intoSubSubExpression() }
+        )
+    }
+)
+
+fun SubExpressionFragment.intoSubSubExpression() = SubExpressionFragment.SubExpression(
+    asEmbarkExpressionUnary1 = this.asEmbarkExpressionUnary?.let {
+        SubExpressionFragment.AsEmbarkExpressionUnary1(
+            unaryType = it.unaryType,
+            text = it.text
+        )
+    },
+    asEmbarkExpressionBinary1 = this.asEmbarkExpressionBinary?.let {
+        SubExpressionFragment.AsEmbarkExpressionBinary1(
+            binaryType = it.binaryType,
+            key = it.key,
+            value = it.value,
+            text = it.text
+        )
+    }
+)
 
