@@ -157,3 +157,48 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf("FOO" to "BAR")
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "Binary equals test message that evaluates to true",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.EQUALS,
+                                text = "Binary equals test message that evaluates to true",
+                                key = "FOO",
+                                value = "BAR"
+                            ).build()
+                        )
+                    ).build(),
+                    MessageBuilder(
+                        text = "Binary equals test message that evaluates to false",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.EQUALS,
+                                text = "Binary equals test message that evaluates to false",
+                                key = "BAZ",
+                                value = "4"
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()
