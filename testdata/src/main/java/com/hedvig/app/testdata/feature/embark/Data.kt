@@ -430,3 +430,26 @@ val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_TEMPLATE_MESSAGE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf("FOO" to "BAR")
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(text = "{FOO} test").build()
+                )
+            ).build()
+    )
+).build()
