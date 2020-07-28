@@ -70,10 +70,10 @@ data class TextActionData(
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =
             TextActionData(
-                data.link.name,
+                data.link.fragments.embarkLinkFragment.name,
                 data.placeholder,
                 messages,
-                data.link.label,
+                data.link.fragments.embarkLinkFragment.label,
                 data.key,
                 passageName
             )

@@ -40,8 +40,7 @@ query EmbarkStory($name: String!) {
           data {
             options {
               link {
-                name
-                label
+                ...EmbarkLinkFragment
               }
               keys
               values
@@ -52,8 +51,7 @@ query EmbarkStory($name: String!) {
           data {
             key
             link {
-              name
-              label
+              ...EmbarkLinkFragment
             }
             placeholder
           }

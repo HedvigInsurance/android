@@ -22,8 +22,7 @@ data class SelectOptionBuilder(
 ) {
     fun build() = EmbarkStoryQuery.Option(
         link = EmbarkStoryQuery.Link(
-            name = link.name,
-            label = link.label
+            fragments = EmbarkStoryQuery.Link.Fragments(link)
         ),
         keys = keyValues.map { it.first },
         values = keyValues.map { it.second }

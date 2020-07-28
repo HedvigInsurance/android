@@ -14,8 +14,7 @@ data class TextActionBuilder(
             data = EmbarkStoryQuery.Data2(
                 key = key,
                 link = EmbarkStoryQuery.Link1(
-                    name = link.name,
-                    label = link.label
+                    fragments = EmbarkStoryQuery.Link1.Fragments(link)
                 ),
                 placeholder = placeholder
             )
