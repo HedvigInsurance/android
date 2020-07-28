@@ -32,7 +32,7 @@ class MultipleExpressionRedirectTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRedirectOnPassageWithBinaryRedirect() {
+    fun shouldRedirectOnPassageWithMultipleRedirect() {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),

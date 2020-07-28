@@ -646,3 +646,40 @@ val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy()
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = "TestPassage3",
+                        expression = ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
+                        passedExpressionKey = "FOO",
+                        passedExpressionValue = "BAR"
+                    ).build()
+                )
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(
+                        text = "conditionally shown message",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.EQUALS,
+                                key = "FOO",
+                                value = "BAR",
+                                text = "conditionally shown message"
+                            ).build()
+                        )
+                    ).build()
+                )
+            )
+            .build()
+    )
+).build()

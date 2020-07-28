@@ -32,7 +32,7 @@ class UnaryExpressionRedirectTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRedirectOnPassageWithRedirect() {
+    fun shouldRedirectOnPassageWithUnaryRedirect() {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),
