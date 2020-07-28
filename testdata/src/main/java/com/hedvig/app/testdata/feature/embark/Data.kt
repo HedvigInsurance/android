@@ -586,3 +586,37 @@ val STORY_WITH_UNARY_REDIRECT = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_BINARY_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            keyValues = listOf("FOO" to "BAR")
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = "TestPassage3",
+                        expression = ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.EQUALS,
+                            key = "FOO",
+                            value = "BAR"
+                        ).build()
+                    ).build()
+                )
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
+    )
+).build()
