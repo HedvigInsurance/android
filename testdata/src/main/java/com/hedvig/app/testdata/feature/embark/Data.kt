@@ -620,3 +620,29 @@ val STORY_WITH_BINARY_REDIRECT = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = "TestPassage3",
+                        expression = ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.AND,
+                            subExpressions = listOf(
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression(),
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression()
+                            )
+                        ).build()
+                    ).build()
+                )
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
+    )
+).build()
