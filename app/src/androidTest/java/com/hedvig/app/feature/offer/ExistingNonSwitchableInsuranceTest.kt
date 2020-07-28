@@ -41,6 +41,9 @@ class ExistingNonSwitchableInsuranceTest {
                     }
                 }
             }
+        }
+
+        onScreen<ChangeDateSheet> {
             autoSetDate { hasText(R.string.ACTIVATE_TODAY_BTN) }
         }
     }

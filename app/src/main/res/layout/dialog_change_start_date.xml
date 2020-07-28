@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/base_margin"
     android:paddingEnd="@dimen/base_margin_triple"
     android:paddingBottom="@dimen/peril_bottom_extra_spacing"
-    tools:context=".feature.offer.ChangeDateBottomSheet">
+    tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
     <ImageView
         android:layout_width="wrap_content"

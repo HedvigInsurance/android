@@ -41,6 +41,8 @@ class ExistingSwitchableInsuranceTest {
                     }
                 }
             }
+        }
+        onScreen<ChangeDateSheet> {
             autoSetDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
         }
     }
