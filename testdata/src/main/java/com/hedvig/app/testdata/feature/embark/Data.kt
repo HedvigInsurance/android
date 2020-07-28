@@ -6,6 +6,7 @@ import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
+import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
@@ -15,6 +16,9 @@ val STANDARD_FIRST_MESSAGE = MessageBuilder(
 ).build()
 val STANDARD_SECOND_MESSAGE = MessageBuilder(
     text = "another test message"
+).build()
+val STANDARD_THIRD_MESSAGE = MessageBuilder(
+    text = "a third message"
 ).build()
 
 val STANDARD_FIRST_LINK = EmbarkLinkFragment(
@@ -51,6 +55,20 @@ val STANDARD_SECOND_PASSAGE_BUILDER =
         name = "TestPassage2",
         id = "2",
         messages = listOf(STANDARD_SECOND_MESSAGE),
+        action = SelectActionBuilder(
+            listOf(
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build()
+            )
+        ).build()
+    )
+
+val STANDARD_THIRD_PASSAGE_BUILDER =
+    PassageBuilder(
+        name = "TestPassage3",
+        id = "3",
+        messages = listOf(STANDARD_THIRD_MESSAGE),
         action = SelectActionBuilder(
             listOf(
                 SelectOptionBuilder(
@@ -545,5 +563,26 @@ val STORY_WITH_TEMPLATE_MESSAGE = EmbarkStoryDataBuilder(
                     MessageBuilder(text = "{FOO} test").build()
                 )
             ).build()
+    )
+).build()
+
+val STORY_WITH_UNARY_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy()
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = "TestPassage3",
+                        expression = ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build()
+                    ).build()
+                )
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
     )
 ).build()
