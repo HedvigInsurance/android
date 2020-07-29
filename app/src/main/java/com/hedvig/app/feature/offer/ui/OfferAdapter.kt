@@ -13,11 +13,12 @@ import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.InsurableLimitsAdapter
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.PerilsAdapter
-import com.hedvig.app.feature.offer.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeDialog
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.TermsAdapter
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -123,7 +124,12 @@ class OfferAdapter(
 
                         startDateContainer.setHapticClickListener {
                             tracker.chooseStartDate()
-                            ChangeDateBottomSheet.newInstance()
+                            ChangeDateBottomSheet.newInstance(
+                                ChangeDateBottomSheetData(
+                                    quote.id,
+                                    quote.currentInsurer?.switchable == true
+                                )
+                            )
                                 .show(
                                     fragmentManager,
                                     ChangeDateBottomSheet.TAG
@@ -134,9 +140,9 @@ class OfferAdapter(
 
                         if (sd != null) {
                             if (sd == LocalDate.now()) {
-                                startDate.text = sd.toString()
-                            } else {
                                 startDate.setText(R.string.START_DATE_TODAY)
+                            } else {
+                                startDate.text = sd.toString()
                             }
                         } else {
                             if (quote.currentInsurer?.switchable == true) {

@@ -2,6 +2,7 @@ package com.hedvig.app
 
 import android.content.Context
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ScalarTypeAdapters
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
@@ -46,11 +47,6 @@ class ApolloClientWrapper(
             .builder()
             .serverUrl(application.graphqlUrl)
             .okHttpClient(okHttpClient)
-            .addCustomTypeAdapter(CustomType.LOCALDATE, PromiscuousLocalDateAdapter())
-            .addCustomTypeAdapter(
-                CustomType.PAYMENTMETHODSRESPONSE,
-                PaymentMethodsApiResponseAdapter()
-            )
             .subscriptionConnectionParams(SubscriptionConnectionParams(mapOf("Authorization" to authToken)))
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
@@ -60,6 +56,8 @@ class ApolloClientWrapper(
             )
             .normalizedCache(normalizedCacheFactory)
 
+        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
         if (isDebug()) {
             builder.logger(ApolloTimberLogger())
         }
@@ -67,5 +65,14 @@ class ApolloClientWrapper(
         val newApolloClient = builder.build()
         nullableApolloClient = newApolloClient
         return newApolloClient
+    }
+
+    companion object {
+        val CUSTOM_TYPE_ADAPTERS = ScalarTypeAdapters(
+            mapOf(
+                CustomType.LOCALDATE to PromiscuousLocalDateAdapter(),
+                CustomType.PAYMENTMETHODSRESPONSE to PaymentMethodsApiResponseAdapter()
+            )
+        )
     }
 }
