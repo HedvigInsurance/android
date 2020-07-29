@@ -10,6 +10,7 @@ import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +22,7 @@ class UnaryExpressionTest {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_NAME to { STORY_WITH_UNARY_EXPRESSIONS }
+        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_UNARY_EXPRESSIONS) }
     )
 
     @get:Rule

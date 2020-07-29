@@ -10,6 +10,7 @@ import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_BINARY_REDIRECT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.awaitility.Duration.TWO_SECONDS
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
@@ -25,7 +26,7 @@ class BinaryExpressionRedirectTest {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_NAME to { STORY_WITH_BINARY_REDIRECT }
+        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_BINARY_REDIRECT) }
     )
 
     @get:Rule

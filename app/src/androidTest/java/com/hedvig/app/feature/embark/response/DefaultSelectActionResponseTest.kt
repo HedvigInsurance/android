@@ -10,6 +10,7 @@ import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +22,7 @@ class DefaultSelectActionResponseTest {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_NAME to { STANDARD_STORY }
+        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
     )
 
     @get:Rule

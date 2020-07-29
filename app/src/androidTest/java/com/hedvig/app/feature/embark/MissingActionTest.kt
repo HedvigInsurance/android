@@ -13,6 +13,7 @@ import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_INCOMPATIBLE_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.hamcrest.core.IsNot.not
 import org.junit.Rule
 import org.junit.Test
@@ -25,7 +26,7 @@ class MissingActionTest {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_NAME to { STORY_WITH_INCOMPATIBLE_ACTION }
+        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_INCOMPATIBLE_ACTION) }
     )
 
     @get:Rule
