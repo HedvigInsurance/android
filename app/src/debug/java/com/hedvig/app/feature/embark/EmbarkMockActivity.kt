@@ -8,6 +8,7 @@ import com.hedvig.app.embarkModule
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_BINARY_REDIRECT
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_GRAPHQL_QUERY_API
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_GREATER_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_INCOMPATIBLE_ACTION
@@ -23,6 +24,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
+import com.hedvig.app.util.jsonObjectOf
 import kotlinx.android.synthetic.debug.activity_generic_development.*
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
@@ -179,6 +181,15 @@ class EmbarkMockActivity : AppCompatActivity(R.layout.activity_generic_developme
                     MockEmbarkViewModel.apply {
                         shouldLoad = true
                         mockedData = STORY_WITH_PASSED_KEY_VALUE
+                    }
+                    startActivity(EmbarkActivity.newInstance(this, this.javaClass.name))
+                },
+                GenericDevelopmentAdapter.Item.Header("Api"),
+                GenericDevelopmentAdapter.Item.ClickableItem("GraphQL Query") {
+                    MockEmbarkViewModel.apply {
+                        shouldLoad = true
+                        mockedData = STORY_WITH_GRAPHQL_QUERY_API
+                        graphQLQueryResponse = jsonObjectOf("hello" to "world")
                     }
                     startActivity(EmbarkActivity.newInstance(this, this.javaClass.name))
                 }

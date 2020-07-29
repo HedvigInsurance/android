@@ -57,6 +57,20 @@ query EmbarkStory($name: String!) {
           }
         }
       }
+      api {
+        ...ApiFragment
+      }
+    }
+  }
+}
+
+fragment ApiFragment on EmbarkApi {
+  ... on EmbarkApiGraphQLQuery {
+    data {
+      query
+      next {
+        name
+      }
     }
   }
 }

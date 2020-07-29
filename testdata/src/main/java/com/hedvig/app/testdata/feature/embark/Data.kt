@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -681,5 +682,21 @@ val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
                 )
             )
             .build()
+    )
+).build()
+
+const val HELLO_QUERY = """
+{
+    hello
+}
+"""
+
+val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(api = GraphQLApiBuilder(query = HELLO_QUERY, next = "TestPassage3").build())
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER.build()
     )
 ).build()

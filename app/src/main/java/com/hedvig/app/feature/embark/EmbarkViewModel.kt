@@ -11,7 +11,10 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.safeLet
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.Stack
 
 sealed class ExpressionResult {
@@ -27,6 +30,8 @@ abstract class EmbarkViewModel : ViewModel() {
     val data: LiveData<EmbarkStoryQuery.Passage> = _data
 
     abstract fun load(name: String)
+
+    abstract suspend fun callGraphQLQuery(query: String): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
@@ -55,6 +60,15 @@ abstract class EmbarkViewModel : ViewModel() {
                             return
                         }
                     }
+                }
+            }
+            nextPassage?.api?.let { api ->
+                api.fragments.apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
+                    viewModelScope.launch {
+                        callGraphQLQuery(graphQLQuery.data.query)
+                        graphQLQuery.data.next?.name?.let { navigateToPassage(it) }
+                    }
+                    return
                 }
             }
             _data.value?.name?.let { backStack.push(it) }
@@ -331,6 +345,18 @@ class EmbarkViewModelImpl(
                 storyData = d
                 displayInitialPassage()
             }
+        }
+    }
+
+    override suspend fun callGraphQLQuery(query: String): JSONObject? {
+        val result = runCatching { embarkRepository.graphQLQuery(query) }
+
+        if (result.isFailure) {
+            TODO("Will be implemented in another PR")
+        }
+
+        return withContext(Dispatchers.IO) {
+            result.getOrNull()?.body?.string()?.let { JSONObject(it) }
         }
     }
 }

@@ -55,7 +55,8 @@ object ApolloMockServerResponseBuilder {
     fun success(data: Operation.Data) =
         ApolloMockServerResult.GraphQLResponse(data.toJson())
 
-    fun success(body: String) = ApolloMockServerResult.GraphQLResponse(body)
+    fun success(data: JSONObject) =
+        ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
 }
 
 class ApolloMockServerRule(
