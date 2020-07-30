@@ -10,6 +10,7 @@ import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.builders.ChooseStartDateBuilder
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.setDate
 import org.junit.Rule
 import org.junit.Test
@@ -26,8 +27,10 @@ class ChooseStartDateTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        OfferQuery.OPERATION_NAME to { OFFER_DATA_SWEDISH_APARTMENT },
-        ChooseStartDateMutation.OPERATION_NAME to { ChooseStartDateBuilder(date = tomorrow).build() }
+        OfferQuery.QUERY_DOCUMENT to apolloResponse { success(OFFER_DATA_SWEDISH_APARTMENT) },
+        ChooseStartDateMutation.QUERY_DOCUMENT to apolloResponse {
+            success(ChooseStartDateBuilder(date = tomorrow).build())
+        }
     )
 
     @get:Rule

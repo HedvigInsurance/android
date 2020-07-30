@@ -160,8 +160,4 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
         invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
     }
-
-    companion object {
-        private const val UTF_8 = "UTF-8"
-    }
 }
