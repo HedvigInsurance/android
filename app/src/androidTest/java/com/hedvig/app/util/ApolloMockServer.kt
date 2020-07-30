@@ -3,6 +3,7 @@ package com.hedvig.app.util
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.OperationName
 import com.apollographql.apollo.api.toJson
+import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.TestApplication
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -23,7 +24,7 @@ fun apolloMockServer(vararg mocks: Pair<OperationName, () -> Operation.Data>) =
                     mocks.firstOrNull { it.first.name() == operationName }?.second
                         ?: return super.peek()
 
-                return MockResponse().setBody(dataProvider().toJson())
+                return MockResponse().setBody(dataProvider().toJson(scalarTypeAdapters = ApolloClientWrapper.CUSTOM_TYPE_ADAPTERS))
             }
         }
     }

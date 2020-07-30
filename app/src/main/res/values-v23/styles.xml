@@ -9,10 +9,12 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
-    <style name="Hedvig.Theme.Offer">
+    <style name="Hedvig.Theme.Offer.V23" parent="Hedvig.Theme.Offer.V21">
         <item name="android:statusBarColor">@color/hedvig_black</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
 
     <style name="Hedvig.Theme.KeyGear.ItemDetail">
         <item name="colorControlNormal">?colorOnPrimary</item>
