@@ -39,6 +39,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         textActionSubmit.text = data.submitLabel
         textActionSubmit.setHapticClickListener {
             val inputText = textActionInput.text.toString()
+            model.putInStore("${data.passageName}Result", inputText)
             model.putInStore(data.key, inputText)
             val responseText = model.preProcessResponse(data.passageName) ?: inputText
             animateResponse(response, responseText) {
@@ -69,10 +70,10 @@ data class TextActionData(
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =
             TextActionData(
-                data.link.name,
+                data.link.fragments.embarkLinkFragment.name,
                 data.placeholder,
                 messages,
-                data.link.label,
+                data.link.fragments.embarkLinkFragment.label,
                 data.key,
                 passageName
             )

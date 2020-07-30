@@ -39,6 +39,11 @@
             android:label="Chat Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.embark.EmbarkMockActivity"
+            android:label="Embark Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>

@@ -7,7 +7,6 @@ import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
-import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -32,5 +31,4 @@ val mockModule = module {
     viewModel<ContractCoverageViewModel> { MockContractCoverageViewModel(get()) }
     viewModel<MarketingViewModel> { MockMarketingViewModel() }
     viewModel<AdyenViewModel> { MockAdyenViewModel() }
-    viewModel<EmbarkViewModel> { MockEmbarkViewModel() }
 }

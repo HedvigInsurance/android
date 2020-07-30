@@ -31,6 +31,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
                 model.putInStore(key, value)
             }
+            model.putInStore("${data.passageName}Result", selectAction.label)
             val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
             animateResponse(response, responseText) {
                 model.navigateToPassage(selectAction.link)
@@ -61,7 +62,14 @@ data class SelectActionPassage(
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data1, passageName: String) =
             SelectActionPassage(
                 messages,
-                data.options.map { SelectAction(it.link.name, it.link.label, it.keys, it.values) },
+                data.options.map {
+                    SelectAction(
+                        it.link.fragments.embarkLinkFragment.name,
+                        it.link.fragments.embarkLinkFragment.label,
+                        it.keys,
+                        it.values
+                    )
+                },
                 passageName
             )
     }
