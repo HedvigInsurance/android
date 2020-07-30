@@ -22,6 +22,9 @@ val STANDARD_SECOND_MESSAGE = MessageBuilder(
 val STANDARD_THIRD_MESSAGE = MessageBuilder(
     text = "a third message"
 ).build()
+val STANDARD_FOURTH_MESSAGE = MessageBuilder(
+    text = "a fourth message"
+).build()
 
 val STANDARD_FIRST_LINK = EmbarkLinkFragment(
     name = "TestPassage2",
@@ -36,6 +39,11 @@ val STANDARD_SECOND_LINK = EmbarkLinkFragment(
 val LINK_TO_THIRD_PASSAGE = EmbarkLinkFragment(
     name = "TestPassage3",
     label = "A third test passage"
+)
+
+val LINK_TO_FOURTH_PASSAGE = EmbarkLinkFragment(
+    name = "TestPassage4",
+    label = "A fourth test passage"
 )
 
 val STANDARD_FIRST_PASSAGE_BUILDER =
@@ -84,6 +92,19 @@ val STANDARD_THIRD_PASSAGE_BUILDER =
             )
         ).build()
     )
+
+val STANDARD_FOURTH_PASSAGE_BUILDER = PassageBuilder(
+    name = "TestPassage4",
+    id = "4",
+    messages = listOf(STANDARD_FOURTH_MESSAGE),
+    action = SelectActionBuilder(
+        listOf(
+            SelectOptionBuilder(
+                link = STANDARD_SECOND_LINK
+            ).build()
+        )
+    ).build()
+)
 
 val STANDARD_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
@@ -707,6 +728,14 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
                     results = listOf(
                         ApiFragment.Result(key = "hello", as_ = "HELLO")
                     ),
+                    errors = listOf(
+                        ApiFragment.Error(
+                            contains = null,
+                            next = ApiFragment.Next(
+                                fragments = ApiFragment.Next.Fragments(LINK_TO_FOURTH_PASSAGE)
+                            )
+                        )
+                    ),
                     next = LINK_TO_THIRD_PASSAGE
                 ).build()
             )
@@ -717,6 +746,8 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
                     MessageBuilder("api result: {HELLO}").build()
                 )
             )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
             .build()
     )
 ).build()

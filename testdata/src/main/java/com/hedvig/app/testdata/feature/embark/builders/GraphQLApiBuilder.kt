@@ -7,6 +7,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 data class GraphQLApiBuilder(
     private val query: String,
     private val results: List<ApiFragment.Result> = emptyList(),
+    private val errors: List<ApiFragment.Error> = emptyList(),
     private val next: EmbarkLinkFragment
 ) {
     fun build() = EmbarkStoryQuery.Api(
@@ -16,8 +17,9 @@ data class GraphQLApiBuilder(
                     data = ApiFragment.Data(
                         query = query,
                         results = results,
-                        next = ApiFragment.Next(
-                            fragments = ApiFragment.Next.Fragments(next)
+                        errors = errors,
+                        next = ApiFragment.Next1(
+                            fragments = ApiFragment.Next1.Fragments(next)
                         )
                     )
                 )

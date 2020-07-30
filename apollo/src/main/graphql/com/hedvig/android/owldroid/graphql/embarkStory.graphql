@@ -129,6 +129,12 @@ fragment ApiFragment on EmbarkApi {
         key
         as
       }
+      errors {
+        contains
+        next {
+          ...EmbarkLinkFragment
+        }
+      }
       next {
         ...EmbarkLinkFragment
       }

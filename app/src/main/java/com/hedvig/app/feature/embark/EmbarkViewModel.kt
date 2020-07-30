@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -65,24 +66,41 @@ abstract class EmbarkViewModel : ViewModel() {
             }
             nextPassage?.api?.let { api ->
                 api.fragments.apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
-                    viewModelScope.launch {
-                        val response =
-                            callGraphQLQuery(graphQLQuery.data.query)?.getJSONObject("data")
-                                ?: TODO("Handle error")
-                        graphQLQuery.data.results.forEach { r ->
-                            putInStore(r.as_, response.getWithDotNotation(r.key).toString())
-                        }
-                        graphQLQuery.data.next?.fragments?.embarkLinkFragment?.name?.let {
-                            navigateToPassage(
-                                it
-                            )
-                        }
-                    }
+                    handleGraphQLQuery(graphQLQuery)
                     return
                 }
             }
             _data.value?.name?.let { backStack.push(it) }
             _data.postValue(preProcessPassage(nextPassage))
+        }
+    }
+
+    private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
+        viewModelScope.launch {
+            val result = runCatching { callGraphQLQuery(graphQLQuery.data.query) }
+
+            if (result.isFailure) {
+                TODO("Handle network error")
+            }
+
+            if (result.getOrNull()?.has("errors") == true) {
+                if (graphQLQuery.data.errors.any { it.contains != null }) {
+                    TODO("Handle matched error")
+                }
+                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                return@launch
+            }
+
+            val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
+
+            graphQLQuery.data.results.forEach { r ->
+                putInStore(r.as_, response.getWithDotNotation(r.key).toString())
+            }
+            graphQLQuery.data.next?.fragments?.embarkLinkFragment?.name?.let {
+                navigateToPassage(
+                    it
+                )
+            }
         }
     }
 
@@ -358,15 +376,7 @@ class EmbarkViewModelImpl(
         }
     }
 
-    override suspend fun callGraphQLQuery(query: String): JSONObject? {
-        val result = runCatching { embarkRepository.graphQLQuery(query) }
-
-        if (result.isFailure) {
-            TODO("Will be implemented in another PR")
-        }
-
-        return withContext(Dispatchers.IO) {
-            result.getOrNull()?.body?.string()?.let { JSONObject(it) }
-        }
+    override suspend fun callGraphQLQuery(query: String) = withContext(Dispatchers.IO) {
+        embarkRepository.graphQLQuery(query).body?.string()?.let { JSONObject(it) }
     }
 }
