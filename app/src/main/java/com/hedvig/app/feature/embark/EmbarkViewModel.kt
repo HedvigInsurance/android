@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,8 +66,17 @@ abstract class EmbarkViewModel : ViewModel() {
             nextPassage?.api?.let { api ->
                 api.fragments.apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
                     viewModelScope.launch {
-                        callGraphQLQuery(graphQLQuery.data.query)
-                        graphQLQuery.data.next?.name?.let { navigateToPassage(it) }
+                        val response =
+                            callGraphQLQuery(graphQLQuery.data.query)?.getJSONObject("data")
+                                ?: TODO("Handle error")
+                        graphQLQuery.data.results.forEach { r ->
+                            putInStore(r.as_, response.getWithDotNotation(r.key).toString())
+                        }
+                        graphQLQuery.data.next?.fragments?.embarkLinkFragment?.name?.let {
+                            navigateToPassage(
+                                it
+                            )
+                        }
                     }
                     return
                 }

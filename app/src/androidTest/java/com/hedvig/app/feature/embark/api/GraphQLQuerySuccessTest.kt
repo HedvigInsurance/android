@@ -22,7 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GraphQLQueryTest {
+class GraphQLQuerySuccessTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
@@ -38,7 +38,7 @@ class GraphQLQueryTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRedirectWhenLoadingPassageWithGraphQLQueryApiThatIsSuccessful() {
+    fun shouldRedirectAndSaveResultsWhenLoadingPassageWithGraphQLQueryApiThatIsSuccessful() {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),
@@ -52,7 +52,7 @@ class GraphQLQueryTest {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("a third message") }
+                        text { hasText("api result: world") }
                     }
                 }
             }

@@ -64,17 +64,6 @@ query EmbarkStory($name: String!) {
   }
 }
 
-fragment ApiFragment on EmbarkApi {
-  ... on EmbarkApiGraphQLQuery {
-    data {
-      query
-      next {
-        name
-      }
-    }
-  }
-}
-
 fragment EmbarkLinkFragment on EmbarkLink {
   name
   label
@@ -127,6 +116,21 @@ fragment SubExpressionFragment on EmbarkExpression {
         key
         value
         text
+      }
+    }
+  }
+}
+
+fragment ApiFragment on EmbarkApi {
+  ... on EmbarkApiGraphQLQuery {
+    data {
+      query
+      results {
+        key
+        as
+      }
+      next {
+        ...EmbarkLinkFragment
       }
     }
   }

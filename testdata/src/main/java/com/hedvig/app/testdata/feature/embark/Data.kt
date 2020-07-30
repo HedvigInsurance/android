@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.embark
 
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
@@ -30,6 +31,11 @@ val STANDARD_FIRST_LINK = EmbarkLinkFragment(
 val STANDARD_SECOND_LINK = EmbarkLinkFragment(
     name = "TestPassage",
     label = "Yet another test passage"
+)
+
+val LINK_TO_THIRD_PASSAGE = EmbarkLinkFragment(
+    name = "TestPassage3",
+    label = "A third test passage"
 )
 
 val STANDARD_FIRST_PASSAGE_BUILDER =
@@ -695,8 +701,22 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
         STANDARD_SECOND_PASSAGE_BUILDER
-            .copy(api = GraphQLApiBuilder(query = HELLO_QUERY, next = "TestPassage3").build())
+            .copy(
+                api = GraphQLApiBuilder(
+                    query = HELLO_QUERY,
+                    results = listOf(
+                        ApiFragment.Result(key = "hello", as_ = "HELLO")
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
             .build(),
-        STANDARD_THIRD_PASSAGE_BUILDER.build()
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder("api result: {HELLO}").build()
+                )
+            )
+            .build()
     )
 ).build()
