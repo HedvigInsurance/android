@@ -59,7 +59,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                 {
                     tracker.changeDateContinue()
                     offerViewModel.chooseStartDate(data.id, localDate)
-                    dialog?.hide()
+                    dismiss()
                 })
         }
         if (data.hasSwitchableInsurer) {
@@ -68,7 +68,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             autoSetDateText.setHapticClickListener {
                 tracker.activateOnInsuranceEnd()
                 offerViewModel.removeStartDate(data.id)
-                dialog?.hide()
+                dismiss()
             }
         } else {
             autoSetDateText.text = getString(R.string.ACTIVATE_TODAY_BTN)
@@ -76,7 +76,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             autoSetDateText.setHapticClickListener {
                 tracker.activateToday()
                 offerViewModel.chooseStartDate(data.id, LocalDate.now())
-                dialog?.hide()
+                dismiss()
             }
         }
     }

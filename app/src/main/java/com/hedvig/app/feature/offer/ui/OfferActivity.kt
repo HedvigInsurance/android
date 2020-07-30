@@ -58,10 +58,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
                 val percentage = scrollY.toFloat() / offerToolbar.height
 
-                if (percentage < -1 || percentage > 2) {
-                    return
-                }
-
                 offerToolbar.setBackgroundColor(
                     boundedColorLerp(
                         Color.TRANSPARENT,
