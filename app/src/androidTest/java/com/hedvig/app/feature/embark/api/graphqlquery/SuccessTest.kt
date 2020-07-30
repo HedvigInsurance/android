@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.api
+package com.hedvig.app.feature.embark.api.graphqlquery
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,7 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GraphQLQuerySuccessTest {
+class SuccessTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 

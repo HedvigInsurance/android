@@ -80,7 +80,8 @@ abstract class EmbarkViewModel : ViewModel() {
             val result = runCatching { callGraphQLQuery(graphQLQuery.data.query) }
 
             if (result.isFailure) {
-                TODO("Handle network error")
+                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                return@launch
             }
 
             if (result.getOrNull()?.has("errors") == true) {
