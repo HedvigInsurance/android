@@ -3,6 +3,7 @@ package com.hedvig.app.util
 import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
+import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.TestApplication
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -53,7 +54,7 @@ object ApolloMockServerResponseBuilder {
         ApolloMockServerResult.GraphQLError(errors.toList())
 
     fun success(data: Operation.Data) =
-        ApolloMockServerResult.GraphQLResponse(data.toJson())
+        ApolloMockServerResult.GraphQLResponse(data.toJson(scalarTypeAdapters = ApolloClientWrapper.CUSTOM_TYPE_ADAPTERS))
 
     fun success(data: JSONObject) =
         ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())

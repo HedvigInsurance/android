@@ -18,7 +18,11 @@
         <item name="colorControlNormal">@color/white</item>
     </style>
 
-    <style name="Hedvig.Theme.Offer" />
+    <style name="Hedvig.Theme.Offer.V21" parent="Hedvig.Theme">
+        <item name="android:windowBackground">@color/hedvig_black</item>
+    </style>
+
+    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V21" />
 
     <style name="Hedvig.Theme.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>

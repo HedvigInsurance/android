@@ -17,4 +17,8 @@
     <string name="norwegian" translatable="false">Norsk</string>
     <string name="english_norwegian" translatable="false">English</string>
     <string name="system_default" translatable="false">System default</string>
+
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
 </resources>

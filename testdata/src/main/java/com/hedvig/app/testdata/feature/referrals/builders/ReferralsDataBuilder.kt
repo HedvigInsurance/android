@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
+import com.hedvig.app.testdata.common.builders.CostBuilder
 
 data class ReferralsDataBuilder(
     val insuranceCost: CostFragment = CostBuilder()
