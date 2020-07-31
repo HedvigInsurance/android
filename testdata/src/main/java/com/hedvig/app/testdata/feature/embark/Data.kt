@@ -3,9 +3,11 @@ package com.hedvig.app.testdata.feature.embark
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
+import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -744,6 +746,53 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
             .copy(
                 messages = listOf(
                     MessageBuilder("api result: {HELLO}").build()
+                )
+            )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
+            .build()
+    )
+).build()
+
+val VARIABLE_QUERY = """
+query VariableQuery(${'$'}variable: String!) {
+    hello(variable: ${'$'}variable)
+}
+"""
+
+val STORY_WITH_GRAPHQL_QUERY_API_AND_VARIABLES = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = TextActionBuilder(
+                    key = "input",
+                    link = STANDARD_FIRST_LINK
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                api = GraphQLApiBuilder(
+                    query = VARIABLE_QUERY,
+                    results = listOf(
+                        ApiFragment.Result(key = "hello", as_ = "VARIABLE")
+                    ),
+                    variables = listOf(
+                        GraphQLVariableBuilder(
+                            kind = GraphQLVariableBuilder.VariableKind.SINGLE,
+                            key = "variable",
+                            from = "input",
+                            type = EmbarkAPIGraphQLSingleVariableCasting.STRING
+                        ).build()
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder("api result: {VARIABLE}").build()
                 )
             )
             .build(),

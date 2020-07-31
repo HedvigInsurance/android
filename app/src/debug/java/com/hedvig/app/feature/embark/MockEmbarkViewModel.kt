@@ -13,7 +13,8 @@ class MockEmbarkViewModel : EmbarkViewModel() {
         displayInitialPassage()
     }
 
-    override suspend fun callGraphQLQuery(query: String): JSONObject? = graphQLQueryResponse
+    override suspend fun callGraphQLQuery(query: String, variables: JSONObject?) =
+        graphQLQueryResponse
 
     companion object {
         var shouldLoad = false

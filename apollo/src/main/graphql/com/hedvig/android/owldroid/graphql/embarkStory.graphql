@@ -135,6 +135,13 @@ fragment ApiFragment on EmbarkApi {
           ...EmbarkLinkFragment
         }
       }
+      variables {
+        ... on EmbarkAPIGraphQLSingleVariable {
+          key
+          from
+          as
+        }
+      }
       next {
         ...EmbarkLinkFragment
       }

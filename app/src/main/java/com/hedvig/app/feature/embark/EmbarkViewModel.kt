@@ -8,11 +8,13 @@ import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
+import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,7 +35,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
     abstract fun load(name: String)
 
-    abstract suspend fun callGraphQLQuery(query: String): JSONObject?
+    abstract suspend fun callGraphQLQuery(query: String, variables: JSONObject? = null): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
@@ -77,7 +79,12 @@ abstract class EmbarkViewModel : ViewModel() {
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val result = runCatching { callGraphQLQuery(graphQLQuery.data.query) }
+            val variables = if (graphQLQuery.data.variables.isNotEmpty()) {
+                extractVariables(graphQLQuery.data.variables)
+            } else {
+                null
+            }
+            val result = runCatching { callGraphQLQuery(graphQLQuery.data.query, variables) }
 
             if (result.isFailure) {
                 navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
@@ -104,6 +111,25 @@ abstract class EmbarkViewModel : ViewModel() {
             }
         }
     }
+
+    private fun extractVariables(variables: List<ApiFragment.Variable>) =
+        variables.mapNotNull { v ->
+            v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
+                val inStore = store[singleVariable.from]
+                    ?: return@mapNotNull null // TODO: What do we do if the variable is not set? Show an error, right?
+                val casted = when (singleVariable.as_) {
+                    EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
+                    EmbarkAPIGraphQLSingleVariableCasting.INT -> inStore.toInt()
+                    EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> inStore.toBoolean()
+                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null // Unsupported type casts are ignored for now.
+                } ?: return@mapNotNull null
+
+                return@mapNotNull Pair(singleVariable.key, casted)
+            }
+
+            // Unsupported variable types are ignored for now.
+            null
+        }.toJsonObject()
 
     fun navigateBack(): Boolean {
         if (backStack.isEmpty()) {
@@ -377,7 +403,8 @@ class EmbarkViewModelImpl(
         }
     }
 
-    override suspend fun callGraphQLQuery(query: String) = withContext(Dispatchers.IO) {
-        embarkRepository.graphQLQuery(query).body?.string()?.let { JSONObject(it) }
-    }
+    override suspend fun callGraphQLQuery(query: String, variables: JSONObject?) =
+        withContext(Dispatchers.IO) {
+            embarkRepository.graphQLQuery(query, variables).body?.string()?.let { JSONObject(it) }
+        }
 }

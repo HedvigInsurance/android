@@ -8,6 +8,7 @@ data class GraphQLApiBuilder(
     private val query: String,
     private val results: List<ApiFragment.Result> = emptyList(),
     private val errors: List<ApiFragment.Error> = emptyList(),
+    private val variables: List<ApiFragment.Variable> = emptyList(),
     private val next: EmbarkLinkFragment
 ) {
     fun build() = EmbarkStoryQuery.Api(
@@ -18,6 +19,7 @@ data class GraphQLApiBuilder(
                         query = query,
                         results = results,
                         errors = errors,
+                        variables = variables,
                         next = ApiFragment.Next1(
                             fragments = ApiFragment.Next1.Fragments(next)
                         )
