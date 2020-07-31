@@ -15,14 +15,14 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.synthetic.main.dialog_change_start_date.*
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
-    private val offerViewModel: OfferViewModel by viewModel()
+    private val offerViewModel: OfferViewModel by sharedViewModel()
     private val tracker: OfferTracker by inject()
 
     private lateinit var localDate: LocalDate
