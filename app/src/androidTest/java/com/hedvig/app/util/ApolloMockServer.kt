@@ -12,19 +12,26 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
 import org.junit.rules.ExternalResource
 
-fun apolloMockServer(vararg mocks: Pair<String, () -> ApolloMockServerResult>) =
+typealias ApolloResultProvider = (JSONObject) -> ApolloMockServerResult
+
+fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
     MockWebServer().apply {
         dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val body = request.body.peek().readUtf8()
                 val bodyAsJson = JSONObject(body)
                 val query = bodyAsJson.getString("query")
+                val variables = if (bodyAsJson.has("variables")) {
+                    bodyAsJson.getJSONObject("variables")
+                } else {
+                    JSONObject()
+                }
 
                 val dataProvider =
                     mocks.firstOrNull { it.first == query }?.second
                         ?: return super.peek()
 
-                return when (val result = dataProvider()) {
+                return when (val result = dataProvider(variables)) {
                     ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
                     is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(jsonObjectOf("errors" to result.errors).toString())
                     is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
@@ -33,8 +40,8 @@ fun apolloMockServer(vararg mocks: Pair<String, () -> ApolloMockServerResult>) =
         }
     }
 
-inline fun apolloResponse(crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult): () -> ApolloMockServerResult =
-    { build(ApolloMockServerResponseBuilder) }
+inline fun apolloResponse(crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult): (JSONObject) -> ApolloMockServerResult =
+    { vars -> build(ApolloMockServerResponseBuilder(vars)) }
 
 sealed class ApolloMockServerResult {
     object InternalServerError : ApolloMockServerResult()
@@ -48,7 +55,9 @@ sealed class ApolloMockServerResult {
     ) : ApolloMockServerResult()
 }
 
-object ApolloMockServerResponseBuilder {
+class ApolloMockServerResponseBuilder(
+    val variables: JSONObject
+) {
     fun internalServerError() = ApolloMockServerResult.InternalServerError
     fun graphQLError(vararg errors: Error) =
         ApolloMockServerResult.GraphQLError(errors.toList())
@@ -61,7 +70,7 @@ object ApolloMockServerResponseBuilder {
 }
 
 class ApolloMockServerRule(
-    vararg mocks: Pair<String, () -> ApolloMockServerResult>
+    vararg mocks: Pair<String, ApolloResultProvider>
 ) : ExternalResource() {
     val webServer = apolloMockServer(*mocks)
 
