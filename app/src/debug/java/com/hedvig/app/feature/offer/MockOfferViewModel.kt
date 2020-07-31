@@ -32,8 +32,28 @@ class MockOfferViewModel : OfferViewModel() {
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(id: String, date: LocalDate) = Unit
+    override fun chooseStartDate(id: String, date: LocalDate) {
+        data.postValue(
+            mockData.copy(
+                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        startDate = date
+                    )
+                )
+            )
+        )
+    }
+
     override fun removeStartDate(id: String) {
+        data.postValue(
+            mockData.copy(
+                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        startDate = null
+                    )
+                )
+            )
+        )
     }
 
     companion object {

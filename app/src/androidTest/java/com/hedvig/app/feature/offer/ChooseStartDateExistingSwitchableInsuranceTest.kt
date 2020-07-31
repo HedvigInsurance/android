@@ -6,11 +6,10 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.builders.ChooseStartDateBuilder
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.setDate
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +17,7 @@ import org.junit.runner.RunWith
 import java.time.LocalDate
 
 @RunWith(AndroidJUnit4::class)
-class ChooseStartDateTest {
+class ChooseStartDateExistingSwitchableInsuranceTest {
 
     private val tomorrow = LocalDate.now().plusDays(1)
 
@@ -27,10 +26,8 @@ class ChooseStartDateTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        OfferQuery.QUERY_DOCUMENT to apolloResponse { success(OFFER_DATA_SWEDISH_APARTMENT) },
-        ChooseStartDateMutation.QUERY_DOCUMENT to apolloResponse {
-            success(ChooseStartDateBuilder(date = tomorrow).build())
-        }
+        OfferQuery.OPERATION_NAME to { OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE },
+        ChooseStartDateMutation.OPERATION_NAME to { ChooseStartDateBuilder(date = tomorrow).build() }
     )
 
     @get:Rule
@@ -69,4 +66,5 @@ class ChooseStartDateTest {
         }
     }
 }
+
 
