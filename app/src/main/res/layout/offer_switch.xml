@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground">
+    android:background="?android:colorBackground"
+    android:paddingBottom="@dimen/base_margin_quadruple">
 
     <TextView
         android:id="@+id/switchTitle"

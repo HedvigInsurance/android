@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/hedvig_black"
-    android:paddingBottom="@dimen/base_margin_quadruple">
+    android:paddingBottom="@dimen/base_margin_quadruple"
+    tools:context=".feature.offer.ui.OfferActivity">
 
     <com.hedvig.app.ui.view.HedvigCardView
         android:layout_width="match_parent"
