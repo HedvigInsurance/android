@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tool="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/base_margin"
     android:paddingEnd="@dimen/base_margin_triple"
     android:paddingBottom="@dimen/peril_bottom_extra_spacing"
-    tool:context=".feature.offer.ChangeDateBottomSheet">
+    tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -58,7 +58,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/auto_set_date_text_size"
         android:textAlignment="center"
-        tool:text="@string/ACTIVATE_INSURANCE_END_BTN" />
-
+        tools:text="@string/ACTIVATE_INSURANCE_END_BTN" />
 
 </LinearLayout>

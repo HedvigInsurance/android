@@ -1,6 +1,6 @@
-package com.hedvig.app.mocks
+package com.hedvig.app.feature.offer
 
-import android.content.Context
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -11,30 +11,19 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
-import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 
-class MockOfferViewModel(
-    context: Context
-) : OfferViewModel() {
+class MockOfferViewModel : OfferViewModel() {
     override val data = MutableLiveData<OfferQuery.Data>()
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        val activePersona = context
-            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
-            .getInt("mockPersona", 0)
-
-        data.postValue(
-            when (activePersona) {
-                0 -> UNSIGNED_WITH_APARTMENT
-                1 -> UNSIGNED_WITH_HOUSE
-                else -> UNSIGNED_WITH_APARTMENT
-            }
-        )
+        Handler().postDelayed({
+            data.postValue(mockData)
+        }, 500)
     }
 
     override fun removeDiscount() = Unit
@@ -43,11 +32,33 @@ class MockOfferViewModel(
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(id: String, date: LocalDate) = Unit
+    override fun chooseStartDate(id: String, date: LocalDate) {
+        data.postValue(
+            mockData.copy(
+                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        startDate = date
+                    )
+                )
+            )
+        )
+    }
+
     override fun removeStartDate(id: String) {
+        data.postValue(
+            mockData.copy(
+                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                        startDate = null
+                    )
+                )
+            )
+        )
     }
 
     companion object {
+        var mockData = OFFER_DATA_SWEDISH_APARTMENT
+
         private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
             redeemedCampaigns = listOf(
                 OfferQuery.RedeemedCampaign(
