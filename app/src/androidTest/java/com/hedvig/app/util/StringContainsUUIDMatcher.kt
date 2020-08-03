@@ -6,7 +6,7 @@ import org.hamcrest.TypeSafeMatcher
 
 class StringContainsUUIDMatcher : TypeSafeMatcher<String>() {
     override fun describeTo(description: Description?) {
-        description?.appendText("a string matching UUID")
+        description?.appendText("a string containing a UUID")
     }
 
     override fun matchesSafely(item: String?): Boolean =
