@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Stack
+import java.util.UUID
 
 sealed class ExpressionResult {
     data class True(
@@ -125,6 +127,16 @@ abstract class EmbarkViewModel : ViewModel() {
                 } ?: return@mapNotNull null
 
                 return@mapNotNull Pair(singleVariable.key, casted)
+            }
+            v.asEmbarkAPIGraphQLGeneratedVariable?.let { generatedVariable ->
+                when (generatedVariable.type) {
+                    EmbarkAPIGraphQLVariableGeneratedType.UUID -> {
+                        val generated = UUID.randomUUID()
+                        putInStore(generatedVariable.storeAs, generated.toString())
+                        return@mapNotNull Pair(generatedVariable.key, generated.toString())
+                    }
+                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null // Unsupported generated types are ignored for now.
+                }
             }
 
             // Unsupported variable types are ignored for now.

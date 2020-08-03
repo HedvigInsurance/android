@@ -7,7 +7,7 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_GRAPHQL_QUERY_API_AND_VARIABLES
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE
 import com.hedvig.app.testdata.feature.embark.VARIABLE_QUERY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -22,14 +22,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class VariableTest {
+class SingleVariableTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
-            success(STORY_WITH_GRAPHQL_QUERY_API_AND_VARIABLES)
+            success(STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE)
         },
         VARIABLE_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to variables.getString("variable")))
@@ -40,7 +40,7 @@ class VariableTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRedirectAndSaveResultsWhenLoadingPassageWithGraphQLQueryApiThatIsSuccessful() {
+    fun shouldCallGraphQLApiWithVariable() {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),

@@ -141,6 +141,11 @@ fragment ApiFragment on EmbarkApi {
           from
           as
         }
+        ... on EmbarkAPIGraphQLGeneratedVariable {
+          key
+          storeAs
+          type
+        }
       }
       next {
         ...EmbarkLinkFragment
