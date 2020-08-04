@@ -4,15 +4,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
+import com.hedvig.app.util.toJsonObject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.Stack
+import java.util.UUID
 
 sealed class ExpressionResult {
     data class True(
@@ -27,6 +36,8 @@ abstract class EmbarkViewModel : ViewModel() {
     val data: LiveData<EmbarkStoryQuery.Passage> = _data
 
     abstract fun load(name: String)
+
+    abstract suspend fun callGraphQLQuery(query: String, variables: JSONObject? = null): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
@@ -57,10 +68,80 @@ abstract class EmbarkViewModel : ViewModel() {
                     }
                 }
             }
+            nextPassage?.api?.let { api ->
+                api.fragments.apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
+                    handleGraphQLQuery(graphQLQuery)
+                    return
+                }
+            }
             _data.value?.name?.let { backStack.push(it) }
             _data.postValue(preProcessPassage(nextPassage))
         }
     }
+
+    private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
+        viewModelScope.launch {
+            val variables = if (graphQLQuery.data.variables.isNotEmpty()) {
+                extractVariables(graphQLQuery.data.variables)
+            } else {
+                null
+            }
+            val result = runCatching { callGraphQLQuery(graphQLQuery.data.query, variables) }
+
+            if (result.isFailure) {
+                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                return@launch
+            }
+
+            if (result.getOrNull()?.has("errors") == true) {
+                if (graphQLQuery.data.errors.any { it.contains != null }) {
+                    TODO("Handle matched error")
+                }
+                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                return@launch
+            }
+
+            val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
+
+            graphQLQuery.data.results.forEach { r ->
+                putInStore(r.as_, response.getWithDotNotation(r.key).toString())
+            }
+            graphQLQuery.data.next?.fragments?.embarkLinkFragment?.name?.let {
+                navigateToPassage(
+                    it
+                )
+            }
+        }
+    }
+
+    private fun extractVariables(variables: List<ApiFragment.Variable>) =
+        variables.mapNotNull { v ->
+            v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
+                val inStore = store[singleVariable.from]
+                    ?: return@mapNotNull null // TODO: What do we do if the variable is not set? Show an error, right?
+                val casted = when (singleVariable.as_) {
+                    EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
+                    EmbarkAPIGraphQLSingleVariableCasting.INT -> inStore.toInt()
+                    EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> inStore.toBoolean()
+                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null // Unsupported type casts are ignored for now.
+                } ?: return@mapNotNull null
+
+                return@mapNotNull Pair(singleVariable.key, casted)
+            }
+            v.asEmbarkAPIGraphQLGeneratedVariable?.let { generatedVariable ->
+                when (generatedVariable.type) {
+                    EmbarkAPIGraphQLVariableGeneratedType.UUID -> {
+                        val generated = UUID.randomUUID()
+                        putInStore(generatedVariable.storeAs, generated.toString())
+                        return@mapNotNull Pair(generatedVariable.key, generated.toString())
+                    }
+                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null // Unsupported generated types are ignored for now.
+                }
+            }
+
+            // Unsupported variable types are ignored for now.
+            null
+        }.toJsonObject()
 
     fun navigateBack(): Boolean {
         if (backStack.isEmpty()) {
@@ -333,4 +414,9 @@ class EmbarkViewModelImpl(
             }
         }
     }
+
+    override suspend fun callGraphQLQuery(query: String, variables: JSONObject?) =
+        withContext(Dispatchers.IO) {
+            embarkRepository.graphQLQuery(query, variables).body?.string()?.let { JSONObject(it) }
+        }
 }

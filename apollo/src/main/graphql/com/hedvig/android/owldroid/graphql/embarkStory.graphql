@@ -57,6 +57,9 @@ query EmbarkStory($name: String!) {
           }
         }
       }
+      api {
+        ...ApiFragment
+      }
     }
   }
 }
@@ -113,6 +116,39 @@ fragment SubExpressionFragment on EmbarkExpression {
         key
         value
         text
+      }
+    }
+  }
+}
+
+fragment ApiFragment on EmbarkApi {
+  ... on EmbarkApiGraphQLQuery {
+    data {
+      query
+      results {
+        key
+        as
+      }
+      errors {
+        contains
+        next {
+          ...EmbarkLinkFragment
+        }
+      }
+      variables {
+        ... on EmbarkAPIGraphQLSingleVariable {
+          key
+          from
+          as
+        }
+        ... on EmbarkAPIGraphQLGeneratedVariable {
+          key
+          storeAs
+          type
+        }
+      }
+      next {
+        ...EmbarkLinkFragment
       }
     }
   }

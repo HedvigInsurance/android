@@ -289,7 +289,7 @@ val repositoriesModule = module {
     single { MarketRepository(get()) }
     single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get()) }
+    single { EmbarkRepository(get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
 }

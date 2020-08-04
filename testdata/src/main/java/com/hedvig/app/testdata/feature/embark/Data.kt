@@ -1,9 +1,14 @@
 package com.hedvig.app.testdata.feature.embark
 
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
+import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -20,6 +25,9 @@ val STANDARD_SECOND_MESSAGE = MessageBuilder(
 val STANDARD_THIRD_MESSAGE = MessageBuilder(
     text = "a third message"
 ).build()
+val STANDARD_FOURTH_MESSAGE = MessageBuilder(
+    text = "a fourth message"
+).build()
 
 val STANDARD_FIRST_LINK = EmbarkLinkFragment(
     name = "TestPassage2",
@@ -29,6 +37,16 @@ val STANDARD_FIRST_LINK = EmbarkLinkFragment(
 val STANDARD_SECOND_LINK = EmbarkLinkFragment(
     name = "TestPassage",
     label = "Yet another test passage"
+)
+
+val LINK_TO_THIRD_PASSAGE = EmbarkLinkFragment(
+    name = "TestPassage3",
+    label = "A third test passage"
+)
+
+val LINK_TO_FOURTH_PASSAGE = EmbarkLinkFragment(
+    name = "TestPassage4",
+    label = "A fourth test passage"
 )
 
 val STANDARD_FIRST_PASSAGE_BUILDER =
@@ -77,6 +95,19 @@ val STANDARD_THIRD_PASSAGE_BUILDER =
             )
         ).build()
     )
+
+val STANDARD_FOURTH_PASSAGE_BUILDER = PassageBuilder(
+    name = "TestPassage4",
+    id = "4",
+    messages = listOf(STANDARD_FOURTH_MESSAGE),
+    action = SelectActionBuilder(
+        listOf(
+            SelectOptionBuilder(
+                link = STANDARD_SECOND_LINK
+            ).build()
+        )
+    ).build()
+)
 
 val STANDARD_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
@@ -680,6 +711,129 @@ val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
                     ).build()
                 )
             )
+            .build()
+    )
+).build()
+
+const val HELLO_QUERY = """
+{
+    hello
+}
+"""
+
+val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                api = GraphQLApiBuilder(
+                    query = HELLO_QUERY,
+                    results = listOf(
+                        ApiFragment.Result(key = "hello", as_ = "HELLO")
+                    ),
+                    errors = listOf(
+                        ApiFragment.Error(
+                            contains = null,
+                            next = ApiFragment.Next(
+                                fragments = ApiFragment.Next.Fragments(LINK_TO_FOURTH_PASSAGE)
+                            )
+                        )
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder("api result: {HELLO}").build()
+                )
+            )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
+            .build()
+    )
+).build()
+
+val VARIABLE_QUERY = """
+query VariableQuery(${'$'}variable: String!) {
+    hello(variable: ${'$'}variable)
+}
+"""
+
+val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = TextActionBuilder(
+                    key = "input",
+                    link = STANDARD_FIRST_LINK
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                api = GraphQLApiBuilder(
+                    query = VARIABLE_QUERY,
+                    results = listOf(
+                        ApiFragment.Result(key = "hello", as_ = "VARIABLE")
+                    ),
+                    variables = listOf(
+                        GraphQLVariableBuilder(
+                            kind = GraphQLVariableBuilder.VariableKind.SINGLE,
+                            key = "variable",
+                            from = "input",
+                            singleType = EmbarkAPIGraphQLSingleVariableCasting.STRING
+                        ).build()
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder("api result: {VARIABLE}").build()
+                )
+            )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
+            .build()
+    )
+).build()
+
+val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                api = GraphQLApiBuilder(
+                    query = VARIABLE_QUERY,
+                    results = listOf(
+                        ApiFragment.Result(key = "hello", as_ = "VARIABLE")
+                    ),
+                    variables = listOf(
+                        GraphQLVariableBuilder(
+                            kind = GraphQLVariableBuilder.VariableKind.GENERATED,
+                            key = "variable",
+                            storeAs = "STORED",
+                            generatedType = EmbarkAPIGraphQLVariableGeneratedType.UUID
+                        ).build()
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(text = "api result: {VARIABLE}").build(),
+                    MessageBuilder(text = "stored: {STORED}").build()
+                )
+            )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
             .build()
     )
 ).build()
