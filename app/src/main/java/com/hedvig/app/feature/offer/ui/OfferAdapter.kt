@@ -179,8 +179,8 @@ class OfferAdapter(
                                 } else {
                                     campaign.resources.getString(
                                         R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                        pdm.pdmQuantity,
-                                        pdm.percentageDiscount.toInt()
+                                        pdm.percentageDiscount.toInt(),
+                                        pdm.pdmQuantity
                                     )
                                 }
                                 campaign.show()
