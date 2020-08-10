@@ -14,6 +14,9 @@ android {
     androidExtensions {
         experimental = true
     }
+    buildFeatures {
+        viewBinding true
+    }
     compileSdkVersion 29
 
     defaultConfig {
