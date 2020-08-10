@@ -4,16 +4,16 @@ import androidx.annotation.IdRes
 import com.hedvig.app.R
 
 enum class LoggedInTabs {
-    DASHBOARD,
-    CLAIMS,
+    HOME,
+    INSURANCE,
     KEY_GEAR,
     REFERRALS,
     PROFILE;
 
     @IdRes
     fun id() = when (this) {
-        DASHBOARD -> R.id.dashboard
-        CLAIMS -> R.id.claims
+        HOME -> R.id.home
+        INSURANCE -> R.id.insurance
         KEY_GEAR -> R.id.key_gear
         REFERRALS -> R.id.referrals
         PROFILE -> R.id.profile
@@ -21,8 +21,8 @@ enum class LoggedInTabs {
 
     companion object {
         fun fromId(@IdRes id: Int) = when (id) {
-            R.id.dashboard -> DASHBOARD
-            R.id.claims -> CLAIMS
+            R.id.home -> HOME
+            R.id.insurance -> INSURANCE
             R.id.key_gear -> KEY_GEAR
             R.id.referrals -> REFERRALS
             R.id.profile -> PROFILE
