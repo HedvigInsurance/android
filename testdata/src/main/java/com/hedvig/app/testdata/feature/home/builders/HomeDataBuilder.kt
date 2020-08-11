@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import java.time.LocalDate
 
 data class HomeDataBuilder(
     private val contracts: List<Status> = emptyList(),
@@ -20,6 +21,13 @@ data class HomeDataBuilder(
                         )
                     } else {
                         null
+                    },
+                    asActiveInFutureStatus = if (c == Status.ACTIVE_IN_FUTURE) {
+                        HomeQuery.AsActiveInFutureStatus(
+                            futureInception = LocalDate.of(2025, 1, 1)
+                        )
+                    } else {
+                        null
                     }
                 )
             )
@@ -27,6 +35,7 @@ data class HomeDataBuilder(
     )
 
     enum class Status {
-        PENDING
+        PENDING,
+        ACTIVE_IN_FUTURE
     }
 }

@@ -60,6 +60,9 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                     is HomeModel.BigText.Pending -> {
                         root.text = "${data.name} TODO"
                     }
+                    is HomeModel.BigText.ActiveInFuture -> {
+                        root.text = "${data.name} ${data.inception} TODO"
+                    }
                 }
             }
         }

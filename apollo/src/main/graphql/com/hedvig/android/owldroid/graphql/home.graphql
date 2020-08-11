@@ -8,6 +8,9 @@ query HomeQuery {
       ... on PendingStatus {
         pendingSince
       }
+      ... on ActiveInFutureStatus {
+        futureInception
+      }
     }
   }
 }
