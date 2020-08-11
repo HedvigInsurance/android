@@ -43,7 +43,7 @@ class PendingTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText("TODO") }
+                    text { hasText("Test TODO") }
                 }
             }
         }

@@ -1,4 +1,7 @@
 query HomeQuery {
+  member {
+    firstName
+  }
   contracts {
     switchedFromInsuranceProvider
     status {

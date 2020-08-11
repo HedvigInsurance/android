@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeBigTextBinding
+import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -57,7 +58,7 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
                 when (data) {
                     is HomeModel.BigText.Pending -> {
-                        root.text = "TODO"
+                        root.text = "${data.name} TODO"
                     }
                 }
             }

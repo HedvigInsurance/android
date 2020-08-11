@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DiffUtil
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
@@ -21,7 +20,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         model.data.observe(viewLifecycleOwner) { data ->
             if (isPending(data.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Pending("TODO")
+                    HomeModel.BigText.Pending(data.member.firstName ?: "")
                 )
             }
         }
@@ -33,23 +32,3 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     }
 }
 
-sealed class HomeModel {
-    sealed class BigText : HomeModel() {
-        data class Pending(
-            val name: String
-        ) : BigText()
-    }
-}
-
-class GenericDiffUtilCallback<T>(
-    private val old: List<T>,
-    private val new: List<T>
-) : DiffUtil.Callback() {
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        old[oldItemPosition] == new[newItemPosition]
-
-    override fun getOldListSize() = old.size
-    override fun getNewListSize() = new.size
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        old[oldItemPosition] == new[newItemPosition]
-}
