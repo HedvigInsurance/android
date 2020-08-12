@@ -15,6 +15,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
             {
                 itemType(::BigTextItem)
                 itemType(::StartClaimItem)
+                itemType(::ErrorItem)
             })
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
@@ -23,5 +24,9 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class StartClaimItem(parent: Matcher<View>) : KRecyclerItem<StartClaimItem>(parent) {
         val button = KButton { withMatcher(parent) }
+    }
+
+    class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
+        val retry = KButton { withId(R.id.retry) }
     }
 }

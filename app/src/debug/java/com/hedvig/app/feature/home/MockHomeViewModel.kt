@@ -5,10 +5,14 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 
 class MockHomeViewModel : HomeViewModel() {
     init {
-        _data.postValue(mockData)
+        load()
     }
 
     companion object {
         var mockData = HOME_DATA_PENDING
+    }
+
+    override fun load() {
+        _data.postValue(mockData)
     }
 }

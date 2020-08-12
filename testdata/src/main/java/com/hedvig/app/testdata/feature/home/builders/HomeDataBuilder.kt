@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class HomeDataBuilder(
     private val contracts: List<Status> = emptyList(),
-    private val firstName: String = "Test"
+    private val firstName: String? = "Test"
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
