@@ -72,7 +72,11 @@ class HomeAdapter(
                         root.text = "${data.name} TODO"
                     }
                     is HomeModel.BigText.ActiveInFuture -> {
-                        root.text = "${data.name} ${formatter.format(data.inception)} TODO"
+                        root.text = root.resources.getString(
+                            R.string.home_tab_active_in_future_welcome_title,
+                            data.name,
+                            formatter.format(data.inception)
+                        )
                     }
                     is HomeModel.BigText.Terminated -> {
                         root.text = "${data.name} Terminated TODO"
