@@ -10,6 +10,8 @@ import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var items: List<HomeModel> = emptyList()
@@ -51,6 +53,8 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
             )
         ) {
             private val binding by viewBinding(HomeBigTextBinding::bind)
+            private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+
             override fun bind(data: HomeModel) = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -61,7 +65,7 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                         root.text = "${data.name} TODO"
                     }
                     is HomeModel.BigText.ActiveInFuture -> {
-                        root.text = "${data.name} ${data.inception} TODO"
+                        root.text = "${data.name} ${formatter.format(data.inception)} TODO"
                     }
                 }
             }
