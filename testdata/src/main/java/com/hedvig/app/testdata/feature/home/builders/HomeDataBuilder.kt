@@ -29,6 +29,13 @@ data class HomeDataBuilder(
                     } else {
                         null
                     },
+                    asActiveInFutureAndTerminatedInFutureStatus = if (c == Status.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+                        HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
+                            futureInception = LocalDate.of(2024, 1, 1)
+                        )
+                    } else {
+                        null
+                    },
                     asTerminatedStatus = if (c == Status.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
                             termination = null
@@ -44,6 +51,7 @@ data class HomeDataBuilder(
     enum class Status {
         PENDING,
         ACTIVE_IN_FUTURE,
+        ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
         TERMINATED
     }
 }

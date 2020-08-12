@@ -14,6 +14,8 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class HomeAdapter(
     private val fragmentManager: FragmentManager
@@ -59,6 +61,7 @@ class HomeAdapter(
             )
         ) {
             private val binding by viewBinding(HomeBigTextBinding::bind)
+            private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
             override fun bind(data: HomeModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -69,7 +72,7 @@ class HomeAdapter(
                         root.text = "${data.name} TODO"
                     }
                     is HomeModel.BigText.ActiveInFuture -> {
-                        root.text = "${data.name} ${data.inception} TODO"
+                        root.text = "${data.name} ${formatter.format(data.inception)} TODO"
                     }
                     is HomeModel.BigText.Terminated -> {
                         root.text = "${data.name} Terminated TODO"

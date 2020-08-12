@@ -11,6 +11,9 @@ query HomeQuery {
       ... on ActiveInFutureStatus {
         futureInception
       }
+      ... on ActiveInFutureAndTerminatedInFutureStatus {
+        futureInception
+      }
       ... on TerminatedStatus {
         termination
       }

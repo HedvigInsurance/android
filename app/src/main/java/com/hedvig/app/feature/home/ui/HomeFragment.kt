@@ -28,13 +28,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 )
             }
             if (isActiveInFuture(data.contracts)) {
-                @Suppress("SimplifiableCallChain") val firstInceptionDate = data
+                val firstInceptionDate = data
                     .contracts
-                    .sortedBy { it.status.asActiveInFutureStatus?.futureInception }
-                    .firstOrNull()
-                    ?.status
-                    ?.asActiveInFutureStatus
-                    ?.futureInception
+                    .mapNotNull {
+                        it.status.asActiveInFutureStatus?.futureInception
+                            ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
+                    }
+                    .min()
                     ?: throw Error("No future inception") // TODO: Show proper error state
 
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
@@ -59,7 +59,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             contracts.all { it.status.asPendingStatus != null }
 
         fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
-            contracts.all { it.status.asActiveInFutureStatus != null }
+            contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
 
         fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
