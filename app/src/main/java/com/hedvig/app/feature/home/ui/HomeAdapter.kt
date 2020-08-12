@@ -79,7 +79,10 @@ class HomeAdapter(
                         )
                     }
                     is HomeModel.BigText.Terminated -> {
-                        root.text = "${data.name} Terminated TODO"
+                        root.text = root.resources.getString(
+                            R.string.home_tab_terminated_welcome_title,
+                            data.name
+                        )
                     }
                 }
             }

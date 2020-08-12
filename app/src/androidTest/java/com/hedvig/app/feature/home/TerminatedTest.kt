@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -39,7 +40,12 @@ class TerminatedTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText("Test Terminated TODO") }
+                    text {
+                        hasText(
+                            ApplicationProvider.getApplicationContext<Context>()
+                                .getString(R.string.home_tab_terminated_welcome_title, "Test")
+                        )
+                    }
                 }
                 childAt<HomeTabScreen.StartClaimItem>(1) {
                     button { click() }
