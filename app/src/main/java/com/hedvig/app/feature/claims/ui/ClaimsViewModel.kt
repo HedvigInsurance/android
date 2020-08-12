@@ -31,15 +31,12 @@ class ClaimsViewModel(
         }
     }
 
-    fun triggerClaimsChat(claimTypeId: String? = null, done: () -> Unit) {
-        viewModelScope.launch {
-            val response =
-                runCatching { claimsRepository.triggerClaimsChatAsync(claimTypeId).await() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            done()
+    suspend fun triggerClaimsChat(claimTypeId: String? = null) {
+        val response =
+            runCatching { claimsRepository.triggerClaimsChatAsync(claimTypeId).await() }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e(it) }
+            return
         }
     }
 
