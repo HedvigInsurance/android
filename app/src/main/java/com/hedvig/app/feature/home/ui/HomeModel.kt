@@ -13,4 +13,8 @@ sealed class HomeModel {
             val inception: LocalDate
         ) : BigText()
     }
+
+    sealed class BodyText : HomeModel() {
+        object Pending : BodyText()
+    }
 }

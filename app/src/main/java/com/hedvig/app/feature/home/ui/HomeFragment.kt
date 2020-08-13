@@ -24,7 +24,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Pending(
                         firstName
-                    )
+                    ),
+
+                    HomeModel.BodyText.Pending
                 )
             }
             if (isActiveInFuture(data.contracts)) {
@@ -55,4 +57,3 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
     }
 }
-
