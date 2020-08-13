@@ -18,6 +18,11 @@ sealed class HomeModel {
         ) : BigText()
     }
 
+    sealed class BodyText : HomeModel() {
+        object Pending : BodyText()
+        object ActiveInFuture : BodyText()
+    }
+
     object StartClaimOutlined : HomeModel()
     object Error : HomeModel()
 }
