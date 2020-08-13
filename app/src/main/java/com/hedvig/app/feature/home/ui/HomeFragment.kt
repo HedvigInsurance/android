@@ -43,7 +43,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BigText.ActiveInFuture(
                         firstName,
                         firstInceptionDate
-                    )
+                    ),
+                    HomeModel.BodyText.ActiveInFuture
                 )
             }
         }

@@ -86,7 +86,14 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                     return invalid(data)
                 }
 
-                root.setText(R.string.home_tab_pending_switchable_body)
+                when (data) {
+                    HomeModel.BodyText.Pending -> {
+                        root.setText(R.string.home_tab_pending_switchable_body)
+                    }
+                    HomeModel.BodyText.ActiveInFuture -> {
+                        root.setText(R.string.home_tab_active_in_future_body)
+                    }
+                }
             }
         }
     }
