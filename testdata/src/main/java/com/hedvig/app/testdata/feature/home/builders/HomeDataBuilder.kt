@@ -22,12 +22,14 @@ data class HomeDataBuilder(
                     } else {
                         null
                     },
-                    asActiveInFutureStatus = if (c == Status.ACTIVE_IN_FUTURE) {
-                        HomeQuery.AsActiveInFutureStatus(
+                    asActiveInFutureStatus = when (c) {
+                        Status.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
                             futureInception = LocalDate.of(2025, 1, 1)
                         )
-                    } else {
-                        null
+                        Status.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
+                            futureInception = null
+                        )
+                        else -> null
                     },
                     asActiveInFutureAndTerminatedInFutureStatus = if (c == Status.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
@@ -52,6 +54,7 @@ data class HomeDataBuilder(
         PENDING,
         ACTIVE_IN_FUTURE,
         ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
+        ACTIVE_IN_FUTURE_INVALID,
         TERMINATED
     }
 }

@@ -42,7 +42,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
                     }
                     .min()
-                    ?: throw Error("No future inception") // TODO: Show proper error state
+
+                if (firstInceptionDate == null) {
+                    (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                        HomeModel.Error
+                    )
+                    return@observe
+                }
 
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.ActiveInFuture(
