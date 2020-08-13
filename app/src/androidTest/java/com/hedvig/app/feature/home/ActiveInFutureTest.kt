@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -13,6 +12,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.hasText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,11 +44,9 @@ class ActiveInFutureTest {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text {
                         hasText(
-                            ApplicationProvider.getApplicationContext<Context>().getString(
-                                R.string.home_tab_active_in_future_welcome_title,
-                                "Test",
-                                formatter.format(LocalDate.of(2025, 1, 1))
-                            )
+                            R.string.home_tab_active_in_future_welcome_title,
+                            "Test",
+                            formatter.format(LocalDate.of(2025, 1, 1))
                         )
                     }
                 }

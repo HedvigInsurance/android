@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeBigTextBinding
+import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
-import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -93,6 +93,13 @@ class HomeAdapter(
                             formatter.format(data.inception)
                         )
                     }
+                    is HomeModel.BigText.Terminated -> {
+                        root.text =
+                            root.resources.getString(
+                                R.string.home_tab_terminated_welcome_title,
+                                data.name
+                            )
+                    }
                 }
             }
         }
@@ -100,7 +107,11 @@ class HomeAdapter(
         class BodyText(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_body_text)) {
             private val binding by viewBinding(HomeBodyTextBinding::bind)
 
-            override fun bind(data: HomeModel) = with(binding) {
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit
+            ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
                 }
@@ -111,9 +122,6 @@ class HomeAdapter(
                     }
                     HomeModel.BodyText.ActiveInFuture -> {
                         root.setText(R.string.home_tab_active_in_future_body)
-                    }
-                    is HomeModel.BigText.Terminated -> {
-                        root.text = "${data.name} Terminated TODO"
                     }
                 }
             }
