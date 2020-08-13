@@ -20,7 +20,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         model.data.observe(viewLifecycleOwner) { data ->
             if (isPending(data.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Pending(data.member.firstName ?: "")
+                    HomeModel.BigText.Pending(data.member.firstName ?: ""),
+                    HomeModel.BodyText.Pending
                 )
             }
         }
@@ -31,4 +32,3 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             contracts.all { it.status.asPendingStatus != null }
     }
 }
-

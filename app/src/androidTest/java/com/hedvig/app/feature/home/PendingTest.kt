@@ -45,6 +45,9 @@ class PendingTest {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText("Test TODO") }
                 }
+                childAt<HomeTabScreen.BodyTextItem>(1) {
+                    text { hasText(R.string.home_tab_pending_switchable_body) }
+                }
             }
         }
     }
@@ -53,9 +56,14 @@ class PendingTest {
 class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler = KRecyclerView({ withId(R.id.recycler) }, {
         itemType(::BigTextItem)
+        itemType(::BodyTextItem)
     })
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
+        val text = KTextView { withMatcher(parent) }
+    }
+
+    class BodyTextItem(parent: Matcher<View>) : KRecyclerItem<BodyTextItem>(parent) {
         val text = KTextView { withMatcher(parent) }
     }
 }
