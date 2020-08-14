@@ -52,6 +52,9 @@ class ActiveInFutureAndTerminatedInFutureTest {
                         )
                     }
                 }
+                childAt<HomeTabScreen.BodyTextItem>(1) {
+                    text { hasText(R.string.home_tab_active_in_future_body) }
+                }
             }
         }
     }

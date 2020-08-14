@@ -15,9 +15,14 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
             {
                 itemType(::BigTextItem)
                 itemType(::StartClaimItem)
+                itemType(::BodyTextItem)
             })
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
+        val text = KTextView { withMatcher(parent) }
+    }
+
+    class BodyTextItem(parent: Matcher<View>) : KRecyclerItem<BodyTextItem>(parent) {
         val text = KTextView { withMatcher(parent) }
     }
 
