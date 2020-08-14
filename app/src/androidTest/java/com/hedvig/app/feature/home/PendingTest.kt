@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.hasText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,10 +38,10 @@ class PendingTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText("Test TODO") }
+                    text { hasText(R.string.home_tab_pending_nonswitchable_welcome_title, "Test") }
                 }
                 childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_pending_switchable_body) }
+                    text { hasText(R.string.home_tab_pending_nonswitchable_body) }
                 }
             }
         }
