@@ -77,7 +77,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isActive(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Active(firstName),
-                    HomeModel.StartClaimContained
+                    HomeModel.StartClaimContained,
+                    HomeModel.CommonClaimTitle
                 )
             }
         }

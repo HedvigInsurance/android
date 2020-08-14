@@ -16,6 +16,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::BigTextItem)
                 itemType(::BodyTextItem)
                 itemType(::StartClaimItem)
+                itemType(::CommonClaimTitleItem)
                 itemType(::ErrorItem)
             })
 
@@ -29,6 +30,11 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class StartClaimItem(parent: Matcher<View>) : KRecyclerItem<StartClaimItem>(parent) {
         val button = KButton { withMatcher(parent) }
+    }
+
+    class CommonClaimTitleItem(parent: Matcher<View>) :
+        KRecyclerItem<CommonClaimTitleItem>(parent) {
+        val text = KTextView { withMatcher(parent) }
     }
 
     class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {

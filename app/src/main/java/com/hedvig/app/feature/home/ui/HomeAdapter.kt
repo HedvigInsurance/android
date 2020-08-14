@@ -41,6 +41,7 @@ class HomeAdapter(
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
+        R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid view type")
     }
@@ -51,6 +52,7 @@ class HomeAdapter(
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
+        HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         HomeModel.Error -> R.layout.home_error
     }
 
@@ -171,6 +173,15 @@ class HomeAdapter(
                     HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
                 }
             }
+        }
+
+        class CommonClaimTitle(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.home_common_claim_title)) {
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit
+            ) = Unit
         }
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {

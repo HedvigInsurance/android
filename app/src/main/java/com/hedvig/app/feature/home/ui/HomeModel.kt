@@ -31,5 +31,7 @@ sealed class HomeModel {
 
     object StartClaimContained : HomeModel()
 
+    object CommonClaimTitle : HomeModel()
+
     object Error : HomeModel()
 }

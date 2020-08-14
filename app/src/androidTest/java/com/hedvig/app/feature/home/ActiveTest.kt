@@ -37,13 +37,16 @@ class ActiveTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowTitleAndClaimButtonWhenUserHasOneActiveContract() {
+    fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
+                }
+                childAt<HomeTabScreen.CommonClaimTitleItem>(2) {
+                    isVisible()
                 }
                 childAt<HomeTabScreen.StartClaimItem>(1) {
                     button { click() }
