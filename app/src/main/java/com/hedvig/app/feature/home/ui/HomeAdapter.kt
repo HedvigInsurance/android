@@ -61,7 +61,10 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
                 when (data) {
                     is HomeModel.BigText.Pending -> {
-                        root.text = "${data.name} TODO"
+                        root.text = root.resources.getString(
+                            R.string.home_tab_pending_nonswitchable_welcome_title,
+                            data.name
+                        )
                     }
                 }
             }
@@ -75,7 +78,7 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                     return invalid(data)
                 }
 
-                root.setText(R.string.home_tab_pending_switchable_body)
+                root.setText(R.string.home_tab_pending_nonswitchable_body)
             }
         }
     }
