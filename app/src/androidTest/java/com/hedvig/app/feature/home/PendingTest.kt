@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,8 +23,12 @@ class PendingTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
-        HomeQuery.OPERATION_NAME to { HOME_DATA_PENDING }
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+            )
+        },
+        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
     )
 
     @get:Rule

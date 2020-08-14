@@ -9,6 +9,7 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +22,11 @@ class ExistingNonSwitchableInsuranceTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        OfferQuery.OPERATION_NAME to { OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE }
+        OfferQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
+            )
+        }
     )
 
     @get:Rule
