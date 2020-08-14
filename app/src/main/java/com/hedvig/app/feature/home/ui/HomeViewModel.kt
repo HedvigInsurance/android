@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class HomeViewModel : ViewModel() {
-    protected val _data = MutableLiveData<HomeQuery.Data>()
-    val data: LiveData<HomeQuery.Data> = _data
+    protected val _data = MutableLiveData<Result<HomeQuery.Data>>()
+    val data: LiveData<Result<HomeQuery.Data>> = _data
 
     abstract fun load()
 }
@@ -23,13 +23,17 @@ class HomeViewModelImpl(
 ) : HomeViewModel() {
     init {
         viewModelScope.launch {
-            homeRepository
+            val job = homeRepository
                 .home()
                 .onEach { response ->
-                    response.data?.let { _data.postValue(it) }
+                    response.errors?.let {
+                        _data.postValue(Result.failure(Error()))
+                        return@onEach
+                    }
+                    response.data?.let { _data.postValue(Result.success(it)) }
                 }
-                .catch {
-                    TODO("Present error to user")
+                .catch { e ->
+                    _data.postValue(Result.failure(e))
                 }
                 .launchIn(this)
         }

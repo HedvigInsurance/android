@@ -9,10 +9,16 @@ class MockHomeViewModel : HomeViewModel() {
     }
 
     companion object {
+        var shouldError = false
         var mockData = HOME_DATA_PENDING
     }
 
     override fun load() {
-        _data.postValue(mockData)
+        if (shouldError) {
+            shouldError = false
+            _data.postValue(Result.failure(Error()))
+            return
+        }
+        _data.postValue(Result.success(mockData))
     }
 }
