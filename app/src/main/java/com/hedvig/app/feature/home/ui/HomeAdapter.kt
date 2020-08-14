@@ -84,7 +84,10 @@ class HomeAdapter(
 
                 when (data) {
                     is HomeModel.BigText.Pending -> {
-                        root.text = "${data.name} TODO"
+                        root.text = root.resources.getString(
+                            R.string.home_tab_pending_nonswitchable_welcome_title,
+                            data.name
+                        )
                     }
                     is HomeModel.BigText.ActiveInFuture -> {
                         root.text = root.resources.getString(
@@ -118,13 +121,13 @@ class HomeAdapter(
 
                 when (data) {
                     HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_switchable_body)
-                    }
-                    HomeModel.BodyText.ActiveInFuture -> {
-                        root.setText(R.string.home_tab_active_in_future_body)
+                        root.setText(R.string.home_tab_pending_nonswitchable_body)
+                        }
+                        HomeModel.BodyText.ActiveInFuture -> {
+                            root.setText(R.string.home_tab_active_in_future_body)
+                        }
                     }
                 }
-            }
         }
 
         class StartClaimOutlined(parent: ViewGroup) :
