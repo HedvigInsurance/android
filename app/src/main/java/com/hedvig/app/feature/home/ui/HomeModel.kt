@@ -13,6 +13,10 @@ sealed class HomeModel {
             val inception: LocalDate
         ) : BigText()
 
+        data class Active(
+            val name: String
+        ) : BigText()
+
         data class Terminated(
             val name: String
         ) : BigText()
@@ -24,6 +28,8 @@ sealed class HomeModel {
     }
 
     object StartClaimOutlined : HomeModel()
+
+    object StartClaimContained : HomeModel()
 
     object Error : HomeModel()
 }

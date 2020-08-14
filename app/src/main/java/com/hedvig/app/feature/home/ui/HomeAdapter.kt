@@ -9,6 +9,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeErrorBinding
+import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.util.GenericDiffUtilCallback
@@ -39,6 +40,7 @@ class HomeAdapter(
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
+        R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid view type")
     }
@@ -48,6 +50,7 @@ class HomeAdapter(
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
+        HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         HomeModel.Error -> R.layout.home_error
     }
 
@@ -96,6 +99,10 @@ class HomeAdapter(
                             formatter.format(data.inception)
                         )
                     }
+                    is HomeModel.BigText.Active -> {
+                        root.text =
+                            root.resources.getString(R.string.home_tab_welcome_title, data.name)
+                    }
                     is HomeModel.BigText.Terminated -> {
                         root.text =
                             root.resources.getString(
@@ -122,12 +129,12 @@ class HomeAdapter(
                 when (data) {
                     HomeModel.BodyText.Pending -> {
                         root.setText(R.string.home_tab_pending_nonswitchable_body)
-                        }
-                        HomeModel.BodyText.ActiveInFuture -> {
-                            root.setText(R.string.home_tab_active_in_future_body)
-                        }
+                    }
+                    HomeModel.BodyText.ActiveInFuture -> {
+                        root.setText(R.string.home_tab_active_in_future_body)
                     }
                 }
+            }
         }
 
         class StartClaimOutlined(parent: ViewGroup) :
@@ -139,6 +146,24 @@ class HomeAdapter(
                 retry: () -> Unit
             ) = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
+                    return invalid(data)
+                }
+
+                root.setHapticClickListener {
+                    HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+                }
+            }
+        }
+
+        class StartClaimContained(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
+            private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit
+            ) = with(binding) {
+                if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
                 }
 

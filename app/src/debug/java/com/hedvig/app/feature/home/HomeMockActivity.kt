@@ -11,6 +11,7 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
+import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
@@ -55,6 +56,13 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
             clickableItem("Active in Future + Active in Future and Terminated in Future") {
                 MockHomeViewModel.apply {
                     mockData = HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                    shouldError = false
+                }
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Active") {
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_ACTIVE
                     shouldError = false
                 }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))

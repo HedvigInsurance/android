@@ -73,6 +73,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.StartClaimOutlined
                 )
             }
+
+            if (isActive(successData.contracts)) {
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                    HomeModel.BigText.Active(firstName),
+                    HomeModel.StartClaimContained
+                )
+            }
         }
     }
 
@@ -82,6 +89,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
         fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
+
+        fun isActive(contracts: List<HomeQuery.Contract>) =
+            contracts.all { it.status.asActiveStatus != null }
 
         fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }

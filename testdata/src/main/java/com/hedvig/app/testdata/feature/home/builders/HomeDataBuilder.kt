@@ -38,6 +38,13 @@ data class HomeDataBuilder(
                     } else {
                         null
                     },
+                    asActiveStatus = if (c == Status.ACTIVE) {
+                        HomeQuery.AsActiveStatus(
+                            pastInception = LocalDate.now()
+                        )
+                    } else {
+                        null
+                    },
                     asTerminatedStatus = if (c == Status.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
                             termination = null
@@ -55,6 +62,7 @@ data class HomeDataBuilder(
         ACTIVE_IN_FUTURE,
         ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
         ACTIVE_IN_FUTURE_INVALID,
+        ACTIVE,
         TERMINATED
     }
 }
