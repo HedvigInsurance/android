@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING_NO_FIRST_NAME
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import org.awaitility.Duration.TWO_SECONDS
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
@@ -29,13 +30,17 @@ class NoFirstNameErrorTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
-        HomeQuery.OPERATION_NAME to {
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+            )
+        },
+        HomeQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
-                HOME_DATA_PENDING_NO_FIRST_NAME
+                success(HOME_DATA_PENDING_NO_FIRST_NAME)
             } else {
-                HOME_DATA_PENDING
+                success(HOME_DATA_PENDING)
             }
         }
     )
