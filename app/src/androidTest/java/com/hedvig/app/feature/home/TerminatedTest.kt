@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.hasText
 import com.hedvig.app.util.apolloResponse
 import org.junit.Rule
 import org.junit.Test
@@ -45,12 +46,7 @@ class TerminatedTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text {
-                        hasText(
-                            ApplicationProvider.getApplicationContext<Context>()
-                                .getString(R.string.home_tab_terminated_welcome_title, "Test")
-                        )
-                    }
+                    text { hasText(R.string.home_tab_terminated_welcome_title, "Test") }
                 }
                 childAt<HomeTabScreen.StartClaimItem>(1) {
                     button { click() }

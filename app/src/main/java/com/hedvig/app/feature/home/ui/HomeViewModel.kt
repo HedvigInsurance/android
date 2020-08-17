@@ -6,11 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.feature.home.data.HomeRepository
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class HomeViewModel : ViewModel() {
-    protected val _data = MutableLiveData<HomeQuery.Data>()
-    val data: LiveData<HomeQuery.Data> = _data
+    protected val _data = MutableLiveData<Result<HomeQuery.Data>>()
+    val data: LiveData<Result<HomeQuery.Data>> = _data
+
+    abstract fun load()
 }
 
 class HomeViewModelImpl(
@@ -18,12 +23,25 @@ class HomeViewModelImpl(
 ) : HomeViewModel() {
     init {
         viewModelScope.launch {
-            val result = runCatching { homeRepository.homeAsync().await() }
-            if (result.isFailure) {
-                TODO("Present error to user")
-            }
+            val job = homeRepository
+                .home()
+                .onEach { response ->
+                    response.errors?.let {
+                        _data.postValue(Result.failure(Error()))
+                        return@onEach
+                    }
+                    response.data?.let { _data.postValue(Result.success(it)) }
+                }
+                .catch { e ->
+                    _data.postValue(Result.failure(e))
+                }
+                .launchIn(this)
+        }
+    }
 
-            result.getOrNull()?.data?.let { _data.postValue(it) }
+    override fun load() {
+        viewModelScope.launch {
+            runCatching { homeRepository.reloadHomeAsync().await() }
         }
     }
 }

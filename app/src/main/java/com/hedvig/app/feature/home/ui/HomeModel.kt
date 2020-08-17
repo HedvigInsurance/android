@@ -24,4 +24,6 @@ sealed class HomeModel {
     }
 
     object StartClaimOutlined : HomeModel()
+
+    object Error : HomeModel()
 }

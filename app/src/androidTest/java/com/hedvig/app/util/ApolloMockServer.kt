@@ -33,7 +33,11 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
 
                 return when (val result = dataProvider(variables)) {
                     ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
-                    is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(jsonObjectOf("errors" to result.errors.toString()).toString())
+                    is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(jsonObjectOf("errors" to result.errors.map {
+                        jsonObjectOf(
+                            "message" to it
+                        )
+                    }.toJsonArray()).toString())
                     is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
                 }
             }
@@ -47,7 +51,7 @@ sealed class ApolloMockServerResult {
     object InternalServerError : ApolloMockServerResult()
 
     data class GraphQLError(
-        val errors: List<Error>
+        val errors: List<String>
     ) : ApolloMockServerResult()
 
     data class GraphQLResponse(
@@ -59,7 +63,7 @@ class ApolloMockServerResponseBuilder(
     val variables: JSONObject
 ) {
     fun internalServerError() = ApolloMockServerResult.InternalServerError
-    fun graphQLError(vararg errors: Error) =
+    fun graphQLError(vararg errors: String) =
         ApolloMockServerResult.GraphQLError(errors.toList())
 
     fun success(data: Operation.Data) =
