@@ -18,6 +18,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_F
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import org.awaitility.Duration
@@ -40,13 +41,17 @@ class ForeverDeepLinkTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
-        ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_NO_DISCOUNTS }
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+            )
+        },
+        ReferralsQuery.QUERY_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) }
     )
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
-   
+
     @Before
     fun setup() {
         previousLoginStatus = ApplicationProvider.getApplicationContext<Context>().isLoggedIn()
