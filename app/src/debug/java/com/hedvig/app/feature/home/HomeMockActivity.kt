@@ -39,19 +39,38 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
         binding.root.adapter = genericDevelopmentAdapter {
             header("Tab Screen")
             clickableItem("Pending") {
-                MockHomeViewModel.mockData = HOME_DATA_PENDING
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_PENDING
+                    shouldError = false
+                }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
             clickableItem("Active in Future") {
-                MockHomeViewModel.mockData = HOME_DATA_ACTIVE_IN_FUTURE
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_ACTIVE_IN_FUTURE
+                    shouldError = false
+                }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
             clickableItem("Active in Future + Active in Future and Terminated in Future") {
-                MockHomeViewModel.mockData = HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                    shouldError = false
+                }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
             clickableItem("Terminated") {
-                MockHomeViewModel.mockData = HOME_DATA_TERMINATED
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_TERMINATED
+                    shouldError = false
+                }
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Error") {
+                MockHomeViewModel.apply {
+                    mockData = HOME_DATA_PENDING
+                    shouldError = true
+                }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
         }

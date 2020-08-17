@@ -15,12 +15,25 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val binding by viewBinding(HomeFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recycler.adapter = HomeAdapter(parentFragmentManager)
+        binding.recycler.adapter = HomeAdapter(parentFragmentManager, model::load)
 
         model.data.observe(viewLifecycleOwner) { data ->
-            // TODO: Show a proper error state if no first name is present.
-            val firstName = data.member.firstName ?: throw Error("No first name")
-            if (isPending(data.contracts)) {
+            if (data.isFailure) {
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                    HomeModel.Error
+                )
+                return@observe
+            }
+
+            val successData = data.getOrNull() ?: return@observe
+            val firstName = successData.member.firstName
+            if (firstName == null) {
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                    HomeModel.Error
+                )
+                return@observe
+            }
+            if (isPending(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Pending(
                         firstName
@@ -29,15 +42,21 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BodyText.Pending
                 )
             }
-            if (isActiveInFuture(data.contracts)) {
-                val firstInceptionDate = data
+            if (isActiveInFuture(successData.contracts)) {
+                val firstInceptionDate = successData
                     .contracts
                     .mapNotNull {
                         it.status.asActiveInFutureStatus?.futureInception
                             ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
                     }
                     .min()
-                    ?: throw Error("No future inception") // TODO: Show proper error state
+
+                if (firstInceptionDate == null) {
+                    (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                        HomeModel.Error
+                    )
+                    return@observe
+                }
 
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.ActiveInFuture(
@@ -48,7 +67,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 )
             }
 
-            if (isTerminated(data.contracts)) {
+            if (isTerminated(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Terminated(firstName),
                     HomeModel.StartClaimOutlined
