@@ -1,0 +1,13 @@
+query HomeQuery {
+  member {
+    firstName
+  }
+  contracts {
+    switchedFromInsuranceProvider
+    status {
+      ... on PendingStatus {
+        pendingSince
+      }
+    }
+  }
+}

@@ -44,6 +44,11 @@
             android:label="Offer Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.home.HomeMockActivity"
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>

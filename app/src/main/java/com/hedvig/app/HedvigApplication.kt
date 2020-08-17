@@ -62,6 +62,7 @@ open class HedvigApplication : Application() {
                     languageAndMarketModule,
                     adyenModule,
                     referralsModule,
+                    homeModule,
                     serviceModule,
                     repositoriesModule,
                     trackerModule

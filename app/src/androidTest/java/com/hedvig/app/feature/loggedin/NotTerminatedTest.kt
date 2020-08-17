@@ -36,7 +36,7 @@ class NotTerminatedTest {
 
         onScreen<LoggedInScreen> {
             root { isVisible() }
-            bottomTabs { hasSelectedItem(R.id.dashboard) }
+            bottomTabs { hasSelectedItem(R.id.home) }
         }
     }
 }

@@ -30,6 +30,9 @@ import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageView
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.ui.HomeViewModel
+import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -254,6 +257,10 @@ val referralsModule = module {
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
 
+val homeModule = module {
+    viewModel<HomeViewModel> { HomeViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -284,6 +291,7 @@ val repositoriesModule = module {
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
+    single { HomeRepository(get()) }
 }
 
 val trackerModule = module {

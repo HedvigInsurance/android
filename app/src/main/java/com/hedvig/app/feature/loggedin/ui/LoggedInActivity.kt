@@ -47,7 +47,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-    private var lastLoggedInTab = LoggedInTabs.DASHBOARD
+    private var lastLoggedInTab = LoggedInTabs.HOME
 
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
@@ -111,9 +111,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-            LoggedInTabs.DASHBOARD,
+            LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
-            LoggedInTabs.CLAIMS -> {
+            LoggedInTabs.INSURANCE -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
             }
             LoggedInTabs.PROFILE -> {
@@ -131,9 +131,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-            LoggedInTabs.DASHBOARD,
+            LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
-            LoggedInTabs.CLAIMS -> {
+            LoggedInTabs.INSURANCE -> {
                 claimsViewModel.triggerFreeTextChat {
                     startClosableChat()
                 }
@@ -179,7 +179,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     }
                     binding.bottomNavigation.inflateMenu(menuId)
                     val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-                        ?: LoggedInTabs.DASHBOARD
+                        ?: LoggedInTabs.HOME
                     binding.bottomNavigation.selectedItemId = initialTab.id()
                     setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
                     binding.loggedInRoot.show()
@@ -223,7 +223,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         fun newInstance(
             context: Context,
             withoutHistory: Boolean = false,
-            initialTab: LoggedInTabs = LoggedInTabs.DASHBOARD
+            initialTab: LoggedInTabs = LoggedInTabs.HOME
         ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
