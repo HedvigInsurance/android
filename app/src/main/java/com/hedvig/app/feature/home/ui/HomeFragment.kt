@@ -18,10 +18,33 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         binding.recycler.adapter = HomeAdapter()
 
         model.data.observe(viewLifecycleOwner) { data ->
+            // TODO: Show a proper error state if no first name is present.
+            val firstName = data.member.firstName ?: throw Error("No first name")
             if (isPending(data.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Pending(data.member.firstName ?: ""),
+                    HomeModel.BigText.Pending(
+                        firstName
+                    ),
+
                     HomeModel.BodyText.Pending
+                )
+            }
+            if (isActiveInFuture(data.contracts)) {
+                val firstInceptionDate = data
+                    .contracts
+                    .mapNotNull {
+                        it.status.asActiveInFutureStatus?.futureInception
+                            ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
+                    }
+                    .min()
+                    ?: throw Error("No future inception") // TODO: Show proper error state
+
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                    HomeModel.BigText.ActiveInFuture(
+                        firstName,
+                        firstInceptionDate
+                    ),
+                    HomeModel.BodyText.ActiveInFuture
                 )
             }
         }
@@ -30,5 +53,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     companion object {
         fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
+
+        fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
+            contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
     }
 }

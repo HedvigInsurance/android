@@ -11,6 +11,8 @@ import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var items: List<HomeModel> = emptyList()
@@ -54,6 +56,8 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
             )
         ) {
             private val binding by viewBinding(HomeBigTextBinding::bind)
+            private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+
             override fun bind(data: HomeModel) = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -64,6 +68,13 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                         root.text = root.resources.getString(
                             R.string.home_tab_pending_nonswitchable_welcome_title,
                             data.name
+                        )
+                    }
+                    is HomeModel.BigText.ActiveInFuture -> {
+                        root.text = root.resources.getString(
+                            R.string.home_tab_active_in_future_welcome_title,
+                            data.name,
+                            formatter.format(data.inception)
                         )
                     }
                 }
@@ -78,7 +89,14 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
                     return invalid(data)
                 }
 
-                root.setText(R.string.home_tab_pending_nonswitchable_body)
+                when (data) {
+                    HomeModel.BodyText.Pending -> {
+                        root.setText(R.string.home_tab_pending_nonswitchable_body)
+                    }
+                    HomeModel.BodyText.ActiveInFuture -> {
+                        root.setText(R.string.home_tab_active_in_future_body)
+                    }
+                }
             }
         }
     }

@@ -11,6 +11,8 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
+import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
+import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.dsl.viewModel
@@ -37,6 +39,14 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
             header("Tab Screen")
             clickableItem("Pending") {
                 MockHomeViewModel.mockData = HOME_DATA_PENDING
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Active in Future") {
+                MockHomeViewModel.mockData = HOME_DATA_ACTIVE_IN_FUTURE
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Active in Future + Active in Future and Terminated in Future") {
+                MockHomeViewModel.mockData = HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
         }
