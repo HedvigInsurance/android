@@ -15,10 +15,6 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.hasText
-import org.awaitility.Duration.TWO_SECONDS
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,14 +57,12 @@ class NoFutureInceptionErrorTest {
                         click()
                     }
                 }
-                await atMost TWO_SECONDS untilAsserted {
-                    childAt<HomeTabScreen.BigTextItem>(0) {
-                        text {
-                            hasText(
-                                R.string.home_tab_pending_nonswitchable_welcome_title,
-                                "Test"
-                            )
-                        }
+                childAt<HomeTabScreen.BigTextItem>(0) {
+                    text {
+                        hasText(
+                            R.string.home_tab_pending_nonswitchable_welcome_title,
+                            "Test"
+                        )
                     }
                 }
             }
