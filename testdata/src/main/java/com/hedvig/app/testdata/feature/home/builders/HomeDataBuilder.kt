@@ -35,6 +35,13 @@ data class HomeDataBuilder(
                         )
                     } else {
                         null
+                    },
+                    asTerminatedStatus = if (c == Status.TERMINATED) {
+                        HomeQuery.AsTerminatedStatus(
+                            termination = null
+                        )
+                    } else {
+                        null
                     }
                 )
             )
@@ -44,6 +51,7 @@ data class HomeDataBuilder(
     enum class Status {
         PENDING,
         ACTIVE_IN_FUTURE,
-        ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+        ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
+        TERMINATED
     }
 }

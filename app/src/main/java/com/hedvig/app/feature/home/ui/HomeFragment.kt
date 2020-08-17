@@ -15,7 +15,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val binding by viewBinding(HomeFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recycler.adapter = HomeAdapter()
+        binding.recycler.adapter = HomeAdapter(parentFragmentManager)
 
         model.data.observe(viewLifecycleOwner) { data ->
             // TODO: Show a proper error state if no first name is present.
@@ -47,6 +47,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BodyText.ActiveInFuture
                 )
             }
+
+            if (isTerminated(data.contracts)) {
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
+                    HomeModel.BigText.Terminated(firstName),
+                    HomeModel.StartClaimOutlined
+                )
+            }
         }
     }
 
@@ -56,5 +63,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
         fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
+
+        fun isTerminated(contracts: List<HomeQuery.Contract>) =
+            contracts.all { it.status.asTerminatedStatus != null }
     }
 }

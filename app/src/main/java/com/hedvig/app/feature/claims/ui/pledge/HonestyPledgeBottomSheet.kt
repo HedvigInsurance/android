@@ -1,39 +1,42 @@
 package com.hedvig.app.feature.claims.ui.pledge
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
+import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.bottom_sheet_honesty_pledge.*
+import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class HonestyPledgeBottomSheet : RoundedBottomSheetDialogFragment() {
+class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
-
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
+    private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
 
-    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.bottom_sheet_honesty_pledge, container, false)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.bottom_sheet_honesty_pledge, null)
-        dialog.setContentView(view)
-
-        dialog.bottomSheetHonestyPledgeButton.setHapticClickListener {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
-            claimsViewModel.triggerClaimsChat {
+            lifecycleScope.launch {
+                claimsViewModel.triggerClaimsChat()
                 dismiss()
                 requireActivity().startClosableChat()
             }
         }
-        return dialog
     }
 
     companion object {

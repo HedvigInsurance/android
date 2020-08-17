@@ -12,10 +12,16 @@ sealed class HomeModel {
             val name: String,
             val inception: LocalDate
         ) : BigText()
+
+        data class Terminated(
+            val name: String
+        ) : BigText()
     }
 
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
     }
+
+    object StartClaimOutlined : HomeModel()
 }

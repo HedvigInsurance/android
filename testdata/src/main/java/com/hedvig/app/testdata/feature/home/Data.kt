@@ -13,3 +13,6 @@ val HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE = HomeDataBuilder(
         HomeDataBuilder.Status.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
     )
 ).build()
+
+val HOME_DATA_TERMINATED =
+    HomeDataBuilder(listOf(HomeDataBuilder.Status.TERMINATED)).build()
