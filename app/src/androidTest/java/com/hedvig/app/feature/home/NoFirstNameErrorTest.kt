@@ -56,7 +56,6 @@ class NoFirstNameErrorTest {
 
         onScreen<HomeTabScreen> {
             recycler {
-                hasSize(1)
                 childAt<HomeTabScreen.ErrorItem>(0) {
                     retry {
                         click()
@@ -76,4 +75,3 @@ class NoFirstNameErrorTest {
         }
     }
 }
-
