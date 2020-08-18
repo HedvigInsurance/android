@@ -1,21 +1,17 @@
 package com.hedvig.app.feature.loggedin
 
 
-import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.hedvig.app.R
+import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import org.hamcrest.Description
-import org.hamcrest.Matcher
+import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.hasNumberOfMenuItems
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,14 +22,14 @@ class NavBarTest {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
-//    @get:Rule
-//    val mockServerRule = ApolloMockServerRule(
-//        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-//            success(
-//                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
-//            )
-//        }
-//    )
+    @get:Rule
+    val mockServerRule = ApolloMockServerRule(
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+            )
+        }
+    )
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
@@ -43,21 +39,11 @@ class NavBarTest {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
         onScreen<LoggedInScreen> {
-            onView(withId(R.id.bottomNavigation))
-                .check(matches(bottomNavNumberOfItems(5)))
-        }
-    }
-
-    private fun bottomNavNumberOfItems(matcherNumber: Int): Matcher<View?>? {
-        return object : BoundedMatcher<View?, BottomNavigationView>(BottomNavigationView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("with $matcherNumber number of items")
-            }
-
-            override fun matchesSafely(bottomNavigationView: BottomNavigationView): Boolean {
-                return matcherNumber == bottomNavigationView.menu.size()
+            bottomTabs {
+                hasNumberOfMenuItems(5)
             }
         }
     }
+    
 }
 
