@@ -3,12 +3,12 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/ic_home_selector"
-        android:title="@string/TAB_TITLE_HOME" />
+        android:title="@string/home_tab.title" />
 
     <item
         android:id="@+id/insurance"
         android:icon="@drawable/ic_insurance_selector"
-        android:title="@string/TAB_TITLE_CLAIM" />
+        android:title="@string/insurances_tab.title" />
 
     <item
         android:id="@+id/key_gear"
