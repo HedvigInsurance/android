@@ -1,5 +1,6 @@
 package com.hedvig.app.util
 
+import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
 import com.hedvig.app.ApolloClientWrapper
