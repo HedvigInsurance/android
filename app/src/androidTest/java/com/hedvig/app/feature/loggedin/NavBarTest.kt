@@ -35,7 +35,7 @@ class NavBarTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowCorrectIconOnNavBar() {
+    fun shouldAllIconsIncludingKeyGear() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
         onScreen<LoggedInScreen> {
@@ -44,6 +44,16 @@ class NavBarTest {
             }
         }
     }
-    
+
+    @Test
+    fun shouldAllIconsExcludingKeyGear() {
+        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+
+        onScreen<LoggedInScreen> {
+            bottomTabs {
+                hasNumberOfMenuItems(4)
+            }
+        }
+    }
 }
 
