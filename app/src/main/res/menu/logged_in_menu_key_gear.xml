@@ -2,26 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/home"
-        android:icon="@drawable/ic_home_active"
+        android:icon="@drawable/ic_home_selector"
         android:title="@string/TAB_TITLE_HOME" />
 
     <item
         android:id="@+id/insurance"
-        android:icon="@drawable/ic_claims"
+        android:icon="@drawable/ic_insurance_selector"
         android:title="@string/TAB_TITLE_CLAIM" />
 
     <item
         android:id="@+id/key_gear"
-        android:icon="@drawable/ic_key_gear"
+        android:icon="@drawable/ic_key_gear_selector"
         android:title="@string/KEY_GEAR_TAB_TITLE" />
 
     <item
         android:id="@+id/referrals"
-        android:icon="@drawable/ic_referrals"
+        android:icon="@drawable/ic_forever_selector"
         android:title="@string/TAB_REFERRALS_TITLE" />
 
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/ic_profile"
+        android:icon="@drawable/ic_profile_selector"
         android:title="@string/TAB_TITLE_PROFILE" />
 </menu>
