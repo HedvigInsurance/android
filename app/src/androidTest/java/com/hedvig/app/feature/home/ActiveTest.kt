@@ -3,7 +3,9 @@ package com.hedvig.app.feature.home
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
@@ -53,7 +55,19 @@ class ActiveTest {
                 }
                 childAt<HomeTabScreen.CommonClaimItem>(4) {
                     text { hasText("Försenat bagage") }
+                    click()
                 }
+            }
+        }
+
+
+        onScreen<CommonClaimScreen> {
+            firstMessage { hasText("Försenat bagage") }
+            pressBack()
+        }
+
+        onScreen<HomeTabScreen> {
+            recycler {
                 childAt<HomeTabScreen.StartClaimItem>(1) {
                     button { click() }
                 }
@@ -64,4 +78,8 @@ class ActiveTest {
             claim { isDisplayed() }
         }
     }
+}
+
+class CommonClaimScreen : Screen<CommonClaimScreen>() {
+    val firstMessage = KTextView { withId(R.id.commonClaimFirstMessage) }
 }

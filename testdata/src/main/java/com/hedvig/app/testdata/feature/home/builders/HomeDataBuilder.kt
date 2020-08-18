@@ -101,7 +101,7 @@ data class CommonClaimBuilder(
                     bulletPoints = emptyList(),
                     buttonTitle = "",
                     color = HedvigColor.BLACK,
-                    title = ""
+                    title = title
                 )
             } else {
                 null

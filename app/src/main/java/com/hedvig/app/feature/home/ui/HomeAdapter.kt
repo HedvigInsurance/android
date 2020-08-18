@@ -12,6 +12,7 @@ import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
@@ -206,6 +207,14 @@ class HomeAdapter(
                     }
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
+                        root.setHapticClickListener {
+                            root.context.startActivity(
+                                CommonClaimActivity.newInstance(
+                                    root.context,
+                                    data.inner
+                                )
+                            )
+                        }
                     }
                 }
             }
