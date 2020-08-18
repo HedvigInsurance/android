@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home
 
 import android.view.View
+import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
@@ -17,6 +18,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::BodyTextItem)
                 itemType(::StartClaimItem)
                 itemType(::CommonClaimTitleItem)
+                itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
             })
 
@@ -37,7 +39,12 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         val text = KTextView { withMatcher(parent) }
     }
 
+    class CommonClaimItem(parent: Matcher<View>) : KRecyclerItem<CommonClaimItem>(parent) {
+        val icon = KImageView(parent) { withId(R.id.icon) }
+        val text = KTextView(parent) { withId(R.id.label) }
+    }
+
     class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
-        val retry = KButton { withId(R.id.retry) }
+        val retry = KButton(parent) { withId(R.id.retry) }
     }
 }

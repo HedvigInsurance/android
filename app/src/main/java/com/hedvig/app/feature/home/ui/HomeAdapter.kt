@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
+import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
@@ -42,6 +43,7 @@ class HomeAdapter(
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
+        R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid view type")
     }
@@ -53,6 +55,7 @@ class HomeAdapter(
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
+        is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.home_error
     }
 
@@ -182,6 +185,30 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit
             ) = Unit
+        }
+
+        class CommonClaim(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.home_common_claim)) {
+            private val binding by viewBinding(HomeCommonClaimBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit
+            ) = with(binding) {
+                if (data !is HomeModel.CommonClaim) {
+                    return invalid(data)
+                }
+
+                when (data) {
+                    // TODO, both: Add icon
+                    is HomeModel.CommonClaim.Emergency -> {
+                        label.text = data.title
+                    }
+                    is HomeModel.CommonClaim.TitleAndBulletPoints -> {
+                        label.text = data.inner.title
+                    }
+                }
+            }
         }
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {

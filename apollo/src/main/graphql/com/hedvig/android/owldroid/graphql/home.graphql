@@ -1,4 +1,4 @@
-query HomeQuery {
+query HomeQuery($locale: Locale!) {
   member {
     firstName
   }
@@ -19,6 +19,34 @@ query HomeQuery {
       }
       ... on TerminatedStatus {
         termination
+      }
+    }
+  }
+  isEligibleToCreateClaim
+  commonClaims(locale: $locale) {
+    title
+    icon {
+      variants {
+        ...IconVariantsFragment
+      }
+    }
+    layout {
+      ... on TitleAndBulletPoints {
+        bulletPoints {
+          title
+          description
+          icon {
+            variants {
+              ...IconVariantsFragment
+            }
+          }
+        }
+        buttonTitle
+        color
+        title
+      }
+      ... on Emergency {
+        color
       }
     }
   }

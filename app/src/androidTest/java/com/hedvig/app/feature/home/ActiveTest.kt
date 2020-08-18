@@ -48,6 +48,12 @@ class ActiveTest {
                 childAt<HomeTabScreen.CommonClaimTitleItem>(2) {
                     isVisible()
                 }
+                childAt<HomeTabScreen.CommonClaimItem>(3) {
+                    text { hasText("Trasig telefon") }
+                }
+                childAt<HomeTabScreen.CommonClaimItem>(4) {
+                    text { hasText("Försenat bagage") }
+                }
                 childAt<HomeTabScreen.StartClaimItem>(1) {
                     button { click() }
                 }

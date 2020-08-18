@@ -5,7 +5,8 @@
     android:id="@+id/recycler"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+    app:spanCount="2"
     tools:context=".feature.home.ui.HomeFragment"
     tools:itemCount="1"
     tools:listitem="@layout/home_big_text" />

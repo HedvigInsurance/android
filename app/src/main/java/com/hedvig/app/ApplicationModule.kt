@@ -291,7 +291,7 @@ val repositoriesModule = module {
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { HomeRepository(get()) }
+    single { HomeRepository(get(), get()) }
 }
 
 val trackerModule = module {

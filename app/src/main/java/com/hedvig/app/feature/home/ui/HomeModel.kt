@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -34,4 +35,14 @@ sealed class HomeModel {
     object CommonClaimTitle : HomeModel()
 
     object Error : HomeModel()
+
+    sealed class CommonClaim : HomeModel() {
+        data class Emergency(
+            val title: String
+        ) : CommonClaim()
+
+        data class TitleAndBulletPoints(
+            val inner: CommonClaimsData
+        ) : CommonClaim()
+    }
 }
