@@ -104,6 +104,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
 
+            bottomNavigation.itemIconTintList = null
+
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
         }

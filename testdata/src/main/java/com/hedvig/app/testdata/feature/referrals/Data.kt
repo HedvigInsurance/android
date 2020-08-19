@@ -8,6 +8,7 @@ import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
 
 val LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED = LoggedInDataBuilder().build()
+val LOGGED_IN_DATA_WITH_KEY_GEAR_DISABLED = LoggedInDataBuilder(features = listOf()).build()
 
 val REFERRALS_DATA_WITH_NO_DISCOUNTS = ReferralsDataBuilder().build()
 val REFERRALS_DATA_WITH_ONE_REFEREE = ReferralsDataBuilder(
