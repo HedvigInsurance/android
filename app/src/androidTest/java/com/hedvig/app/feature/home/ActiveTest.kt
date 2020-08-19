@@ -3,12 +3,14 @@ package com.hedvig.app.feature.home
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.home.screens.CommonClaimScreen
+import com.hedvig.app.feature.home.screens.EmergencyScreen
+import com.hedvig.app.feature.home.screens.HomeTabScreen
+import com.hedvig.app.feature.home.screens.HonestyPledgeSheetScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
@@ -94,10 +96,3 @@ class ActiveTest {
     }
 }
 
-class EmergencyScreen : Screen<EmergencyScreen>() {
-    val title = KTextView { withId(R.id.emergencyTitle) }
-}
-
-class CommonClaimScreen : Screen<CommonClaimScreen>() {
-    val firstMessage = KTextView { withId(R.id.commonClaimFirstMessage) }
-}

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home
+package com.hedvig.app.feature.home.screens
 
 import android.view.View
 import com.agoda.kakao.image.KImageView
@@ -14,12 +14,12 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
         KRecyclerView({ withId(R.id.recycler) },
             {
-                itemType(::BigTextItem)
-                itemType(::BodyTextItem)
-                itemType(::StartClaimItem)
-                itemType(::CommonClaimTitleItem)
-                itemType(::CommonClaimItem)
-                itemType(::ErrorItem)
+                itemType(HomeTabScreen::BigTextItem)
+                itemType(HomeTabScreen::BodyTextItem)
+                itemType(HomeTabScreen::StartClaimItem)
+                itemType(HomeTabScreen::CommonClaimTitleItem)
+                itemType(HomeTabScreen::CommonClaimItem)
+                itemType(HomeTabScreen::ErrorItem)
             })
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
