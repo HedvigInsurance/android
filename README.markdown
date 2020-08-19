@@ -20,6 +20,6 @@ $ ./gradlew app:downloadStrings
 
 ## Build Types
 
-* Relese: `com.hedvig.app` Build for the customer on Play Store
-* Staging: `com.hedvig.test.app` Build for internal testing using Firestore
-* Develop: `com.hedvig.dev.app` Build for development
+* Release: `com.hedvig.app` Build for the customer on Play Store. Using production backend
+* Staging: `com.hedvig.test.app` Build for internal testing using Firebase App Distribution. Using staging backend
+* Develop: `com.hedvig.dev.app` Build for development. Using staging backend
