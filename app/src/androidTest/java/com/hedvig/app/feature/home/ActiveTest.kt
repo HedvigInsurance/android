@@ -51,9 +51,23 @@ class ActiveTest {
                     isVisible()
                 }
                 childAt<HomeTabScreen.CommonClaimItem>(3) {
+                    text { hasText("Det är kris!") }
+                    click()
+                }
+            }
+        }
+
+        onScreen<EmergencyScreen> {
+            title { hasText("Det är kris!") }
+            pressBack()
+        }
+
+        onScreen<HomeTabScreen> {
+            recycler {
+                childAt<HomeTabScreen.CommonClaimItem>(4) {
                     text { hasText("Trasig telefon") }
                 }
-                childAt<HomeTabScreen.CommonClaimItem>(4) {
+                childAt<HomeTabScreen.CommonClaimItem>(5) {
                     text { hasText("Försenat bagage") }
                     click()
                 }
@@ -78,6 +92,10 @@ class ActiveTest {
             claim { isDisplayed() }
         }
     }
+}
+
+class EmergencyScreen : Screen<EmergencyScreen>() {
+    val title = KTextView { withId(R.id.emergencyTitle) }
 }
 
 class CommonClaimScreen : Screen<CommonClaimScreen>() {

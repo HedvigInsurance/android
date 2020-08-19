@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.ui
 
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -38,7 +39,7 @@ sealed class HomeModel {
 
     sealed class CommonClaim : HomeModel() {
         data class Emergency(
-            val title: String
+            val inner: EmergencyData
         ) : CommonClaim()
 
         data class TitleAndBulletPoints(

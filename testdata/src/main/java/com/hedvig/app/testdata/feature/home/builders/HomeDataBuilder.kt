@@ -9,6 +9,10 @@ data class HomeDataBuilder(
     private val contracts: List<Status> = emptyList(),
     private val firstName: String? = "Test",
     private val commonClaims: List<HomeQuery.CommonClaim> = listOf(
+        CommonClaimBuilder(
+            title = "Det är kris!",
+            variant = CommonClaimBuilder.Variant.EMERGENCY
+        ).build(),
         CommonClaimBuilder(title = "Trasig telefon").build(),
         CommonClaimBuilder(title = "Försenat bagage").build()
     )
