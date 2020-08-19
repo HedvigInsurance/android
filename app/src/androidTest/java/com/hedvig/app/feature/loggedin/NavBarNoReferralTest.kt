@@ -1,13 +1,12 @@
 package com.hedvig.app.feature.loggedin
 
-
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_DISABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -16,9 +15,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
-class NavBarTest {
+class NavBarNoReferralTest {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
@@ -26,7 +24,7 @@ class NavBarTest {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
-                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_DISABLED
             )
         }
     )
@@ -35,14 +33,13 @@ class NavBarTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldAllIconsIncludingKeyGear() {
+    fun shouldAllIconsExcludingReferrals() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
-        onScreen<LoggedInScreen> {
+        Screen.onScreen<LoggedInScreen> {
             bottomTabs {
-                hasNumberOfMenuItems(5)
+                hasNumberOfMenuItems(4)
             }
         }
     }
 }
-
