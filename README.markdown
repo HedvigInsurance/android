@@ -17,3 +17,9 @@ $ ./gradlew apollo:downloadApolloSchema
 $ ./gradlew app:downloadStrings
 ```
 5. Build and install via Android Studio
+
+## Build Types
+
+* Relese: `com.hedvig.app` Build for the customer on Play Store
+* Staging: `com.hedvig.test.app` Build for internal testing using Firestore
+* Develop: `com.hedvig.dev.app` Build for development
