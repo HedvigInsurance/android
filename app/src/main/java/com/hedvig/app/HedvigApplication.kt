@@ -8,11 +8,7 @@ import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
-import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.extensions.getStoredBoolean
-import com.hedvig.app.util.extensions.setAuthenticationToken
-import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.*
 import e
 import i
 import kotlinx.coroutines.CoroutineScope
@@ -120,4 +116,5 @@ open class HedvigApplication : Application() {
     }
 
     open val graphqlUrl = BuildConfig.GRAPHQL_URL
+    open val isTestBuild = false
 }

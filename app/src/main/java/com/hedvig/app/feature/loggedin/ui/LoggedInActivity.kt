@@ -166,15 +166,11 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         loggedInViewModel.data.observe(this) { data ->
             data?.let { d ->
                 if (binding.bottomNavigation.menu.isEmpty()) {
-                    val keyGearEnabled: Boolean
-                    if (isTesting()) {
-                        keyGearEnabled = d.member.features.contains(Feature.KEYGEAR)
-                    } else if (isDebug()) {
-                        keyGearEnabled = isDebug()
+                    val keyGearEnabled: Boolean = if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                        true
                     } else {
-                        keyGearEnabled = d.member.features.contains(Feature.KEYGEAR)
+                        d.member.features.contains(Feature.KEYGEAR)
                     }
-//                    keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
                     val referralsEnabled =
                         isDebug() || d.member.features.contains(Feature.REFERRALS)
 

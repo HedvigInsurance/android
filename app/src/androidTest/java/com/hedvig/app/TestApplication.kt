@@ -5,6 +5,7 @@ import com.apollographql.apollo.test.espresso.ApolloIdlingResource
 
 class TestApplication : HedvigApplication() {
     override val graphqlUrl = "http://localhost:$PORT/"
+    override val isTestBuild = true
 
     override fun onCreate() {
         super.onCreate()
@@ -20,3 +21,9 @@ class TestApplication : HedvigApplication() {
         const val PORT = 8080
     }
 }
+
+/*
+ Release: "com.hedvig.app"
+ Staging: "com.hedvig.test.app"
+ Dev:     "com.hedvig.dev.app"
+*/

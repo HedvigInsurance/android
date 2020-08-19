@@ -100,7 +100,20 @@ import java.io.File
 import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
-fun isTesting() = BuildConfig.APP_ID == "com.hedvig.dev.app"
+
+fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
+    if (app.isTestBuild) {
+        return false
+    }
+    if (BuildConfig.DEBUG) {
+        return true
+    }
+    if (BuildConfig.APP_ID == "com.hedvig.test.app") {
+        return true
+    }
+
+    return false
+}
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
