@@ -26,10 +26,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
+    private var recyclerInitialPaddingBottom = 0
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.recycler.apply {
+            recyclerInitialPaddingBottom = paddingBottom
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                updatePadding(bottom = bottomTabInset)
+                updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
             adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
