@@ -47,11 +47,7 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
-import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
+import com.hedvig.app.feature.loggedin.ui.*
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
@@ -101,9 +97,10 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
+fun isTesting() = BuildConfig.APP_ID == "com.hedvig.dev.app"
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
@@ -175,9 +172,11 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
-        context
-    ).language})"
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
+        getLocale(
+            context
+        ).language
+    })"
 
 fun makeLocaleString(context: Context): String =
     getLocale(context).toLanguageTag()

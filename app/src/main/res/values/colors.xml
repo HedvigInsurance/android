@@ -28,6 +28,7 @@
     <color name="translucent_tool_bar">#730A0D14</color>
     <color name="button_background_dark">#333333</color>
     <color name="caption_light">#8f121212</color>
+    <color name="grey_inactive">#777777</color>
 
     <color name="hedvig_black">#121212</color>
     <color name="hedvig_off_white">#fafafa</color>

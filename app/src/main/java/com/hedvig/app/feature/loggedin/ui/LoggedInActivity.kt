@@ -8,9 +8,7 @@ import android.view.MenuItem
 import androidx.core.view.isEmpty
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.app.BaseActivity
-import com.hedvig.app.LoggedInTerminatedActivity
-import com.hedvig.app.R
+import com.hedvig.app.*
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
@@ -21,7 +19,6 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
-import com.hedvig.app.isDebug
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
@@ -169,7 +166,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         loggedInViewModel.data.observe(this) { data ->
             data?.let { d ->
                 if (binding.bottomNavigation.menu.isEmpty()) {
-                    val keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
+                    val keyGearEnabled: Boolean
+                    if (isTesting()) {
+                        keyGearEnabled = d.member.features.contains(Feature.KEYGEAR)
+                    } else if (isDebug()) {
+                        keyGearEnabled = isDebug()
+                    } else {
+                        keyGearEnabled = d.member.features.contains(Feature.KEYGEAR)
+                    }
+//                    keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
                     val referralsEnabled =
                         isDebug() || d.member.features.contains(Feature.REFERRALS)
 
