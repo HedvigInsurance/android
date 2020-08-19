@@ -1,12 +1,14 @@
 package com.hedvig.app.feature.home.ui
 
 import android.graphics.Rect
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
@@ -17,6 +19,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -25,11 +28,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
 
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
             binding.recycler.updatePadding(bottom = bottomTabInset)
         }
-        binding.recycler.adapter = HomeAdapter(parentFragmentManager, model::load)
+        binding.recycler.adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
         (binding.recycler.layoutManager as? GridLayoutManager)?.spanSizeLookup =
             object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {

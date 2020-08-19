@@ -90,10 +90,10 @@ data class CommonClaimBuilder(
                 fragments = HomeQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(
-                            svgUrl = "https://www.example.com"
+                            svgUrl = "/app-content-service/warning_dark.svg"
                         ),
                         light = IconVariantsFragment.Light(
-                            svgUrl = "https://www.example.com"
+                            svgUrl = "/app-content-service/warning.svg"
                         )
                     )
                 )

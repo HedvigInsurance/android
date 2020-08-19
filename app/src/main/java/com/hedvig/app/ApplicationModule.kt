@@ -1,11 +1,13 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.bumptech.glide.RequestBuilder
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
@@ -93,6 +95,8 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.svg.GlideApp
+import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -171,6 +175,11 @@ val applicationModule = module {
     }
     single {
         ApolloClientWrapper(get(), get(), get(), get())
+    }
+    single<RequestBuilder<PictureDrawable>> {
+        GlideApp.with(get<Context>())
+            .`as`(PictureDrawable::class.java)
+            .listener(SvgSoftwareLayerSetter())
     }
 }
 

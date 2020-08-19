@@ -1,10 +1,14 @@
 package com.hedvig.app.feature.home.ui
 
+import android.graphics.drawable.PictureDrawable
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestBuilder
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
@@ -16,6 +20,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -25,7 +30,8 @@ import java.time.format.FormatStyle
 
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
-    private val retry: () -> Unit
+    private val retry: () -> Unit,
+    private val requestBuilder: RequestBuilder<PictureDrawable>
 ) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var items: List<HomeModel> = emptyList()
         set(value) {
@@ -62,14 +68,15 @@ class HomeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, retry)
+        holder.bind(items[position], fragmentManager, retry, requestBuilder)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             data: HomeModel,
             fragmentManager: FragmentManager,
-            retry: () -> Unit
+            retry: () -> Unit,
+            requestBuilder: RequestBuilder<PictureDrawable>
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -86,8 +93,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = with(binding) {
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
                 }
@@ -127,7 +135,8 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -150,8 +159,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = with(binding) {
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
                 }
@@ -168,8 +178,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = with(binding) {
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
                 }
@@ -185,8 +196,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = Unit
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = Unit
         }
 
         class CommonClaim(parent: ViewGroup) :
@@ -195,16 +207,19 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = with(binding) {
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
                 }
 
                 when (data) {
-                    // TODO, both: Add icon
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
+                        requestBuilder
+                            .load(requestUri(data.inner.iconUrls))
+                            .into(icon)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
@@ -216,6 +231,9 @@ class HomeAdapter(
                     }
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
+                        requestBuilder
+                            .load(requestUri(data.inner.iconUrls))
+                            .into(icon)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
@@ -227,6 +245,10 @@ class HomeAdapter(
                     }
                 }
             }
+
+            private fun requestUri(icons: ThemedIconUrls) = Uri.parse(
+                "${BuildConfig.BASE_URL}${icons.iconByTheme(binding.root.context)}"
+            )
         }
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {
@@ -234,8 +256,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit
-            ) = with(binding) {
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ): Any? = with(binding) {
                 this.retry.setHapticClickListener { retry() }
             }
         }
