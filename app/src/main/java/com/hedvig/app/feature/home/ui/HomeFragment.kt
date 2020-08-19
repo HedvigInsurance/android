@@ -1,17 +1,13 @@
 package com.hedvig.app.feature.home.ui
 
-import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
@@ -48,38 +44,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     return 2
                 }
             }
-        binding.recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
-            ) {
-                val position = parent.getChildAdapterPosition(view)
-                val item = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position) ?: return
-
-                if (item !is HomeModel.CommonClaim) {
-                    return
-                }
-
-                val spanIndex =
-                    (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
-
-                when (spanIndex) {
-                    SPAN_LEFT -> {
-                        outRect.left = BASE_MARGIN_DOUBLE
-                        outRect.right = BASE_MARGIN_HALF
-                    }
-                    SPAN_RIGHT -> {
-                        outRect.left = BASE_MARGIN_HALF
-                        outRect.right = BASE_MARGIN_DOUBLE
-                    }
-                }
-            }
-
-            private val SPAN_LEFT = 0
-            private val SPAN_RIGHT = 1
-        })
+        binding.recycler.addItemDecoration(HomeItemDecoration())
 
         model.data.observe(viewLifecycleOwner) { data ->
             if (data.isFailure) {
