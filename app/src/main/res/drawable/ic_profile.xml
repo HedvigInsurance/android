@@ -1,19 +1,4 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-  <path
-      android:pathData="M11.9999,2.5C9.5146,2.5 7.4999,4.5147 7.4999,7C7.4999,9.4853 9.5146,11.5 11.9999,11.5C14.4851,11.5 16.4999,9.4853 16.4999,7C16.4999,4.5147 14.4851,2.5 11.9999,2.5Z"
-      android:fillColor="@color/bottom_navigation_icon_fill_color_state"
-      android:fillType="evenOdd"/>
-  <path
-      android:pathData="M11.9999,13C8.2814,13 5.1351,15.6308 4.5301,19.0346C4.3329,20.0261 5.1239,21 6.138,21H17.8618C18.8751,21 19.6658,20.0274 19.47,19.0365C18.8643,15.4849 15.7086,13 11.9999,13Z"
-      android:fillColor="@color/bottom_navigation_icon_fill_color_state"
-      android:fillType="evenOdd"/>
-  <path
-      android:strokeWidth="1"
-      android:pathData="M5.0205,19.1321L5.0206,19.1321L5.0224,19.1221C5.583,15.9679 8.5125,13.5 11.9999,13.5C15.487,13.5 18.416,15.8304 18.9772,19.1205L18.977,19.1206L18.9795,19.1334C19.1148,19.8181 18.5571,20.5 17.8618,20.5H6.138C5.4421,20.5 4.8842,19.8172 5.0205,19.1321ZM7.9999,7C7.9999,4.7909 9.7907,3 11.9999,3C14.209,3 15.9999,4.7909 15.9999,7C15.9999,9.2091 14.209,11 11.9999,11C9.7907,11 7.9999,9.2091 7.9999,7Z"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/bottom_navigation_icon_forever_fill_state"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M12 2.5C9.515 2.5 7.5 4.515 7.5 7s2.015 4.5 4.5 4.5 4.5-2.015 4.5-4.5-2.015-4.5-4.5-4.5zM12 13c-3.719 0-6.865 2.63-7.47 6.035C4.333 20.026 5.124 21 6.138 21h11.724c1.013 0 1.804-0.973 1.608-1.963C18.864 15.485 15.709 13 12 13z" android:fillColor="@color/bottom_navigation_icon_fill_color_state" android:fillType="evenOdd"/>
+    <path android:strokeWidth="1" android:pathData="M5.02 19.132l0.002-0.01C5.583 15.968 8.512 13.5 12 13.5c3.487 0 6.416 2.33 6.977 5.62l0.003 0.013c0.135 0.685-0.423 1.367-1.118 1.367H6.138c-0.696 0-1.254-0.683-1.117-1.368zM8 7c0-2.21 1.79-4 4-4 2.209 0 4 1.79 4 4s-1.791 4-4 4c-2.21 0-4-1.79-4-4z" android:strokeColor="@color/bottom_navigation_icon_forever_fill_state"/>
 </vector>
