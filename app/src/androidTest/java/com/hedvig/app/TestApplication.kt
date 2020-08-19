@@ -21,9 +21,3 @@ class TestApplication : HedvigApplication() {
         const val PORT = 8080
     }
 }
-
-/*
- Release: "com.hedvig.app"
- Staging: "com.hedvig.test.app"
- Dev:     "com.hedvig.dev.app"
-*/
