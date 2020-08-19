@@ -27,24 +27,26 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-            binding.recycler.updatePadding(bottom = bottomTabInset)
-        }
-        binding.recycler.adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
-        (binding.recycler.layoutManager as? GridLayoutManager)?.spanSizeLookup =
-            object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    (binding.recycler.adapter as? HomeAdapter)?.items?.getOrNull(position)
-                        ?.let { item ->
-                            return when (item) {
-                                is HomeModel.CommonClaim -> 1
-                                else -> 2
-                            }
-                        }
-                    return 2
-                }
+        binding.recycler.apply {
+            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
+                updatePadding(bottom = bottomTabInset)
             }
-        binding.recycler.addItemDecoration(HomeItemDecoration())
+            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
+            (layoutManager as? GridLayoutManager)?.spanSizeLookup =
+                object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        (binding.recycler.adapter as? HomeAdapter)?.items?.getOrNull(position)
+                            ?.let { item ->
+                                return when (item) {
+                                    is HomeModel.CommonClaim -> 1
+                                    else -> 2
+                                }
+                            }
+                        return 2
+                    }
+                }
+            addItemDecoration(HomeItemDecoration())
+        }
 
         model.data.observe(viewLifecycleOwner) { data ->
             if (data.isFailure) {
