@@ -6,7 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_DISABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class NavBarNoKeyGearTest {
+class NavBarReferralsEnabledTest {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
@@ -24,7 +24,7 @@ class NavBarNoKeyGearTest {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
-                LOGGED_IN_DATA_WITH_KEY_GEAR_DISABLED
+                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         }
     )
