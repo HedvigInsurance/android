@@ -9,7 +9,7 @@
     android:layout_marginTop="@dimen/base_margin_double"
     android:layout_marginEnd="@dimen/base_margin_double"
     android:padding="@dimen/base_margin_double"
-    app:cardBackgroundColor="?colorWarning">
+    android:theme="@style/ThemeOverlay.Hedvig.WarningCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

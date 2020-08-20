@@ -29,6 +29,10 @@
             @style/Hedvig.ShapeAppearance.LargeComponent
         </item>
 
+        <item name="shapeAppearanceMediumComponent">
+            @style/Hedvig.ShapeAppearance.MediumComponent
+        </item>
+
         <!-- Default button -->
         <item name="materialButtonStyle">@style/Hedvig.Button</item>
         <item name="textAppearanceButton">@style/Hedvig.TextAppearance.Button</item>
