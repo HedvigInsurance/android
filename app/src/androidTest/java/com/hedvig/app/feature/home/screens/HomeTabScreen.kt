@@ -1,13 +1,14 @@
 package com.hedvig.app.feature.home.screens
 
 import android.view.View
-import com.agoda.kakao.image.KImageView
+import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import org.hamcrest.Matcher
 
 class HomeTabScreen : Screen<HomeTabScreen>() {
@@ -39,6 +40,10 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         val title = KTextView(parent) { withId(R.id.title) }
         val body = KTextView(parent) { withId(R.id.body) }
         val action = KButton(parent) { withId(R.id.action) }
+
+        val connectPayin = KIntent {
+            hasComponent(ConnectPaymentActivity::class.java.name)
+        }
     }
 
     class CommonClaimTitleItem(parent: Matcher<View>) :
@@ -47,7 +52,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     }
 
     class CommonClaimItem(parent: Matcher<View>) : KRecyclerItem<CommonClaimItem>(parent) {
-        val icon = KImageView(parent) { withId(R.id.icon) }
         val text = KTextView(parent) { withId(R.id.label) }
     }
 

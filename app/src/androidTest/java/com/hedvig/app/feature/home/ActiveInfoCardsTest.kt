@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.home
 
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ActiveInfoCardsTest {
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -52,13 +52,11 @@ class ActiveInfoCardsTest {
                 childAt<HomeTabScreen.InfoCardItem>(2) {
                     title { hasText(R.string.info_card_missing_payment_title) }
                     body { hasText(R.string.info_card_missing_payment_body) }
-                    action { hasText(R.string.info_card_missing_payment_button_text) }
-                }
-                childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
-                    isVisible()
-                }
-                childAt<HomeTabScreen.CommonClaimItem>(4) {
-                    text { hasText("Det är kris!") }
+                    action {
+                        hasText(R.string.info_card_missing_payment_button_text)
+                        click()
+                    }
+                    connectPayin { intended() }
                 }
             }
         }

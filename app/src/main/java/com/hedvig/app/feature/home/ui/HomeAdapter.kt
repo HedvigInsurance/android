@@ -20,6 +20,7 @@ import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate
@@ -211,6 +212,9 @@ class HomeAdapter(
                         title.setText(R.string.info_card_missing_payment_title)
                         body.setText(R.string.info_card_missing_payment_body)
                         action.setText(R.string.info_card_missing_payment_button_text)
+                        action.setHapticClickListener {
+                            action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                        }
                     }
                 }
             }
