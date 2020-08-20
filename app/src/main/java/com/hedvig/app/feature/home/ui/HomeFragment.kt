@@ -1,21 +1,55 @@
 package com.hedvig.app.feature.home.ui
 
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
     private val model: HomeViewModel by viewModel()
+    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
 
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
+    private var recyclerInitialPaddingBottom = 0
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recycler.adapter = HomeAdapter(parentFragmentManager, model::load)
+        binding.recycler.apply {
+            recyclerInitialPaddingBottom = paddingBottom
+            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
+                updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
+            }
+            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
+            (layoutManager as? GridLayoutManager)?.spanSizeLookup =
+                object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        (binding.recycler.adapter as? HomeAdapter)?.items?.getOrNull(position)
+                            ?.let { item ->
+                                return when (item) {
+                                    is HomeModel.CommonClaim -> 1
+                                    else -> 2
+                                }
+                            }
+                        return 2
+                    }
+                }
+            addItemDecoration(HomeItemDecoration())
+        }
 
         model.data.observe(viewLifecycleOwner) { data ->
             if (data.isFailure) {
@@ -73,17 +107,42 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.StartClaimOutlined
                 )
             }
+
+            if (isActive(successData.contracts)) {
+                (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
+                    HomeModel.BigText.Active(firstName),
+                    HomeModel.StartClaimContained,
+                    HomeModel.CommonClaimTitle,
+                    *(successData.commonClaims.map { cc ->
+                        cc.layout.asEmergency?.let {
+                            EmergencyData.from(cc, successData.isEligibleToCreateClaim)?.let { ed ->
+                                return@map HomeModel.CommonClaim.Emergency(ed)
+                            }
+                        }
+                        cc.layout.asTitleAndBulletPoints?.let {
+                            CommonClaimsData.from(cc, successData.isEligibleToCreateClaim)
+                                ?.let { ccd ->
+                                    return@map HomeModel.CommonClaim.TitleAndBulletPoints(ccd)
+                                }
+                        }
+                        null
+                    }.toTypedArray())
+                )
+            }
         }
     }
 
     companion object {
-        fun isPending(contracts: List<HomeQuery.Contract>) =
+        private fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
 
-        fun isTerminated(contracts: List<HomeQuery.Contract>) =
+        private fun isActive(contracts: List<HomeQuery.Contract>) =
+            contracts.all { it.status.asActiveStatus != null }
+
+        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }

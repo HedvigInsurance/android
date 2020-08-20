@@ -1,16 +1,19 @@
 package com.hedvig.app.feature.home.data
 
+import android.content.Context
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.ApolloClientWrapper
+import com.hedvig.app.util.apollo.defaultLocale
 
 class HomeRepository(
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClientWrapper: ApolloClientWrapper,
+    context: Context
 ) {
-    private val homeQuery = HomeQuery()
+    private val homeQuery = HomeQuery(defaultLocale(context))
 
     fun home() = apolloClientWrapper
         .apolloClient
