@@ -13,6 +13,7 @@
     <item name="colorSecondary" type="color">@color/lavender_300</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
     <item name="colorPlaceholder" type="color">#57121212</item>
+    <item name="colorWarning" type="color">#fae098</item>
 
     <item name="colorError" type="color">#DD2727</item>
 

@@ -14,12 +14,13 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
         KRecyclerView({ withId(R.id.recycler) },
             {
-                itemType(HomeTabScreen::BigTextItem)
-                itemType(HomeTabScreen::BodyTextItem)
-                itemType(HomeTabScreen::StartClaimItem)
-                itemType(HomeTabScreen::CommonClaimTitleItem)
-                itemType(HomeTabScreen::CommonClaimItem)
-                itemType(HomeTabScreen::ErrorItem)
+                itemType(::BigTextItem)
+                itemType(::BodyTextItem)
+                itemType(::StartClaimItem)
+                itemType(::InfoCardItem)
+                itemType(::CommonClaimTitleItem)
+                itemType(::CommonClaimItem)
+                itemType(::ErrorItem)
             })
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
@@ -32,6 +33,12 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class StartClaimItem(parent: Matcher<View>) : KRecyclerItem<StartClaimItem>(parent) {
         val button = KButton { withMatcher(parent) }
+    }
+
+    class InfoCardItem(parent: Matcher<View>) : KRecyclerItem<InfoCardItem>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
+        val body = KTextView(parent) { withId(R.id.body) }
+        val action = KButton(parent) { withId(R.id.action) }
     }
 
     class CommonClaimTitleItem(parent: Matcher<View>) :

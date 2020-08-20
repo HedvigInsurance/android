@@ -184,9 +184,11 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
-        context
-    ).language})"
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
+        getLocale(
+            context
+        ).language
+    })"
 
 fun makeLocaleString(context: Context): String =
     getLocale(context).toLanguageTag()
@@ -267,7 +269,7 @@ val referralsModule = module {
 }
 
 val homeModule = module {
-    viewModel<HomeViewModel> { HomeViewModelImpl(get()) }
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get()) }
 }
 
 val serviceModule = module {

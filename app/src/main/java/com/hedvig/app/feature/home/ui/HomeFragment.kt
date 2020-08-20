@@ -8,6 +8,7 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
@@ -51,15 +52,18 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             addItemDecoration(HomeItemDecoration())
         }
 
-        model.data.observe(viewLifecycleOwner) { data ->
-            if (data.isFailure) {
+        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
+            if (homeData == null) {
+                return@observe
+            }
+            if (homeData.isFailure) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.Error
                 )
                 return@observe
             }
 
-            val successData = data.getOrNull() ?: return@observe
+            val successData = homeData.getOrNull() ?: return@observe
             val firstName = successData.member.firstName
             if (firstName == null) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
@@ -112,25 +116,39 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
-                    HomeModel.CommonClaimTitle,
-                    *(successData.commonClaims.map { cc ->
-                        cc.layout.asEmergency?.let {
-                            EmergencyData.from(cc, successData.isEligibleToCreateClaim)?.let { ed ->
-                                return@map HomeModel.CommonClaim.Emergency(ed)
-                            }
-                        }
-                        cc.layout.asTitleAndBulletPoints?.let {
-                            CommonClaimsData.from(cc, successData.isEligibleToCreateClaim)
-                                ?.let { ccd ->
-                                    return@map HomeModel.CommonClaim.TitleAndBulletPoints(ccd)
-                                }
-                        }
+                    if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+                        HomeModel.InfoCard.ConnectPayin
+                    } else {
                         null
-                    }.toTypedArray())
+                    },
+                    HomeModel.CommonClaimTitle,
+                    *commonClaimsItems(
+                        successData.commonClaims,
+                        successData.isEligibleToCreateClaim
+                    ).toTypedArray()
                 )
             }
         }
     }
+
+    private fun commonClaimsItems(
+        commonClaims: List<HomeQuery.CommonClaim>,
+        isEligibleToCreateClaim: Boolean
+    ) =
+        commonClaims.map { cc ->
+            cc.layout.asEmergency?.let {
+                EmergencyData.from(cc, isEligibleToCreateClaim)?.let { ed ->
+                    return@map HomeModel.CommonClaim.Emergency(ed)
+                }
+            }
+            cc.layout.asTitleAndBulletPoints?.let {
+                CommonClaimsData.from(cc, isEligibleToCreateClaim)
+                    ?.let { ccd ->
+                        return@map HomeModel.CommonClaim.TitleAndBulletPoints(ccd)
+                    }
+            }
+            null
+        }
 
     companion object {
         private fun isPending(contracts: List<HomeQuery.Contract>) =

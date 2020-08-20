@@ -33,6 +33,10 @@ sealed class HomeModel {
 
     object StartClaimContained : HomeModel()
 
+    sealed class InfoCard : HomeModel() {
+        object ConnectPayin : InfoCard()
+    }
+
     object CommonClaimTitle : HomeModel()
 
     object Error : HomeModel()

@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -45,6 +44,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         loadingSpinner.remove()
         val (dashboardData, payinStatusData) = data
 
+        /*
         val infoBoxes = mutableListOf<DashboardModel.InfoBox>()
 
         dashboardData?.importantMessages?.firstOrNull()?.let { importantMessage ->
@@ -72,6 +72,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
             infoBoxes.add(DashboardModel.InfoBox.ConnectPayin)
         }
+         */
 
         val contracts = dashboardData?.contracts.orEmpty().map { DashboardModel.Contract(it) }
 
@@ -87,7 +88,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         (root.adapter as? DashboardAdapter)?.items =
-            listOf(DashboardModel.Header) + infoBoxes + contracts + upsells
+            listOf(DashboardModel.Header) + contracts + upsells
     }
 
     override fun onResume() {
