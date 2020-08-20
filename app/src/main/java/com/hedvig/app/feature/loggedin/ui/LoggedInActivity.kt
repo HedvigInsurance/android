@@ -8,9 +8,7 @@ import android.view.MenuItem
 import androidx.core.view.isEmpty
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.app.BaseActivity
-import com.hedvig.app.LoggedInTerminatedActivity
-import com.hedvig.app.R
+import com.hedvig.app.*
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
@@ -21,7 +19,6 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
-import com.hedvig.app.isDebug
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
@@ -104,6 +101,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
 
+            bottomNavigation.itemIconTintList = null
+
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
         }
@@ -167,9 +166,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         loggedInViewModel.data.observe(this) { data ->
             data?.let { d ->
                 if (binding.bottomNavigation.menu.isEmpty()) {
-                    val keyGearEnabled = isDebug() || d.member.features.contains(Feature.KEYGEAR)
-                    val referralsEnabled =
-                        isDebug() || d.member.features.contains(Feature.REFERRALS)
+                    val keyGearEnabled = if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                        true
+                    } else {
+                        d.member.features.contains(Feature.KEYGEAR)
+                    }
+                    val referralsEnabled = if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                        true
+                    } else {
+                        d.member.features.contains(Feature.REFERRALS)
+                    }
 
                     val menuId = when {
                         keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear

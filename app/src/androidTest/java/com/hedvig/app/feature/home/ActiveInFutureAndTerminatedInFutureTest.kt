@@ -10,7 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -31,7 +31,7 @@ class ActiveInFutureAndTerminatedInFutureTest {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
-                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+                LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
             )
         },
         HomeQuery.QUERY_DOCUMENT to apolloResponse {
