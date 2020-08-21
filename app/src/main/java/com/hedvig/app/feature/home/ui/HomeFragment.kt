@@ -116,6 +116,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
+                    *psaItems(successData.importantMessages).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.InfoCard.ConnectPayin
                     } else {
@@ -130,6 +131,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             }
         }
     }
+
+    private fun psaItems(
+        importantMessages: List<HomeQuery.ImportantMessage?>
+    ) = importantMessages
+        .filterNotNull()
+        .map { HomeModel.InfoCard.PSA(it) }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
@@ -214,6 +215,19 @@ class HomeAdapter(
                         action.setText(R.string.info_card_missing_payment_button_text)
                         action.setHapticClickListener {
                             action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                        }
+                    }
+                    is HomeModel.InfoCard.PSA -> {
+                        title.text = data.inner.title
+                        body.text = data.inner.message
+                        action.text = data.inner.button
+                        val uri = Uri.parse(data.inner.link)
+                        action.setHapticClickListener {
+                            action.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                setData(
+                                    uri
+                                )
+                            })
                         }
                     }
                 }

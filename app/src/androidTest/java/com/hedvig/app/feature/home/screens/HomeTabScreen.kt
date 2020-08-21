@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.screens
 
+import android.content.Intent
 import android.view.View
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -43,6 +44,11 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
         val connectPayin = KIntent {
             hasComponent(ConnectPaymentActivity::class.java.name)
+        }
+
+        val psaLink = KIntent {
+            hasAction(Intent.ACTION_VIEW)
+            hasData("https://www.example.com")
         }
     }
 

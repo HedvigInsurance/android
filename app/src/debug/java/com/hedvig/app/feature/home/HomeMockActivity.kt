@@ -14,6 +14,7 @@ import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
@@ -70,9 +71,9 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
                 }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
-            clickableItem("Active + Connect Payin") {
+            clickableItem("Active + Connect Payin + PSA") {
                 MockHomeViewModel.apply {
-                    homeMockData = HOME_DATA_ACTIVE
+                    homeMockData = HOME_DATA_ACTIVE_WITH_PSA
                     payinStatusData = PAYIN_STATUS_DATA_NEEDS_SETUP
                     shouldError = false
                 }

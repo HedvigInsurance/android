@@ -10,13 +10,14 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
+import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.hasText
+import com.hedvig.app.util.stubExternalIntents
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,10 +31,10 @@ class ActiveInfoCardsTest {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
-                LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE) },
+        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE_WITH_PSA) },
         PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) }
     )
 
@@ -44,12 +45,23 @@ class ActiveInfoCardsTest {
     fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
+        stubExternalIntents()
+
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
                 }
                 childAt<HomeTabScreen.InfoCardItem>(2) {
+                    title { hasText("Example PSA title") }
+                    body { hasText("Example PSA body") }
+                    action {
+                        hasText("Example PSA action")
+                        click()
+                    }
+                    psaLink { intended() }
+                }
+                childAt<HomeTabScreen.InfoCardItem>(3) {
                     title { hasText(R.string.info_card_missing_payment_title) }
                     body { hasText(R.string.info_card_missing_payment_body) }
                     action {
