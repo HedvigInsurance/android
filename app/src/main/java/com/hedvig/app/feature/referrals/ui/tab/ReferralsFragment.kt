@@ -18,11 +18,9 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showShareSheet
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.*
+import com.hedvig.app.util.getToolbarBarHeight
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.android.synthetic.main.fragment_referrals.*
 import org.koin.android.ext.android.inject
@@ -44,6 +42,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
         shareInitialBottomMargin = share.marginBottom
         invitesInitialBottomPadding = invites.paddingBottom
+
+        invites.updatePadding(top = getToolbarBarHeight(this))
+        invites.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
 
         share.doOnLayout {
             shareHeight = it.height
@@ -101,9 +104,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${Uri.encode(
-                                    code
-                                )}"
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
+                                    Uri.encode(
+                                        code
+                                    )
+                                }"
                             )
                         )
                         intent.type = "text/plain"

@@ -143,9 +143,9 @@ class DashboardAdapter(
                             title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
                         body.text = body.resources.getString(
                             R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
-                                LocalDate.now(),
-                                data.renewalDate
-                            )
+                            LocalDate.now(),
+                            data.renewalDate
+                        )
                         )
                         action.text =
                             action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
@@ -225,11 +225,6 @@ class DashboardAdapter(
                         )
                     }
                     contractStatus.asActiveStatus?.let {
-                        status.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            status.context.compatDrawable(
-                                R.drawable.ic_active
-                            ), null, null, null
-                        )
                         status.text =
                             status.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
                     }

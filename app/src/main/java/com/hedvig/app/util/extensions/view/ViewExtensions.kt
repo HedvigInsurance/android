@@ -2,11 +2,7 @@ package com.hedvig.app.util.extensions.view
 
 import android.app.Activity
 import android.graphics.Rect
-import android.view.HapticFeedbackConstants
-import android.view.TouchDelegate
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
@@ -219,6 +215,22 @@ fun NestedScrollView.setupToolbarScrollListener(
     }
 }
 
+fun NestedScrollView.setupToolbarAlphaScrollListener(
+    loggedInViewModel: LoggedInViewModel
+) {
+    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
+        // 242 == 95%
+        val maxAlphaScroll = 242
+        val offset = this.computeVerticalScrollOffset().toFloat()
+        val alpha = if (offset < maxAlphaScroll) {
+            offset
+        } else {
+            252f
+        }
+        loggedInViewModel.scroll.postValue(alpha)
+    }
+}
+
 fun NestedScrollView.setupToolbarScrollListener(
     toolbar: Toolbar
 ) {
@@ -246,6 +258,23 @@ fun RecyclerView.setupToolbarScrollListener(loggedInViewModel: LoggedInViewModel
                 1f
             }
             loggedInViewModel.scroll.postValue(percentage * 10)
+        }
+    })
+}
+
+fun RecyclerView.setupToolbarAlphaScrollListener(loggedInViewModel: LoggedInViewModel) {
+    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            // 242 == 95%
+            val maxAlphaScroll = 242
+            val offset = this@setupToolbarAlphaScrollListener.computeVerticalScrollOffset().toFloat()
+            val alpha = if (offset < maxAlphaScroll) {
+                offset
+            } else {
+                242f
+            }
+            loggedInViewModel.scroll.postValue(alpha)
         }
     })
 }

@@ -15,6 +15,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -29,7 +30,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private var recyclerInitialPaddingBottom = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         binding.recycler.apply {
+            doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
             recyclerInitialPaddingBottom = paddingBottom
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)

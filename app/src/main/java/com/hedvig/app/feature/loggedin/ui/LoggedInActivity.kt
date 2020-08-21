@@ -54,6 +54,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
+
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
@@ -63,8 +64,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInViewModel.updateBottomTabInset(view.measuredHeight)
             }
 
-            loggedInViewModel.scroll.observe(this@LoggedInActivity) { elevation ->
-                elevation?.let { toolbar.elevation = it }
+            toolbar.background.alpha = 0
+
+            loggedInViewModel.scroll.observe(this@LoggedInActivity) { alpha ->
+                alpha?.let { toolbar.background.alpha = it.toInt() }
             }
 
             setSupportActionBar(toolbar)

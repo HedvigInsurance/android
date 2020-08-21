@@ -11,8 +11,10 @@ import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.getToolbarBarHeight
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -26,6 +28,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        root.updatePadding(top = getToolbarBarHeight(this))
+
+        root.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
         val scrollInitialBottomPadding = root.paddingBottom
         loggedInViewModel.bottomTabInset.observe(this) { bti ->
             bti?.let { bottomTabInset ->
@@ -33,7 +41,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             }
         }
 
-        root.setupToolbarScrollListener(loggedInViewModel)
+        root.setupToolbarAlphaScrollListener(loggedInViewModel)
         root.adapter = DashboardAdapter(parentFragmentManager, tracker)
 
         dashboardViewModel.data.observe(this) { data ->

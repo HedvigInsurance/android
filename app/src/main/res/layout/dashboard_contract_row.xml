@@ -25,7 +25,6 @@
         android:drawablePadding="@dimen/base_margin"
         android:gravity="center_vertical"
         android:textAppearance="?textAppearanceBody2"
-        tools:drawableStart="@drawable/ic_active"
         tools:text="Aktiv" />
 
     <com.hedvig.app.ui.view.HedvigCardView
@@ -88,11 +87,11 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:contentDescription="@null"
-                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info" />
+                app:srcCompat="@drawable/ic_info"
+                app:tint="?colorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -155,11 +154,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:contentDescription="@null"
-                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info" />
+                app:srcCompat="@drawable/ic_info"
+                app:tint="?colorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -222,11 +221,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:contentDescription="@null"
-                android:tint="?colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info" />
+                app:srcCompat="@drawable/ic_info"
+                app:tint="?colorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

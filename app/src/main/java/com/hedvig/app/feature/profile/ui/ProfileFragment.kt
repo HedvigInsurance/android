@@ -17,16 +17,10 @@ import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.setAuthenticationToken
-import com.hedvig.app.util.extensions.setIsLoggedIn
-import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.triggerRestartActivity
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.view.*
+import com.hedvig.app.util.getToolbarBarHeight
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -42,6 +36,11 @@ class ProfileFragment : BaseTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        profileRoot.updatePadding(top = getToolbarBarHeight(this))
+        profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
 
         val scrollInitialBottomPadding = profileRoot.paddingBottom
         loggedInViewModel.bottomTabInset.observe(this) { bti ->
