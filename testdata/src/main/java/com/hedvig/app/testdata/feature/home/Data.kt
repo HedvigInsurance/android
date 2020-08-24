@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.home
 
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
+import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(HomeDataBuilder.Status.PENDING)).build()
 
@@ -27,3 +28,9 @@ val HOME_DATA_PENDING_NO_FIRST_NAME =
     HomeDataBuilder(listOf(HomeDataBuilder.Status.PENDING), firstName = null).build()
 
 val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(HomeDataBuilder.Status.ACTIVE)).build()
+
+val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
+    listOf(HomeDataBuilder.Status.ACTIVE), importantMessages = listOf(
+        ImportantMessageBuilder().build()
+    )
+).build()

@@ -8,12 +8,14 @@ import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.apollo.toLocaleString
 
 class HomeRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     context: Context
 ) {
-    private val homeQuery = HomeQuery(defaultLocale(context))
+    private val defaultLocale = defaultLocale(context)
+    private val homeQuery = HomeQuery(defaultLocale, defaultLocale.toLocaleString())
 
     fun home() = apolloClientWrapper
         .apolloClient

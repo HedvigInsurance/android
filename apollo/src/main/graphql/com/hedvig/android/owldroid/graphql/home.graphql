@@ -1,4 +1,4 @@
-query HomeQuery($locale: Locale!) {
+query HomeQuery($locale: Locale!, $languageCode: String!) {
   member {
     firstName
   }
@@ -49,5 +49,11 @@ query HomeQuery($locale: Locale!) {
         color
       }
     }
+  }
+  importantMessages(where: { language: { code: $languageCode } }) {
+    title
+    message
+    button
+    link
   }
 }
