@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.profile.builders
 
+import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -47,7 +48,15 @@ data class ProfileDataBuilder(
         chargeHistory = emptyList(),
         bankAccount = null,
         activePaymentMethods = null,
-        cashback = null,
+        cashback = ProfileQuery.Cashback(
+            fragments = ProfileQuery.Cashback.Fragments(
+                CashbackFragment(
+                    name = "Example Charity",
+                    imageUrl = null,
+                    paragraph = null
+                )
+            )
+        ),
         cashbackOptions = emptyList(),
         redeemedCampaigns = emptyList(),
         referralInformation = ProfileQuery.ReferralInformation(

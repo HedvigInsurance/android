@@ -8,4 +8,4 @@
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:context=".feature.profile.ui.ProfileFragment"
     tools:itemCount="3"
-    tools:listitem="@layout/profile_menu_row" />
+    tools:listitem="@layout/profile_row" />

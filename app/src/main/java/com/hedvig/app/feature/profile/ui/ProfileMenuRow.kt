@@ -9,7 +9,7 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import kotlinx.android.synthetic.main.profile_menu_row.view.*
+import kotlinx.android.synthetic.main.profile_row.view.*
 
 class ProfileMenuRow : ConstraintLayout {
     private var attributeSet: AttributeSet? = null
@@ -22,7 +22,7 @@ class ProfileMenuRow : ConstraintLayout {
     ) : super(context, attributeSet, defStyle) {
         this.attributeSet = attributeSet
         this.defStyle = defStyle
-        inflate(context, R.layout.profile_menu_row, this)
+        inflate(context, R.layout.profile_row, this)
         setupDynamicContent()
     }
 
@@ -31,31 +31,31 @@ class ProfileMenuRow : ConstraintLayout {
         attributeSet: AttributeSet?
     ) : super(context, attributeSet) {
         this.attributeSet = attributeSet
-        inflate(context, R.layout.profile_menu_row, this)
+        inflate(context, R.layout.profile_row, this)
         setupDynamicContent()
     }
 
     constructor(context: Context) : super(context) {
-        inflate(context, R.layout.profile_menu_row, this)
+        inflate(context, R.layout.profile_row, this)
         setupDynamicContent()
     }
 
     var icon: Drawable? = null
         set(value) {
             field = value
-            profile_menu_row_icon.setImageDrawable(field)
+            //icon.setImageDrawable(field)
         }
     var name: CharSequence? = null
         set(value) {
             field = value
-            profile_menu_row_name.text = field
+            title.text = field
         }
     var description: CharSequence? = null
         set(value) {
             field = value
-            profile_menu_row_description.text = field
-            profile_menu_row_description.show()
-            profile_menu_row_name.gravity = Gravity.NO_GRAVITY
+            caption.text = field
+            caption.show()
+            title.gravity = Gravity.NO_GRAVITY
         }
 
     private fun setupDynamicContent() {
@@ -68,14 +68,14 @@ class ProfileMenuRow : ConstraintLayout {
 
         val description = attributes.getText(R.styleable.ProfileMenuRow_description)
         description?.let { d ->
-            profile_menu_row_description.text = d
+            caption.text = d
         } ?: makeSingleLine()
 
         attributes.recycle()
     }
 
     private fun makeSingleLine() {
-        profile_menu_row_description.remove()
-        profile_menu_row_name.gravity = Gravity.CENTER_VERTICAL
+        caption.remove()
+        title.gravity = Gravity.CENTER_VERTICAL
     }
 }
