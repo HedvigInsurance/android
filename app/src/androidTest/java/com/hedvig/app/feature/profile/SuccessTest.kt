@@ -76,6 +76,9 @@ class SuccessTest {
                 childAt<ProfileTabScreen.Subtitle>(4) {
                     isVisible()
                 }
+                childAt<ProfileTabScreen.Row>(5) {
+                    isVisible()
+                }
             }
         }
     }

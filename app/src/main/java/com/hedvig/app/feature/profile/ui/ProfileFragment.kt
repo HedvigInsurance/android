@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.databinding.ProfileRowBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
@@ -76,7 +77,14 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 ) {
                     startActivity(Intent(requireContext(), PaymentActivity::class.java))
                 },
-                ProfileModel.Subtitle
+                ProfileModel.Subtitle,
+                ProfileModel.Row(
+                    getString(R.string.profile_appSettingsSection_row_headline),
+                    getString(R.string.profile_appSettingsSection_row_subheadline),
+                    R.drawable.ic_profile_settings
+                ) {
+                    startActivity(Intent(requireContext(), AboutAppActivity::class.java))
+                }
             )
         }
     }
