@@ -33,7 +33,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         root.setupToolbarScrollListener(loggedInViewModel)
-        root.adapter = DashboardAdapter(parentFragmentManager, tracker)
+        root.adapter = DashboardAdapter(parentFragmentManager)
 
         dashboardViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
@@ -43,36 +43,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun bind(data: Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>) {
         loadingSpinner.remove()
         val (dashboardData, payinStatusData) = data
-
-        /*
-        val infoBoxes = mutableListOf<DashboardModel.InfoBox>()
-
-        dashboardData?.importantMessages?.firstOrNull()?.let { importantMessage ->
-            infoBoxes.add(
-                DashboardModel.InfoBox.ImportantInformation(
-                    importantMessage.title ?: "",
-                    importantMessage.message ?: "",
-                    importantMessage.button ?: "",
-                    importantMessage.link ?: ""
-                )
-            )
-        }
-
-        val renewals = dashboardData?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
-
-        renewals.forEach {
-            infoBoxes.add(
-                DashboardModel.InfoBox.Renewal(
-                    it.renewalDate,
-                    it.draftCertificateUrl
-                )
-            )
-        }
-
-        if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            infoBoxes.add(DashboardModel.InfoBox.ConnectPayin)
-        }
-         */
 
         val contracts = dashboardData?.contracts.orEmpty().map { DashboardModel.Contract(it) }
 

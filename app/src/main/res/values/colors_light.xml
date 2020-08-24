@@ -17,7 +17,7 @@
 
     <item name="colorError" type="color">#DD2727</item>
 
-    <item name="textColorPrimary" type="color">#AB121212</item>
+    <item name="textColorPrimary" type="color">@color/text_color_primary_light</item>
     <item name="textColorSecondary" type="color">#121212</item>
     <item name="textColorThird" type="color">#8F121212</item>
 
