@@ -75,7 +75,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     R.drawable.ic_payment
                 ) {
                     startActivity(Intent(requireContext(), PaymentActivity::class.java))
-                }
+                },
+                ProfileModel.Subtitle
             )
         }
     }
@@ -92,12 +93,14 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.profile_title -> ViewHolder.Title(parent)
         R.layout.profile_row -> ViewHolder.Row(parent)
+        R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
         else -> throw Error("Invalid viewType")
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
         ProfileModel.Title -> R.layout.profile_title
         is ProfileModel.Row -> R.layout.profile_row
+        ProfileModel.Subtitle -> R.layout.profile_subtitle
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -131,6 +134,10 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
                 root.setHapticClickListener { data.action() }
             }
         }
+
+        class Subtitle(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_subtitle)) {
+            override fun bind(data: ProfileModel) = Unit
+        }
     }
 }
 
@@ -143,4 +150,6 @@ sealed class ProfileModel {
         @DrawableRes val icon: Int,
         val action: () -> Unit
     ) : ProfileModel()
+
+    object Subtitle : ProfileModel()
 }

@@ -73,6 +73,9 @@ class SuccessTest {
                         )
                     }
                 }
+                childAt<ProfileTabScreen.Subtitle>(4) {
+                    isVisible()
+                }
             }
         }
     }
@@ -82,6 +85,7 @@ class ProfileTabScreen : Screen<ProfileTabScreen>() {
     val recycler = KRecyclerView({ withId(R.id.recycler) }, {
         itemType(::Title)
         itemType(::Row)
+        itemType(::Subtitle)
     })
 
     class Title(parent: Matcher<View>) : KRecyclerItem<Title>(parent) {
@@ -90,5 +94,9 @@ class ProfileTabScreen : Screen<ProfileTabScreen>() {
 
     class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
         val caption = KTextView(parent) { withId(R.id.caption) }
+    }
+
+    class Subtitle(parent: Matcher<View>) : KRecyclerItem<Subtitle>(parent) {
+        val text = KTextView(parent) { withMatcher(parent) }
     }
 }
