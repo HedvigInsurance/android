@@ -5,6 +5,10 @@
         <item name="cornerSize">6dp</item>
     </style>
 
+    <style name="Hedvig.ShapeAppearance.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <style name="ThemeOverlay.Hedvig.ShapeAppearance.BottomSheetDialog" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">@dimen/bottom_sheet_corner_radius</item>

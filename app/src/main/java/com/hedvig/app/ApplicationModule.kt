@@ -279,7 +279,7 @@ val referralsModule = module {
 }
 
 val homeModule = module {
-    viewModel<HomeViewModel> { HomeViewModelImpl(get()) }
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get()) }
 }
 
 val serviceModule = module {

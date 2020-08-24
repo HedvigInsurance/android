@@ -2,23 +2,26 @@ package com.hedvig.app.feature.home
 
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
+import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 
 class MockHomeViewModel : HomeViewModel() {
     init {
         load()
     }
 
-    companion object {
-        var shouldError = false
-        var mockData = HOME_DATA_PENDING
-    }
-
     override fun load() {
         if (shouldError) {
             shouldError = false
-            _data.postValue(Result.failure(Error()))
+            _homeData.postValue(Result.failure(Error()))
             return
         }
-        _data.postValue(Result.success(mockData))
+        _homeData.postValue(Result.success(homeMockData))
+        _payinStatusData.postValue(payinStatusData)
+    }
+
+    companion object {
+        var shouldError = false
+        var homeMockData = HOME_DATA_PENDING
+        var payinStatusData = PAYIN_STATUS_DATA_ACTIVE
     }
 }
