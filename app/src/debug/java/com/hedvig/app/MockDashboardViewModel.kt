@@ -425,30 +425,23 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
         )
 
         val SWEDISH_APARTMENT = DashboardQuery.Data(
-            listOf(SWEDISH_APARTMENT_CONTRACT), emptyList()
+            listOf(SWEDISH_APARTMENT_CONTRACT)
         )
 
         val SWEDISH_HOUSE = DashboardQuery.Data(
-            listOf(SWEDISH_HOUSE_CONTRACT), emptyList()
+            listOf(SWEDISH_HOUSE_CONTRACT)
         )
 
         val NORWEGIAN_HOME_CONTENTS = DashboardQuery.Data(
-            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT), emptyList()
+            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT)
         )
 
         val NORWEGIAN_TRAVEL = DashboardQuery.Data(
-            listOf(NORWEGIAN_TRAVEL_CONTRACT), emptyList()
+            listOf(NORWEGIAN_TRAVEL_CONTRACT)
         )
 
         val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = DashboardQuery.Data(
-            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT), listOf(
-                DashboardQuery.ImportantMessage(
-                    title = "VMA",
-                    message = "Mock mock mock",
-                    button = "Read more",
-                    link = "https://www.example.com"
-                )
-            )
+            listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT)
         )
     }
 }

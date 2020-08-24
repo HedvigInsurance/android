@@ -52,12 +52,6 @@ query DashboardQuery($locale: Locale!, $languageCode: String!) {
       url
     }
   }
-  importantMessages(where: { language: { code: $languageCode } }) {
-    title
-    message
-    button
-    link
-  }
 }
 
 fragment AddressFragment on Address {

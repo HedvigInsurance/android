@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -55,17 +54,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         val infoBoxes = mutableListOf<DashboardModel.InfoBox>()
 
-        dashboardData?.importantMessages?.firstOrNull()?.let { importantMessage ->
-            infoBoxes.add(
-                DashboardModel.InfoBox.ImportantInformation(
-                    importantMessage.title ?: "",
-                    importantMessage.message ?: "",
-                    importantMessage.button ?: "",
-                    importantMessage.link ?: ""
-                )
-            )
-        }
-
         val renewals = dashboardData?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
 
         renewals.forEach {
@@ -75,10 +63,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                     it.draftCertificateUrl
                 )
             )
-        }
-
-        if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            infoBoxes.add(DashboardModel.InfoBox.ConnectPayin)
         }
 
         val contracts = dashboardData?.contracts.orEmpty().map { DashboardModel.Contract(it) }
