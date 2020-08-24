@@ -1,4 +1,4 @@
-query DashboardQuery($locale: Locale!, $languageCode: String!) {
+query InsuranceQuery($locale: Locale!, $languageCode: String!) {
   contracts {
     id
     status {

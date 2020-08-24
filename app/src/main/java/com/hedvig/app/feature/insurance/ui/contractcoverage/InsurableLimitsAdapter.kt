@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

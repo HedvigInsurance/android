@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

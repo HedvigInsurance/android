@@ -1,24 +1,24 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.DashboardQuery
-import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import e
 import kotlinx.coroutines.launch
 
 abstract class ContractCoverageViewModel : ViewModel() {
-    abstract val data: LiveData<DashboardQuery.Contract>
+    abstract val data: LiveData<InsuranceQuery.Contract>
 
     abstract fun loadContract(id: String)
 }
 
 class ContractCoverageViewModelImpl(
-    private val repository: DashboardRepository
+    private val repository: InsuranceRepository
 ) : ContractCoverageViewModel() {
-    override val data = MutableLiveData<DashboardQuery.Contract>()
+    override val data = MutableLiveData<InsuranceQuery.Contract>()
 
     override fun loadContract(id: String) {
         viewModelScope.launch {

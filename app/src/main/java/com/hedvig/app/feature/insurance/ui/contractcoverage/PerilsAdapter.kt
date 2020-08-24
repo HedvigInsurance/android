@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
@@ -46,11 +46,13 @@ class PerilsAdapter(
             requestBuilder: RequestBuilder<PictureDrawable>
         ) {
             label.text = peril.title
-            val iconUrl = "${BuildConfig.BASE_URL}${if (icon.context.isDarkThemeActive) {
-                peril.icon.variants.dark.svgUrl
-            } else {
-                peril.icon.variants.light.svgUrl
-            }}"
+            val iconUrl = "${BuildConfig.BASE_URL}${
+                if (icon.context.isDarkThemeActive) {
+                    peril.icon.variants.dark.svgUrl
+                } else {
+                    peril.icon.variants.light.svgUrl
+                }
+            }"
 
             requestBuilder
                 .load(iconUrl)

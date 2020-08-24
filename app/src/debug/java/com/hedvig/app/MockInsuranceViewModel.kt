@@ -6,18 +6,18 @@ import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import java.time.LocalDate
 
-class MockDashboardViewModel(context: Context) : DashboardViewModel() {
-    override val data = MutableLiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>()
+class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
+    override val data = MutableLiveData<Pair<InsuranceQuery.Data?, PayinStatusQuery.Data?>>()
 
     init {
         val activePersona = context
@@ -38,10 +38,10 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
     }
 
     companion object {
-        private val SWEDISH_HOUSE_CONTRACT = DashboardQuery.Contract(
+        private val SWEDISH_HOUSE_CONTRACT = InsuranceQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = DashboardQuery.Status(
-                fragments = DashboardQuery.Status.Fragments(
+            status = InsuranceQuery.Status(
+                fragments = InsuranceQuery.Status.Fragments(
                     contractStatusFragment = ContractStatusFragment(
                         asPendingStatus = null,
                         asActiveInFutureStatus = null,
@@ -58,13 +58,13 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_HOUSE,
             upcomingRenewal = null,
-            currentAgreement = DashboardQuery.CurrentAgreement(
-                asAgreementCore = DashboardQuery.AsAgreementCore(
+            currentAgreement = InsuranceQuery.CurrentAgreement(
+                asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
                 ),
-                asSwedishHouseAgreement = DashboardQuery.AsSwedishHouseAgreement(
-                    address = DashboardQuery.Address1(
-                        fragments = DashboardQuery.Address1.Fragments(
+                asSwedishHouseAgreement = InsuranceQuery.AsSwedishHouseAgreement(
+                    address = InsuranceQuery.Address1(
+                        fragments = InsuranceQuery.Address1.Fragments(
                             AddressFragment(
                                 street = "Testvägen 1",
                                 postalCode = "123 45",
@@ -80,8 +80,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asSwedishApartmentAgreement = null
             ),
             perils = listOf(
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -101,8 +101,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 )
             ),
             insurableLimits = listOf(
-                DashboardQuery.InsurableLimit(
-                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                InsuranceQuery.InsurableLimit(
+                    fragments = InsuranceQuery.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Utstyrene dine er forsikrat till",
                             limit = "1 000 000 kr",
@@ -112,15 +112,15 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
 
                 )
             ),
-            termsAndConditions = DashboardQuery.TermsAndConditions(
+            termsAndConditions = InsuranceQuery.TermsAndConditions(
                 displayName = "Terms and Conditions",
                 url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
-        private val SWEDISH_APARTMENT_CONTRACT = DashboardQuery.Contract(
+        private val SWEDISH_APARTMENT_CONTRACT = InsuranceQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = DashboardQuery.Status(
-                fragments = DashboardQuery.Status.Fragments(
+            status = InsuranceQuery.Status(
+                fragments = InsuranceQuery.Status.Fragments(
                     contractStatusFragment = ContractStatusFragment(
                         asPendingStatus = null,
                         asActiveInFutureStatus = null,
@@ -136,15 +136,15 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
-            upcomingRenewal = DashboardQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
+            upcomingRenewal = InsuranceQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
                 draftCertificateUrl = "https://www.example.com"),
-            currentAgreement = DashboardQuery.CurrentAgreement(
-                asAgreementCore = DashboardQuery.AsAgreementCore(
+            currentAgreement = InsuranceQuery.CurrentAgreement(
+                asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
                 ),
-                asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
-                    address = DashboardQuery.Address(
-                        fragments = DashboardQuery.Address.Fragments(
+                asSwedishApartmentAgreement = InsuranceQuery.AsSwedishApartmentAgreement(
+                    address = InsuranceQuery.Address(
+                        fragments = InsuranceQuery.Address.Fragments(
                             AddressFragment(
                                 street = "Testvägen 1",
                                 postalCode = "123 45",
@@ -161,8 +161,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asSwedishHouseAgreement = null
             ),
             perils = listOf(
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -180,8 +180,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -199,8 +199,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -218,8 +218,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -237,8 +237,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -258,8 +258,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 )
             ),
             insurableLimits = listOf(
-                DashboardQuery.InsurableLimit(
-                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                InsuranceQuery.InsurableLimit(
+                    fragments = InsuranceQuery.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Utstyrene dine er forsikrat till",
                             limit = "1 000 000 kr",
@@ -268,15 +268,15 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
                 )
             ),
-            termsAndConditions = DashboardQuery.TermsAndConditions(
+            termsAndConditions = InsuranceQuery.TermsAndConditions(
                 displayName = "Terms and Conditions",
                 url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
-        private val NORWEGIAN_HOME_CONTENTS_CONTRACT = DashboardQuery.Contract(
+        private val NORWEGIAN_HOME_CONTENTS_CONTRACT = InsuranceQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = DashboardQuery.Status(
-                fragments = DashboardQuery.Status.Fragments(
+            status = InsuranceQuery.Status(
+                fragments = InsuranceQuery.Status.Fragments(
                     contractStatusFragment = ContractStatusFragment(
                         asPendingStatus = null,
                         asActiveInFutureStatus = null,
@@ -292,17 +292,17 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             ),
             displayName = "Innboforsikring",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_RENT,
-            upcomingRenewal = DashboardQuery.UpcomingRenewal(
+            upcomingRenewal = InsuranceQuery.UpcomingRenewal(
                 renewalDate = LocalDate.of(2020, 6, 1),
                 draftCertificateUrl = "https://www.example.com"
             ),
-            currentAgreement = DashboardQuery.CurrentAgreement(
-                asAgreementCore = DashboardQuery.AsAgreementCore(
+            currentAgreement = InsuranceQuery.CurrentAgreement(
+                asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
                 ),
-                asNorwegianHomeContentAgreement = DashboardQuery.AsNorwegianHomeContentAgreement(
-                    address = DashboardQuery.Address2(
-                        fragments = DashboardQuery.Address2.Fragments(
+                asNorwegianHomeContentAgreement = InsuranceQuery.AsNorwegianHomeContentAgreement(
+                    address = InsuranceQuery.Address2(
+                        fragments = InsuranceQuery.Address2.Fragments(
                             AddressFragment(
                                 street = "Testvägen 1",
                                 postalCode = "123 45",
@@ -319,8 +319,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 asSwedishHouseAgreement = null
             ),
             perils = listOf(
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -340,8 +340,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 )
             ),
             insurableLimits = listOf(
-                DashboardQuery.InsurableLimit(
-                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                InsuranceQuery.InsurableLimit(
+                    fragments = InsuranceQuery.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Utstyrene dine er forsikrat till",
                             limit = "1 000 000 kr",
@@ -350,16 +350,16 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
                 )
             ),
-            termsAndConditions = DashboardQuery.TermsAndConditions(
+            termsAndConditions = InsuranceQuery.TermsAndConditions(
                 displayName = "Terms and Conditions",
                 url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
 
-        private val NORWEGIAN_TRAVEL_CONTRACT = DashboardQuery.Contract(
+        private val NORWEGIAN_TRAVEL_CONTRACT = InsuranceQuery.Contract(
             id = "eaaf8b5c-5a61-44a9-91bc-3de5b6bf878e",
-            status = DashboardQuery.Status(
-                fragments = DashboardQuery.Status.Fragments(
+            status = InsuranceQuery.Status(
+                fragments = InsuranceQuery.Status.Fragments(
                     contractStatusFragment = ContractStatusFragment(
                         asPendingStatus = null,
                         asActiveInFutureStatus = null,
@@ -376,20 +376,20 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
             displayName = "Reiseforsikring",
             typeOfContract = TypeOfContract.NO_TRAVEL,
             upcomingRenewal = null,
-            currentAgreement = DashboardQuery.CurrentAgreement(
-                asAgreementCore = DashboardQuery.AsAgreementCore(
+            currentAgreement = InsuranceQuery.CurrentAgreement(
+                asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
                 ),
                 asNorwegianHomeContentAgreement = null,
-                asNorwegianTravelAgreement = DashboardQuery.AsNorwegianTravelAgreement(
+                asNorwegianTravelAgreement = InsuranceQuery.AsNorwegianTravelAgreement(
                     numberCoInsured = 2
                 ),
                 asSwedishApartmentAgreement = null,
                 asSwedishHouseAgreement = null
             ),
             perils = listOf(
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -409,8 +409,8 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                 )
             ),
             insurableLimits = listOf(
-                DashboardQuery.InsurableLimit(
-                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                InsuranceQuery.InsurableLimit(
+                    fragments = InsuranceQuery.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Utstyrene dine er forsikrat till",
                             limit = "1 000 000 kr",
@@ -419,29 +419,29 @@ class MockDashboardViewModel(context: Context) : DashboardViewModel() {
                     )
                 )
             ),
-            termsAndConditions = DashboardQuery.TermsAndConditions(
+            termsAndConditions = InsuranceQuery.TermsAndConditions(
                 displayName = "Terms and Conditions",
                 url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )
         )
 
-        val SWEDISH_APARTMENT = DashboardQuery.Data(
+        val SWEDISH_APARTMENT = InsuranceQuery.Data(
             listOf(SWEDISH_APARTMENT_CONTRACT)
         )
 
-        val SWEDISH_HOUSE = DashboardQuery.Data(
+        val SWEDISH_HOUSE = InsuranceQuery.Data(
             listOf(SWEDISH_HOUSE_CONTRACT)
         )
 
-        val NORWEGIAN_HOME_CONTENTS = DashboardQuery.Data(
+        val NORWEGIAN_HOME_CONTENTS = InsuranceQuery.Data(
             listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT)
         )
 
-        val NORWEGIAN_TRAVEL = DashboardQuery.Data(
+        val NORWEGIAN_TRAVEL = InsuranceQuery.Data(
             listOf(NORWEGIAN_TRAVEL_CONTRACT)
         )
 
-        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = DashboardQuery.Data(
+        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = InsuranceQuery.Data(
             listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT)
         )
     }

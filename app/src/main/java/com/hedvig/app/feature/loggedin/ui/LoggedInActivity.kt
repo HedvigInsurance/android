@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isEmpty
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.*
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -37,7 +37,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
-    private val dashboardViewModel: DashboardViewModel by viewModel()
+    private val insuranceViewModel: InsuranceViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val loggedInTracker: LoggedInTracker by inject()
@@ -208,7 +208,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
         whatsNewViewModel.fetchNews()
 
-        dashboardViewModel.data.observe(lifecycleOwner = this) { data ->
+        insuranceViewModel.data.observe(lifecycleOwner = this) { data ->
             data?.first?.let { d ->
                 if (isTerminated(d.contracts)) {
                     startActivity(LoggedInTerminatedActivity.newInstance(this))
@@ -242,7 +242,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 putExtra(INITIAL_TAB, initialTab)
             }
 
-        fun isTerminated(contracts: List<DashboardQuery.Contract>) =
+        fun isTerminated(contracts: List<InsuranceQuery.Contract>) =
             contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"

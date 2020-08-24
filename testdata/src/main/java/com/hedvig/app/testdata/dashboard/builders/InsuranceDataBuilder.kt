@@ -4,20 +4,20 @@ import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import java.time.LocalDate
 
-class DashboardDataBuilder(
-    private val upcomingRenewal: DashboardQuery.UpcomingRenewal? = null
+class InsuranceDataBuilder(
+    private val upcomingRenewal: InsuranceQuery.UpcomingRenewal? = null
 ) {
 
-    fun build() = DashboardQuery.Data(
-        contracts = listOf(DashboardQuery.Contract(
+    fun build() = InsuranceQuery.Data(
+        contracts = listOf(InsuranceQuery.Contract(
             id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
-            status = DashboardQuery.Status(
-                fragments = DashboardQuery.Status.Fragments(
+            status = InsuranceQuery.Status(
+                fragments = InsuranceQuery.Status.Fragments(
                     contractStatusFragment = ContractStatusFragment(
                         asPendingStatus = null,
                         asActiveInFutureStatus = null,
@@ -34,13 +34,13 @@ class DashboardDataBuilder(
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
             upcomingRenewal = upcomingRenewal,
-            currentAgreement = DashboardQuery.CurrentAgreement(
-                asAgreementCore = DashboardQuery.AsAgreementCore(
+            currentAgreement = InsuranceQuery.CurrentAgreement(
+                asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
                 ),
-                asSwedishApartmentAgreement = DashboardQuery.AsSwedishApartmentAgreement(
-                    address = DashboardQuery.Address(
-                        fragments = DashboardQuery.Address.Fragments(
+                asSwedishApartmentAgreement = InsuranceQuery.AsSwedishApartmentAgreement(
+                    address = InsuranceQuery.Address(
+                        fragments = InsuranceQuery.Address.Fragments(
                             AddressFragment(
                                 street = "Testvägen 1",
                                 postalCode = "123 45",
@@ -57,8 +57,8 @@ class DashboardDataBuilder(
                 asSwedishHouseAgreement = null
             ),
             perils = listOf(
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -76,8 +76,8 @@ class DashboardDataBuilder(
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -95,8 +95,8 @@ class DashboardDataBuilder(
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -114,8 +114,8 @@ class DashboardDataBuilder(
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -133,8 +133,8 @@ class DashboardDataBuilder(
                     )
 
                 ),
-                DashboardQuery.Peril(
-                    fragments = DashboardQuery.Peril.Fragments(
+                InsuranceQuery.Peril(
+                    fragments = InsuranceQuery.Peril.Fragments(
                         PerilFragment(
                             title = "Mock",
                             description = "Mock",
@@ -154,8 +154,8 @@ class DashboardDataBuilder(
                 )
             ),
             insurableLimits = listOf(
-                DashboardQuery.InsurableLimit(
-                    fragments = DashboardQuery.InsurableLimit.Fragments(
+                InsuranceQuery.InsurableLimit(
+                    fragments = InsuranceQuery.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Utstyrene dine er forsikrat till",
                             limit = "1 000 000 kr",
@@ -164,7 +164,7 @@ class DashboardDataBuilder(
                     )
                 )
             ),
-            termsAndConditions = DashboardQuery.TermsAndConditions(
+            termsAndConditions = InsuranceQuery.TermsAndConditions(
                 displayName = "Terms and Conditions",
                 url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
             )

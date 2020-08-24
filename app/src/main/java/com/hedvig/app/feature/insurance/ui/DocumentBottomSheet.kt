@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.insurance.ui
 
 import android.net.Uri
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
+import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.contract_document_sheet.*
 import org.koin.android.ext.android.inject
 
 class DocumentBottomSheet : BottomSheetDialogFragment() {
-    private val tracker: DashboardTracker by inject()
+    private val tracker: InsuranceTracker by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,

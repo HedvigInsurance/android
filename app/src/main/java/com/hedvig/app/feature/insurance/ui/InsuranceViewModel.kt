@@ -1,13 +1,13 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.insurance.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.feature.dashboard.data.DashboardRepository
+import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
@@ -15,17 +15,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-abstract class DashboardViewModel : ViewModel() {
-    abstract val data: LiveData<Pair<DashboardQuery.Data?, PayinStatusQuery.Data?>>
+abstract class InsuranceViewModel : ViewModel() {
+    abstract val data: LiveData<Pair<InsuranceQuery.Data?, PayinStatusQuery.Data?>>
 }
 
-class DashboardViewModelImpl(
-    private val dashboardRepository: DashboardRepository,
+class InsuranceViewModelImpl(
+    private val insuranceRepository: InsuranceRepository,
     private val payinStatusRepository: PayinStatusRepository
-) : DashboardViewModel() {
+) : InsuranceViewModel() {
 
     private val payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-    private val dashboardData = MutableLiveData<DashboardQuery.Data>()
+    private val dashboardData = MutableLiveData<InsuranceQuery.Data>()
     override val data = combineTuple(dashboardData, payinStatusData)
 
     init {
@@ -41,7 +41,7 @@ class DashboardViewModelImpl(
                 .launchIn(this)
 
             val dashboardResponse = runCatching {
-                dashboardRepository
+                insuranceRepository
                     .dashboardAsync()
                     .await()
             }

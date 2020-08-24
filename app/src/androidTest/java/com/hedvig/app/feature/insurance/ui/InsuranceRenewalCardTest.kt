@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.insurance.ui
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -7,7 +7,7 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
-import com.hedvig.app.feature.dashboard.screens.DashboardScreen
+import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.dashboard.DASHBOARD_DATA_WITH_RENEWAL_DATE
@@ -20,7 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class DashboardRenewalCardTest {
+class InsuranceRenewalCardTest {
 
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
@@ -50,9 +50,9 @@ class DashboardRenewalCardTest {
         )
         activityRule.launchActivity(intent)
 
-        onScreen<DashboardScreen> {
+        onScreen<InsuranceScreen> {
             root {
-                childAt<DashboardScreen.InfoCardItem>(1) {
+                childAt<InsuranceScreen.InfoCardItem>(1) {
                     title {
                         hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
                     }

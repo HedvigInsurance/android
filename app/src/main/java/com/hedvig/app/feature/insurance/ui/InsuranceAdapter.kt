@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui
+package com.hedvig.app.feature.insurance.ui
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -10,13 +10,13 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
+import com.hedvig.app.feature.insurance.service.InsuranceTracker
+import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageActivity
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.openUri
@@ -30,14 +30,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class DashboardAdapter(
+class InsuranceAdapter(
     private val fragmentManager: FragmentManager,
-    private val tracker: DashboardTracker
+    private val tracker: InsuranceTracker
 ) :
-    RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
-    var items: List<DashboardModel> = emptyList()
+    RecyclerView.Adapter<InsuranceAdapter.ViewHolder>() {
+    var items: List<InsuranceModel> = emptyList()
         set(value) {
-            val diff = DiffUtil.calculateDiff(DashboardDiffUtilCallback(field, value))
+            val diff = DiffUtil.calculateDiff(InsuranceDiffUtilCallback(field, value))
             field = value
             diff.dispatchUpdatesTo(this)
         }
@@ -57,10 +57,10 @@ class DashboardAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it, tracker) }
+                (items[position] as? InsuranceModel.InfoBox)?.let { holder.bind(it, tracker) }
             }
             is ViewHolder.ContractViewHolder -> {
-                (items[position] as? DashboardModel.Contract)?.let {
+                (items[position] as? InsuranceModel.Contract)?.let {
                     holder.bind(
                         it.inner,
                         fragmentManager
@@ -68,16 +68,16 @@ class DashboardAdapter(
                 }
             }
             is ViewHolder.UpsellViewHolder -> {
-                (items[position] as? DashboardModel.Upsell)?.let { holder.bind(it) }
+                (items[position] as? InsuranceModel.Upsell)?.let { holder.bind(it) }
             }
         }
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is DashboardModel.InfoBox -> R.layout.home_info_card
-        is DashboardModel.Contract -> R.layout.dashboard_contract_row
-        is DashboardModel.Upsell -> R.layout.dashboard_upsell
-        is DashboardModel.Header -> R.layout.dashboard_header
+        is InsuranceModel.InfoBox -> R.layout.home_info_card
+        is InsuranceModel.Contract -> R.layout.dashboard_contract_row
+        is InsuranceModel.Upsell -> R.layout.dashboard_upsell
+        is InsuranceModel.Header -> R.layout.dashboard_header
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -104,7 +104,7 @@ class DashboardAdapter(
                 }
             }
 
-            fun bind(model: DashboardModel.Upsell) {
+            fun bind(model: InsuranceModel.Upsell) {
                 title.text = title.resources.getString(model.title)
                 description.text = description.resources.getString(model.description)
                 cta.text = cta.resources.getString(model.ctaText)
@@ -120,9 +120,9 @@ class DashboardAdapter(
             private val body = itemView.body
             private val action = itemView.action
 
-            fun bind(data: DashboardModel.InfoBox, tracker: DashboardTracker) {
+            fun bind(data: InsuranceModel.InfoBox, tracker: InsuranceTracker) {
                 when (data) {
-                    is DashboardModel.InfoBox.Renewal -> {
+                    is InsuranceModel.InfoBox.Renewal -> {
                         title.text =
                             title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
                         body.text = body.resources.getString(
@@ -162,7 +162,7 @@ class DashboardAdapter(
             private val perilCard = itemView.coverageCard
             private val documentsCard = itemView.documentsCard
 
-            fun bind(contract: DashboardQuery.Contract, fragmentManager: FragmentManager) {
+            fun bind(contract: InsuranceQuery.Contract, fragmentManager: FragmentManager) {
                 contract.status.fragments.contractStatusFragment.let { contractStatus ->
                     contractStatus.asPendingStatus?.let {
                         status.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -315,7 +315,7 @@ class DashboardAdapter(
     companion object {
         private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MM dd")
 
-        private val DashboardQuery.CurrentAgreement.numberCoInsured: Int
+        private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
             get() {
                 asNorwegianTravelAgreement?.numberCoInsured?.let { return it }
                 asSwedishHouseAgreement?.numberCoInsured?.let { return it }
@@ -327,10 +327,10 @@ class DashboardAdapter(
     }
 }
 
-sealed class DashboardModel {
-    object Header : DashboardModel()
+sealed class InsuranceModel {
+    object Header : InsuranceModel()
 
-    sealed class InfoBox : DashboardModel() {
+    sealed class InfoBox : InsuranceModel() {
         data class Renewal(
             val renewalDate: LocalDate,
             val draftCertificateUrl: String
@@ -338,19 +338,19 @@ sealed class DashboardModel {
     }
 
     data class Contract(
-        val inner: DashboardQuery.Contract
-    ) : DashboardModel()
+        val inner: InsuranceQuery.Contract
+    ) : InsuranceModel()
 
     data class Upsell(
         @get:StringRes val title: Int,
         @get:StringRes val description: Int,
         @get:StringRes val ctaText: Int
-    ) : DashboardModel()
+    ) : InsuranceModel()
 }
 
-class DashboardDiffUtilCallback(
-    private val old: List<DashboardModel>,
-    private val new: List<DashboardModel>
+class InsuranceDiffUtilCallback(
+    private val old: List<InsuranceModel>,
+    private val new: List<InsuranceModel>
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
         old[oldItemPosition] == new[newItemPosition]

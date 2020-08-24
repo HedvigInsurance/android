@@ -2,14 +2,14 @@ package com.hedvig.app
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
 
 class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() {
-    override val data = MutableLiveData<DashboardQuery.Contract>()
+    override val data = MutableLiveData<InsuranceQuery.Contract>()
 
-    private val mockData: DashboardQuery.Data
+    private val mockData: InsuranceQuery.Data
 
     init {
         val mockPersona = context
@@ -17,12 +17,12 @@ class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() 
             .getInt("mockPersona", 0)
 
         mockData = when (mockPersona) {
-            0 -> MockDashboardViewModel.SWEDISH_APARTMENT
-            1 -> MockDashboardViewModel.SWEDISH_HOUSE
-            2 -> MockDashboardViewModel.NORWEGIAN_HOME_CONTENTS
-            3 -> MockDashboardViewModel.NORWEGIAN_TRAVEL
-            4 -> MockDashboardViewModel.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-            else -> MockDashboardViewModel.SWEDISH_APARTMENT
+            0 -> MockInsuranceViewModel.SWEDISH_APARTMENT
+            1 -> MockInsuranceViewModel.SWEDISH_HOUSE
+            2 -> MockInsuranceViewModel.NORWEGIAN_HOME_CONTENTS
+            3 -> MockInsuranceViewModel.NORWEGIAN_TRAVEL
+            4 -> MockInsuranceViewModel.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
+            else -> MockInsuranceViewModel.SWEDISH_APARTMENT
         }
     }
 

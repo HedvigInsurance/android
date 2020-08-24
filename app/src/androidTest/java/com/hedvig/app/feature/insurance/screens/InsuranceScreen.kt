@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.screens
+package com.hedvig.app.feature.insurance.screens
 
 import android.content.Intent
 import android.view.View
@@ -11,10 +11,10 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import org.hamcrest.Matcher
 
-class DashboardScreen : Screen<DashboardScreen>() {
+class InsuranceScreen : Screen<InsuranceScreen>() {
     val root =
         KRecyclerView({ withId(R.id.root) }, {
-            itemType(DashboardScreen::InfoCardItem)
+            itemType(InsuranceScreen::InfoCardItem)
         })
 
     class InfoCardItem(parent: Matcher<View>) : KRecyclerItem<InfoCardItem>(parent) {

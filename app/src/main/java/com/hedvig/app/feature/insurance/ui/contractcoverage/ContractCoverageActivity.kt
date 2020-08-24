@@ -1,10 +1,10 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.NestedScrollView
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
@@ -85,7 +85,7 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
         }
     }
 
-    private fun bind(data: DashboardQuery.Contract) {
+    private fun bind(data: InsuranceQuery.Contract) {
         loadingSpinner.remove()
         scrollView.show()
         perilSectionTitle.text = getString(

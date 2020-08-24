@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.dashboard.ui.contractcoverage
+package com.hedvig.app.feature.insurance.ui.contractcoverage
 
 import android.content.Context
 import android.os.Bundle
@@ -56,11 +56,13 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                 putString(TITLE, peril.title)
                 putString(BODY, peril.description)
                 putString(
-                    ICON_URL, "${BuildConfig.BASE_URL}${if (context.isDarkThemeActive) {
+                    ICON_URL, "${BuildConfig.BASE_URL}${
+                    if (context.isDarkThemeActive) {
                         peril.icon.variants.dark.svgUrl
                     } else {
                         peril.icon.variants.light.svgUrl
-                    }}"
+                    }
+                }"
                 )
             }
         }
