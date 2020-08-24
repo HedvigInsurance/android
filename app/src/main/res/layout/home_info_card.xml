@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginEnd="@dimen/base_margin_double"
             android:textAppearance="?textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/title"

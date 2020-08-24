@@ -10,7 +10,7 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import java.time.LocalDate
 
 class DashboardDataBuilder(
-    val upcomingRenewal: DashboardQuery.UpcomingRenewal? = null
+    private val upcomingRenewal: DashboardQuery.UpcomingRenewal? = null
 ) {
 
     fun build() = DashboardQuery.Data(

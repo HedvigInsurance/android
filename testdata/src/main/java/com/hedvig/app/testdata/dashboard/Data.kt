@@ -6,5 +6,4 @@ import java.time.LocalDate
 
 val DASHBOARD_DATA_WITH_RENEWAL_DATE = DashboardDataBuilder(
     DashboardQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
-        draftCertificateUrl = "https://www.example.com")
-)
+        draftCertificateUrl = "https://www.example.com")).build()
