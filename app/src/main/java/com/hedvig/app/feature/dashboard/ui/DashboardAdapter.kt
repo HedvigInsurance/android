@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.dashboard.ui
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,26 +13,17 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
-import kotlinx.android.synthetic.main.dashboard_info_card.view.*
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*
-import kotlinx.android.synthetic.main.dashboard_upsell.view.title
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class DashboardAdapter(
-    private val fragmentManager: FragmentManager,
-    private val tracker: DashboardTracker
+    private val fragmentManager: FragmentManager
 ) :
     RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
     var items: List<DashboardModel> = emptyList()
@@ -44,7 +34,6 @@ class DashboardAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.dashboard_info_card -> ViewHolder.InfoBoxViewHolder(parent)
         R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
@@ -57,9 +46,6 @@ class DashboardAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it, tracker) }
-            }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? DashboardModel.Contract)?.let {
                     holder.bind(
@@ -75,7 +61,6 @@ class DashboardAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is DashboardModel.InfoBox -> R.layout.dashboard_info_card
         is DashboardModel.Contract -> R.layout.dashboard_contract_row
         is DashboardModel.Upsell -> R.layout.dashboard_upsell
         is DashboardModel.Header -> R.layout.dashboard_header
@@ -109,71 +94,6 @@ class DashboardAdapter(
                 title.text = title.resources.getString(model.title)
                 description.text = description.resources.getString(model.description)
                 cta.text = cta.resources.getString(model.ctaText)
-            }
-        }
-
-        class InfoBoxViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.dashboard_info_card, parent, false)
-        ) {
-            private val title = itemView.title
-            private val body = itemView.body
-            private val action = itemView.action
-
-            fun bind(data: DashboardModel.InfoBox, tracker: DashboardTracker) {
-                when (data) {
-                    is DashboardModel.InfoBox.ImportantInformation -> {
-                        title.text = data.title
-                        body.text = data.body
-                        action.text = data.actionLabel
-                        val maybeLinkUri = runCatching {
-                            Uri.parse(data.actionLink)
-                        }
-                        action.setHapticClickListener {
-                            maybeLinkUri.getOrNull()?.let { uri ->
-                                if (action.context.canOpenUri(uri)) {
-                                    action.context.openUri(uri)
-                                }
-                            }
-                        }
-                    }
-                    is DashboardModel.InfoBox.Renewal -> {
-                        title.text =
-                            title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-                        body.text = body.resources.getString(
-                            R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
-                                LocalDate.now(),
-                                data.renewalDate
-                            )
-                        )
-                        action.text =
-                            action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
-                        val maybeLinkUri = runCatching {
-                            Uri.parse(data.draftCertificateUrl)
-                        }
-                        action.setHapticClickListener {
-                            tracker.showRenewal()
-                            maybeLinkUri.getOrNull()?.let { uri ->
-                                if (action.context.canOpenUri(uri)) {
-                                    action.context.openUri(uri)
-                                }
-                            }
-                        }
-                    }
-                    is DashboardModel.InfoBox.ConnectPayin -> {
-                        title.text =
-                            title.resources.getString(R.string.DASHBOARD_SETUP_DIRECT_DEBIT_TITLE)
-                        body.text =
-                            body.resources.getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_DESCRIPTION)
-                        action.text =
-                            body.resources.getString(R.string.DASHBOARD_DIRECT_DEBIT_STATUS_NEED_SETUP_BUTTON_LABEL)
-                        action.setHapticClickListener {
-                            tracker.connectPayment()
-                            action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
-                        }
-                    }
-                }
             }
         }
 
@@ -362,22 +282,6 @@ class DashboardAdapter(
 
 sealed class DashboardModel {
     object Header : DashboardModel()
-
-    sealed class InfoBox : DashboardModel() {
-        data class ImportantInformation(
-            val title: String,
-            val body: String,
-            val actionLabel: String,
-            val actionLink: String
-        ) : InfoBox()
-
-        data class Renewal(
-            val renewalDate: LocalDate,
-            val draftCertificateUrl: String
-        ) : InfoBox()
-
-        object ConnectPayin : InfoBox()
-    }
 
     data class Contract(
         val inner: DashboardQuery.Contract

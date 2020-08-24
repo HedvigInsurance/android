@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import java.time.LocalDate
@@ -32,6 +33,13 @@ sealed class HomeModel {
     object StartClaimOutlined : HomeModel()
 
     object StartClaimContained : HomeModel()
+
+    sealed class InfoCard : HomeModel() {
+        object ConnectPayin : InfoCard()
+        data class PSA(
+            val inner: HomeQuery.ImportantMessage
+        ) : InfoCard()
+    }
 
     object CommonClaimTitle : HomeModel()
 

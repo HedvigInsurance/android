@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
@@ -14,11 +15,13 @@ import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeErrorBinding
+import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate
@@ -50,6 +53,7 @@ class HomeAdapter(
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
+        R.layout.home_info_card -> ViewHolder.InfoCard(parent)
         R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
@@ -62,6 +66,7 @@ class HomeAdapter(
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
+        is HomeModel.InfoCard -> R.layout.home_info_card
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.home_error
@@ -187,6 +192,44 @@ class HomeAdapter(
 
                 root.setHapticClickListener {
                     HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+                }
+            }
+        }
+
+        class InfoCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_info_card)) {
+            private val binding by viewBinding(HomeInfoCardBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>
+            ) = with(binding) {
+                if (data !is HomeModel.InfoCard) {
+                    return invalid(data)
+                }
+
+                when (data) {
+                    HomeModel.InfoCard.ConnectPayin -> {
+                        title.setText(R.string.info_card_missing_payment_title)
+                        body.setText(R.string.info_card_missing_payment_body)
+                        action.setText(R.string.info_card_missing_payment_button_text)
+                        action.setHapticClickListener {
+                            action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                        }
+                    }
+                    is HomeModel.InfoCard.PSA -> {
+                        title.text = data.inner.title
+                        body.text = data.inner.message
+                        action.text = data.inner.button
+                        val uri = Uri.parse(data.inner.link)
+                        action.setHapticClickListener {
+                            action.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                setData(
+                                    uri
+                                )
+                            })
+                        }
+                    }
                 }
             }
         }

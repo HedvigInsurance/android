@@ -13,7 +13,8 @@ data class HomeDataBuilder(
         ).build(),
         CommonClaimBuilder(title = "Trasig telefon").build(),
         CommonClaimBuilder(title = "Försenat bagage").build()
-    )
+    ),
+    private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
@@ -64,7 +65,8 @@ data class HomeDataBuilder(
             )
         },
         isEligibleToCreateClaim = contracts.any { it == Status.ACTIVE },
-        commonClaims = commonClaims
+        commonClaims = commonClaims,
+        importantMessages = importantMessages
     )
 
     enum class Status {
@@ -75,4 +77,18 @@ data class HomeDataBuilder(
         ACTIVE,
         TERMINATED
     }
+}
+
+data class ImportantMessageBuilder(
+    private val title: String = "Example PSA title",
+    private val body: String = "Example PSA body",
+    private val actionLabel: String = "Example PSA action",
+    private val url: String = "https://www.example.com"
+) {
+    fun build() = HomeQuery.ImportantMessage(
+        title = title,
+        message = body,
+        button = actionLabel,
+        link = url
+    )
 }
