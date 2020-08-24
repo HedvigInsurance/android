@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.dashboard.ui
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,18 +14,25 @@ import com.hedvig.android.owldroid.graphql.DashboardQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.dashboard.service.DashboardTracker
 import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*
+import kotlinx.android.synthetic.main.dashboard_upsell.view.title
+import kotlinx.android.synthetic.main.home_info_card.view.*
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class DashboardAdapter(
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
+    private val tracker: DashboardTracker
 ) :
     RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
     var items: List<DashboardModel> = emptyList()
@@ -35,6 +43,7 @@ class DashboardAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.home_info_card -> ViewHolder.InfoBoxViewHolder(parent)
         R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
@@ -47,6 +56,9 @@ class DashboardAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
+            is ViewHolder.InfoBoxViewHolder -> {
+                (items[position] as? DashboardModel.InfoBox)?.let { holder.bind(it, tracker) }
+            }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? DashboardModel.Contract)?.let {
                     holder.bind(
@@ -62,6 +74,7 @@ class DashboardAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
+        is DashboardModel.InfoBox -> R.layout.home_info_card
         is DashboardModel.Contract -> R.layout.dashboard_contract_row
         is DashboardModel.Upsell -> R.layout.dashboard_upsell
         is DashboardModel.Header -> R.layout.dashboard_header
@@ -101,7 +114,7 @@ class DashboardAdapter(
         class InfoBoxViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.dashboard_info_card, parent, false)
+                .inflate(R.layout.home_info_card, parent, false)
         ) {
             private val title = itemView.title
             private val body = itemView.body

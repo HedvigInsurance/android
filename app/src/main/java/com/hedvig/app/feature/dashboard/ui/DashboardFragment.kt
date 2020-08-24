@@ -79,7 +79,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         (root.adapter as? DashboardAdapter)?.items =
-            listOf(DashboardModel.Header) + contracts + upsells
+            listOf(DashboardModel.Header) + infoBoxes + contracts + upsells
     }
 
     override fun onResume() {
