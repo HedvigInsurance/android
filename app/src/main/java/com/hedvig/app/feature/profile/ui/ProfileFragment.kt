@@ -60,7 +60,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 ProfileModel.Row(
                     getString(R.string.PROFILE_MY_CHARITY_ROW_TITLE),
                     data.cashback?.fragments?.cashbackFragment?.name ?: "",
-                    R.drawable.ic_charity
+                    R.drawable.ic_profile_charity
                 ) {
                     startActivity(Intent(requireContext(), CharityActivity::class.java))
                 },
