@@ -6,6 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".feature.profile.ui.ProfileFragment"
+    tools:context=".feature.profile.ui.tab.ProfileFragment"
     tools:itemCount="3"
     tools:listitem="@layout/profile_row" />
