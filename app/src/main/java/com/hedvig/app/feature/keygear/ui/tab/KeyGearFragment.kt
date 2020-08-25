@@ -17,10 +17,12 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
-import com.hedvig.app.util.extensions.view.*
-import com.hedvig.app.util.getToolbarBarHeight
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.transitionPair
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.android.synthetic.main.fragment_key_gear.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -38,9 +40,11 @@ class KeyGearFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        keyGearRoot.updatePadding(top = getToolbarBarHeight(this))
-        keyGearRoot.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        val scrollInitialTopPadding = keyGearRoot.paddingTop
+        loggedInViewModel.toolbarInset.observe(this) { tbi ->
+            tbi?.let { toolbarInsets ->
+                keyGearRoot.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
         }
 
         val scrollInitialBottomPadding = keyGearRoot.paddingBottom

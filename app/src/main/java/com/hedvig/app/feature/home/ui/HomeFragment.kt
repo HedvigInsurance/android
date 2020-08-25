@@ -14,12 +14,14 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
+import com.hedvig.app.util.extensions.observe as viewModelObserve
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
     private val model: HomeViewModel by viewModel()
@@ -33,6 +35,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.recycler.apply {
+
+            val scrollInitialTopPadding = paddingTop
+            loggedInViewModel.toolbarInset.viewModelObserve(this@HomeFragment) { tbi ->
+                tbi?.let { toolbarInsets ->
+                    updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                }
+            }
+
             doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
@@ -55,6 +65,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                 }
             addItemDecoration(HomeItemDecoration())
+            setupToolbarAlphaScrollListener(loggedInViewModel)
         }
 
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->

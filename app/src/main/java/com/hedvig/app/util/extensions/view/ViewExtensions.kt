@@ -2,7 +2,11 @@ package com.hedvig.app.util.extensions.view
 
 import android.app.Activity
 import android.graphics.Rect
-import android.view.*
+import android.view.HapticFeedbackConstants
+import android.view.TouchDelegate
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
@@ -225,7 +229,7 @@ fun NestedScrollView.setupToolbarAlphaScrollListener(
         val alpha = if (offset < maxAlphaScroll) {
             offset
         } else {
-            252f
+            242f
         }
         loggedInViewModel.scroll.postValue(alpha)
     }

@@ -18,9 +18,11 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showShareSheet
-import com.hedvig.app.util.extensions.view.*
-import com.hedvig.app.util.getToolbarBarHeight
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.updatePadding
 import e
 import kotlinx.android.synthetic.main.fragment_referrals.*
 import org.koin.android.ext.android.inject
@@ -43,9 +45,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         shareInitialBottomMargin = share.marginBottom
         invitesInitialBottomPadding = invites.paddingBottom
 
-        invites.updatePadding(top = getToolbarBarHeight(this))
-        invites.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        val scrollInitialTopPadding = invites.paddingTop
+        loggedInViewModel.toolbarInset.observe(this) { tbi ->
+            tbi?.let { toolbarInsets ->
+                invites.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
         }
 
         share.doOnLayout {
@@ -60,7 +64,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             }
         }
 
-        invites.setupToolbarScrollListener(loggedInViewModel)
+        invites.setupToolbarAlphaScrollListener(loggedInViewModel)
         invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
         invites.adapter = ReferralsAdapter({
             (invites.adapter as? ReferralsAdapter)?.setLoading()

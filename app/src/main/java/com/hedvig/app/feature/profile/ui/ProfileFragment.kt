@@ -17,10 +17,16 @@ import com.hedvig.app.feature.profile.ui.feedback.FeedbackActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.extensions.*
-import com.hedvig.app.util.extensions.view.*
-import com.hedvig.app.util.getToolbarBarHeight
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.extensions.setAuthenticationToken
+import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.triggerRestartActivity
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updatePadding
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
@@ -37,9 +43,12 @@ class ProfileFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileRoot.updatePadding(top = getToolbarBarHeight(this))
-        profileRoot.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+
+        val scrollInitialTopPadding = profileRoot.paddingTop
+        loggedInViewModel.toolbarInset.observe(this) { tbi ->
+            tbi?.let { toolbarInsets ->
+                profileRoot.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
         }
 
         val scrollInitialBottomPadding = profileRoot.paddingBottom
@@ -50,7 +59,7 @@ class ProfileFragment : BaseTabFragment() {
         }
 
         populateData()
-        profileRoot.setupToolbarScrollListener(loggedInViewModel)
+        profileRoot.setupToolbarAlphaScrollListener(loggedInViewModel)
     }
 
     override fun onResume() {

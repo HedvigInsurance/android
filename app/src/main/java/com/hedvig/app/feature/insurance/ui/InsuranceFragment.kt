@@ -6,16 +6,14 @@ import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.getToolbarBarHeight
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import kotlinx.android.synthetic.main.fragment_insurance.*
-import kotlinx.android.synthetic.main.loading_spinner.*
+import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -23,42 +21,45 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val tracker: InsuranceTracker by inject()
+    private val binding by viewBinding(FragmentInsuranceBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        root.updatePadding(top = getToolbarBarHeight(this))
-
-        root.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-
-        val scrollInitialBottomPadding = root.paddingBottom
-        loggedInViewModel.bottomTabInset.observe(this) { bti ->
-            bti?.let { bottomTabInset ->
-                root.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+        binding.apply {
+            val scrollInitialTopPadding = recycler.paddingTop
+            loggedInViewModel.toolbarInset.observe(this@InsuranceFragment) { tbi ->
+                tbi?.let { toolbarInsets ->
+                    recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                }
             }
+
+            val scrollInitialBottomPadding = recycler.paddingBottom
+            loggedInViewModel.bottomTabInset.observe(this@InsuranceFragment) { bti ->
+                bti?.let { bottomTabInset ->
+                    recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+                }
+            }
+
+            recycler.setupToolbarAlphaScrollListener(loggedInViewModel)
+            recycler.adapter = InsuranceAdapter(parentFragmentManager, tracker)
         }
-
-        root.setupToolbarAlphaScrollListener(loggedInViewModel)
-        root.adapter = InsuranceAdapter(parentFragmentManager, tracker)
-
         insuranceViewModel.data.observe(this) { data ->
             data?.let { bind(it) }
         }
     }
 
     private fun bind(data: Pair<InsuranceQuery.Data?, PayinStatusQuery.Data?>) {
-        loadingSpinner.remove()
+        binding.loadSpinner.root.remove()
         val (dashboardData, payinStatusData) = data
 
-        val infoBoxes = mutableListOf<InsuranceModel.InfoBox>()
+        val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
 
         val renewals = dashboardData?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
 
         renewals.forEach {
             infoBoxes.add(
-                InsuranceModel.InfoBox.Renewal(
+                InsuranceModel.Renewal(
                     it.renewalDate,
                     it.draftCertificateUrl
                 )
@@ -78,13 +79,13 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             }
         }
 
-        (root.adapter as? InsuranceAdapter)?.items =
+        (binding.recycler.adapter as? InsuranceAdapter)?.items =
             listOf(InsuranceModel.Header) + infoBoxes + contracts + upsells
     }
 
     override fun onResume() {
         super.onResume()
-        root.scrollToPosition(0)
+        binding.recycler.scrollToPosition(0)
     }
 
     companion object {

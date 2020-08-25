@@ -27,7 +27,7 @@
         android:textAppearance="?textAppearanceBody2"
         tools:text="Aktiv" />
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/contractInformationCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -95,9 +95,9 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/coverageCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -162,9 +162,9 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/documentsCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -229,6 +229,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

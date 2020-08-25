@@ -8,7 +8,10 @@ import android.view.MenuItem
 import androidx.core.view.isEmpty
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
-import com.hedvig.app.*
+import com.hedvig.app.BaseActivity
+import com.hedvig.app.HedvigApplication
+import com.hedvig.app.LoggedInTerminatedActivity
+import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -19,6 +22,7 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
@@ -57,6 +61,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
 
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->

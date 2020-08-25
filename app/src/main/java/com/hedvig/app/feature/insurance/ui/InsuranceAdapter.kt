@@ -57,7 +57,7 @@ class InsuranceAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? InsuranceModel.InfoBox)?.let { holder.bind(it, tracker) }
+                (items[position] as? InsuranceModel.Renewal)?.let { holder.bind(it, tracker) }
             }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? InsuranceModel.Contract)?.let {
@@ -74,7 +74,7 @@ class InsuranceAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is InsuranceModel.InfoBox -> R.layout.home_info_card
+        is InsuranceModel.Renewal -> R.layout.home_info_card
         is InsuranceModel.Contract -> R.layout.dashboard_contract_row
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.dashboard_header
@@ -120,29 +120,25 @@ class InsuranceAdapter(
             private val body = itemView.body
             private val action = itemView.action
 
-            fun bind(data: InsuranceModel.InfoBox, tracker: InsuranceTracker) {
-                when (data) {
-                    is InsuranceModel.InfoBox.Renewal -> {
-                        title.text =
-                            title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-                        body.text = body.resources.getString(
-                            R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
-                            LocalDate.now(),
-                            data.renewalDate
-                        )
-                        )
-                        action.text =
-                            action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
-                        val maybeLinkUri = runCatching {
-                            Uri.parse(data.draftCertificateUrl)
-                        }
-                        action.setHapticClickListener {
-                            tracker.showRenewal()
-                            maybeLinkUri.getOrNull()?.let { uri ->
-                                if (action.context.canOpenUri(uri)) {
-                                    action.context.openUri(uri)
-                                }
-                            }
+            fun bind(data: InsuranceModel.Renewal, tracker: InsuranceTracker) {
+                title.text =
+                    title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
+                body.text = body.resources.getString(
+                    R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
+                    LocalDate.now(),
+                    data.renewalDate
+                )
+                )
+                action.text =
+                    action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+                val maybeLinkUri = runCatching {
+                    Uri.parse(data.draftCertificateUrl)
+                }
+                action.setHapticClickListener {
+                    tracker.showRenewal()
+                    maybeLinkUri.getOrNull()?.let { uri ->
+                        if (action.context.canOpenUri(uri)) {
+                            action.context.openUri(uri)
                         }
                     }
                 }
@@ -330,12 +326,11 @@ class InsuranceAdapter(
 sealed class InsuranceModel {
     object Header : InsuranceModel()
 
-    sealed class InfoBox : InsuranceModel() {
-        data class Renewal(
-            val renewalDate: LocalDate,
-            val draftCertificateUrl: String
-        ) : InfoBox()
-    }
+    data class Renewal(
+        val renewalDate: LocalDate,
+        val draftCertificateUrl: String
+    ) : InsuranceModel()
+
 
     data class Contract(
         val inner: InsuranceQuery.Contract
