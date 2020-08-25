@@ -9,6 +9,16 @@
     tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
 
+    <ImageView
+        android:id="@+id/gradient"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.hedvig.app.feature.loggedin.ui.TabPager
         android:id="@+id/tabContent"
         android:layout_width="match_parent"

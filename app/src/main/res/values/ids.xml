@@ -109,4 +109,7 @@
 
     <!-- PieChartView-tags -->
     <item name="slice_blink_animation" type="id" />
+
+    <!-- LoggedInActivity-tags -->
+    <item name="gradient_animation" type="id" />
 </resources>
