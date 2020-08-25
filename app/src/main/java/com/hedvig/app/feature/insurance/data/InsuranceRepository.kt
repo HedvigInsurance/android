@@ -12,6 +12,6 @@ class InsuranceRepository(
 ) {
     fun dashboardAsync() = apolloClientWrapper
         .apolloClient
-        .query(InsuranceQuery(defaultLocale(context), defaultLocale(context).rawValue))
+        .query(InsuranceQuery(defaultLocale(context)))
         .toDeferred()
 }
