@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
+import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
@@ -21,6 +23,9 @@ import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.setAuthenticationToken
+import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
@@ -84,7 +89,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     R.drawable.ic_profile_settings
                 ) {
                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
-                }
+                },
+                ProfileModel.Logout
             )
         }
     }
@@ -102,6 +108,7 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         R.layout.profile_title -> ViewHolder.Title(parent)
         R.layout.profile_row -> ViewHolder.Row(parent)
         R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
+        R.layout.profile_logout -> ViewHolder.Logout(parent)
         else -> throw Error("Invalid viewType")
     }
 
@@ -109,6 +116,7 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         ProfileModel.Title -> R.layout.profile_title
         is ProfileModel.Row -> R.layout.profile_row
         ProfileModel.Subtitle -> R.layout.profile_subtitle
+        ProfileModel.Logout -> R.layout.profile_logout
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -146,6 +154,20 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         class Subtitle(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_subtitle)) {
             override fun bind(data: ProfileModel) = Unit
         }
+
+        class Logout(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
+            private val binding by viewBinding(ProfileLogoutBinding::bind)
+            override fun bind(data: ProfileModel) = with(binding) {
+                root.setHapticClickListener {
+                    root.context.apply {
+                        setAuthenticationToken(null)
+                        setIsLoggedIn(false)
+                        FirebaseInstanceId.getInstance().deleteInstanceId()
+                        triggerRestartActivity()
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -160,4 +182,6 @@ sealed class ProfileModel {
     ) : ProfileModel()
 
     object Subtitle : ProfileModel()
+
+    object Logout : ProfileModel()
 }
