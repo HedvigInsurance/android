@@ -3,12 +3,12 @@ package com.hedvig.app.feature.insurance.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -27,33 +27,36 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         binding.apply {
             val scrollInitialTopPadding = recycler.paddingTop
-            loggedInViewModel.toolbarInset.observe(this@InsuranceFragment) { tbi ->
-                tbi?.let { toolbarInsets ->
-                    recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
-                }
+            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
+                recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
             }
 
             val scrollInitialBottomPadding = recycler.paddingBottom
-            loggedInViewModel.bottomTabInset.observe(this@InsuranceFragment) { bti ->
-                bti?.let { bottomTabInset ->
-                    recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
-                }
+            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
+                recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
             recycler.setupToolbarAlphaScrollListener(loggedInViewModel)
-            recycler.adapter = InsuranceAdapter(parentFragmentManager, tracker)
+            recycler.adapter = InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
-        insuranceViewModel.data.observe(this) { data ->
-            data?.let { bind(it) }
+        insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
+            bind(data)
         }
     }
 
-    private fun bind(data: InsuranceQuery.Data?) {
+    private fun bind(data: Result<InsuranceQuery.Data>) {
         binding.loadSpinner.root.remove()
+
+        if (data.isFailure) {
+            (binding.recycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
+            return
+        }
+
+        val successData = data.getOrNull() ?: return
 
         val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
 
-        val renewals = data?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
+        val renewals = successData.contracts.mapNotNull { it.upcomingRenewal }
 
         renewals.forEach {
             infoBoxes.add(
@@ -64,16 +67,15 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             )
         }
 
-        val contracts = data?.contracts.orEmpty().map { InsuranceModel.Contract(it) }
+        val contracts = successData.contracts.map { InsuranceModel.Contract(it) }
 
         val upsells = mutableListOf<InsuranceModel.Upsell>()
-        data?.let { dd ->
-            if (isNorway(dd.contracts)) {
-                if (doesNotHaveHomeContents(dd.contracts)) {
-                    upsells.add(UPSELL_HOME_CONTENTS)
-                } else if (doesNotHaveTravelInsurance(dd.contracts)) {
-                    upsells.add(UPSELL_TRAVEL)
-                }
+
+        if (isNorway(successData.contracts)) {
+            if (doesNotHaveHomeContents(successData.contracts)) {
+                upsells.add(UPSELL_HOME_CONTENTS)
+            } else if (doesNotHaveTravelInsurance(successData.contracts)) {
+                upsells.add(UPSELL_TRAVEL)
             }
         }
 

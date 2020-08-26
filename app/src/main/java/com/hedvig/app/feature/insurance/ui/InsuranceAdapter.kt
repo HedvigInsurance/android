@@ -13,14 +13,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
+import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.synthetic.main.dashboard_contract_row.view.*
 import kotlinx.android.synthetic.main.dashboard_upsell.view.*
@@ -32,7 +35,8 @@ import java.time.temporal.ChronoUnit
 
 class InsuranceAdapter(
     private val fragmentManager: FragmentManager,
-    private val tracker: InsuranceTracker
+    private val tracker: InsuranceTracker,
+    private val retry: () -> Unit
 ) :
     RecyclerView.Adapter<InsuranceAdapter.ViewHolder>() {
     var items: List<InsuranceModel> = emptyList()
@@ -47,6 +51,7 @@ class InsuranceAdapter(
         R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
+        R.layout.insurance_error -> ViewHolder.Error(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -70,6 +75,9 @@ class InsuranceAdapter(
             is ViewHolder.UpsellViewHolder -> {
                 (items[position] as? InsuranceModel.Upsell)?.let { holder.bind(it) }
             }
+            is ViewHolder.Error -> {
+                holder.bind(retry)
+            }
         }
     }
 
@@ -78,6 +86,7 @@ class InsuranceAdapter(
         is InsuranceModel.Contract -> R.layout.dashboard_contract_row
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.dashboard_header
+        InsuranceModel.Error -> R.layout.insurance_error
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -306,6 +315,13 @@ class InsuranceAdapter(
                 .from(parent.context)
                 .inflate(R.layout.dashboard_header, parent, false)
         )
+
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.insurance_error)) {
+            private val binding by viewBinding(InsuranceErrorBinding::bind)
+            fun bind(retry: () -> Unit): Any? = with(binding) {
+                this.retry.setHapticClickListener { retry() }
+            }
+        }
     }
 
     companion object {
@@ -341,6 +357,8 @@ sealed class InsuranceModel {
         @get:StringRes val description: Int,
         @get:StringRes val ctaText: Int
     ) : InsuranceModel()
+
+    object Error : InsuranceModel()
 }
 
 class InsuranceDiffUtilCallback(

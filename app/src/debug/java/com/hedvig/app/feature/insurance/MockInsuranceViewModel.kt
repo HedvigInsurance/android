@@ -3,21 +3,26 @@ package com.hedvig.app.feature.insurance
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 
 class MockInsuranceViewModel : InsuranceViewModel() {
-    override val data = MutableLiveData<InsuranceQuery.Data>()
+    override val data = MutableLiveData<Result<InsuranceQuery.Data>>()
 
     init {
         load()
     }
 
-    fun load() {
-        if (hasRenewal) {
-    
+    override fun load() {
+        if (shouldError) {
+            shouldError = false
+            data.postValue(Result.failure(Error()))
+            return
         }
+        data.postValue(Result.success(insuranceMockData))
     }
 
     companion object {
-        val hasRenewal = true
+        var insuranceMockData = INSURANCE_DATA
+        var shouldError = false
     }
 }

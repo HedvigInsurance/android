@@ -214,9 +214,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
 
         insuranceViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.let { d ->
-                if (isTerminated(d.contracts)) {
-                    startActivity(LoggedInTerminatedActivity.newInstance(this))
+            if (data != null) {
+                val safeData = data.getOrNull()
+                safeData?.let { d ->
+                    if (isTerminated(d.contracts)) {
+                        startActivity(LoggedInTerminatedActivity.newInstance(this))
+                    }
                 }
             }
         }

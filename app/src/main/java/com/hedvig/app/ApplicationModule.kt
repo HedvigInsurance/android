@@ -236,7 +236,7 @@ val loggedInModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }

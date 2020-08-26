@@ -9,7 +9,11 @@ import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import java.time.LocalDate
 
-class InsuranceDataBuilder {
+class InsuranceDataBuilder(
+    private val renewal: InsuranceQuery.UpcomingRenewal? =
+        InsuranceQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
+            draftCertificateUrl = "https://www.example.com")
+) {
 
     fun build() = InsuranceQuery.Data(
         contracts = listOf(InsuranceQuery.Contract(
@@ -31,8 +35,7 @@ class InsuranceDataBuilder {
             ),
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
-            upcomingRenewal = InsuranceQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
-                draftCertificateUrl = "https://www.example.com"),
+            upcomingRenewal = renewal,
             currentAgreement = InsuranceQuery.CurrentAgreement(
                 asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"

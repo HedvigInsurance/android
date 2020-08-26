@@ -1,52 +1,49 @@
 package com.hedvig.app.feature.insurance.ui
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import e
 import kotlinx.coroutines.launch
 
 abstract class InsuranceViewModel : ViewModel() {
-    abstract val data: LiveData<InsuranceQuery.Data?>
+    abstract val data: MutableLiveData<Result<InsuranceQuery.Data>>
+    abstract fun load()
 }
 
 class InsuranceViewModelImpl(
-    private val insuranceRepository: InsuranceRepository,
-    private val payinStatusRepository: PayinStatusRepository
+    private val insuranceRepository: InsuranceRepository
 ) : InsuranceViewModel() {
 
-    //    private val payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-    override val data = MutableLiveData<InsuranceQuery.Data>()
-//    override val data = combineTuple(dashboardData, payinStatusData)
+    override val data = MutableLiveData<Result<InsuranceQuery.Data>>()
 
     init {
-        viewModelScope.launch {
-//            payinStatusRepository
-//                .payinStatus()
-//                .onEach { response ->
-//                    response.data?.let { data ->
-//                        payinStatusData.postValue(data)
-//                    }
-//                }
-//                .catch { e(it) }
-//                .launchIn(this)
+        load()
+    }
 
+    override fun load() {
+        viewModelScope.launch {
             val dashboardResponse = runCatching {
                 insuranceRepository
                     .dashboardAsync()
                     .await()
             }
-
             if (dashboardResponse.isFailure) {
-                dashboardResponse.exceptionOrNull()?.let { e(it) }
+                dashboardResponse.exceptionOrNull()?.let { exception ->
+                    e(exception)
+                    data.postValue(Result.failure(exception))
+                }
                 return@launch
             }
 
-            data.postValue(dashboardResponse.getOrNull()?.data)
+            if (dashboardResponse.getOrNull()?.hasErrors() == true) {
+                data.postValue(Result.failure(Error()))
+                return@launch
+            }
+
+            dashboardResponse.getOrNull()?.data?.let { data.postValue(Result.success(it)) }
         }
     }
 }

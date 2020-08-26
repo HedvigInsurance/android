@@ -15,7 +15,8 @@ import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import java.time.LocalDate
 
 class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
-    override val data = MutableLiveData<InsuranceQuery.Data?>()
+    override val data = MutableLiveData<Result<InsuranceQuery.Data>>()
+    override fun load() {}
 
     init {
         val activePersona = context
@@ -23,12 +24,12 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
             .getInt("mockPersona", 0)
         data.postValue(
             when (activePersona) {
-                0 -> SWEDISH_APARTMENT
-                1 -> SWEDISH_HOUSE
-                2 -> NORWEGIAN_HOME_CONTENTS
-                3 -> NORWEGIAN_TRAVEL
-                4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-                else -> SWEDISH_APARTMENT
+                0 -> Result.success(SWEDISH_APARTMENT)
+                1 -> Result.success(SWEDISH_HOUSE)
+                2 -> Result.success(NORWEGIAN_HOME_CONTENTS)
+                3 -> Result.success(NORWEGIAN_TRAVEL)
+                4 -> Result.success(NORWEGIAN_HOME_CONTENTS_AND_TRAVEL)
+                else -> Result.success(SWEDISH_APARTMENT)
             }
         )
     }
@@ -332,7 +333,6 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                             )
                         )
                     )
-
                 )
             ),
             insurableLimits = listOf(
