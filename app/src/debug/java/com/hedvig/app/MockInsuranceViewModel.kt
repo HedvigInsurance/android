@@ -1,7 +1,6 @@
 package com.hedvig.app
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
@@ -15,7 +14,6 @@ import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import java.time.LocalDate
 
 class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
-    override val data = MutableLiveData<Result<InsuranceQuery.Data>>()
     override fun load() {}
 
     init {

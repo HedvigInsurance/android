@@ -9,15 +9,14 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class InsuranceViewModel : ViewModel() {
-    abstract val data: MutableLiveData<Result<InsuranceQuery.Data>>
+    protected val _data = MutableLiveData<Result<InsuranceQuery.Data>>()
+    val data: MutableLiveData<Result<InsuranceQuery.Data>> = _data
     abstract fun load()
 }
 
 class InsuranceViewModelImpl(
     private val insuranceRepository: InsuranceRepository
 ) : InsuranceViewModel() {
-
-    override val data = MutableLiveData<Result<InsuranceQuery.Data>>()
 
     init {
         load()
