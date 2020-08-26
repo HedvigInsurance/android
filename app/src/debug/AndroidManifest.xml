@@ -49,6 +49,11 @@
             android:label="Home Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.profile.ProfileMockActivity"
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>
