@@ -23,15 +23,11 @@
     <item name="phoneNumberInput" type="id" />
     <item name="contactDetailsContainer" type="id" />
     <item name="paymentRow" type="id" />
-    <item name="profile_menu_row_description" type="id" />
     <item name="profile_payment_screen_content" type="id" />
     <item name="profile_payment_header" type="id" />
     <item name="sphere" type="id" />
     <item name="priceSphere" type="id" />
     <item name="profile_payment_deductible_sphere" type="id" />
-    <item name="profile_menu_row" type="id" />
-    <item name="profile_menu_row_icon" type="id" />
-    <item name="profile_menu_row_name" type="id" />
     <item name="profile_menu_item_description" type="id" />
     <item name="profileInfoRow" type="id" />
     <item name="profilePaymentRow" type="id" />
@@ -89,7 +85,6 @@
     <item name="emailInputContainer" type="id" />
     <item name="phoneNumberInputContainer" type="id" />
     <item name="profileReferralRow" type="id" />
-    <item name="iconNavigateNext" type="id" />
 
     <!-- SpringUtils-tags -->
     <item name="translation_x" type="id" />
