@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -49,13 +48,12 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
     }
 
-    private fun bind(data: Pair<InsuranceQuery.Data?, PayinStatusQuery.Data?>) {
+    private fun bind(data: InsuranceQuery.Data?) {
         binding.loadSpinner.root.remove()
-        val (dashboardData, payinStatusData) = data
 
         val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
 
-        val renewals = dashboardData?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
+        val renewals = data?.contracts.orEmpty().mapNotNull { it.upcomingRenewal }
 
         renewals.forEach {
             infoBoxes.add(
@@ -66,10 +64,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             )
         }
 
-        val contracts = dashboardData?.contracts.orEmpty().map { InsuranceModel.Contract(it) }
+        val contracts = data?.contracts.orEmpty().map { InsuranceModel.Contract(it) }
 
         val upsells = mutableListOf<InsuranceModel.Upsell>()
-        dashboardData?.let { dd ->
+        data?.let { dd ->
             if (isNorway(dd.contracts)) {
                 if (doesNotHaveHomeContents(dd.contracts)) {
                     upsells.add(UPSELL_HOME_CONTENTS)

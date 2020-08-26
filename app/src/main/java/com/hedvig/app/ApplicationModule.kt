@@ -49,7 +49,11 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.*
+import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
@@ -231,7 +235,7 @@ val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
 
-val dashboardModule = module {
+val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }

@@ -7,9 +7,7 @@ import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
-import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
@@ -17,23 +15,21 @@ import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import java.time.LocalDate
 
 class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
-    override val data = MutableLiveData<Pair<InsuranceQuery.Data?, PayinStatusQuery.Data?>>()
+    override val data = MutableLiveData<InsuranceQuery.Data?>()
 
     init {
         val activePersona = context
             .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
             .getInt("mockPersona", 0)
         data.postValue(
-            Pair(
-                when (activePersona) {
-                    0 -> SWEDISH_APARTMENT
-                    1 -> SWEDISH_HOUSE
-                    2 -> NORWEGIAN_HOME_CONTENTS
-                    3 -> NORWEGIAN_TRAVEL
-                    4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-                    else -> SWEDISH_APARTMENT
-                }, PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)
-            )
+            when (activePersona) {
+                0 -> SWEDISH_APARTMENT
+                1 -> SWEDISH_HOUSE
+                2 -> NORWEGIAN_HOME_CONTENTS
+                3 -> NORWEGIAN_TRAVEL
+                4 -> NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
+                else -> SWEDISH_APARTMENT
+            }
         )
     }
 
