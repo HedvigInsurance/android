@@ -23,7 +23,6 @@ import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.svg.buildRequestBuilder
@@ -54,7 +53,7 @@ class ClaimsFragment : BaseTabFragment() {
             }
         }
 
-        claimsNestedScrollView.setupToolbarScrollListener(loggedInViewModel)
+        //claimsNestedScrollView.setupToolbarScrollListener(loggedInViewModel::onScroll)
 
         claimsViewModel.apply {
             loadingSpinner.show()

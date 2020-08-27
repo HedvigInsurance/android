@@ -18,7 +18,6 @@ import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -82,7 +81,7 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-        keyGearRoot.setupToolbarScrollListener(loggedInViewModel)
+        //keyGearRoot.setupToolbarScrollListener(loggedInViewModel::onScroll)
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {

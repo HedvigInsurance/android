@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -16,10 +17,8 @@ import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -51,13 +50,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
 
         loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bti ->
-            bti?.let {
-                bottomTabInset = it
-                applyInsets()
-            }
+            bottomTabInset = bti
+            applyInsets()
         }
 
-        invites.setupToolbarScrollListener(loggedInViewModel)
+        //invites.setupToolbarScrollListener(loggedInViewModel::onScroll)
         invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
         invites.adapter = ReferralsAdapter({
             (invites.adapter as? ReferralsAdapter)?.setLoading()
@@ -70,14 +67,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
 
         referralsViewModel.isRefreshing.observe(viewLifecycleOwner) { isRefreshing ->
-            isRefreshing?.let { swipeToRefresh.isRefreshing = it }
+            swipeToRefresh.isRefreshing = isRefreshing
         }
 
         referralsViewModel.data.observe(viewLifecycleOwner) { data ->
-            if (data == null) {
-                return@observe
-            }
-
             if (data.isFailure) {
                 (invites.adapter as? ReferralsAdapter)?.items = listOf(
                     ReferralsModel.Title,
@@ -101,9 +94,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${Uri.encode(
-                                    code
-                                )}"
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
+                                    Uri.encode(
+                                        code
+                                    )
+                                }"
                             )
                         )
                         intent.type = "text/plain"

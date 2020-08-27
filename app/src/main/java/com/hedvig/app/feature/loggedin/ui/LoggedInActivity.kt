@@ -36,6 +36,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import i
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import javax.money.MonetaryAmount
@@ -64,6 +65,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
 
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
@@ -71,8 +73,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInViewModel.updateBottomTabInset(view.measuredHeight)
             }
 
-            loggedInViewModel.scroll.observe(this@LoggedInActivity) { elevation ->
-                elevation?.let { toolbar.elevation = it }
+            loggedInViewModel.scroll.observe(this@LoggedInActivity) { scroll ->
+                i { "scroll value: $scroll" }
+                //toolbar.elevation = scroll
             }
 
             setSupportActionBar(toolbar)

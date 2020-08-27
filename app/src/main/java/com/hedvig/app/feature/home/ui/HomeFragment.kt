@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -28,12 +29,17 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
     private var recyclerInitialPaddingBottom = 0
+    private var recyclerInitialPaddingTop = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.recycler.apply {
             recyclerInitialPaddingBottom = paddingBottom
+            recyclerInitialPaddingTop = paddingTop
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
+            }
+            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInset ->
+                updatePadding(top = recyclerInitialPaddingTop + toolbarInset)
             }
             adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
@@ -50,6 +56,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                 }
             addItemDecoration(HomeItemDecoration())
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                private var scrollY = 0
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    scrollY += dy
+                    loggedInViewModel.onScroll(scrollY)
+                }
+            })
         }
 
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
