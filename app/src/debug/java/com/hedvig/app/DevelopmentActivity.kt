@@ -45,7 +45,7 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Insurance") {
                     startActivity(Intent(this, InsuranceMockActivity::class.java))
-                }
+                },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
                     startActivity(Intent(this, ProfileMockActivity::class.java))
                 },
