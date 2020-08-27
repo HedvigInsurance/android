@@ -51,4 +51,10 @@
         <item name="colorOnSurface">?colorPrimary</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.RenewalCard" parent="">
+        <item name="colorSurface">@color/colorInfoCardSurface</item>
+        <item name="colorPrimary">@color/hedvig_black</item>
+        <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
 </resources>

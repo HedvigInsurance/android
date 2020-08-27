@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
@@ -16,9 +17,8 @@ import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -40,11 +40,15 @@ class KeyGearFragment : BaseTabFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val scrollInitialTopPadding = keyGearRoot.paddingTop
+        loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
+            keyGearRoot.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+
+        }
+
         val scrollInitialBottomPadding = keyGearRoot.paddingBottom
-        loggedInViewModel.bottomTabInset.observe(this) { bti ->
-            bti?.let { bottomTabInset ->
-                keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
-            }
+        loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
+            keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
         }
 
         items.adapter =
@@ -59,30 +63,28 @@ class KeyGearFragment : BaseTabFragment() {
                         ).toBundle()
                     )
                 }, { root, item ->
-                    startActivity(
-                        KeyGearItemDetailActivity.newInstance(
-                            requireContext(),
-                            item.fragments.keyGearItemFragment
-                        ),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            requireActivity(),
-                            Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
-                        ).toBundle()
-                    )
-                })
+                startActivity(
+                    KeyGearItemDetailActivity.newInstance(
+                        requireContext(),
+                        item.fragments.keyGearItemFragment
+                    ),
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        requireActivity(),
+                        Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
+                    ).toBundle()
+                )
+            })
         items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
         items.itemAnimator = SlideInItemAnimator()
 
-        viewModel.data.observe(this) { d ->
-            d?.let { data ->
-                bind(data)
-                if (!hasSentAutoAddedItems) {
-                    hasSentAutoAddedItems = true
-                    viewModel.sendAutoAddedItems()
-                }
+        viewModel.data.observe(viewLifecycleOwner) { data ->
+            bind(data)
+            if (!hasSentAutoAddedItems) {
+                hasSentAutoAddedItems = true
+                viewModel.sendAutoAddedItems()
             }
         }
-        keyGearRoot.setupToolbarScrollListener(loggedInViewModel)
+        keyGearRoot.setupToolbarAlphaScrollListener(loggedInViewModel)
     }
 
     fun bind(data: KeyGearItemsQuery.Data) {

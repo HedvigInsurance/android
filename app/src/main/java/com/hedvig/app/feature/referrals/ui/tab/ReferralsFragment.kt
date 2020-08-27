@@ -19,7 +19,7 @@ import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showShareSheet
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -45,6 +45,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         shareInitialBottomMargin = share.marginBottom
         invitesInitialBottomPadding = invites.paddingBottom
 
+        val scrollInitialTopPadding = invites.paddingTop
+        loggedInViewModel.toolbarInset.observe(this) { tbi ->
+            tbi?.let { toolbarInsets ->
+                invites.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
+        }
+
         share.doOnLayout {
             shareHeight = it.height
             applyInsets()
@@ -57,7 +64,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             }
         }
 
-        invites.setupToolbarScrollListener(loggedInViewModel)
+        invites.setupToolbarAlphaScrollListener(loggedInViewModel)
         invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
         invites.adapter = ReferralsAdapter({
             (invites.adapter as? ReferralsAdapter)?.setLoading()
@@ -101,9 +108,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             requireContext().getString(
                                 R.string.REFERRAL_SMS_MESSAGE,
                                 incentive.format(requireContext()),
-                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${Uri.encode(
-                                    code
-                                )}"
+                                "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
+                                    Uri.encode(
+                                        code
+                                    )
+                                }"
                             )
                         )
                         intent.type = "text/plain"

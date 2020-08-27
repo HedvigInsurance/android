@@ -103,7 +103,7 @@ class DevelopmentScreenAdapter(
                 const val DEVELOPMENT_PREFERENCES = "DevelopmentPreferences"
                 private val REAL_MODULES =
                     listOf(
-                        dashboardModule,
+                        insuranceModule,
                         marketingModule,
                         offerModule,
                         profileModule,
