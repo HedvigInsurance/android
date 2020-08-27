@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.hedvig.app.feature.home.ui.HomeFragment
 import com.hedvig.app.feature.insurance.ui.InsuranceFragment
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
-import com.hedvig.app.feature.profile.ui.ProfileFragment
+import com.hedvig.app.feature.profile.ui.tab.ProfileFragment
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsFragment
 import com.hedvig.app.util.extensions.byOrdinal
 
