@@ -21,9 +21,13 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.openUri
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -327,7 +331,7 @@ class InsuranceAdapter(
 
 sealed class InsuranceModel {
     object Header : InsuranceModel()
-    
+
     data class Contract(
         val inner: InsuranceQuery.Contract
     ) : InsuranceModel()
