@@ -54,19 +54,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         val successData = data.getOrNull() ?: return
 
-//        val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
-
-        val renewals = successData.contracts.mapNotNull { it.upcomingRenewal }
-
-//        renewals.forEach {
-//            infoBoxes.add(
-//                InsuranceModel.Renewal(
-//                    it.renewalDate,
-//                    it.draftCertificateUrl
-//                )
-//            )
-//        }
-
         val contracts = successData.contracts.map { InsuranceModel.Contract(it) }
 
         val upsells = mutableListOf<InsuranceModel.Upsell>()
