@@ -253,7 +253,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
+            android:name=".feature.insurance.ui.contractdetail.ContractDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -261,7 +261,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity"
+            android:name=".feature.insurance.ui.contractcoverage.ContractCoverageActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

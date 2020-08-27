@@ -8,7 +8,11 @@ import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.util.extensions.*
+import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
+import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.extensions.getStoredBoolean
+import com.hedvig.app.util.extensions.setAuthenticationToken
+import com.hedvig.app.util.extensions.storeBoolean
 import e
 import i
 import kotlinx.coroutines.CoroutineScope
@@ -49,7 +53,7 @@ open class HedvigApplication : Application() {
                     applicationModule,
                     viewModelModule,
                     loggedInModule,
-                    dashboardModule,
+                    insuranceModule,
                     marketingModule,
                     offerModule,
                     profileModule,

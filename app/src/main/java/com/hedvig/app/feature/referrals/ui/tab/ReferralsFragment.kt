@@ -44,6 +44,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         shareInitialBottomMargin = share.marginBottom
         invitesInitialBottomPadding = invites.paddingBottom
 
+        val scrollInitialTopPadding = invites.paddingTop
+        loggedInViewModel.toolbarInset.observe(this) { tbi ->
+            tbi?.let { toolbarInsets ->
+                invites.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
+        }
+
         share.doOnLayout {
             shareHeight = it.height
             applyInsets()

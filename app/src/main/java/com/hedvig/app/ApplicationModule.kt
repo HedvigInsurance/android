@@ -24,17 +24,17 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
+import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.service.InsuranceTracker
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
+import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
+import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModelImpl
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -49,7 +49,11 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.*
+import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
@@ -231,8 +235,8 @@ val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
 
-val dashboardModule = module {
-    viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
+val insuranceModule = module {
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
@@ -293,7 +297,7 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { DashboardRepository(get(), get()) }
+    single { InsuranceRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single {
@@ -329,6 +333,6 @@ val trackerModule = module {
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }
-    single { DashboardTracker(get()) }
+    single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
 }

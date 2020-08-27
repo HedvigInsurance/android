@@ -15,6 +15,7 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -32,7 +33,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private var recyclerInitialPaddingTop = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         binding.recycler.apply {
+
+            val scrollInitialTopPadding = paddingTop
+            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
+                updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
+
             recyclerInitialPaddingBottom = paddingBottom
             recyclerInitialPaddingTop = paddingTop
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
