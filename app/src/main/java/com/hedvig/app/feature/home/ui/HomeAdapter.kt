@@ -108,7 +108,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.BigText.Pending -> {
                         root.text = root.resources.getString(
-                            R.string.home_tab_pending_nonswitchable_welcome_title,
+                            R.string.home_tab_pending_unknown_title,
                             data.name
                         )
                     }
@@ -149,7 +149,7 @@ class HomeAdapter(
 
                 when (data) {
                     HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_nonswitchable_body)
+                        root.setText(R.string.home_tab_pending_unknown_body)
                     }
                     HomeModel.BodyText.ActiveInFuture -> {
                         root.setText(R.string.home_tab_active_in_future_body)
