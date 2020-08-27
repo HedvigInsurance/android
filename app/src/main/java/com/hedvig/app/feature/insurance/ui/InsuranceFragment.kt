@@ -54,18 +54,18 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         val successData = data.getOrNull() ?: return
 
-        val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
+//        val infoBoxes = mutableListOf<InsuranceModel.Renewal>()
 
         val renewals = successData.contracts.mapNotNull { it.upcomingRenewal }
 
-        renewals.forEach {
-            infoBoxes.add(
-                InsuranceModel.Renewal(
-                    it.renewalDate,
-                    it.draftCertificateUrl
-                )
-            )
-        }
+//        renewals.forEach {
+//            infoBoxes.add(
+//                InsuranceModel.Renewal(
+//                    it.renewalDate,
+//                    it.draftCertificateUrl
+//                )
+//            )
+//        }
 
         val contracts = successData.contracts.map { InsuranceModel.Contract(it) }
 
@@ -80,7 +80,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
 
         (binding.recycler.adapter as? InsuranceAdapter)?.items =
-            listOf(InsuranceModel.Header) + infoBoxes + contracts + upsells
+            listOf(InsuranceModel.Header) + contracts + upsells
     }
 
     override fun onResume() {

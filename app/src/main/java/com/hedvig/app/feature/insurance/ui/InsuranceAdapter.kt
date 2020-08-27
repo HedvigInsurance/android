@@ -13,20 +13,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
-import com.hedvig.app.databinding.DashboardContractRowBinding
 import com.hedvig.app.databinding.DashboardUpsellBinding
-import com.hedvig.app.databinding.HomeInfoCardBinding
+import com.hedvig.app.databinding.InsuranceContractRowBinding
 import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageActivity
 import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
-import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.openUri
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import java.time.LocalDate
@@ -47,8 +42,7 @@ class InsuranceAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.home_info_card -> ViewHolder.InfoBoxViewHolder(parent)
-        R.layout.dashboard_contract_row -> ViewHolder.ContractViewHolder(parent)
+        R.layout.insurance_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.insurance_error -> ViewHolder.Error(parent)
@@ -61,14 +55,12 @@ class InsuranceAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.InfoBoxViewHolder -> {
-                (items[position] as? InsuranceModel.Renewal)?.let { holder.bind(it, tracker) }
-            }
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? InsuranceModel.Contract)?.let {
                     holder.bind(
                         it.inner,
-                        fragmentManager
+                        fragmentManager,
+                        tracker
                     )
                 }
             }
@@ -82,8 +74,7 @@ class InsuranceAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is InsuranceModel.Renewal -> R.layout.home_info_card
-        is InsuranceModel.Contract -> R.layout.dashboard_contract_row
+        is InsuranceModel.Contract -> R.layout.insurance_contract_row
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.dashboard_header
         InsuranceModel.Error -> R.layout.insurance_error
@@ -122,49 +113,45 @@ class InsuranceAdapter(
             }
         }
 
-        class InfoBoxViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.home_info_card, parent, false)
-        ) {
-            private val binding by viewBinding(HomeInfoCardBinding::bind)
-
-            fun bind(data: InsuranceModel.Renewal, tracker: InsuranceTracker) {
-                binding.apply {
-                    title.text =
-                        title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-                    body.text = body.resources.getString(
-                        R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, ChronoUnit.DAYS.between(
-                        LocalDate.now(),
-                        data.renewalDate
-                    )
-                    )
-                    action.text =
-                        action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
-                    val maybeLinkUri = runCatching {
-                        Uri.parse(data.draftCertificateUrl)
-                    }
-                    action.setHapticClickListener {
-                        tracker.showRenewal()
-                        maybeLinkUri.getOrNull()?.let { uri ->
-                            if (action.context.canOpenUri(uri)) {
-                                action.context.openUri(uri)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         class ContractViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.dashboard_contract_row, parent, false)
+                .inflate(R.layout.insurance_contract_row, parent, false)
         ) {
-            private val binding by viewBinding(DashboardContractRowBinding::bind)
+            private val binding by viewBinding(InsuranceContractRowBinding::bind)
 
-            fun bind(contract: InsuranceQuery.Contract, fragmentManager: FragmentManager) {
+            fun bind(contract: InsuranceQuery.Contract,
+                     fragmentManager: FragmentManager,
+                     tracker: InsuranceTracker) {
                 binding.apply {
+                    if (contract.upcomingRenewal != null) {
+                        renewalCard.show()
+                        contract.upcomingRenewal?.let { renewal ->
+                            title.text =
+                                title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
+                            body.text = body.resources.getString(
+                                R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+                                ChronoUnit.DAYS.between(
+                                    LocalDate.now(),
+                                    renewal.renewalDate
+
+                                )
+                            )
+                            action.text =
+                                action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+                            val maybeLinkUri = runCatching {
+                                Uri.parse(renewal.draftCertificateUrl)
+                            }
+                            action.setHapticClickListener {
+                                tracker.showRenewal()
+                                maybeLinkUri.getOrNull()?.let { uri ->
+                                    if (action.context.canOpenUri(uri)) {
+                                        action.context.openUri(uri)
+                                    }
+                                }
+                            }
+                        }
+                    }
                     contract.status.fragments.contractStatusFragment.let { contractStatus ->
                         contractStatus.asPendingStatus?.let {
                             this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -340,13 +327,7 @@ class InsuranceAdapter(
 
 sealed class InsuranceModel {
     object Header : InsuranceModel()
-
-    data class Renewal(
-        val renewalDate: LocalDate,
-        val draftCertificateUrl: String
-    ) : InsuranceModel()
-
-
+    
     data class Contract(
         val inner: InsuranceQuery.Contract
     ) : InsuranceModel()
