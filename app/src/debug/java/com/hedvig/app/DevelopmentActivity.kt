@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
+import com.hedvig.app.feature.home.HomeMockActivity
+import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
+import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.viewgallery.ViewGalleryActivity
 import kotlinx.android.synthetic.debug.activity_development.*
@@ -36,6 +39,15 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
                     startActivity(Intent(this, OfferMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
+                    startActivity(Intent(this, HomeMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Insurance") {
+                    startActivity(Intent(this, InsuranceMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
+                    startActivity(Intent(this, ProfileMockActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))

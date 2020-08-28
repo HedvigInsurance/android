@@ -25,6 +25,7 @@ buildscript {
         classpath "com.apollographql.apollo:apollo-gradle-plugin:$apollo_version"
         classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
         classpath 'com.github.likandr:lokalise-plugin:1.3'
+        classpath "net.rdrei.android.buildtimetracker:gradle-plugin:0.11.1"
     }
 }
 
@@ -41,6 +42,27 @@ allprojects {
         }
         maven {
             url 'https://dl.bintray.com/hedvig/hedvig-java'
+        }
+    }
+}
+
+apply plugin: "build-time-tracker"
+buildtimetracker {
+    reporters {
+        csv {
+            output "build/times.csv"
+            append true
+            header false
+        }
+
+        summary {
+            ordered false
+            threshold 50
+            barstyle "unicode"
+        }
+
+        csvSummary {
+            csv "build/times.csv"
         }
     }
 }

@@ -43,4 +43,18 @@
         <item name="colorSurface">@color/colorInfoCardSurface</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.WarningCard" parent="">
+        <item name="colorSurface">?colorWarning</item>
+        <item name="colorPrimary">@color/hedvig_black</item>
+        <item name="android:textColorPrimary">@color/text_color_primary_light</item>
+        <item name="android:textColorSecondary">@color/hedvig_black</item>
+        <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.RenewalCard" parent="">
+        <item name="colorSurface">@color/colorInfoCardSurface</item>
+        <item name="colorPrimary">@color/hedvig_black</item>
+        <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
 </resources>

@@ -64,3 +64,23 @@ class GenericDevelopmentAdapter(
         ) : Item()
     }
 }
+
+class GenericDevelopmentAdapterBuilder {
+    val items = mutableListOf<GenericDevelopmentAdapter.Item>()
+
+    fun header(label: String) {
+        items.add(GenericDevelopmentAdapter.Item.Header(label))
+    }
+
+    fun clickableItem(label: String, onClick: () -> Unit) {
+        items.add(GenericDevelopmentAdapter.Item.ClickableItem(label, onClick))
+    }
+}
+
+inline fun genericDevelopmentAdapter(
+    crossinline function: GenericDevelopmentAdapterBuilder.() -> Unit
+): GenericDevelopmentAdapter {
+    val builder = GenericDevelopmentAdapterBuilder()
+    function(builder)
+    return GenericDevelopmentAdapter(builder.items)
+}

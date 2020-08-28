@@ -1,0 +1,61 @@
+query InsuranceQuery($locale: Locale!) {
+  contracts {
+    id
+    status {
+      ... ContractStatusFragment
+    }
+    displayName
+    typeOfContract
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
+    }
+    currentAgreement {
+      ... on AgreementCore {
+        certificateUrl
+      }
+      ... on SwedishApartmentAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+        saType: type
+      }
+      ... on SwedishHouseAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+      }
+      ... on NorwegianHomeContentAgreement {
+        address {
+          ...AddressFragment
+        }
+        numberCoInsured
+        squareMeters
+        nhcType: type
+      }
+      ... on NorwegianTravelAgreement {
+        numberCoInsured
+      }
+    }
+    perils(locale: $locale) {
+      ... PerilFragment
+    }
+    insurableLimits(locale: $locale) {
+      ... InsurableLimitsFragment
+    }
+    termsAndConditions(locale: $locale) {
+      displayName
+      url
+    }
+  }
+}
+
+fragment AddressFragment on Address {
+  street
+  postalCode
+  city
+}

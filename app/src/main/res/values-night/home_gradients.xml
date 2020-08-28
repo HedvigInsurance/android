@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="home_gradient">
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">#1B2631</item>
+        <item type="color">#34221E</item>
+    </array>
+    <array name="insurance_gradient">
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">#0B1619</item>
+        <item type="color">#192E33</item>
+    </array>
+    <array name="key_gear_gradient">
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">#131313</item>
+        <item type="color">#262626</item>
+    </array>
+    <array name="forever_gradient">
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">#131313</item>
+        <item type="color">#262626</item>
+    </array>
+    <array name="profile_gradient">
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">#0F0F05</item>
+        <item type="color">#1E1D0A</item>
+    </array>
+</resources>
