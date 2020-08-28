@@ -8,6 +8,7 @@ import androidx.lifecycle.observe
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
@@ -24,13 +25,24 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val model: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
 
-    private var scrollInitialBottomPadding = 0
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recycler.apply {
-            scrollInitialBottomPadding = paddingBottom
+            val scrollInitialBottomPadding = paddingBottom
+            val scrollInitialTopPadding = paddingTop
+
+            var hasInsetForToolbar = false
+
+            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInset ->
+                updatePadding(top = scrollInitialTopPadding + toolbarInset)
+                if (!hasInsetForToolbar) {
+                    hasInsetForToolbar = true
+                    scrollToPosition(0)
+                }
+            }
+
+            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
 
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)

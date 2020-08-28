@@ -15,7 +15,7 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
+import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -29,25 +29,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
-    private var recyclerInitialPaddingBottom = 0
-    private var recyclerInitialPaddingTop = 0
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         binding.recycler.apply {
+            val recyclerInitialPaddingBottom = paddingBottom
+            val recyclerInitialPaddingTop = paddingTop
 
-            val scrollInitialTopPadding = paddingTop
+            var hasInsetForToolbar = false
+
             loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                updatePadding(top = recyclerInitialPaddingTop + toolbarInsets)
+                if (!hasInsetForToolbar) {
+                    hasInsetForToolbar = true
+                    scrollToPosition(0)
+                }
             }
 
-            recyclerInitialPaddingBottom = paddingBottom
-            recyclerInitialPaddingTop = paddingTop
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
-            }
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInset ->
-                updatePadding(top = recyclerInitialPaddingTop + toolbarInset)
             }
             adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
@@ -64,13 +62,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                 }
             addItemDecoration(HomeItemDecoration())
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                private var scrollY = 0
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    scrollY += dy
-                    loggedInViewModel.onScroll(scrollY)
-                }
-            })
+            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
         }
 
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->

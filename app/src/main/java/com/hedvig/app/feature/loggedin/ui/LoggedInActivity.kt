@@ -29,6 +29,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -64,6 +66,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
 
+            toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
@@ -74,9 +77,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInViewModel.updateBottomTabInset(view.measuredHeight)
             }
 
+            val isDarkTheme = isDarkThemeActive
+
             loggedInViewModel.scroll.observe(this@LoggedInActivity) { scroll ->
-                i { "scroll value: $scroll" }
-                //toolbar.elevation = scroll
+                val positionInSpan = scroll.toFloat() / toolbar.measuredHeight
+                toolbar.background.alpha = boundedLerp(0, 242, positionInSpan / 2)
+                if (isDarkTheme) {
+                    gradient.drawable?.alpha = boundedLerp(127, 255, positionInSpan / 5)
+                } else {
+                    gradient.drawable?.alpha = boundedLerp(255, 0, positionInSpan / 5)
+                }
             }
 
             setSupportActionBar(toolbar)
@@ -218,8 +228,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
 
         insuranceViewModel.data.observe(this) { data ->
-            if (isTerminated(data.contracts)) {
-                startActivity(LoggedInTerminatedActivity.newInstance(this))
+            data.getOrNull()?.let { d ->
+                if (isTerminated(d.contracts)) {
+                    startActivity(LoggedInTerminatedActivity.newInstance(this))
+                }
             }
         }
     }
@@ -240,6 +252,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 mutate()
                 colors = newTab.backgroundGradient(resources)
             })
+            if (gradient.context.isDarkThemeActive) {
+                gradient.drawable.alpha = 127
+            }
         } else {
             val initialGradientComponents =
                 (gradient.drawable as? GradientDrawableWrapper)?.getColorsLowerApi() ?: return@with

@@ -9,8 +9,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -27,17 +27,25 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         binding.apply {
             val scrollInitialTopPadding = recycler.paddingTop
+
+            var hasInsetForToolbar = false
+
             loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
                 recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                if (!hasInsetForToolbar) {
+                    hasInsetForToolbar = true
+                    recycler.scrollToPosition(0)
+                }
             }
 
             val scrollInitialBottomPadding = recycler.paddingBottom
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
+            recycler.addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
 
-            recycler.setupToolbarAlphaScrollListener(loggedInViewModel)
-            recycler.adapter = InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
+            recycler.adapter =
+                InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
             bind(data)
