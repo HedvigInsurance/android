@@ -6,6 +6,5 @@
     android:layout_marginStart="@dimen/base_margin_triple"
     android:layout_marginTop="@dimen/base_margin_triple"
     android:layout_marginEnd="@dimen/base_margin_triple"
-    android:textAlignment="center"
     android:textAppearance="?textAppearanceBody1"
     tools:text="@string/home_tab.pending_switchable_body" />
