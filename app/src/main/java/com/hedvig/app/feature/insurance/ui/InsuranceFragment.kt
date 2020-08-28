@@ -25,26 +25,26 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            val scrollInitialTopPadding = recycler.paddingTop
+        binding.insuranceRecycler.apply {
+            val scrollInitialTopPadding = paddingTop
 
             var hasInsetForToolbar = false
 
             loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                updatePadding(top = scrollInitialTopPadding + toolbarInsets)
                 if (!hasInsetForToolbar) {
                     hasInsetForToolbar = true
-                    recycler.scrollToPosition(0)
+                    scrollToPosition(0)
                 }
             }
 
-            val scrollInitialBottomPadding = recycler.paddingBottom
+            val scrollInitialBottomPadding = paddingBottom
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+                updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
-            recycler.addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
+            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
 
-            recycler.adapter =
+            adapter =
                 InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
@@ -56,7 +56,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.recycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
             return
         }
 
@@ -74,13 +74,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             }
         }
 
-        (binding.recycler.adapter as? InsuranceAdapter)?.items =
+        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
             listOf(InsuranceModel.Header) + contracts + upsells
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.recycler.scrollToPosition(0)
     }
 
     companion object {
