@@ -18,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
+import com.hedvig.app.BASE_MARGIN_OCTUPLE
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
@@ -97,7 +98,6 @@ class KeyGearItemsAdapter(
                     Glide
                         .with(holder.image)
                         .load(photoUrl)
-                        .placeholder(ColorDrawable(holder.image.context.colorAttr(R.attr.colorSurface)))
                         .transition(withCrossFade())
                         .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
                         .into(holder.image)
