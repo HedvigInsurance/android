@@ -50,6 +50,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_navigate_next" />
+        app:srcCompat="@drawable/ic_arrow_forward" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
