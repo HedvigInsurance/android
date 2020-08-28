@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include layout="@layout/loading_spinner" />
+        <include android:id="@+id/loadingSpinner" layout="@layout/loading_spinner" />
 
         <TextView
             android:id="@+id/header"

@@ -9,8 +9,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarAlphaScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -25,19 +25,27 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            val scrollInitialTopPadding = recycler.paddingTop
+        binding.insuranceRecycler.apply {
+            val scrollInitialTopPadding = paddingTop
+
+            var hasInsetForToolbar = false
+
             loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                recycler.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+                if (!hasInsetForToolbar) {
+                    hasInsetForToolbar = true
+                    scrollToPosition(0)
+                }
             }
 
-            val scrollInitialBottomPadding = recycler.paddingBottom
+            val scrollInitialBottomPadding = paddingBottom
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                recycler.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
+                updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
+            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
 
-            recycler.setupToolbarAlphaScrollListener(loggedInViewModel)
-            recycler.adapter = InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
+            adapter =
+                InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
             bind(data)
@@ -48,7 +56,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.recycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
             return
         }
 
@@ -66,13 +74,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             }
         }
 
-        (binding.recycler.adapter as? InsuranceAdapter)?.items =
+        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
             listOf(InsuranceModel.Header) + contracts + upsells
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.recycler.scrollToPosition(0)
     }
 
     companion object {

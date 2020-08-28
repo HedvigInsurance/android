@@ -8,30 +8,35 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import kotlinx.coroutines.launch
 
 abstract class LoggedInViewModel : ViewModel() {
-    abstract val data: LiveData<LoggedInQuery.Data>
-    val scroll = MutableLiveData<Float>()
+    protected val _data = MutableLiveData<LoggedInQuery.Data>()
+    val data: LiveData<LoggedInQuery.Data> = _data
 
-    private val _toolbarInset = MutableLiveData<Int>()
-    val toolbarInset: LiveData<Int>
-        get() = _toolbarInset
-
-    fun updateToolbarInset(newInset: Int) {
-        _toolbarInset.postValue(newInset)
-    }
+    private val _scroll = MutableLiveData<Int>()
+    val scroll: LiveData<Int> = _scroll
 
     private val _bottomTabInset = MutableLiveData<Int>()
     val bottomTabInset: LiveData<Int>
         get() = _bottomTabInset
 
+    private val _toolbarInset = MutableLiveData<Int>()
+    val toolbarInset: LiveData<Int> = _toolbarInset
+
     fun updateBottomTabInset(newInset: Int) {
         _bottomTabInset.postValue(newInset)
+    }
+
+    fun updateToolbarInset(newInset: Int) {
+        _toolbarInset.postValue(newInset)
+    }
+
+    fun onScroll(scroll: Int) {
+        _scroll.postValue(scroll)
     }
 }
 
 class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository
 ) : LoggedInViewModel() {
-    override val data = MutableLiveData<LoggedInQuery.Data>()
 
     init {
         viewModelScope.launch {
@@ -41,7 +46,7 @@ class LoggedInViewModelImpl(
                     .await()
             }
 
-            data.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { _data.postValue(it) }
         }
     }
 }

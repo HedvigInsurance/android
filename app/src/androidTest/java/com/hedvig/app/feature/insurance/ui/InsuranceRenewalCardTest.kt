@@ -4,7 +4,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.hedvig.android.owldroid.graphql.DashboardQuery
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
@@ -32,7 +32,7 @@ class InsuranceRenewalCardTest {
                 LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
             )
         },
-        DashboardQuery.QUERY_DOCUMENT to apolloResponse {
+        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
             success(
                 INSURANCE_DATA
             )

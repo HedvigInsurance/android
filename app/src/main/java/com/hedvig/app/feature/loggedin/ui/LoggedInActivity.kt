@@ -1,11 +1,16 @@
 package com.hedvig.app.feature.loggedin.ui
 
+import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isEmpty
+import androidx.dynamicanimation.animation.FloatValueHolder
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
@@ -24,7 +29,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.toMonetaryAmount
-import com.hedvig.app.util.extensions.observe
+import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -32,6 +38,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import i
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import javax.money.MonetaryAmount
@@ -59,6 +66,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
 
+            toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
@@ -69,10 +77,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 loggedInViewModel.updateBottomTabInset(view.measuredHeight)
             }
 
-            toolbar.background.alpha = 0
+            val isDarkTheme = isDarkThemeActive
 
-            loggedInViewModel.scroll.observe(this@LoggedInActivity) { alpha ->
-                alpha?.let { toolbar.background.alpha = it.toInt() }
+            loggedInViewModel.scroll.observe(this@LoggedInActivity) { scroll ->
+                val positionInSpan = scroll.toFloat() / toolbar.measuredHeight
+                toolbar.background.alpha = boundedLerp(0, 242, positionInSpan / 2)
+                if (isDarkTheme) {
+                    gradient.drawable?.alpha = boundedLerp(127, 255, positionInSpan / 5)
+                } else {
+                    gradient.drawable?.alpha = boundedLerp(255, 0, positionInSpan / 5)
+                }
             }
 
             setSupportActionBar(toolbar)
@@ -87,6 +101,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
                 tabContent.setCurrentItem(id.ordinal, false)
                 setupToolBar(id)
+                animateGradient(id)
                 true
             }
 
@@ -97,7 +112,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
                 welcomeViewModel.fetch()
-                welcomeViewModel.data.observe(lifecycleOwner = this@LoggedInActivity) { data ->
+                welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
                     if (data != null) {
                         WelcomeDialog.newInstance(data)
                             .show(supportFragmentManager, WelcomeDialog.TAG)
@@ -162,64 +177,60 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     private fun bindData() {
-        whatsNewViewModel.news.observe(lifecycleOwner = this) { data ->
-            data?.let {
-                if (data.news.isNotEmpty()) {
-                    WhatsNewDialog.newInstance(data.news)
-                        .show(supportFragmentManager, WhatsNewDialog.TAG)
-                }
+        whatsNewViewModel.news.observe(this) { data ->
+            if (data.news.isNotEmpty()) {
+                WhatsNewDialog.newInstance(data.news)
+                    .show(supportFragmentManager, WhatsNewDialog.TAG)
             }
         }
 
         loggedInViewModel.data.observe(this) { data ->
-            data?.let { d ->
-                if (binding.bottomNavigation.menu.isEmpty()) {
-                    val keyGearEnabled = if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+            if (binding.bottomNavigation.menu.isEmpty()) {
+                val keyGearEnabled =
+                    if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
                         true
                     } else {
-                        d.member.features.contains(Feature.KEYGEAR)
+                        data.member.features.contains(Feature.KEYGEAR)
                     }
-                    val referralsEnabled = if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                val referralsEnabled =
+                    if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
                         true
                     } else {
-                        d.member.features.contains(Feature.REFERRALS)
+                        data.member.features.contains(Feature.REFERRALS)
                     }
 
-                    val menuId = when {
-                        keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
-                        referralsEnabled -> R.menu.logged_in_menu
-                        !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
-                        else -> R.menu.logged_in_menu
-                    }
-                    binding.bottomNavigation.inflateMenu(menuId)
-                    val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-                        ?: LoggedInTabs.HOME
-                    binding.bottomNavigation.selectedItemId = initialTab.id()
-                    setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
-                    binding.loggedInRoot.show()
+                val menuId = when {
+                    keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+                    referralsEnabled -> R.menu.logged_in_menu
+                    !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+                    else -> R.menu.logged_in_menu
                 }
-
-                referralTermsUrl = d.referralTerms.url
-                d.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                    ?.let { referralsIncentive = it }
+                binding.bottomNavigation.inflateMenu(menuId)
+                val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                    ?: LoggedInTabs.HOME
+                binding.bottomNavigation.selectedItemId = initialTab.id()
+                setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
+                binding.loggedInRoot.show()
             }
+
+            referralTermsUrl = data.referralTerms.url
+            data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                ?.let { referralsIncentive = it }
+
         }
 
-        profileViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.member?.id?.let { id ->
+        profileViewModel.data.observe(this) { data ->
+            data.member.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
 
         }
         whatsNewViewModel.fetchNews()
 
-        insuranceViewModel.data.observe(lifecycleOwner = this) { data ->
-            if (data != null) {
-                val safeData = data.getOrNull()
-                safeData?.let { d ->
-                    if (isTerminated(d.contracts)) {
-                        startActivity(LoggedInTerminatedActivity.newInstance(this))
-                    }
+        insuranceViewModel.data.observe(this) { data ->
+            data.getOrNull()?.let { d ->
+                if (isTerminated(d.contracts)) {
+                    startActivity(LoggedInTerminatedActivity.newInstance(this))
                 }
             }
         }
@@ -232,6 +243,55 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
         if (id != null) {
             lastLoggedInTab = id
+        }
+    }
+
+    private fun animateGradient(newTab: LoggedInTabs) = with(binding) {
+        if (gradient.drawable == null) {
+            gradient.setImageDrawable(GradientDrawableWrapper().apply {
+                mutate()
+                colors = newTab.backgroundGradient(resources)
+            })
+            if (gradient.context.isDarkThemeActive) {
+                gradient.drawable.alpha = 127
+            }
+        } else {
+            val initialGradientComponents =
+                (gradient.drawable as? GradientDrawableWrapper)?.getColorsLowerApi() ?: return@with
+            val newGradientComponents = newTab.backgroundGradient(resources)
+            (gradient.getTag(R.id.gradient_animation) as? SpringAnimation)?.cancel()
+
+            val animation = SpringAnimation(FloatValueHolder())
+                .apply {
+                    spring = SpringForce().apply {
+                        stiffness = SpringForce.STIFFNESS_LOW
+                        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    }
+                    addUpdateListener { _, value, _ ->
+                        val progress = value / 100
+                        val first = evaluator.evaluate(
+                            progress,
+                            initialGradientComponents[0],
+                            newGradientComponents[0]
+                        ) as Int
+                        val second = evaluator.evaluate(
+                            progress,
+                            initialGradientComponents[1],
+                            newGradientComponents[1]
+                        ) as Int
+                        val third = evaluator.evaluate(
+                            progress,
+                            initialGradientComponents[2],
+                            newGradientComponents[2]
+                        ) as Int
+
+                        (gradient.drawable.mutate() as? GradientDrawableWrapper)
+                            ?.colors = intArrayOf(first, second, third)
+                    }
+                    animateToFinalPosition(100f)
+                }
+
+            gradient.setTag(R.id.gradient_animation, animation)
         }
     }
 
@@ -255,5 +315,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
+
+        private val evaluator = ArgbEvaluator()
     }
 }
