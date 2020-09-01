@@ -93,7 +93,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 ProfileModel.Row(
                     getString(R.string.PROFILE_ABOUT_ROW),
                     getString(R.string.profile_tab_about_row_subtitle),
-                    R.drawable.ic_info
+                    R.drawable.ic_info_toolbar
                 ) {
                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                 },
