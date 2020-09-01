@@ -65,13 +65,11 @@
 
         <Button
             android:id="@+id/action"
-            style="?materialButtonOutlinedStyle"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
             android:layout_marginEnd="@dimen/base_margin"
-            android:layout_marginBottom="@dimen/base_margin_half"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/separator"
