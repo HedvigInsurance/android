@@ -24,6 +24,12 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val binding by viewBinding(ProfileFragmentBinding::bind)
     private val model: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+    private var scroll = 0
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,7 +48,15 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 }
             }
 
-            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
+            addOnScrollListener(
+                ScrollPositionListener(
+                    loggedInViewModel::onScroll,
+                    viewLifecycleOwner
+                )
+            )
+            addOnScrollListener(ScrollPositionListener({
+                scroll = it
+            }, viewLifecycleOwner))
 
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)

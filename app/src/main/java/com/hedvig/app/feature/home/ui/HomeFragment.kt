@@ -6,7 +6,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -26,8 +25,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val model: HomeViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
+    private var scroll = 0
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.recycler.apply {
@@ -62,7 +67,15 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                 }
             addItemDecoration(HomeItemDecoration())
-            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
+            addOnScrollListener(
+                ScrollPositionListener(
+                    loggedInViewModel::onScroll,
+                    viewLifecycleOwner
+                )
+            )
+            addOnScrollListener(ScrollPositionListener({
+                scroll = it
+            }, viewLifecycleOwner))
         }
 
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->

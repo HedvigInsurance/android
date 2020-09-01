@@ -13,6 +13,7 @@ import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import i
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -21,12 +22,18 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val tracker: InsuranceTracker by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
+    private var scroll = 0
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
+            i { "onCreate" }
 
             var hasInsetForToolbar = false
 
@@ -42,8 +49,15 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
-            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
-
+            addOnScrollListener(
+                ScrollPositionListener(
+                    loggedInViewModel::onScroll,
+                    viewLifecycleOwner
+                )
+            )
+            addOnScrollListener(ScrollPositionListener({
+                scroll = it
+            }, viewLifecycleOwner))
             adapter =
                 InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
@@ -56,7 +70,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
+                listOf(InsuranceModel.Error)
             return
         }
 
