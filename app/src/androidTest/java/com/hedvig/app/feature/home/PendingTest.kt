@@ -44,10 +44,10 @@ class PendingTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText(R.string.home_tab_pending_nonswitchable_welcome_title, "Test") }
+                    text { hasText(R.string.home_tab_pending_unknown_title, "Test") }
                 }
                 childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_pending_nonswitchable_body) }
+                    text { hasText(R.string.home_tab_pending_unknown_body) }
                 }
             }
         }

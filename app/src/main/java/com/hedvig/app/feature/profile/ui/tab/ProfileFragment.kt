@@ -14,6 +14,7 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -100,6 +101,13 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     getString(R.string.profile_appSettingsSection_row_headline),
                     getString(R.string.profile_appSettingsSection_row_subheadline),
                     R.drawable.ic_profile_settings
+                ) {
+                    startActivity(SettingsActivity.newInstance(requireContext()))
+                },
+                ProfileModel.Row(
+                    getString(R.string.PROFILE_ABOUT_ROW),
+                    getString(R.string.profile_tab_about_row_subtitle),
+                    R.drawable.ic_info_toolbar
                 ) {
                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                 },

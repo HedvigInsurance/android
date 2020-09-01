@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -23,6 +24,7 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.synthetic.main.activity_emergency.*
 import kotlinx.android.synthetic.main.common_claim_first_message.*
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -77,7 +79,8 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
 
         thirdEmergencyButton.setHapticClickListener {
             tracker.emergencyChat()
-            claimsViewModel.triggerFreeTextChat {
+            lifecycleScope.launch {
+                claimsViewModel.triggerFreeTextChat()
                 startClosableChat()
             }
         }

@@ -79,6 +79,12 @@ class SuccessTest {
                 childAt<ProfileTabScreen.Row>(5) {
                     isVisible()
                 }
+                childAt<ProfileTabScreen.Row>(6) {
+                    isVisible()
+                }
+                childAt<ProfileTabScreen.Logout>(7) {
+                    isVisible()
+                }
             }
         }
     }
@@ -89,6 +95,7 @@ class ProfileTabScreen : Screen<ProfileTabScreen>() {
         itemType(::Title)
         itemType(::Row)
         itemType(::Subtitle)
+        itemType(::Logout)
     })
 
     class Title(parent: Matcher<View>) : KRecyclerItem<Title>(parent) {
@@ -101,5 +108,9 @@ class ProfileTabScreen : Screen<ProfileTabScreen>() {
 
     class Subtitle(parent: Matcher<View>) : KRecyclerItem<Subtitle>(parent) {
         val text = KTextView(parent) { withMatcher(parent) }
+    }
+
+    class Logout(parent: Matcher<View>) : KRecyclerItem<Logout>(parent) {
+
     }
 }

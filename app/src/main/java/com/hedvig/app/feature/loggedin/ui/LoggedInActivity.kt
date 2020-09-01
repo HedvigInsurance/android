@@ -10,6 +10,7 @@ import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
@@ -22,7 +23,6 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
@@ -38,6 +38,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import javax.money.MonetaryAmount
@@ -134,11 +135,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
             LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
+            LoggedInTabs.PROFILE,
             LoggedInTabs.INSURANCE -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
-            }
-            LoggedInTabs.PROFILE -> {
-                menuInflater.inflate(R.menu.profile_settings_menu, menu)
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
@@ -154,13 +153,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
             LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
+            LoggedInTabs.PROFILE,
             LoggedInTabs.INSURANCE -> {
-                claimsViewModel.triggerFreeTextChat {
+                lifecycleScope.launch {
+                    claimsViewModel.triggerFreeTextChat()
                     startClosableChat()
                 }
-            }
-            LoggedInTabs.PROFILE -> {
-                startActivity(SettingsActivity.newInstance(this))
             }
             LoggedInTabs.REFERRALS -> {
                 startActivity(
