@@ -21,10 +21,15 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val tracker: InsuranceTracker by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
+    private var scroll = 0
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
 
@@ -42,8 +47,15 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
-            addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
-
+            addOnScrollListener(
+                ScrollPositionListener(
+                    { scrollPosition ->
+                        scroll = scrollPosition
+                        loggedInViewModel.onScroll(scrollPosition)
+                    },
+                    viewLifecycleOwner
+                )
+            )
             adapter =
                 InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
@@ -56,7 +68,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items = listOf(InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
+                listOf(InsuranceModel.Error)
             return
         }
 

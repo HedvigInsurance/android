@@ -41,6 +41,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private var bottomTabInset = 0
     private var shareInitialBottomMargin = 0
     private var invitesInitialBottomPadding = 0
+    private var scroll = 0
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,7 +75,16 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 applyInsets()
             }
 
-            invites.addOnScrollListener(ScrollPositionListener(loggedInViewModel::onScroll))
+            invites.addOnScrollListener(
+                ScrollPositionListener(
+                    { scrollPosition ->
+                        scroll = scrollPosition
+                        loggedInViewModel.onScroll(scrollPosition)
+                    },
+                    viewLifecycleOwner
+                )
+            )
+
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             invites.adapter = ReferralsAdapter({
                 (invites.adapter as? ReferralsAdapter)?.setLoading()

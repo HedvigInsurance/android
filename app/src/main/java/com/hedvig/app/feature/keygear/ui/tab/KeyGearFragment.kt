@@ -6,6 +6,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
@@ -34,8 +35,14 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
     private val tracker: KeyGearTracker by inject()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentKeyGearBinding::bind)
+    private var scroll = 0
 
     private var hasSentAutoAddedItems = false
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,7 +58,10 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                 keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
             keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
-                loggedInViewModel.onScroll(scrollY)
+                scroll = scrollY
+                if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                    loggedInViewModel.onScroll(scroll)
+                }
             }
 
             items.adapter =
