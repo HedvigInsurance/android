@@ -13,7 +13,6 @@ import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import i
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -33,7 +32,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         super.onViewCreated(view, savedInstanceState)
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
-            i { "onCreate" }
 
             var hasInsetForToolbar = false
 
