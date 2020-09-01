@@ -37,7 +37,7 @@ class ProfileToolbarMenuTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() {
+    fun shouldOpenChatWhenClickingToolbarActionOnProfileTab() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
 
         onScreen<LoggedInScreen> {
