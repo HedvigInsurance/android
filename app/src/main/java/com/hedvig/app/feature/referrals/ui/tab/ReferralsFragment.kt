@@ -77,13 +77,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
             invites.addOnScrollListener(
                 ScrollPositionListener(
-                    loggedInViewModel::onScroll,
+                    { scrollPosition ->
+                        scroll = scrollPosition
+                        loggedInViewModel.onScroll(scrollPosition)
+                    },
                     viewLifecycleOwner
                 )
             )
-            invites.addOnScrollListener(ScrollPositionListener({
-                scroll = it
-            }, viewLifecycleOwner))
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             invites.adapter = ReferralsAdapter({

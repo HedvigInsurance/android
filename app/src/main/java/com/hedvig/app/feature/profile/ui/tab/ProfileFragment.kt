@@ -50,13 +50,13 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
             addOnScrollListener(
                 ScrollPositionListener(
-                    loggedInViewModel::onScroll,
+                    { scrollPosition ->
+                        scroll = scrollPosition
+                        loggedInViewModel.onScroll(scrollPosition)
+                    },
                     viewLifecycleOwner
                 )
             )
-            addOnScrollListener(ScrollPositionListener({
-                scroll = it
-            }, viewLifecycleOwner))
 
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)

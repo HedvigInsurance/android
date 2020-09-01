@@ -69,13 +69,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             addItemDecoration(HomeItemDecoration())
             addOnScrollListener(
                 ScrollPositionListener(
-                    loggedInViewModel::onScroll,
+                    { scrollPosition ->
+                        scroll = scrollPosition
+                        loggedInViewModel.onScroll(scrollPosition)
+                    },
                     viewLifecycleOwner
                 )
             )
-            addOnScrollListener(ScrollPositionListener({
-                scroll = it
-            }, viewLifecycleOwner))
         }
 
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
