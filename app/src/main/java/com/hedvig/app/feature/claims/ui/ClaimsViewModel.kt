@@ -40,17 +40,14 @@ class ClaimsViewModel(
         }
     }
 
-    fun triggerFreeTextChat(done: () -> Unit) {
-        viewModelScope.launch {
-            val response = runCatching {
-                chatRepository
-                    .triggerFreeTextChatAsync().await()
-            }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            done()
+    suspend fun triggerFreeTextChat() {
+        val response = runCatching {
+            chatRepository
+                .triggerFreeTextChatAsync().await()
+        }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e(it) }
+            return
         }
     }
 
