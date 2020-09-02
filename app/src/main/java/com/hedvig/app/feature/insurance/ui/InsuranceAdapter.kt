@@ -49,7 +49,7 @@ class InsuranceAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_row -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
-        R.layout.dashboard_header -> ViewHolder.TitleViewHolder(parent)
+        R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.insurance_error -> ViewHolder.Error(parent)
         else -> {
             throw Error("Unreachable")
@@ -81,7 +81,7 @@ class InsuranceAdapter(
     override fun getItemViewType(position: Int) = when (items[position]) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_row
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
-        is InsuranceModel.Header -> R.layout.dashboard_header
+        is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.Error -> R.layout.insurance_error
     }
 
@@ -125,9 +125,11 @@ class InsuranceAdapter(
         ) {
             private val binding by viewBinding(InsuranceContractRowBinding::bind)
 
-            fun bind(contract: InsuranceQuery.Contract,
-                     fragmentManager: FragmentManager,
-                     tracker: InsuranceTracker) {
+            fun bind(
+                contract: InsuranceQuery.Contract,
+                fragmentManager: FragmentManager,
+                tracker: InsuranceTracker
+            ) {
                 binding.apply {
                     if (contract.upcomingRenewal != null) {
                         renewalCard.show()
@@ -304,7 +306,7 @@ class InsuranceAdapter(
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.dashboard_header, parent, false)
+                .inflate(R.layout.insurance_header, parent, false)
         )
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.insurance_error)) {
