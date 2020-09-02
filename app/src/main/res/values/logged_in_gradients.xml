@@ -25,8 +25,8 @@
     </array>
 
     <array name="profile_gradient">
-        <item type="color">#C4DFEE</item>
-        <item type="color">#DFECF2</item>
+        <item type="color">#DCDEF5</item>
+        <item type="color">#EFF0FB</item>
         <item type="color">#F6F6F6</item>
     </array>
 </resources>
