@@ -35,6 +35,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        scroll = 0
+
         binding.recycler.apply {
             val recyclerInitialPaddingBottom = paddingBottom
             val recyclerInitialPaddingTop = paddingTop

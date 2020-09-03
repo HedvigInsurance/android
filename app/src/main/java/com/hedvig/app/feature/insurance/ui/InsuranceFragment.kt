@@ -30,6 +30,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        scroll = 0
+
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
 

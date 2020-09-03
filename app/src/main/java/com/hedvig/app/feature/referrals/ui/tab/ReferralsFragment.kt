@@ -51,6 +51,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        scroll = 0
+
         with(binding) {
             shareInitialBottomMargin = share.marginBottom
             invitesInitialBottomPadding = invites.paddingBottom

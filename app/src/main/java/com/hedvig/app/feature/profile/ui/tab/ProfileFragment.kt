@@ -35,6 +35,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        scroll = 0
+
         binding.recycler.apply {
             val scrollInitialBottomPadding = paddingBottom
             val scrollInitialTopPadding = paddingTop
