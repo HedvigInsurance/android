@@ -30,6 +30,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        scroll = 0
+
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
 
@@ -89,11 +91,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
             listOf(InsuranceModel.Header) + contracts + upsells
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        scroll = 0
     }
 
     companion object {

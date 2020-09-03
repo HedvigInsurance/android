@@ -47,6 +47,8 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        scroll = 0
+
         with(binding) {
             val scrollInitialTopPadding = keyGearRoot.paddingTop
             loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
@@ -116,11 +118,6 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
             description.remove()
             items.updateMargin(top = BASE_MARGIN_TRIPLE)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        scroll = 0
     }
 
     companion object {

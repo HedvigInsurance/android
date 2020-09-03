@@ -51,6 +51,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        scroll = 0
+
         with(binding) {
             shareInitialBottomMargin = share.marginBottom
             invitesInitialBottomPadding = invites.paddingBottom
@@ -185,10 +187,5 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private fun applyInsets() = with(binding) {
         share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
         invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        scroll = 0
     }
 }
