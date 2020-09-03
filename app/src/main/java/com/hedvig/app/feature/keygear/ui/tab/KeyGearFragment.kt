@@ -118,6 +118,11 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroll = 0
+    }
+
     companion object {
         const val ITEM_BACKGROUND_TRANSITION_NAME = "itemBackground"
     }

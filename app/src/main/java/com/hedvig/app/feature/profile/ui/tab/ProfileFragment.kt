@@ -115,5 +115,10 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             )
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroll = 0
+    }
 }
 

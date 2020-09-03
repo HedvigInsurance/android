@@ -91,6 +91,11 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             listOf(InsuranceModel.Header) + contracts + upsells
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroll = 0
+    }
+
     companion object {
         private val UPSELL_HOME_CONTENTS =
             InsuranceModel.Upsell(

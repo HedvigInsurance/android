@@ -186,4 +186,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         share.updateMargin(bottom = shareInitialBottomMargin + bottomTabInset)
         invites.updatePadding(bottom = invitesInitialBottomPadding + bottomTabInset + shareHeight)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroll = 0
+    }
 }

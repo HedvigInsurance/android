@@ -183,6 +183,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             null
         }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroll = 0
+    }
+
     companion object {
         private fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
