@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
@@ -10,14 +11,16 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity
-import kotlinx.android.synthetic.debug.activity_development.*
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
+    private val binding by viewBinding(ActivityDevelopmentBinding::bind)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.adapter = DevelopmentScreenAdapter(
+        binding.root.adapter = DevelopmentScreenAdapter(
             listOf(
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {

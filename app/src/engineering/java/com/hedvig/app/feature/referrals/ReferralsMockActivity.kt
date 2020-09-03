@@ -24,20 +24,22 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
-import kotlinx.android.synthetic.debug.activity_generic_development.*
+import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
+import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
 
 class ReferralsMockActivity : AppCompatActivity(R.layout.activity_generic_development) {
+    private val binding by viewBinding(ActivityGenericDevelopmentBinding::bind)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         unloadKoinModules(listOf(loggedInModule, referralsModule))
         loadKoinModules(MOCK_MODULE)
 
-        root.adapter = GenericDevelopmentAdapter(
+        binding.root.adapter = GenericDevelopmentAdapter(
             listOf(
                 GenericDevelopmentAdapter.Item.Header("Referrals Tab"),
                 GenericDevelopmentAdapter.Item.ClickableItem("Loading") {
