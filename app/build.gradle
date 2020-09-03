@@ -72,9 +72,8 @@ android {
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\""
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
-            // minifyEnabled true
-            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
