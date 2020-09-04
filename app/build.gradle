@@ -23,7 +23,7 @@ android {
         targetSdkVersion 29
         applicationId 'com.hedvig'
 
-        minSdkVersion 21
+        minSdkVersion 23
         versionCode 43
         versionName '4.2.2'
 

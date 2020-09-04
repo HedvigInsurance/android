@@ -1,13 +1,13 @@
 <resources>
 
-    <style name="Hedvig.Theme" parent="Hedvig.Theme.V21" />
+    <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@color/translucent_background</item>
     </style>
 
     <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">@color/color_background_95</item>
+        <item name="android:navigationBarColor">#01FF0000</item>
         <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
@@ -16,16 +16,20 @@
     </style>
 
     <style name="Hedvig.Theme.KeyGear.ItemDetail">
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">?colorOnPrimary</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Hedvig.Theme.Offer.V21" parent="Hedvig.Theme">
+    <style name="Hedvig.Theme.Offer.V23" parent="Hedvig.Theme">
         <item name="android:windowBackground">@color/hedvig_black</item>
+        <item name="android:statusBarColor">@color/hedvig_black</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V21" />
+    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
 
     <style name="Hedvig.Theme.Splash">
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
@@ -85,9 +89,9 @@
         <item name="android:windowExitAnimation">@null</item>
     </style>
 
-    <style name="TransparentDialog" parent="TransparentDialog.V21" />
+    <style name="TransparentDialog" parent="TransparentDialog.V23" />
 
-    <style name="TransparentDialog.V21" parent="Hedvig.Theme">
+    <style name="TransparentDialog.V23" parent="Hedvig.Theme">
         <item name="android:background">@null</item>
         <item name="android:windowContentOverlay">@null</item>
 

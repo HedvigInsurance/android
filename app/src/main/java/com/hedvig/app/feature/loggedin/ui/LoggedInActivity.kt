@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isEmpty
-import androidx.core.view.marginBottom
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -34,7 +33,6 @@ import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -75,8 +73,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-                loggedInViewModel.updateBottomTabInset(view.measuredHeight + view.marginBottom)
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+                loggedInViewModel.updateBottomTabInset(view.measuredHeight)
             }
 
             val isDarkTheme = isDarkThemeActive

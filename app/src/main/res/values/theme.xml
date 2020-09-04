@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Hedvig.Theme.V21" />
+    <style name="AppTheme" parent="Hedvig.Theme.V23" />
 
-    <style name="Hedvig.Theme.V21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Hedvig.Theme.V23" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
@@ -65,8 +65,10 @@
         <item name="actionMenuTextColor">@color/hedvig_text_button_state</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">?android:colorBackground</item>
         <item name="materialAlertDialogTheme">@style/AlertDialog</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <attr name="materialButtonContainedLargeStyle" format="reference" />
