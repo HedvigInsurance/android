@@ -11,7 +11,7 @@
 
         <activity
             android:name=".DevelopmentActivity"
-            android:label="Hedvig Development Screen"
+            android:label="Engineering Mode"
             android:theme="@style/Hedvig.Theme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

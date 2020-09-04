@@ -90,6 +90,19 @@ android {
             debuggable true
         }
     }
+
+    sourceSets {
+        debug {
+            java.srcDirs += "src/engineering/java"
+            res.srcDirs += "src/engineering/res"
+            manifest.srcFile "src/debug/AndroidManifest.xml"
+        }
+        staging {
+            java.srcDirs += "src/engineering/java"
+            res.srcDirs += "src/engineering/res"
+            manifest.srcFile "src/debug/AndroidManifest.xml"
+        }
+    }
 }
 
 dependencies {
@@ -97,6 +110,7 @@ dependencies {
 
     androidTestImplementation project(':testdata')
     debugImplementation project(':testdata')
+    stagingImplementation project(':testdata')
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
