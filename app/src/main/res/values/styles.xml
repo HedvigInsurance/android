@@ -7,7 +7,8 @@
     </style>
 
     <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">#01FF0000</item>
+        <!-- Almost transparent. Only way I could get it to look right-->
+        <item name="android:navigationBarColor">#01000000</item>
         <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
@@ -16,7 +17,7 @@
     </style>
 
     <style name="Hedvig.Theme.KeyGear.ItemDetail">
-        <item name="colorControlNormal">?colorOnPrimary</item>
+        <item name="colorControlNormal">@color/white</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
