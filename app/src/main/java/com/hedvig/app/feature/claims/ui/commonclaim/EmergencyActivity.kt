@@ -68,7 +68,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             )
             .into(commonClaimFirstMessageIcon)
 
-        commonClaimFirstMessage.text = getString(R.string.CLAIMS_EMERGENCY_FIRST_MESSAGE)
+        commonClaimFirstMessage.text = getString(R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)
         commonClaimCreateClaimButton.remove()
 
         if (data.eligibleToClaim) {
