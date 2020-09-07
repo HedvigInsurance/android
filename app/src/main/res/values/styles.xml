@@ -7,8 +7,7 @@
     </style>
 
     <style name="Hedvig.Theme.LoggedIn">
-        <!-- Almost transparent. Only way I could get it to look right-->
-        <item name="android:navigationBarColor">#01000000</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
