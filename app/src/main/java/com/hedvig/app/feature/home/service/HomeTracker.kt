@@ -2,10 +2,9 @@ package com.hedvig.app.feature.home.service
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 
-class HomeTracker(val mixpanel: MixpanelAPI) {
-    fun startClaimOutlined() = mixpanel.track("START_CLAIM_OUTLINED")
-    fun startClaimContained() = mixpanel.track("START_CLAIM_CONTAINED")
-    fun addPaymentMethod() = mixpanel.track("ADD_PAYMENT_METHOD")
-    fun emergency() = mixpanel.track("EMERGENCY")
-    fun retry() = mixpanel.track("RETRY")
+class HomeTracker(private val mixpanel: MixpanelAPI) {
+    fun startClaimOutlined() = mixpanel.track("home_tab.claim_button_text")
+    fun startClaimContained() = mixpanel.track("home_tab.claim_button_text")
+    fun addPaymentMethod() = mixpanel.track("info_card_missing_payment.button_text")
+    fun retry() = mixpanel.track("home_tab.error_button_text")
 }

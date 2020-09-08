@@ -277,7 +277,6 @@ class HomeAdapter(
                             .load(requestUri(data.inner.iconUrls))
                             .into(icon)
                         root.setHapticClickListener {
-                            tracker.emergency()
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
                                     root.context,
