@@ -29,6 +29,8 @@ val HOME_DATA_PENDING_NO_FIRST_NAME =
 
 val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(HomeDataBuilder.Status.ACTIVE)).build()
 
+val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(HomeDataBuilder.Status.TERMINATED_TODAY)).build()
+
 val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
     listOf(HomeDataBuilder.Status.ACTIVE), importantMessages = listOf(
         ImportantMessageBuilder().build()
