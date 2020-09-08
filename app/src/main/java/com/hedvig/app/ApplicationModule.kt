@@ -25,6 +25,7 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
@@ -105,7 +106,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -335,4 +336,5 @@ val trackerModule = module {
     single { KeyGearTracker(get()) }
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
+    single { HomeTracker(get()) }
 }

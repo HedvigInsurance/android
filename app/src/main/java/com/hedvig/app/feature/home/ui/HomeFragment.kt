@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
+import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -26,6 +27,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
+    private val tracker: HomeTracker by inject()
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
@@ -54,7 +56,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
-            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder)
+            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder, tracker)
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
