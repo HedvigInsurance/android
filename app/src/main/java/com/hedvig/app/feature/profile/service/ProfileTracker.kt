@@ -11,9 +11,10 @@ class ProfileTracker(
         mixpanel.reset()
     }
 
-    fun charityRow() = mixpanel.track("PROFILE_ROW_CHARITY_TITLE")
+    fun charityRow() = mixpanel.track("PROFILE_MY_CHARITY_ROW_TITLE")
     fun paymentRow() = mixpanel.track("PROFILE_ROW_PAYMENT_TITLE")
-    fun myInfoRow() = mixpanel.track("PROFILE_ROW_MY_INFO_TITLE")
+    fun myInfoRow() = mixpanel.track("PROFILE_MY_INFO_ROW_TITLE")
     fun feedbackRow() = mixpanel.track("PROFILE_ROW_FEEDBACK_TITLE")
-    fun aboutAppRow() = mixpanel.track("PROFILE_ROW_ABOUT_APP_TITLE")
+    fun aboutAppRow() = mixpanel.track("PROFILE_ABOUT_ROW")
+    fun settings() = mixpanel.track("profile_appSettingsSection_row_headline")
 }

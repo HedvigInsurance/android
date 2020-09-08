@@ -73,7 +73,7 @@ class InsuranceAdapter(
                 (items[position] as? InsuranceModel.Upsell)?.let { holder.bind(it) }
             }
             is ViewHolder.Error -> {
-                holder.bind(retry)
+                holder.bind(retry, tracker)
             }
         }
     }
@@ -311,8 +311,11 @@ class InsuranceAdapter(
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.insurance_error)) {
             private val binding by viewBinding(InsuranceErrorBinding::bind)
-            fun bind(retry: () -> Unit): Any? = with(binding) {
-                this.retry.setHapticClickListener { retry() }
+            fun bind(retry: () -> Unit, tracker: InsuranceTracker): Any? = with(binding) {
+                this.retry.setHapticClickListener {
+                    tracker.retry()
+                    retry()
+                }
             }
         }
     }

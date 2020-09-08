@@ -21,6 +21,7 @@ import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -34,7 +35,8 @@ import java.time.format.FormatStyle
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
     private val retry: () -> Unit,
-    private val requestBuilder: RequestBuilder<PictureDrawable>
+    private val requestBuilder: RequestBuilder<PictureDrawable>,
+    private val tracker: HomeTracker
 ) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var items: List<HomeModel> = emptyList()
         set(value) {
@@ -73,7 +75,7 @@ class HomeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, retry, requestBuilder)
+        holder.bind(items[position], fragmentManager, retry, requestBuilder, tracker)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -81,7 +83,8 @@ class HomeAdapter(
             data: HomeModel,
             fragmentManager: FragmentManager,
             retry: () -> Unit,
-            requestBuilder: RequestBuilder<PictureDrawable>
+            requestBuilder: RequestBuilder<PictureDrawable>,
+            tracker: HomeTracker
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -99,7 +102,8 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -141,7 +145,8 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -165,13 +170,15 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
                 }
 
                 root.setHapticClickListener {
+                    tracker.startClaimOutlined()
                     HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
                 }
             }
@@ -184,13 +191,15 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
                 }
 
                 root.setHapticClickListener {
+                    tracker.startClaimContained()
                     HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
                 }
             }
@@ -202,7 +211,8 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ) = with(binding) {
                 if (data !is HomeModel.InfoCard) {
                     return invalid(data)
@@ -214,6 +224,7 @@ class HomeAdapter(
                         body.setText(R.string.info_card_missing_payment_body)
                         action.setText(R.string.info_card_missing_payment_button_text)
                         action.setHapticClickListener {
+                            tracker.addPaymentMethod()
                             action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
                         }
                     }
@@ -240,7 +251,8 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = Unit
         }
 
@@ -251,7 +263,8 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
@@ -300,9 +313,13 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
             ): Any? = with(binding) {
-                this.retry.setHapticClickListener { retry() }
+                this.retry.setHapticClickListener {
+                    tracker.retry()
+                    retry()
+                }
             }
         }
     }
