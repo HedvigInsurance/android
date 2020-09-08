@@ -12,7 +12,7 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.ThemedIconUrls
-import kotlinx.android.synthetic.main.claims_common_claim_cell.view.*
+import kotlinx.android.synthetic.main.home_common_claim.view.*
 
 class CommonClaimsAdapter(
     private val commonClaims: List<CommonClaimQuery.CommonClaim>,
@@ -25,7 +25,7 @@ class CommonClaimsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.claims_common_claim_cell,
+                R.layout.home_common_claim,
                 parent,
                 false
             )
@@ -59,7 +59,7 @@ class CommonClaimsAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val view = itemView
-        val commonClaimIcon: ImageView = itemView.commonClaimCellIcon
-        val commonClaimLabel: TextView = itemView.commonClaimCellLabel
+        val commonClaimIcon: ImageView = itemView.icon
+        val commonClaimLabel: TextView = itemView.label
     }
 }

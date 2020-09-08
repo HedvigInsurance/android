@@ -9,11 +9,12 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apolloResponse
 import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
@@ -27,8 +28,16 @@ class MultipleReferralsTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_NAME to { LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED },
-        ReferralsQuery.OPERATION_NAME to { REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES }
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
+            )
+        },
+        ReferralsQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+            )
+        }
     )
 
     @get:Rule

@@ -10,6 +10,7 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_SHORT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.hasError
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +25,11 @@ class CodeTooShortErrorTest : KoinComponent {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        UpdateReferralCampaignCodeMutation.OPERATION_NAME to { EDIT_CODE_DATA_TOO_SHORT }
+        UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
+            success(
+                EDIT_CODE_DATA_TOO_SHORT
+            )
+        }
     )
 
     @get:Rule

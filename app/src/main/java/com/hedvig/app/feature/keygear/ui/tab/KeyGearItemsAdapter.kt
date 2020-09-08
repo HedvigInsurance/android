@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
-import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -97,7 +95,6 @@ class KeyGearItemsAdapter(
                     Glide
                         .with(holder.image)
                         .load(photoUrl)
-                        .placeholder(ColorDrawable(holder.image.context.colorAttr(R.attr.colorSurface)))
                         .transition(withCrossFade())
                         .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
                         .into(holder.image)

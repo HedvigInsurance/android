@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="home_gradient">
+        <item type="color">#C0CAD8</item>
+        <item type="color">#EDCDAB</item>
+        <item type="color">#F6F6F6</item>
+    </array>
+
+    <array name="insurance_gradient">
+        <item type="color">#F2DAC0</item>
+        <item type="color">#F4E8DC</item>
+        <item type="color">#F6F6F6</item>
+    </array>
+
+    <array name="key_gear_gradient">
+        <item type="color">#D3D3D3</item>
+        <item type="color">#E5E5E5</item>
+        <item type="color">#F6F6F6</item>
+    </array>
+
+    <array name="forever_gradient">
+        <item type="color">#D3D3D3</item>
+        <item type="color">#E5E5E5</item>
+        <item type="color">#F6F6F6</item>
+    </array>
+
+    <array name="profile_gradient">
+        <item type="color">#DCDEF5</item>
+        <item type="color">#EFF0FB</item>
+        <item type="color">#F6F6F6</item>
+    </array>
+</resources>

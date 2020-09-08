@@ -14,13 +14,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include layout="@layout/loading_spinner" />
+        <include
+            android:id="@+id/loadingSpinner"
+            layout="@layout/loading_spinner" />
 
         <TextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginEnd="@dimen/base_margin_double"
             android:text="@string/KEY_GEAR_TAB_TITLE"
             android:textAppearance="?textAppearanceHeadline4"
             app:layout_constraintStart_toStartOf="parent"

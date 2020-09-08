@@ -87,7 +87,9 @@ class ProfileViewModelImpl(
         viewModelScope.launch {
             profileRepository
                 .profile()
-                .onEach { data.postValue(it.data) }
+                .onEach { response ->
+                    response.data?.let { data.postValue(it) }
+                }
                 .catch { e(it) }
                 .launchIn(this)
         }

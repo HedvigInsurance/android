@@ -2,7 +2,8 @@
 <resources>
 
     <style name="Hedvig.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
-        <item name="lineHeight">24sp</item>
+        <item name="lineHeight">26sp</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <dimen name="body_1_placeholder_width">48sp</dimen>
@@ -10,7 +11,7 @@
     <dimen name="body_1_placeholder_line_space">8sp</dimen>
 
     <style name="Hedvig.TextAppearance.Body2" parent="TextAppearance.MaterialComponents.Body2">
-        <item name="lineHeight">20sp</item>
+        <item name="lineHeight">22sp</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
