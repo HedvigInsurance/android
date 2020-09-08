@@ -234,7 +234,6 @@ class HomeAdapter(
                         action.text = data.inner.button
                         val uri = Uri.parse(data.inner.link)
                         action.setHapticClickListener {
-                            tracker.psaLink()
                             action.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
                                 setData(
                                     uri
@@ -293,7 +292,6 @@ class HomeAdapter(
                             .load(requestUri(data.inner.iconUrls))
                             .into(icon)
                         root.setHapticClickListener {
-                            tracker.openCommonClaimActivity()
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
                                     root.context,
