@@ -17,6 +17,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMI
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
+import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import com.hedvig.app.util.extensions.viewBinding
@@ -75,6 +76,14 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
                 MockHomeViewModel.apply {
                     homeMockData = HOME_DATA_ACTIVE_WITH_PSA
                     payinStatusData = PAYIN_STATUS_DATA_NEEDS_SETUP
+                    shouldError = false
+                }
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Will terminate today") {
+                MockHomeViewModel.apply {
+                    homeMockData = HOME_DATA_TERMINATED_TODAY
+                    payinStatusData = PAYIN_STATUS_DATA_ACTIVE
                     shouldError = false
                 }
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))

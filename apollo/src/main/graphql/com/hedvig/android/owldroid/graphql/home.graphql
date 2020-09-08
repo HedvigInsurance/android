@@ -17,6 +17,9 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
       ... on ActiveStatus {
         pastInception
       }
+      ... on TerminatedTodayStatus {
+        today
+      }
       ... on TerminatedStatus {
         termination
       }

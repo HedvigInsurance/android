@@ -54,6 +54,11 @@ data class HomeDataBuilder(
                     } else {
                         null
                     },
+                    asTerminatedTodayStatus = if (c == Status.TERMINATED_TODAY) {
+                        HomeQuery.AsTerminatedTodayStatus(today = LocalDate.now())
+                    } else {
+                        null
+                    },
                     asTerminatedStatus = if (c == Status.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
                             termination = null
@@ -75,6 +80,7 @@ data class HomeDataBuilder(
         ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
         ACTIVE_IN_FUTURE_INVALID,
         ACTIVE,
+        TERMINATED_TODAY,
         TERMINATED
     }
 }
