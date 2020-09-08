@@ -193,7 +193,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             contracts.all { it.status.asActiveInFutureStatus != null || it.status.asActiveInFutureAndTerminatedInFutureStatus != null }
 
         private fun isActive(contracts: List<HomeQuery.Contract>) =
-            contracts.all { it.status.asActiveStatus != null }
+            contracts.any { it.status.asActiveStatus != null || it.status.asTerminatedTodayStatus != null }
 
         private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
