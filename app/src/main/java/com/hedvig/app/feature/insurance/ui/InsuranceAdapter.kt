@@ -284,7 +284,7 @@ class InsuranceAdapter(
                     }
 
                     coverageCard.setHapticClickListener {
-                        tracker.coverageCard()
+                        tracker.myCoverage()
                         coverageCard.context.startActivity(
                             ContractCoverageActivity.newInstance(
                                 coverageCard.context,
@@ -294,7 +294,7 @@ class InsuranceAdapter(
                     }
 
                     documentsCard.setHapticClickListener {
-                        tracker.documentsCard()
+                        tracker.myDocuments()
                         DocumentBottomSheet
                             .newInstance(
                                 contract.currentAgreement.asAgreementCore?.certificateUrl,
