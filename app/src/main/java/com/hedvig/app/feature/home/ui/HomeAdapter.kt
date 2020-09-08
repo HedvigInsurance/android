@@ -224,7 +224,7 @@ class HomeAdapter(
                         body.setText(R.string.info_card_missing_payment_body)
                         action.setText(R.string.info_card_missing_payment_button_text)
                         action.setHapticClickListener {
-                            tracker.connectPayin()
+                            tracker.addPaymentMethod()
                             action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
                         }
                     }
