@@ -9,9 +9,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:tint="@android:color/transparent"
-        app:tintMode="src_in"
         android:background="@drawable/ic_chat_ripple"
         android:contentDescription="@string/DASHBOARD_OPEN_CHAT"
-        app:srcCompat="@drawable/ic_chat" />
+        android:elevation="4dp"
+        app:srcCompat="@drawable/ic_chat"
+        app:tint="@android:color/transparent"
+        app:tintMode="src_in" />
 </FrameLayout>
