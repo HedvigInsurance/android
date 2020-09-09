@@ -138,12 +138,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.PROFILE,
             LoggedInTabs.INSURANCE -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+                menu.getItem(0).actionView.setOnClickListener {
+                    onOptionsItemSelected(menu.getItem(0))
+                }
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
             }
             else -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+                menu.getItem(0).actionView.setOnClickListener {
+                    onOptionsItemSelected(menu.getItem(0))
+                }
             }
         }
         return super.onCreateOptionsMenu(menu)
