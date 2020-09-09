@@ -19,9 +19,8 @@ class WhatsNewDialog : DismissiblePager() {
     override val titleLabel = R.string.NEWS_TITLE
 
     override val tracker: WhatsNewTracker by inject()
-    override val items: List<DismissiblePagerPage> by lazy {
-        arguments!!.getParcelableArrayList<DismissiblePagerPage>(PAGES)!! // Enforced by newInstance()
-    }
+    override val items: List<DismissiblePagerPage>
+        get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(PAGES).orEmpty()
 
     override fun onDismiss() {
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
