@@ -4,8 +4,7 @@ import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import androidx.core.content.ContextCompat
 import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -30,8 +29,10 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
@@ -89,8 +90,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
 
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayShowTitleEnabled(false)
 
             tabContent.adapter = TabPagerAdapter(supportFragmentManager)
             bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
@@ -99,6 +98,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     e { "Programmer error: Invalid menu item chosen" }
                     return@setOnNavigationItemSelectedListener false
                 }
+                setToolbarIcon(id)
+                setupToolbarListener(id)
                 tabContent.setCurrentItem(id.ordinal, false)
                 setupToolBar(id)
                 animateGradient(id)
@@ -131,46 +132,63 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
+    private fun setToolbarIcon(id: LoggedInTabs) {
+        when (id) {
             LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
             LoggedInTabs.PROFILE,
             LoggedInTabs.INSURANCE -> {
-                menuInflater.inflate(R.menu.base_tab_menu, menu)
-            }
-            LoggedInTabs.REFERRALS -> {
-                menuInflater.inflate(R.menu.referral_more_info_menu, menu)
-            }
-            else -> {
-                menuInflater.inflate(R.menu.base_tab_menu, menu)
-            }
-        }
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-            LoggedInTabs.HOME,
-            LoggedInTabs.KEY_GEAR,
-            LoggedInTabs.PROFILE,
-            LoggedInTabs.INSURANCE -> {
-                lifecycleScope.launch {
-                    claimsViewModel.triggerFreeTextChat()
-                    startClosableChat()
+                binding.toolbarIcon.apply {
+                    layoutParams.height = 40.dp
+                    requestLayout()
+                    setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@LoggedInActivity,
+                            R.drawable.ic_chat
+                        )
+                    )
                 }
             }
             LoggedInTabs.REFERRALS -> {
-                startActivity(
-                    ReferralsInformationActivity.newInstance(
-                        this,
-                        referralTermsUrl,
-                        referralsIncentive
+                binding.toolbarIcon.apply {
+                    layoutParams.height = 20.dp
+                    requestLayout()
+                    setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@LoggedInActivity,
+                            R.drawable.ic_info_toolbar
+                        )
                     )
-                )
+                }
             }
         }
-        return true
+    }
+
+    private fun setupToolbarListener(id: LoggedInTabs?) {
+        when (id) {
+            LoggedInTabs.HOME,
+            LoggedInTabs.KEY_GEAR,
+            LoggedInTabs.PROFILE,
+            LoggedInTabs.INSURANCE -> {
+                binding.toolbarIcon.setHapticClickListener {
+                    lifecycleScope.launch {
+                        claimsViewModel.triggerFreeTextChat()
+                        startClosableChat()
+                    }
+                }
+            }
+            LoggedInTabs.REFERRALS -> {
+                binding.toolbarIcon.setHapticClickListener {
+                    startActivity(
+                        ReferralsInformationActivity.newInstance(
+                            this,
+                            referralTermsUrl,
+                            referralsIncentive
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private fun bindData() {
@@ -236,7 +254,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private fun setupToolBar(id: LoggedInTabs?) {
         if (lastLoggedInTab != id) {
             binding.bottomNavigation.elevation = 0f
-            invalidateOptionsMenu()
+            setupToolbarListener(id)
         }
         if (id != null) {
             lastLoggedInTab = id

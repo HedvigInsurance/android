@@ -29,15 +29,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/logged_in_toolbar_height"
         android:background="@drawable/background_square"
         android:backgroundTint="?colorOnPrimary"
+        android:gravity="center_vertical|end"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/toolbarIcon"
+            android:layout_width="@dimen/base_margin_sextuple"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/base_margin_double"
+            android:elevation="1dp"
+            tools:src="@drawable/ic_chat" />
+
+    </LinearLayout>
 
     <!--Have to use custom background for this view, had problem with backgroundTint-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
