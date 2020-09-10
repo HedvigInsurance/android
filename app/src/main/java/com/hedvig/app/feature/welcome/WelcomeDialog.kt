@@ -32,7 +32,10 @@ class WelcomeDialog : DismissiblePager() {
     }
 
     override fun onLastPageButton() {
-
+        dismiss()
+        RatingsDialog
+            .newInstance()
+            .show(parentFragmentManager, RatingsDialog.TAG)
     }
 
     companion object {

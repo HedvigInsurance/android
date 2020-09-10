@@ -32,7 +32,8 @@ class WhatsNewDialog : DismissiblePager() {
     }
 
     override fun onLastPageButton() {
-
+        dismiss()
+        whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
     }
 
     companion object {
