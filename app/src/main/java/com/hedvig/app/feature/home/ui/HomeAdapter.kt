@@ -159,6 +159,9 @@ class HomeAdapter(
                     HomeModel.BodyText.ActiveInFuture -> {
                         root.setText(R.string.home_tab_active_in_future_body)
                     }
+                    HomeModel.BodyText.Terminated -> {
+                        root.setText(R.string.home_tab_terminated_body)
+                    }
                 }
             }
         }
