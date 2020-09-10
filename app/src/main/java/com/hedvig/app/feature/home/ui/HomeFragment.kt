@@ -146,6 +146,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
+                    HomeModel.HowClaimsWork(successData.welcome[0]),
                     *psaItems(successData.importantMessages).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.InfoCard.ConnectPayin

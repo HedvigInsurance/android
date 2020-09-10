@@ -1,5 +1,7 @@
 package com.hedvig.app.testdata.feature.home.builders
 
+import com.apollographql.apollo.api.internal.ResponseReader
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import java.time.LocalDate
 
@@ -71,7 +73,59 @@ data class HomeDataBuilder(
         },
         isEligibleToCreateClaim = contracts.any { it == Status.ACTIVE },
         commonClaims = commonClaims,
-        importantMessages = importantMessages
+        importantMessages = importantMessages,
+        welcome = listOf(
+            HomeQuery.Welcome(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                paragraph = "1",
+                title = "1"
+            ),HomeQuery.Welcome(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                paragraph = "2",
+                title = "2"
+            ),
+            HomeQuery.Welcome(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                paragraph = "3",
+                title = "3"
+            )
+        )
     )
 
     enum class Status {

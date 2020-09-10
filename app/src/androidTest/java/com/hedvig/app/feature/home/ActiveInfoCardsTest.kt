@@ -52,7 +52,7 @@ class ActiveInfoCardsTest {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
                 }
-                childAt<HomeTabScreen.InfoCardItem>(2) {
+                childAt<HomeTabScreen.InfoCardItem>(3) {
                     title { hasText("Example PSA title") }
                     body { hasText("Example PSA body") }
                     action {
@@ -61,7 +61,7 @@ class ActiveInfoCardsTest {
                     }
                     psaLink { intended() }
                 }
-                childAt<HomeTabScreen.InfoCardItem>(3) {
+                childAt<HomeTabScreen.InfoCardItem>(4) {
                     title { hasText(R.string.info_card_missing_payment_title) }
                     body { hasText(R.string.info_card_missing_payment_body) }
                     action {
