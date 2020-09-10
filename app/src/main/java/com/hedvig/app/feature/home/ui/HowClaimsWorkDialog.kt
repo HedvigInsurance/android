@@ -14,7 +14,6 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
-    private lateinit var mFragmentManager: FragmentManager
 
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerPage>
@@ -30,16 +29,15 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override fun onLastPageButton() {
         HonestyPledgeBottomSheet
             .newInstance("test")
-            .show(mFragmentManager, HonestyPledgeBottomSheet.TAG)
+            .show(parentFragmentManager, HonestyPledgeBottomSheet.TAG)
     }
 
     companion object {
         const val TAG = "WelcomeDialog"
         private const val ITEMS = "items"
 
-        fun newInstance(fragmentManager: FragmentManager, items: List<DismissiblePagerPage>) =
+        fun newInstance(items: List<DismissiblePagerPage>) =
             HowClaimsWorkDialog().apply {
-                mFragmentManager = fragmentManager
                 arguments = Bundle().apply {
                     putParcelableArrayList(ITEMS, ArrayList(items))
                 }

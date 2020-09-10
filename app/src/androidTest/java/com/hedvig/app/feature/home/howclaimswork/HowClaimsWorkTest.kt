@@ -44,36 +44,6 @@ class HowClaimsWorkTest {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.HowClaimsWork>(2) {
-                    isVisible()
-                    button {
-                        hasText("How claims work")
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldOpenHowClaimsWorkDialog() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.HowClaimsWork>(2) {
-                    button {
-                        hasText("How claims work")
-                        click()
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldOpenClaim() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.HowClaimsWork>(2) {
                     button {
                         hasText("How claims work")
                         click()
@@ -82,7 +52,7 @@ class HowClaimsWorkTest {
             }
         }
         onScreen<HowClaimsWorkScreen> {
-            button{
+            button {
                 hasText(R.string.claims_explainer_02_button_next)
                 click()
                 click()
@@ -91,7 +61,7 @@ class HowClaimsWorkTest {
             }
         }
         onScreen<HonestyPledgeSheetScreen> {
-            claim{
+            claim {
                 hasText(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
                 click()
             }

@@ -327,7 +327,7 @@ class HomeAdapter(
                     return invalid(data)
                 }
                 button.setHapticClickListener {
-                    HowClaimsWorkDialog.newInstance(fragmentManager,
+                    HowClaimsWorkDialog.newInstance(
                         listOf(
                             DismissiblePagerPage(
                                 ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
