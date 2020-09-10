@@ -29,7 +29,7 @@ abstract class DismissiblePager : DialogFragment() {
     abstract val proceedLabel: Int
 
     @get:StringRes
-    abstract val dismissLabel: Int
+    abstract val lastButtonText: Int
 
     @get:StyleRes
     abstract val animationStyle: Int
@@ -38,6 +38,8 @@ abstract class DismissiblePager : DialogFragment() {
     abstract val titleLabel: Int?
 
     abstract fun onDismiss()
+    abstract fun onLastSwipe()
+    abstract fun onLastPageButton()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +93,7 @@ abstract class DismissiblePager : DialogFragment() {
             proceed.text = if (items.size > 1) {
                 resources.getString(proceedLabel)
             } else {
-                resources.getString(dismissLabel)
+                resources.getString(lastButtonText)
             }
             pager.addOnPageChangeListener(PageChangeListener())
             proceed.setHapticClickListener {
@@ -116,8 +118,8 @@ abstract class DismissiblePager : DialogFragment() {
                         pagerIndicator.translationX = translation
                     }
                     if (position == count - 1 && offsetPercentage == 0f) {
-                        onDismiss()
-                        dialog?.dismiss()
+                        onLastSwipe()
+                        dismiss()
                     }
                 }
             }
@@ -128,10 +130,15 @@ abstract class DismissiblePager : DialogFragment() {
                 pager.adapter?.count?.let { count ->
                     proceed.text =
                         if (isPositionLast(page, count) || isPositionNextToLast(page, count)) {
-                            resources.getString(dismissLabel)
+                            resources.getString(lastButtonText)
                         } else {
                             resources.getString(proceedLabel)
                         }
+                    if (isPositionNextToLast(page, count)) {
+                        proceed.setHapticClickListener {
+                            onLastPageButton()
+                        }
+                    }
                 }
             }
         }

@@ -10,17 +10,24 @@ import com.hedvig.app.feature.welcome.WelcomeTracker
 import org.koin.android.ext.android.inject
 
 class HowClaimsWorkDialog : DismissiblePager() {
-    override val proceedLabel = R.string.NEWS_PROCEED
-    override val dismissLabel = R.string.NEWS_DISMISS
+    override val proceedLabel = R.string.claims_explainer_02_button_next
+    override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
-    private lateinit var mFragmentManager :FragmentManager
+    private lateinit var mFragmentManager: FragmentManager
 
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerPage>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(ITEMS).orEmpty()
 
     override fun onDismiss() {
+
+    }
+
+    override fun onLastSwipe() {
+    }
+
+    override fun onLastPageButton() {
         HonestyPledgeBottomSheet
             .newInstance("test")
             .show(mFragmentManager, HonestyPledgeBottomSheet.TAG)

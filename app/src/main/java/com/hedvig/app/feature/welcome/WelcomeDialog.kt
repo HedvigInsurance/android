@@ -10,7 +10,7 @@ import org.koin.android.ext.android.inject
 class WelcomeDialog : DismissiblePager() {
 
     override val proceedLabel = R.string.NEWS_PROCEED
-    override val dismissLabel = R.string.NEWS_DISMISS
+    override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.WelcomeDialogAnimation
     override val titleLabel: Nothing? = null
 
@@ -22,6 +22,17 @@ class WelcomeDialog : DismissiblePager() {
         RatingsDialog
             .newInstance()
             .show(parentFragmentManager, RatingsDialog.TAG)
+    }
+
+    override fun onLastSwipe() {
+        dismiss()
+        RatingsDialog
+            .newInstance()
+            .show(parentFragmentManager, RatingsDialog.TAG)
+    }
+
+    override fun onLastPageButton() {
+
     }
 
     companion object {

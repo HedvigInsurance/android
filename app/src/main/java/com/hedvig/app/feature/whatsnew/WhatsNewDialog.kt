@@ -14,7 +14,7 @@ class WhatsNewDialog : DismissiblePager() {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     override val proceedLabel = R.string.NEWS_PROCEED
-    override val dismissLabel = R.string.NEWS_DISMISS
+    override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel = R.string.NEWS_TITLE
 
@@ -24,6 +24,15 @@ class WhatsNewDialog : DismissiblePager() {
 
     override fun onDismiss() {
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
+    }
+
+    override fun onLastSwipe() {
+        dismiss()
+        whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
+    }
+
+    override fun onLastPageButton() {
+
     }
 
     companion object {
