@@ -32,20 +32,12 @@ class LoginStatusService(
             return LoginStatus.ONBOARDING
         }
 
-        if (isTerminated(response.data?.contracts)) {
-            return LoginStatus.LOGGED_IN_TERMINATED
-        }
-
         context.setIsLoggedIn(true)
 
         return LoginStatus.LOGGED_IN
     }
 
     companion object {
-
-        private fun isTerminated(contracts: List<ContractStatusQuery.Contract>?) =
-            contracts?.isNotEmpty() == true && contracts.all { it.status.__typename == "TerminatedStatus" }
-
         const val IS_VIEWING_OFFER = "IS_VIEWING_OFFER"
     }
 }
