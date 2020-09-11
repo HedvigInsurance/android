@@ -36,7 +36,7 @@ class DismissablePageFragment : androidx.fragment.app.Fragment() {
 
     companion object {
         fun newInstance(
-            illustration: String,
+            illustration: String?,
             title: String,
             paragraph: String
         ): DismissablePageFragment {

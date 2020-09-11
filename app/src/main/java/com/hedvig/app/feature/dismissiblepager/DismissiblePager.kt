@@ -3,6 +3,7 @@ package com.hedvig.app.feature.dismissiblepager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
@@ -17,6 +18,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import d
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
@@ -104,6 +106,7 @@ abstract class DismissiblePager : DialogFragment() {
     }
 
     inner class PageChangeListener : ViewPager.OnPageChangeListener {
+
         override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
@@ -116,6 +119,10 @@ abstract class DismissiblePager : DialogFragment() {
                         proceed.translationX = translation
                         topBar.translationX = translation
                         pagerIndicator.translationX = translation
+                    }
+                    if (isPositionLast(position, count - 1)) {
+                        pager.setOnTouchListener(OnTouchListener { v, event -> true })
+                        d { "offset: $offsetPixels" }
                     }
                     if (position == count - 1 && offsetPercentage == 0f) {
                         onLastSwipe()
