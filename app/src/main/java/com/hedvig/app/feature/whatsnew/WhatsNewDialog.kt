@@ -17,6 +17,8 @@ class WhatsNewDialog : DismissiblePager() {
     override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel = R.string.NEWS_TITLE
+    override val shouldShowLogo = true
+    override val shouldCloseOnLastSwipe = true
 
     override val tracker: WhatsNewTracker by inject()
     override val items: List<DismissiblePagerPage>

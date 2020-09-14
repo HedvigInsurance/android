@@ -3,7 +3,6 @@ package com.hedvig.app.feature.dismissiblepager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
@@ -18,13 +17,14 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import d
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
 abstract class DismissiblePager : DialogFragment() {
     abstract val items: List<DismissiblePagerPage>
     abstract val tracker: DismissablePageTracker
+    abstract val shouldShowLogo: Boolean
+    abstract val shouldCloseOnLastSwipe: Boolean
     private val binding by viewBinding(FragmentDismissablePagerBinding::bind)
 
     @get:StringRes
@@ -80,6 +80,8 @@ abstract class DismissiblePager : DialogFragment() {
                 view.updatePadding(top = initialState.paddings.top + insets.stableInsetTop)
             }
 
+            pagerIndicator.shouldShowLogo = this@DismissiblePager.shouldShowLogo
+
             close.setOnClickListener {
                 onDismiss()
                 dialog?.dismiss()
@@ -90,7 +92,7 @@ abstract class DismissiblePager : DialogFragment() {
                 title.show()
             }
 
-            pager.adapter = DismissablePagerAdapter(childFragmentManager, items, requireContext())
+            pager.adapter = DismissablePagerAdapter(childFragmentManager, items, requireContext(), shouldCloseOnLastSwipe)
             pagerIndicator.pager = pager
             proceed.text = if (items.size > 1) {
                 resources.getString(proceedLabel)
@@ -110,23 +112,20 @@ abstract class DismissiblePager : DialogFragment() {
         override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
-
             binding.apply {
                 pager.adapter?.count?.let { count ->
-                    if (position == count - 2) {
-                        newsContainer.alpha = 1.0f - offsetPercentage
-                        val translation = -(screenWidth * offsetPercentage)
-                        proceed.translationX = translation
-                        topBar.translationX = translation
-                        pagerIndicator.translationX = translation
-                    }
-                    if (isPositionLast(position, count - 1)) {
-                        pager.setOnTouchListener(OnTouchListener { v, event -> true })
-                        d { "offset: $offsetPixels" }
-                    }
-                    if (position == count - 1 && offsetPercentage == 0f) {
-                        onLastSwipe()
-                        dismiss()
+                    if (shouldCloseOnLastSwipe) {
+                        if (position == count - 2) {
+                            newsContainer.alpha = 1.0f - offsetPercentage
+                            val translation = -(screenWidth * offsetPercentage)
+                            proceed.translationX = translation
+                            topBar.translationX = translation
+                            pagerIndicator.translationX = translation
+                        }
+                        if (position == count - 1 && offsetPercentage == 0f) {
+                            onLastSwipe()
+                            dismiss()
+                        }
                     }
                 }
             }

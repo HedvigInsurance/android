@@ -14,13 +14,14 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
+    override val shouldShowLogo = false
+    override val shouldCloseOnLastSwipe = false
 
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerPage>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(ITEMS).orEmpty()
 
     override fun onDismiss() {
-
     }
 
     override fun onLastSwipe() {

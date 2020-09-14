@@ -13,6 +13,8 @@ class WelcomeDialog : DismissiblePager() {
     override val lastButtonText = R.string.NEWS_DISMISS
     override val animationStyle = R.style.WelcomeDialogAnimation
     override val titleLabel: Nothing? = null
+    override val shouldShowLogo = true
+    override val shouldCloseOnLastSwipe = true
 
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerPage>

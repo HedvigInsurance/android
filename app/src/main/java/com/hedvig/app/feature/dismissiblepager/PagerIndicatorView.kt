@@ -28,6 +28,8 @@ class PagerIndicatorView : LinearLayout {
     private val purple = context.compatColor(R.color.purple)
     private val gray = context.compatColor(R.color.gray)
 
+    var shouldShowLogo = true
+
     var pager: androidx.viewpager.widget.ViewPager? = null
         set(value) {
             field = value
@@ -36,7 +38,7 @@ class PagerIndicatorView : LinearLayout {
                 removeAllViews()
                 pager.adapter?.count?.let { count ->
                     for (i in 0 until count) {
-                        if (isPositionLast(i, count)) {
+                        if (shouldShowLogo && isPositionLast(i, count)) {
                             LayoutInflater.from(context).inflate(R.layout.hedvig_logo, this, true)
                         } else {
                             LayoutInflater.from(context)
@@ -56,15 +58,30 @@ class PagerIndicatorView : LinearLayout {
                 pager?.adapter?.count
             ) { currentItem, count ->
                 if (position == currentItem) {
-                    if (!isPositionNextToLast(position, count)) {
+                    if (shouldShowLogo) {
+                        if (!isPositionNextToLast(position, count)) {
+                            (getChildAt(position + 1) as? ImageView)?.let {
+                                expandIndicator(
+                                    it,
+                                    offsetPercentage
+                                )
+                            }
+                        }
+                        if (!isPositionLast(position, count)) {
+                            (getChildAt(position) as? ImageView)?.let {
+                                shrinkIndicator(
+                                    it,
+                                    offsetPercentage
+                                )
+                            }
+                        }
+                    } else {
                         (getChildAt(position + 1) as? ImageView)?.let {
                             expandIndicator(
                                 it,
                                 offsetPercentage
                             )
                         }
-                    }
-                    if (!isPositionLast(position, count)) {
                         (getChildAt(position) as? ImageView)?.let {
                             shrinkIndicator(
                                 it,
@@ -73,7 +90,16 @@ class PagerIndicatorView : LinearLayout {
                         }
                     }
                 } else {
-                    if (!isPositionNextToLast(position, count)) {
+                    if (shouldShowLogo) {
+                        if (!isPositionNextToLast(position, count)) {
+                            (getChildAt(position + 1) as? ImageView)?.let {
+                                shrinkIndicator(
+                                    it,
+                                    1.0f - offsetPercentage
+                                )
+                            }
+                        }
+                    } else {
                         (getChildAt(position + 1) as? ImageView)?.let {
                             shrinkIndicator(
                                 it,
