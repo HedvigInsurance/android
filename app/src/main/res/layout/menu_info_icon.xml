@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingEnd="@dimen/base_margin_double">
+    android:paddingEnd="@dimen/base_margin_triple">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/ic_chat_ripple"
-        android:contentDescription="@string/DASHBOARD_OPEN_CHAT"
-        app:srcCompat="@drawable/ic_chat"
+        android:background="@drawable/ic_info_ripple"
+        android:contentDescription="@string/REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION"
+        app:srcCompat="@drawable/ic_info_toolbar"
         app:tint="@android:color/transparent"
         app:tintMode="src_in" />
 </FrameLayout>
