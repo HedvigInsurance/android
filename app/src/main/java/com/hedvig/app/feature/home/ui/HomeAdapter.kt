@@ -331,18 +331,18 @@ class HomeAdapter(
                         listOf(
                             DismissiblePagerPage(
                                 ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                "page 1",
-                                "page 1"
+                                data.pager.title,
+                                data.pager.paragraph
                             ),
                             DismissiblePagerPage(
                                 ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                "page 2",
-                                "page 2"
+                                data.pager.title,
+                                data.pager.paragraph
                             ),
                             DismissiblePagerPage(
                                 ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                "page 3",
-                                "page 3"
+                                data.pager.title,
+                                data.pager.paragraph
                             )
                         )
                     ).show(fragmentManager, WelcomeDialog.TAG)
