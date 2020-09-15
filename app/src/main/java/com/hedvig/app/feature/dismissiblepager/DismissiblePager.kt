@@ -134,12 +134,15 @@ abstract class DismissiblePager : DialogFragment() {
         override fun onPageSelected(page: Int) {
             binding.apply {
                 pager.adapter?.count?.let { count ->
-                    proceed.text =
+                    proceed.text = if (shouldCloseOnLastSwipe) {
                         if (isPositionLast(page, count) || isPositionNextToLast(page, count)) {
                             resources.getString(lastButtonText)
                         } else {
                             resources.getString(proceedLabel)
                         }
+                    } else {
+                        resources.getString(proceedLabel)
+                    }
                     if (isPositionNextToLast(page, count)) {
                         proceed.setHapticClickListener {
                             onLastPageButton()

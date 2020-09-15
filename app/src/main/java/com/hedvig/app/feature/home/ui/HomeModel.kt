@@ -34,7 +34,7 @@ sealed class HomeModel {
 
     object StartClaimContained : HomeModel()
 
-    data class HowClaimsWork(val pager: HomeQuery.Welcome): HomeModel()
+    data class HowClaimsWork(val pager: List<HomeQuery.HowClaimsWork>): HomeModel()
 
     sealed class InfoCard : HomeModel() {
         object ConnectPayin : InfoCard()

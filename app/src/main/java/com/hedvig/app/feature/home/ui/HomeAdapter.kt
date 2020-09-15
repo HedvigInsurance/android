@@ -18,8 +18,8 @@ import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
-import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
@@ -326,26 +326,16 @@ class HomeAdapter(
                 if (data !is HowClaimsWork) {
                     return invalid(data)
                 }
+                val howClaimsWorkData = data.pager.map { page ->
+                    DismissiblePagerPage(
+                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                        "",
+                        page.body
+                    )
+                }
                 button.setHapticClickListener {
-                    HowClaimsWorkDialog.newInstance(
-                        listOf(
-                            DismissiblePagerPage(
-                                ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                data.pager.title,
-                                data.pager.paragraph
-                            ),
-                            DismissiblePagerPage(
-                                ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                data.pager.title,
-                                data.pager.paragraph
-                            ),
-                            DismissiblePagerPage(
-                                ThemedIconUrls.from(data.pager.illustration.variants.fragments.iconVariantsFragment),
-                                data.pager.title,
-                                data.pager.paragraph
-                            )
-                        )
-                    ).show(fragmentManager, WelcomeDialog.TAG)
+                    HowClaimsWorkDialog.newInstance(howClaimsWorkData)
+                        .show(fragmentManager, WelcomeDialog.TAG)
                 }
             }
         }

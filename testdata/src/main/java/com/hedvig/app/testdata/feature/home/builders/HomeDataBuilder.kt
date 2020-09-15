@@ -74,8 +74,8 @@ data class HomeDataBuilder(
         isEligibleToCreateClaim = contracts.any { it == Status.ACTIVE },
         commonClaims = commonClaims,
         importantMessages = importantMessages,
-        welcome = listOf(
-            HomeQuery.Welcome(
+        howClaimsWork = listOf(
+            HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
                         fragments = HomeQuery.Variants2.Fragments(
@@ -89,9 +89,9 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                paragraph = "1",
+                body = "1",
                 title = "1"
-            ),HomeQuery.Welcome(
+            ),HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
                         fragments = HomeQuery.Variants2.Fragments(
@@ -105,10 +105,10 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                paragraph = "2",
+                body = "2",
                 title = "2"
             ),
-            HomeQuery.Welcome(
+            HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
                         fragments = HomeQuery.Variants2.Fragments(
@@ -122,7 +122,7 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                paragraph = "3",
+                body = "3",
                 title = "3"
             )
         )

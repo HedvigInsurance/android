@@ -59,13 +59,14 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     button
     link
   }
-  welcome(platform: Android, locale: $locale) {
-    illustration {
-      variants {
+
+  howClaimsWork(locale: $locale){
+    illustration{
+      variants{
         ... IconVariantsFragment
       }
     }
-    paragraph
     title
+    body
   }
 }

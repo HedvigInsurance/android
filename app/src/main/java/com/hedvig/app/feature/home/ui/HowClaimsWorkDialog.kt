@@ -11,7 +11,7 @@ import org.koin.android.ext.android.inject
 
 class HowClaimsWorkDialog : DismissiblePager() {
     override val proceedLabel = R.string.claims_explainer_02_button_next
-    override val lastButtonText = R.string.NEWS_DISMISS
+    override val lastButtonText = R.string.claims_explainer_03_button_start_claim
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = false

@@ -39,7 +39,7 @@
         android:layout_marginEnd="@dimen/base_margin_triple"
         android:layout_marginBottom="@dimen/base_margin_triple"
         android:gravity="center_horizontal"
-        android:textAppearance="?textAppearanceBody1"
+        android:textAppearance="?textAppearanceSubtitle1"
         tools:text="Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får 10 kr lägre månadskostnad – för varje vän!" />
 
 </LinearLayout>
