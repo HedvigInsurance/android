@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import org.koin.android.ext.android.inject
 
@@ -15,11 +15,10 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = false
-    override val shouldCloseOnLastSwipe = false
 
     override val tracker: WelcomeTracker by inject()
-    override val items: List<DismissiblePagerPage>
-        get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(ITEMS).orEmpty()
+    override val items: List<DismissiblePagerModel>
+        get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
     override fun onDismiss() {
     }
@@ -28,6 +27,7 @@ class HowClaimsWorkDialog : DismissiblePager() {
     }
 
     override fun onLastPageButton() {
+        //TODO claimKey?
         HonestyPledgeBottomSheet
             .newInstance("test")
             .show(parentFragmentManager, HonestyPledgeBottomSheet.TAG)
@@ -37,7 +37,7 @@ class HowClaimsWorkDialog : DismissiblePager() {
         const val TAG = "WelcomeDialog"
         private const val ITEMS = "items"
 
-        fun newInstance(items: List<DismissiblePagerPage>) =
+        fun newInstance(items: List<DismissiblePagerModel>) =
             HowClaimsWorkDialog().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(ITEMS, ArrayList(items))

@@ -22,7 +22,7 @@ import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
@@ -327,9 +327,8 @@ class HomeAdapter(
                     return invalid(data)
                 }
                 val howClaimsWorkData = data.pager.map { page ->
-                    DismissiblePagerPage(
+                    DismissiblePagerModel.NoTitlePage(
                         ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                        "",
                         page.body
                     )
                 }

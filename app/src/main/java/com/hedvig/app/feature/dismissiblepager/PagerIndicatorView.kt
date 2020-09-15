@@ -128,12 +128,12 @@ class PagerIndicatorView : LinearLayout {
     }
 
     private fun shrinkIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(purple, gray, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(R.attr.colorPrimary, gray, percentage))
         indicator.setScaleXY(1.5f - percentage / 2)
     }
 
     private fun expandIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(gray, purple, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(gray, R.attr.colorPrimary, percentage))
         indicator.setScaleXY(1.0f + percentage / 2)
     }
 }

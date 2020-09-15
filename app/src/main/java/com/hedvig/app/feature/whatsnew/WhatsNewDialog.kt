@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -18,11 +18,10 @@ class WhatsNewDialog : DismissiblePager() {
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel = R.string.NEWS_TITLE
     override val shouldShowLogo = true
-    override val shouldCloseOnLastSwipe = true
 
     override val tracker: WhatsNewTracker by inject()
-    override val items: List<DismissiblePagerPage>
-        get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(PAGES).orEmpty()
+    override val items: List<DismissiblePagerModel>
+        get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(PAGES).orEmpty()
 
     override fun onDismiss() {
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
@@ -48,12 +47,12 @@ class WhatsNewDialog : DismissiblePager() {
                 putParcelableArrayList(
                     PAGES,
                     ArrayList(pages.map { page ->
-                        DismissiblePagerPage(
+                        DismissiblePagerModel.TitlePage(
                             ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
                             page.title,
                             page.paragraph
                         )
-                    })
+                    } + DismissiblePagerModel.SwipeOffScreen)
                 )
             }
         }

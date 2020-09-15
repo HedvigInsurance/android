@@ -3,7 +3,7 @@ package com.hedvig.app.feature.welcome
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import e
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ class WelcomeViewModel(
     private val welcomeRepository: WelcomeRepository
 ) : ViewModel() {
 
-    val data = MutableLiveData<List<DismissiblePagerPage>>()
+    val data = MutableLiveData<List<DismissiblePagerModel>>()
 
     fun fetch() {
         viewModelScope.launch {
@@ -24,7 +24,7 @@ class WelcomeViewModel(
             response.getOrNull()?.data?.let { response ->
                 data.postValue(
                     response.welcome.map { page ->
-                        DismissiblePagerPage(
+                        DismissiblePagerModel.TitlePage(
                             ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
                             page.title,
                             page.paragraph

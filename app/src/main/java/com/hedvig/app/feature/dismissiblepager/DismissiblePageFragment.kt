@@ -12,7 +12,7 @@ import com.hedvig.app.R
 import com.hedvig.app.util.svg.buildRequestBuilder
 import kotlinx.android.synthetic.main.fragment_news.*
 
-class DismissablePageFragment : androidx.fragment.app.Fragment() {
+class DismissiblePageFragment : androidx.fragment.app.Fragment() {
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
 
     override fun onCreateView(
@@ -37,10 +37,10 @@ class DismissablePageFragment : androidx.fragment.app.Fragment() {
     companion object {
         fun newInstance(
             illustration: String?,
-            title: String,
+            title: String?,
             paragraph: String
-        ): DismissablePageFragment {
-            val fragment = DismissablePageFragment()
+        ): DismissiblePageFragment {
+            val fragment = DismissiblePageFragment()
 
             val arguments = Bundle().apply {
                 putString(ILLUSTRATION, illustration)

@@ -21,10 +21,9 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
 abstract class DismissiblePager : DialogFragment() {
-    abstract val items: List<DismissiblePagerPage>
+    abstract val items: List<DismissiblePagerModel>
     abstract val tracker: DismissablePageTracker
     abstract val shouldShowLogo: Boolean
-    abstract val shouldCloseOnLastSwipe: Boolean
     private val binding by viewBinding(FragmentDismissablePagerBinding::bind)
 
     @get:StringRes
@@ -92,7 +91,7 @@ abstract class DismissiblePager : DialogFragment() {
                 title.show()
             }
 
-            pager.adapter = DismissablePagerAdapter(childFragmentManager, items, requireContext(), shouldCloseOnLastSwipe)
+            pager.adapter = DismissiblePagerAdapter(childFragmentManager, items, requireContext())
             pagerIndicator.pager = pager
             proceed.text = if (items.size > 1) {
                 resources.getString(proceedLabel)
@@ -114,17 +113,19 @@ abstract class DismissiblePager : DialogFragment() {
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
             binding.apply {
                 pager.adapter?.count?.let { count ->
-                    if (shouldCloseOnLastSwipe) {
-                        if (position == count - 2) {
-                            newsContainer.alpha = 1.0f - offsetPercentage
-                            val translation = -(screenWidth * offsetPercentage)
-                            proceed.translationX = translation
-                            topBar.translationX = translation
-                            pagerIndicator.translationX = translation
-                        }
-                        if (position == count - 1 && offsetPercentage == 0f) {
-                            onLastSwipe()
-                            dismiss()
+                    when (items.last()) {
+                        is DismissiblePagerModel.SwipeOffScreen->{
+                            if (position == count - 2) {
+                                newsContainer.alpha = 1.0f - offsetPercentage
+                                val translation = -(screenWidth * offsetPercentage)
+                                proceed.translationX = translation
+                                topBar.translationX = translation
+                                pagerIndicator.translationX = translation
+                            }
+                            if (position == count - 1 && offsetPercentage == 0f) {
+                                onLastSwipe()
+                                dismiss()
+                            }
                         }
                     }
                 }
@@ -134,14 +135,25 @@ abstract class DismissiblePager : DialogFragment() {
         override fun onPageSelected(page: Int) {
             binding.apply {
                 pager.adapter?.count?.let { count ->
-                    proceed.text = if (shouldCloseOnLastSwipe) {
-                        if (isPositionLast(page, count) || isPositionNextToLast(page, count)) {
-                            resources.getString(lastButtonText)
-                        } else {
-                            resources.getString(proceedLabel)
+                    when (items.last()) {
+                        is DismissiblePagerModel.SwipeOffScreen -> {
+                            proceed.text = if (isPositionLast(page, count) || isPositionNextToLast(
+                                    page,
+                                    count
+                                )
+                            ) {
+                                resources.getString(lastButtonText)
+                            } else {
+                                resources.getString(proceedLabel)
+                            }
                         }
-                    } else {
-                        resources.getString(proceedLabel)
+                        else -> {
+                            proceed.text = if (page == count - 1) {
+                                resources.getString(lastButtonText)
+                            } else {
+                                resources.getString(proceedLabel)
+                            }
+                        }
                     }
                     if (isPositionNextToLast(page, count)) {
                         proceed.setHapticClickListener {

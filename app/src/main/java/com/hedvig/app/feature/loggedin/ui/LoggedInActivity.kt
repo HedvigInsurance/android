@@ -20,6 +20,7 @@ import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
@@ -28,6 +29,7 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.shouldOverrideFeatureFlags
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.isDarkThemeActive

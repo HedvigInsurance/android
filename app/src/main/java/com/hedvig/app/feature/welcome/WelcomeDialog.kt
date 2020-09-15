@@ -3,7 +3,7 @@ package com.hedvig.app.feature.welcome
 import android.os.Bundle
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.ratings.RatingsDialog
 import org.koin.android.ext.android.inject
 
@@ -14,11 +14,10 @@ class WelcomeDialog : DismissiblePager() {
     override val animationStyle = R.style.WelcomeDialogAnimation
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = true
-    override val shouldCloseOnLastSwipe = true
 
     override val tracker: WelcomeTracker by inject()
-    override val items: List<DismissiblePagerPage>
-        get() = requireArguments().getParcelableArrayList<DismissiblePagerPage>(ITEMS).orEmpty()
+    override val items: List<DismissiblePagerModel>
+        get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
     override fun onDismiss() {
         RatingsDialog
@@ -44,9 +43,9 @@ class WelcomeDialog : DismissiblePager() {
         const val TAG = "WelcomeDialog"
         private const val ITEMS = "items"
 
-        fun newInstance(items: List<DismissiblePagerPage>) = WelcomeDialog().apply {
+        fun newInstance(items: List<DismissiblePagerModel>) = WelcomeDialog().apply {
             arguments = Bundle().apply {
-                putParcelableArrayList(ITEMS, ArrayList(items))
+                putParcelableArrayList(ITEMS, ArrayList(items + DismissiblePagerModel.SwipeOffScreen))
             }
         }
     }

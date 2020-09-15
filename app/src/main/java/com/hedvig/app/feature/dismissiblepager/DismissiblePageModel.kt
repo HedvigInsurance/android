@@ -13,6 +13,12 @@ sealed class DismissiblePagerModel: Parcelable {
     ) : DismissiblePagerModel()
 
     @Parcelize
+    data class NoTitlePage(
+        val imageUrls: ThemedIconUrls,
+        val paragraph: String
+    ) : DismissiblePagerModel()
+
+    @Parcelize
     object SwipeOffScreen: DismissiblePagerModel()
 }
 
