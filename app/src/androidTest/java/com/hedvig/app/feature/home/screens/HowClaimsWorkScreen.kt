@@ -9,5 +9,4 @@ import com.hedvig.app.R
 class HowClaimsWorkScreen : Screen<HowClaimsWorkScreen>() {
     val button = KButton { withId(R.id.proceed) }
     val title = KTextView { withId(R.id.title) }
-    val pager = KViewPager { withId(R.id.pager) }
 }

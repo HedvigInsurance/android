@@ -146,6 +146,11 @@ abstract class DismissiblePager : DialogFragment() {
                             } else {
                                 resources.getString(proceedLabel)
                             }
+                            if (isPositionNextToLast(page, count)) {
+                                proceed.setHapticClickListener {
+                                    onLastPageButton()
+                                }
+                            }
                         }
                         else -> {
                             proceed.text = if (page == count - 1) {
@@ -153,11 +158,10 @@ abstract class DismissiblePager : DialogFragment() {
                             } else {
                                 resources.getString(proceedLabel)
                             }
-                        }
-                    }
-                    if (isPositionNextToLast(page, count)) {
-                        proceed.setHapticClickListener {
-                            onLastPageButton()
+                            if (page == count-1)
+                            proceed.setHapticClickListener {
+                                onLastPageButton()
+                            }
                         }
                     }
                 }

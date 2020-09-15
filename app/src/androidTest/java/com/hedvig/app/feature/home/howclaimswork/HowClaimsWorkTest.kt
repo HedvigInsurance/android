@@ -39,7 +39,7 @@ class HowClaimsWorkTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldExistHowClaimsWorkButton() {
+    fun shouldOpenClaimFromHowClaimsWork() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
         onScreen<HomeTabScreen> {
             recycler {
@@ -56,7 +56,7 @@ class HowClaimsWorkTest {
                 hasText(R.string.claims_explainer_02_button_next)
                 click()
                 click()
-                hasText(R.string.NEWS_DISMISS)
+                hasText(R.string.claims_explainer_03_button_start_claim)
                 click()
             }
         }

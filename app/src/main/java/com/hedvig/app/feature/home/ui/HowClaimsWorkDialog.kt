@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
 import android.os.Bundle
-import androidx.fragment.app.FragmentManager
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
