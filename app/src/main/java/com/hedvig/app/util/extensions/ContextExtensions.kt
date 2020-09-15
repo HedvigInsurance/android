@@ -42,6 +42,12 @@ const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
+fun Context.themeColor(@AttrRes attrRes: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute (attrRes, typedValue, true)
+    return typedValue.data
+}
+
 @ColorInt
 fun Context.colorAttr(
     @AttrRes color: Int,

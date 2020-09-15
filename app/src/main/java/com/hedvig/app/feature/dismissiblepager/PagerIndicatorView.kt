@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import com.hedvig.app.R
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.themeColor
 import com.hedvig.app.util.extensions.view.setScaleXY
 import com.hedvig.app.util.safeLet
 
@@ -25,8 +26,8 @@ class PagerIndicatorView : LinearLayout {
         gravity = Gravity.CENTER
     }
 
-    private val purple = context.compatColor(R.color.purple)
-    private val gray = context.compatColor(R.color.gray)
+    private val colorSelected = context.themeColor(R.attr.colorPrimary)
+    private val colorDeselected = context.compatColor(R.color.color_divider)
 
     var shouldShowLogo = true
 
@@ -128,12 +129,12 @@ class PagerIndicatorView : LinearLayout {
     }
 
     private fun shrinkIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(R.attr.colorPrimary, gray, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(colorSelected, colorDeselected, percentage))
         indicator.setScaleXY(1.5f - percentage / 2)
     }
 
     private fun expandIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(gray, R.attr.colorPrimary, percentage))
+        indicator.drawable.mutate().setTint(boundedColorLerp(colorDeselected, colorSelected, percentage))
         indicator.setScaleXY(1.0f + percentage / 2)
     }
 }
