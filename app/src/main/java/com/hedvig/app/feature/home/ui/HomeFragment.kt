@@ -138,6 +138,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isTerminated(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Terminated(firstName),
+                    HomeModel.BodyText.Terminated,
                     HomeModel.StartClaimOutlined
                 )
             }

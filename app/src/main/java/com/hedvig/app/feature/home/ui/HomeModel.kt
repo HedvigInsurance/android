@@ -28,6 +28,7 @@ sealed class HomeModel {
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
+        object Terminated : BodyText()
     }
 
     object StartClaimOutlined : HomeModel()

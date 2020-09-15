@@ -16,7 +16,6 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
-import com.hedvig.app.LoggedInTerminatedActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -140,12 +139,18 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.PROFILE,
             LoggedInTabs.INSURANCE -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+                menu.getItem(0).actionView.setOnClickListener {
+                    onOptionsItemSelected(menu.getItem(0))
+                }
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
             }
             else -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
+                menu.getItem(0).actionView.setOnClickListener {
+                    onOptionsItemSelected(menu.getItem(0))
+                }
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -225,14 +230,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         }
         whatsNewViewModel.fetchNews()
-
-        insuranceViewModel.data.observe(this) { data ->
-            data.getOrNull()?.let { d ->
-                if (isTerminated(d.contracts)) {
-                    startActivity(LoggedInTerminatedActivity.newInstance(this))
-                }
-            }
-        }
     }
 
     private fun setupToolBar(id: LoggedInTabs?) {
