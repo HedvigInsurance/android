@@ -91,14 +91,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
-            tabContent.adapter = TabPagerAdapter(supportFragmentManager)
             bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
                 val id = LoggedInTabs.fromId(menuItem.itemId)
                 if (id == null) {
                     e { "Programmer error: Invalid menu item chosen" }
                     return@setOnNavigationItemSelectedListener false
                 }
-                tabContent.setCurrentItem(id.ordinal, false)
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.tabContent, id.fragment)
+                    .commitAllowingStateLoss()
+
                 setupToolBar(id)
                 animateGradient(id)
                 true

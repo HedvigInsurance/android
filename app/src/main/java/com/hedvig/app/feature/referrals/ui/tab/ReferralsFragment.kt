@@ -8,6 +8,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
@@ -42,6 +43,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private var shareInitialBottomMargin = 0
     private var invitesInitialBottomPadding = 0
     private var scroll = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
+    }
 
     override fun onResume() {
         super.onResume()
