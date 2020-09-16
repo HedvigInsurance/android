@@ -12,6 +12,7 @@ import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setScaleXY
 import com.hedvig.app.util.safeLet
 
@@ -28,37 +29,29 @@ class PagerIndicatorView : LinearLayout {
         gravity = Gravity.CENTER
     }
 
-    private val colorSelected = context.colorAttr(R.attr.colorPrimary)
-    private val colorDeselected = context.compatColor(R.color.color_divider)
+    private val colorSelected = context.compatColor(R.color.colorPrimary)
+    private val colorDeselected = context.compatColor(R.color.gray)
 
     var items: List<DismissiblePagerModel> = emptyList()
+        set(value) {
+            field = value
+            removeAllViews()
+            items.forEach { item ->
+                when (item) {
+                    DismissiblePagerModel.SwipeOffScreen -> {
+                        inflate(R.layout.hedvig_logo, true)
+                    }
+                    else -> {
+                        inflate(R.layout.pager_indicator_view, true)
+                    }
+                }
+            }
+        }
 
     var pager: androidx.viewpager.widget.ViewPager? = null
         set(value) {
             field = value
-            value?.let { pager ->
-                pager.addOnPageChangeListener(PageChangeListener())
-                removeAllViews()
-                pager.adapter?.count?.let { count ->
-                    for (i in 0 until count) {
-                        when (items.last()) {
-                            is DismissiblePagerModel.SwipeOffScreen -> {
-                                if (isPositionLast(i, count)) {
-                                    LayoutInflater.from(context)
-                                        .inflate(R.layout.hedvig_logo, this, true)
-                                } else {
-                                    LayoutInflater.from(context)
-                                        .inflate(R.layout.pager_indicator_view, this, true)
-                                }
-                            }
-                            else -> {
-                                LayoutInflater.from(context)
-                                    .inflate(R.layout.pager_indicator_view, this, true)
-                            }
-                        }
-                    }
-                }
-            }
+            value?.addOnPageChangeListener(PageChangeListener())
         }
 
     inner class PageChangeListener : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
