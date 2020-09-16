@@ -79,7 +79,7 @@ abstract class DismissiblePager : DialogFragment() {
                 view.updatePadding(top = initialState.paddings.top + insets.stableInsetTop)
             }
 
-            pagerIndicator.shouldShowLogo = this@DismissiblePager.shouldShowLogo
+            pagerIndicator.items = items
 
             close.setOnClickListener {
                 onDismiss()
@@ -114,7 +114,7 @@ abstract class DismissiblePager : DialogFragment() {
             binding.apply {
                 pager.adapter?.count?.let { count ->
                     when (items.last()) {
-                        is DismissiblePagerModel.SwipeOffScreen->{
+                        is DismissiblePagerModel.SwipeOffScreen -> {
                             if (position == count - 2) {
                                 newsContainer.alpha = 1.0f - offsetPercentage
                                 val translation = -(screenWidth * offsetPercentage)
@@ -158,10 +158,10 @@ abstract class DismissiblePager : DialogFragment() {
                             } else {
                                 resources.getString(proceedLabel)
                             }
-                            if (page == count-1)
-                            proceed.setHapticClickListener {
-                                onLastPageButton()
-                            }
+                            if (page == count - 1)
+                                proceed.setHapticClickListener {
+                                    onLastPageButton()
+                                }
                         }
                     }
                 }

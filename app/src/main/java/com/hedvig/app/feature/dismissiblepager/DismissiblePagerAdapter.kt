@@ -1,9 +1,12 @@
 package com.hedvig.app.feature.dismissiblepager
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
+// Seems to be an IDE bug.
+@SuppressLint("WrongConstant")
 class DismissiblePagerAdapter(
     fragmentManager: FragmentManager,
     private val data: List<DismissiblePagerModel>,
@@ -25,7 +28,7 @@ class DismissiblePagerAdapter(
                     title = null
                 )
             }
-            is DismissiblePagerModel.SwipeOffScreen -> {
+            DismissiblePagerModel.SwipeOffScreen -> {
                 androidx.fragment.app.Fragment()
             }
         }

@@ -60,9 +60,9 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     link
   }
 
-  howClaimsWork(locale: $locale){
-    illustration{
-      variants{
+  howClaimsWork(locale: $locale) {
+    illustration {
+      variants {
         ... IconVariantsFragment
       }
     }

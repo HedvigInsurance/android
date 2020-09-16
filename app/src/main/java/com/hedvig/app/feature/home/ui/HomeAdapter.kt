@@ -329,7 +329,7 @@ class HomeAdapter(
                 if (data !is HowClaimsWork) {
                     return invalid(data)
                 }
-                val howClaimsWorkData = data.pager.map { page ->
+                val howClaimsWorkData = data.pages.map { page ->
                     DismissiblePagerModel.NoTitlePage(
                         ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
                         page.body

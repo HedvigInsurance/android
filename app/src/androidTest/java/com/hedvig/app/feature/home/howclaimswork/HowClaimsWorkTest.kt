@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.howclaimswork
 
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -41,6 +42,7 @@ class HowClaimsWorkTest {
     @Test
     fun shouldOpenClaimFromHowClaimsWork() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        Intents.init()
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.HowClaimsWork>(2) {
@@ -65,6 +67,7 @@ class HowClaimsWorkTest {
                 hasText(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
                 click()
             }
+            chat { intended() }
         }
     }
 }

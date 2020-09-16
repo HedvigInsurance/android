@@ -6,10 +6,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.DiffUtil
 import com.hedvig.app.R
+import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.boundedColorLerp
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.themeColor
 import com.hedvig.app.util.extensions.view.setScaleXY
 import com.hedvig.app.util.safeLet
 
@@ -26,10 +28,10 @@ class PagerIndicatorView : LinearLayout {
         gravity = Gravity.CENTER
     }
 
-    private val colorSelected = context.themeColor(R.attr.colorPrimary)
+    private val colorSelected = context.colorAttr(R.attr.colorPrimary)
     private val colorDeselected = context.compatColor(R.color.color_divider)
 
-    var shouldShowLogo = true
+    var items: List<DismissiblePagerModel> = emptyList()
 
     var pager: androidx.viewpager.widget.ViewPager? = null
         set(value) {
@@ -39,11 +41,20 @@ class PagerIndicatorView : LinearLayout {
                 removeAllViews()
                 pager.adapter?.count?.let { count ->
                     for (i in 0 until count) {
-                        if (shouldShowLogo && isPositionLast(i, count)) {
-                            LayoutInflater.from(context).inflate(R.layout.hedvig_logo, this, true)
-                        } else {
-                            LayoutInflater.from(context)
-                                .inflate(R.layout.pager_indicator_view, this, true)
+                        when (items.last()) {
+                            is DismissiblePagerModel.SwipeOffScreen -> {
+                                if (isPositionLast(i, count)) {
+                                    LayoutInflater.from(context)
+                                        .inflate(R.layout.hedvig_logo, this, true)
+                                } else {
+                                    LayoutInflater.from(context)
+                                        .inflate(R.layout.pager_indicator_view, this, true)
+                                }
+                            }
+                            else -> {
+                                LayoutInflater.from(context)
+                                    .inflate(R.layout.pager_indicator_view, this, true)
+                            }
                         }
                     }
                 }
@@ -59,16 +70,32 @@ class PagerIndicatorView : LinearLayout {
                 pager?.adapter?.count
             ) { currentItem, count ->
                 if (position == currentItem) {
-                    if (shouldShowLogo) {
-                        if (!isPositionNextToLast(position, count)) {
+                    when (items.last()) {
+                        is DismissiblePagerModel.SwipeOffScreen -> {
+                            if (!isPositionNextToLast(position, count)) {
+                                (getChildAt(position + 1) as? ImageView)?.let {
+                                    expandIndicator(
+                                        it,
+                                        offsetPercentage
+                                    )
+                                }
+                            }
+                            if (!isPositionLast(position, count)) {
+                                (getChildAt(position) as? ImageView)?.let {
+                                    shrinkIndicator(
+                                        it,
+                                        offsetPercentage
+                                    )
+                                }
+                            }
+                        }
+                        else -> {
                             (getChildAt(position + 1) as? ImageView)?.let {
                                 expandIndicator(
                                     it,
                                     offsetPercentage
                                 )
                             }
-                        }
-                        if (!isPositionLast(position, count)) {
                             (getChildAt(position) as? ImageView)?.let {
                                 shrinkIndicator(
                                     it,
@@ -76,36 +103,26 @@ class PagerIndicatorView : LinearLayout {
                                 )
                             }
                         }
-                    } else {
-                        (getChildAt(position + 1) as? ImageView)?.let {
-                            expandIndicator(
-                                it,
-                                offsetPercentage
-                            )
-                        }
-                        (getChildAt(position) as? ImageView)?.let {
-                            shrinkIndicator(
-                                it,
-                                offsetPercentage
-                            )
-                        }
                     }
                 } else {
-                    if (shouldShowLogo) {
-                        if (!isPositionNextToLast(position, count)) {
+                    when (items.last()) {
+                        is DismissiblePagerModel.SwipeOffScreen -> {
+                            if (!isPositionNextToLast(position, count)) {
+                                (getChildAt(position + 1) as? ImageView)?.let {
+                                    shrinkIndicator(
+                                        it,
+                                        1.0f - offsetPercentage
+                                    )
+                                }
+                            }
+                        }
+                        else -> {
                             (getChildAt(position + 1) as? ImageView)?.let {
                                 shrinkIndicator(
                                     it,
                                     1.0f - offsetPercentage
                                 )
                             }
-                        }
-                    } else {
-                        (getChildAt(position + 1) as? ImageView)?.let {
-                            shrinkIndicator(
-                                it,
-                                1.0f - offsetPercentage
-                            )
                         }
                     }
                     (getChildAt(position) as? ImageView?)?.let {
@@ -129,12 +146,14 @@ class PagerIndicatorView : LinearLayout {
     }
 
     private fun shrinkIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(colorSelected, colorDeselected, percentage))
+        indicator.drawable.mutate()
+            .setTint(boundedColorLerp(colorSelected, colorDeselected, percentage))
         indicator.setScaleXY(1.5f - percentage / 2)
     }
 
     private fun expandIndicator(indicator: ImageView, percentage: Float) {
-        indicator.drawable.mutate().setTint(boundedColorLerp(colorDeselected, colorSelected, percentage))
+        indicator.drawable.mutate()
+            .setTint(boundedColorLerp(colorDeselected, colorSelected, percentage))
         indicator.setScaleXY(1.0f + percentage / 2)
     }
 }
