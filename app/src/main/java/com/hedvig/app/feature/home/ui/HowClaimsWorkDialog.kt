@@ -26,9 +26,8 @@ class HowClaimsWorkDialog : DismissiblePager() {
     }
 
     override fun onLastPageButton() {
-        //TODO claimKey?
         HonestyPledgeBottomSheet
-            .newInstance("test")
+            .newInstance()
             .show(parentFragmentManager, HonestyPledgeBottomSheet.TAG)
     }
 

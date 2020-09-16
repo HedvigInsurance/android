@@ -41,15 +41,7 @@ class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "HonestyPledgeBottomSheet"
-        private const val ARGS_CLAIM_KEY = "claim_key"
 
-        fun newInstance(claimKey: String): HonestyPledgeBottomSheet {
-            val arguments = Bundle().apply {
-                putString(ARGS_CLAIM_KEY, claimKey)
-            }
-
-            return HonestyPledgeBottomSheet()
-                .also { it.arguments = arguments }
-        }
+        fun newInstance(): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet()
     }
 }
