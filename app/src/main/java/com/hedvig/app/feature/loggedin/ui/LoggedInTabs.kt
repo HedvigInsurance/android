@@ -2,7 +2,13 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.res.Resources
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import com.hedvig.app.R
+import com.hedvig.app.feature.home.ui.HomeFragment
+import com.hedvig.app.feature.insurance.ui.InsuranceFragment
+import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
+import com.hedvig.app.feature.profile.ui.tab.ProfileFragment
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsFragment
 
 enum class LoggedInTabs {
     HOME,
@@ -10,6 +16,15 @@ enum class LoggedInTabs {
     KEY_GEAR,
     REFERRALS,
     PROFILE;
+
+    val fragment: Fragment
+        get() = when (this) {
+            HOME -> HomeFragment()
+            INSURANCE -> InsuranceFragment()
+            KEY_GEAR -> KeyGearFragment()
+            REFERRALS -> ReferralsFragment()
+            PROFILE -> ProfileFragment()
+        }
 
     @IdRes
     fun id() = when (this) {
