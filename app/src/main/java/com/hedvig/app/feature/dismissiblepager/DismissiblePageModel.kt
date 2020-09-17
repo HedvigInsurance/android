@@ -9,13 +9,15 @@ sealed class DismissiblePagerModel: Parcelable {
     data class TitlePage(
         val imageUrls: ThemedIconUrls,
         val title: String,
-        val paragraph: String
+        val paragraph: String,
+        val buttonText: String
     ) : DismissiblePagerModel()
 
     @Parcelize
     data class NoTitlePage(
         val imageUrls: ThemedIconUrls,
-        val paragraph: String
+        val paragraph: String,
+        val buttonText: String
     ) : DismissiblePagerModel()
 
     @Parcelize

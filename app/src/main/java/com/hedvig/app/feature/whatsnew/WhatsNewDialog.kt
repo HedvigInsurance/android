@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.whatsnew
 
+import android.app.Application
 import android.os.Bundle
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
@@ -46,12 +47,22 @@ class WhatsNewDialog : DismissiblePager() {
             arguments = Bundle().apply {
                 putParcelableArrayList(
                     PAGES,
-                    ArrayList(pages.map { page ->
-                        DismissiblePagerModel.TitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.title,
-                            page.paragraph
-                        )
+                    ArrayList(pages.mapIndexed { index, page ->
+                        if (index == items.size - 1) {
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getString(R.string.NEWS_DISMISS)
+                            )
+                        } else {
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getString(R.string.NEWS_PROCEED)
+                            )
+                        }
                     } + DismissiblePagerModel.SwipeOffScreen)
                 )
             }

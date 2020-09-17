@@ -228,7 +228,7 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { WelcomeViewModel(get()) }
+    viewModel { WelcomeViewModel(get(), get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 

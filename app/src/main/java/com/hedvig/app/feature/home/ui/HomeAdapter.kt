@@ -5,6 +5,7 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -329,11 +330,20 @@ class HomeAdapter(
                 if (data !is HowClaimsWork) {
                     return invalid(data)
                 }
-                val howClaimsWorkData = data.pages.map { page ->
-                    DismissiblePagerModel.NoTitlePage(
-                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                        page.body
-                    )
+                val howClaimsWorkData = data.pages.mapIndexed { index, page ->
+                    if (index == data.pages.size - 1) {
+                        DismissiblePagerModel.NoTitlePage(
+                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                            page.body,
+                            button.context.getString(R.string.claims_explainer_03_button_start_claim)
+                        )
+                    } else {
+                        DismissiblePagerModel.NoTitlePage(
+                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                            page.body,
+                            button.context.getString(R.string.claims_explainer_02_button_next)
+                        )
+                    }
                 }
                 button.setHapticClickListener {
                     HowClaimsWorkDialog.newInstance(howClaimsWorkData)

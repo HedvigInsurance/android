@@ -134,6 +134,15 @@ abstract class DismissiblePager : DialogFragment() {
 
         override fun onPageSelected(page: Int) {
             binding.apply {
+                when (val currentPage = items[page]) {
+                    is DismissiblePagerModel.TitlePage -> {
+                        proceed.text = currentPage.buttonText
+                    }
+                    is DismissiblePagerModel.NoTitlePage->{
+                        proceed.text = currentPage.buttonText
+                    }
+                }
+
                 pager.adapter?.count?.let { count ->
                     when (items.last()) {
                         is DismissiblePagerModel.SwipeOffScreen -> {

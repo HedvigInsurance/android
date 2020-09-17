@@ -1,16 +1,20 @@
 package com.hedvig.app.feature.welcome
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import e
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
-    private val welcomeRepository: WelcomeRepository
-) : ViewModel() {
+    private val welcomeRepository: WelcomeRepository,
+    application: Application
+) : AndroidViewModel(application) {
 
     val data = MutableLiveData<List<DismissiblePagerModel>>()
 
@@ -23,12 +27,22 @@ class WelcomeViewModel(
             }
             response.getOrNull()?.data?.let { response ->
                 data.postValue(
-                    response.welcome.map { page ->
-                        DismissiblePagerModel.TitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.title,
-                            page.paragraph
-                        )
+                    response.welcome.mapIndexed { index, page ->
+                        if (index == response.welcome.size - 1) {
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getApplication<Application>().getString(R.string.NEWS_DISMISS)
+                            )
+                        } else {
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getApplication<Application>().getString(R.string.NEWS_PROCEED)
+                            )
+                        }
                     })
             }
         }

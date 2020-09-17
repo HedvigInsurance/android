@@ -15,18 +15,10 @@ class DismissiblePagerAdapter(
     override fun getItem(position: Int) =
         when (val page = data[position]) {
             is DismissiblePagerModel.TitlePage -> {
-                DismissiblePageFragment.newInstance(
-                    illustration = page.imageUrls.iconByTheme(context),
-                    title = page.title,
-                    paragraph = page.paragraph
-                )
+                DismissiblePageTitleFragment.newInstance(page)
             }
             is DismissiblePagerModel.NoTitlePage -> {
-                DismissiblePageFragment.newInstance(
-                    illustration = page.imageUrls.iconByTheme(context),
-                    paragraph = page.paragraph,
-                    title = null
-                )
+                DismissiblePageNoTitleFragment.newInstance(page)
             }
             DismissiblePagerModel.SwipeOffScreen -> {
                 androidx.fragment.app.Fragment()
