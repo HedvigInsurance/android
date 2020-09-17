@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <!-- TODO: text key -->
+
     <Button
         android:id="@+id/button"
         style="?materialButtonTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="How claims work"
+        android:text="@string/home_tab.claim_explainer_button"
         android:textColor="@color/color_primary_67"
         app:icon="@drawable/ic_info_claims" />
 </FrameLayout>
