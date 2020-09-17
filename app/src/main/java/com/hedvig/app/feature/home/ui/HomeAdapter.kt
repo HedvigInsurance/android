@@ -5,6 +5,7 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +19,15 @@ import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
+import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
+import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
+import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate
@@ -59,6 +64,7 @@ class HomeAdapter(
         R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
+        R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -72,6 +78,7 @@ class HomeAdapter(
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.home_error
+        is HowClaimsWork -> R.layout.how_claims_work_button
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -308,6 +315,39 @@ class HomeAdapter(
             private fun requestUri(icons: ThemedIconUrls) = Uri.parse(
                 "${BuildConfig.BASE_URL}${icons.iconByTheme(binding.root.context)}"
             )
+        }
+
+        class HowClaimsWorkButton(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
+            private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
+            ): Any? = with(binding) {
+                if (data !is HowClaimsWork) {
+                    return invalid(data)
+                }
+                val howClaimsWorkData = data.pages.mapIndexed { index, page ->
+                    DismissiblePagerModel.NoTitlePage(
+                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                        page.body,
+                        button.context.getString(
+                            if (index == data.pages.size - 1) {
+                                R.string.claims_explainer_03_button_start_claim
+                            } else {
+                                R.string.claims_explainer_02_button_next
+                            }
+                        )
+                    )
+                }
+                button.setHapticClickListener {
+                    HowClaimsWorkDialog.newInstance(howClaimsWorkData)
+                        .show(fragmentManager, HowClaimsWorkDialog.TAG)
+                }
+            }
         }
 
         class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {

@@ -35,6 +35,8 @@ sealed class HomeModel {
 
     object StartClaimContained : HomeModel()
 
+    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>): HomeModel()
+
     sealed class InfoCard : HomeModel() {
         object ConnectPayin : InfoCard()
         data class PSA(

@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.welcome
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerPage
-import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import e
 import kotlinx.coroutines.launch
 
@@ -12,7 +12,8 @@ class WelcomeViewModel(
     private val welcomeRepository: WelcomeRepository
 ) : ViewModel() {
 
-    val data = MutableLiveData<List<DismissiblePagerPage>>()
+    private val _data = MutableLiveData<WelcomeQuery.Data>()
+    val data: LiveData<WelcomeQuery.Data> = _data
 
     fun fetch() {
         viewModelScope.launch {
@@ -21,16 +22,7 @@ class WelcomeViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data?.let { response ->
-                data.postValue(
-                    response.welcome.map { page ->
-                        DismissiblePagerPage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.title,
-                            page.paragraph
-                        )
-                    })
-            }
+            response.getOrNull()?.data?.let { _data.postValue(it) }
         }
     }
 }
