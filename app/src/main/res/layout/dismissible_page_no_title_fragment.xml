@@ -12,7 +12,6 @@
         android:layout_width="@dimen/dismissible_page_illustration_size"
         android:layout_height="@dimen/dismissible_page_illustration_size"
         android:contentDescription="@null"
-        android:maxHeight="200dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/paragraph"
         app:layout_constraintEnd_toEndOf="parent"
