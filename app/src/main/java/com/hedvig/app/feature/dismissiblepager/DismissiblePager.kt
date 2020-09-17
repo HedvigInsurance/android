@@ -138,7 +138,7 @@ abstract class DismissiblePager : DialogFragment() {
                     is DismissiblePagerModel.TitlePage -> {
                         proceed.text = currentPage.buttonText
                     }
-                    is DismissiblePagerModel.NoTitlePage->{
+                    is DismissiblePagerModel.NoTitlePage -> {
                         proceed.text = currentPage.buttonText
                     }
                 }
@@ -159,6 +159,11 @@ abstract class DismissiblePager : DialogFragment() {
                                 proceed.setHapticClickListener {
                                     onLastPageButton()
                                 }
+                            } else {
+                                proceed.setHapticClickListener {
+                                    tracker.clickProceed()
+                                    pager.currentItem += 1
+                                }
                             }
                         }
                         else -> {
@@ -167,10 +172,16 @@ abstract class DismissiblePager : DialogFragment() {
                             } else {
                                 resources.getString(proceedLabel)
                             }
-                            if (page == count - 1)
+                            if (page == count - 1) {
                                 proceed.setHapticClickListener {
                                     onLastPageButton()
                                 }
+                            } else {
+                                proceed.setHapticClickListener {
+                                    tracker.clickProceed()
+                                    pager.currentItem += 1
+                                }
+                            }
                         }
                     }
                 }
