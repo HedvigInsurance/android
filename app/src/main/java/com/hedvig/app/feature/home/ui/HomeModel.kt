@@ -35,12 +35,9 @@ sealed class HomeModel {
 
     object StartClaimContained : HomeModel()
 
-    sealed class InfoCard : HomeModel() {
-        object ConnectPayin : InfoCard()
-        data class PSA(
-            val inner: HomeQuery.ImportantMessage
-        ) : InfoCard()
-    }
+    object InfoCard : HomeModel()
+
+    data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
 
     object CommonClaimTitle : HomeModel()
 

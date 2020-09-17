@@ -77,15 +77,11 @@ data class HomeDataBuilder(
 }
 
 data class ImportantMessageBuilder(
-    private val title: String = "Example PSA title",
     private val body: String = "Example PSA body",
-    private val actionLabel: String = "Example PSA action",
     private val url: String = "https://www.example.com"
 ) {
     fun build() = HomeQuery.ImportantMessage(
-        title = title,
         message = body,
-        button = actionLabel,
         link = url
     )
 }
