@@ -331,23 +331,21 @@ class HomeAdapter(
                     return invalid(data)
                 }
                 val howClaimsWorkData = data.pages.mapIndexed { index, page ->
-                    if (index == data.pages.size - 1) {
-                        DismissiblePagerModel.NoTitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.body,
-                            button.context.getString(R.string.claims_explainer_03_button_start_claim)
+                    DismissiblePagerModel.NoTitlePage(
+                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                        page.body,
+                        button.context.getString(
+                            if (index == data.pages.size - 1) {
+                                R.string.claims_explainer_03_button_start_claim
+                            } else {
+                                R.string.claims_explainer_02_button_next
+                            }
                         )
-                    } else {
-                        DismissiblePagerModel.NoTitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.body,
-                            button.context.getString(R.string.claims_explainer_02_button_next)
-                        )
-                    }
+                    )
                 }
                 button.setHapticClickListener {
                     HowClaimsWorkDialog.newInstance(howClaimsWorkData)
-                        .show(fragmentManager, WelcomeDialog.TAG)
+                        .show(fragmentManager, HowClaimsWorkDialog.TAG)
                 }
             }
         }

@@ -32,7 +32,7 @@ class HowClaimsWorkDialog : DismissiblePager() {
     }
 
     companion object {
-        const val TAG = "WelcomeDialog"
+        const val TAG = "HowClaimsWorkDialog"
         private const val ITEMS = "items"
 
         fun newInstance(items: List<DismissiblePagerModel>) =
