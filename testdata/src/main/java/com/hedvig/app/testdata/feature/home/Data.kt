@@ -34,6 +34,12 @@ val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(ContractStatus.TERMINATE
 
 val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
     listOf(ContractStatus.ACTIVE), importantMessages = listOf(
+        ImportantMessageBuilder().build()
+    )
+).build()
+
+val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
+    listOf(ContractStatus.ACTIVE), importantMessages = listOf(
         ImportantMessageBuilder().build(),
         ImportantMessageBuilder().build()
     )

@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.ui
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -79,15 +80,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         return 2
                     }
                 }
-            addItemDecoration(HomeItemDecoration())
-            addItemDecoration(
-                DividerItemDecoration(
-                    context,
-                    DividerItemDecoration.VERTICAL
-                )
-            )
-
-            // addItemDecoration(ItemDividerDecoration(context))
+            addItemDecoration(HomeItemDecoration(context))
             addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->
