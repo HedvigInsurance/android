@@ -159,7 +159,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
-                    *psaItems(successData.importantMessages).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.InfoCard
                     } else {
