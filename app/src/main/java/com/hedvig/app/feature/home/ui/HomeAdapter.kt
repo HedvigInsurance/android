@@ -336,9 +336,9 @@ class HomeAdapter(
                         page.body,
                         button.context.getString(
                             if (index == data.pages.size - 1) {
-                                R.string.claims_explainer_03_button_start_claim
+                                R.string.claims_explainer_button_start_claim
                             } else {
-                                R.string.claims_explainer_02_button_next
+                                R.string.claims_explainer_button_next
                             }
                         )
                     )
