@@ -55,10 +55,10 @@ class HowClaimsWorkTest {
         }
         onScreen<HowClaimsWorkScreen> {
             button {
-                hasText(R.string.claims_explainer_02_button_next)
+                hasText(R.string.claims_explainer_button_next)
                 click()
                 click()
-                hasText(R.string.claims_explainer_03_button_start_claim)
+                hasText(R.string.claims_explainer_button_start_claim)
                 click()
             }
         }

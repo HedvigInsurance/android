@@ -90,8 +90,7 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                body = "1",
-                title = "1"
+                body = "1"
             ),HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
@@ -106,8 +105,7 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                body = "2",
-                title = "2"
+                body = "2"
             ),
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
@@ -123,8 +121,7 @@ data class HomeDataBuilder(
                         )
                     )
                 ),
-                body = "3",
-                title = "3"
+                body = "3"
             )
         )
     )
