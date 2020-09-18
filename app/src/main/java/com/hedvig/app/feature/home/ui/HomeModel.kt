@@ -38,6 +38,8 @@ sealed class HomeModel {
     object InfoCard : HomeModel()
 
     data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
+    
+    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>): HomeModel()
 
     object CommonClaimTitle : HomeModel()
 

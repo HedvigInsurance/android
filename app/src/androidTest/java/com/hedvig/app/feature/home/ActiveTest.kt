@@ -49,10 +49,10 @@ class ActiveTest {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
                 }
-                childAt<HomeTabScreen.CommonClaimTitleItem>(2) {
+                childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
                     isVisible()
                 }
-                childAt<HomeTabScreen.CommonClaimItem>(3) {
+                childAt<HomeTabScreen.CommonClaimItem>(4) {
                     text { hasText("Det är kris!") }
                     click()
                 }
@@ -66,10 +66,10 @@ class ActiveTest {
 
         onScreen<HomeTabScreen> {
             recycler {
-                childAt<HomeTabScreen.CommonClaimItem>(4) {
+                childAt<HomeTabScreen.CommonClaimItem>(5) {
                     text { hasText("Trasig telefon") }
                 }
-                childAt<HomeTabScreen.CommonClaimItem>(5) {
+                childAt<HomeTabScreen.CommonClaimItem>(6) {
                     text { hasText("Försenat bagage") }
                     click()
                 }
