@@ -90,10 +90,12 @@ class ProfileAdapter(
                     root.context.apply {
                         setAuthenticationToken(null)
                         setIsLoggedIn(false)
-                        lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                            FirebaseInstanceId.getInstance().deleteInstanceId()
-                            withContext(Dispatchers.Main) {
-                                triggerRestartActivity()
+                        lifecycleOwner.lifecycleScope.launch {
+                            withContext(Dispatchers.IO) {
+                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                withContext(Dispatchers.Main) {
+                                    triggerRestartActivity()
+                                }
                             }
                         }
                     }
