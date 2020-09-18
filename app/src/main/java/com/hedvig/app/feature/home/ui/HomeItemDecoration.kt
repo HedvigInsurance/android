@@ -46,6 +46,10 @@ class HomeItemDecoration : RecyclerView.ItemDecoration() {
                 outRect.top = BASE_MARGIN_SEPTUPLE
             }
         }
+
+        if (item is HomeModel.PSA) {
+            
+        }
     }
 
     companion object {

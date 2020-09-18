@@ -2,6 +2,7 @@ package com.hedvig.app.ui.decoration
 
 import android.graphics.Rect
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class CenterItemDecoration : RecyclerView.ItemDecoration() {

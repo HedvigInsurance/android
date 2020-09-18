@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -79,6 +80,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                 }
             addItemDecoration(HomeItemDecoration())
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+
+            // addItemDecoration(ItemDividerDecoration(context))
             addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->
