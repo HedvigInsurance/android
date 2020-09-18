@@ -2,8 +2,11 @@ package com.hedvig.app.feature.profile.ui.tab
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
@@ -15,8 +18,13 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(
+    private val lifecycleOwner: LifecycleOwner
+) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
     var items: List<ProfileModel> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(GenericDiffUtilCallback(field, value))
@@ -40,25 +48,25 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], lifecycleOwner)
     }
 
     override fun getItemCount() = items.size
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: ProfileModel): Any?
+        abstract fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner): Any?
 
         fun invalid(data: ProfileModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
         class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_title)) {
-            override fun bind(data: ProfileModel) = Unit
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = Unit
         }
 
         class Row(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_row)) {
             private val binding by viewBinding(ProfileRowBinding::bind)
-            override fun bind(data: ProfileModel) = with(binding) {
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
                 if (data !is ProfileModel.Row) {
                     return invalid(data)
                 }
@@ -72,18 +80,22 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         }
 
         class Subtitle(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_subtitle)) {
-            override fun bind(data: ProfileModel) = Unit
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = Unit
         }
 
         class Logout(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
             private val binding by viewBinding(ProfileLogoutBinding::bind)
-            override fun bind(data: ProfileModel) = with(binding) {
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
                 root.setHapticClickListener {
                     root.context.apply {
                         setAuthenticationToken(null)
                         setIsLoggedIn(false)
-                        com.google.firebase.iid.FirebaseInstanceId.getInstance().deleteInstanceId()
-                        triggerRestartActivity()
+                        lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                            FirebaseInstanceId.getInstance().deleteInstanceId()
+                            withContext(Dispatchers.Main) {
+                                triggerRestartActivity()
+                            }
+                        }
                     }
                 }
             }

@@ -76,7 +76,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
-            adapter = ProfileAdapter()
+            adapter = ProfileAdapter(viewLifecycleOwner)
         }
 
         model.data.observe(viewLifecycleOwner) { data ->
