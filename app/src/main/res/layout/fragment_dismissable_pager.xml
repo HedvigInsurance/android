@@ -11,8 +11,7 @@
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/base_margin">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/close"

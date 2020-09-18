@@ -76,7 +76,7 @@ abstract class DismissiblePager : DialogFragment() {
             }
 
             topBar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.stableInsetTop)
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
 
             pagerIndicator.items = items
