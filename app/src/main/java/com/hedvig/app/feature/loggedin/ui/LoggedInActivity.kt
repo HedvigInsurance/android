@@ -49,7 +49,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
-    private val insuranceViewModel: InsuranceViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val loggedInTracker: LoggedInTracker by inject()
@@ -319,9 +318,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
                 putExtra(INITIAL_TAB, initialTab)
             }
-
-        fun isTerminated(contracts: List<InsuranceQuery.Contract>) =
-            contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
 
         const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
