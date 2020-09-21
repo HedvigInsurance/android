@@ -28,11 +28,13 @@
 
     <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
 
-    <style name="Hedvig.Theme.Splash">
+    <style name="Hedvig.Theme.Splash.V23" parent="Hedvig.Theme">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:navigationBarColor">@color/hedvig_black</item>
     </style>
+
+    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V23"/>
 
     <style name="FullScreenDialog" parent="Hedvig.Theme">
         <item name="windowNoTitle">true</item>

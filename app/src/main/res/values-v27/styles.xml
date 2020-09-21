@@ -42,4 +42,10 @@
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
+    <style name="Hedvig.Theme.Splash.V27" parent="Hedvig.Theme.Splash.V23">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V27"/>
+
 </resources>
