@@ -132,7 +132,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
 
-
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
         }
@@ -240,7 +239,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private fun setupToolBar(id: LoggedInTabs?) {
         if (lastLoggedInTab != id) {
-            binding.bottomNavigation.elevation = 0f
             invalidateOptionsMenu()
         }
         if (id != null) {
