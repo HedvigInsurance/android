@@ -90,6 +90,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
+            bottomNavigation.itemIconTintList = null
             bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
                 val id = LoggedInTabs.fromId(menuItem.itemId)
                 if (id == null) {
@@ -104,11 +105,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 setupToolBar(id)
                 animateGradient(id)
                 true
-            }
-
-            if (intent.getBooleanExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION, false)) {
-                bottomNavigation.selectedItemId = R.id.referrals
-                intent.removeExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION)
             }
 
             if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
@@ -136,7 +132,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
 
-            bottomNavigation.itemIconTintList = null
 
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
@@ -317,7 +312,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 putExtra(INITIAL_TAB, initialTab)
             }
 
-        const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
 
         private val evaluator = ArgbEvaluator()

@@ -3,8 +3,6 @@ package com.hedvig.app.feature.loggedin
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.image.KImageView
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.WelcomeQuery
@@ -62,6 +60,3 @@ class PostSignTest {
     }
 }
 
-class WelcomeScreen : Screen<WelcomeScreen>() {
-    val close = KImageView { withId(R.id.close) }
-}
