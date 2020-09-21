@@ -25,10 +25,11 @@ class LoginStatusService(
 
         context.getAuthenticationToken() ?: return LoginStatus.ONBOARDING
 
-        val response =
+        val response = runCatching {
             apolloClientWrapper.apolloClient.query(ContractStatusQuery()).toDeferred().await()
+        }
 
-        if (response.data?.contracts?.isEmpty() == true) {
+        if (response.isFailure || response.getOrNull()?.data?.contracts.orEmpty().isEmpty()) {
             return LoginStatus.ONBOARDING
         }
 
