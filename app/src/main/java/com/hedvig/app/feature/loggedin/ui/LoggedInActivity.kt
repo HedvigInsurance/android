@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -53,7 +54,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-    private var lastLoggedInTab = LoggedInTabs.HOME
+    private var savedTab: LoggedInTabs? = null
+    private var lastSelectedTab: LoggedInTabs? = null
 
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
@@ -61,12 +63,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
+
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                loggedInViewModel.updateToolbarInset(view.measuredHeight)
+            }
+            toolbar.doOnLayout { view ->
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
 
@@ -97,6 +104,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     e { "Programmer error: Invalid menu item chosen" }
                     return@setOnNavigationItemSelectedListener false
                 }
+
+                if (id == lastSelectedTab) {
+                    return@setOnNavigationItemSelectedListener false
+                }
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.tabContent, id.fragment)
@@ -104,6 +115,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
                 setupToolBar(id)
                 animateGradient(id)
+                lastSelectedTab = id
                 true
             }
 
@@ -135,6 +147,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable(
+            "tab",
+            LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)
+        )
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -215,7 +235,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     else -> R.menu.logged_in_menu
                 }
                 binding.bottomNavigation.inflateMenu(menuId)
-                val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                val initialTab = savedTab
+                    ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                     ?: LoggedInTabs.HOME
                 binding.bottomNavigation.selectedItemId = initialTab.id()
                 setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
@@ -238,12 +259,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     private fun setupToolBar(id: LoggedInTabs?) {
-        if (lastLoggedInTab != id) {
-            invalidateOptionsMenu()
-        }
-        if (id != null) {
-            lastLoggedInTab = id
-        }
+        invalidateOptionsMenu()
     }
 
     private fun animateGradient(newTab: LoggedInTabs) = with(binding) {
