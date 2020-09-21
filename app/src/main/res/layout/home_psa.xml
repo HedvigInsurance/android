@@ -29,4 +29,13 @@
         app:layout_constraintStart_toEndOf="@+id/body"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_forward" />
+
+    <View
+        android:id="@id/endSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

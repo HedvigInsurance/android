@@ -43,9 +43,9 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
             return
         }
 
-        if (item is HomeModel.InfoCard) {
+        if (item is HomeModel.ConnectPayin) {
             val prev = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position - 1) ?: return
-            if (prev is HomeModel.InfoCard) {
+            if (prev is HomeModel.ConnectPayin) {
                 outRect.top = BASE_MARGIN
             }
 
@@ -74,7 +74,8 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
             val position = parent.getChildAdapterPosition(view)
             val item = adapter?.items?.getOrNull(position) ?: return
 
-            if (item is HomeModel.PSA) {
+            val prev = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position - 1) ?: return
+            if (prev is HomeModel.PSA && item is HomeModel.PSA) {
                 divider?.draw(c)
             }
         }

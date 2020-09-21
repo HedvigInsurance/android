@@ -3,10 +3,8 @@ package com.hedvig.app.feature.home.ui
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -160,7 +158,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                        HomeModel.InfoCard
+                        HomeModel.ConnectPayin
                     } else {
                         null
                     },

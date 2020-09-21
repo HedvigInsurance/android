@@ -5,7 +5,6 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +16,9 @@ import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
+import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
-import com.hedvig.app.databinding.PsaBoxBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
@@ -28,7 +27,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate
@@ -57,7 +55,7 @@ class HomeAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.psa_box -> ViewHolder.PSABox(parent)
+        R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
@@ -76,11 +74,11 @@ class HomeAdapter(
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-        is HomeModel.InfoCard -> R.layout.home_info_card
+        is HomeModel.ConnectPayin -> R.layout.home_info_card
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.home_error
-        is HomeModel.PSA -> R.layout.psa_box
+        is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
     }
 
@@ -227,7 +225,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker
             ) = with(binding) {
-                if (data !is HomeModel.InfoCard) {
+                if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
                 }
 
@@ -242,8 +240,8 @@ class HomeAdapter(
         }
 
         class PSABox(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.psa_box)) {
-            private val binding by viewBinding(PsaBoxBinding::bind)
+            ViewHolder(parent.inflate(R.layout.home_psa)) {
+            private val binding by viewBinding(HomePsaBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -347,9 +345,9 @@ class HomeAdapter(
                         page.body,
                         button.context.getString(
                             if (index == data.pages.size - 1) {
-                                R.string.claims_explainer_03_button_start_claim
+                                R.string.claims_explainer_button_start_claim
                             } else {
-                                R.string.claims_explainer_02_button_next
+                                R.string.claims_explainer_button_next
                             }
                         )
                     )

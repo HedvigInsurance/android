@@ -64,7 +64,6 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
         ... IconVariantsFragment
       }
     }
-    title
     body
   }
 }
