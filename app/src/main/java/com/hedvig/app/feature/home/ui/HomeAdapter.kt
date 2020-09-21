@@ -5,7 +5,6 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +26,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.inflate

@@ -24,6 +24,7 @@
         <item name="textColorThird">@color/textColorThird</item>
         <item name="fontFamily">@font/favorit_book</item>
         <item name="android:fontFamily">@font/favorit_book</item>
+        <item name="colorTooltip">@color/colorTooltip</item>
 
         <item name="shapeAppearanceLargeComponent">
             @style/Hedvig.ShapeAppearance.LargeComponent
@@ -80,6 +81,7 @@
     <attr name="textColorThird" format="reference" />
     <attr name="colorPlaceholder" format="reference" />
     <attr name="colorWarning" format="reference" />
+    <attr name="colorTooltip" format="reference" />
 
     <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="buttonBarButtonStyle">?materialButtonTextStyle</item>

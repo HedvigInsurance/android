@@ -4,6 +4,8 @@ import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isEmpty
@@ -12,6 +14,7 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
@@ -20,7 +23,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.home.ui.HomeFragment
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
@@ -31,7 +34,11 @@ import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -42,6 +49,8 @@ import e
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
@@ -49,7 +58,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
-    private val insuranceViewModel: InsuranceViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val loggedInTracker: LoggedInTracker by inject()
@@ -57,6 +65,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
     private var lastLoggedInTab = LoggedInTabs.HOME
+    private val date = Date()
 
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
@@ -64,8 +73,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setLastOpen(date.time)
+
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                makeToast(shouldShowTooltip(getLastOpen()).toString())
+            }, 2000)
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
@@ -143,7 +158,19 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
+
+            if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
+                if (shouldShowTooltip(getLastOpen())) {
+
+                }
+            }
         }
+    }
+
+    private fun shouldShowTooltip(lastOpen: Long): Boolean {
+        val lo = 1597968000000
+        val diff: Long = date.time - lo
+        return TimeUnit.MILLISECONDS.toDays(diff) >= 30
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -164,6 +191,28 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
                 menu.getItem(0).actionView.setOnClickListener {
                     onOptionsItemSelected(menu.getItem(0))
+                }
+            }
+        }
+
+        if (shouldShowTooltip(getLastOpen())) {
+            when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
+                LoggedInTabs.HOME -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        ViewTooltip
+                            .on(binding.toolbar.menu.getItem(0).actionView)
+                            .autoHide(true, 5000)
+                            .corner(30)
+                            .arrowTargetMargin(-20)
+                            .arrowSourceMargin(-20)
+                            .position(ViewTooltip.Position.BOTTOM)
+                            .color(binding.toolbar.context.colorAttr(R.attr.colorTooltip))
+                            .textColor(binding.toolbar.context.colorAttr(R.attr.colorPrimary))
+                            .text(R.string.home_tab_chat_hint_text)
+                            .show()
+                    }, 2000)
+                }
+                else -> {
                 }
             }
         }
