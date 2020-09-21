@@ -16,10 +16,6 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,19 +46,17 @@ class PostSignTest {
             LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext())
                 .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) })
 
-        await atMost TWO_SECONDS untilAsserted {
-            onScreen<WelcomeScreen> {
-                close {
-                    isVisible()
-                    click()
-                }
+        onScreen<WelcomeScreen> {
+            close {
+                isVisible()
+                click()
             }
-            onScreen<LoggedInScreen> {
-                pressBack()
-                root { isVisible() }
-                bottomTabs {
-                    hasSelectedItem(R.id.home)
-                }
+        }
+        onScreen<LoggedInScreen> {
+            pressBack()
+            root { isVisible() }
+            bottomTabs {
+                hasSelectedItem(R.id.home)
             }
         }
     }
