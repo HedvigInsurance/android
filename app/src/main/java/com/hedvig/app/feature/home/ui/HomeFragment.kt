@@ -147,8 +147,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Terminated(firstName),
                     HomeModel.BodyText.Terminated,
-                    HomeModel.StartClaimOutlined
-                )
+                    HomeModel.StartClaimOutlined,
+                    HomeModel.HowClaimsWork(successData.howClaimsWork)
+                    )
             }
 
             if (isActive(successData.contracts)) {
