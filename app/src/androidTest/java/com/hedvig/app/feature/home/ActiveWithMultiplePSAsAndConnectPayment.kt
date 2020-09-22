@@ -2,7 +2,10 @@ package com.hedvig.app.feature.home
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.times
 import androidx.test.espresso.intent.VerificationMode
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
@@ -18,6 +21,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.stubExternalIntents
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,7 +29,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ActiveWithMultiplePSAsAndConnectPayment {
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -42,27 +46,9 @@ class ActiveWithMultiplePSAsAndConnectPayment {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenFirstPSALinks() {
+    fun shouldOpenPSALinksAndConnectPayment() {
         activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
-        Intents.init()
-        Screen.onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.InfoCardItem>(5){
-                    title { hasText(R.string.info_card_missing_payment_title) }
-                    body { hasText(R.string.info_card_missing_payment_body) }
-                    action {
-                        hasText(R.string.info_card_missing_payment_button_text)
-                        click()
-                    }
-                    connectPayin { intended() }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldOpenConnectPayment() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        stubExternalIntents()
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.HomePSAItem>(0) {
@@ -71,6 +57,22 @@ class ActiveWithMultiplePSAsAndConnectPayment {
                         click()
                     }
                     psaLink { intended() }
+                }
+                childAt<HomeTabScreen.HomePSAItem>(1) {
+                    text { hasText("Example PSA body") }
+                    button {
+                        click()
+                    }
+                    psaLink { intended(times(2)) }
+                }
+                childAt<HomeTabScreen.InfoCardItem>(5){
+                    title { hasText(R.string.info_card_missing_payment_title) }
+                    body { hasText(R.string.info_card_missing_payment_body) }
+                    action {
+                        hasText(R.string.info_card_missing_payment_button_text)
+                        click()
+                    }
+                    connectPayin { intended() }
                 }
             }
         }
