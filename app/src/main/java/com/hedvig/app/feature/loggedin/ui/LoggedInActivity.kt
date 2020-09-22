@@ -65,7 +65,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-
     private val date = Date()
     private var savedTab: LoggedInTabs? = null
     private var lastSelectedTab: LoggedInTabs? = null
@@ -76,15 +75,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setLastOpen(date.time)
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
 
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                makeToast(shouldShowTooltip(getLastOpen()).toString())
-            }, 2000)
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
@@ -164,20 +158,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
-
-            if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
-                if (shouldShowTooltip(getLastOpen())) {
-
-                }
-            }
         }
     }
 
     private fun shouldShowTooltip(lastOpen: Long): Boolean {
-        val lo = 1597968000000
-        val diff: Long = date.time - lo
+        val diff: Long = date.time - lastOpen
         return TimeUnit.MILLISECONDS.toDays(diff) >= 30
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(
             "tab",
@@ -209,24 +197,23 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         if (shouldShowTooltip(getLastOpen())) {
-            when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-                LoggedInTabs.HOME -> {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        ViewTooltip
-                            .on(binding.toolbar.menu.getItem(0).actionView)
-                            .autoHide(true, 5000)
-                            .corner(30)
-                            .arrowTargetMargin(-20)
-                            .arrowSourceMargin(-20)
-                            .position(ViewTooltip.Position.BOTTOM)
-                            .color(binding.toolbar.context.colorAttr(R.attr.colorTooltip))
-                            .textColor(binding.toolbar.context.colorAttr(R.attr.colorPrimary))
-                            .text(R.string.home_tab_chat_hint_text)
-                            .show()
-                    }, 2000)
-                }
-                else -> {
-                }
+            if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    ViewTooltip
+                        .on(binding.toolbar.menu.getItem(0).actionView)
+                        .autoHide(true, 5000)
+                        .corner(30)
+                        .arrowTargetMargin(-20)
+                        .arrowSourceMargin(-20)
+                        .position(ViewTooltip.Position.BOTTOM)
+                        .color(binding.toolbar.context.colorAttr(R.attr.colorTooltip))
+                        .textColor(binding.toolbar.context.colorAttr(R.attr.colorPrimary))
+                        .text(R.string.home_tab_chat_hint_text)
+                        .onDisplay {
+                            setLastOpen(date.time)
+                        }
+                        .show()
+                }, 2000)
             }
         }
         return super.onCreateOptionsMenu(menu)
