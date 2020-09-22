@@ -3,7 +3,6 @@ package com.hedvig.app.feature.loggedin.ui
 import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,7 +17,6 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
@@ -26,7 +24,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.home.ui.HomeFragment
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
@@ -38,22 +35,23 @@ import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import kotlinx.android.synthetic.main.activity_licenses.view.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.util.Date
-import java.util.concurrent.TimeUnit
+import java.time.LocalDate
 import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
@@ -67,7 +65,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-    private val date = Date()
     private var savedTab: LoggedInTabs? = null
     private var lastSelectedTab: LoggedInTabs? = null
 
@@ -163,9 +160,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-    private fun shouldShowTooltip(lastOpen: Long): Boolean {
-        val diff: Long = date.time - lastOpen
-        return TimeUnit.MILLISECONDS.toDays(diff) >= 30
+    private fun shouldShowTooltip(lastOpen: Long, currentEpochDay: Long): Boolean {
+        val diff = currentEpochDay - lastOpen
+        return diff >= 30
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -198,9 +195,11 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
         }
 
-        if (shouldShowTooltip(getLastOpen())) {
+        val currentEpochDay = LocalDate.now().toEpochDay()
+        if (shouldShowTooltip(getLastOpen(), currentEpochDay)) {
             if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
-                Handler(Looper.getMainLooper()).postDelayed({
+                Handler().postDelayed({
+                    binding.toolbar.performOnTapHapticFeedback()
                     ViewTooltip
                         .on(binding.toolbar.menu.getItem(0).actionView)
                         .autoHide(true, 5000)
@@ -208,12 +207,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         .arrowTargetMargin(-20)
                         .arrowSourceMargin(-20)
                         .position(ViewTooltip.Position.BOTTOM)
-                        .color(colorAttr(R.attr.colorTooltip))
+                        .color(compatColor(R.color.colorTooltip))
                         .textColor(colorAttr(R.attr.colorPrimary))
                         .text(R.string.home_tab_chat_hint_text)
                         .withShadow(false)
                         .onDisplay {
-                            setLastOpen(date.time)
+                            setLastOpen(currentEpochDay)
                         }
                         .show()
                 }, 2000)
