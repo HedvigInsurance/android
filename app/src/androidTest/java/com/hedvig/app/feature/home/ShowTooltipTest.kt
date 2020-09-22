@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ShowTooltipTest {
-    private var preferencesEditor: SharedPreferences.Editor? = null
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
@@ -57,7 +56,7 @@ class ShowTooltipTest {
             context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE)
                 .getLong("shared_preference_last_open", 0)
 
-         context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
+        context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
             .putLong("shared_preference_last_open", 0).commit()
     }
 
@@ -65,7 +64,7 @@ class ShowTooltipTest {
     fun shouldShowTooltipAfterThirtyDays() {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         Screen.onScreen<LoggedInScreen> {
-            await atMost FIVE_SECONDS ignoreExceptionsInstanceOf(NoMatchingViewException::class) untilAsserted {
+            await atMost FIVE_SECONDS ignoreExceptionsInstanceOf (NoMatchingViewException::class) untilAsserted {
                 tooltip {
                     isVisible()
                 }
