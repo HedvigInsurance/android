@@ -170,6 +170,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
             LoggedInTabs.REFERRALS -> {
                 menuInflater.inflate(R.menu.referral_more_info_menu, menu)
+                menu.getItem(0).actionView.setOnClickListener {
+                    onOptionsItemSelected(menu.getItem(0))
+                }
             }
             else -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
