@@ -47,7 +47,7 @@ class HowClaimsWorkTest {
             recycler {
                 childAt<HomeTabScreen.HowClaimsWork>(2) {
                     button {
-                        hasText("How claims work")
+                        hasText(R.string.home_tab_claim_explainer_button)
                         click()
                     }
                 }
