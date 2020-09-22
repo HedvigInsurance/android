@@ -15,11 +15,8 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
-<<<<<<< HEAD
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-=======
->>>>>>> develop
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
@@ -27,10 +24,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-<<<<<<< HEAD
 import com.hedvig.app.feature.home.ui.HomeFragment
-=======
->>>>>>> develop
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
@@ -71,13 +65,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-<<<<<<< HEAD
-    private var lastLoggedInTab = LoggedInTabs.HOME
+
     private val date = Date()
-=======
     private var savedTab: LoggedInTabs? = null
     private var lastSelectedTab: LoggedInTabs? = null
->>>>>>> develop
 
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
@@ -85,11 +76,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-<<<<<<< HEAD
         setLastOpen(date.time)
-=======
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
->>>>>>> develop
 
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
@@ -185,19 +173,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
-<<<<<<< HEAD
     private fun shouldShowTooltip(lastOpen: Long): Boolean {
         val lo = 1597968000000
         val diff: Long = date.time - lo
         return TimeUnit.MILLISECONDS.toDays(diff) >= 30
-=======
+    }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(
             "tab",
             LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)
         )
         super.onSaveInstanceState(outState)
->>>>>>> develop
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
