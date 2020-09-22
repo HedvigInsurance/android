@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
-import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.doOnLayout
@@ -47,7 +45,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_licenses.view.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
