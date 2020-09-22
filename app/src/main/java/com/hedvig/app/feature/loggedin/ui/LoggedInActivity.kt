@@ -6,13 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
@@ -20,7 +20,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
@@ -49,14 +48,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
-    private val insuranceViewModel: InsuranceViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val loggedInTracker: LoggedInTracker by inject()
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
-    private var lastLoggedInTab = LoggedInTabs.HOME
+    private var savedTab: LoggedInTabs? = null
+    private var lastSelectedTab: LoggedInTabs? = null
 
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
@@ -64,12 +63,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
+
         with(binding) {
             loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                loggedInViewModel.updateToolbarInset(view.measuredHeight)
+            }
+            toolbar.doOnLayout { view ->
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
 
@@ -93,10 +97,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
+            bottomNavigation.itemIconTintList = null
             bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
                 val id = LoggedInTabs.fromId(menuItem.itemId)
                 if (id == null) {
                     e { "Programmer error: Invalid menu item chosen" }
+                    return@setOnNavigationItemSelectedListener false
+                }
+
+                if (id == lastSelectedTab) {
                     return@setOnNavigationItemSelectedListener false
                 }
                 supportFragmentManager
@@ -106,12 +115,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
                 setupToolBar(id)
                 animateGradient(id)
+                lastSelectedTab = id
                 true
-            }
-
-            if (intent.getBooleanExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION, false)) {
-                bottomNavigation.selectedItemId = R.id.referrals
-                intent.removeExtra(EXTRA_IS_FROM_REFERRALS_NOTIFICATION)
             }
 
             if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
@@ -139,11 +144,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
 
-            bottomNavigation.itemIconTintList = null
-
             bindData()
             setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable(
+            "tab",
+            LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)
+        )
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -224,7 +235,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     else -> R.menu.logged_in_menu
                 }
                 binding.bottomNavigation.inflateMenu(menuId)
-                val initialTab = intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                val initialTab = savedTab
+                    ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                     ?: LoggedInTabs.HOME
                 binding.bottomNavigation.selectedItemId = initialTab.id()
                 setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
@@ -247,13 +259,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     private fun setupToolBar(id: LoggedInTabs?) {
-        if (lastLoggedInTab != id) {
-            binding.bottomNavigation.elevation = 0f
-            invalidateOptionsMenu()
-        }
-        if (id != null) {
-            lastLoggedInTab = id
-        }
+        invalidateOptionsMenu()
     }
 
     private fun animateGradient(newTab: LoggedInTabs) = with(binding) {
@@ -320,10 +326,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 putExtra(INITIAL_TAB, initialTab)
             }
 
-        fun isTerminated(contracts: List<InsuranceQuery.Contract>) =
-            contracts.isNotEmpty() && contracts.all { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
-
-        const val EXTRA_IS_FROM_REFERRALS_NOTIFICATION = "extra_is_from_referrals_notification"
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
 
         private val evaluator = ArgbEvaluator()
