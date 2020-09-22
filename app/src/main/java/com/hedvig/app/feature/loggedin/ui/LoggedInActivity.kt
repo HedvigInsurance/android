@@ -3,6 +3,7 @@ package com.hedvig.app.feature.loggedin.ui
 import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -206,9 +207,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         .arrowTargetMargin(-20)
                         .arrowSourceMargin(-20)
                         .position(ViewTooltip.Position.BOTTOM)
-                        .color(binding.toolbar.context.colorAttr(R.attr.colorTooltip))
-                        .textColor(binding.toolbar.context.colorAttr(R.attr.colorPrimary))
+                        .color(colorAttr(R.attr.colorTooltip))
+                        .textColor(colorAttr(R.attr.colorPrimary))
                         .text(R.string.home_tab_chat_hint_text)
+                        .withShadow(false)
                         .onDisplay {
                             setLastOpen(date.time)
                         }
