@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
+import androidx.core.view.marginTop
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -16,6 +17,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.app.BASE_MARGIN
+import com.hedvig.app.BASE_MARGIN_DOUBLE
+import com.hedvig.app.BASE_MARGIN_OCTUPLE
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.R
@@ -34,12 +39,14 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -200,9 +207,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     ViewTooltip
                         .on(binding.toolbar.menu.getItem(0).actionView)
                         .autoHide(true, 5000)
-                        .corner(30)
+                        .corner(BASE_MARGIN_TRIPLE)
                         .arrowTargetMargin(-20)
                         .arrowSourceMargin(-20)
+                        .padding(
+                            14.dp,
+                            12.dp,
+                            14.dp,
+                            15.dp
+                        )
                         .position(ViewTooltip.Position.BOTTOM)
                         .color(compatColor(R.color.colorTooltip))
                         .textColor(colorAttr(R.attr.colorPrimary))
