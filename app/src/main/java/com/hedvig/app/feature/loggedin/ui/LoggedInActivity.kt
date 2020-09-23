@@ -205,6 +205,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     ViewTooltip
                         .on(binding.toolbar.menu.getItem(0).actionView)
                         .autoHide(true, 5000)
+                        .clickToHide(true)
                         .corner(BASE_MARGIN_DOUBLE)
                         .arrowTargetMargin(-20)
                         .arrowSourceMargin(-20)
