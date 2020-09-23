@@ -209,7 +209,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         .arrowTargetMargin(-20)
                         .arrowSourceMargin(-20)
                         .padding(
-                            12.dp,
+                            13.dp,
                             12.dp,
                             12.dp,
                             15.dp
