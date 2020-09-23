@@ -32,6 +32,8 @@
 
     <item name="colorInfoCardSurface" type="color">@color/lavender_900</item>
 
+    <item name="colorTooltip" type="color">@color/hedvig_dark_gray</item>
+
     <!-- Compatibility with Adyen -->
     <item name="primaryColor" type="color">@color/colorPrimary</item>
     <item name="textColor" type="color">@color/textColorPrimary</item>
