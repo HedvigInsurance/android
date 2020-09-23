@@ -13,7 +13,7 @@ import org.hamcrest.Matcher
 
 class InsuranceScreen : Screen<InsuranceScreen>() {
     val root =
-        KRecyclerView({ withId(R.id.root) }, {
+        KRecyclerView({ withId(R.id.insuranceRecycler) }, {
             itemType(InsuranceScreen::InfoCardItem)
         })
 

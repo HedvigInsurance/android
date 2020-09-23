@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.stubExternalIntents
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,7 +50,7 @@ class InsuranceRenewalCardTest {
             initialTab = LoggedInTabs.INSURANCE
         )
         activityRule.launchActivity(intent)
-
+        stubExternalIntents()
         onScreen<InsuranceScreen> {
             root {
                 childAt<InsuranceScreen.InfoCardItem>(1) {
