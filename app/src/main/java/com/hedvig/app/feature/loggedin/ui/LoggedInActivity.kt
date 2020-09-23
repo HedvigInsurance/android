@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.doOnLayout
@@ -13,7 +14,9 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.R
@@ -30,8 +33,14 @@ import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
+import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.dp
+import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
@@ -41,6 +50,7 @@ import e
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.time.LocalDate
 import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
@@ -149,6 +159,11 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
     }
 
+    private fun shouldShowTooltip(lastOpen: Long, currentEpochDay: Long): Boolean {
+        val diff = currentEpochDay - lastOpen
+        return diff >= 30
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(
             "tab",
@@ -179,6 +194,37 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 menu.getItem(0).actionView.setOnClickListener {
                     onOptionsItemSelected(menu.getItem(0))
                 }
+            }
+        }
+
+        val currentEpochDay = LocalDate.now().toEpochDay()
+        if (shouldShowTooltip(getLastOpen(), currentEpochDay)) {
+            if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
+                Handler().postDelayed({
+                    binding.toolbar.performOnTapHapticFeedback()
+                    ViewTooltip
+                        .on(binding.toolbar.menu.getItem(0).actionView)
+                        .autoHide(true, 5000)
+                        .clickToHide(true)
+                        .corner(BASE_MARGIN_DOUBLE)
+                        .arrowTargetMargin(-20)
+                        .arrowSourceMargin(-20)
+                        .padding(
+                            12.dp,
+                            12.dp,
+                            12.dp,
+                            15.dp
+                        )
+                        .position(ViewTooltip.Position.BOTTOM)
+                        .color(compatColor(R.color.colorTooltip))
+                        .textColor(colorAttr(R.attr.colorPrimary))
+                        .text(R.string.home_tab_chat_hint_text)
+                        .withShadow(false)
+                        .onDisplay {
+                            setLastOpen(currentEpochDay)
+                        }
+                        .show()
+                }, 2000)
             }
         }
         return super.onCreateOptionsMenu(menu)
