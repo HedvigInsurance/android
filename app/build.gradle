@@ -10,8 +10,6 @@ licenseReport {
     copyHtmlReportToAssets = true
 }
 
-apply plugin: 'com.starter.easylauncher'
-
 android {
     androidExtensions {
         experimental = true
@@ -248,4 +246,15 @@ lokalise {
     id lokaliseProperties['id']
     token lokaliseProperties['token']
 }
+
+apply plugin: 'com.starter.easylauncher'
+
+easylauncher {
+    buildTypes {
+        staging {
+            enable true
+        }
+    }
+}
+
 
