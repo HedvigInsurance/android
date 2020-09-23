@@ -254,7 +254,7 @@ class HomeAdapter(
                 }
                 body.text = data.inner.message
                 val uri = Uri.parse(data.inner.link)
-                arrow.setHapticClickListener {
+                root.setHapticClickListener {
                     arrow.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
                         setData(
                             uri

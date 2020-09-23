@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorWarning">
+    android:background="@drawable/background_ripple"
+    android:backgroundTint="?colorWarning">
 
     <TextView
         android:id="@+id/body"
