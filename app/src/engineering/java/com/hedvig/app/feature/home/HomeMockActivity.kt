@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.R
@@ -100,6 +101,16 @@ class HomeMockActivity : AppCompatActivity(R.layout.activity_generic_development
                     homeMockData = HOME_DATA_PENDING
                     shouldError = true
                 }
+                startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+            }
+            clickableItem("Active + Chat Tooltip") {
+                MockHomeViewModel.apply {
+                    homeMockData = HOME_DATA_ACTIVE
+                    shouldError = false
+                }
+                getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE)
+                    .edit()
+                    .putLong("shared_preference_last_open", 0).apply()
                 startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
             }
         }

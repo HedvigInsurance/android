@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -29,6 +30,13 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
     private val tracker: ProfileTracker by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -68,7 +76,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
-            adapter = ProfileAdapter()
+            adapter = ProfileAdapter(viewLifecycleOwner)
         }
 
         model.data.observe(viewLifecycleOwner) { data ->

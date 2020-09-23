@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
@@ -30,6 +31,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val tracker: HomeTracker by inject()
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -138,14 +146,17 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isTerminated(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
                     HomeModel.BigText.Terminated(firstName),
-                    HomeModel.StartClaimOutlined
-                )
+                    HomeModel.BodyText.Terminated,
+                    HomeModel.StartClaimOutlined,
+                    HomeModel.HowClaimsWork(successData.howClaimsWork)
+                    )
             }
 
             if (isActive(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
+                    HomeModel.HowClaimsWork(successData.howClaimsWork),
                     *psaItems(successData.importantMessages).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.InfoCard.ConnectPayin

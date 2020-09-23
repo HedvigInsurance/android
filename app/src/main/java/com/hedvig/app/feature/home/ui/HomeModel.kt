@@ -28,11 +28,14 @@ sealed class HomeModel {
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
+        object Terminated : BodyText()
     }
 
     object StartClaimOutlined : HomeModel()
 
     object StartClaimContained : HomeModel()
+
+    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>): HomeModel()
 
     sealed class InfoCard : HomeModel() {
         object ConnectPayin : InfoCard()

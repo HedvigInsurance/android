@@ -16,6 +16,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
         KRecyclerView({ withId(R.id.recycler) },
             {
+                itemType(::HowClaimsWork)
                 itemType(::BigTextItem)
                 itemType(::BodyTextItem)
                 itemType(::StartClaimItem)
@@ -24,6 +25,10 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
             })
+
+    class HowClaimsWork(parent: Matcher<View>) : KRecyclerItem<HowClaimsWork>(parent) {
+        val button = KButton(parent) { withId(R.id.button) }
+    }
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
         val text = KTextView { withMatcher(parent) }

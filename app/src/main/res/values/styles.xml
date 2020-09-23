@@ -28,23 +28,26 @@
 
     <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
 
-    <style name="Hedvig.Theme.Splash">
+    <style name="Hedvig.Theme.Splash.V23" parent="Hedvig.Theme">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:navigationBarColor">@color/hedvig_black</item>
     </style>
+
+    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V23"/>
 
     <style name="FullScreenDialog" parent="Hedvig.Theme">
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="WelcomeDialogAnimation">
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
-    <style name="WhatsNewDialogAnimation">
+    <style name="DialogSlideInSlideOut">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
@@ -22,6 +23,13 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val tracker: InsuranceTracker by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
+    }
 
     override fun onResume() {
         super.onResume()

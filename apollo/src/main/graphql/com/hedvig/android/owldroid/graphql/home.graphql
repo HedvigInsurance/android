@@ -59,4 +59,13 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     button
     link
   }
+
+  howClaimsWork(locale: $locale) {
+    illustration {
+      variants {
+        ... IconVariantsFragment
+      }
+    }
+    body
+  }
 }

@@ -1,10 +1,13 @@
 package com.hedvig.app.testdata.feature.home.builders
 
+import com.apollographql.apollo.api.internal.ResponseReader
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
 
 data class HomeDataBuilder(
-    private val contracts: List<Status> = emptyList(),
+    private val contracts: List<ContractStatus> = emptyList(),
     private val firstName: String? = "Test",
     private val commonClaims: List<HomeQuery.CommonClaim> = listOf(
         CommonClaimBuilder(
@@ -24,7 +27,7 @@ data class HomeDataBuilder(
             HomeQuery.Contract(
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
-                    asPendingStatus = if (c == Status.PENDING) {
+                    asPendingStatus = if (c == ContractStatus.PENDING) {
                         HomeQuery.AsPendingStatus(
                             pendingSince = null
                         )
@@ -32,34 +35,34 @@ data class HomeDataBuilder(
                         null
                     },
                     asActiveInFutureStatus = when (c) {
-                        Status.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
+                        ContractStatus.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
                             futureInception = LocalDate.of(2025, 1, 1)
                         )
-                        Status.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
+                        ContractStatus.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
                             futureInception = null
                         )
                         else -> null
                     },
-                    asActiveInFutureAndTerminatedInFutureStatus = if (c == Status.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+                    asActiveInFutureAndTerminatedInFutureStatus = if (c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
                             futureInception = LocalDate.of(2024, 1, 1)
                         )
                     } else {
                         null
                     },
-                    asActiveStatus = if (c == Status.ACTIVE) {
+                    asActiveStatus = if (c == ContractStatus.ACTIVE) {
                         HomeQuery.AsActiveStatus(
                             pastInception = LocalDate.now()
                         )
                     } else {
                         null
                     },
-                    asTerminatedTodayStatus = if (c == Status.TERMINATED_TODAY) {
+                    asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
                         HomeQuery.AsTerminatedTodayStatus(today = LocalDate.now())
                     } else {
                         null
                     },
-                    asTerminatedStatus = if (c == Status.TERMINATED) {
+                    asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
                             termination = null
                         )
@@ -69,20 +72,59 @@ data class HomeDataBuilder(
                 )
             )
         },
-        isEligibleToCreateClaim = contracts.any { it == Status.ACTIVE },
+        isEligibleToCreateClaim = contracts.any { it == ContractStatus.ACTIVE },
         commonClaims = commonClaims,
-        importantMessages = importantMessages
+        importantMessages = importantMessages,
+        howClaimsWork = listOf(
+            HomeQuery.HowClaimsWork(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                body = "1"
+            ),HomeQuery.HowClaimsWork(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                body = "2"
+            ),
+            HomeQuery.HowClaimsWork(
+                illustration = HomeQuery.Illustration(
+                    variants = HomeQuery.Variants2(
+                        fragments = HomeQuery.Variants2.Fragments(
+                            IconVariantsFragment(
+                                dark = IconVariantsFragment.Dark(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                ), light = IconVariantsFragment.Light(
+                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                )
+                            )
+                        )
+                    )
+                ),
+                body = "3"
+            )
+        )
     )
-
-    enum class Status {
-        PENDING,
-        ACTIVE_IN_FUTURE,
-        ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
-        ACTIVE_IN_FUTURE_INVALID,
-        ACTIVE,
-        TERMINATED_TODAY,
-        TERMINATED
-    }
 }
 
 data class ImportantMessageBuilder(

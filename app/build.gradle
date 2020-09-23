@@ -25,7 +25,7 @@ android {
 
         minSdkVersion 23
         versionCode 43
-        versionName '4.3.0'
+        versionName '4.4.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -193,6 +193,9 @@ dependencies {
     implementation("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
         transitive = false
     }
+
+    //Tooltip
+    implementation 'com.github.florent37:viewtooltip:1.2.2'
 
     //facebook
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'

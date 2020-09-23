@@ -50,10 +50,10 @@ class TerminatedTodayTest {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
                 }
-                childAt<HomeTabScreen.CommonClaimTitleItem>(2) {
+                childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
                     isVisible()
                 }
-                childAt<HomeTabScreen.CommonClaimItem>(3) {
+                childAt<HomeTabScreen.CommonClaimItem>(4) {
                     text { hasText("Det är kris!") }
                 }
             }
