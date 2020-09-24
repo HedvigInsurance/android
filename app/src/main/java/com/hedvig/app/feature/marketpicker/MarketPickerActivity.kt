@@ -33,7 +33,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val newMarketPref = sharedPreferences.getString(SettingsActivity.SETTINGS_NEW_MARKET, null)
 
-        marketList.adapter = MarketAdapter(model)
+        marketList.adapter = MarketAdapter(model, tracker)
         marketList.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }

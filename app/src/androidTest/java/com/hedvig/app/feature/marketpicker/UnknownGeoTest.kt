@@ -8,7 +8,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.marketPickerTrackerModule
-import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
+import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -29,13 +29,13 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 @RunWith(AndroidJUnit4::class)
-class PreselectMarket {
+class UnknownGeoTest {
     @get:Rule
     val activityRule = ActivityTestRule(MarketPickerActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        GeoQuery.QUERY_DOCUMENT to apolloResponse { success(GEO_DATA_SE) }
+        GeoQuery.QUERY_DOCUMENT to apolloResponse { success(GEO_DATA_FI) }
     )
 
     @get:Rule
@@ -54,7 +54,7 @@ class PreselectMarket {
     }
 
     @Test
-    fun shouldPreselectMarketWhenUserIsInSupportedGeoArea() {
+    fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() {
         activityRule.launchActivity(MarketPickerActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
@@ -64,7 +64,10 @@ class PreselectMarket {
                         withText(R.string.sweden)
                     }
                 } perform {
-                    radioButton { isChecked() }
+                    radioButton {
+                        isNotChecked()
+                        click()
+                    }
                 }
             }
             languageRecyclerView {
@@ -86,7 +89,7 @@ class PreselectMarket {
             }
         }
 
-        verify(exactly = 0) { tracker.selectMarket(any()) }
+        verify { tracker.selectMarket(Market.SE) }
         verify { tracker.selectLocale(Language.SV_SE) }
     }
 
