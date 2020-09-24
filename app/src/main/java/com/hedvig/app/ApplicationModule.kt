@@ -338,6 +338,7 @@ val trackerModule = module {
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
+    single { ScreenTracker(get()) }
 }
 
 val marketPickerTrackerModule = module {
