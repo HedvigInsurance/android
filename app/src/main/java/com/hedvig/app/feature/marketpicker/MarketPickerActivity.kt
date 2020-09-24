@@ -82,6 +82,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         )
 
         save.setHapticClickListener {
+            tracker.submit()
             model.save()
             goToMarketingActivity()
         }
@@ -118,4 +119,6 @@ class MarketPickerTracker(
             "locale" to locale.toString()
         )
     )
+
+    fun submit() = mixpanel.track("select_market_submit")
 }
