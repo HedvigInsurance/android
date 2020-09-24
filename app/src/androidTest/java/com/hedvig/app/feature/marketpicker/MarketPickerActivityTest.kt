@@ -18,6 +18,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,6 +26,7 @@ import org.koin.core.inject
 import org.koin.test.KoinTest
 
 @RunWith(AndroidJUnit4::class)
+@Ignore
 class MarketPickerActivityTest : KoinTest {
     private val apolloClientWrapper: ApolloClientWrapper by inject()
 
