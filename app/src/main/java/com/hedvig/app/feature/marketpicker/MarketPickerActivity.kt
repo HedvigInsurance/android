@@ -11,12 +11,9 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.jsonObjectOf
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -101,24 +98,4 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     companion object {
         fun newInstance(context: Context) = Intent(context, MarketPickerActivity::class.java)
     }
-}
-
-class MarketPickerTracker(
-    private val mixpanel: MixpanelAPI
-) {
-    fun selectMarket(market: Market) = mixpanel.track(
-        "select_market",
-        jsonObjectOf(
-            "market" to market.toString()
-        )
-    )
-
-    fun selectLocale(locale: Language) = mixpanel.track(
-        "select_locale",
-        jsonObjectOf(
-            "locale" to locale.toString()
-        )
-    )
-
-    fun submit() = mixpanel.track("select_market_submit")
 }

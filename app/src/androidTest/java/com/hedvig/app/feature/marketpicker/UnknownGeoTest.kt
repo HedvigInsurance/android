@@ -119,7 +119,7 @@ class UnknownGeoTest {
         assertThat(market).isEqualTo("SE")
         assertThat(language).isEqualTo(Language.SETTING_SV_SE)
     }
-    
+
     @After
     fun teardown() {
         PreferenceManager.getDefaultSharedPreferences(context())
