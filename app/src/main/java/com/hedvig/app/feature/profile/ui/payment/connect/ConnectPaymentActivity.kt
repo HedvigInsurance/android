@@ -98,7 +98,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
             explainerButton.setHapticClickListener {
                 tracker.explainerConnect()
                 explainerScreen.fadeOut({
-                    hedvigToolbar.show()
+                    toolbar.show()
                     loadingSpinner.show()
                     profileViewModel.startTrustlySession()
                 }, true)
@@ -258,7 +258,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
             return
         }
         profileViewModel.startTrustlySession()
-        hedvigToolbar.show()
+        toolbar.show()
     }
 
     fun showSuccess() {

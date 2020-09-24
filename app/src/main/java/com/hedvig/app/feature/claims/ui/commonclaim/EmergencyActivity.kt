@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.makeACall
@@ -18,12 +19,11 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_emergency.*
-import kotlinx.android.synthetic.main.common_claim_first_message.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -31,6 +31,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val tracker: ClaimsTracker by inject()
+    private val binding by viewBinding(ActivityEmergencyBinding::bind)
 
     private val requestBuilder by lazy { buildRequestBuilder() }
 
@@ -44,59 +45,63 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             return
         }
 
-        root.setEdgeToEdgeSystemUiFlags(true)
-        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
+            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
 
-        emergencyTitle.text = data.title
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-        scrollView.setupToolbarScrollListener(toolbar = toolbar)
+            toolbar.title = data.title
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+            scrollView.setupToolbarScrollListener(toolbar = toolbar)
 
-        requestBuilder
-            .load(
-                Uri.parse(
-                    BuildConfig.BASE_URL + data.iconUrls.iconByTheme(
-                        commonClaimFirstMessageIcon.context
+            requestBuilder
+                .load(
+                    Uri.parse(
+                        BuildConfig.BASE_URL + data.iconUrls.iconByTheme(
+                            firstMessage.commonClaimFirstMessageIcon.context
+                        )
                     )
                 )
-            )
-            .into(commonClaimFirstMessageIcon)
+                .into(firstMessage.commonClaimFirstMessageIcon)
 
-        commonClaimFirstMessage.text = getString(R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)
-        commonClaimCreateClaimButton.remove()
+            firstMessage.commonClaimFirstMessage.text =
+                getString(R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)
+            firstMessage.commonClaimCreateClaimButton.remove()
 
-        if (data.eligibleToClaim) {
-            showInsuranceActive()
-        } else {
-            showInsuranceInactive()
-        }
+            if (data.eligibleToClaim) {
+                showInsuranceActive()
+            } else {
+                showInsuranceInactive()
+            }
 
-        thirdEmergencyButton.setHapticClickListener {
-            tracker.emergencyChat()
-            lifecycleScope.launch {
-                claimsViewModel.triggerFreeTextChat()
-                startClosableChat()
+            thirdEmergencyButton.setHapticClickListener {
+                tracker.emergencyChat()
+                lifecycleScope.launch {
+                    claimsViewModel.triggerFreeTextChat()
+                    startClosableChat()
+                }
             }
         }
     }
 
     private fun showInsuranceActive() {
-        secondEmergencyButton.enable()
-
-        secondEmergencyButton.setHapticClickListener {
-            tracker.callGlobalAssistance()
-            makeACall(GLOBAL_ASSISTANCE_URI)
+        binding.apply {
+            secondEmergencyButton.enable()
+            secondEmergencyButton.setHapticClickListener {
+                tracker.callGlobalAssistance()
+                makeACall(GLOBAL_ASSISTANCE_URI)
+            }
         }
     }
 
     private fun showInsuranceInactive() {
-        secondEmergencyButton.disable()
+        binding.secondEmergencyButton.disable()
     }
 
     companion object {

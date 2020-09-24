@@ -36,7 +36,7 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
                 bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
             )
         }
-        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
@@ -46,7 +46,7 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
         insurableLimits.adapter = InsurableLimitsAdapter()
         insurableLimits.addItemDecoration((GridSpacingItemDecoration(BASE_MARGIN_DOUBLE)))
 
-        hedvigToolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
@@ -66,7 +66,7 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
     private fun setupScrollListener() {
         scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             val dy = oldScrollY - scrollY
-            hedvigToolbar?.let { toolbar ->
+            toolbar?.let { toolbar ->
                 val toolbarHeight = toolbar.height.toFloat()
                 val offset = scrollView.computeVerticalScrollOffset().toFloat()
                 val percentage = if (offset < toolbarHeight) {

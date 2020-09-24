@@ -86,7 +86,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
         val chatInputHeight = input.measureTextInput()
-        val toolbarHeight = getViewHeight(hedvigToolbar)
+        val toolbarHeight = getViewHeight(toolbar)
         messages.updatePadding(
             top = messages.paddingTop + toolbarHeight,
             bottom = messages.paddingBottom + chatInputHeight
@@ -99,7 +99,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
         }
 
-        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
