@@ -16,6 +16,7 @@ import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
+import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
@@ -54,6 +55,7 @@ class HomeAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
@@ -72,10 +74,11 @@ class HomeAdapter(
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-        is HomeModel.InfoCard -> R.layout.home_info_card
+        is HomeModel.ConnectPayin -> R.layout.home_info_card
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.home_error
+        is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
     }
 
@@ -222,33 +225,41 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker
             ) = with(binding) {
-                if (data !is HomeModel.InfoCard) {
+                if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
                 }
 
-                when (data) {
-                    HomeModel.InfoCard.ConnectPayin -> {
-                        title.setText(R.string.info_card_missing_payment_title)
-                        body.setText(R.string.info_card_missing_payment_body)
-                        action.setText(R.string.info_card_missing_payment_button_text)
-                        action.setHapticClickListener {
-                            tracker.addPaymentMethod()
-                            action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
-                        }
-                    }
-                    is HomeModel.InfoCard.PSA -> {
-                        title.text = data.inner.title
-                        body.text = data.inner.message
-                        action.text = data.inner.button
-                        val uri = Uri.parse(data.inner.link)
-                        action.setHapticClickListener {
-                            action.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                setData(
-                                    uri
-                                )
-                            })
-                        }
-                    }
+                title.setText(R.string.info_card_missing_payment_title)
+                body.setText(R.string.info_card_missing_payment_body)
+                action.setText(R.string.info_card_missing_payment_button_text)
+                action.setHapticClickListener {
+                    tracker.addPaymentMethod()
+                    action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                }
+            }
+        }
+
+        class PSABox(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.home_psa)) {
+            private val binding by viewBinding(HomePsaBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker
+            ) = with(binding) {
+                if (data !is HomeModel.PSA) {
+                    return invalid(data)
+                }
+                body.text = data.inner.message
+                val uri = Uri.parse(data.inner.link)
+                root.setHapticClickListener {
+                    arrow.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        setData(
+                            uri
+                        )
+                    })
                 }
             }
         }

@@ -19,6 +19,10 @@
         <item name="lineHeight">24sp</item>
     </style>
 
+    <style name="Hedvig.TextAppearance.Subtitle2" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="lineHeight">20sp</item>
+    </style>
+
     <dimen name="subtitle_1_placeholder_width">48sp</dimen>
     <dimen name="subtitle_1_placeholder_height">16sp</dimen>
 

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.home.screens
 
 import android.content.Intent
 import android.view.View
+import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
@@ -16,6 +17,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
         KRecyclerView({ withId(R.id.recycler) },
             {
+                itemType(::HomePSAItem)
                 itemType(::HowClaimsWork)
                 itemType(::BigTextItem)
                 itemType(::BodyTextItem)
@@ -25,6 +27,15 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
             })
+
+    class HomePSAItem(parent: Matcher<View>) : KRecyclerItem<HomePSAItem>(parent) {
+        val text = KTextView(parent) { withId(R.id.body) }
+        val button = KImageView(parent) { withId(R.id.arrow) }
+        val psaLink = KIntent {
+            hasAction(Intent.ACTION_VIEW)
+            hasData("https://www.example.com")
+        }
+    }
 
     class HowClaimsWork(parent: Matcher<View>) : KRecyclerItem<HowClaimsWork>(parent) {
         val button = KButton(parent) { withId(R.id.button) }
@@ -49,11 +60,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
         val connectPayin = KIntent {
             hasComponent(ConnectPaymentActivity::class.java.name)
-        }
-
-        val psaLink = KIntent {
-            hasAction(Intent.ACTION_VIEW)
-            hasData("https://www.example.com")
         }
     }
 
