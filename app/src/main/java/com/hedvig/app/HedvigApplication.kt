@@ -65,7 +65,8 @@ open class HedvigApplication : Application() {
                     homeModule,
                     serviceModule,
                     repositoriesModule,
-                    trackerModule
+                    trackerModule,
+                    marketPickerTrackerModule
                 )
             )
         }

@@ -13,7 +13,10 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.market_item.view.*
 
-class MarketAdapter(private val model: LanguageAndMarketViewModel) :
+class MarketAdapter(
+    private val model: LanguageAndMarketViewModel,
+    private val tracker: MarketPickerTracker
+) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
     var items: List<MarketModel> = listOf()
         set(value) {
@@ -30,11 +33,11 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel) :
             animateRadioButton(holder)
             holder.button.isChecked = true
             holder.button.background =
-                holder.button.context.getDrawable(R.drawable.ic_radio_button_checked)
+                holder.button.context.compatDrawable(R.drawable.ic_radio_button_checked)
         } else {
             holder.button.isChecked = false
             holder.button.background =
-                holder.button.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+                holder.button.context.compatDrawable(R.drawable.ic_radio_button_unchecked)
         }
         when (position) {
             Market.SE.ordinal -> holder.itemView.apply {
@@ -55,9 +58,11 @@ class MarketAdapter(private val model: LanguageAndMarketViewModel) :
     private fun selectMarket(position: Int) {
         when (position) {
             Market.SE.ordinal -> {
+                tracker.selectMarket(Market.SE)
                 model.updateMarket(Market.SE)
             }
             Market.NO.ordinal -> {
+                tracker.selectMarket(Market.NO)
                 model.updateMarket(Market.NO)
             }
         }

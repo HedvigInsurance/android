@@ -18,13 +18,11 @@
         android:padding="@dimen/base_margin">
 
         <ImageView
+            android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
             android:padding="@dimen/base_margin"
-            android:tint="?colorPrimary"
             app:srcCompat="@drawable/ic_hedvig_wordmark" />
 
     </LinearLayout>
@@ -97,6 +95,5 @@
         </LinearLayout>
 
     </ScrollView>
-
 
 </LinearLayout>
