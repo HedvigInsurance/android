@@ -31,7 +31,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
 
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
             onBackPressed()
         }
 

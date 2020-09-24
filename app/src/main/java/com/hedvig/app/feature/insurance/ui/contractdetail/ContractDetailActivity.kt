@@ -39,12 +39,12 @@ class ContractDetailActivity : BaseActivity(R.layout.activity_contract_detail) {
             )
         }
 
-        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
 
-        hedvigToolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 

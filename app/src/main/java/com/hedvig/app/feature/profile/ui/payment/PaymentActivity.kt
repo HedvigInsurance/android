@@ -50,7 +50,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true, root) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
             onBackPressed()
         }
 

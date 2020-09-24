@@ -60,7 +60,7 @@ class ActiveTest {
         }
 
         onScreen<EmergencyScreen> {
-            title { hasText("Det är kris!") }
+            title { hasTitle("Det är kris!") }
             pressBack()
         }
 
