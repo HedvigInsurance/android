@@ -233,6 +233,7 @@ dependencies {
     androidTestImplementation "org.koin:koin-test:$koin_version"
     androidTestImplementation 'org.awaitility:awaitility:3.1.6'
     androidTestImplementation 'org.awaitility:awaitility-kotlin:3.1.6'
+    androidTestImplementation "io.mockk:mockk-android:1.10.0"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

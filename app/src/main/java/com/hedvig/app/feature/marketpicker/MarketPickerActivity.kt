@@ -4,16 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.jsonObjectOf
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.activity_market_picker.*
 import org.koin.android.ext.android.inject
@@ -38,9 +40,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             }
         )
         model.markets.observe(this) { list ->
-            list?.let {
-                (marketList.adapter as? MarketAdapter)?.items = list
-            }
+            (marketList.adapter as? MarketAdapter)?.items = list
         }
         if (newMarketPref != null) {
             val market = Market.valueOf(newMarketPref)
@@ -56,7 +56,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             model.loadGeo()
         }
 
-        val languageAdapter = LanguageAdapter(model)
+        val languageAdapter = LanguageAdapter(model, tracker)
         languageList.adapter = languageAdapter
         model.markets.observe(this) { markets ->
             markets?.let {
@@ -67,8 +67,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 }
                 try {
                     val market = model.markets.value?.first { it.selected }?.market
-                    market?.let { market ->
-                        languageAdapter.selectedMarket = market
+                    market?.let { m ->
+                        languageAdapter.selectedMarket = m
                     }
                 } catch (e: Exception) {
 
@@ -105,5 +105,17 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
 class MarketPickerTracker(
     private val mixpanel: MixpanelAPI
 ) {
+    fun selectMarket(market: Market) = mixpanel.track(
+        "select_market",
+        jsonObjectOf(
+            "market" to market.toString()
+        )
+    )
 
+    fun selectLocale(locale: Language) = mixpanel.track(
+        "select_locale",
+        jsonObjectOf(
+            "locale" to locale.toString()
+        )
+    )
 }
