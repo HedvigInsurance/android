@@ -44,8 +44,8 @@
     </style>
 
     <style name="ThemeOverlay.Hedvig.PSA" parent="">
-        <item name="android:textColorPrimary">@color/color_black_67</item>
-        <item name="colorPrimary">@color/black</item>
+        <item name="android:textColorPrimary">@color/color_hedvig_black_67</item>
+        <item name="colorPrimary">@color/hedvig_black</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.WarningCard" parent="">
