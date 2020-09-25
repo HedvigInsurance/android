@@ -257,22 +257,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private fun bindData() {
         whatsNewViewModel.news.observe(this) { data ->
             if (data.news.isNotEmpty()) {
-                WhatsNewDialog.newInstance(
-                    data.news.mapIndexed { index, page ->
-                        DismissiblePagerModel.TitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.title,
-                            page.paragraph,
-                            getString(
-                                if (index == data.news.size - 1) {
-                                    R.string.NEWS_DISMISS
-                                } else {
-                                    R.string.NEWS_PROCEED
-                                }
-                            )
-                        )
-                    }
-                ).show(supportFragmentManager, WhatsNewDialog.TAG)
+                WhatsNewDialog.newInstance(data.news)
+                    .show(supportFragmentManager, WhatsNewDialog.TAG)
             }
         }
 

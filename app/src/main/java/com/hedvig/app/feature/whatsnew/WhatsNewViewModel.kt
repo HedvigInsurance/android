@@ -7,19 +7,13 @@ import com.hedvig.app.util.LiveEvent
 import e
 import kotlinx.coroutines.launch
 
-abstract class WhatsNewViewModel: ViewModel() {
+class WhatsNewViewModel(
+    private val whatsNewRepository: WhatsNewRepository
+) : ViewModel() {
+
     val news = LiveEvent<WhatsNewQuery.Data>()
 
-    abstract fun fetchNews(sinceVersion: String? = null)
-
-    abstract fun hasSeenNews(version: String)
-}
-
-class WhatsNewViewModelImpl(
-    private val whatsNewRepository: WhatsNewRepository
-) : WhatsNewViewModel() {
-
-    override fun fetchNews(sinceVersion: String?) {
+    fun fetchNews(sinceVersion: String? = null) {
         viewModelScope.launch {
             val response = runCatching { whatsNewRepository.whatsNewAsync(sinceVersion).await() }
             if (response.isFailure) {
@@ -30,5 +24,5 @@ class WhatsNewViewModelImpl(
         }
     }
 
-    override fun hasSeenNews(version: String) = whatsNewRepository.hasSeenNews(version)
+    fun hasSeenNews(version: String) = whatsNewRepository.hasSeenNews(version)
 }
