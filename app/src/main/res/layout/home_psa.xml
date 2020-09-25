@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:theme="@style/ThemeOverlay.Hedvig.PSA"
     android:background="@drawable/background_ripple"
     android:backgroundTint="?colorWarning">
 
@@ -13,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double"
         android:textAppearance="?textAppearanceSubtitle2"
-        android:textColor="@color/color_black_67"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/arrow"
         app:layout_constraintStart_toStartOf="parent"
