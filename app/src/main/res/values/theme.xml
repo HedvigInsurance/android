@@ -49,6 +49,7 @@
         <item name="textAppearanceHeadline6">@style/Hedvig.TextAppearance.Headline6</item>
 
         <item name="textAppearanceSubtitle1">@style/Hedvig.TextAppearance.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/Hedvig.TextAppearance.Subtitle2</item>
 
         <item name="textAppearanceBody1">@style/Hedvig.TextAppearance.Body1</item>
         <item name="textAppearanceBody2">@style/Hedvig.TextAppearance.Body2</item>

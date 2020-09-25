@@ -5,6 +5,7 @@ import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
+import com.agoda.kakao.scroll.KScrollView
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
@@ -18,6 +19,8 @@ class MarketPickerScreen : Screen<MarketPickerScreen>() {
         KRecyclerView({ withId(R.id.languageList) }, itemTypeBuilder = { itemType(::LanguageItem) })
 
     val save = KButton { withId(R.id.save) }
+
+    val scroll = KScrollView { withId(R.id.scrollView) }
 
     class MarketItem(parent: Matcher<View>) : KRecyclerItem<MarketItem>(parent) {
         val radioButton = KCheckBox(parent) { withId(R.id.radioButton) }

@@ -59,6 +59,7 @@ import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -337,4 +338,9 @@ val trackerModule = module {
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
+    single { ScreenTracker(get()) }
+}
+
+val marketPickerTrackerModule = module {
+    single { MarketPickerTracker(get()) }
 }

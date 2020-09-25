@@ -9,12 +9,20 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.feature.settings.Language
+import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : AppCompatActivity {
     constructor() : super()
     constructor(@LayoutRes layout: Int) : super(layout)
 
     open val preventRecreation = false
+
+    private val tracker: ScreenTracker by inject()
+
+    override fun onResume() {
+        tracker.screenView(javaClass.simpleName)
+        super.onResume()
+    }
 
     override fun onDestroy() {
         LocalBroadcastManager
@@ -47,3 +55,4 @@ abstract class BaseActivity : AppCompatActivity {
         }
     }
 }
+

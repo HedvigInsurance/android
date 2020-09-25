@@ -43,6 +43,12 @@
         <item name="colorSurface">@color/colorInfoCardSurface</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.PSA" parent="">
+        <item name="android:textColorPrimary">@color/color_hedvig_black_67</item>
+        <item name="colorPrimary">@color/hedvig_black</item>
+        <item name="android:colorBackground">?colorWarning</item>
+    </style>
+
     <style name="ThemeOverlay.Hedvig.WarningCard" parent="">
         <item name="colorSurface">?colorWarning</item>
         <item name="colorPrimary">@color/hedvig_black</item>

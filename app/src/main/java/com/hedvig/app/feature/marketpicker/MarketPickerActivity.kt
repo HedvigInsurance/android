@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.hedvig.app.BaseActivity
@@ -12,13 +13,15 @@ import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_market_picker.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
     private val model: LanguageAndMarketViewModel by viewModel()
+
+    private val tracker: MarketPickerTracker by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,16 +30,14 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val newMarketPref = sharedPreferences.getString(SettingsActivity.SETTINGS_NEW_MARKET, null)
 
-        marketList.adapter = MarketAdapter(model)
+        marketList.adapter = MarketAdapter(model, tracker)
         marketList.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
         model.markets.observe(this) { list ->
-            list?.let {
-                (marketList.adapter as? MarketAdapter)?.items = list
-            }
+            (marketList.adapter as? MarketAdapter)?.items = list
         }
         if (newMarketPref != null) {
             val market = Market.valueOf(newMarketPref)
@@ -52,7 +53,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             model.loadGeo()
         }
 
-        val languageAdapter = LanguageAdapter(model)
+        val languageAdapter = LanguageAdapter(model, tracker)
         languageList.adapter = languageAdapter
         model.markets.observe(this) { markets ->
             markets?.let {
@@ -63,8 +64,8 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 }
                 try {
                     val market = model.markets.value?.first { it.selected }?.market
-                    market?.let { market ->
-                        languageAdapter.selectedMarket = market
+                    market?.let { m ->
+                        languageAdapter.selectedMarket = m
                     }
                 } catch (e: Exception) {
 
@@ -78,6 +79,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
         )
 
         save.setHapticClickListener {
+            tracker.submit()
             model.save()
             goToMarketingActivity()
         }

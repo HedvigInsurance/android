@@ -19,7 +19,7 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
 
         with(binding) {
             root.setEdgeToEdgeSystemUiFlags(true)
-            hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
             scrollView.doOnApplyWindowInsets { view, insets, initialState ->
@@ -29,7 +29,7 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
-            hedvigToolbar.setNavigationOnClickListener {
+            toolbar.setNavigationOnClickListener {
                 onBackPressed()
             }
 

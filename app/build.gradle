@@ -25,7 +25,7 @@ android {
 
         minSdkVersion 23
         versionCode 43
-        versionName '4.4.0'
+        versionName '4.5.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -233,6 +233,7 @@ dependencies {
     androidTestImplementation "org.koin:koin-test:$koin_version"
     androidTestImplementation 'org.awaitility:awaitility:3.1.6'
     androidTestImplementation 'org.awaitility:awaitility-kotlin:3.1.6'
+    androidTestImplementation "io.mockk:mockk-android:1.10.0"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

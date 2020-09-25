@@ -101,30 +101,30 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun initializeToolbar() {
-        hedvigToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
         }
 
-        setSupportActionBar(hedvigToolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         val backDrawable = compatDrawable(R.drawable.ic_back)
         backDrawable?.setTint(compatColor(R.color.white))
-        hedvigToolbar.navigationIcon = backDrawable
-        hedvigToolbar.setNavigationOnClickListener {
+        toolbar.navigationIcon = backDrawable
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
         scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
             val positionInSpan =
-                scrollY - (photosSection.photos.height - (hedvigToolbar.height * 2.0f))
-            val percentage = positionInSpan / hedvigToolbar.height
+                scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
+            val percentage = positionInSpan / toolbar.height
 
             // Avoid some unnecessary background color updates
             if (percentage < -1 || percentage > 2) {
                 return@setOnScrollChangeListener
             }
 
-            hedvigToolbar.setBackgroundColor(
+            toolbar.setBackgroundColor(
                 boundedColorLerp(
                     Color.TRANSPARENT,
                     compatColor(R.color.translucent_tool_bar),

@@ -78,7 +78,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         return 2
                     }
                 }
-            addItemDecoration(HomeItemDecoration())
+            addItemDecoration(HomeItemDecoration(context))
             addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->
@@ -154,12 +154,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
             if (isActive(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
+                    *psaItems(successData.importantMessages).toTypedArray(),
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
-                    *psaItems(successData.importantMessages).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                        HomeModel.InfoCard.ConnectPayin
+                        HomeModel.ConnectPayin
                     } else {
                         null
                     },
@@ -177,7 +177,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         importantMessages: List<HomeQuery.ImportantMessage?>
     ) = importantMessages
         .filterNotNull()
-        .map { HomeModel.InfoCard.PSA(it) }
+        .map { HomeModel.PSA(it) }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,

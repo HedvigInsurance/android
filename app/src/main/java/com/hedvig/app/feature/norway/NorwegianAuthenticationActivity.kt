@@ -23,7 +23,7 @@ class NorwegianAuthenticationActivity : BaseActivity(R.layout.activity_norwegian
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        hedvigToolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
