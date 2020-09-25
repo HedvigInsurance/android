@@ -93,6 +93,7 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
@@ -220,7 +221,6 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
@@ -235,6 +235,10 @@ val viewModelModule = module {
 
 val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
+}
+
+val whatsNewModule = module {
+    viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
 }
 
 val insuranceModule = module {
