@@ -6,14 +6,16 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.fragment_embark_select_action.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private val model: EmbarkViewModel by sharedViewModel()
+    private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -24,20 +26,22 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             return
         }
 
-        messages.adapter = MessageAdapter().apply {
-            items = data.messages
-        }
-        actions.adapter = SelectActionAdapter { selectAction ->
-            selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
-                model.putInStore(key, value)
+        binding.apply {
+            messages.adapter = MessageAdapter().apply {
+                items = data.messages
             }
-            model.putInStore("${data.passageName}Result", selectAction.label)
-            val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
-            animateResponse(response, responseText) {
-                model.navigateToPassage(selectAction.link)
+            actions.adapter = SelectActionAdapter { selectAction ->
+                selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
+                    model.putInStore(key, value)
+                }
+                model.putInStore("${data.passageName}Result", selectAction.label)
+                val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
+                animateResponse(response, responseText) {
+                    model.navigateToPassage(selectAction.link)
+                }
+            }.apply {
+                items = data.actions
             }
-        }.apply {
-            items = data.actions
         }
     }
 

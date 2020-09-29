@@ -6,16 +6,18 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.fragment_embark_text_action.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     private val model: EmbarkViewModel by sharedViewModel()
+    private val binding by viewBinding(FragmentEmbarkTextActionBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,23 +29,25 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             return
         }
 
-        messages.adapter = MessageAdapter().apply {
-            items = data.messages
-        }
+        binding.apply {
+            messages.adapter = MessageAdapter().apply {
+                items = data.messages
+            }
 
-        textActionInput.hint = data.hint
-        textActionInput.onChange { text ->
-            textActionSubmit.isEnabled = text.isNotEmpty()
-        }
+            textActionInput.hint = data.hint
+            textActionInput.onChange { text ->
+                textActionSubmit.isEnabled = text.isNotEmpty()
+            }
 
-        textActionSubmit.text = data.submitLabel
-        textActionSubmit.setHapticClickListener {
-            val inputText = textActionInput.text.toString()
-            model.putInStore("${data.passageName}Result", inputText)
-            model.putInStore(data.key, inputText)
-            val responseText = model.preProcessResponse(data.passageName) ?: inputText
-            animateResponse(response, responseText) {
-                model.navigateToPassage(data.link)
+            textActionSubmit.text = data.submitLabel
+            textActionSubmit.setHapticClickListener {
+                val inputText = textActionInput.text.toString()
+                model.putInStore("${data.passageName}Result", inputText)
+                model.putInStore(data.key, inputText)
+                val responseText = model.preProcessResponse(data.passageName) ?: inputText
+                animateResponse(response, responseText) {
+                    model.navigateToPassage(data.link)
+                }
             }
         }
     }
