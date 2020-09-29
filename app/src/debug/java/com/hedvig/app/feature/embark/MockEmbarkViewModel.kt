@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.embark
 
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
+import com.hedvig.app.util.jsonObjectOf
 import org.json.JSONObject
 
 class MockEmbarkViewModel : EmbarkViewModel() {
@@ -14,7 +15,7 @@ class MockEmbarkViewModel : EmbarkViewModel() {
     }
 
     override suspend fun callGraphQLQuery(query: String, variables: JSONObject?) =
-        graphQLQueryResponse
+        jsonObjectOf("data" to graphQLQueryResponse)
 
     companion object {
         var shouldLoad = false
