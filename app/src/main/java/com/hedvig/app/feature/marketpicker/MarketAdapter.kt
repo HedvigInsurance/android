@@ -18,7 +18,7 @@ class MarketAdapter(
     private val tracker: MarketPickerTracker
 ) :
     RecyclerView.Adapter<MarketAdapter.ViewHolder>() {
-    var items: List<MarketModel> = listOf()
+    var items: List<MarketAndLanguageModel.MarketModel> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()

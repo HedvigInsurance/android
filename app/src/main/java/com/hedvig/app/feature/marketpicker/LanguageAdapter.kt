@@ -8,7 +8,6 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
@@ -22,7 +21,7 @@ class LanguageAdapter(
     private var lastChecked: RadioButton? = null
 
     var selectedMarket = Market.SE
-    var items: List<LanguageModel> = listOf()
+    var items: List<MarketAndLanguageModel.LanguageModel> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()

@@ -138,8 +138,8 @@ enum class Language {
     }
 }
 
-data class LanguageModel(
+/*data class LanguageModel(
     val language: Language,
     var selected: Boolean = false,
     var available: Boolean = false
-)
+)*/

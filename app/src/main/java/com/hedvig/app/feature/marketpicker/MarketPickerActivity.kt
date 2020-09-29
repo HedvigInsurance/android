@@ -36,7 +36,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
                 compatDrawable(R.drawable.divider)?.let { setDrawable(it) }
             }
         )
-        model.markets.observe(this) { list ->
+/*        model.markets.observe(this) { list ->
             (marketList.adapter as? MarketAdapter)?.items = list
         }
         if (newMarketPref != null) {
@@ -82,7 +82,7 @@ class MarketPickerActivity : BaseActivity(R.layout.activity_market_picker) {
             tracker.submit()
             model.save()
             goToMarketingActivity()
-        }
+        }*/
 
         model.isLanguageSelected.observe(this) { isLanguageSelected ->
             isLanguageSelected?.let {

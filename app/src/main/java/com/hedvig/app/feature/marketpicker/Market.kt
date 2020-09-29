@@ -9,7 +9,7 @@ enum class Market {
     }
 }
 
-data class MarketModel(
+/*data class MarketModel(
     val market: Market,
     val selected: Boolean = false
-)
+)*/

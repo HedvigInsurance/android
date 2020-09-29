@@ -10,10 +10,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketModel
+import com.hedvig.app.feature.marketpicker.MarketAndLanguageModel
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.LanguageModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.apollo.defaultLocale
@@ -27,13 +26,24 @@ class LanguageAndMarketViewModel(
     private val marketRepository: MarketRepository,
     private val context: Context
 ) : ViewModel() {
-    val markets = MutableLiveData<List<MarketModel>>()
+    // val markets = MutableLiveData<List<MarketModel>>()
     val preselectedMarket = MutableLiveData<String>()
     val isLanguageSelected = MutableLiveData(false)
-    val languages = MutableLiveData<List<LanguageModel>>()
+
+    // val languages = MutableLiveData<List<LanguageModel>>()
+    val marketAndLanguages = MutableLiveData<List<MarketAndLanguageModel>>()
 
     init {
-        markets.value = Market.values().map { market ->
+        marketAndLanguages.value = Market.values().map { market ->
+            MarketAndLanguageModel.MarketModel(
+                market
+            )
+        } + Language.values().map { language ->
+            MarketAndLanguageModel.LanguageModel(
+                language
+            )
+        }
+/*        markets.value = Market.values().map { market ->
             MarketModel(
                 market
             )
@@ -43,10 +53,36 @@ class LanguageAndMarketViewModel(
             LanguageModel(
                 language
             )
+        }*/
+    }
+
+/*    private fun getMarkets(): ArrayList<MarketAndLanguageModel.Market> {
+        val list: ArrayList<MarketAndLanguageModel.Market> = ArrayList()
+        marketsAndLanguages.value?.map { item ->
+            if (item is MarketAndLanguageModel.Market) {
+                list.add(item)
+            }
+        }
+        return list
+    }*/
+
+    private fun isLanguageSelected() {
+        var languageSelected = false
+        marketAndLanguages.value?.let { list ->
+            val selectedLanguage = list.find {
+                it is MarketAndLanguageModel.LanguageModel && it.selected
+            }
+            languageSelected =
+                (selectedLanguage as MarketAndLanguageModel.LanguageModel?)?.selected ?: false
+        }
+        if (languageSelected) {
+            isLanguageSelected.postValue(true)
+        } else {
+            isLanguageSelected.postValue(false)
         }
     }
 
-    private fun isLanguageSelected() {
+/*    private fun isLanguageSelected() {
         var languageSelected = false
         languages.value?.let { list ->
             val selectedLanguage = list.find { it.selected }
@@ -57,9 +93,48 @@ class LanguageAndMarketViewModel(
         } else {
             isLanguageSelected.postValue(false)
         }
-    }
+    }*/
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
+    fun test() {
+        val marketModel =
+            marketAndLanguages.value?.first { it is MarketAndLanguageModel.MarketModel && it.selected } as MarketAndLanguageModel.MarketModel
+        val market = marketModel.market
+        val languageModel =
+            marketAndLanguages.value?.first { it is MarketAndLanguageModel.LanguageModel && it.selected } as MarketAndLanguageModel.LanguageModel
+        val language = languageModel.language
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        sharedPreferences.edit()
+            .putString(Market.MARKET_SHARED_PREF, market.name)
+            .commit()
+
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
+            .commit()
+
+        language.apply(context)?.let { language ->
+            updateLanguage(makeLocaleString(language))
+
+            viewModelScope.launch {
+                withContext(NonCancellable) {
+                    runCatching {
+                        marketRepository
+                            .updatePickedLocaleAsync(defaultLocale(language))
+                    }
+                }
+            }
+        }
+
+        LocalBroadcastManager
+            .getInstance(context)
+            .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+    }
+
+/*    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
     fun save() {
         val market = markets.value?.first { it.selected }?.market
         val language = languages.value?.first { it.selected }?.language
@@ -95,23 +170,67 @@ class LanguageAndMarketViewModel(
                 .getInstance(context)
                 .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
         }
-    }
+    }*/
 
     fun selectLanguage(language: Language) {
+        marketAndLanguages.value?.let { list ->
+            for (marketAndLanguageModel in list) {
+                if (marketAndLanguageModel is MarketAndLanguageModel.LanguageModel) {
+                    marketAndLanguageModel.selected = marketAndLanguageModel.language == language
+                }
+            }
+        }
+        isLanguageSelected()
+    }
+
+/*    fun selectLanguage(language: Language) {
         languages.value?.let { list ->
             for (languageModel in list) {
                 languageModel.selected = languageModel.language == language
             }
         }
         isLanguageSelected()
-    }
+    }*/
 
-    fun updateLanguage(acceptLanguage: String) {
+    private fun updateLanguage(acceptLanguage: String) {
         languageRepository
             .setLanguage(acceptLanguage)
     }
 
     fun updateMarket(market: Market) {
+        marketAndLanguages.value?.let { list ->
+            for (marketAndLanguageModel in list) {
+                if (marketAndLanguageModel is MarketAndLanguageModel.MarketModel) {
+                    MarketAndLanguageModel.MarketModel(
+                        marketAndLanguageModel.market,
+                        marketAndLanguageModel.market == market
+                    )
+                }
+            }
+        }
+
+        marketAndLanguages.value?.let { list ->
+            for (marketAndLanguageModel in list) {
+                if (marketAndLanguageModel is MarketAndLanguageModel.LanguageModel) {
+                    var available = false
+                    if (market == Market.SE) {
+                        if (marketAndLanguageModel.language == Language.SV_SE || marketAndLanguageModel.language == Language.EN_SE) {
+                            available = true
+                        }
+                    } else if (market == Market.NO) {
+                        if (marketAndLanguageModel.language == Language.NB_NO || marketAndLanguageModel.language == Language.EN_NO) {
+                            available = true
+                        }
+                    }
+                    marketAndLanguageModel.available = available
+                    marketAndLanguageModel.selected = false
+                    isLanguageSelected()
+                }
+            }
+        }
+    }
+
+/*    fun updateMarket(market: Market) {
         markets.postValue(markets.value?.map { marketModel ->
             MarketModel(
                 marketModel.market,
@@ -141,7 +260,7 @@ class LanguageAndMarketViewModel(
             }
         }
         isLanguageSelected()
-    }
+    }*/
 
     fun loadGeo() {
         viewModelScope.launch {
@@ -157,6 +276,7 @@ class LanguageAndMarketViewModel(
                 try {
                     updateMarket(Market.valueOf(geo.countryISOCode))
                 } catch (e: Exception) {
+                    e { e.toString() }
                     return@launch
                 }
             }
