@@ -408,7 +408,7 @@ class EmbarkViewModelImpl(
                     .await()
             }
 
-            result.getOrNull()?.data()?.let { d ->
+            result.getOrNull()?.data?.let { d ->
                 storyData = d
                 displayInitialPassage()
             }

@@ -4,22 +4,23 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.observe
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
 import com.hedvig.app.feature.embark.passages.TextActionFragment
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
-
     private val model: EmbarkViewModel by viewModel()
+    private val binding by viewBinding(ActivityEmbarkBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,47 +37,45 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         model.load(storyName)
 
-        model.data.observe(this) { data ->
-            data?.let { passage ->
-                loadingSpinner.remove()
+        model.data.observe(this) { passage ->
+            binding.loadingSpinner.loadingSpinner.remove()
 
-                passage.action?.asEmbarkSelectAction?.let { options ->
-                    val selectActionData = SelectActionPassage.from(
-                        passage.messages.map { it.fragments.messageFragment.text },
-                        options.data,
-                        passage.name
-                    )
+            passage.action?.asEmbarkSelectAction?.let { options ->
+                val selectActionData = SelectActionPassage.from(
+                    passage.messages.map { it.fragments.messageFragment.text },
+                    options.data,
+                    passage.name
+                )
 
-                    val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
-
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.passageContainer, selectActionFragment)
-                        .commit()
-                    return@observe
-                }
-
-                passage.action?.asEmbarkTextAction?.let { textAction ->
-                    val textActionData =
-                        TextActionData.from(
-                            passage.messages.map { it.fragments.messageFragment.text },
-                            textAction.data,
-                            passage.name
-                        )
-
-                    val textActionFragment = TextActionFragment.newInstance(textActionData)
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.passageContainer, textActionFragment)
-                        .commit()
-                    return@observe
-                }
+                val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
 
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                    .replace(R.id.passageContainer, selectActionFragment)
                     .commit()
+                return@observe
             }
+
+            passage.action?.asEmbarkTextAction?.let { textAction ->
+                val textActionData =
+                    TextActionData.from(
+                        passage.messages.map { it.fragments.messageFragment.text },
+                        textAction.data,
+                        passage.name
+                    )
+
+                val textActionFragment = TextActionFragment.newInstance(textActionData)
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.passageContainer, textActionFragment)
+                    .commit()
+                return@observe
+            }
+
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                .commit()
         }
     }
 
