@@ -16,7 +16,7 @@ class FeedbackActivity : BaseActivity(R.layout.activity_feedback) {
 
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true, root) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
             onBackPressed()
         }
 

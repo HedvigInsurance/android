@@ -2,6 +2,7 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
+import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.HedvigColor
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.parcel.Parcelize
@@ -19,6 +20,14 @@ data class CommonClaimsData(
     companion object {
         fun from(
             data: CommonClaimQuery.CommonClaim,
+            eligibleToClaim: Boolean
+        ): CommonClaimsData? {
+            val layout = data.layout.asTitleAndBulletPoints ?: return null
+            TODO("Remove")
+        }
+
+        fun from(
+            data: HomeQuery.CommonClaim,
             eligibleToClaim: Boolean
         ): CommonClaimsData? {
             val layout = data.layout.asTitleAndBulletPoints ?: return null

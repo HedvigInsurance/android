@@ -6,9 +6,11 @@ import androidx.lifecycle.Observer
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
@@ -27,7 +29,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
 
         root.setEdgeToEdgeSystemUiFlags(true)
 
-        setupToolbar(R.id.hedvigToolbar, R.drawable.ic_back, true, root) {
+        setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
             onBackPressed()
         }
 
@@ -40,7 +42,22 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
             data?.let {
                 whatsNew.show()
                 whatsNew.setOnClickListener {
-                    WhatsNewDialog.newInstance(data.news)
+                    WhatsNewDialog.newInstance(
+                        data.news.mapIndexed { index, page ->
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getString(
+                                    if (index == data.news.size - 1) {
+                                        R.string.NEWS_DISMISS
+                                    } else {
+                                        R.string.NEWS_PROCEED
+                                    }
+                                )
+                            )
+                        }
+                    )
                         .show(supportFragmentManager, WhatsNewDialog.TAG)
                 }
             }

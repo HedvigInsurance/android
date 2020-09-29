@@ -24,16 +24,9 @@
             android:clipToPadding="false"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/emergencyTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline5"
-                tools:text="@string/CONTRACT_COVERAGE_CONTRACT_TYPE" />
-
-            <include layout="@layout/common_claim_first_message" />
+            <include
+                android:id="@+id/firstMessage"
+                layout="@layout/common_claim_first_message" />
 
             <com.hedvig.app.ui.view.HedvigCardView
                 android:layout_width="match_parent"
@@ -54,14 +47,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_TITLE"
+                        android:text="@string/EMERGENCY_ABROAD_TITLE"
                         android:textAppearance="?textAppearanceSubtitle1" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/base_margin"
-                        android:text="@string/CLAIMS_EMERGENCY_SECOND_BOX_DESCRIPTION"
+                        android:text="@string/EMERGENCY_ABROAD_DESCRIPTION"
                         android:textAppearance="?textAppearanceBody2" />
 
                     <Button

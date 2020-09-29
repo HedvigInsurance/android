@@ -30,7 +30,7 @@ class GraphQLErrorTest {
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_QUERY_API) },
         HELLO_QUERY to apolloResponse {
-            graphQLError(Error(message = "some error"))
+            graphQLError("some error")
         }
     )
 

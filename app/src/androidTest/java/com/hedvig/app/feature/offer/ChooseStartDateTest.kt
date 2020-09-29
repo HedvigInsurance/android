@@ -29,7 +29,11 @@ class ChooseStartDateTest {
     val mockServerRule = ApolloMockServerRule(
         OfferQuery.QUERY_DOCUMENT to apolloResponse { success(OFFER_DATA_SWEDISH_APARTMENT) },
         ChooseStartDateMutation.QUERY_DOCUMENT to apolloResponse {
-            success(ChooseStartDateBuilder(date = tomorrow).build())
+            success(
+                ChooseStartDateBuilder(
+                    date = tomorrow
+                ).build()
+            )
         }
     )
 

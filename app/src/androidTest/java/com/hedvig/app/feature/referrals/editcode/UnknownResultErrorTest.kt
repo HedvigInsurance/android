@@ -25,7 +25,9 @@ class UnknownResultErrorTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
-            success(EDIT_CODE_DATA_UNKNOWN_RESULT)
+            success(
+                EDIT_CODE_DATA_UNKNOWN_RESULT
+            )
         }
     )
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="@dimen/home_error_icon_size"
+        android:layout_height="@dimen/home_error_icon_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_octuple"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/ic_claims" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:text="@string/home_tab.error_title"
+        android:textAppearance="?textAppearanceHeadline6" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:text="@string/home_tab.error_body"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceBody2" />
+
+    <Button
+        android:id="@+id/retry"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:text="@string/home_tab.error_button_text" />
+
+</LinearLayout>

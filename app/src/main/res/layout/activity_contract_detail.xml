@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".feature.dashboard.ui.contractdetail.ContractDetailActivity">
+    tools:context=".feature.insurance.ui.contractdetail.ContractDetailActivity">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hedvigToolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
             android:id="@+id/scrollViewContent"
@@ -223,7 +223,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/hedvigToolbar"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"

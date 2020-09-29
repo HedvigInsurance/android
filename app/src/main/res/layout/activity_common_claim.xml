@@ -21,16 +21,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/commonClaimTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline5"
-                tools:text="@string/CONTRACT_COVERAGE_CONTRACT_TYPE" />
-
-            <include layout="@layout/common_claim_first_message" />
+            <include
+                android:id="@+id/firstMessage"
+                layout="@layout/common_claim_first_message" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/bulletPointsRecyclerView"

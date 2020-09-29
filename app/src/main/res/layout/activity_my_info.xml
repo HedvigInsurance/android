@@ -9,7 +9,7 @@
     tools:context="com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/hedvigToolbar"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:colorBackground" />
@@ -25,50 +25,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:text="@string/PROFILE_MY_INFO_TITLE"
-                android:textAppearance="?textAppearanceHeadline4" />
-
-            <include layout="@layout/loading_spinner" />
-
-            <FrameLayout
-                android:id="@+id/sphereContainer"
-                android:layout_width="@dimen/profile_sphere_side_length"
-                android:layout_height="@dimen/profile_sphere_side_length"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:visibility="gone"
-                tools:showIn="@layout/activity_my_info"
-                tools:visibility="visible">
-
-                <ImageView
-                    android:id="@id/sphere"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@null"
-                    app:srcCompat="@drawable/sphere"
-                    tools:tint="@color/dark_purple" />
-
-                <TextView
-                    android:id="@+id/sphereText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="2"
-                    android:padding="@dimen/sphere_text_padding"
-                    android:textColor="@color/hedvig_white"
-                    app:autoSizeMaxTextSize="@dimen/sphere_text_max_text_size"
-                    app:autoSizeMinTextSize="@dimen/sphere_text_min_text_size"
-                    app:autoSizeStepGranularity="@dimen/sphere_text_step_granularity"
-                    app:autoSizeTextType="uniform"
-                    tools:text="Testina Testsdotteri" />
-            </FrameLayout>
+            <include
+                android:id="@+id/spinner"
+                layout="@layout/loading_spinner" />
 
             <LinearLayout
                 android:id="@id/contactDetailsContainer"

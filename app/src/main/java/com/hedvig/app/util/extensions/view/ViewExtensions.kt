@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 
 fun View.show(): View {
@@ -204,25 +203,11 @@ fun Toolbar.setupToolbar(
     }
 }
 
-fun NestedScrollView.setupToolbarScrollListener(
-    loggedInViewModel: LoggedInViewModel
-) {
-    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
-        val maxElevationScroll = 200
-        val offset = this.computeVerticalScrollOffset().toFloat()
-        val percentage = if (offset < maxElevationScroll) {
-            offset / maxElevationScroll
-        } else {
-            1f
-        }
-        loggedInViewModel.scroll.postValue(percentage * 10)
-    }
-}
 
 fun NestedScrollView.setupToolbarScrollListener(
     toolbar: Toolbar
 ) {
-    this.setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
+    setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
         val maxElevationScroll = 200
         val offset = this.computeVerticalScrollOffset().toFloat()
         val percentage = if (offset < maxElevationScroll) {
@@ -234,28 +219,26 @@ fun NestedScrollView.setupToolbarScrollListener(
     }
 }
 
-fun RecyclerView.setupToolbarScrollListener(loggedInViewModel: LoggedInViewModel) {
-    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+fun RecyclerView.setupToolbarScrollListener(onScroll: (Float) -> Unit) {
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
             val maxElevationScroll = 200
-            val offset = this@setupToolbarScrollListener.computeVerticalScrollOffset().toFloat()
+            val offset = computeVerticalScrollOffset().toFloat()
             val percentage = if (offset < maxElevationScroll) {
                 offset / maxElevationScroll
             } else {
                 1f
             }
-            loggedInViewModel.scroll.postValue(percentage * 10)
+            onScroll(percentage)
         }
     })
 }
 
 fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
-    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
             val maxElevationScroll = 200
-            val offset = this@setupToolbarScrollListener.computeVerticalScrollOffset().toFloat()
+            val offset = computeVerticalScrollOffset().toFloat()
             val percentage = if (offset < maxElevationScroll) {
                 offset / maxElevationScroll
             } else {

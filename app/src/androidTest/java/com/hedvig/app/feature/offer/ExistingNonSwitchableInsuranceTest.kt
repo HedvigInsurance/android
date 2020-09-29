@@ -23,7 +23,9 @@ class ExistingNonSwitchableInsuranceTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         OfferQuery.QUERY_DOCUMENT to apolloResponse {
-            success(OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE)
+            success(
+                OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
+            )
         }
     )
 

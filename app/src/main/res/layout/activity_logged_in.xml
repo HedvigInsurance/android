@@ -9,33 +9,44 @@
     tools:context=".feature.loggedin.ui.LoggedInActivity"
     tools:visibility="visible">
 
-    <com.hedvig.app.feature.loggedin.ui.TabPager
-        android:id="@+id/tabContentContainer"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/gradient"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/tabContent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hedvigToolbar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/hedvigToolbar"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:colorBackground"
+        android:background="@drawable/background_square"
+        android:backgroundTint="?colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!--Have to use custom background for this view, had problem with backgroundTint-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomTabs"
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_bottom_nav"
         app:itemIconSize="@dimen/tab_bar_icon_size"
         app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="@+id/tabContentContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/tabContent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:menu="@menu/logged_in_menu" />

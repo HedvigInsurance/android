@@ -1,0 +1,69 @@
+query HomeQuery($locale: Locale!, $languageCode: String!) {
+  member {
+    firstName
+  }
+  contracts {
+    switchedFromInsuranceProvider
+    status {
+      ... on PendingStatus {
+        pendingSince
+      }
+      ... on ActiveInFutureStatus {
+        futureInception
+      }
+      ... on ActiveInFutureAndTerminatedInFutureStatus {
+        futureInception
+      }
+      ... on ActiveStatus {
+        pastInception
+      }
+      ... on TerminatedTodayStatus {
+        today
+      }
+      ... on TerminatedStatus {
+        termination
+      }
+    }
+  }
+  isEligibleToCreateClaim
+  commonClaims(locale: $locale) {
+    title
+    icon {
+      variants {
+        ...IconVariantsFragment
+      }
+    }
+    layout {
+      ... on TitleAndBulletPoints {
+        bulletPoints {
+          title
+          description
+          icon {
+            variants {
+              ...IconVariantsFragment
+            }
+          }
+        }
+        buttonTitle
+        color
+        title
+      }
+      ... on Emergency {
+        color
+      }
+    }
+  }
+  importantMessages(where: { language: { code: $languageCode } }) {
+    message
+    link
+  }
+
+  howClaimsWork(locale: $locale) {
+    illustration {
+      variants {
+        ... IconVariantsFragment
+      }
+    }
+    body
+  }
+}

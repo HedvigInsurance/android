@@ -1,11 +1,13 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.bumptech.glide.RequestBuilder
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
@@ -22,17 +24,21 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.dashboard.data.DashboardRepository
-import com.hedvig.app.feature.dashboard.service.DashboardTracker
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModel
-import com.hedvig.app.feature.dashboard.ui.DashboardViewModelImpl
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModel
-import com.hedvig.app.feature.dashboard.ui.contractcoverage.ContractCoverageViewModelImpl
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModel
-import com.hedvig.app.feature.dashboard.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.service.HomeTracker
+import com.hedvig.app.feature.home.ui.HomeViewModel
+import com.hedvig.app.feature.home.ui.HomeViewModelImpl
+import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.service.InsuranceTracker
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
+import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
+import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModelImpl
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -56,6 +62,7 @@ import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -89,10 +96,13 @@ import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.svg.GlideApp
+import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -104,6 +114,20 @@ import java.io.File
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
+
+fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
+    if (app.isTestBuild) {
+        return false
+    }
+    if (BuildConfig.DEBUG) {
+        return true
+    }
+    if (BuildConfig.APP_ID == "com.hedvig.test.app") {
+        return true
+    }
+
+    return false
+}
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
@@ -172,12 +196,19 @@ val applicationModule = module {
     single {
         ApolloClientWrapper(get(), get(), get(), get())
     }
+    single<RequestBuilder<PictureDrawable>> {
+        GlideApp.with(get<Context>())
+            .`as`(PictureDrawable::class.java)
+            .listener(SvgSoftwareLayerSetter())
+    }
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${getLocale(
-        context
-    ).language})"
+    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
+        getLocale(
+            context
+        ).language
+    })"
 
 fun makeLocaleString(context: Context): String =
     getLocale(context).toLanguageTag()
@@ -193,7 +224,6 @@ fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VER
 
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { WhatsNewViewModel(get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
@@ -210,8 +240,12 @@ val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
 
-val dashboardModule = module {
-    viewModel<DashboardViewModel> { DashboardViewModelImpl(get(), get()) }
+val whatsNewModule = module {
+    viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
+}
+
+val insuranceModule = module {
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
     viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
@@ -261,6 +295,10 @@ val referralsModule = module {
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
 
+val homeModule = module {
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -272,7 +310,7 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { DashboardRepository(get(), get()) }
+    single { InsuranceRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single {
@@ -292,6 +330,7 @@ val repositoriesModule = module {
     single { EmbarkRepository(get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
+    single { HomeRepository(get(), get()) }
 }
 
 val trackerModule = module {
@@ -308,6 +347,12 @@ val trackerModule = module {
     single { RatingsTracker(get()) }
     single { LoggedInTracker(get()) }
     single { KeyGearTracker(get()) }
-    single { DashboardTracker(get()) }
+    single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
+    single { HomeTracker(get()) }
+    single { ScreenTracker(get()) }
+}
+
+val marketPickerTrackerModule = module {
+    single { MarketPickerTracker(get()) }
 }

@@ -26,7 +26,9 @@ class CodeTooShortErrorTest : KoinComponent {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
-            success(EDIT_CODE_DATA_TOO_SHORT)
+            success(
+                EDIT_CODE_DATA_TOO_SHORT
+            )
         }
     )
 

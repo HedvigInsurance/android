@@ -10,7 +10,7 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
@@ -30,7 +30,9 @@ class ReferralsActivatedActivityTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA_WITH_REFERRALS_FEATURE_ENABLED)
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
+            )
         }
     )
 

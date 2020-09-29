@@ -24,7 +24,9 @@ class CodeAlreadyTakenTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
-            success(EDIT_CODE_DATA_ALREADY_TAKEN)
+            success(
+                EDIT_CODE_DATA_ALREADY_TAKEN
+            )
         }
     )
 

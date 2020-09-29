@@ -4,77 +4,103 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.observe
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_QUINTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FragmentKeyGearBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
-import com.hedvig.app.feature.loggedin.ui.BaseTabFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.transitionPair
-import kotlinx.android.synthetic.main.fragment_key_gear.*
-import kotlinx.android.synthetic.main.loading_spinner.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class KeyGearFragment : BaseTabFragment() {
-    override val layout = R.layout.fragment_key_gear
+class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
     private val viewModel: KeyGearViewModel by sharedViewModel()
     private val tracker: KeyGearTracker by inject()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+    private val binding by viewBinding(FragmentKeyGearBinding::bind)
+    private var scroll = 0
 
     private var hasSentAutoAddedItems = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val scrollInitialBottomPadding = keyGearRoot.paddingBottom
-        loggedInViewModel.bottomTabInset.observe(this) { bti ->
-            bti?.let { bottomTabInset ->
+        scroll = 0
+
+        with(binding) {
+            val scrollInitialTopPadding = keyGearRoot.paddingTop
+            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
+                keyGearRoot.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
+            }
+
+            val scrollInitialBottomPadding = keyGearRoot.paddingBottom
+            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
-        }
+            keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+                scroll = scrollY
+                if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                    loggedInViewModel.onScroll(scroll)
+                }
+            }
 
-        items.adapter =
-            KeyGearItemsAdapter(
-                tracker,
-                { v ->
-                    startActivity(
-                        CreateKeyGearItemActivity.newInstance(requireContext()),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            requireActivity(),
-                            transitionPair(v)
-                        ).toBundle()
-                    )
-                }, { root, item ->
-                    startActivity(
-                        KeyGearItemDetailActivity.newInstance(
-                            requireContext(),
-                            item.fragments.keyGearItemFragment
-                        ),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            requireActivity(),
-                            Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
-                        ).toBundle()
-                    )
-                })
-        items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
-        items.itemAnimator = SlideInItemAnimator()
+            items.adapter =
+                KeyGearItemsAdapter(
+                    tracker,
+                    { v ->
+                        startActivity(
+                            CreateKeyGearItemActivity.newInstance(requireContext()),
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                requireActivity(),
+                                transitionPair(v)
+                            ).toBundle()
+                        )
+                    }, { root, item ->
+                        startActivity(
+                            KeyGearItemDetailActivity.newInstance(
+                                requireContext(),
+                                item.fragments.keyGearItemFragment
+                            ),
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                requireActivity(),
+                                Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
+                            ).toBundle()
+                        )
+                    })
+            items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
+            items.itemAnimator = SlideInItemAnimator()
 
-        viewModel.data.observe(this) { d ->
-            d?.let { data ->
+            viewModel.data.observe(viewLifecycleOwner) { data ->
                 bind(data)
                 if (!hasSentAutoAddedItems) {
                     hasSentAutoAddedItems = true
@@ -82,11 +108,10 @@ class KeyGearFragment : BaseTabFragment() {
                 }
             }
         }
-        keyGearRoot.setupToolbarScrollListener(loggedInViewModel)
     }
 
-    fun bind(data: KeyGearItemsQuery.Data) {
-        loadingSpinner.remove()
+    fun bind(data: KeyGearItemsQuery.Data) = with(binding) {
+        binding.loadingSpinner.root.remove()
         (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItems
         items.show()
 
@@ -101,11 +126,6 @@ class KeyGearFragment : BaseTabFragment() {
             description.remove()
             items.updateMargin(top = BASE_MARGIN_TRIPLE)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        keyGearRoot.scrollY = 0
     }
 
     companion object {

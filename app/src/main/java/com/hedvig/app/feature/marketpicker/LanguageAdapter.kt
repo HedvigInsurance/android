@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.feature.language.LanguageAndMarketViewModel
 import com.hedvig.app.feature.settings.LanguageModel
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.spring
 import kotlinx.android.synthetic.main.language_item_new.view.*
 
 class LanguageAdapter(
-    private val model: LanguageAndMarketViewModel
+    private val model: LanguageAndMarketViewModel,
+    private val tracker: MarketPickerTracker
 ) : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
     private var lastCheckedPos = 0
     private var lastChecked: RadioButton? = null
@@ -34,16 +36,17 @@ class LanguageAdapter(
         if (items[position].selected) {
             animateRadioButton(holder)
             holder.button.background =
-                holder.button.context.getDrawable(R.drawable.ic_radio_button_checked)
+                holder.button.context.compatDrawable(R.drawable.ic_radio_button_checked)
         } else {
             holder.button.background =
-                holder.button.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+                holder.button.context.compatDrawable(R.drawable.ic_radio_button_unchecked)
         }
         when (position) {
             LOCAL -> {
                 holder.itemView.apply {
                     language.text = resources.getString(items[position].language.getLabel())
                     setHapticClickListener {
+                        tracker.selectLocale(items[position].language)
                         model.selectLanguage(items[position].language)
                         setupRadioButton(holder, position)
                     }
@@ -52,6 +55,7 @@ class LanguageAdapter(
             EN -> holder.itemView.apply {
                 language.text = resources.getString(items[position].language.getLabel())
                 setHapticClickListener {
+                    tracker.selectLocale(items[position].language)
                     model.selectLanguage(items[position].language)
                     setupRadioButton(holder, position)
                 }
@@ -68,13 +72,13 @@ class LanguageAdapter(
     private fun setupRadioButton(holder: ViewHolder, position: Int) {
         val rb = holder.button
         rb.isChecked = true
-        rb.background = rb.context.getDrawable(R.drawable.ic_radio_button_checked)
+        rb.background = rb.context.compatDrawable(R.drawable.ic_radio_button_checked)
         animateRadioButton(holder)
         if (rb.isChecked) {
             lastChecked?.let { rb ->
                 if (lastCheckedPos != position) {
                     rb.background =
-                        rb.context.getDrawable(R.drawable.ic_radio_button_unchecked)
+                        rb.context.compatDrawable(R.drawable.ic_radio_button_unchecked)
                     rb.isChecked = false
                     animateRadioButton(holder)
                 }

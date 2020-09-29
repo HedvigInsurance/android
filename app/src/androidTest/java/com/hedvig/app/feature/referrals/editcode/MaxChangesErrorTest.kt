@@ -24,7 +24,9 @@ class MaxChangesErrorTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
-            success(EDIT_CODE_DATA_TOO_MANY_CHANGES)
+            success(
+                EDIT_CODE_DATA_TOO_MANY_CHANGES
+            )
         }
     )
 

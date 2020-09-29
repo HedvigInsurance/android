@@ -53,7 +53,7 @@ open class HedvigApplication : Application() {
                     applicationModule,
                     viewModelModule,
                     loggedInModule,
-                    dashboardModule,
+                    insuranceModule,
                     marketingModule,
                     offerModule,
                     profileModule,
@@ -62,10 +62,13 @@ open class HedvigApplication : Application() {
                     languageAndMarketModule,
                     adyenModule,
                     referralsModule,
+                    homeModule,
                     serviceModule,
                     repositoriesModule,
                     trackerModule,
-                    embarkModule
+                    embarkModule,
+                    marketPickerTrackerModule,
+                    whatsNewModule
                 )
             )
         }
@@ -120,4 +123,5 @@ open class HedvigApplication : Application() {
     }
 
     open val graphqlUrl = BuildConfig.GRAPHQL_URL
+    open val isTestBuild = false
 }

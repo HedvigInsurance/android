@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/dashboard"
+        android:id="@+id/home"
         android:icon="@drawable/ic_home"
-        android:title="@string/TAB_TITLE_HOME" />
+        android:title="@string/home_tab.title" />
 
     <item
-        android:id="@+id/claims"
-        android:icon="@drawable/ic_claims"
-        android:title="@string/TAB_TITLE_CLAIM" />
+        android:id="@+id/insurance"
+        android:icon="@drawable/ic_insurance"
+        android:title="@string/insurances_tab.title" />
 
     <item
         android:id="@+id/key_gear"
@@ -17,7 +17,7 @@
 
     <item
         android:id="@+id/referrals"
-        android:icon="@drawable/ic_referrals"
+        android:icon="@drawable/ic_forever"
         android:title="@string/TAB_REFERRALS_TITLE" />
 
     <item

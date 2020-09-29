@@ -11,7 +11,7 @@
 
         <activity
             android:name=".DevelopmentActivity"
-            android:label="Hedvig Development Screen"
+            android:label="Engineering Mode"
             android:theme="@style/Hedvig.Theme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,6 +47,21 @@
         <activity
             android:name=".feature.offer.OfferMockActivity"
             android:label="Offer Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
+            android:name=".feature.home.HomeMockActivity"
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
+            android:name=".feature.insurance.InsuranceMockActivity"
+            android:label="Insurance Mock Screen"
+            android:theme="@style/Hedvig.Theme"/>
+
+        <activity
+            android:name=".feature.profile.ProfileMockActivity"
+            android:label="Home Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
     </application>

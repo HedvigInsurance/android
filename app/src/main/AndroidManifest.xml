@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:theme="@style/Hedvig.Theme"
         android:name=".HedvigApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -201,13 +202,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".LoggedInTerminatedActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.settings.SettingsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -253,7 +247,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.dashboard.ui.contractdetail.ContractDetailActivity"
+            android:name=".feature.insurance.ui.contractdetail.ContractDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -261,7 +255,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".feature.dashboard.ui.contractcoverage.ContractCoverageActivity"
+            android:name=".feature.insurance.ui.contractcoverage.ContractCoverageActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

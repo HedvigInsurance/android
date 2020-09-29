@@ -165,22 +165,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     startActivity(Intent(this, LoggedInActivity::class.java))
                 }
             }
-            LoginStatus.LOGGED_IN_TERMINATED -> {
-                // Upcast everyone that were logged in before Norway launch to be in the Swedish market
-                if (market == null) {
-                    sharedPreferences.edit()
-                        .putString(Market.MARKET_SHARED_PREF, Market.SE.name)
-                        .commit()
-                }
-                runSplashAnimation {
-                    startActivity(
-                        Intent(
-                            this,
-                            LoggedInTerminatedActivity::class.java
-                        )
-                    )
-                }
-            }
             else -> {
                 CoroutineScope(IO).launch {
                     val response = loggedInService.getLoginStatus()
