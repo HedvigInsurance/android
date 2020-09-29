@@ -2,6 +2,8 @@ package com.hedvig.app.testdata.feature.embark
 
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.fragment.GraphQLErrorsFragment
+import com.hedvig.android.owldroid.fragment.GraphQLResultsFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
@@ -729,13 +731,26 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
                 api = GraphQLApiBuilder(
                     query = HELLO_QUERY,
                     results = listOf(
-                        ApiFragment.Result(key = "hello", as_ = "HELLO")
+                        ApiFragment.Result(
+                            fragments = ApiFragment.Result.Fragments(
+                                GraphQLResultsFragment(
+                                    key = "hello", as_ = "HELLO"
+                                )
+                            )
+                        )
                     ),
                     errors = listOf(
                         ApiFragment.Error(
-                            contains = null,
-                            next = ApiFragment.Next(
-                                fragments = ApiFragment.Next.Fragments(LINK_TO_FOURTH_PASSAGE)
+                            fragments = ApiFragment.Error.Fragments(
+                                GraphQLErrorsFragment(
+
+                                    contains = null,
+                                    next = GraphQLErrorsFragment.Next(
+                                        fragments = GraphQLErrorsFragment.Next.Fragments(
+                                            LINK_TO_FOURTH_PASSAGE
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
@@ -776,7 +791,11 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
                 api = GraphQLApiBuilder(
                     query = VARIABLE_QUERY,
                     results = listOf(
-                        ApiFragment.Result(key = "hello", as_ = "VARIABLE")
+                        ApiFragment.Result(
+                            fragments = ApiFragment.Result.Fragments(
+                                GraphQLResultsFragment(key = "hello", as_ = "VARIABLE")
+                            )
+                        )
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(
@@ -811,7 +830,11 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder
                 api = GraphQLApiBuilder(
                     query = VARIABLE_QUERY,
                     results = listOf(
-                        ApiFragment.Result(key = "hello", as_ = "VARIABLE")
+                        ApiFragment.Result(
+                            fragments = ApiFragment.Result.Fragments(
+                                GraphQLResultsFragment(key = "hello", as_ = "VARIABLE")
+                            )
+                        )
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(

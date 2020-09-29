@@ -15,16 +15,17 @@ data class GraphQLApiBuilder(
         fragments = EmbarkStoryQuery.Api.Fragments(
             ApiFragment(
                 asEmbarkApiGraphQLQuery = ApiFragment.AsEmbarkApiGraphQLQuery(
-                    data = ApiFragment.Data(
+                    queryData = ApiFragment.QueryData(
                         query = query,
                         results = results,
                         errors = errors,
                         variables = variables,
-                        next = ApiFragment.Next1(
-                            fragments = ApiFragment.Next1.Fragments(next)
+                        next = ApiFragment.Next(
+                            fragments = ApiFragment.Next.Fragments(next)
                         )
                     )
-                )
+                ),
+                asEmbarkApiGraphQLMutation = null
             )
         )
     )

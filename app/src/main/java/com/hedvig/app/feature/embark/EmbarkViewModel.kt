@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
+import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -81,32 +82,32 @@ abstract class EmbarkViewModel : ViewModel() {
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val variables = if (graphQLQuery.data.variables.isNotEmpty()) {
-                extractVariables(graphQLQuery.data.variables)
+            val variables = if (graphQLQuery.queryData.variables.isNotEmpty()) {
+                extractVariables(graphQLQuery.queryData.variables.map { it.fragments.graphQLVariablesFragment })
             } else {
                 null
             }
-            val result = runCatching { callGraphQLQuery(graphQLQuery.data.query, variables) }
+            val result = runCatching { callGraphQLQuery(graphQLQuery.queryData.query, variables) }
 
             if (result.isFailure) {
-                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
                 return@launch
             }
 
             if (result.getOrNull()?.has("errors") == true) {
-                if (graphQLQuery.data.errors.any { it.contains != null }) {
+                if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
                     TODO("Handle matched error")
                 }
-                navigateToPassage(graphQLQuery.data.errors.first().next.fragments.embarkLinkFragment.name)
+                navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
                 return@launch
             }
 
             val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
-            graphQLQuery.data.results.forEach { r ->
-                putInStore(r.as_, response.getWithDotNotation(r.key).toString())
+            graphQLQuery.queryData.results.forEach { r ->
+                putInStore(r.fragments.graphQLResultsFragment.as_, response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
             }
-            graphQLQuery.data.next?.fragments?.embarkLinkFragment?.name?.let {
+            graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
                 navigateToPassage(
                     it
                 )
@@ -114,7 +115,7 @@ abstract class EmbarkViewModel : ViewModel() {
         }
     }
 
-    private fun extractVariables(variables: List<ApiFragment.Variable>) =
+    private fun extractVariables(variables: List<GraphQLVariablesFragment>) =
         variables.mapNotNull { v ->
             v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
                 val inStore = store[singleVariable.from]
