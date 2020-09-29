@@ -38,7 +38,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
     abstract fun load(name: String)
 
-    abstract suspend fun callGraphQLQuery(query: String, variables: JSONObject? = null): JSONObject?
+    abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
@@ -74,6 +74,10 @@ abstract class EmbarkViewModel : ViewModel() {
                     handleGraphQLQuery(graphQLQuery)
                     return
                 }
+                api.fragments.apiFragment.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
+                    handleGraphQLMutation(graphQLMutation)
+                    return
+                }
             }
             _data.value?.name?.let { backStack.push(it) }
             _data.postValue(preProcessPassage(nextPassage))
@@ -87,7 +91,7 @@ abstract class EmbarkViewModel : ViewModel() {
             } else {
                 null
             }
-            val result = runCatching { callGraphQLQuery(graphQLQuery.queryData.query, variables) }
+            val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
 
             if (result.isFailure) {
                 navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
@@ -108,6 +112,41 @@ abstract class EmbarkViewModel : ViewModel() {
                 putInStore(r.fragments.graphQLResultsFragment.as_, response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
             }
             graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
+                navigateToPassage(
+                    it
+                )
+            }
+        }
+    }
+
+    private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
+        viewModelScope.launch {
+            val variables = if (graphQLMutation.mutationData.variables.isNotEmpty()) {
+                extractVariables(graphQLMutation.mutationData.variables.map { it.fragments.graphQLVariablesFragment })
+            } else {
+                null
+            }
+            val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables) }
+
+            if (result.isFailure) {
+                navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                return@launch
+            }
+
+            if (result.getOrNull()?.has("errors") == true) {
+                if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
+                    TODO("Handle matched error")
+                }
+                navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                return@launch
+            }
+
+            val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
+
+            graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
+                putInStore(r.fragments.graphQLResultsFragment.as_, response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+            }
+            graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
                 navigateToPassage(
                     it
                 )
@@ -416,7 +455,7 @@ class EmbarkViewModelImpl(
         }
     }
 
-    override suspend fun callGraphQLQuery(query: String, variables: JSONObject?) =
+    override suspend fun callGraphQL(query: String, variables: JSONObject?) =
         withContext(Dispatchers.IO) {
             embarkRepository.graphQLQuery(query, variables).body?.string()?.let { JSONObject(it) }
         }
