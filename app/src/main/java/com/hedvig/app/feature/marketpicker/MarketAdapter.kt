@@ -42,11 +42,11 @@ class MarketAdapter(
         when (position) {
             Market.SE.ordinal -> holder.itemView.apply {
                 flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_se))
-                country.text = holder.itemView.context.getText(R.string.sweden)
+                header.text = holder.itemView.context.getText(R.string.sweden)
             }
             Market.NO.ordinal -> holder.itemView.apply {
                 flag.setImageDrawable(context.compatDrawable(R.drawable.ic_flag_no))
-                country.text = holder.itemView.context.getText(R.string.norway)
+                header.text = holder.itemView.context.getText(R.string.norway)
             }
         }
 

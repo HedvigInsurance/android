@@ -9,31 +9,32 @@
 
     <ImageView
         android:id="@+id/flag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/base_margin_triple"
+        android:layout_height="@dimen/base_margin_triple"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="@id/selectedCountry"
+        app:layout_constraintBottom_toBottomOf="@id/selected"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/country"
+        app:layout_constraintTop_toTopOf="@id/header"
         tools:src="@drawable/ic_flag_se" />
 
     <TextView
-        android:id="@+id/country"
+        android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin"
-        android:text="TODO Country"
-        app:layout_constraintBottom_toTopOf="@id/selectedCountry"
-        app:layout_constraintStart_toEndOf="@id/flag" />
+        android:layout_marginStart="@dimen/base_margin_double"
+        app:layout_constraintBottom_toTopOf="@id/selected"
+        app:layout_constraintStart_toEndOf="@id/flag"
+        tools:text="@string/market_language_screen.market_label" />
 
     <TextView
-        android:id="@+id/selectedCountry"
+        android:id="@+id/selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin"
-        android:text="TODO Sweden"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:textAppearance="@style/Hedvig.TextAppearance.Caption"
         app:layout_constraintStart_toEndOf="@id/flag"
-        app:layout_constraintTop_toBottomOf="@id/country" />
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:text="Sweden" />
 
     <ImageView
         android:layout_width="wrap_content"

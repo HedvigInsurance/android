@@ -7,124 +7,14 @@
     tools:background="@color/black"
     tools:context="com.hedvig.app.feature.marketpicker.MarketPickerFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/base_margin_septuple"
-        android:text="TODO Welcome to Hedvig"
-        android:textAppearance="@style/Hedvig.TextAppearance.Headline4"
-        app:layout_constraintBottom_toTopOf="@+id/picker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/continueButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:reverseLayout="true"
         tools:itemCount="2"
         tools:listitem="@layout/picker_layout" />
-
-    <!--    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/market"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/base_margin_double"
-            android:paddingVertical="@dimen/base_margin"
-            app:layout_constraintBottom_toTopOf="@id/languageContainer">
-
-            <ImageView
-                android:id="@+id/flag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@id/selectedCountry"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/country"
-                tools:src="@drawable/ic_flag_se" />
-
-            <TextView
-                android:id="@+id/country"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:text="TODO Country"
-                app:layout_constraintBottom_toTopOf="@id/selectedCountry"
-                app:layout_constraintStart_toEndOf="@id/flag" />
-
-            <TextView
-                android:id="@+id/selectedCountry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:text="TODO Sweden"
-                app:layout_constraintStart_toEndOf="@id/flag"
-                app:layout_constraintTop_toBottomOf="@id/country" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_forward" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/languageContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/base_margin_double"
-            android:paddingVertical="@dimen/base_margin"
-            app:layout_constraintBottom_toTopOf="@id/continueButton">
-
-            <ImageView
-                android:id="@+id/globe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@id/selectedLanguage"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/language"
-                app:srcCompat="@drawable/ic_language" />
-
-            <TextView
-                android:id="@+id/language"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:text="TODO Language"
-                app:layout_constraintBottom_toTopOf="@id/selectedLanguage"
-                app:layout_constraintStart_toEndOf="@id/globe" />
-
-            <TextView
-                android:id="@+id/selectedLanguage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:text="TODO Swedish"
-                app:layout_constraintStart_toEndOf="@id/globe"
-                app:layout_constraintTop_toBottomOf="@id/language" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_forward" />
-        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-    <Button
-        android:id="@+id/continueButton"
-        style="?materialButtonContainedLargeStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:text="TODO Continue"
-        android:transitionName="marketButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

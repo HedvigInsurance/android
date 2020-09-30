@@ -14,3 +14,6 @@ sealed class MarketAndLanguageModel {
         var available: Boolean = false
     ) : MarketAndLanguageModel()
 }
+
+
+

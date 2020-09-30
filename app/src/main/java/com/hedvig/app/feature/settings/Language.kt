@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
+import com.hedvig.app.feature.marketpicker.Market
 import java.util.Locale
 
 enum class Language {
@@ -113,6 +114,13 @@ enum class Language {
                     ?: SETTING_SYSTEM_DEFAULT
             )
         }
+
+        fun getAvailableLanguages(market: Market): List<Language> {
+            return when (market) {
+                Market.SE -> listOf(SV_SE, EN_SE)
+                Market.NO -> listOf(NB_NO, EN_NO)
+            }
+        }
     }
 
     object DefaultLocale {
@@ -137,9 +145,3 @@ enum class Language {
         data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
     }
 }
-
-/*data class LanguageModel(
-    val language: Language,
-    var selected: Boolean = false,
-    var available: Boolean = false
-)*/
