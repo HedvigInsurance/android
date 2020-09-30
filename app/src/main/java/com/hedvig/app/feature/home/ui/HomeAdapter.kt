@@ -29,7 +29,9 @@ import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -255,11 +257,9 @@ class HomeAdapter(
                 body.text = data.inner.message
                 val uri = Uri.parse(data.inner.link)
                 root.setHapticClickListener {
-                    arrow.context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                        setData(
-                            uri
-                        )
-                    })
+                    if (arrow.context.canOpenUri(uri)) {
+                        arrow.context.openUri(uri)
+                    }
                 }
             }
         }
