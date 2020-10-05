@@ -11,7 +11,9 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class LanguagePickerBottomSheetAdapter(private val viewModel: MarketPickerViewModel) :
+class LanguagePickerBottomSheetAdapter(
+    private val viewModel: MarketPickerViewModel
+) :
     RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
 
     var items: List<Language> = emptyList()

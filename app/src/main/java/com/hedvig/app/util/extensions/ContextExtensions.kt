@@ -30,6 +30,8 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.SettingsActivity
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
@@ -112,6 +114,12 @@ fun Context.getMarket(): Market? {
     val pref = PreferenceManager.getDefaultSharedPreferences(this)
     val marketName = pref.getString(Market.MARKET_SHARED_PREF, null)
     return marketName?.let { Market.valueOf(it) }
+}
+
+fun Context.getLanguage(): Language? {
+    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+    val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+    return language?.let { Language.from(it) }
 }
 
 private fun Context.getSharedPreferences() =

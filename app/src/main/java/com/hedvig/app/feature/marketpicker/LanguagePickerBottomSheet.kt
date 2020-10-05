@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.observe
@@ -33,6 +35,10 @@ class LanguagePickerBottomSheet(
                 (recycler.adapter as LanguagePickerBottomSheetAdapter).notifyDataSetChanged()
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        viewModel.save()
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
 import com.hedvig.app.util.extensions.viewBinding
 
@@ -32,6 +34,10 @@ class MarketPickerBottomSheet(
                 (recycler.adapter as MarketPickerBottomSheetAdapter).notifyDataSetChanged()
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        viewModel.save()
     }
 
     companion object {

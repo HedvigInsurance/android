@@ -232,7 +232,7 @@ val viewModelModule = module {
     }
     viewModel { WelcomeViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
-    viewModel { MarketPickerViewModel(get()) }
+    viewModel { MarketPickerViewModel(get(), get(), get()) }
 }
 
 val loggedInModule = module {

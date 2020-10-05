@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
@@ -9,6 +10,9 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
+import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketpicker.Market.NO
+import com.hedvig.app.feature.marketpicker.Market.SE
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.inflate
@@ -18,7 +22,8 @@ import e
 
 class PickerAdapter(
     private val parentFragmentManager: FragmentManager,
-    private val viewModel: MarketPickerViewModel
+    private val viewModel: MarketPickerViewModel,
+    private val marketingViewModel: MarketingViewModel
 ) :
     RecyclerView.Adapter<PickerAdapter.ViewHolder>() {
 
@@ -50,7 +55,7 @@ class PickerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], parentFragmentManager, viewModel)
+        holder.bind(items[position], parentFragmentManager, viewModel, marketingViewModel)
     }
 
     override fun getItemCount() = items.size
@@ -60,7 +65,8 @@ class PickerAdapter(
         abstract fun bind(
             item: Model,
             parentFragmentManager: FragmentManager,
-            viewModel: MarketPickerViewModel
+            viewModel: MarketPickerViewModel,
+            marketingViewModel: MarketingViewModel
         )
 
         fun invalid(data: Model) {
@@ -72,15 +78,16 @@ class PickerAdapter(
             override fun bind(
                 item: Model,
                 parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel
+                viewModel: MarketPickerViewModel,
+                marketingViewModel: MarketingViewModel
             ) {
                 if (item !is Model.MarketModel || item.selection == null) {
                     return invalid(item)
                 }
                 binding.apply {
                     val marketList = listOf(
-                        com.hedvig.app.feature.marketpicker.Market.SE,
-                        com.hedvig.app.feature.marketpicker.Market.NO
+                        SE,
+                        NO
                     )
                     root.setHapticClickListener {
                         MarketPickerBottomSheet(marketList, viewModel)
@@ -89,8 +96,8 @@ class PickerAdapter(
                     flag.setImageDrawable(
                         flag.context.compatDrawable(
                             when (item.selection) {
-                                com.hedvig.app.feature.marketpicker.Market.SE -> R.drawable.ic_flag_se
-                                com.hedvig.app.feature.marketpicker.Market.NO -> R.drawable.ic_flag_no
+                                SE -> R.drawable.ic_flag_se
+                                NO -> R.drawable.ic_flag_no
                             }
                         )
                     )
@@ -98,8 +105,8 @@ class PickerAdapter(
                         header.context.getString(R.string.market_language_screen_market_label)
                     selected.text = selected.context.getString(
                         when (item.selection) {
-                            com.hedvig.app.feature.marketpicker.Market.SE -> R.string.sweden
-                            com.hedvig.app.feature.marketpicker.Market.NO -> R.string.norway
+                            SE -> R.string.sweden
+                            NO -> R.string.norway
                         }
                     )
                 }
@@ -111,7 +118,8 @@ class PickerAdapter(
             override fun bind(
                 item: Model,
                 parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel
+                viewModel: MarketPickerViewModel,
+                marketingViewModel: MarketingViewModel
             ) {
                 if (item !is Model.LanguageModel || item.selection == null) {
                     return invalid(item)
@@ -135,26 +143,30 @@ class PickerAdapter(
             override fun bind(
                 item: Model,
                 parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel
+                viewModel: MarketPickerViewModel,
+                marketingViewModel: MarketingViewModel
             ) {
             }
         }
 
         class Button(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_button)) {
             val binding by viewBinding(PickerButtonBinding::bind)
+
+            @SuppressLint("ApplySharedPref") // We need to apply this now
             override fun bind(
                 item: Model, parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel
+                viewModel: MarketPickerViewModel,
+                marketingViewModel: MarketingViewModel
             ) {
-                val marketSelectedFragment = MarketSelectedFragment()
-                marketSelectedFragment.sharedElementEnterTransition = MaterialContainerTransform()
-
-                binding.continueButton.setHapticClickListener {
-                    parentFragmentManager.beginTransaction()
-                        .addSharedElement(it, "marketButton")
-                        .replace(R.id.container, marketSelectedFragment)
-                        .addToBackStack(null)
-                        .commit()
+                binding.apply {
+                    continueButton.setHapticClickListener {
+                        viewModel.uploadLanguage()
+                        marketingViewModel.navigateTo(CurrentFragment.MARKETING, it to "marketButton")
+/*                        parentFragmentManager.beginTransaction()
+                            .addSharedElement(it, "marketButton")
+                            .replace(R.id.container, marketSelectedFragment)
+                            .commit()*/
+                    }
                 }
             }
         }

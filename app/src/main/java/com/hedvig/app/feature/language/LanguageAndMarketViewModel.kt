@@ -193,8 +193,7 @@ class LanguageAndMarketViewModel(
     }*/
 
     private fun updateLanguage(acceptLanguage: String) {
-        languageRepository
-            .setLanguage(acceptLanguage)
+
     }
 
     fun updateMarket(market: Market) {
