@@ -1,18 +1,20 @@
 package com.hedvig.app.ui.fragment
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
 import com.hedvig.app.R
+import com.hedvig.app.databinding.FileUploadDialogBinding
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import kotlinx.android.synthetic.main.file_upload_dialog.*
+import com.hedvig.app.util.extensions.viewBinding
 
 abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
     abstract fun onFileChosen(uri: Uri)
@@ -20,31 +22,28 @@ abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
     @get:StringRes
     abstract val title: Int
 
-    override fun getTheme() =
-        R.style.NoTitleBottomSheetDialogTheme
+    protected val binding by viewBinding(FileUploadDialogBinding::bind)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.file_upload_dialog, null)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.file_upload_dialog, container, false)
 
-        dialog.setContentView(view)
-
-        dialog.header.text = requireContext().getString(title)
-
-        dialog.uploadImageOrVideo.setHapticClickListener {
-            selectImageFromLibrary()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.apply {
+            header.text = requireContext().getString(title)
+            uploadImageOrVideo.setHapticClickListener {
+                selectImageFromLibrary()
+            }
+            uploadFile.setHapticClickListener {
+                selectFile()
+            }
         }
-
-        dialog.uploadFile.setHapticClickListener {
-            selectFile()
-        }
-
-        return dialog
     }
 
     protected fun uploadStarted() {
-        dialog?.apply {
+        binding.apply {
             header.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
             loadingSpinner.show()
             uploadImageOrVideo.remove()
