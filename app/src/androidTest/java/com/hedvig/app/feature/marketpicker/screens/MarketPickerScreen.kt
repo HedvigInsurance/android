@@ -15,6 +15,13 @@ class MarketPickerScreen : Screen<MarketPickerScreen>() {
         itemType(::Picker)
     })
 
+    val languagePicker = KRecyclerView({ withId(R.id.recycler) }, {
+        itemType(::Language)
+    })
+
+    val marketPicker = KRecyclerView({ withId(R.id.recycler) }, {
+        itemType(::Market)
+    })
     class ContinueButton(parent: Matcher<View>) : KRecyclerItem<ContinueButton>(parent) {
         val continueButton = KCheckBox(parent) { withId(R.id.continueButton) }
     }
@@ -23,5 +30,7 @@ class MarketPickerScreen : Screen<MarketPickerScreen>() {
         val selectedMarket = KTextView(parent) { withId(R.id.selected) }
     }
 
+    class Language(parent: Matcher<View>) : KRecyclerItem<Language>(parent)
 
+    class Market(parent: Matcher<View>) : KRecyclerItem<Market>(parent)
 }

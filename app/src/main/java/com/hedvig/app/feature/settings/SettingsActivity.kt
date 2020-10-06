@@ -70,47 +70,33 @@ class SettingsActivity : BaseActivity() {
                 }
             }
 
-            val marketPreference = findPreference<ListPreference>(SETTINGS_MARKET)
-            if (market != null) {
-                marketPreference?.setValueIndex(market.ordinal)
-            } else {
+            val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
+            if (market == null) {
                 MarketingActivity.newInstance(requireContext())
             }
-            marketPreference?.let { mp ->
-                val oldValue = mp.value
-                mp.setOnPreferenceChangeListener { _, newValue ->
-                    if (oldValue != newValue) {
-                        requireContext().showAlert(
-                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
-                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
-                            positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
-                            negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-                            positiveAction = {
-                                sharedPreferences.edit()
-                                    .putString(
-                                        SETTINGS_NEW_MARKET,
-                                        Market.valueOf(newValue.toString()).name
-                                    )
-                                    .commit()
-
-
-                                userViewModel.logout {
-                                    requireContext().storeBoolean(
-                                        LoginStatusService.IS_VIEWING_OFFER,
-                                        false
-                                    )
-                                    requireContext().setAuthenticationToken(null)
-                                    requireContext().setIsLoggedIn(false)
-                                    FirebaseInstanceId.getInstance().deleteInstanceId()
-                                    mixpanel.reset()
-                                    requireActivity().triggerRestartActivity(MarketingActivity::class.java)
-                                }
-                            },
-                            negativeAction = {
-                                mp.value = oldValue
+            marketPreference?.let { np ->
+                np.setOnPreferenceClickListener {
+                    requireContext().showAlert(
+                        R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
+                        R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
+                        positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
+                        negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
+                        positiveAction = {
+                            sharedPreferences.edit()
+                                .putString(SETTINGS_NEW_MARKET, null).commit()
+                            userViewModel.logout {
+                                requireContext().storeBoolean(
+                                    LoginStatusService.IS_VIEWING_OFFER,
+                                    false
+                                )
+                                requireContext().setAuthenticationToken(null)
+                                requireContext().setIsLoggedIn(false)
+                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                mixpanel.reset()
+                                requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }
-                        )
-                    }
+                        }
+                    )
                     true
                 }
             }

@@ -75,52 +75,35 @@ class UnknownGeoTest {
         onScreen<MarketPickerScreen> {
             picker {
                 childAt<MarketPickerScreen.Picker>(2) {
-                    selectedMarket.hasText(R.string.sweden)
-                }
-                childAt<MarketPickerScreen.ContinueButton>(0) {
                     click()
                 }
+            }
+            marketPicker {
+                childAt<MarketPickerScreen.Market>(0) {
+                    click()
+                }
+            }
+            picker {
                 childAt<MarketPickerScreen.Picker>(1) {
+                    click()
+                }
+            }
+            languagePicker {
+                childAt<MarketPickerScreen.Language>(0) {
+                    click()
+                }
+            }
+            picker {
+                childAt<MarketPickerScreen.ContinueButton>(0) {
                     click()
                 }
             }
         }
 
-        /*onScreen<MarketPickerScreen> {
-            marketRecyclerView {
-                childWith<MarketPickerScreen.MarketItem> {
-                    withDescendant {
-                        withText(R.string.sweden)
-                    }
-                } perform {
-                    radioButton {
-                        isNotChecked()
-                        click()
-                    }
-                }
-            }
-            languageRecyclerView {
-                childWith<MarketPickerScreen.Language> {
-                    withDescendant {
-                        withText(R.string.swedish)
-                    }
-                } perform {
-                    click()
-                }
-            }
-            scroll {
-                scrollToEnd()
-            }
-            await atMost TWO_SECONDS untilAsserted {
-                save {
-                    click()
-                }
-            }
-        }*/
 
-      /*  verify(exactly = 1) { tracker.selectMarket(Market.SE) }
+        verify(exactly = 1) { tracker.selectMarket(Market.SE) }
         verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }
-        verify(exactly = 1) { tracker.submit() }*/
+        verify(exactly = 1) { tracker.submit() }
 
         val pref = PreferenceManager.getDefaultSharedPreferences(context())
 
