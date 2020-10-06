@@ -22,6 +22,7 @@ class MarketPickerViewModel(
     private val context: Context
 ) : ViewModel() {
     val data = MutableLiveData<PickerState>()
+    val shouldProceed = MutableLiveData<Boolean>(false)
 
     init {
         viewModelScope.launch {
@@ -30,10 +31,21 @@ class MarketPickerViewModel(
                 val geo = runCatching { marketRepository.geoAsync().await() }
                 geo.getOrNull()?.data?.let {
                     runCatching {
-                        when (val market = Market.valueOf(it.geo.countryISOCode)) {
-                            Market.SE -> data.postValue(PickerState(market, Language.SV_SE))
-                            Market.NO -> data.postValue(PickerState(market, Language.NB_NO))
+                        val market: Market
+                        try {
+                            market = Market.valueOf(it.geo.countryISOCode)
+                            when (market) {
+                                Market.SE -> data.postValue(PickerState(market, Language.SV_SE))
+                                Market.NO -> data.postValue(PickerState(market, Language.NB_NO))
+                            }
+                        } catch (e: Exception) {
+                            data.postValue(
+                                PickerState(
+                                    Market.SE, Language.EN_SE
+                                )
+                            )
                         }
+
                     }
                 }
             } else {

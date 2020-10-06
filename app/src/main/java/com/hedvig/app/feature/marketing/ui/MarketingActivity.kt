@@ -76,10 +76,6 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // model.removeSharedElements()
-    }
 
     companion object {
         fun newInstance(context: Context, withoutHistory: Boolean = false) =

@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
-import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
 import com.hedvig.app.util.extensions.viewBinding
 
 class MarketPickerBottomSheet(
     private val markets: List<Market>,
-    private val viewModel: MarketPickerViewModel
+    private val viewModel: MarketPickerViewModel,
+    private val tracker: MarketPickerTracker
 ) : BottomSheetDialogFragment() {
     val binding by viewBinding(MarketPickerBottomSheetBinding::bind)
 
@@ -27,7 +27,7 @@ class MarketPickerBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             header.text = header.context.getString(R.string.market_picker_modal_title)
-            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel).also {
+            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker).also {
                 it.items = markets
             }
             viewModel.data.observe(viewLifecycleOwner) {

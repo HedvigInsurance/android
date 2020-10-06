@@ -12,7 +12,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class LanguagePickerBottomSheetAdapter(
-    private val viewModel: MarketPickerViewModel
+    private val viewModel: MarketPickerViewModel,
+    private val tracker: MarketPickerTracker
 ) :
     RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
 
@@ -31,7 +32,7 @@ class LanguagePickerBottomSheetAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel)
+        holder.bind(items[position], viewModel, tracker)
     }
 
     override fun getItemCount() = items.size
@@ -40,12 +41,13 @@ class LanguagePickerBottomSheetAdapter(
         parent.inflate(R.layout.picker_item_layout)
     ) {
         val binding by viewBinding(PickerItemLayoutBinding::bind)
-        fun bind(language: Language, viewModel: MarketPickerViewModel) {
+        fun bind(language: Language, viewModel: MarketPickerViewModel, tracker: MarketPickerTracker) {
             binding.apply {
                 radioButton.isChecked = viewModel.data.value?.language == language
                 text.text = text.context.getString(language.getLabel())
 
                 root.setHapticClickListener {
+                    tracker.selectLocale(language)
                     viewModel.data.postValue(viewModel.data.value?.copy(language = language))
                 }
             }

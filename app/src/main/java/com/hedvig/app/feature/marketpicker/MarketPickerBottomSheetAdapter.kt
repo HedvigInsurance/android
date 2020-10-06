@@ -11,7 +11,10 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class MarketPickerBottomSheetAdapter(private val viewModel: MarketPickerViewModel) :
+class MarketPickerBottomSheetAdapter(
+    private val viewModel: MarketPickerViewModel,
+    private val tracker: MarketPickerTracker
+) :
     RecyclerView.Adapter<MarketPickerBottomSheetAdapter.ViewHolder>() {
 
     var items: List<Market> = emptyList()
@@ -29,7 +32,7 @@ class MarketPickerBottomSheetAdapter(private val viewModel: MarketPickerViewMode
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel)
+        holder.bind(items[position], viewModel, tracker)
     }
 
     override fun getItemCount() = items.size
@@ -38,7 +41,7 @@ class MarketPickerBottomSheetAdapter(private val viewModel: MarketPickerViewMode
         parent.inflate(R.layout.picker_item_layout)
     ) {
         val binding by viewBinding(PickerItemLayoutBinding::bind)
-        fun bind(market: Market, viewModel: MarketPickerViewModel) {
+        fun bind(market: Market, viewModel: MarketPickerViewModel, tracker: MarketPickerTracker) {
             binding.apply {
                 radioButton.isChecked = viewModel.data.value?.market == market
                 text.text = when (market) {
@@ -46,6 +49,7 @@ class MarketPickerBottomSheetAdapter(private val viewModel: MarketPickerViewMode
                     Market.NO -> binding.text.context.getString(R.string.norway)
                 }
                 root.setHapticClickListener {
+                    tracker.selectMarket(market)
                     viewModel.data.postValue(
                         PickerState(
                             market, Language.getAvailableLanguages(market).first()

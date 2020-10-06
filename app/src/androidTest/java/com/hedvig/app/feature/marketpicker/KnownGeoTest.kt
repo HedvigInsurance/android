@@ -8,6 +8,7 @@ import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -20,10 +21,6 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import io.mockk.mockk
 import io.mockk.verify
-import org.awaitility.Duration.TWO_SECONDS
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -34,7 +31,7 @@ import org.koin.dsl.module
 @RunWith(AndroidJUnit4::class)
 class KnownGeoTest {
     @get:Rule
-    val activityRule = ActivityTestRule(MarketPickerActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(MarketingActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -73,40 +70,23 @@ class KnownGeoTest {
 
     @Test
     fun shouldPreselectMarketWhenUserIsInSupportedGeoArea() {
-        activityRule.launchActivity(MarketPickerActivity.newInstance(context()))
+        activityRule.launchActivity(MarketingActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
-            marketRecyclerView {
-                childWith<MarketPickerScreen.MarketItem> {
-                    withDescendant {
-                        withText(R.string.sweden)
-                    }
-                } perform {
-                    radioButton { isChecked() }
+            picker {
+                childAt<MarketPickerScreen.Picker>(2) {
+                    selectedMarket.hasText(R.string.sweden)
                 }
-            }
-            languageRecyclerView {
-                childWith<MarketPickerScreen.LanguageItem> {
-                    withDescendant {
-                        withText(R.string.swedish)
-                    }
-                } perform {
-                    click()
-                }
-            }
-            scroll {
-                scrollToEnd()
-            }
-            await atMost TWO_SECONDS untilAsserted {
-                save {
+                childAt<MarketPickerScreen.ContinueButton>(0) {
                     click()
                 }
             }
         }
 
-        verify(exactly = 0) { tracker.selectMarket(any()) }
-        verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }
-        verify(exactly = 1) { tracker.submit() }
+
+            verify(exactly = 0) { tracker.selectMarket(any()) }
+            verify(exactly = 0) { tracker.selectLocale(any()) }
+            verify(exactly = 1) { tracker.submit() }
 
         val pref = PreferenceManager.getDefaultSharedPreferences(context())
 

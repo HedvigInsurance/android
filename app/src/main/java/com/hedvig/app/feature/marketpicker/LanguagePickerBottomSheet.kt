@@ -3,7 +3,6 @@ package com.hedvig.app.feature.marketpicker
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.observe
@@ -14,7 +13,8 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.util.extensions.viewBinding
 
 class LanguagePickerBottomSheet(
-    private val viewModel: MarketPickerViewModel
+    private val viewModel: MarketPickerViewModel,
+    private val tracker: MarketPickerTracker
 ) : BottomSheetDialogFragment() {
     val binding by viewBinding(LanguagePickerBottomSheetBinding::bind)
 
@@ -26,7 +26,7 @@ class LanguagePickerBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            recycler.adapter = LanguagePickerBottomSheetAdapter(viewModel)
+            recycler.adapter = LanguagePickerBottomSheetAdapter(viewModel, tracker)
             viewModel.data.observe(viewLifecycleOwner) { VMState ->
                 VMState.market?.let { market ->
                     (recycler.adapter as LanguagePickerBottomSheetAdapter).items =

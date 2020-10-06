@@ -1,6 +1,10 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
@@ -14,7 +18,9 @@ import com.hedvig.app.feature.marketpicker.Market.NO
 import com.hedvig.app.feature.marketpicker.Market.SE
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -22,7 +28,8 @@ import e
 class PickerAdapter(
     private val parentFragmentManager: FragmentManager,
     private val viewModel: MarketPickerViewModel,
-    private val marketingViewModel: MarketingViewModel
+    private val marketingViewModel: MarketingViewModel,
+    private val tracker: MarketPickerTracker
 ) :
     RecyclerView.Adapter<PickerAdapter.ViewHolder>() {
 
@@ -54,7 +61,7 @@ class PickerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], parentFragmentManager, viewModel, marketingViewModel)
+        holder.bind(items[position], parentFragmentManager, viewModel, marketingViewModel, tracker)
     }
 
     override fun getItemCount() = items.size
@@ -65,7 +72,8 @@ class PickerAdapter(
             item: Model,
             parentFragmentManager: FragmentManager,
             viewModel: MarketPickerViewModel,
-            marketingViewModel: MarketingViewModel
+            marketingViewModel: MarketingViewModel,
+            tracker: MarketPickerTracker
         )
 
         fun invalid(data: Model) {
@@ -78,7 +86,8 @@ class PickerAdapter(
                 item: Model,
                 parentFragmentManager: FragmentManager,
                 viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel
+                marketingViewModel: MarketingViewModel,
+                tracker: MarketPickerTracker
             ) {
                 if (item !is Model.MarketModel || item.selection == null) {
                     return invalid(item)
@@ -89,7 +98,7 @@ class PickerAdapter(
                         NO
                     )
                     root.setHapticClickListener {
-                        MarketPickerBottomSheet(marketList, viewModel)
+                        MarketPickerBottomSheet(marketList, viewModel, tracker)
                             .show(parentFragmentManager, MarketPickerBottomSheet.TAG)
                     }
                     flag.setImageDrawable(
@@ -118,14 +127,15 @@ class PickerAdapter(
                 item: Model,
                 parentFragmentManager: FragmentManager,
                 viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel
+                marketingViewModel: MarketingViewModel,
+                tracker: MarketPickerTracker
             ) {
                 if (item !is Model.LanguageModel || item.selection == null) {
                     return invalid(item)
                 }
                 binding.apply {
                     root.setHapticClickListener {
-                        LanguagePickerBottomSheet(viewModel).show(
+                        LanguagePickerBottomSheet(viewModel, tracker).show(
                             parentFragmentManager,
                             LanguagePickerBottomSheet.TAG
                         )
@@ -143,7 +153,8 @@ class PickerAdapter(
                 item: Model,
                 parentFragmentManager: FragmentManager,
                 viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel
+                marketingViewModel: MarketingViewModel,
+                tracker: MarketPickerTracker
             ) {
             }
         }
@@ -155,15 +166,23 @@ class PickerAdapter(
             override fun bind(
                 item: Model, parentFragmentManager: FragmentManager,
                 viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel
+                marketingViewModel: MarketingViewModel,
+                tracker: MarketPickerTracker
             ) {
                 binding.apply {
+                    val shouldProceed = continueButton.context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)
                     continueButton.setHapticClickListener {
+                        continueButton.context.storeBoolean(MarketPickerFragment.SHOULD_PROCEED, true)
+                        tracker.submit()
                         viewModel.uploadLanguage()
+                        viewModel.save()
+                    }
+                    if (shouldProceed) {
                         marketingViewModel.navigateTo(
                             CurrentFragment.MARKETING,
-                            it to "marketButton"
+                            continueButton to "marketButton"
                         )
+                        continueButton.context.storeBoolean(MarketPickerFragment.SHOULD_PROCEED, false)
                     }
                 }
             }

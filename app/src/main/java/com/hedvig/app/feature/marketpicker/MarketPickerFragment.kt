@@ -11,6 +11,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -18,6 +19,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val viewModel: MarketPickerViewModel by viewModel()
     private val marketingViewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
+    private val tracker: MarketPickerTracker by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -27,7 +29,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
-            picker.adapter = PickerAdapter(parentFragmentManager, viewModel, marketingViewModel)
+            picker.adapter = PickerAdapter(parentFragmentManager, viewModel, marketingViewModel, tracker)
 
             viewModel.data.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
@@ -40,5 +42,9 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                 }
             }
         }
+    }
+
+    companion object{
+        const val SHOULD_PROCEED = "SHOULD_PROCEED"
     }
 }
