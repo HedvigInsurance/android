@@ -16,8 +16,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -74,7 +74,7 @@ class SettingsActivity : BaseActivity() {
             if (market != null) {
                 marketPreference?.setValueIndex(market.ordinal)
             } else {
-                MarketPickerActivity.newInstance(requireContext())
+                MarketingActivity.newInstance(requireContext())
             }
             marketPreference?.let { mp ->
                 val oldValue = mp.value
@@ -103,7 +103,7 @@ class SettingsActivity : BaseActivity() {
                                     requireContext().setIsLoggedIn(false)
                                     FirebaseInstanceId.getInstance().deleteInstanceId()
                                     mixpanel.reset()
-                                    requireActivity().triggerRestartActivity(MarketPickerActivity::class.java)
+                                    requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                                 }
                             },
                             negativeAction = {

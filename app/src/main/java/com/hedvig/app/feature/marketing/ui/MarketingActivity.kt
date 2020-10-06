@@ -31,27 +31,24 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         model.navigationState.observe(this) { navigationState ->
             when (navigationState.destination) {
                 MARKET_PICKER -> {
-                    val tx = supportFragmentManager.beginTransaction()
+                    val transaction = supportFragmentManager.beginTransaction()
 
                     navigationState.sharedElements.forEach { (v, t) ->
-                        tx.addSharedElement(v, t)
+                        transaction.addSharedElement(v, t)
                     }
 
-                    tx.replace(R.id.container, MarketPickerFragment())
+                    transaction.replace(R.id.container, MarketPickerFragment())
                         .commit()
                 }
                 MARKETING -> {
-                    val tx = supportFragmentManager.beginTransaction()
+                    val transaction = supportFragmentManager.beginTransaction()
 
-                    navigationState.sharedElements.forEach { (v, t) ->
-                        tx.addSharedElement(v, t)
+                    navigationState.sharedElements.forEach { (view, transitionName) ->
+                        transaction.addSharedElement(view, transitionName)
                     }
-                    tx.replace(
-                            R.id.container,
-                            MarketSelectedFragment().also {
-                                it.sharedElementEnterTransition = MaterialContainerTransform()
-                            })
-                        .commit()
+                    transaction.replace(R.id.container, MarketSelectedFragment().also {
+                        it.sharedElementEnterTransition = MaterialContainerTransform()
+                    }).commit()
                 }
             }
         }
@@ -77,6 +74,11 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         if (!model.goBack()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // model.removeSharedElements()
     }
 
     companion object {

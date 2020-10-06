@@ -3,12 +3,12 @@ package com.hedvig.app.feature.marketpicker
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -37,7 +37,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             val market = requireContext().getMarket()
             if (market == null) {
-                startActivity(MarketPickerActivity.newInstance(requireContext()))
+                startActivity(MarketingActivity.newInstance(requireContext()))
                 return
             }
 

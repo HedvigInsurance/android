@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.transition.MaterialContainerTransform
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
@@ -161,11 +160,10 @@ class PickerAdapter(
                 binding.apply {
                     continueButton.setHapticClickListener {
                         viewModel.uploadLanguage()
-                        marketingViewModel.navigateTo(CurrentFragment.MARKETING, it to "marketButton")
-/*                        parentFragmentManager.beginTransaction()
-                            .addSharedElement(it, "marketButton")
-                            .replace(R.id.container, marketSelectedFragment)
-                            .commit()*/
+                        marketingViewModel.navigateTo(
+                            CurrentFragment.MARKETING,
+                            it to "marketButton"
+                        )
                     }
                 }
             }

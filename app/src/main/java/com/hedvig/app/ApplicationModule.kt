@@ -47,8 +47,7 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.language.LanguageRepository
+import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -251,10 +250,6 @@ val insuranceModule = module {
 
 val marketingModule = module {
     viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
-}
-
-val languageAndMarketModule = module {
-    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
 }
 
 val offerModule = module {
