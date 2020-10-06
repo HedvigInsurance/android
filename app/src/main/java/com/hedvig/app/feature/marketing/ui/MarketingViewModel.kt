@@ -14,27 +14,14 @@ import java.util.Stack
 abstract class MarketingViewModel : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
 
-    protected val _navigationState = MutableLiveData<NavigationState>()
-    val navigationState: LiveData<NavigationState> = _navigationState
-
-    private val backStack = Stack<NavigationState>()
+    val navigationState = MutableLiveData<NavigationState>()
 
     init {
-        _navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
+        navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
     }
 
     fun navigateTo(cf: CurrentFragment, vararg sharedElements: Pair<View, String>) {
-        navigationState.value?.let { backStack.push(it) }
-        _navigationState.postValue(NavigationState(cf, sharedElements.toList()))
-    }
-
-    fun goBack(): Boolean {
-        if (backStack.empty()) {
-            return false
-        }
-        val state = backStack.pop()
-        _navigationState.postValue(state)
-        return true
+        navigationState.postValue(NavigationState(cf, sharedElements.toList()))
     }
 }
 

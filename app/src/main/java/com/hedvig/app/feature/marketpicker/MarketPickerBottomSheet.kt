@@ -27,7 +27,7 @@ class MarketPickerBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             header.text = header.context.getString(R.string.market_picker_modal_title)
-            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker).also {
+            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
                 it.items = markets
             }
             viewModel.data.observe(viewLifecycleOwner) {

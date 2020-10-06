@@ -22,7 +22,8 @@ class MarketPickerViewModel(
     private val context: Context
 ) : ViewModel() {
     val data = MutableLiveData<PickerState>()
-    val shouldProceed = MutableLiveData<Boolean>(false)
+
+    private var dirty = false
 
     init {
         viewModelScope.launch {
@@ -80,6 +81,14 @@ class MarketPickerViewModel(
             LocalBroadcastManager
                 .getInstance(context)
                 .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+
+            dirty = true
+        }
+    }
+
+    fun saveIfNotDirty() {
+        if (!dirty) {
+            save()
         }
     }
 

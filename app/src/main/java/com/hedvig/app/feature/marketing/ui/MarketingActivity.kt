@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import androidx.lifecycle.observe
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.transition.MaterialContainerTransform
@@ -16,6 +17,7 @@ import com.hedvig.app.feature.marketpicker.CurrentFragment.MARKET_PICKER
 import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -27,22 +29,18 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         model.navigationState.observe(this) { navigationState ->
             when (navigationState.destination) {
                 MARKET_PICKER -> {
                     val transaction = supportFragmentManager.beginTransaction()
-
                     navigationState.sharedElements.forEach { (v, t) ->
                         transaction.addSharedElement(v, t)
                     }
-
                     transaction.replace(R.id.container, MarketPickerFragment())
                         .commit()
                 }
                 MARKETING -> {
                     val transaction = supportFragmentManager.beginTransaction()
-
                     navigationState.sharedElements.forEach { (view, transitionName) ->
                         transaction.addSharedElement(view, transitionName)
                     }
@@ -52,7 +50,6 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                 }
             }
         }
-
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
 
@@ -69,13 +66,6 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                 }
         }
     }
-
-    override fun onBackPressed() {
-        if (!model.goBack()) {
-            super.onBackPressed()
-        }
-    }
-
 
     companion object {
         fun newInstance(context: Context, withoutHistory: Boolean = false) =

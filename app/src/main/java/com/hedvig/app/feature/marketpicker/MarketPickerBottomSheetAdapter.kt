@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.app.Dialog
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,8 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class MarketPickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
-    private val tracker: MarketPickerTracker
+    private val tracker: MarketPickerTracker,
+    private val dialog: Dialog?
 ) :
     RecyclerView.Adapter<MarketPickerBottomSheetAdapter.ViewHolder>() {
 
@@ -32,7 +34,7 @@ class MarketPickerBottomSheetAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel, tracker)
+        holder.bind(items[position], viewModel, tracker, dialog)
     }
 
     override fun getItemCount() = items.size
@@ -41,7 +43,12 @@ class MarketPickerBottomSheetAdapter(
         parent.inflate(R.layout.picker_item_layout)
     ) {
         val binding by viewBinding(PickerItemLayoutBinding::bind)
-        fun bind(market: Market, viewModel: MarketPickerViewModel, tracker: MarketPickerTracker) {
+        fun bind(
+            market: Market,
+            viewModel: MarketPickerViewModel,
+            tracker: MarketPickerTracker,
+            dialog: Dialog?
+        ) {
             binding.apply {
                 radioButton.isChecked = viewModel.data.value?.market == market
                 text.text = when (market) {
@@ -55,6 +62,7 @@ class MarketPickerBottomSheetAdapter(
                             market, Language.getAvailableLanguages(market).first()
                         )
                     )
+                    dialog?.cancel()
                 }
             }
         }
