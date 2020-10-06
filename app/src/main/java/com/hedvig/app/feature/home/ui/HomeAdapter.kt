@@ -25,6 +25,8 @@ import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -41,7 +43,8 @@ class HomeAdapter(
     private val fragmentManager: FragmentManager,
     private val retry: () -> Unit,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
-    private val tracker: HomeTracker
+    private val tracker: HomeTracker,
+    private val marketProvider: MarketProvider
 ) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     var items: List<HomeModel> = emptyList()
         set(value) {
@@ -84,7 +87,7 @@ class HomeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, retry, requestBuilder, tracker)
+        holder.bind(items[position], fragmentManager, retry, requestBuilder, tracker, marketProvider)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -93,7 +96,8 @@ class HomeAdapter(
             fragmentManager: FragmentManager,
             retry: () -> Unit,
             requestBuilder: RequestBuilder<PictureDrawable>,
-            tracker: HomeTracker
+            tracker: HomeTracker,
+            marketProvider: MarketProvider
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -112,7 +116,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -155,7 +160,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -183,7 +189,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
@@ -204,7 +211,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
@@ -224,7 +232,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ) = with(binding) {
                 if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
@@ -235,7 +244,11 @@ class HomeAdapter(
                 action.setText(R.string.info_card_missing_payment_button_text)
                 action.setHapticClickListener {
                     tracker.addPaymentMethod()
-                    action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                    when (marketProvider.market) {
+                        Market.SE -> action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                        Market.NO -> action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                        else -> {}
+                    }
                 }
             }
         }
@@ -248,7 +261,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ) = with(binding) {
                 if (data !is HomeModel.PSA) {
                     return invalid(data)
@@ -270,7 +284,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = Unit
         }
 
@@ -282,7 +297,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
@@ -333,7 +349,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HowClaimsWork) {
                     return invalid(data)
@@ -365,7 +382,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
@@ -375,3 +393,4 @@ class HomeAdapter(
         }
     }
 }
+

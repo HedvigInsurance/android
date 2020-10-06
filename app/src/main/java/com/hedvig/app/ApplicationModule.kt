@@ -28,6 +28,7 @@ import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -347,4 +348,8 @@ val trackerModule = module {
 
 val marketPickerTrackerModule = module {
     single { MarketPickerTracker(get()) }
+}
+
+val marketProviderModule = module {
+    single { MarketProvider(get()) }
 }
