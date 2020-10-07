@@ -10,6 +10,7 @@ import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.MockWhatsNewViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
@@ -68,6 +69,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
                     startActivity(Intent(this, ProfileMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Market Picker"){
+                    startActivity(Intent(this, MarketPickerMockActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))

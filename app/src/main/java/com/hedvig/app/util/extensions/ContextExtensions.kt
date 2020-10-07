@@ -1,5 +1,6 @@
 package com.hedvig.app.util.extensions
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -106,9 +107,18 @@ fun Context.isLoggedIn(): Boolean =
 fun Context.setLastOpen(date: Long) =
     getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, date).commit()
 
-fun Context.getLastOpen()=
+fun Context.getLastOpen() =
     getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
+@SuppressLint("ApplySharedPref") // We need to do this right away
+fun Context.setMarket(market: Market?) {
+    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+    if (market != null) {
+        pref.edit().putString(Market.MARKET_SHARED_PREF, market.name).commit()
+    } else {
+        pref.edit().remove(Market.MARKET_SHARED_PREF).commit()
+    }
+}
 
 fun Context.getMarket(): Market? {
     val pref = PreferenceManager.getDefaultSharedPreferences(this)

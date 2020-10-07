@@ -18,6 +18,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setAuthenticationToken
@@ -46,13 +47,14 @@ class SettingsActivity : BaseActivity() {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val mixpanel: MixpanelAPI by inject()
+        private val marketProvider: MarketProvider by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val market = context?.getMarket()
+            val market = marketProvider.market
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -72,7 +74,7 @@ class SettingsActivity : BaseActivity() {
 
             val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
             if (market == null) {
-                MarketingActivity.newInstance(requireContext())
+                startActivity(MarketingActivity.newInstance(requireContext()))
             }
             marketPreference?.let { np ->
                 np.setOnPreferenceClickListener {

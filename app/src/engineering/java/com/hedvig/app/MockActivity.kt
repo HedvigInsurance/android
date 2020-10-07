@@ -2,14 +2,13 @@ package com.hedvig.app
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.core.module.Module
-import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
 
-abstract class MockActivity: AppCompatActivity(R.layout.activity_generic_development) {
+abstract class MockActivity : AppCompatActivity(R.layout.activity_generic_development) {
     protected val binding by viewBinding(ActivityGenericDevelopmentBinding::bind)
 
     protected abstract val original: List<Module>
