@@ -61,6 +61,7 @@ import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
+import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -351,5 +352,5 @@ val marketPickerTrackerModule = module {
 }
 
 val marketProviderModule = module {
-    single { MarketProvider(get()) }
+    single<MarketProvider> { MarketProviderImpl(get()) }
 }
