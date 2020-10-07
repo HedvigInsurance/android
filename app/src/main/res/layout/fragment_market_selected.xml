@@ -1,10 +1,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/ThemeOverlay.Hedvig.MarketingActivity"
+    tools:background="@color/gray"
     tools:context="com.hedvig.app.feature.marketpicker.MarketSelectedFragment">
+
     <ImageView
         android:id="@+id/settings"
         android:layout_width="wrap_content"
@@ -34,12 +36,12 @@
         android:id="@+id/signUp"
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
-        android:transitionName="marketButton"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/MARKETING_SCREEN_CTA"
+        android:transitionName="marketButton"
         app:layout_constraintBottom_toTopOf="@id/logIn" />
 
     <Button

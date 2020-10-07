@@ -60,6 +60,8 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
+import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -249,7 +251,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
 }
 
 val offerModule = module {
@@ -344,4 +346,8 @@ val trackerModule = module {
 
 val marketPickerTrackerModule = module {
     single { MarketPickerTracker(get()) }
+}
+
+val marketProviderModule = module {
+    single<MarketProvider> { MarketProviderImpl(get()) }
 }

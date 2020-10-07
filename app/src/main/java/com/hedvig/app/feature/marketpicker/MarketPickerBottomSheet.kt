@@ -10,13 +10,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
 import com.hedvig.app.util.extensions.viewBinding
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class MarketPickerBottomSheet(
-    private val markets: List<Market>,
-    private val viewModel: MarketPickerViewModel,
-    private val tracker: MarketPickerTracker
-) : BottomSheetDialogFragment() {
+class MarketPickerBottomSheet: BottomSheetDialogFragment() {
     val binding by viewBinding(MarketPickerBottomSheetBinding::bind)
+    private val tracker: MarketPickerTracker by inject()
+    private val viewModel: MarketPickerViewModel by viewModel()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +29,7 @@ class MarketPickerBottomSheet(
         binding.apply {
             header.text = header.context.getString(R.string.market_picker_modal_title)
             recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
-                it.items = markets
+                it.items = Market.values().toList()
             }
             viewModel.data.observe(viewLifecycleOwner) {
                 (recycler.adapter as MarketPickerBottomSheetAdapter).notifyDataSetChanged()
@@ -37,7 +38,7 @@ class MarketPickerBottomSheet(
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        viewModel.save()
+        viewModel.saveIfNotDirty()
     }
 
     companion object {

@@ -6,7 +6,7 @@
     android:layout_marginBottom="@dimen/base_margin_septuple"
     android:text="@string/market_language_screen.title"
     android:textAlignment="center"
-    android:textAppearance="@style/Hedvig.TextAppearance.Headline4"
+    android:textAppearance="?textAppearanceHeadline4"
     app:layout_constraintBottom_toTopOf="@+id/picker"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent" />

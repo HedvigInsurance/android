@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:textAppearance="@style/Hedvig.TextAppearance.Headline5"
+        android:textAppearance="?textAppearanceHeadline5"
         tools:text="Header" />
 
     <TextView
@@ -30,12 +30,12 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/base_margin"
         android:text="@string/language_picker_modal.text"
-        android:textAppearance="@style/Hedvig.TextAppearance.Body1" />
+        android:textAppearance="?textAppearanceBody1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="3"
         tools:listitem="@layout/picker_item_layout" />

@@ -38,7 +38,7 @@ class LanguagePickerBottomSheet(
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        viewModel.save()
+        viewModel.saveIfNotDirty()
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -21,7 +20,6 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
     private val tracker: MarketPickerTracker by inject()
 
-    @SuppressLint("ApplySharedPref")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.apply {
@@ -29,7 +27,8 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
-            picker.adapter = PickerAdapter(parentFragmentManager, viewModel, marketingViewModel, tracker)
+            picker.adapter =
+                PickerAdapter(parentFragmentManager, viewModel, marketingViewModel, tracker)
 
             viewModel.data.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
@@ -44,7 +43,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
         }
     }
 
-    companion object{
+    companion object {
         const val SHOULD_PROCEED = "SHOULD_PROCEED"
     }
 }

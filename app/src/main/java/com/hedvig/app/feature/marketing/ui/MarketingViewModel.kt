@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketpicker.CurrentFragment
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import kotlinx.coroutines.launch
-import java.util.Stack
 
 abstract class MarketingViewModel : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
@@ -25,24 +25,18 @@ abstract class MarketingViewModel : ViewModel() {
     }
 }
 
-data class NavigationState(
-    val destination: CurrentFragment,
-    private var _sharedElements: List<Pair<View, String>>
-) {
-    val sharedElements: List<Pair<View, String>>
-    get() {
-        val elems = _sharedElements.toMutableList()
-        _sharedElements = emptyList()
-        return elems
-    }
-}
-
 class MarketingViewModelImpl(
-    marketingRepository: MarketingRepository
+    marketingRepository: MarketingRepository,
+    marketProvider: MarketProvider
 ) : MarketingViewModel() {
     override val marketingBackground = MutableLiveData<MarketingBackgroundQuery.AppMarketingImage>()
 
     init {
+        if (marketProvider.market == null) {
+            navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
+        } else {
+            navigationState.value = NavigationState(CurrentFragment.MARKETING, emptyList())
+        }
         viewModelScope.launch {
             val response = runCatching {
                 marketingRepository
@@ -54,4 +48,16 @@ class MarketingViewModelImpl(
                 ?.let { marketingBackground.postValue(it) }
         }
     }
+}
+
+data class NavigationState(
+    val destination: CurrentFragment,
+    private var _sharedElements: List<Pair<View, String>>
+) {
+    val sharedElements: List<Pair<View, String>>
+        get() {
+            val elems = _sharedElements.toMutableList()
+            _sharedElements = emptyList()
+            return elems
+        }
 }

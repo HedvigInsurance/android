@@ -93,12 +93,8 @@ class PickerAdapter(
                     return invalid(item)
                 }
                 binding.apply {
-                    val marketList = listOf(
-                        SE,
-                        NO
-                    )
                     root.setHapticClickListener {
-                        MarketPickerBottomSheet(marketList, viewModel, tracker)
+                        MarketPickerBottomSheet()
                             .show(parentFragmentManager, MarketPickerBottomSheet.TAG)
                     }
                     flag.setImageDrawable(

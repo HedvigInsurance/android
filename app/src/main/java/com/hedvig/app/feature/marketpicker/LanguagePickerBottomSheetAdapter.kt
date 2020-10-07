@@ -16,8 +16,7 @@ class LanguagePickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) :
-    RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
 
     var items: List<Language> = emptyList()
         set(value) {
