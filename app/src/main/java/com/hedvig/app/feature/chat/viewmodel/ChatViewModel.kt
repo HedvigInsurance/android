@@ -158,6 +158,7 @@ class ChatViewModel(
                     uri
                 )
             }
+            response.getOrNull()?.data?.let(uploadBottomSheetResponse::postValue)
         }
     }
 
