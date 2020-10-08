@@ -16,12 +16,18 @@ import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
 import kotlinx.coroutines.launch
 
-class MarketPickerViewModel(
+abstract class MarketPickerViewModel : ViewModel() {
+    abstract val data: MutableLiveData<PickerState>
+    abstract fun saveIfNotDirty()
+    abstract fun uploadLanguage()
+}
+
+class MarketPickerViewModelImpl(
     private val marketRepository: MarketRepository,
     private val languageRepository: LanguageRepository,
     private val context: Context
-) : ViewModel() {
-    val data = MutableLiveData<PickerState>()
+) : MarketPickerViewModel() {
+    override val data = MutableLiveData<PickerState>()
 
     private var dirty = false
 
@@ -78,21 +84,25 @@ class MarketPickerViewModel(
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            LocalBroadcastManager
-                .getInstance(context)
-                .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+            reload()
 
             dirty = true
         }
     }
 
-    fun saveIfNotDirty() {
+    private fun reload() {
+        LocalBroadcastManager
+            .getInstance(context)
+            .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+    }
+
+    override fun saveIfNotDirty() {
         if (!dirty) {
             save()
         }
     }
 
-    fun uploadLanguage() {
+    override fun uploadLanguage() {
         data.value?.let { data ->
             data.language?.apply(context)?.let { language ->
                 languageRepository.setLanguage(makeLocaleString(language))

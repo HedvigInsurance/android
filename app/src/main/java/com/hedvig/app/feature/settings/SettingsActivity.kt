@@ -23,6 +23,7 @@ import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.setMarket
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -53,7 +54,6 @@ class SettingsActivity : BaseActivity() {
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val market = marketProvider.market
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
@@ -84,8 +84,7 @@ class SettingsActivity : BaseActivity() {
                         positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                         positiveAction = {
-                            sharedPreferences.edit()
-                                .putString(SETTINGS_NEW_MARKET, null).commit()
+                            requireContext().setMarket(null)
                             userViewModel.logout {
                                 requireContext().storeBoolean(
                                     LoginStatusService.IS_VIEWING_OFFER,
@@ -158,7 +157,6 @@ class SettingsActivity : BaseActivity() {
         const val SETTING_LANGUAGE = "language"
         const val SETTING_NOTIFICATIONS = "notifications"
         const val SETTINGS_MARKET = "market"
-        const val SETTINGS_NEW_MARKET = "newMarket"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
