@@ -42,8 +42,8 @@ class MarketPickerViewModelImpl(
                         try {
                             market = Market.valueOf(it.geo.countryISOCode)
                             when (market) {
-                                Market.SE -> data.postValue(PickerState(market, Language.SV_SE))
-                                Market.NO -> data.postValue(PickerState(market, Language.NB_NO))
+                                Market.SE -> data.postValue(PickerState(market, Language.EN_SE))
+                                Market.NO -> data.postValue(PickerState(market, Language.EN_NO))
                             }
                         } catch (e: Exception) {
                             data.postValue(
