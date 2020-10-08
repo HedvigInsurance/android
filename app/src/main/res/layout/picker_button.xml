@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/base_margin_double"
     android:layout_marginBottom="@dimen/base_margin_triple"
+    android:layout_marginTop="@dimen/base_margin_quadruple"
     android:text="@string/market_language_screen.continue_button_text"
     android:transitionName="marketButton"
     app:layout_constraintBottom_toBottomOf="parent"

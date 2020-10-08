@@ -7,6 +7,18 @@
     tools:background="@color/black"
     tools:context="com.hedvig.app.feature.marketpicker.MarketPickerFragment">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/base_margin_septuple"
+        android:text="@string/market_language_screen.title"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceHeadline4"
+        app:layout_constraintBottom_toTopOf="@+id/picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_gravity="center"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/picker"
         android:layout_width="match_parent"

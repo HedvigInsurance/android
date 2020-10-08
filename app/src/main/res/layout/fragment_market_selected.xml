@@ -15,7 +15,7 @@
         android:layout_marginEnd="@dimen/base_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_settings" />
+        app:srcCompat="@drawable/ic_settings_marketing" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
@@ -39,7 +39,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/MARKETING_SCREEN_CTA"
         android:transitionName="marketButton"
         app:layout_constraintBottom_toTopOf="@id/logIn" />

@@ -20,6 +20,7 @@ abstract class MarketPickerViewModel : ViewModel() {
     abstract val data: MutableLiveData<PickerState>
     abstract fun saveIfNotDirty()
     abstract fun uploadLanguage()
+    abstract var dirty: Boolean
 }
 
 class MarketPickerViewModelImpl(
@@ -29,7 +30,7 @@ class MarketPickerViewModelImpl(
 ) : MarketPickerViewModel() {
     override val data = MutableLiveData<PickerState>()
 
-    private var dirty = false
+    override var dirty = false
 
     init {
         viewModelScope.launch {

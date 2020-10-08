@@ -35,8 +35,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                     items = listOf(
                         Model.Button,
                         Model.LanguageModel(data.language),
-                        Model.MarketModel(data.market),
-                        Model.Title
+                        Model.MarketModel(data.market)
                     )
                 }
             }

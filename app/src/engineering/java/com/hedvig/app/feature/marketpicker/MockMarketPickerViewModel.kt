@@ -1,25 +1,61 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
-import com.hedvig.app.util.extensions.getLanguage
-import com.hedvig.app.util.extensions.getMarket
 
 class MockMarketPickerViewModel(
     private val context: Context
 ) : MarketPickerViewModel() {
 
+    override var dirty = false
+
     override val data = MutableLiveData<PickerState>()
-    override fun saveIfNotDirty() {
-    }
 
     override fun uploadLanguage() {
+    }
+
+    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
+    fun save() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        data.value?.let { data ->
+            sharedPreferences.edit()
+                .putString(
+                    Market.MARKET_SHARED_PREF,
+                    data.market?.name
+                )
+                .commit()
+
+            sharedPreferences
+                .edit()
+                .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
+                .commit()
+
+            reload()
+
+            dirty = true
+        }
+    }
+
+    private fun reload() {
+        LocalBroadcastManager
+            .getInstance(context)
+            .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+    }
+
+    override fun saveIfNotDirty() {
+        if (!dirty) {
+            save()
+        }
     }
 
     init {
