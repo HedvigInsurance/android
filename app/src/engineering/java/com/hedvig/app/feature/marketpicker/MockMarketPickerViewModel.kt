@@ -11,6 +11,8 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
+import com.hedvig.app.util.extensions.getLanguage
+import com.hedvig.app.util.extensions.getMarket
 
 class MockMarketPickerViewModel(
     private val context: Context
@@ -58,9 +60,11 @@ class MockMarketPickerViewModel(
         }
     }
 
+    // MockMarketProvider().market
+
     init {
         if (!AVAILABLE_GEO_MARKET) {
-            if (MockMarketProvider().market == null) {
+            if (context.getMarket() == null) {
                 val market: Market
                 try {
                     market = Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
@@ -76,7 +80,7 @@ class MockMarketPickerViewModel(
                     )
                 }
             } else {
-                MockMarketProvider().market?.let { _ ->
+                context.getMarket()?.let { _ ->
                     data.postValue(
                         PickerState(
                             Market.SE, Language.EN_SE
@@ -85,7 +89,7 @@ class MockMarketPickerViewModel(
                 }
             }
         } else {
-            if (MockMarketProvider().market == null) {
+            if (context.getMarket() == null) {
                 val market: Market
                 try {
                     market = Market.valueOf(GEO_DATA_SE.geo.countryISOCode)
@@ -101,10 +105,10 @@ class MockMarketPickerViewModel(
                     )
                 }
             } else {
-                MockMarketProvider().market?.let { market ->
+                context.getMarket()?.let { market ->
                     data.postValue(
                         PickerState(
-                            market, Language.EN_SE
+                            market, context.getLanguage()
                         )
                     )
                 }
