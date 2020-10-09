@@ -94,7 +94,7 @@ class KnownGeoTest {
         val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
 
         assertThat(market).isEqualTo("SE")
-        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
+        assertThat(language).isEqualTo(Language.SETTING_EN_SE)
     }
 
     @After
