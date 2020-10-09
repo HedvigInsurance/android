@@ -46,7 +46,7 @@ class MarketPickerMockActivity : MockActivity() {
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
             )
         }
-        clickableItem("Market: not selected") {
+        clickableItem("Market: not selected. SE IP Address") {
             setMarket(null)
             setLanguage(Language.EN_SE)
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true

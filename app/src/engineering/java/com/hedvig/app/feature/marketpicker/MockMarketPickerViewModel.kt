@@ -58,55 +58,32 @@ class MockMarketPickerViewModel(
     }
 
     init {
-        if (!AVAILABLE_GEO_MARKET) {
-            if (context.getMarket() == null) {
-                val market: Market
-                try {
-                    market = Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
-                    when (market) {
-                        Market.SE -> data.postValue(PickerState(market, Language.EN_SE))
-                        Market.NO -> data.postValue(PickerState(market, Language.EN_NO))
-                    }
-                } catch (e: Exception) {
-                    data.postValue(
-                        PickerState(
-                            Market.SE, Language.EN_SE
-                        )
-                    )
+        if (context.getMarket() == null) {
+            val market: Market
+            try {
+                market = if (AVAILABLE_GEO_MARKET) {
+                    Market.valueOf(GEO_DATA_SE.geo.countryISOCode)
+                } else {
+                    Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
                 }
-            } else {
-                context.getMarket()?.let { _ ->
-                    data.postValue(
-                        PickerState(
-                            Market.SE, Language.EN_SE
-                        )
-                    )
+                when (market) {
+                    Market.SE -> data.postValue(PickerState(market, Language.EN_SE))
+                    Market.NO -> data.postValue(PickerState(market, Language.EN_NO))
                 }
+            } catch (e: Exception) {
+                data.postValue(
+                    PickerState(
+                        Market.SE, Language.EN_SE
+                    )
+                )
             }
         } else {
-            if (context.getMarket() == null) {
-                val market: Market
-                try {
-                    market = Market.valueOf(GEO_DATA_SE.geo.countryISOCode)
-                    when (market) {
-                        Market.SE -> data.postValue(PickerState(market, Language.SV_SE))
-                        Market.NO -> data.postValue(PickerState(market, Language.NB_NO))
-                    }
-                } catch (e: Exception) {
-                    data.postValue(
-                        PickerState(
-                            Market.SE, Language.EN_SE
-                        )
+            context.getMarket()?.let { market ->
+                data.postValue(
+                    PickerState(
+                        market, context.getLanguage()
                     )
-                }
-            } else {
-                context.getMarket()?.let { market ->
-                    data.postValue(
-                        PickerState(
-                            market, context.getLanguage()
-                        )
-                    )
-                }
+                )
             }
         }
     }
