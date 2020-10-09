@@ -13,6 +13,7 @@ import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.getStoredBoolean
 
 class MockMarketPickerViewModel(
     private val context: Context
@@ -44,7 +45,7 @@ class MockMarketPickerViewModel(
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            if (!clean) {
+            if (!clean || context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)) {
                 reload()
             }
         }
@@ -63,8 +64,8 @@ class MockMarketPickerViewModel(
                 try {
                     market = Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
                     when (market) {
-                        Market.SE -> data.postValue(PickerState(market, Language.SV_SE))
-                        Market.NO -> data.postValue(PickerState(market, Language.NB_NO))
+                        Market.SE -> data.postValue(PickerState(market, Language.EN_SE))
+                        Market.NO -> data.postValue(PickerState(market, Language.EN_NO))
                     }
                 } catch (e: Exception) {
                     data.postValue(

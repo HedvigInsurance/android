@@ -14,6 +14,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.getStoredBoolean
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {
@@ -87,7 +88,7 @@ class MarketPickerViewModelImpl(
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            if (!clean) {
+            if (!clean || context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)) {
                 reload()
             }
             uploadLanguage()

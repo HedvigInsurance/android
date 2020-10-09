@@ -8,14 +8,14 @@
     tools:context="com.hedvig.app.feature.marketpicker.MarketSelectedFragment">
 
     <ImageView
-        android:id="@+id/settings"
+        android:id="@+id/flag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/base_margin"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_settings_marketing" />
+        tools:srcCompat="@drawable/ic_flag_no" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"

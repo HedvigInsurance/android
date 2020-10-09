@@ -29,17 +29,16 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         model.navigationState.observe(this) { navigationState ->
             when (navigationState.destination) {
                 MARKET_PICKER -> {
                     val transaction = supportFragmentManager.beginTransaction()
-                    navigationState.sharedElements.forEach { (v, t) ->
-                        transaction.addSharedElement(v, t)
+                    navigationState.sharedElements.forEach { (view, transitionName) ->
+                        transaction.addSharedElement(view, transitionName)
                     }
-                    transaction.replace(R.id.container, MarketPickerFragment())
-                        .commit()
+                    transaction.replace(R.id.container, MarketPickerFragment().also {
+                        it.sharedElementEnterTransition = MaterialContainerTransform()
+                    }).commit()
                 }
                 MARKETING -> {
                     val transaction = supportFragmentManager.beginTransaction()
@@ -52,6 +51,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                 }
             }
         }
+
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
 

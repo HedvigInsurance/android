@@ -162,9 +162,13 @@ class PickerAdapter(
                 tracker: MarketPickerTracker
             ) {
                 binding.apply {
-                    val shouldProceed = continueButton.context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)
+                    val shouldProceed =
+                        continueButton.context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)
                     continueButton.setHapticClickListener {
-                        continueButton.context.storeBoolean(MarketPickerFragment.SHOULD_PROCEED, true)
+                        continueButton.context.storeBoolean(
+                            MarketPickerFragment.SHOULD_PROCEED,
+                            true
+                        )
                         tracker.submit()
                         viewModel.uploadLanguage()
                         viewModel.save()
@@ -174,7 +178,10 @@ class PickerAdapter(
                             CurrentFragment.MARKETING,
                             continueButton to "marketButton"
                         )
-                        continueButton.context.storeBoolean(MarketPickerFragment.SHOULD_PROCEED, false)
+                        continueButton.context.storeBoolean(
+                            MarketPickerFragment.SHOULD_PROCEED,
+                            false
+                        )
                     }
                 }
             }
