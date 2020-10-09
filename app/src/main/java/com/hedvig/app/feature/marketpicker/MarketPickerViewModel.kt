@@ -18,9 +18,8 @@ import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {
     abstract val data: MutableLiveData<PickerState>
-    abstract fun saveIfNotDirty()
+    abstract fun save()
     abstract fun uploadLanguage()
-    abstract var dirty: Boolean
 }
 
 class MarketPickerViewModelImpl(
@@ -29,8 +28,6 @@ class MarketPickerViewModelImpl(
     private val context: Context
 ) : MarketPickerViewModel() {
     override val data = MutableLiveData<PickerState>()
-
-    override var dirty = false
 
     init {
         viewModelScope.launch {
@@ -68,9 +65,14 @@ class MarketPickerViewModelImpl(
         }
     }
 
-    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-    fun save() {
+    @SuppressLint("ApplySharedPref")// We want to apply this right away. It's important
+    override fun save() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        var clean = false
+        data.value?.let { ps ->
+            clean = ps.market == context.getMarket() && ps.language == context.getLanguage()
+        }
+
 
         data.value?.let { data ->
             sharedPreferences.edit()
@@ -85,9 +87,10 @@ class MarketPickerViewModelImpl(
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            reload()
-
-            dirty = true
+            if (!clean) {
+                reload()
+            }
+            uploadLanguage()
         }
     }
 
@@ -95,12 +98,6 @@ class MarketPickerViewModelImpl(
         LocalBroadcastManager
             .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
-    }
-
-    override fun saveIfNotDirty() {
-        if (!dirty) {
-            save()
-        }
     }
 
     override fun uploadLanguage() {

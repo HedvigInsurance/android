@@ -18,16 +18,18 @@ class MockMarketPickerViewModel(
     private val context: Context
 ) : MarketPickerViewModel() {
 
-    override var dirty = false
-
     override val data = MutableLiveData<PickerState>()
 
     override fun uploadLanguage() {
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-    fun save() {
+    override fun save() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        var clean = false
+        data.value?.let { ps ->
+            clean = ps.market == context.getMarket() && ps.language == context.getLanguage()
+        }
 
         data.value?.let { data ->
             sharedPreferences.edit()
@@ -42,9 +44,9 @@ class MockMarketPickerViewModel(
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            reload()
-
-            dirty = true
+            if (!clean) {
+                reload()
+            }
         }
     }
 
@@ -53,14 +55,6 @@ class MockMarketPickerViewModel(
             .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
     }
-
-    override fun saveIfNotDirty() {
-        if (!dirty) {
-            save()
-        }
-    }
-
-    // MockMarketProvider().market
 
     init {
         if (!AVAILABLE_GEO_MARKET) {
@@ -121,6 +115,3 @@ class MockMarketPickerViewModel(
     }
 }
 
-class MockMarketProvider : MarketProvider() {
-    override val market: Market? = null
-}

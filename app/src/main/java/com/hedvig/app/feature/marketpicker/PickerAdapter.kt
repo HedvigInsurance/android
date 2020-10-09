@@ -167,7 +167,7 @@ class PickerAdapter(
                         continueButton.context.storeBoolean(MarketPickerFragment.SHOULD_PROCEED, true)
                         tracker.submit()
                         viewModel.uploadLanguage()
-                        viewModel.saveIfNotDirty()
+                        viewModel.save()
                     }
                     if (shouldProceed) {
                         marketingViewModel.navigateTo(

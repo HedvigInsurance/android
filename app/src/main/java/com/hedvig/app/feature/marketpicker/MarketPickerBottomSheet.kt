@@ -38,7 +38,7 @@ class MarketPickerBottomSheet: BottomSheetDialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        viewModel.saveIfNotDirty()
+        viewModel.save()
     }
 
     companion object {
