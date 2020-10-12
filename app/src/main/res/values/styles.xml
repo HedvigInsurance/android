@@ -3,7 +3,6 @@
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
     <style name="Hedvig.Theme.Marketing.V23" parent="Hedvig.Theme">
-        <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/translucent_dark_mode</item>
     </style>
 

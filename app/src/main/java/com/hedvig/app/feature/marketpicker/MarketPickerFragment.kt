@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -21,6 +23,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val tracker: MarketPickerTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireContext().storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
         binding.apply {
             picker.doOnApplyWindowInsets { view, insets, initialState ->

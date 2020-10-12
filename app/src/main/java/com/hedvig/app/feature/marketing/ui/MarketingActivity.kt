@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.transition.MaterialContainerTransform
+import com.hedvig.android.owldroid.type.UserInterfaceStyle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMarketingBinding
@@ -16,8 +18,6 @@ import com.hedvig.app.feature.marketpicker.CurrentFragment.MARKET_PICKER
 import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
-import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -65,11 +65,31 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                         .transition(withCrossFade())
                         .placeholder(BitmapDrawable(resources, placeholder))
                         .into(backgroundImage)
+
+                    when (image.userInterfaceStyle) {
+                        UserInterfaceStyle.LIGHT -> {
+                            val view = window.decorView
+                            view.systemUiVisibility =
+                                view.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                        }
+                        UserInterfaceStyle.DARK -> {
+                            val view = window.decorView
+                            view.systemUiVisibility =
+                                view.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        }
+                        UserInterfaceStyle.UNKNOWN__ -> {
+                            val view = window.decorView
+                            view.systemUiVisibility =
+                                view.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        }
+                    }
                 }
         }
     }
 
     companion object {
+        const val SHOULD_OPEN_MARKET_SELECTED = "SHOULD_MARKET_SELECTED"
+
         fun newInstance(context: Context, withoutHistory: Boolean = false) =
             Intent(context, MarketingActivity::class.java).apply {
                 if (withoutHistory) {

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketing.ui
 
+import android.content.Context
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketpicker.CurrentFragment
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.util.extensions.getStoredBoolean
 import kotlinx.coroutines.launch
 
 abstract class MarketingViewModel : ViewModel() {
@@ -27,15 +28,15 @@ abstract class MarketingViewModel : ViewModel() {
 
 class MarketingViewModelImpl(
     marketingRepository: MarketingRepository,
-    marketProvider: MarketProvider
+    context: Context
 ) : MarketingViewModel() {
     override val marketingBackground = MutableLiveData<MarketingBackgroundQuery.AppMarketingImage>()
 
     init {
-        if (marketProvider.market == null) {
-            navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
-        } else {
+        if (context.getStoredBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED)) {
             navigationState.value = NavigationState(CurrentFragment.MARKETING, emptyList())
+        } else {
+            navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
         }
         viewModelScope.launch {
             val response = runCatching {

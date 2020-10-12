@@ -53,6 +53,8 @@ class UnknownGeoTest {
 
     var originalMarket: String? = null
     var originalLanguage: String? = null
+    var originalShouldOpenMarketSelected = false
+
 
     @Before
     fun setup() {
@@ -60,11 +62,13 @@ class UnknownGeoTest {
 
         originalMarket = pref.getString(Market.MARKET_SHARED_PREF, null)
         originalLanguage = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+        originalShouldOpenMarketSelected = pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
         pref
             .edit()
             .remove(Market.MARKET_SHARED_PREF)
             .remove(SettingsActivity.SETTING_LANGUAGE)
+            .remove(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED)
             .commit()
     }
 
@@ -120,6 +124,7 @@ class UnknownGeoTest {
             .edit()
             .putString(Market.MARKET_SHARED_PREF, originalMarket)
             .putString(SettingsActivity.SETTING_LANGUAGE, originalLanguage)
+            .putBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, originalShouldOpenMarketSelected)
             .commit()
     }
 }
