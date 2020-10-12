@@ -16,12 +16,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:theme="@style/Hedvig.Theme"
         android:name=".HedvigApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:theme="@style/Hedvig.Theme">
         <activity
             android:name=".feature.marketpicker.MarketPickerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -285,6 +285,12 @@
 
         <activity
             android:name=".feature.referrals.ui.editcode.ReferralsEditCodeActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"

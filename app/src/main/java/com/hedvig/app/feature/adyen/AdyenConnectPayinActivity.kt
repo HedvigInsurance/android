@@ -1,0 +1,178 @@
+package com.hedvig.app.feature.adyen
+
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import androidx.lifecycle.observe
+import com.adyen.checkout.base.model.PaymentMethodsApiResponse
+import com.adyen.checkout.base.model.payments.Amount
+import com.adyen.checkout.card.CardConfiguration
+import com.adyen.checkout.core.api.Environment
+import com.adyen.checkout.dropin.DropIn
+import com.adyen.checkout.dropin.DropInConfiguration
+import com.adyen.checkout.googlepay.GooglePayConfiguration
+import com.hedvig.app.BaseActivity
+import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.getLocale
+import com.hedvig.app.isDebug
+import e
+import org.koin.android.viewmodel.ext.android.viewModel
+
+class AdyenConnectPayinActivity : BaseActivity(R.layout.adyen_connect_payin_activity) {
+    private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
+    private val adyenViewModel: AdyenViewModel by viewModel()
+
+    private lateinit var paymentMethods: PaymentMethodsApiResponse
+    private lateinit var currency: AdyenCurrency
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val c = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
+
+        if (c == null) {
+            e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
+            finish()
+            return
+        }
+
+        currency = c
+
+        if (isPostSign()) {
+            connectPaymentViewModel.setInitialNavigationDestination(ConnectPaymentScreenState.Explainer)
+        }
+
+        connectPaymentViewModel.navigationState.observe(this) { state ->
+            when (state) {
+                ConnectPaymentScreenState.Explainer -> supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.container, PostSignExplainerFragment())
+                    .commitAllowingStateLoss()
+                ConnectPaymentScreenState.Connect -> startAdyenPayment()
+                is ConnectPaymentScreenState.Result -> supportFragmentManager
+                    .beginTransaction()
+                    .replace(
+                        R.id.container,
+                        ConnectPaymentSuccessFragment.newInstance(state.success, isPostSign())
+                    )
+                    .commitAllowingStateLoss()
+            }
+        }
+
+        connectPaymentViewModel.shouldClose.observe(this) { shouldClose ->
+            if (shouldClose) {
+                if (isPostSign()) {
+                    startActivity(
+                        LoggedInActivity.newInstance(
+                            this,
+                            withoutHistory = true,
+                            isFromOnboarding = true
+                        )
+                    )
+                    return@observe
+                }
+                finish()
+            }
+        }
+
+        adyenViewModel.paymentMethods.observe(this) {
+            paymentMethods = it
+
+            if (isPostSign()) {
+                connectPaymentViewModel.isReadyToStart()
+            } else {
+                startAdyenPayment()
+            }
+        }
+    }
+
+    private fun startAdyenPayment() {
+        val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_PUBLIC_KEY))
+            .setShowStorePaymentField(false)
+            .build()
+
+        val googlePayConfig =
+            GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_MERCHANT_ACCOUNT))
+                .setGooglePayEnvironment(
+                    if (isDebug()) {
+                        GOOGLE_WALLET_ENVIRONMENT_TEST
+                    } else {
+                        GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
+                    }
+                )
+                .build()
+        val dropInConfiguration = DropInConfiguration
+            .Builder(
+                this,
+                intent, AdyenDropInService::class.java
+            )
+            .addCardConfiguration(cardConfig)
+            .addGooglePayConfiguration(googlePayConfig)
+            .setShopperLocale(getLocale(this))
+            .setEnvironment(
+                if (isDebug()) {
+                    Environment.TEST
+                } else {
+                    Environment.EUROPE
+                }
+            )
+            .setAmount(Amount().apply {
+                currency = this@AdyenConnectPayinActivity.currency.toString()
+                value = 0
+            })
+            .build()
+
+        DropIn.startPayment(this, paymentMethods, dropInConfiguration)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.getStringExtra(DropIn.RESULT_KEY) == ADYEN_RESULT_CODE_AUTHORISED) {
+            connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (
+            !isPostSign()
+            && connectPaymentViewModel.navigationState.value is ConnectPaymentScreenState.Result
+            && resultCode == Activity.RESULT_CANCELED
+        ) {
+            finish()
+        }
+    }
+
+    private fun isPostSign() = intent.getBooleanExtra(IS_POST_SIGN, false)
+
+    companion object {
+        private const val ADYEN_RESULT_CODE_AUTHORISED = "Authorised"
+
+        private const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
+        private const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
+        fun newInstance(context: Context, currency: AdyenCurrency, isPostSign: Boolean = false) =
+            Intent(context, AdyenConnectPayinActivity::class.java).apply {
+                putExtra(IS_POST_SIGN, isPostSign)
+                putExtra(CURRENCY, currency)
+            }
+
+        private const val IS_POST_SIGN = "IS_POST_SIGN"
+        private const val CURRENCY = "CURRENCY"
+    }
+}
+
+enum class AdyenCurrency {
+    NOK,
+    DKK;
+
+    companion object {
+        fun fromMarket(market: Market) = when (market) {
+            Market.NO -> NOK
+            else -> throw Error("Market $market is not supported by Adyen")
+        }
+    }
+}

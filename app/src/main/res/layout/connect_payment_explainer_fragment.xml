@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/explainerIllustration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toTopOf="@id/explainerPreHeadline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/illustration_connect_payment" />
+
+    <TextView
+        android:id="@+id/explainerPreHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/trustly_explainer_illustration_offset"
+        android:text="@string/ONBOARDING_CONNECT_DD_PRE_HEADLINE"
+        android:textAppearance="?textAppearanceHeadline5"
+        android:textColor="?textColorLink"
+        app:layout_constraintBottom_toTopOf="@id/explainerTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/explainerIllustration" />
+
+    <TextView
+        android:id="@+id/explainerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ONBOARDING_CONNECT_DD_HEADLINE"
+        android:textAppearance="?textAppearanceHeadline5"
+        app:layout_constraintBottom_toTopOf="@id/explainerParagraph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/explainerPreHeadline" />
+
+    <TextView
+        android:id="@+id/explainerParagraph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="center"
+        android:paddingStart="@dimen/base_margin_double"
+        android:paddingEnd="@dimen/base_margin_double"
+        android:text="@string/ONBOARDING_CONNECT_DD_BODY"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintBottom_toTopOf="@id/explainerButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/explainerTitle" />
+
+    <Button
+        android:id="@+id/explainerButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:enabled="false"
+        android:text="@string/ONBOARDING_CONNECT_DD_CTA"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/explainerParagraph" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
+import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
@@ -58,6 +59,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
                     startActivity(Intent(this, LoggedInMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Adyen") {
+                    startActivity(Intent(this, AdyenMockActivity::class.java))
                 },
                 DevelopmentScreenAdapter . DevelopmentScreenItem . Row ("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))

@@ -16,6 +16,7 @@ import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModelImpl
+import com.hedvig.app.feature.adyen.ConnectPaymentViewModel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -292,6 +293,10 @@ val referralsModule = module {
 
 val homeModule = module {
     viewModel<HomeViewModel> { HomeViewModelImpl(get(), get()) }
+}
+
+val connectPaymentModule = module {
+    viewModel { ConnectPaymentViewModel() }
 }
 
 val serviceModule = module {

@@ -19,6 +19,8 @@ import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
+import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -87,7 +89,14 @@ class HomeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, retry, requestBuilder, tracker, marketProvider)
+        holder.bind(
+            items[position],
+            fragmentManager,
+            retry,
+            requestBuilder,
+            tracker,
+            marketProvider
+        )
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -244,10 +253,20 @@ class HomeAdapter(
                 action.setText(R.string.info_card_missing_payment_button_text)
                 action.setHapticClickListener {
                     tracker.addPaymentMethod()
-                    when (marketProvider.market) {
-                        Market.SE -> action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
-                        Market.NO -> action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
-                        else -> {}
+                    when (val market = marketProvider.market) {
+                        Market.SE -> action.context.startActivity(
+                            ConnectPaymentActivity.newInstance(
+                                action.context
+                            )
+                        )
+                        Market.NO -> action.context.startActivity(
+                            AdyenConnectPayinActivity.newInstance(
+                                action.context,
+                                AdyenCurrency.fromMarket(market)
+                            )
+                        )
+                        else -> {
+                        }
                     }
                 }
             }
