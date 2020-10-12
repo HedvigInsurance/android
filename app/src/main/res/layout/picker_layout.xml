@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/base_margin_double"
-    android:paddingVertical="@dimen/base_margin">
+    android:paddingEnd="@dimen/base_margin_double"
+    android:paddingStart="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin"
+    android:paddingBottom="@dimen/base_margin">
 
     <ImageView
         android:id="@+id/flag"

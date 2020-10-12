@@ -10,28 +10,6 @@
     android:paddingEnd="@dimen/base_margin_triple"
     android:paddingBottom="@dimen/base_margin_triple">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="@null"
-        android:src="@drawable/bottom_sheet_handle" />
-
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:text="@string/language_picker_modal.title"
-        android:textAppearance="?textAppearanceHeadline5" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/base_margin"
-        android:text="@string/language_picker_modal.text"
-        android:textAppearance="?textAppearanceBody1" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"

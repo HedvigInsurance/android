@@ -27,12 +27,16 @@ class LanguagePickerBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             recycler.adapter = LanguagePickerBottomSheetAdapter(viewModel, tracker, dialog)
-            viewModel.data.observe(viewLifecycleOwner) { VMState ->
-                VMState.market?.let { market ->
-                    (recycler.adapter as LanguagePickerBottomSheetAdapter).items =
-                        Language.getAvailableLanguages(market)
+            viewModel.data.observe(viewLifecycleOwner) { state ->
+                state.market?.let { market ->
+                    (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.items =
+                        listOf(
+                            LanguageAdapterModel.Pill,
+                            LanguageAdapterModel.Header,
+                            LanguageAdapterModel.Description,
+                            LanguageAdapterModel.LanguageList(Language.getAvailableLanguages(market))
+                        )
                 }
-                (recycler.adapter as LanguagePickerBottomSheetAdapter).notifyDataSetChanged()
             }
         }
     }

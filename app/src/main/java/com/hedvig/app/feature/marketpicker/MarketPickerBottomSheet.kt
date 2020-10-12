@@ -31,9 +31,6 @@ class MarketPickerBottomSheet: BottomSheetDialogFragment() {
             recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
                 it.items = Market.values().toList()
             }
-            viewModel.data.observe(viewLifecycleOwner) {
-                (recycler.adapter as MarketPickerBottomSheetAdapter).notifyDataSetChanged()
-            }
         }
     }
 

@@ -12,14 +12,13 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class MarketPickerBottomSheetAdapter(
+class LanguageItemAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) :
-    RecyclerView.Adapter<MarketPickerBottomSheetAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<LanguageItemAdapter.ViewHolder>() {
 
-    var items: List<Market> = emptyList()
+    var items: List<Language> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(
                 GenericDiffUtilCallback(
@@ -44,25 +43,18 @@ class MarketPickerBottomSheetAdapter(
     ) {
         val binding by viewBinding(PickerItemLayoutBinding::bind)
         fun bind(
-            market: Market,
+            language: Language,
             viewModel: MarketPickerViewModel,
             tracker: MarketPickerTracker,
             dialog: Dialog?
         ) {
             binding.apply {
-                radioButton.isChecked = viewModel.data.value?.market == market
-                text.text = when (market) {
-                    Market.SE -> binding.text.context.getString(R.string.sweden)
-                    Market.NO -> binding.text.context.getString(R.string.norway)
-                }
+                radioButton.isChecked = viewModel.data.value?.language == language
+                text.text = text.context.getString(language.getLabel())
+
                 root.setHapticClickListener {
-                    tracker.selectMarket(market)
-                    viewModel.updatePickerState(
-                        PickerState(
-                            market,
-                            Language.getAvailableLanguages(market).first()
-                        )
-                    )
+                    tracker.selectLocale(language)
+                    viewModel.updatePickerState(viewModel.data.value?.copy(language = language))
                     dialog?.cancel()
                 }
             }

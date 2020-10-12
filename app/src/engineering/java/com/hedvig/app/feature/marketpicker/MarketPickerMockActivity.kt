@@ -14,26 +14,34 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketPickerModule
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setMarket
+import com.hedvig.app.util.extensions.storeBoolean
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class MarketPickerMockActivity : MockActivity() {
     override val original = listOf(marketPickerModule)
     override val mocks = listOf(module {
-        viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(baseContext) }
+        viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(application) }
     })
     private var originalMarket: Market? = null
+    private var originalShouldOpenMarketSelected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
         originalMarket = getMarket()
+        originalShouldOpenMarketSelected =
+            pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
     }
 
+    @SuppressLint("ApplySharedPref") // Needed
     override fun adapter() = genericDevelopmentAdapter {
+        val pref = this@MarketPickerMockActivity.getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE)
         header("Market Picker")
         clickableItem("Market: SE /w Swedish") {
             setMarket(Market.SE)
             setLanguage(Language.SV_SE)
+            storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, true)
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
             )
@@ -41,6 +49,7 @@ class MarketPickerMockActivity : MockActivity() {
         clickableItem("Market: NO /w Norwegian") {
             setMarket(Market.NO)
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
+            storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, true)
             setLanguage(Language.NB_NO)
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -48,7 +57,8 @@ class MarketPickerMockActivity : MockActivity() {
         }
         clickableItem("Market: not selected. SE IP Address") {
             setMarket(null)
-            setLanguage(Language.EN_SE)
+            removeLanguage()
+            pref.edit().remove(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -56,7 +66,8 @@ class MarketPickerMockActivity : MockActivity() {
         }
         clickableItem("Preselected geo market not avalible") {
             setMarket(null)
-            setLanguage(Language.EN_SE)
+            removeLanguage()
+            pref.edit().remove(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = false
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -65,7 +76,7 @@ class MarketPickerMockActivity : MockActivity() {
     }
 
     @SuppressLint("ApplySharedPref") // Needed
-    fun setLanguage(language: Language) {
+    private fun setLanguage(language: Language) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPreferences
             .edit()
@@ -77,8 +88,25 @@ class MarketPickerMockActivity : MockActivity() {
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
     }
 
+    @SuppressLint("ApplySharedPref") // Needed
+    private fun removeLanguage() {
+        val sharedPreferences = this.getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE)
+        sharedPreferences
+            .edit()
+            .remove(SettingsActivity.SETTING_LANGUAGE)
+            .commit()
+
+        LocalBroadcastManager
+            .getInstance(this)
+            .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         setMarket(originalMarket)
+        storeBoolean(
+            MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+            originalShouldOpenMarketSelected
+        )
     }
 }

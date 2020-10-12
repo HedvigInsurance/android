@@ -1,16 +1,17 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.app.Dialog
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.databinding.PickerItemLayoutBinding
+import com.hedvig.app.databinding.LanguageRecyclerItemBinding
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import e
 
 class LanguagePickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
@@ -18,7 +19,7 @@ class LanguagePickerBottomSheetAdapter(
     private val dialog: Dialog?
 ) : RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
 
-    var items: List<Language> = emptyList()
+    var items: List<LanguageAdapterModel> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(
                 GenericDiffUtilCallback(
@@ -30,7 +31,20 @@ class LanguagePickerBottomSheetAdapter(
             diff.dispatchUpdatesTo(this)
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.pill_layout -> ViewHolder.Pill(parent)
+        R.layout.picker_header -> ViewHolder.Header(parent)
+        R.layout.picker_description -> ViewHolder.Description(parent)
+        R.layout.language_recycler_item -> ViewHolder.Item(parent)
+        else -> throw Error("Invalid view type")
+    }
+
+    override fun getItemViewType(position: Int) = when (items[position]) {
+        LanguageAdapterModel.Pill -> R.layout.pill_layout
+        LanguageAdapterModel.Header -> R.layout.picker_header
+        LanguageAdapterModel.Description -> R.layout.picker_description
+        is LanguageAdapterModel.LanguageList -> R.layout.language_recycler_item
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position], viewModel, tracker, dialog)
@@ -38,26 +52,74 @@ class LanguagePickerBottomSheetAdapter(
 
     override fun getItemCount() = items.size
 
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        parent.inflate(R.layout.picker_item_layout)
-    ) {
-        val binding by viewBinding(PickerItemLayoutBinding::bind)
-        fun bind(
-            language: Language,
+    sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        abstract fun bind(
+            item: LanguageAdapterModel,
             viewModel: MarketPickerViewModel,
             tracker: MarketPickerTracker,
             dialog: Dialog?
-        ) {
-            binding.apply {
-                radioButton.isChecked = viewModel.data.value?.language == language
-                text.text = text.context.getString(language.getLabel())
+        )
 
-                root.setHapticClickListener {
-                    tracker.selectLocale(language)
-                    viewModel.data.postValue(viewModel.data.value?.copy(language = language))
-                    dialog?.cancel()
+        fun invalid(data: LanguageAdapterModel) {
+            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
+        }
+
+        class Item(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.language_recycler_item)) {
+            val binding by viewBinding(LanguageRecyclerItemBinding::bind)
+            override fun bind(
+                item: LanguageAdapterModel,
+                viewModel: MarketPickerViewModel,
+                tracker: MarketPickerTracker,
+                dialog: Dialog?
+            ) {
+                if (item !is LanguageAdapterModel.LanguageList) {
+                    return invalid(item)
                 }
+
+                binding.root.adapter =
+                    LanguageItemAdapter(viewModel, tracker, dialog).also {
+                        it.items = item.languages
+                    }
+            }
+        }
+
+        class Pill(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.pill_layout)) {
+            override fun bind(
+                item: LanguageAdapterModel,
+                viewModel: MarketPickerViewModel,
+                tracker: MarketPickerTracker,
+                dialog: Dialog?
+            ) {
+            }
+        }
+
+        class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_header)) {
+            override fun bind(
+                item: LanguageAdapterModel,
+                viewModel: MarketPickerViewModel,
+                tracker: MarketPickerTracker,
+                dialog: Dialog?
+            ) {
+            }
+        }
+
+        class Description(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.picker_description)) {
+            override fun bind(
+                item: LanguageAdapterModel,
+                viewModel: MarketPickerViewModel,
+                tracker: MarketPickerTracker,
+                dialog: Dialog?
+            ) {
             }
         }
     }
+}
+
+sealed class LanguageAdapterModel {
+    object Pill : LanguageAdapterModel()
+    object Header : LanguageAdapterModel()
+    object Description : LanguageAdapterModel()
+    data class LanguageList(val languages: List<Language>) : LanguageAdapterModel()
 }

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -55,14 +56,17 @@ class UnknownGeoTest {
     var originalLanguage: String? = null
     var originalShouldOpenMarketSelected = false
 
-
     @Before
     fun setup() {
-        val pref = PreferenceManager.getDefaultSharedPreferences(context())
+        val pref = context().applicationContext.getSharedPreferences(
+            "hedvig_shared_preference",
+            AppCompatActivity.MODE_PRIVATE
+        )
 
         originalMarket = pref.getString(Market.MARKET_SHARED_PREF, null)
         originalLanguage = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
-        originalShouldOpenMarketSelected = pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
+        originalShouldOpenMarketSelected =
+            pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
         pref
             .edit()
@@ -124,7 +128,10 @@ class UnknownGeoTest {
             .edit()
             .putString(Market.MARKET_SHARED_PREF, originalMarket)
             .putString(SettingsActivity.SETTING_LANGUAGE, originalLanguage)
-            .putBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, originalShouldOpenMarketSelected)
+            .putBoolean(
+                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                originalShouldOpenMarketSelected
+            )
             .commit()
     }
 }

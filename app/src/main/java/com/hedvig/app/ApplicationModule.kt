@@ -236,10 +236,8 @@ val viewModelModule = module {
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 
-
-
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {
