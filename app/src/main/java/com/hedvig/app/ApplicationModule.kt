@@ -89,7 +89,10 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
+import com.hedvig.app.feature.trustly.TrustlyViewModel
+import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -296,7 +299,11 @@ val homeModule = module {
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel() }
+    viewModel { ConnectPaymentViewModel(get()) }
+}
+
+val trustlyModule = module {
+    viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get()) }
 }
 
 val serviceModule = module {
@@ -330,6 +337,7 @@ val repositoriesModule = module {
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
+    single { TrustlyRepository(get()) }
 }
 
 val trackerModule = module {

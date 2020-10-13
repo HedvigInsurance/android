@@ -21,7 +21,7 @@ import com.hedvig.app.isDebug
 import e
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class AdyenConnectPayinActivity : BaseActivity(R.layout.adyen_connect_payin_activity) {
+class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
     private val adyenViewModel: AdyenViewModel by viewModel()
 

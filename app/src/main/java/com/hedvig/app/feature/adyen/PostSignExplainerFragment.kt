@@ -7,12 +7,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.observe
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
+import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
@@ -36,7 +39,9 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
     }
 }
 
-class ConnectPaymentViewModel : ViewModel() {
+class ConnectPaymentViewModel(
+    private val payinStatusRepository: PayinStatusRepository
+) : ViewModel() {
     private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
     val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
 
@@ -47,6 +52,11 @@ class ConnectPaymentViewModel : ViewModel() {
 
     fun navigateTo(screen: ConnectPaymentScreenState) {
         _navigationState.postValue(screen)
+        if (screen is ConnectPaymentScreenState.Result && screen.success) {
+            viewModelScope.launch {
+                payinStatusRepository.refreshPayinStatus()
+            }
+        }
     }
 
     fun isReadyToStart() {

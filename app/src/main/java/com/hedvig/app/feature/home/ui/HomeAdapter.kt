@@ -30,6 +30,7 @@ import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
+import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
@@ -255,7 +256,7 @@ class HomeAdapter(
                     tracker.addPaymentMethod()
                     when (val market = marketProvider.market) {
                         Market.SE -> action.context.startActivity(
-                            ConnectPaymentActivity.newInstance(
+                            TrustlyConnectPayinActivity.newInstance(
                                 action.context
                             )
                         )
