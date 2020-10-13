@@ -17,7 +17,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
-    private val viewModel: MarketPickerViewModel by viewModel()
+    private val viewModel: MarketPickerViewModel by sharedViewModel()
     private val marketingViewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
     private val tracker: MarketPickerTracker by inject()
