@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/ThemeOverlay.Hedvig.MarketingActivity"
+    tools:background="@color/black"
+    tools:context="com.hedvig.app.feature.marketpicker.MarketPickerFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/base_margin_septuple"
+        android:text="@string/market_language_screen.title"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceHeadline4" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/picker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:reverseLayout="true"
+        tools:itemCount="2"
+        tools:listitem="@layout/picker_layout" />
+
+</FrameLayout>

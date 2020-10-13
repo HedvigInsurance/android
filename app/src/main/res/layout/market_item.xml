@@ -20,7 +20,7 @@
         tools:src="@drawable/ic_flag_se" />
 
     <TextView
-        android:id="@+id/country"
+        android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"

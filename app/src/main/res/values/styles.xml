@@ -2,6 +2,12 @@
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
+    <style name="Hedvig.Theme.Marketing.V23" parent="Hedvig.Theme">
+        <item name="android:navigationBarColor">@color/translucent_dark_mode</item>
+    </style>
+
+    <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23"/>
+
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@color/translucent_background</item>
     </style>
