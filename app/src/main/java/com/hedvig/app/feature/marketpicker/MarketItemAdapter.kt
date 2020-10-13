@@ -58,12 +58,11 @@ class MarketItemAdapter(
                 root.setHapticClickListener {
                     tracker.selectMarket(market)
                     viewModel.updatePickerState(
-                        PickerState(
-                            market,
-                            Language.getAvailableLanguages(market).first()
+                        viewModel.data.value?.copy(
+                            market = market,
+                            language = Language.getAvailableLanguages(market).first()
                         )
                     )
-                    viewModel.updatePickerState(viewModel.data.value?.copy(market = market))
                     viewModel.save()
                     dialog?.cancel()
                 }

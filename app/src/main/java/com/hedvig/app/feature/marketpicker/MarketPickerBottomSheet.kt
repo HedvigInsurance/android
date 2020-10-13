@@ -9,12 +9,13 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerBottomSheet: BottomSheetDialogFragment() {
     val binding by viewBinding(MarketPickerBottomSheetBinding::bind)
     private val tracker: MarketPickerTracker by inject()
-    private val viewModel: MarketPickerViewModel by viewModel()
+    private val viewModel: MarketPickerViewModel by sharedViewModel()
 
 
     override fun onCreateView(
