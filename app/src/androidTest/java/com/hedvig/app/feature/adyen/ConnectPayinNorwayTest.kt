@@ -68,7 +68,7 @@ class ConnectPayinNorwayTest {
                     action {
                         click()
                     }
-                    connectPayin { intended() }
+                    connectPayinAdyen { intended() }
                 }
             }
         }

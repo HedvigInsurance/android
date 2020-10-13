@@ -10,6 +10,7 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
 import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import org.hamcrest.Matcher
 
@@ -61,6 +62,9 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         val connectPayin = KIntent {
             hasComponent(ConnectPaymentActivity::class.java.name)
         }
+
+        val connectPayinAdyen =
+            KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     }
 
     class CommonClaimTitleItem(parent: Matcher<View>) :
