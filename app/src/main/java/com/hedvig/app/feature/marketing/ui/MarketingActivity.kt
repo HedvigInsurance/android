@@ -72,12 +72,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                             view.systemUiVisibility =
                                 view.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
                         }
-                        UserInterfaceStyle.DARK -> {
-                            val view = window.decorView
-                            view.systemUiVisibility =
-                                view.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                        }
-                        UserInterfaceStyle.UNKNOWN__ -> {
+                        UserInterfaceStyle.DARK, UserInterfaceStyle.UNKNOWN__  -> {
                             val view = window.decorView
                             view.systemUiVisibility =
                                 view.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR

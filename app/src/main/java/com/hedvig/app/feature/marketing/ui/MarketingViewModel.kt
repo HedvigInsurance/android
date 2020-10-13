@@ -15,14 +15,15 @@ import kotlinx.coroutines.launch
 abstract class MarketingViewModel : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
 
-    val navigationState = MutableLiveData<NavigationState>()
+    protected val _navigationState = MutableLiveData<NavigationState>()
+    val navigationState: LiveData<NavigationState> = _navigationState
 
     init {
-        navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
+        _navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
     }
 
     fun navigateTo(cf: CurrentFragment, vararg sharedElements: Pair<View, String>) {
-        navigationState.postValue(NavigationState(cf, sharedElements.toList()))
+        _navigationState.postValue(NavigationState(cf, sharedElements.toList()))
     }
 }
 
@@ -34,9 +35,9 @@ class MarketingViewModelImpl(
 
     init {
         if (context.getStoredBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED)) {
-            navigationState.value = NavigationState(CurrentFragment.MARKETING, emptyList())
+            _navigationState.value = NavigationState(CurrentFragment.MARKETING, emptyList())
         } else {
-            navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
+            _navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER, emptyList())
         }
         viewModelScope.launch {
             val response = runCatching {
