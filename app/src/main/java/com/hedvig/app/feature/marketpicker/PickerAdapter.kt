@@ -127,7 +127,7 @@ class PickerAdapter(
                 }
                 binding.apply {
                     root.setHapticClickListener {
-                        LanguagePickerBottomSheet(viewModel, tracker).show(
+                        LanguagePickerBottomSheet().show(
                             parentFragmentManager,
                             LanguagePickerBottomSheet.TAG
                         )

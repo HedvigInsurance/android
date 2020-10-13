@@ -1,11 +1,9 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
@@ -27,15 +25,10 @@ class MarketPickerBottomSheet: BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            header.text = header.context.getString(R.string.market_picker_modal_title)
             recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
-                it.items = Market.values().toList()
+                it.items = listOf(MarketAdapterModel.Header, MarketAdapterModel.MarketList(Market.values().toList()))
             }
         }
-    }
-
-    override fun onCancel(dialog: DialogInterface) {
-        viewModel.save()
     }
 
     companion object {

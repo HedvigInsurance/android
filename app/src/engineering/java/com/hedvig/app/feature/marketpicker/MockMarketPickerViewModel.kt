@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
@@ -10,16 +8,14 @@ import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
 
 class MockMarketPickerViewModel(
-    private val myApplication: Application
-) : MarketPickerViewModel(myApplication) {
-    override val _data = MutableLiveData<PickerState>()
-    override val data: LiveData<PickerState> = _data
+    private val context: Context
+) : MarketPickerViewModel(context) {
 
     override fun uploadLanguage() {
     }
 
     init {
-        if (myApplication.getMarket() == null) {
+        if (context.getMarket() == null) {
             val market: Market
             try {
                 market = if (AVAILABLE_GEO_MARKET) {
@@ -39,10 +35,10 @@ class MockMarketPickerViewModel(
                 )
             }
         } else {
-            myApplication.getMarket()?.let { market ->
+            context.getMarket()?.let { market ->
                 _data.postValue(
                     PickerState(
-                        market, myApplication.getLanguage()
+                        market, context.getLanguage()
                     )
                 )
             }

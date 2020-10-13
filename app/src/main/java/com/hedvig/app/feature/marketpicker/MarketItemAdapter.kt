@@ -12,13 +12,13 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class LanguageItemAdapter(
+class MarketItemAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) : RecyclerView.Adapter<LanguageItemAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<MarketItemAdapter.ViewHolder>() {
 
-    var items: List<Language> = emptyList()
+    var items: List<Market> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(
                 GenericDiffUtilCallback(
@@ -43,18 +43,27 @@ class LanguageItemAdapter(
     ) {
         val binding by viewBinding(PickerItemLayoutBinding::bind)
         fun bind(
-            language: Language,
+            market: Market,
             viewModel: MarketPickerViewModel,
             tracker: MarketPickerTracker,
             dialog: Dialog?
         ) {
             binding.apply {
-                radioButton.isChecked = viewModel.data.value?.language == language
-                text.text = text.context.getString(language.getLabel())
 
+                radioButton.isChecked = viewModel.data.value?.market == market
+                text.text = when (market) {
+                    Market.SE -> binding.text.context.getString(R.string.sweden)
+                    Market.NO -> binding.text.context.getString(R.string.norway)
+                }
                 root.setHapticClickListener {
-                    tracker.selectLocale(language)
-                    viewModel.updatePickerState(viewModel.data.value?.copy(language = language))
+                    tracker.selectMarket(market)
+                    viewModel.updatePickerState(
+                        PickerState(
+                            market,
+                            Language.getAvailableLanguages(market).first()
+                        )
+                    )
+                    viewModel.updatePickerState(viewModel.data.value?.copy(market = market))
                     viewModel.save()
                     dialog?.cancel()
                 }

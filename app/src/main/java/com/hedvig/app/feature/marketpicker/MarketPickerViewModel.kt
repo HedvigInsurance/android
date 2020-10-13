@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
@@ -20,18 +21,17 @@ import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.getStoredBoolean
 import kotlinx.coroutines.launch
 
-abstract class MarketPickerViewModel(application: Application) : AndroidViewModel(application) {
-    protected open val _data = MutableLiveData<PickerState>()
-    open val data: LiveData<PickerState> = _data
+abstract class MarketPickerViewModel(private val context: Context) : ViewModel() {
+    protected val _data = MutableLiveData<PickerState>()
+    val data: LiveData<PickerState> = _data
     abstract fun uploadLanguage()
 
     @SuppressLint("ApplySharedPref")// We want to apply this right away. It's important
     fun save() {
-        val application = getApplication<HedvigApplication>()
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         var clean = false
         data.value?.let { ps ->
-            clean = ps.market == application.getMarket() && ps.language == application.getLanguage()
+            clean = ps.market == context.getMarket() && ps.language == context.getLanguage()
         }
 
         data.value?.let { data ->
@@ -47,7 +47,7 @@ abstract class MarketPickerViewModel(application: Application) : AndroidViewMode
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
 
-            if (!clean || application.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)) {
+            if (!clean || context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)) {
                 reload()
             }
             uploadLanguage()
@@ -56,23 +56,20 @@ abstract class MarketPickerViewModel(application: Application) : AndroidViewMode
 
     private fun reload() {
         LocalBroadcastManager
-            .getInstance(getApplication<HedvigApplication>())
+            .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
     }
 
     fun updatePickerState(pickerState: PickerState?) {
-        _data.postValue(pickerState)
+        _data.value = pickerState
     }
 }
 
 class MarketPickerViewModelImpl(
     private val marketRepository: MarketRepository,
     private val languageRepository: LanguageRepository,
-    private val context: Context,
-    application: Application
-) : MarketPickerViewModel(application) {
-    override val _data = MutableLiveData<PickerState>()
-    override val data: LiveData<PickerState> = _data
+    private val context: Context
+) : MarketPickerViewModel(context) {
 
     init {
         viewModelScope.launch {

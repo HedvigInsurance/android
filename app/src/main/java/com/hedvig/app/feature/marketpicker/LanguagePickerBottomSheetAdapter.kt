@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.LanguageRecyclerItemBinding
+import com.hedvig.app.databinding.PickerHeaderBinding
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
@@ -101,6 +102,8 @@ class LanguagePickerBottomSheetAdapter(
                 tracker: MarketPickerTracker,
                 dialog: Dialog?
             ) {
+                val binding by viewBinding(PickerHeaderBinding::bind)
+                binding.header.text = binding.header.context.getText(R.string.language_picker_modal_title)
             }
         }
 
