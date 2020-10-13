@@ -33,7 +33,6 @@ class LanguagePickerBottomSheetAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.pill_layout -> ViewHolder.Pill(parent)
         R.layout.picker_header -> ViewHolder.Header(parent)
         R.layout.picker_description -> ViewHolder.Description(parent)
         R.layout.language_recycler_item -> ViewHolder.Item(parent)
@@ -41,7 +40,6 @@ class LanguagePickerBottomSheetAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        LanguageAdapterModel.Pill -> R.layout.pill_layout
         LanguageAdapterModel.Header -> R.layout.picker_header
         LanguageAdapterModel.Description -> R.layout.picker_description
         is LanguageAdapterModel.LanguageList -> R.layout.language_recycler_item
@@ -85,16 +83,6 @@ class LanguagePickerBottomSheetAdapter(
             }
         }
 
-        class Pill(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.pill_layout)) {
-            override fun bind(
-                item: LanguageAdapterModel,
-                viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
-                dialog: Dialog?
-            ) {
-            }
-        }
-
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_header)) {
             override fun bind(
                 item: LanguageAdapterModel,
@@ -121,7 +109,6 @@ class LanguagePickerBottomSheetAdapter(
 }
 
 sealed class LanguageAdapterModel {
-    object Pill : LanguageAdapterModel()
     object Header : LanguageAdapterModel()
     object Description : LanguageAdapterModel()
     data class LanguageList(val languages: List<Language>) : LanguageAdapterModel()
