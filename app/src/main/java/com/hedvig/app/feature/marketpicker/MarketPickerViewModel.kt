@@ -75,6 +75,14 @@ class MarketPickerViewModelImpl(
         viewModelScope.launch {
             if (context.getMarket() == null) {
                 val geo = runCatching { marketRepository.geoAsync().await() }
+                if (geo.isFailure || geo.getOrNull()?.hasErrors() == true) {
+                    _data.postValue(
+                        PickerState(
+                            Market.SE, Language.EN_SE
+                        )
+                    )
+                    return@launch
+                }
                 geo.getOrNull()?.data?.let {
                     runCatching {
                         val market: Market

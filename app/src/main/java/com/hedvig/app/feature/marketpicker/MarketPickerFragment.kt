@@ -1,9 +1,12 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -14,7 +17,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import org.koin.android.viewmodel.ext.android.viewModel
 
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val viewModel: MarketPickerViewModel by sharedViewModel()
@@ -33,6 +35,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
             picker.adapter =
                 PickerAdapter(parentFragmentManager, viewModel, marketingViewModel, tracker)
 
+            var firstLayout = true
             viewModel.data.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
                     items = listOf(
@@ -40,6 +43,11 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                         Model.LanguageModel(data.language),
                         Model.MarketModel(data.market)
                     )
+                }
+                // Need too do this else the recyclerview might not show until user scrolls
+                if (firstLayout) {
+                    firstLayout = false
+                    picker.smoothScrollToPosition(0)
                 }
             }
         }
