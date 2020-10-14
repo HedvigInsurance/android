@@ -19,6 +19,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.TrustlyConnectFragmentBinding
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -33,9 +34,13 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val transitionType = requireArguments().getSerializable(TRANSITION_TYPE) as? TransitionType ?: return
+
         // TODO: Fix the directions of the animation
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+        if (transitionType != TransitionType.NO_ENTER_EXIT_RIGHT) {
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT)
+        }
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -137,11 +142,15 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
 
     companion object {
         private const val IS_POST_SIGN = "IS_POST_SIGN"
+        private const val TRANSITION_TYPE = "TRANSITION_TYPE"
 
-        fun newInstance(isPostSign: Boolean = false) = TrustlyConnectFragment().apply {
-            arguments = bundleOf(
-                IS_POST_SIGN to isPostSign
-            )
-        }
+        fun newInstance(isPostSign: Boolean, transitionType: TransitionType) =
+            TrustlyConnectFragment().apply {
+                arguments = bundleOf(
+                    IS_POST_SIGN to isPostSign,
+                    TRANSITION_TYPE to transitionType
+                )
+            }
     }
 }
+

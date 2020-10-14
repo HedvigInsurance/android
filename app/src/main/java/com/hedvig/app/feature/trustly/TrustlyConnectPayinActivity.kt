@@ -11,6 +11,7 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
+import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.showAlert
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -25,7 +26,7 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
             connectPaymentViewModel.setInitialNavigationDestination(ConnectPaymentScreenState.Explainer)
             connectPaymentViewModel.isReadyToStart()
         } else {
-            connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Connect)
+            connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.NO_ENTER_EXIT_RIGHT))
         }
 
         connectPaymentViewModel.navigationState.observe(this) { state ->
@@ -34,9 +35,9 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                     .beginTransaction()
                     .replace(R.id.container, PostSignExplainerFragment.newInstance(isPostSign()))
                     .commitAllowingStateLoss()
-                ConnectPaymentScreenState.Connect -> supportFragmentManager
+                is ConnectPaymentScreenState.Connect -> supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, TrustlyConnectFragment.newInstance(isPostSign()))
+                    .replace(R.id.container, TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType))
                     .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Result -> supportFragmentManager
                     .beginTransaction()

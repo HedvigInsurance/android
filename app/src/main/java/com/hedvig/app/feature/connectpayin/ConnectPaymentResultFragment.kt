@@ -9,6 +9,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.feature.trustly.TrustlyTracker
+import com.hedvig.app.feature.trustly.showConfirmCloseDialog
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -21,7 +22,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }
 
@@ -56,7 +57,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                 close.setText(R.string.ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY)
                 close.setHapticClickListener {
                     tracker.retry()
-                    connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Connect)
+                    connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_RIGHT_EXIT_RIGHT))
                 }
             }
         }

@@ -20,7 +20,6 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
     }
 
@@ -39,7 +38,7 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
         }
 
         binding.explainerButton.setHapticClickListener {
-            model.navigateTo(ConnectPaymentScreenState.Connect)
+            model.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_LEFT_EXIT_RIGHT))
         }
 
         model.readyToStart.observe(viewLifecycleOwner) { binding.explainerButton.isEnabled = it }

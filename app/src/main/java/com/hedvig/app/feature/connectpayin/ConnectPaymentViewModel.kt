@@ -50,6 +50,14 @@ class ConnectPaymentViewModel(
 
 sealed class ConnectPaymentScreenState {
     object Explainer : ConnectPaymentScreenState()
-    object Connect : ConnectPaymentScreenState()
+    data class Connect(
+        val transitionType: TransitionType
+    ) : ConnectPaymentScreenState()
     data class Result(val success: Boolean) : ConnectPaymentScreenState()
+}
+
+enum class TransitionType {
+    NO_ENTER_EXIT_RIGHT,
+    ENTER_LEFT_EXIT_RIGHT,
+    ENTER_RIGHT_EXIT_RIGHT
 }

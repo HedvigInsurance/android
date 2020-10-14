@@ -31,6 +31,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
     private lateinit var paymentMethods: PaymentMethodsApiResponse
     private lateinit var currency: AdyenCurrency
+    private var hasConnected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                     .beginTransaction()
                     .replace(R.id.container, PostSignExplainerFragment.newInstance(isPostSign()))
                     .commitAllowingStateLoss()
-                ConnectPaymentScreenState.Connect -> startAdyenPayment()
+                is ConnectPaymentScreenState.Connect -> startAdyenPayment()
                 is ConnectPaymentScreenState.Result -> supportFragmentManager
                     .beginTransaction()
                     .replace(
@@ -135,6 +136,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.getStringExtra(DropIn.RESULT_KEY) == ADYEN_RESULT_CODE_AUTHORISED) {
+            hasConnected = true
             connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
         }
     }
@@ -144,7 +146,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
         if (
             !isPostSign()
-            && connectPaymentViewModel.navigationState.value is ConnectPaymentScreenState.Result
+            && !hasConnected
             && resultCode == Activity.RESULT_CANCELED
         ) {
             finish()
