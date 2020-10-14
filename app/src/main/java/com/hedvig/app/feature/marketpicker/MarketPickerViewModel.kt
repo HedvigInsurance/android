@@ -121,7 +121,6 @@ data class PickerState(
 )
 
 sealed class Model {
-    object Title : Model()
     data class MarketModel(
         val selection: Market?
     ) : Model()

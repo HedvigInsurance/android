@@ -26,7 +26,8 @@
         android:layout_marginStart="@dimen/base_margin_double"
         app:layout_constraintBottom_toTopOf="@id/selected"
         app:layout_constraintStart_toEndOf="@id/flag"
-        tools:text="@string/market_language_screen.market_label" />
+        tools:text="@string/market_language_screen.market_label"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/selected"
@@ -36,7 +37,8 @@
         android:textAppearance="?textAppearanceCaption"
         app:layout_constraintStart_toEndOf="@id/flag"
         app:layout_constraintTop_toBottomOf="@id/header"
-        tools:text="Sweden" />
+        tools:text="Sweden"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
         android:layout_width="wrap_content"
