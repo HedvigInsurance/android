@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketpicker
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -8,6 +9,7 @@ import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -20,10 +22,6 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import io.mockk.mockk
 import io.mockk.verify
-import org.awaitility.Duration.TWO_SECONDS
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -34,7 +32,7 @@ import org.koin.dsl.module
 @RunWith(AndroidJUnit4::class)
 class UnknownGeoTest {
     @get:Rule
-    val activityRule = ActivityTestRule(MarketPickerActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(MarketingActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -56,56 +54,60 @@ class UnknownGeoTest {
 
     var originalMarket: String? = null
     var originalLanguage: String? = null
+    var originalShouldOpenMarketSelected = false
 
     @Before
     fun setup() {
-        val pref = PreferenceManager.getDefaultSharedPreferences(context())
+        val pref = context().applicationContext.getSharedPreferences(
+            "hedvig_shared_preference",
+            AppCompatActivity.MODE_PRIVATE
+        )
 
         originalMarket = pref.getString(Market.MARKET_SHARED_PREF, null)
         originalLanguage = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+        originalShouldOpenMarketSelected =
+            pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
         pref
             .edit()
             .remove(Market.MARKET_SHARED_PREF)
             .remove(SettingsActivity.SETTING_LANGUAGE)
+            .remove(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED)
             .commit()
     }
 
     @Test
     fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() {
-        activityRule.launchActivity(MarketPickerActivity.newInstance(context()))
+        activityRule.launchActivity(MarketingActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
-            marketRecyclerView {
-                childWith<MarketPickerScreen.MarketItem> {
-                    withDescendant {
-                        withText(R.string.sweden)
-                    }
-                } perform {
-                    radioButton {
-                        isNotChecked()
-                        click()
-                    }
-                }
-            }
-            languageRecyclerView {
-                childWith<MarketPickerScreen.LanguageItem> {
-                    withDescendant {
-                        withText(R.string.swedish)
-                    }
-                } perform {
+            picker {
+                childAt<MarketPickerScreen.Picker>(2) {
                     click()
                 }
             }
-            scroll {
-                scrollToEnd()
+            marketPicker {
+                childAt<MarketPickerScreen.Market>(0) {
+                    click()
+                }
             }
-            await atMost TWO_SECONDS untilAsserted {
-                save {
+            picker {
+                childAt<MarketPickerScreen.Picker>(1) {
+                    click()
+                }
+            }
+            languagePicker {
+                childAt<MarketPickerScreen.Language>(0) {
+                    click()
+                }
+            }
+            picker {
+                childAt<MarketPickerScreen.ContinueButton>(0) {
                     click()
                 }
             }
         }
+
 
         verify(exactly = 1) { tracker.selectMarket(Market.SE) }
         verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }
@@ -126,6 +128,10 @@ class UnknownGeoTest {
             .edit()
             .putString(Market.MARKET_SHARED_PREF, originalMarket)
             .putString(SettingsActivity.SETTING_LANGUAGE, originalLanguage)
+            .putBoolean(
+                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                originalShouldOpenMarketSelected
+            )
             .commit()
     }
 }

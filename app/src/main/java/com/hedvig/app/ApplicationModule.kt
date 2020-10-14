@@ -16,7 +16,6 @@ import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModelImpl
-import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -25,11 +24,11 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -49,8 +48,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.language.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -61,7 +58,11 @@ import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
+import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
+import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
+import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
@@ -240,6 +241,10 @@ val viewModelModule = module {
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 
+val marketPickerModule = module {
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
+}
+
 val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
@@ -255,11 +260,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
-}
-
-val languageAndMarketModule = module {
-    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
 }
 
 val offerModule = module {

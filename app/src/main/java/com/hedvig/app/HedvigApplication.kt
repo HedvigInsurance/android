@@ -59,7 +59,6 @@ open class HedvigApplication : Application() {
                     profileModule,
                     paymentModule,
                     keyGearModule,
-                    languageAndMarketModule,
                     adyenModule,
                     referralsModule,
                     homeModule,
@@ -71,7 +70,8 @@ open class HedvigApplication : Application() {
                     marketProviderModule,
                     connectPaymentModule,
                     trustlyModule,
-                    notificationModule
+                    notificationModule,
+                    marketPickerModule
                 )
             )
         }

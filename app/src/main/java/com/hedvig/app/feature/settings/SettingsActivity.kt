@@ -16,12 +16,14 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.setMarket
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -46,13 +48,13 @@ class SettingsActivity : BaseActivity() {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val mixpanel: MixpanelAPI by inject()
+        private val marketProvider: MarketProvider by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val market = context?.getMarket()
+            val market = marketProvider.market
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -70,47 +72,32 @@ class SettingsActivity : BaseActivity() {
                 }
             }
 
-            val marketPreference = findPreference<ListPreference>(SETTINGS_MARKET)
-            if (market != null) {
-                marketPreference?.setValueIndex(market.ordinal)
-            } else {
-                MarketPickerActivity.newInstance(requireContext())
+            val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
+            if (market == null) {
+                startActivity(MarketingActivity.newInstance(requireContext()))
             }
-            marketPreference?.let { mp ->
-                val oldValue = mp.value
-                mp.setOnPreferenceChangeListener { _, newValue ->
-                    if (oldValue != newValue) {
-                        requireContext().showAlert(
-                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
-                            R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
-                            positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
-                            negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-                            positiveAction = {
-                                sharedPreferences.edit()
-                                    .putString(
-                                        SETTINGS_NEW_MARKET,
-                                        Market.valueOf(newValue.toString()).name
-                                    )
-                                    .commit()
-
-
-                                userViewModel.logout {
-                                    requireContext().storeBoolean(
-                                        LoginStatusService.IS_VIEWING_OFFER,
-                                        false
-                                    )
-                                    requireContext().setAuthenticationToken(null)
-                                    requireContext().setIsLoggedIn(false)
-                                    FirebaseInstanceId.getInstance().deleteInstanceId()
-                                    mixpanel.reset()
-                                    requireActivity().triggerRestartActivity(MarketPickerActivity::class.java)
-                                }
-                            },
-                            negativeAction = {
-                                mp.value = oldValue
+            marketPreference?.let { np ->
+                np.setOnPreferenceClickListener {
+                    requireContext().showAlert(
+                        R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
+                        R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
+                        positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
+                        negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
+                        positiveAction = {
+                            requireContext().setMarket(null)
+                            userViewModel.logout {
+                                requireContext().storeBoolean(
+                                    LoginStatusService.IS_VIEWING_OFFER,
+                                    false
+                                )
+                                requireContext().setAuthenticationToken(null)
+                                requireContext().setIsLoggedIn(false)
+                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                mixpanel.reset()
+                                requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }
-                        )
-                    }
+                        }
+                    )
                     true
                 }
             }
@@ -170,7 +157,6 @@ class SettingsActivity : BaseActivity() {
         const val SETTING_LANGUAGE = "language"
         const val SETTING_NOTIFICATIONS = "notifications"
         const val SETTINGS_MARKET = "market"
-        const val SETTINGS_NEW_MARKET = "newMarket"
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }

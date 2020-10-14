@@ -11,7 +11,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
@@ -87,7 +86,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         }
 
         runSplashAnimation {
-
             marketProvider.market?.connectPayin(this)?.let { connectPayinIntent ->
                 startActivities(
                     arrayOf(
@@ -107,7 +105,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         when (getMarket()) {
             null -> {
                 runSplashAnimation {
-                    startActivity(MarketPickerActivity.newInstance(this))
+                    startActivity(MarketingActivity.newInstance(this))
                 }
             }
             Market.SE -> {
@@ -140,7 +138,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
             LoginStatus.ONBOARDING -> {
                 if (market == null) {
                     runSplashAnimation {
-                        startActivity(MarketPickerActivity.newInstance(this))
+                        startActivity(MarketingActivity.newInstance(this))
                     }
                 } else {
                     runSplashAnimation {

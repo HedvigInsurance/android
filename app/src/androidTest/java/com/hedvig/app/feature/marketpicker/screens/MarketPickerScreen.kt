@@ -5,28 +5,32 @@ import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.scroll.KScrollView
-import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 class MarketPickerScreen : Screen<MarketPickerScreen>() {
-    val marketRecyclerView =
-        KRecyclerView({ withId(R.id.marketList) }, itemTypeBuilder = { itemType(::MarketItem) })
+    val picker = KRecyclerView({ withId(R.id.picker) }, {
+        itemType(::ContinueButton)
+        itemType(::Picker)
+    })
 
-    val languageRecyclerView =
-        KRecyclerView({ withId(R.id.languageList) }, itemTypeBuilder = { itemType(::LanguageItem) })
+    val languagePicker = KRecyclerView({ withId(R.id.recycler) }, {
+        itemType(::Language)
+    })
 
-    val save = KButton { withId(R.id.save) }
-
-    val scroll = KScrollView { withId(R.id.scrollView) }
-
-    class MarketItem(parent: Matcher<View>) : KRecyclerItem<MarketItem>(parent) {
-        val radioButton = KCheckBox(parent) { withId(R.id.radioButton) }
+    val marketPicker = KRecyclerView({ withId(R.id.recycler) }, {
+        itemType(::Market)
+    })
+    class ContinueButton(parent: Matcher<View>) : KRecyclerItem<ContinueButton>(parent) {
+        val continueButton = KCheckBox(parent) { withId(R.id.continueButton) }
     }
 
-    class LanguageItem(parent: Matcher<View>) : KRecyclerItem<LanguageItem>(parent) {
-        val languageText = KTextView(parent) { withId(R.id.language) }
+    class Picker(parent: Matcher<View>) : KRecyclerItem<Picker>(parent) {
+        val selectedMarket = KTextView(parent) { withId(R.id.selected) }
     }
+
+    class Language(parent: Matcher<View>) : KRecyclerItem<Language>(parent)
+
+    class Market(parent: Matcher<View>) : KRecyclerItem<Market>(parent)
 }

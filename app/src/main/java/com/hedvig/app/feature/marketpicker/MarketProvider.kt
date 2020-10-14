@@ -10,6 +10,6 @@ abstract class MarketProvider {
 class MarketProviderImpl(
     private val context: Context
 ) : MarketProvider() {
-    override val market: Market?
+    override val market
         get() = context.getMarket()
 }
