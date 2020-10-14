@@ -42,7 +42,6 @@ class PickerAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        TITLE -> ViewHolder.Title(parent)
         MARKET -> ViewHolder.Market(parent)
         LANGUAGE -> ViewHolder.Language(parent)
         BUTTON -> ViewHolder.Button(parent)
@@ -50,7 +49,6 @@ class PickerAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        Model.Title -> TITLE
         is Model.MarketModel -> MARKET
         is Model.LanguageModel -> LANGUAGE
         Model.Button -> BUTTON
@@ -140,17 +138,6 @@ class PickerAdapter(
             }
         }
 
-        class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_title)) {
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
-            }
-        }
-
         class Button(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_button)) {
             val binding by viewBinding(PickerButtonBinding::bind)
 
@@ -192,6 +179,5 @@ class PickerAdapter(
         const val MARKET = 0
         const val LANGUAGE = 1
         const val BUTTON = 2
-        const val TITLE = 3
     }
 }
