@@ -8,9 +8,9 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.feature.home.screens.HomeTabScreen
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
@@ -21,7 +21,6 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,16 +47,15 @@ class ConnectPayinSwedenTest {
 
     private val marketProvider = mockk<MarketProvider>(relaxed = true)
 
+    init {
+        every { marketProvider.market } returns Market.SE
+    }
+
     @get:Rule
     val koinMockModuleRule = KoinMockModuleRule(
         listOf(marketProviderModule),
         listOf(module { single { marketProvider } })
     )
-
-    @Before
-    fun setup() {
-        every { marketProvider.market } returns Market.SE
-    }
 
     @Test
     fun shouldOpenConnectPayinTrustly() {
@@ -68,7 +66,7 @@ class ConnectPayinSwedenTest {
                     action {
                         click()
                     }
-                    connectPayin { intended() }
+                    connectPayinTrustly { intended() }
                 }
             }
         }

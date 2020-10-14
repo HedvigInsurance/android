@@ -3,24 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    tools:context=".feature.connectpayin.ConnectPaymentResultFragment"
     android:layout_height="match_parent">
 
     <!-- TODO: Rename these IDs to be a bit more sane -->
 
     <ImageView
-        android:id="@+id/resultIcon"
+        android:id="@+id/icon"
         android:layout_width="@dimen/connect_payment_result_icon_size"
         android:layout_height="@dimen/connect_payment_result_icon_size"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toTopOf="@id/resultTitle"
+        app:layout_constraintBottom_toTopOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:src="@drawable/ic_active" />
+        tools:src="@drawable/ic_checkmark_in_circle" />
 
     <TextView
-        android:id="@+id/resultTitle"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_triple"
@@ -31,11 +32,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/resultIcon"
+        app:layout_constraintTop_toBottomOf="@id/icon"
         tools:text="@string/PROFILE_TRUSTLY_SUCCESS_TITLE" />
 
     <Button
-        android:id="@+id/resultClose"
+        android:id="@+id/close"
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,18 +44,19 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:text="@string/PROFILE_TRUSTLY_CLOSE"
-        app:layout_constraintBottom_toTopOf="@id/resultDoItLater"
+        app:layout_constraintBottom_toTopOf="@id/doItLater"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/resultDoItLater"
-        style="?attr/materialButtonTextStyle"
-        android:layout_width="wrap_content"
+        android:id="@+id/doItLater"
+        style="?materialButtonOutlinedLargeStyle"
+        android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/base_margin_quintuple"
         android:text="@string/ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER"
-        android:textColor="?colorError"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

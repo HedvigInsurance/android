@@ -16,7 +16,7 @@ import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModelImpl
-import com.hedvig.app.feature.adyen.ConnectPaymentViewModel
+import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -102,6 +102,7 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
@@ -299,7 +300,7 @@ val homeModule = module {
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel(get()) }
+    viewModel { ConnectPaymentViewModel(get(), get()) }
 }
 
 val trustlyModule = module {
@@ -366,4 +367,8 @@ val marketPickerTrackerModule = module {
 
 val marketProviderModule = module {
     single<MarketProvider> { MarketProviderImpl(get()) }
+}
+
+val notificationModule = module {
+    single { PaymentNotificationManager(get()) }
 }

@@ -11,7 +11,7 @@ import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
+import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import org.hamcrest.Matcher
 
 class HomeTabScreen : Screen<HomeTabScreen>() {
@@ -59,8 +59,8 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         val body = KTextView(parent) { withId(R.id.body) }
         val action = KButton(parent) { withId(R.id.action) }
 
-        val connectPayin = KIntent {
-            hasComponent(ConnectPaymentActivity::class.java.name)
+        val connectPayinTrustly = KIntent {
+            hasComponent(TrustlyConnectPayinActivity::class.java.name)
         }
 
         val connectPayinAdyen =

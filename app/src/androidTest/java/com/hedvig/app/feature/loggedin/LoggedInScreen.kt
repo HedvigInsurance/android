@@ -6,7 +6,6 @@ import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.screen.Screen
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 
 class LoggedInScreen : Screen<LoggedInScreen>() {
     val root = KView { withId(R.id.loggedInRoot) }

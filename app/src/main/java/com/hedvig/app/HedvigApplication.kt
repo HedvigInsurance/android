@@ -70,7 +70,8 @@ open class HedvigApplication : Application() {
                     whatsNewModule,
                     marketProviderModule,
                     connectPaymentModule,
-                    trustlyModule
+                    trustlyModule,
+                    notificationModule
                 )
             )
         }

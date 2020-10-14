@@ -14,6 +14,10 @@ import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
+import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
+import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.getLocale
@@ -49,14 +53,14 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             when (state) {
                 ConnectPaymentScreenState.Explainer -> supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, PostSignExplainerFragment())
+                    .replace(R.id.container, PostSignExplainerFragment.newInstance(isPostSign()))
                     .commitAllowingStateLoss()
                 ConnectPaymentScreenState.Connect -> startAdyenPayment()
                 is ConnectPaymentScreenState.Result -> supportFragmentManager
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        ConnectPaymentSuccessFragment.newInstance(state.success, isPostSign())
+                        ConnectPaymentResultFragment.newInstance(state.success, isPostSign())
                     )
                     .commitAllowingStateLoss()
             }

@@ -19,18 +19,13 @@ import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
-import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
-import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
@@ -254,21 +249,8 @@ class HomeAdapter(
                 action.setText(R.string.info_card_missing_payment_button_text)
                 action.setHapticClickListener {
                     tracker.addPaymentMethod()
-                    when (val market = marketProvider.market) {
-                        Market.SE -> action.context.startActivity(
-                            TrustlyConnectPayinActivity.newInstance(
-                                action.context
-                            )
-                        )
-                        Market.NO -> action.context.startActivity(
-                            AdyenConnectPayinActivity.newInstance(
-                                action.context,
-                                AdyenCurrency.fromMarket(market)
-                            )
-                        )
-                        else -> {
-                        }
-                    }
+                    marketProvider.market?.connectPayin(action.context)
+                        ?.let { action.context.startActivity(it) }
                 }
             }
         }
