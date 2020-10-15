@@ -36,7 +36,6 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
 
         val transitionType = requireArguments().getSerializable(TRANSITION_TYPE) as? TransitionType ?: return
 
-        // TODO: Fix the directions of the animation
         if (transitionType != TransitionType.NO_ENTER_EXIT_RIGHT) {
             enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT)
         }
@@ -153,4 +152,3 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
             }
     }
 }
-

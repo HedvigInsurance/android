@@ -6,7 +6,6 @@
     tools:context=".feature.connectpayin.ConnectPaymentResultFragment"
     android:layout_height="match_parent">
 
-    <!-- TODO: Rename these IDs to be a bit more sane -->
 
     <ImageView
         android:id="@+id/icon"
