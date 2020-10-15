@@ -7,9 +7,11 @@ import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
+import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.MockWhatsNewViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
+import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
@@ -37,20 +39,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                         LoggedInActivity.newInstance(this)
                     )
                 },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in with welcome-screen") {
-                    startActivity(
-                        LoggedInActivity.newInstance(this)
-                            .putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                    )
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in with whats new-screen") {
-                    unloadKoinModules(listOf(whatsNewModule))
-                    loadKoinModules(module { viewModel<WhatsNewViewModel> { MockWhatsNewViewModel() } })
-                    MockWhatsNewViewModel.apply {
-                        whatsNewData = WHATS_NEW
-                    }
-                    startActivity(LoggedInActivity.newInstance(this))
-                },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
                     startActivity(Intent(this, ReferralsMockActivity::class.java))
                 },
@@ -69,7 +57,13 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
                     startActivity(Intent(this, ProfileMockActivity::class.java))
                 },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Market Picker"){
+                    startActivity(Intent(this, MarketPickerMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
+                    startActivity(Intent(this, LoggedInMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter . DevelopmentScreenItem . Row ("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {

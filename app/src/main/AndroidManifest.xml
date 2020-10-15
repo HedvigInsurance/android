@@ -23,13 +23,6 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true">
         <activity
-            android:name=".feature.marketpicker.MarketPickerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -267,7 +260,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
+            android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"

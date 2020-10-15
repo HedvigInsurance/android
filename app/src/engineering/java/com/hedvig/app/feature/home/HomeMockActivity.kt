@@ -30,7 +30,7 @@ class HomeMockActivity : MockActivity() {
     })
 
     override fun adapter() = genericDevelopmentAdapter {
-        header("Tab Screen")
+        header("Home Screen")
         clickableItem("Pending") {
             MockHomeViewModel.apply {
                 homeMockData = HOME_DATA_PENDING

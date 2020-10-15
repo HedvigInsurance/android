@@ -48,4 +48,10 @@
 
     <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V27"/>
 
+    <style name="Hedvig.Theme.Marketing.V27" parent="Hedvig.Theme.Marketing.V23">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V27"/>
+
 </resources>
