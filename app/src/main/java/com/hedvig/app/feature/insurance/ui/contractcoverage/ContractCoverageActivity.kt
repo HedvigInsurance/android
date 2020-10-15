@@ -109,7 +109,8 @@ class ContractCoverageActivity : BaseActivity(R.layout.activity_contract_coverag
             TypeOfContract.NO_HOME_CONTENT_OWN,
             TypeOfContract.NO_HOME_CONTENT_RENT,
             TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
+            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+            TypeOfContract.DK_HOME_CONTENT-> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
             TypeOfContract.NO_TRAVEL,
             TypeOfContract.NO_TRAVEL_YOUTH -> context.getString(R.string.INSURANCE_TYPE_TRAVEL_DEFINITE)
             TypeOfContract.UNKNOWN__ -> ""

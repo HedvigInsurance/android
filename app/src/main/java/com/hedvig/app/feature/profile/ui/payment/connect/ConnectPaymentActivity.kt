@@ -22,8 +22,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenDropInService
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketPickerActivity
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.trustly.TrustlyJavascriptInterface
 import com.hedvig.app.feature.trustly.TrustlyTracker
@@ -61,7 +61,7 @@ class ConnectPaymentActivity : BaseActivity(R.layout.activity_connect_payment) {
         val market = getMarket()
         if (market == null) {
             e { "Programmer error: ${this.javaClass.name} accessed without a Market selected" }
-            startActivity(MarketPickerActivity.newInstance(this))
+            startActivity(MarketingActivity.newInstance(this))
             return
         }
 

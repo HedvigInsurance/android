@@ -25,6 +25,8 @@ fun Locale.toLocaleString() = when (this) {
     Locale.SV_SE -> "sv_SE"
     Locale.EN_NO -> "en_NO"
     Locale.NB_NO -> "nb_NO"
+    Locale.DA_DK -> "da_DK"
+    Locale.EN_DK -> "en_DK"
     Locale.UNKNOWN__ -> ""
 }
 
@@ -33,6 +35,8 @@ fun Locale.toWebLocaleTag() = when (this) {
     Locale.SV_SE -> "se"
     Locale.NB_NO -> "no"
     Locale.EN_NO -> "no-en"
+    Locale.DA_DK -> "dk"
+    Locale.EN_DK -> "dk-en"
     Locale.UNKNOWN__ -> "se-en"
 }
 

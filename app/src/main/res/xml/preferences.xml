@@ -18,12 +18,9 @@
             app:title="@string/SETTINGS_LANGUAGE_TITLE"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
-            app:entries="@array/market_settings"
-            app:entryValues="@array/market_settings_values"
+        <Preference
             app:key="market"
-            app:title="@string/SETTINGS_PAGE_MARKET"
-            app:useSimpleSummaryProvider="true" />
+            app:title="@string/SETTINGS_PAGE_MARKET" />
 
         <Preference
             app:key="notifications"

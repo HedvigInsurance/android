@@ -30,12 +30,4 @@
         <item>nb-NO</item>
         <item>en-NO</item>
     </string-array>
-    <string-array name="market_settings">
-        <item>Sverige</item>
-        <item>Norge</item>
-    </string-array>
-    <string-array name="market_settings_values">
-        <item>SE</item>
-        <item>NO</item>
-    </string-array>
 </resources>

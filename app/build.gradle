@@ -25,7 +25,7 @@ android {
 
         minSdkVersion 23
         versionCode 43
-        versionName '4.5.2'
+        versionName '4.6.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -129,6 +129,7 @@ dependencies {
     implementation 'com.google.android:flexbox:2.0.1'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 
     // Android lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'

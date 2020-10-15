@@ -4,5 +4,6 @@ query MarketingBackground($language: String!) {
       url
     }
     blurhash
+    userInterfaceStyle
   }
 }

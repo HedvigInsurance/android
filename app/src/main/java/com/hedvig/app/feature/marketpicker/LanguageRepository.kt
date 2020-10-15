@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.language
+package com.hedvig.app.feature.marketpicker
 
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
