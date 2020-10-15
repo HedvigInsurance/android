@@ -3,10 +3,8 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
-import org.koin.core.KoinComponent
 
-class TestRunner : AndroidJUnitRunner(), KoinComponent {
-
+class TestRunner : AndroidJUnitRunner() {
     override fun newApplication(
         cl: ClassLoader?,
         className: String?,
