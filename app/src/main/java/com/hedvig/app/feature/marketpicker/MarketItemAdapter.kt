@@ -41,7 +41,7 @@ class MarketItemAdapter(
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         parent.inflate(R.layout.picker_item_layout)
     ) {
-        val binding by viewBinding(PickerItemLayoutBinding::bind)
+        private val binding by viewBinding(PickerItemLayoutBinding::bind)
         fun bind(
             market: Market,
             viewModel: MarketPickerViewModel,
@@ -49,12 +49,8 @@ class MarketItemAdapter(
             dialog: Dialog?
         ) {
             binding.apply {
-
                 radioButton.isChecked = viewModel.data.value?.market == market
-                text.text = when (market) {
-                    Market.SE -> binding.text.context.getString(R.string.sweden)
-                    Market.NO -> binding.text.context.getString(R.string.norway)
-                }
+                text.setText(market.label)
                 root.setHapticClickListener {
                     tracker.selectMarket(market)
                     viewModel.updatePickerState(
