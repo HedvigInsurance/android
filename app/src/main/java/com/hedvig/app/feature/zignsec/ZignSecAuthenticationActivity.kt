@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.denmark
+package com.hedvig.app.feature.zignsec
 
 import android.annotation.SuppressLint
 import android.content.Context

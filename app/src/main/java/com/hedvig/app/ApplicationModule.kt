@@ -24,8 +24,6 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.denmark.DanishAuthRepository
-import com.hedvig.app.feature.denmark.ZignSecAuthViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -66,8 +64,6 @@ import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -99,6 +95,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
+import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
+import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.terminated.TerminatedTracker
@@ -231,8 +229,7 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { NorwegianAuthenticationViewModel(get()) }
-    viewModel { ZignSecAuthViewModel(get()) }
+    viewModel { ZignSecAuthViewModel(get(), get()) }
 }
 
 val marketPickerModule = module {
@@ -320,12 +317,11 @@ val repositoriesModule = module {
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }
-    single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
-    single { DanishAuthRepository(get()) }
+    single { ZignSecAuthRepository(get()) }
 }
 
 val trackerModule = module {

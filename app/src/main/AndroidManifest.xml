@@ -22,7 +22,13 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
-        <activity android:name=".feature.denmark.ZignSecAuthenticationActivity"></activity>
+        <activity
+            android:name=".feature.zignsec.ZignSecAuthenticationActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -225,13 +231,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.webonboarding.WebOnboardingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.norway.NorwegianAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
