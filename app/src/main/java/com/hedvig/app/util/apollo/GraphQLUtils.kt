@@ -17,6 +17,8 @@ fun defaultLocale(context: Context) =
         "nb_NO" -> Locale.NB_NO
         "sv_SE" -> Locale.SV_SE
         "en_SE" -> Locale.EN_SE
+        "da_DK" -> Locale.DA_DK
+        "en_DK" -> Locale.EN_DK
         else -> Locale.EN_SE
     }
 
