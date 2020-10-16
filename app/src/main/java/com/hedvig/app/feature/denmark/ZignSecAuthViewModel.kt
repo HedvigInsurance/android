@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class DanishAuthViewModel(
+class ZignSecAuthViewModel(
     private val repository: DanishAuthRepository
 ) : ViewModel() {
     protected val _redirectUrl = MutableLiveData<String>()

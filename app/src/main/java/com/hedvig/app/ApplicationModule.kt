@@ -25,7 +25,7 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.denmark.DanishAuthRepository
-import com.hedvig.app.feature.denmark.DanishAuthViewModel
+import com.hedvig.app.feature.denmark.ZignSecAuthViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -232,10 +232,7 @@ val viewModelModule = module {
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { NorwegianAuthenticationViewModel(get()) }
-}
-
-val denmarkModule = module {
-    viewModel { DanishAuthViewModel(get()) }
+    viewModel { ZignSecAuthViewModel(get()) }
 }
 
 val marketPickerModule = module {

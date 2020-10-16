@@ -11,16 +11,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
-import com.hedvig.app.databinding.ActivityDanishAuthenticationBinding
+import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class DanishAuthenticationActivity : AppCompatActivity(R.layout.activity_danish_authentication) {
+class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_sec_authentication) {
 
     private val viewModel: ZignSecAuthViewModel by viewModel()
-    private val binding by viewBinding(ActivityDanishAuthenticationBinding::bind)
+    private val binding by viewBinding(ActivityZignSecAuthenticationBinding::bind)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +84,6 @@ class DanishAuthenticationActivity : AppCompatActivity(R.layout.activity_danish_
 
     companion object {
         fun newInstance(context: Context) =
-            Intent(context, DanishAuthenticationActivity::class.java)
+            Intent(context, ZignSecAuthenticationActivity::class.java)
     }
 }

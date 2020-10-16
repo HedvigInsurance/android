@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.denmark.DanishAuthenticationActivity
+import com.hedvig.app.feature.denmark.ZignSecAuthenticationActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
@@ -14,10 +14,7 @@ import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -72,7 +69,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
             logIn.setHapticClickListener {
                 tracker.logIn()
                 // marketProvider.openAuth(requireContext(), parentFragmentManager)
-                startActivity(DanishAuthenticationActivity.newInstance(requireContext()))
+                startActivity(ZignSecAuthenticationActivity.newInstance(requireContext()))
             }
         }
     }

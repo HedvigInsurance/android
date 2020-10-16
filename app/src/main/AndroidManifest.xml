@@ -22,7 +22,7 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
-        <activity android:name=".feature.denmark.DanishAuthenticationActivity"></activity>
+        <activity android:name=".feature.denmark.ZignSecAuthenticationActivity"></activity>
         <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
