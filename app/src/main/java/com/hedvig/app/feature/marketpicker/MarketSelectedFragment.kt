@@ -14,6 +14,7 @@ import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -48,7 +49,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             flag.apply {
                 marketProvider.market?.let { market ->
-                    setImageDrawable(context.compatDrawable(market.getFlag()))
+                    setImageDrawable(context.compatDrawable(market.flag))
                 }
                 setHapticClickListener {
                     viewModel.navigateTo(
@@ -67,6 +68,9 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                     Market.NO -> {
                         startActivity(WebOnboardingActivity.newInstance(requireContext()))
                     }
+                    Market.DK -> {
+                        startActivity(WebOnboardingActivity.newInstance(requireContext()))
+                    }
                 }
             }
 
@@ -78,6 +82,9 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                     }
                     Market.NO -> {
                         startActivity(NorwegianAuthenticationActivity.newInstance(requireContext()))
+                    }
+                    Market.DK -> {
+                        requireContext().makeToast("Not Implemented!")
                     }
                 }
             }

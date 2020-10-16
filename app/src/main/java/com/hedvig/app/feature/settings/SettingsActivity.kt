@@ -85,6 +85,10 @@ class SettingsActivity : BaseActivity() {
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                         positiveAction = {
                             requireContext().setMarket(null)
+                            requireContext().storeBoolean(
+                                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                                false
+                            )
                             userViewModel.logout {
                                 requireContext().storeBoolean(
                                     LoginStatusService.IS_VIEWING_OFFER,
@@ -113,6 +117,10 @@ class SettingsActivity : BaseActivity() {
                         lp.entries = resources.getStringArray(R.array.language_settings_no)
                         lp.entryValues =
                             resources.getStringArray(R.array.language_settings_values_no)
+                    }
+                    Market.DK -> {
+                        lp.entries = resources.getStringArray(R.array.language_settings_dk)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
                     }
                 }
 

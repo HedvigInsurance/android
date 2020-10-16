@@ -15,10 +15,9 @@ import com.hedvig.app.util.hasError
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.KoinComponent
 
 @RunWith(AndroidJUnit4::class)
-class CodeTooShortErrorTest : KoinComponent {
+class CodeTooShortErrorTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)
