@@ -30,7 +30,7 @@ android {
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        resConfigs "en", "en-rNO", "en-rSE", "nb-rNO", "sv-rSE"
+        resConfigs "en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"
 
         testInstrumentationRunner "com.hedvig.app.TestRunner"
     }
