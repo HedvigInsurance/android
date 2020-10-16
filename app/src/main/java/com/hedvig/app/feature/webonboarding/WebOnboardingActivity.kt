@@ -77,6 +77,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
         val localePath = when (defaultLocale(this)) {
             Locale.NB_NO -> "no/"
             Locale.EN_NO -> "no-en/"
+            Locale.DA_DK -> "dk/"
+            Locale.EN_DK -> "dk-en/"
             else -> "no/"
         }
 

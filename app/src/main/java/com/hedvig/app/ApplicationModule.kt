@@ -50,8 +50,7 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.language.LanguageAndMarketViewModel
-import com.hedvig.app.feature.language.LanguageRepository
+import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -63,6 +62,10 @@ import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
+import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
+import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
+import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
 import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
@@ -236,6 +239,10 @@ val viewModelModule = module {
     viewModel { NorwegianAuthenticationViewModel(get()) }
 }
 
+val marketPickerModule = module {
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
+}
+
 val loggedInModule = module {
     viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
 }
@@ -251,11 +258,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
-}
-
-val languageAndMarketModule = module {
-    viewModel { LanguageAndMarketViewModel(get(), get(), get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
 }
 
 val offerModule = module {
@@ -355,4 +358,8 @@ val trackerModule = module {
 
 val marketPickerTrackerModule = module {
     single { MarketPickerTracker(get()) }
+}
+
+val marketProviderModule = module {
+    single<MarketProvider> { MarketProviderImpl(get(), get()) }
 }

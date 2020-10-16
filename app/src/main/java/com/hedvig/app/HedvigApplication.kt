@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
+import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -18,7 +19,6 @@ import i
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import net.ypresto.timbertreeutils.CrashlyticsLogExceptionTree
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -59,7 +59,6 @@ open class HedvigApplication : Application() {
                     profileModule,
                     paymentModule,
                     keyGearModule,
-                    languageAndMarketModule,
                     adyenModule,
                     referralsModule,
                     homeModule,
@@ -68,7 +67,9 @@ open class HedvigApplication : Application() {
                     trackerModule,
                     embarkModule,
                     marketPickerTrackerModule,
-                    whatsNewModule
+                    whatsNewModule,
+                    marketProviderModule,
+                    marketPickerModule
                 )
             )
         }
@@ -90,16 +91,16 @@ open class HedvigApplication : Application() {
         if (isDebug()) {
             Timber.plant(Timber.DebugTree())
         } else {
-            Timber.plant(CrashlyticsLogExceptionTree())
+            Timber.plant(FirebaseCrashlyticsLogExceptionTree())
         }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
     private suspend fun acquireHedvigToken() {
-        val query =
+        val response = runCatching {
             apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred().await()
-        val response = runCatching { query }
+        }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }
             return

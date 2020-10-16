@@ -30,12 +30,14 @@
         <item>nb-NO</item>
         <item>en-NO</item>
     </string-array>
-    <string-array name="market_settings">
-        <item>Sverige</item>
-        <item>Norge</item>
+    <string-array name="language_settings_dk">
+        <item>@string/SETTINGS_LANGUAGE_SYSTEM_DEFAULT</item>
+        <item>@string/danish</item>
+        <item>@string/SETTINGS_LANGUAGE_ENGLISH</item>
     </string-array>
-    <string-array name="market_settings_values">
-        <item>SE</item>
-        <item>NO</item>
+    <string-array name="language_settings_values_dk">
+        <item>system_default</item>
+        <item>da-DK</item>
+        <item>en-DK</item>
     </string-array>
 </resources>

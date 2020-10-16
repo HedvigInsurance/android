@@ -64,6 +64,16 @@
             android:label="Home Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.marketpicker.MarketPickerMockActivity"
+            android:label="Home Mock Screen" 
+            android:theme="@style/Hedvig.Theme"/>
+
+        <activity
+            android:name=".feature.loggedin.LoggedInMockActivity"
+            android:label="Logged In Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>
