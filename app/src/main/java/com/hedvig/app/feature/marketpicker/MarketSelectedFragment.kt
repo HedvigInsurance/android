@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.denmark.DanishAuthenticationActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
@@ -72,14 +71,8 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             logIn.setHapticClickListener {
                 tracker.logIn()
-                when (market) {
-                    Market.SE -> {
-                        AuthenticateDialog().show(parentFragmentManager, AuthenticateDialog.TAG)
-                    }
-                    Market.NO -> {
-                        startActivity(NorwegianAuthenticationActivity.newInstance(requireContext()))
-                    }
-                }
+                // marketProvider.openAuth(requireContext(), parentFragmentManager)
+                startActivity(DanishAuthenticationActivity.newInstance(requireContext()))
             }
         }
     }
