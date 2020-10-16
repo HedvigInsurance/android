@@ -7,9 +7,11 @@ import androidx.work.WorkerParameters
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.whenApiVersion
 import e
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@OptIn(KoinApiExtension::class)
 class ReplyWorker(
     private val context: Context,
     params: WorkerParameters

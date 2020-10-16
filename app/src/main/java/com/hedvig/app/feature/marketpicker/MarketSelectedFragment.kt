@@ -13,6 +13,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -44,7 +45,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             flag.apply {
                 marketProvider.market?.let { market ->
-                    setImageDrawable(context.compatDrawable(market.getFlag()))
+                    setImageDrawable(context.compatDrawable(market.flag))
                 }
                 setHapticClickListener {
                     viewModel.navigateTo(
@@ -63,13 +64,25 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                     Market.NO -> {
                         startActivity(WebOnboardingActivity.newInstance(requireContext()))
                     }
+                    Market.DK -> {
+                        startActivity(WebOnboardingActivity.newInstance(requireContext()))
+                    }
                 }
             }
 
             logIn.setHapticClickListener {
                 tracker.logIn()
-                // marketProvider.openAuth(requireContext(), parentFragmentManager)
-                startActivity(ZignSecAuthenticationActivity.newInstance(requireContext()))
+                when (market) {
+                    Market.SE -> {
+                        AuthenticateDialog().show(parentFragmentManager, AuthenticateDialog.TAG)
+                    }
+                    Market.NO -> {
+                        startActivity(NorwegianAuthenticationActivity.newInstance(requireContext()))
+                    }
+                    Market.DK -> {
+                        startActivity(ZignSecAuthenticationActivity.newInstance(requireContext()))
+                    }
+                }
             }
         }
     }

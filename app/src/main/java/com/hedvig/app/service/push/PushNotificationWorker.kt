@@ -9,9 +9,11 @@ import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@OptIn(KoinApiExtension::class)
 class PushNotificationWorker(
     val context: Context,
     params: WorkerParameters

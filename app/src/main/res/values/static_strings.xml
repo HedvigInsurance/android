@@ -15,7 +15,10 @@
     <string name="english_swedish" translatable="false">English</string>
     <string name="norway" translatable="false">Norge</string>
     <string name="norwegian" translatable="false">Norsk</string>
+    <string name="denmark" translatable="false">Danmark</string>
+    <string name="danish" translatable="false">Dansk</string>
     <string name="english_norwegian" translatable="false">English</string>
+    <string name="english_danish" translatable="false">English</string>
     <string name="system_default" translatable="false">System default</string>
 
     <string name="one" translatable="false">1</string>

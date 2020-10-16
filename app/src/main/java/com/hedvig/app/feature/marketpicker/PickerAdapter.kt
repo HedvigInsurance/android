@@ -91,28 +91,15 @@ class PickerAdapter(
                         MarketPickerBottomSheet()
                             .show(parentFragmentManager, MarketPickerBottomSheet.TAG)
                     }
-                    flag.setImageDrawable(
-                        flag.context.compatDrawable(
-                            when (item.selection) {
-                                SE -> R.drawable.ic_flag_se
-                                NO -> R.drawable.ic_flag_no
-                            }
-                        )
-                    )
-                    header.text =
-                        header.context.getString(R.string.market_language_screen_market_label)
-                    selected.text = selected.context.getString(
-                        when (item.selection) {
-                            SE -> R.string.sweden
-                            NO -> R.string.norway
-                        }
-                    )
+                    flag.setImageResource(item.selection.flag)
+                    header.setText(R.string.market_language_screen_market_label)
+                    selected.setText(item.selection.label)
                 }
             }
         }
 
         class Language(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
-            val binding by viewBinding(PickerLayoutBinding::bind)
+            private val binding by viewBinding(PickerLayoutBinding::bind)
             override fun bind(
                 item: Model,
                 parentFragmentManager: FragmentManager,
@@ -130,10 +117,9 @@ class PickerAdapter(
                             LanguagePickerBottomSheet.TAG
                         )
                     }
-                    flag.setImageDrawable(flag.context.compatDrawable(R.drawable.ic_language))
-                    header.text =
-                        header.context.getString(R.string.market_language_screen_language_label)
-                    selected.text = selected.context.getString(item.selection.getLabel())
+                    flag.setImageResource(R.drawable.ic_language)
+                    header.setText(R.string.market_language_screen_language_label)
+                    selected.setText(item.selection.getLabel())
                 }
             }
         }

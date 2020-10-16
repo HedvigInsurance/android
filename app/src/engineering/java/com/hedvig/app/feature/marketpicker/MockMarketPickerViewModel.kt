@@ -26,6 +26,7 @@ class MockMarketPickerViewModel(
                 when (market) {
                     Market.SE -> _data.postValue(PickerState(market, Language.EN_SE))
                     Market.NO -> _data.postValue(PickerState(market, Language.EN_NO))
+                    Market.DK -> _data.postValue(PickerState(market, Language.EN_DK))
                 }
             } catch (e: Exception) {
                 _data.postValue(
