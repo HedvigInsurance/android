@@ -2,46 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".feature.trustly.TrustlyConnectFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:layout_width="match_parent"
         android:id="@+id/toolbar"
-        app:title="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE"
-        tools:navigationIcon="@drawable/ic_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/pay_in_iframe_post_sign.title"
         tools:menu="@menu/connect_payin"
-        android:layout_height="wrap_content" />
+        tools:navigationIcon="@drawable/ic_close" />
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/loadingContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:id="@+id/loadingContainer"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <ProgressBar
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="Loading..."
-            android:layout_marginTop="@dimen/base_margin_triple"
-            android:layout_marginStart="@dimen/base_margin_triple"
-            android:layout_marginEnd="@dimen/base_margin_triple"
-            android:textAppearance="?textAppearanceHeadline6"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    </FrameLayout>
 
     <com.hedvig.app.ui.view.SafeWebView
-        android:layout_width="match_parent"
         android:id="@+id/trustly"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:visibility="gone"
-        android:layout_height="0dp" />
+        android:visibility="gone" />
 
 </LinearLayout>

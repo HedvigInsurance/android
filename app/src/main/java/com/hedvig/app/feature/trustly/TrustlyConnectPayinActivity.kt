@@ -37,13 +37,16 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                     .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Connect -> supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType))
+                    .replace(
+                        R.id.container,
+                        TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType)
+                    )
                     .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Result -> supportFragmentManager
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        ConnectPaymentResultFragment.newInstance(state.success, isPostSign())
+                        ConnectPaymentResultFragment.newInstance(state.success)
                     )
                     .commitAllowingStateLoss()
             }
@@ -84,10 +87,10 @@ inline fun onBackPressedCallback(crossinline callback: () -> Unit, enabled: Bool
     }
 
 fun showConfirmCloseDialog(context: Context, close: () -> Unit) = context.showAlert(
-    title = R.string.TRUSTLY_ALERT_TITLE,
-    message = R.string.TRUSTLY_ALERT_BODY,
-    positiveLabel = R.string.TRUSTLY_ALERT_POSITIVE_ACTION,
-    negativeLabel = R.string.TRUSTLY_ALERT_NEGATIVE_ACTION,
+    title = R.string.pay_in_iframe_post_sign_skip_alert_title,
+    message = R.string.pay_in_iframe_post_sign_skip_alert_body,
+    positiveLabel = R.string.pay_in_iframe_post_sign_skip_alert_proceed_button,
+    negativeLabel = R.string.pay_in_iframe_post_sign_skip_alert_dismiss_button,
     positiveAction = {
         close()
     }

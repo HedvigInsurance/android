@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.connectpayin.PostSignExplainerFragment">
 
     <ImageView
         android:id="@+id/explainerIllustration"
@@ -24,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_octuple"
-        android:text="@string/ONBOARDING_CONNECT_DD_HEADLINE"
+        android:text="@string/pay_in_explainer.headline"
         android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintBottom_toTopOf="@id/explainerParagraph"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,11 +37,11 @@
         android:id="@+id/explainerParagraph"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:textAlignment="center"
         android:layout_marginStart="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_triple"
-        android:text="@string/ONBOARDING_CONNECT_DD_BODY"
+        android:text="@string/pay_in_explainer.body"
+        android:textAlignment="center"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toTopOf="@id/explainerButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +57,7 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
-        android:text="@string/ONBOARDING_CONNECT_DD_CTA"
+        android:text="@string/pay_in_explainer.button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

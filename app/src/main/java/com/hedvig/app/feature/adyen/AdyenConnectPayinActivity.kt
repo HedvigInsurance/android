@@ -61,7 +61,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        ConnectPaymentResultFragment.newInstance(state.success, isPostSign())
+                        ConnectPaymentResultFragment.newInstance(state.success)
                     )
                     .commitAllowingStateLoss()
             }

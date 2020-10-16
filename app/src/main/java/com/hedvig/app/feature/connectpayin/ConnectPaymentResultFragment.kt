@@ -9,7 +9,6 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.feature.trustly.TrustlyTracker
-import com.hedvig.app.feature.trustly.showConfirmCloseDialog
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -29,35 +28,33 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             val success = requireArguments().getBoolean(SUCCESS)
-            val isPostSign = requireArguments().getBoolean(IS_POST_SIGN)
 
             if (success) {
                 icon.setImageResource(R.drawable.ic_checkmark_in_circle)
-                title.setText(R.string.PROFILE_TRUSTLY_SUCCESS_TITLE)
+                title.setText(R.string.pay_in_confirmation_headline)
                 doItLater.isVisible = false
-                close.setText(
-                    if (isPostSign) {
-                        R.string.ONBOARDING_CONNECT_DD_SUCCESS_CTA
-                    } else {
-                        R.string.PROFILE_TRUSTLY_CLOSE
-                    }
-                )
+                close.setText(R.string.pay_in_confirmation_continue_button)
                 close.setHapticClickListener {
                     tracker.close()
                     connectPaymentViewModel.close()
                 }
             } else {
                 icon.setImageResource(R.drawable.ic_warning_triangle)
-                title.setText(R.string.ONBOARDING_CONNECT_DD_FAILURE_HEADLINE)
+                title.setText(R.string.pay_in_error_headline)
+                body.isVisible = true
                 doItLater.isVisible = true
                 doItLater.setHapticClickListener {
                     tracker.doItLater()
                     connectPaymentViewModel.close()
                 }
-                close.setText(R.string.ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY)
+                close.setText(R.string.pay_in_error_retry_button)
                 close.setHapticClickListener {
                     tracker.retry()
-                    connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_RIGHT_EXIT_RIGHT))
+                    connectPaymentViewModel.navigateTo(
+                        ConnectPaymentScreenState.Connect(
+                            TransitionType.ENTER_RIGHT_EXIT_RIGHT
+                        )
+                    )
                 }
             }
         }
@@ -67,11 +64,10 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
         private const val SUCCESS = "SUCCESS"
         private const val IS_POST_SIGN = "IS_POST_SIGN"
 
-        fun newInstance(success: Boolean, isPostSign: Boolean) =
+        fun newInstance(success: Boolean) =
             ConnectPaymentResultFragment().apply {
                 arguments = bundleOf(
-                    SUCCESS to success,
-                    IS_POST_SIGN to isPostSign
+                    SUCCESS to success
                 )
             }
     }
