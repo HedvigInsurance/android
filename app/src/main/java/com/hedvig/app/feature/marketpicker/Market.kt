@@ -15,7 +15,7 @@ enum class Market {
         SE -> TrustlyConnectPayinActivity.newInstance(
             context
         )
-        NO -> AdyenConnectPayinActivity.newInstance(
+        NO, DK -> AdyenConnectPayinActivity.newInstance(
             context,
             AdyenCurrency.fromMarket(this)
         )

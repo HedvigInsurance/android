@@ -178,6 +178,7 @@ enum class AdyenCurrency {
     companion object {
         fun fromMarket(market: Market) = when (market) {
             Market.NO -> NOK
+            Market.DK -> DKK
             else -> throw Error("Market $market is not supported by Adyen")
         }
     }
