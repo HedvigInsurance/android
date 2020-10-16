@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -58,6 +58,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://giraffe.hedvig.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://giraffe.hedvig.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.hedvig.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = true
             resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
@@ -72,6 +73,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = true
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
@@ -86,6 +88,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = false
 
             resValue "string", "file_provider_authority", "\"com.hedvig.android.dev.file.provider\""
 
@@ -151,8 +154,7 @@ dependencies {
 
     // Firebase
     implementation 'com.google.android.gms:play-services-base:17.4.0'
-    releaseImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    stagingImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
 
     implementation "com.google.firebase:firebase-dynamic-links:19.1.1"
     implementation 'com.google.firebase:firebase-config:19.2.0'
@@ -164,8 +166,6 @@ dependencies {
     def koin_version = "2.2.0-rc-2"
     implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-android-viewmodel:$koin_version"
-
-    implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
