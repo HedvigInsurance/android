@@ -18,9 +18,12 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TrustlyConnectFragmentBinding
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
+import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
+import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.onBackPressedCallback
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -34,10 +37,14 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val transitionType = requireArguments().getSerializable(TRANSITION_TYPE) as? TransitionType ?: return
+        val transitionType =
+            requireArguments().getSerializable(TRANSITION_TYPE) as? TransitionType ?: return
 
         if (transitionType != TransitionType.NO_ENTER_EXIT_RIGHT) {
-            enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT)
+            enterTransition = MaterialSharedAxis(
+                MaterialSharedAxis.X,
+                transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT
+            )
         }
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
     }
@@ -52,7 +59,11 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
             requireActivity().onBackPressedDispatcher.addCallback(
                 viewLifecycleOwner,
                 onBackPressedCallback({
-                    showConfirmCloseDialog(requireContext(), connectPaymentViewModel::close)
+                    showConfirmCloseDialog(
+                        requireContext(),
+                        ConnectPayinType.TRUSTLY,
+                        connectPaymentViewModel::close
+                    )
                 })
             )
         }
@@ -66,6 +77,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                             R.id.skip -> {
                                 showConfirmCloseDialog(
                                     requireContext(),
+                                    ConnectPayinType.TRUSTLY,
                                     connectPaymentViewModel::close
                                 )
                                 true

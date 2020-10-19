@@ -3,17 +3,16 @@ package com.hedvig.app.feature.trustly
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.observe
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.util.extensions.showAlert
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
@@ -33,7 +32,10 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
             when (state) {
                 ConnectPaymentScreenState.Explainer -> supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, PostSignExplainerFragment.newInstance(isPostSign()))
+                    .replace(
+                        R.id.container,
+                        PostSignExplainerFragment.newInstance(ConnectPayinType.TRUSTLY)
+                    )
                     .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Connect -> supportFragmentManager
                     .beginTransaction()
@@ -46,7 +48,10 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        ConnectPaymentResultFragment.newInstance(state.success)
+                        ConnectPaymentResultFragment.newInstance(
+                            state.success,
+                            ConnectPayinType.TRUSTLY
+                        )
                     )
                     .commitAllowingStateLoss()
             }
@@ -78,20 +83,3 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
             }
     }
 }
-
-inline fun onBackPressedCallback(crossinline callback: () -> Unit, enabled: Boolean = true) =
-    object : OnBackPressedCallback(enabled) {
-        override fun handleOnBackPressed() {
-            callback()
-        }
-    }
-
-fun showConfirmCloseDialog(context: Context, close: () -> Unit) = context.showAlert(
-    title = R.string.pay_in_iframe_post_sign_skip_alert_title,
-    message = R.string.pay_in_iframe_post_sign_skip_alert_body,
-    positiveLabel = R.string.pay_in_iframe_post_sign_skip_alert_proceed_button,
-    negativeLabel = R.string.pay_in_iframe_post_sign_skip_alert_dismiss_button,
-    positiveAction = {
-        close()
-    }
-)

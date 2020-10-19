@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_octuple"
-        android:text="@string/pay_in_explainer.headline"
+        tools:text="@string/pay_in_explainer.headline"
         android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintBottom_toTopOf="@id/explainerParagraph"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +57,7 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
-        android:text="@string/pay_in_explainer.button_text"
+        tools:text="@string/pay_in_explainer.button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

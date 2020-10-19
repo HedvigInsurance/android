@@ -8,10 +8,10 @@ import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
-import com.hedvig.app.feature.trustly.onBackPressedCallback
-import com.hedvig.app.feature.trustly.showConfirmCloseDialog
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.onBackPressedCallback
+import e
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
@@ -26,28 +26,42 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val isPostSign = requireArguments().getBoolean(IS_POST_SIGN)
-
-        if (isPostSign) {
-            requireActivity().onBackPressedDispatcher.addCallback(
-                viewLifecycleOwner,
-                onBackPressedCallback({
-                    showConfirmCloseDialog(requireContext(), model::close)
-                })
-            )
+        val paymentType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
+        if (paymentType == null) {
+            e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
+            return
         }
 
-        binding.explainerButton.setHapticClickListener {
-            model.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_LEFT_EXIT_RIGHT))
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback({
+                showConfirmCloseDialog(requireContext(), paymentType, model::close)
+            })
+        )
+
+        binding.apply {
+            when (paymentType) {
+                ConnectPayinType.TRUSTLY -> {
+                    explainerTitle.setText(R.string.pay_in_explainer_direct_debit_headline)
+                    explainerButton.setText(R.string.pay_in_explainer_direct_debit_button_text)
+                }
+                ConnectPayinType.ADYEN -> {
+                    explainerTitle.setText(R.string.pay_in_explainer_headline)
+                    explainerButton.setText(R.string.pay_in_explainer_button_text)
+                }
+            }
+            explainerButton.setHapticClickListener {
+                model.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_LEFT_EXIT_RIGHT))
+            }
         }
 
         model.readyToStart.observe(viewLifecycleOwner) { binding.explainerButton.isEnabled = it }
     }
 
     companion object {
-        private const val IS_POST_SIGN = "IS_POST_SIGN"
-        fun newInstance(isPostSign: Boolean = false) = PostSignExplainerFragment().apply {
-            arguments = bundleOf(IS_POST_SIGN to isPostSign)
+        private const val PAYIN_TYPE = "PAYIN_TYPE"
+        fun newInstance(payinType: ConnectPayinType) = PostSignExplainerFragment().apply {
+            arguments = bundleOf(PAYIN_TYPE to payinType)
         }
     }
 }

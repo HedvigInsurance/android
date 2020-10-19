@@ -11,6 +11,7 @@ import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import e
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -29,9 +30,21 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
         binding.apply {
             val success = requireArguments().getBoolean(SUCCESS)
 
+            val payinType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
+
+            if (payinType == null) {
+                e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
+                return
+            }
+
             if (success) {
                 icon.setImageResource(R.drawable.ic_checkmark_in_circle)
-                title.setText(R.string.pay_in_confirmation_headline)
+                title.setText(
+                    when (payinType) {
+                        ConnectPayinType.ADYEN -> R.string.pay_in_confirmation_headline
+                        ConnectPayinType.TRUSTLY -> R.string.pay_in_confirmation_direct_debit_headline
+                    }
+                )
                 doItLater.isVisible = false
                 close.setText(R.string.pay_in_confirmation_continue_button)
                 close.setHapticClickListener {
@@ -41,6 +54,12 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
             } else {
                 icon.setImageResource(R.drawable.ic_warning_triangle)
                 title.setText(R.string.pay_in_error_headline)
+                body.setText(
+                    when (payinType) {
+                        ConnectPayinType.TRUSTLY -> R.string.pay_in_error_direct_debit_body
+                        ConnectPayinType.ADYEN -> R.string.pay_in_error_body
+                    }
+                )
                 body.isVisible = true
                 doItLater.isVisible = true
                 doItLater.setHapticClickListener {
@@ -62,12 +81,13 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
 
     companion object {
         private const val SUCCESS = "SUCCESS"
-        private const val IS_POST_SIGN = "IS_POST_SIGN"
+        private const val PAYIN_TYPE = "PAYIN_TYPE"
 
-        fun newInstance(success: Boolean) =
+        fun newInstance(success: Boolean, payinType: ConnectPayinType) =
             ConnectPaymentResultFragment().apply {
                 arguments = bundleOf(
-                    SUCCESS to success
+                    SUCCESS to success,
+                    PAYIN_TYPE to payinType
                 )
             }
     }

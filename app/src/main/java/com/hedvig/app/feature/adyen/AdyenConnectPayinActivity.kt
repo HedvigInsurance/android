@@ -14,12 +14,12 @@ import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
@@ -54,14 +54,20 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             when (state) {
                 ConnectPaymentScreenState.Explainer -> supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, PostSignExplainerFragment.newInstance(isPostSign()))
+                    .replace(
+                        R.id.container,
+                        PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN)
+                    )
                     .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Connect -> startAdyenPayment()
                 is ConnectPaymentScreenState.Result -> supportFragmentManager
                     .beginTransaction()
                     .replace(
                         R.id.container,
-                        ConnectPaymentResultFragment.newInstance(state.success)
+                        ConnectPaymentResultFragment.newInstance(
+                            state.success,
+                            ConnectPayinType.ADYEN
+                        )
                     )
                     .commitAllowingStateLoss()
             }
@@ -168,18 +174,5 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
         private const val IS_POST_SIGN = "IS_POST_SIGN"
         private const val CURRENCY = "CURRENCY"
-    }
-}
-
-enum class AdyenCurrency {
-    NOK,
-    DKK;
-
-    companion object {
-        fun fromMarket(market: Market) = when (market) {
-            Market.NO -> NOK
-            Market.DK -> DKK
-            else -> throw Error("Market $market is not supported by Adyen")
-        }
     }
 }
