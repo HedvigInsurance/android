@@ -1,4 +1,4 @@
-mutation danishAuth {
+mutation DanishAuth {
   danishBankIdAuth {
     redirectUrl
   }

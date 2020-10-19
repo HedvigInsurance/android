@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".feature.zignsec.ZignSecAuthenticationActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:titleTextAppearance="?textAppearanceHeadline6"
         tools:layout_height="?attr/actionBarSize" />
 
-    <WebView
+    <com.hedvig.app.ui.view.SafeWebView
         android:id="@+id/danishBankIdContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"

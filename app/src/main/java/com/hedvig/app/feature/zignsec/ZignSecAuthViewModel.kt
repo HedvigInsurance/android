@@ -15,9 +15,8 @@ import kotlinx.coroutines.launch
 
 class ZignSecAuthViewModel(
     private val repository: ZignSecAuthRepository,
-    private val marketProvider: MarketProvider,
-
-    ) : ViewModel() {
+    private val marketProvider: MarketProvider
+) : ViewModel() {
     private val _redirectUrl = MutableLiveData<String>()
     private val _authStatus = MutableLiveData<AuthState>()
     val redirectUrl: LiveData<String> = _redirectUrl
@@ -56,6 +55,7 @@ class ZignSecAuthViewModel(
                         _redirectUrl.postValue(response.getOrNull()?.data?.danishBankIdAuth?.redirectUrl)
                     }
                     else -> {
+                        e { "Invalid market used in ${this.javaClass.name}" }
                     }
                 }
             }
