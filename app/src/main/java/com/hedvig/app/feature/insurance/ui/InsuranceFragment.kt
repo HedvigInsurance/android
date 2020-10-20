@@ -66,8 +66,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                     viewLifecycleOwner
                 )
             )
-            adapter =
-                InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
+            adapter = InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
             bind(data)

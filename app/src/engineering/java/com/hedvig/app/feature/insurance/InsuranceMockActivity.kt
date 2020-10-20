@@ -14,6 +14,7 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_NO_RENEWAL
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -32,6 +33,18 @@ class InsuranceMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Tab Screen")
+        clickableItem("Active on and Terminated on") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_ACTIVE_AND_TERMINATED
+                shouldError = false
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    this@InsuranceMockActivity,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
         clickableItem("Renewal /w SE apartment") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = INSURANCE_DATA

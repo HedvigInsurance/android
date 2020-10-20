@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,24 +13,17 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
-import com.hedvig.app.databinding.InsuranceContractRowBinding
+import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageActivity
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
-import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class InsuranceAdapter(
     private val fragmentManager: FragmentManager,
@@ -47,7 +39,7 @@ class InsuranceAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.insurance_contract_row -> ViewHolder.ContractViewHolder(parent)
+        R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.insurance_error -> ViewHolder.Error(parent)
@@ -62,11 +54,7 @@ class InsuranceAdapter(
         when (holder) {
             is ViewHolder.ContractViewHolder -> {
                 (items[position] as? InsuranceModel.Contract)?.let {
-                    holder.bind(
-                        it.inner,
-                        fragmentManager,
-                        tracker
-                    )
+                    holder.bind(it.inner)
                 }
             }
             is ViewHolder.UpsellViewHolder -> {
@@ -79,7 +67,7 @@ class InsuranceAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is InsuranceModel.Contract -> R.layout.insurance_contract_row
+        is InsuranceModel.Contract -> R.layout.insurance_contract_card
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.Error -> R.layout.insurance_error
@@ -121,17 +109,13 @@ class InsuranceAdapter(
         class ContractViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.insurance_contract_row, parent, false)
+                .inflate(R.layout.insurance_contract_card, parent, false)
         ) {
-            private val binding by viewBinding(InsuranceContractRowBinding::bind)
+            private val binding by viewBinding(InsuranceContractCardBinding::bind)
 
-            fun bind(
-                contract: InsuranceQuery.Contract,
-                fragmentManager: FragmentManager,
-                tracker: InsuranceTracker
-            ) {
+            fun bind(contract: InsuranceQuery.Contract) {
                 binding.apply {
-                    if (contract.upcomingRenewal != null) {
+/*                    if (contract.upcomingRenewal != null) {
                         renewalCard.show()
                         contract.upcomingRenewal?.let { renewal ->
                             title.text =
@@ -158,146 +142,64 @@ class InsuranceAdapter(
                                 }
                             }
                         }
-                    }
+                    }*/
                     contract.status.fragments.contractStatusFragment.let { contractStatus ->
                         contractStatus.asPendingStatus?.let {
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_inactive
-                                ), null, null, null
-                            )
-                            this.contractStatus.text =
-                                this.contractStatus.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
+                            firstStatusPill.show()
+                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
                         }
                         contractStatus.asActiveInFutureStatus?.let { activeInFuture ->
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_inactive
-                                ), null, null, null
-                            )
-                            this.contractStatus.text = this.contractStatus.resources.getString(
+                            firstStatusPill.show()
+
+                            firstStatusPill.text = firstStatusPill.resources.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
                                 dateTimeFormatter.format(activeInFuture.futureInception)
                             )
                         }
                         contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_inactive
-                                ), null, null, null
-                            )
-                            this.contractStatus.text = this.contractStatus.resources.getString(
+                            firstStatusPill.show()
+                            firstStatusPill.text = firstStatusPill.resources.getString(
+                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE,
+                                activeAndTerminated.futureInception,
+                                dateTimeFormatter.format(activeAndTerminated.futureTermination))
+                            secondStatusPill.show()
+                            secondStatusPill.text = secondStatusPill.resources.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE,
                                 activeAndTerminated.futureInception,
                                 dateTimeFormatter.format(activeAndTerminated.futureTermination)
                             )
                         }
                         contractStatus.asActiveStatus?.let {
-                            this.contractStatus.text =
-                                this.contractStatus.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+                            container.setBackgroundResource(R.drawable.card_background)
                         }
                         contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_termination_in_future
-                                ), null, null, null
-                            )
-                            this.contractStatus.text = this.contractStatus.resources.getString(
+                            firstStatusPill.show()
+                            firstStatusPill.text = firstStatusPill.resources.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
                                 dateTimeFormatter.format(terminatedInFuture.futureTermination)
                             )
                         }
                         contractStatus.asTerminatedTodayStatus?.let {
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_termination_in_future
-                                ), null, null, null
-                            )
-                            this.contractStatus.text =
-                                this.contractStatus.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
+                            firstStatusPill.show()
+                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
                         }
                         contractStatus.asTerminatedStatus?.let {
-                            this.contractStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                this.contractStatus.context.compatDrawable(
-                                    R.drawable.ic_terminated
-                                ), null, null, null
-                            )
-                            this.contractStatus.text =
-                                this.contractStatus.resources.getString(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
+                            firstStatusPill.show()
+                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
                         }
                     }
 
 
                     contractName.text = contract.displayName
 
-                    when (contract.typeOfContract) {
-                        TypeOfContract.NO_TRAVEL_YOUTH,
-                        TypeOfContract.NO_TRAVEL -> {
-                            contractInformationIcon.setImageDrawable(
-                                contractInformationIcon.context.compatDrawable(
-                                    R.drawable.ic_contract_type_travel
-                                )
-                            )
-                        }
-                        TypeOfContract.SE_HOUSE -> {
-                            contractInformationIcon.setImageDrawable(
-                                contractInformationIcon.context.compatDrawable(
-                                    R.drawable.ic_house
-                                )
-                            )
-                        }
-                        TypeOfContract.SE_APARTMENT_BRF,
-                        TypeOfContract.SE_APARTMENT_RENT,
-                        TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                        TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                        TypeOfContract.NO_HOME_CONTENT_OWN,
-                        TypeOfContract.NO_HOME_CONTENT_RENT,
-                        TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                        TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
-                            contractInformationIcon.setImageDrawable(
-                                contractInformationIcon.context.compatDrawable(
-                                    R.drawable.ic_apartment
-                                )
-                            )
-                        }
-                        TypeOfContract.UNKNOWN__ -> {
-                        }
-                    }
-                    contractInformationDescription.text =
-                        if (contract.currentAgreement.numberCoInsured == 0) {
-                            contractInformationDescription.resources.getString(R.string.DASHBOARD_MY_INFO_NO_COINSURED)
-                        } else {
-                            contractInformationDescription.resources.getString(
-                                R.string.DASHBOARD_MY_INFO_COINSURED,
-                                contract.currentAgreement.numberCoInsured
-                            )
-                        }
-
-                    contractInformationCard.setHapticClickListener {
-                        contractInformationCard.context.startActivity(
-                            ContractDetailActivity.newInstance(
-                                contractInformationCard.context,
-                                contract.id
-                            )
+                    contractPills.adapter = ContractPillAdapter().also { adapter ->
+                        adapter.items = listOf(
+                            ContractModel.ContractType(contract.typeOfContract),
+                            ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
                         )
                     }
-
-                    coverageCard.setHapticClickListener {
-                        coverageCard.context.startActivity(
-                            ContractCoverageActivity.newInstance(
-                                coverageCard.context,
-                                contract.id
-                            )
-                        )
-                    }
-
-                    documentsCard.setHapticClickListener {
-                        DocumentBottomSheet
-                            .newInstance(
-                                contract.currentAgreement.asAgreementCore?.certificateUrl,
-                                contract.termsAndConditions.url
-                            )
-                            .show(fragmentManager, DocumentBottomSheet.TAG)
+                    root.setHapticClickListener {
+                        //TODO open info activity
                     }
                 }
             }
