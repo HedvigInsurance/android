@@ -60,5 +60,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
 class ContractDetailTabAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
     override fun getItemCount() = 3
 
-    override fun createFragment(position: Int) = Fragment()
+    override fun createFragment(position: Int) = LongScrollyFragment()
 }
+
+class LongScrollyFragment : Fragment(R.layout.long_scrolly_fragment)
