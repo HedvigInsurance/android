@@ -115,34 +115,6 @@ class InsuranceAdapter(
 
             fun bind(contract: InsuranceQuery.Contract) {
                 binding.apply {
-/*                    if (contract.upcomingRenewal != null) {
-                        renewalCard.show()
-                        contract.upcomingRenewal?.let { renewal ->
-                            title.text =
-                                title.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE)
-                            body.text = body.resources.getString(
-                                R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
-                                ChronoUnit.DAYS.between(
-                                    LocalDate.now(),
-                                    renewal.renewalDate
-
-                                )
-                            )
-                            action.text =
-                                action.resources.getString(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
-                            val maybeLinkUri = runCatching {
-                                Uri.parse(renewal.draftCertificateUrl)
-                            }
-                            action.setHapticClickListener {
-                                tracker.showRenewal()
-                                maybeLinkUri.getOrNull()?.let { uri ->
-                                    if (action.context.canOpenUri(uri)) {
-                                        action.context.openUri(uri)
-                                    }
-                                }
-                            }
-                        }
-                    }*/
                     contract.status.fragments.contractStatusFragment.let { contractStatus ->
                         contractStatus.asPendingStatus?.let {
                             firstStatusPill.show()
@@ -150,7 +122,6 @@ class InsuranceAdapter(
                         }
                         contractStatus.asActiveInFutureStatus?.let { activeInFuture ->
                             firstStatusPill.show()
-
                             firstStatusPill.text = firstStatusPill.resources.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
                                 dateTimeFormatter.format(activeInFuture.futureInception)
@@ -159,13 +130,11 @@ class InsuranceAdapter(
                         contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
                             firstStatusPill.show()
                             firstStatusPill.text = firstStatusPill.resources.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE,
-                                activeAndTerminated.futureInception,
-                                dateTimeFormatter.format(activeAndTerminated.futureTermination))
+                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
+                                dateTimeFormatter.format(activeAndTerminated.futureInception))
                             secondStatusPill.show()
-                            secondStatusPill.text = secondStatusPill.resources.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE,
-                                activeAndTerminated.futureInception,
+                            secondStatusPill.text = secondStatusPill.context.getString(
+                                R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
                                 dateTimeFormatter.format(activeAndTerminated.futureTermination)
                             )
                         }
@@ -223,7 +192,7 @@ class InsuranceAdapter(
     }
 
     companion object {
-        private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MM dd")
+        private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
 
         private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
             get() {
