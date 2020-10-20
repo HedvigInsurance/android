@@ -6,6 +6,7 @@ import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS_A
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_TRAVEL
 import com.hedvig.app.MockInsuranceViewModel.Companion.SWEDISH_HOUSE
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -128,6 +129,10 @@ class InsuranceMockActivity : MockActivity() {
                     initialTab = LoggedInTabs.INSURANCE
                 )
             )
+        }
+        header("Detail Screen")
+        clickableItem("No particular data") {
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity))
         }
     }
 }

@@ -133,5 +133,6 @@
     <dimen name="pill_corner_radius">4dp</dimen>
     <dimen name="pill_padding_vertical">4dp</dimen>
     <dimen name="pill_padding_horizontal">6dp</dimen>
+    <dimen name="tab_layout_height">48dp</dimen>
 
 </resources>
