@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
+    private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_BRF,
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
@@ -40,7 +41,7 @@ class InsuranceDataBuilder(
                     )
                 ),
                 displayName = "Hemförsäkring",
-                typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
+                typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
                     asAgreementCore = InsuranceQuery.AsAgreementCore(

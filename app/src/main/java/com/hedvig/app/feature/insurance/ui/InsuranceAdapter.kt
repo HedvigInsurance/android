@@ -131,7 +131,8 @@ class InsuranceAdapter(
                             firstStatusPill.show()
                             firstStatusPill.text = firstStatusPill.resources.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
-                                dateTimeFormatter.format(activeAndTerminated.futureInception))
+                                dateTimeFormatter.format(activeAndTerminated.futureInception)
+                            )
                             secondStatusPill.show()
                             secondStatusPill.text = secondStatusPill.context.getString(
                                 R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
@@ -162,10 +163,33 @@ class InsuranceAdapter(
                     contractName.text = contract.displayName
 
                     contractPills.adapter = ContractPillAdapter().also { adapter ->
-                        adapter.items = listOf(
-                            ContractModel.ContractType(contract.typeOfContract),
-                            ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
-                        )
+                        when (contract.typeOfContract) {
+                            TypeOfContract.SE_HOUSE,
+                            TypeOfContract.SE_APARTMENT_BRF,
+                            TypeOfContract.SE_APARTMENT_RENT,
+                            TypeOfContract.NO_HOME_CONTENT_OWN,
+                            TypeOfContract.NO_HOME_CONTENT_RENT,
+                            TypeOfContract.NO_TRAVEL,
+                            TypeOfContract.NO_TRAVEL_YOUTH,
+                            TypeOfContract.DK_HOME_CONTENT -> {
+                                adapter.items = listOf(
+                                    ContractModel.ContractType(contract.typeOfContract),
+                                    ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                )
+                            }
+                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
+                            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+                            TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+                            TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
+                                adapter.items = listOf(
+                                    ContractModel.ContractType(contract.typeOfContract),
+                                    ContractModel.Student(contract.typeOfContract),
+                                    ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                )
+                            }
+                            TypeOfContract.UNKNOWN__ -> {
+                            }
+                        }
                     }
                     root.setHapticClickListener {
                         //TODO open info activity

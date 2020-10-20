@@ -1,10 +1,12 @@
 package com.hedvig.app.testdata.dashboard
 
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 import java.time.LocalDate
 
 val INSURANCE_DATA = InsuranceDataBuilder().build()
+val INSURANCE_DATA_STUDENT = InsuranceDataBuilder(typeOfContract = TypeOfContract.SE_APARTMENT_STUDENT_BRF).build()
 val INSURANCE_DATA_ACTIVE_AND_TERMINATED = InsuranceDataBuilder(
     activeStatus = null,
     activeInFutureAndTerminatedInFutureStatus = ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(

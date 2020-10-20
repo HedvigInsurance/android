@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="@dimen/base_margin_double"
     android:layout_height="200dp"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -57,13 +58,16 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contractPills"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="horizontal"
-            tools:itemCount="2" />
+            tools:itemCount="2"
+            android:requiresFadingEdge="horizontal"
+            android:layout_marginEnd="@dimen/base_margin"
+            app:layout_constraintEnd_toStartOf="@+id/imageView" />
 
 
         <ImageView
@@ -71,7 +75,8 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_arrow_forward"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/imageView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
