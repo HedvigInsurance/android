@@ -2,8 +2,12 @@ package com.hedvig.app
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 
@@ -14,11 +18,13 @@ class GenericDevelopmentAdapter(
     override fun getItemViewType(position: Int) = when (items[position]) {
         is Item.Header -> R.layout.development_header_row
         is Item.ClickableItem -> R.layout.development_row
+        is Item.MarketSpinner -> R.layout.development_market_spinner
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.development_header_row -> ViewHolder.HeaderViewHolder(parent)
         R.layout.development_row -> ViewHolder.ClickableViewHolder(parent)
+        R.layout.development_market_spinner -> ViewHolder.MarketSpinner(parent)
         else -> throw Error("Invalid viewType")
     }
 
@@ -51,6 +57,37 @@ class GenericDevelopmentAdapter(
                 }
             }
         }
+
+        class MarketSpinner(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.development_market_spinner)) {
+            private val root = itemView as Spinner
+
+            init {
+                root.adapter = ArrayAdapter<String>(
+                    root.context,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    Market.values().map(Market::toString)
+                )
+            }
+
+            override fun bind(data: Item) {
+                (data as? Item.MarketSpinner)?.let {
+                    root.onItemSelectedListener =
+                        object : AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(
+                                parent: AdapterView<*>,
+                                view: View?,
+                                position: Int,
+                                id: Long
+                            ) {
+                                data.select(Market.valueOf(parent.getItemAtPosition(position) as String))
+                            }
+
+                            override fun onNothingSelected(parent: AdapterView<*>?) {}
+                        }
+                }
+            }
+        }
     }
 
     sealed class Item {
@@ -61,6 +98,10 @@ class GenericDevelopmentAdapter(
         data class ClickableItem(
             val title: String,
             val open: () -> Unit
+        ) : Item()
+
+        data class MarketSpinner(
+            val select: (Market) -> Unit
         ) : Item()
     }
 }
@@ -74,6 +115,10 @@ class GenericDevelopmentAdapterBuilder {
 
     fun clickableItem(label: String, onClick: () -> Unit) {
         items.add(GenericDevelopmentAdapter.Item.ClickableItem(label, onClick))
+    }
+
+    fun marketSpinner(select: (Market) -> Unit) {
+        items.add(GenericDevelopmentAdapter.Item.MarketSpinner(select))
     }
 }
 
