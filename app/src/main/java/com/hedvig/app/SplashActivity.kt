@@ -11,8 +11,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
@@ -28,6 +28,7 @@ import org.koin.android.ext.android.inject
 
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
+    private val marketProvider: MarketProvider by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,12 +86,14 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         }
 
         runSplashAnimation {
-            startActivities(
-                arrayOf(
-                    Intent(this, LoggedInActivity::class.java),
-                    Intent(this, ConnectPaymentActivity::class.java)
+            marketProvider.market?.connectPayin(this)?.let { connectPayinIntent ->
+                startActivities(
+                    arrayOf(
+                        Intent(this, LoggedInActivity::class.java),
+                        connectPayinIntent
+                    )
                 )
-            )
+            }
         }
     }
 

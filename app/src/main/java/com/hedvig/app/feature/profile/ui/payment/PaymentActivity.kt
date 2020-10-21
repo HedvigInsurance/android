@@ -9,7 +9,6 @@ import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
@@ -62,12 +61,12 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
 
         changeBankAccount.setHapticClickListener {
-            startActivity(ConnectPaymentActivity.newInstance(this))
+            market?.connectPayin(this)?.let { startActivity(it) }
         }
 
         connectBankAccount.setHapticClickListener {
             tracker.connectBankAccount()
-            startActivity(ConnectPaymentActivity.newInstance(this))
+            market?.connectPayin(this)?.let { startActivity(it) }
         }
 
         redeemCode.setHapticClickListener {
