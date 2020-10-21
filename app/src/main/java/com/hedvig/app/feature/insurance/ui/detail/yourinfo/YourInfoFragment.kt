@@ -32,6 +32,16 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                     )
                     return@observe
                 }
+                data.currentAgreement.asSwedishHouseAgreement?.let {
+                    (adapter as? YourInfoAdapter)?.submitList(
+                        homeSection(
+                            it.address.fragments.addressFragment,
+                            it.squareMeters,
+                            getString(R.string.SWEDISH_HOUSE_LOB)
+                        ) + coinsuredSection(it.numberCoInsured)
+                    )
+                    return@observe
+                }
                 data.currentAgreement.asNorwegianHomeContentAgreement?.let {
                     (adapter as? YourInfoAdapter)?.submitList(
                         homeSection(

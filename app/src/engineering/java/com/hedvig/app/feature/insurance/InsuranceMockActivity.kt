@@ -20,6 +20,7 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_C
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -125,6 +126,10 @@ class InsuranceMockActivity : MockActivity() {
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Swedish House") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_HOUSE
             startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
         }
         clickableItem("Norwegian Home Contents") {

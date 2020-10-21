@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class NorwegianTravelContractTest {
+class NorwegianTravelTest {
     @get:Rule
     val activityRule = ActivityTestRule(ContractDetailActivity::class.java, false, false)
 

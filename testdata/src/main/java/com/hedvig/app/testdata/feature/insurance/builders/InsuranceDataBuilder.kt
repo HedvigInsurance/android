@@ -17,7 +17,7 @@ class InsuranceDataBuilder(
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
-        )
+        ),
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -89,7 +89,23 @@ class InsuranceDataBuilder(
                     } else {
                         null
                     },
-                    asSwedishHouseAgreement = null
+                    asSwedishHouseAgreement = if (type == TypeOfContract.SE_HOUSE) {
+                        InsuranceQuery.AsSwedishHouseAgreement(
+                            address = InsuranceQuery.Address1(
+                                fragments = InsuranceQuery.Address1.Fragments(
+                                    AddressFragment(
+                                        street = "Testvägen 1",
+                                        postalCode = "123 45",
+                                        city = "Tensta",
+                                    )
+                                )
+                            ),
+                            numberCoInsured = coinsured,
+                            squareMeters = 50,
+                        )
+                    } else {
+                        null
+                    }
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(
