@@ -30,6 +30,17 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                             it.saType.displayName(requireContext())
                         ) + coinsuredSection(it.numberCoInsured)
                     )
+                    return@observe
+                }
+                data.currentAgreement.asNorwegianHomeContentAgreement?.let {
+                    (adapter as? YourInfoAdapter)?.submitList(
+                        homeSection(
+                            it.address.fragments.addressFragment,
+                            it.squareMeters,
+                            it.nhcType?.displayName(requireContext()) ?: ""
+                        ) + coinsuredSection(it.numberCoInsured)
+                    )
+                    return@observe
                 }
                 data.currentAgreement.asNorwegianTravelAgreement?.let {
                     (adapter as? YourInfoAdapter)?.submitList(
@@ -83,12 +94,13 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             SwedishApartmentLineOfBusiness.UNKNOWN__ -> ""
         }
 
-        internal fun NorwegianHomeContentLineOfBusiness.displayName(context: Context) = when (this) {
-            NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
-            NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
-            NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
-            NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
-            NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
-        }
+        internal fun NorwegianHomeContentLineOfBusiness.displayName(context: Context) =
+            when (this) {
+                NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
+                NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
+                NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
+                NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
+                NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
+            }
     }
 }

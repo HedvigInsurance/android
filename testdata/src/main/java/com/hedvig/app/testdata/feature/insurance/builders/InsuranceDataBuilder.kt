@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import java.time.LocalDate
@@ -63,7 +64,24 @@ class InsuranceDataBuilder(
                     } else {
                         null
                     },
-                    asNorwegianHomeContentAgreement = null,
+                    asNorwegianHomeContentAgreement = if (type == TypeOfContract.NO_HOME_CONTENT_RENT) {
+                        InsuranceQuery.AsNorwegianHomeContentAgreement(
+                            address = InsuranceQuery.Address2(
+                                fragments = InsuranceQuery.Address2.Fragments(
+                                    AddressFragment(
+                                        street = "Testvägen 1",
+                                        postalCode = "123 45",
+                                        city = "Tensta"
+                                    )
+                                )
+                            ),
+                            numberCoInsured = coinsured,
+                            squareMeters = 50,
+                            nhcType = NorwegianHomeContentLineOfBusiness.RENT
+                        )
+                    } else {
+                        null
+                    },
                     asNorwegianTravelAgreement = if (type == TypeOfContract.NO_TRAVEL) {
                         InsuranceQuery.AsNorwegianTravelAgreement(
                             numberCoInsured = coinsured

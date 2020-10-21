@@ -8,3 +8,5 @@ val INSURANCE_DATA_SWEDISH_APARTMENT = InsuranceDataBuilder().build()
 val INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL = InsuranceDataBuilder(renewal = null).build()
 
 val INSURANCE_DATA_NORWEGIAN_TRAVEL = InsuranceDataBuilder(type = TypeOfContract.NO_TRAVEL).build()
+
+val INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS = InsuranceDataBuilder(type=TypeOfContract.NO_HOME_CONTENT_RENT).build()

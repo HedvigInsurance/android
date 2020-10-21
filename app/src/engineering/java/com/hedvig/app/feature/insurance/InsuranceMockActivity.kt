@@ -16,6 +16,7 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
@@ -124,6 +125,10 @@ class InsuranceMockActivity : MockActivity() {
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Norwegian Home Contents") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
             startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
         }
         clickableItem("Norwegian Travel") {
