@@ -26,7 +26,6 @@ import e
 import java.time.format.DateTimeFormatter
 
 class InsuranceAdapter(
-    private val fragmentManager: FragmentManager,
     private val tracker: InsuranceTracker,
     private val retry: () -> Unit
 ) :
