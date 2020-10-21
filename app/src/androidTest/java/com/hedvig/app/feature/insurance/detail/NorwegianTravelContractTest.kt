@@ -1,15 +1,8 @@
 package com.hedvig.app.feature.insurance.detail
 
-import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.pager2.KViewPager2
-import com.agoda.kakao.pager2.KViewPagerItem
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
@@ -19,7 +12,6 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
-import org.hamcrest.Matcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +42,6 @@ class NorwegianTravelContractTest {
             tabContent {
                 childAt<ContractDetailScreen.YourInfoTab>(0) {
                     recycler {
-                        isVisible()
                         childAt<ContractDetailScreen.YourInfoTab.Header>(0) {
                             text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                         }
@@ -65,24 +56,3 @@ class NorwegianTravelContractTest {
     }
 }
 
-class ContractDetailScreen : Screen<ContractDetailScreen>() {
-    val tabContent = KViewPager2({ withId(R.id.tabContent) }, {
-        itemType(::YourInfoTab)
-    })
-
-    class YourInfoTab(parent: Matcher<View>) : KViewPagerItem<YourInfoTab>(parent) {
-        val recycler = KRecyclerView({ withId(R.id.recycler) }, {
-            itemType(::Header)
-            itemType(::Row)
-        })
-
-        class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
-            val text = KTextView { withMatcher(parent) }
-        }
-
-        class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
-            val label = KTextView { withId(R.id.label) }
-            val content = KTextView { withId(R.id.content) }
-        }
-    }
-}

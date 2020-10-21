@@ -122,7 +122,11 @@ class InsuranceMockActivity : MockActivity() {
             )
         }
         header("Detail Screen")
-        clickableItem("Norweigan travel") {
+        clickableItem("Swedish Apartment") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Norwegian Travel") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_TRAVEL
             startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
         }
