@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import androidx.fragment.app.FragmentManager
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
@@ -17,6 +17,7 @@ import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -138,9 +139,6 @@ class InsuranceAdapter(
                                 dateTimeFormatter.format(activeAndTerminated.futureTermination)
                             )
                         }
-                        contractStatus.asActiveStatus?.let {
-                            container.setBackgroundResource(R.drawable.card_background)
-                        }
                         contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
                             firstStatusPill.show()
                             firstStatusPill.text = firstStatusPill.resources.getString(
@@ -155,6 +153,29 @@ class InsuranceAdapter(
                         contractStatus.asTerminatedStatus?.let {
                             firstStatusPill.show()
                             firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
+                        }
+                        contractStatus.asActiveStatus?.let {
+                            when (contract.typeOfContract) {
+                                TypeOfContract.SE_HOUSE,
+                                TypeOfContract.SE_APARTMENT_BRF,
+                                TypeOfContract.SE_APARTMENT_RENT,
+                                TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+                                TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+                                TypeOfContract.NO_HOME_CONTENT_OWN,
+                                TypeOfContract.NO_HOME_CONTENT_RENT,
+                                TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
+                                TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
+                                    container.setBackgroundResource(R.drawable.card_home_background)
+                                }
+                                TypeOfContract.NO_TRAVEL,
+                                TypeOfContract.NO_TRAVEL_YOUTH,
+                                TypeOfContract.DK_HOME_CONTENT -> {
+                                    container.setBackgroundResource(R.drawable.card_travel_background)
+                                }
+                                TypeOfContract.UNKNOWN__ -> {
+
+                                }
+                            }
                         }
                     }
 
@@ -171,19 +192,23 @@ class InsuranceAdapter(
                             TypeOfContract.NO_TRAVEL,
                             TypeOfContract.NO_TRAVEL_YOUTH,
                             TypeOfContract.DK_HOME_CONTENT -> {
-                                adapter.items = listOf(
-                                    ContractModel.ContractType(contract.typeOfContract),
-                                    ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                adapter.submitList(
+                                    listOf(
+                                        ContractModel.ContractType(contract.typeOfContract),
+                                        ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                    )
                                 )
                             }
                             TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                             TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                             TypeOfContract.SE_APARTMENT_STUDENT_BRF,
                             TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
-                                adapter.items = listOf(
-                                    ContractModel.ContractType(contract.typeOfContract),
-                                    ContractModel.Student(contract.typeOfContract),
-                                    ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                adapter.submitList(
+                                    listOf(
+                                        ContractModel.ContractType(contract.typeOfContract),
+                                        ContractModel.Student(contract.typeOfContract),
+                                        ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
+                                    )
                                 )
                             }
                             TypeOfContract.UNKNOWN__ -> {
@@ -191,7 +216,11 @@ class InsuranceAdapter(
                         }
                     }
                     root.setHapticClickListener {
-                        //TODO open info activity
+                        startActivity(
+                            root.context,
+                            ContractDetailActivity.newInstance(root.context),
+                            null
+                        )
                     }
                 }
             }

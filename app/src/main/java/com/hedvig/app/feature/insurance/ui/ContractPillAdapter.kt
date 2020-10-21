@@ -2,33 +2,24 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractPillBinding
-import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.getStringIdForCard
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
-class ContractPillAdapter : RecyclerView.Adapter<ContractPillAdapter.ViewHolder>() {
-
-    var items: List<ContractModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(GenericDiffUtilCallback(field, value))
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+class ContractPillAdapter :
+    ListAdapter<ContractModel, ContractPillAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount() = items.count()
 
     class ViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.contract_pill)) {
@@ -42,9 +33,14 @@ class ContractPillAdapter : RecyclerView.Adapter<ContractPillAdapter.ViewHolder>
                     }
                     is ContractModel.NoOfCoInsured -> {
                         if (item.noOfCoInsured == 0) {
-                            text.text = text.context.getString(R.string.insurance_tab_covers_you_tag).toUpperCase()
+                            text.text =
+                                text.context.getString(R.string.insurance_tab_covers_you_tag)
+                                    .toUpperCase()
                         } else {
-                            text.text = "${text.context.getString(R.string.insurance_tab_covers_you_tag).toUpperCase()}+${item.noOfCoInsured}"
+                            text.text = "${
+                                text.context.getString(R.string.insurance_tab_covers_you_tag)
+                                    .toUpperCase()
+                            }+${item.noOfCoInsured}"
                         }
                     }
                     is ContractModel.Student -> {
@@ -69,6 +65,14 @@ class ContractPillAdapter : RecyclerView.Adapter<ContractPillAdapter.ViewHolder>
             }
         }
     }
+}
+
+class DiffCallback : DiffUtil.ItemCallback<ContractModel>() {
+    override fun areItemsTheSame(oldItem: ContractModel, newItem: ContractModel) =
+        oldItem === newItem
+
+    override fun areContentsTheSame(oldItem: ContractModel, newItem: ContractModel) =
+        oldItem == newItem
 }
 
 sealed class ContractModel {

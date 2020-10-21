@@ -40,11 +40,12 @@
             tools:visibility="visible" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/base_margin_triple"
+            android:layout_height="@dimen/base_margin_triple"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_hedvig_black" />
+            app:srcCompat="@drawable/ic_hedvig_h"
+            app:tint="@color/lavender_900" />
 
         <TextView
             android:id="@+id/contractName"
@@ -62,12 +63,12 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+            app:layout_constraintEnd_toStartOf="@+id/imageView"
             android:orientation="horizontal"
-            tools:itemCount="2"
-            android:requiresFadingEdge="horizontal"
             android:layout_marginEnd="@dimen/base_margin"
-            app:layout_constraintEnd_toStartOf="@+id/imageView" />
+            tools:itemCount="6"
+            tools:listitem="@layout/contract_pill" />
 
 
         <ImageView
