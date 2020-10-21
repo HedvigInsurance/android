@@ -69,4 +69,8 @@
         <item name="materialAlertDialogBodyTextStyle">?textAppearanceBody1</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.Toolbar.ErrorAction" parent="">
+        <item name="actionMenuTextColor">?colorError</item>
+    </style>
+
 </resources>

@@ -11,6 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Hedvig.Toolbar.ErrorAction"
         app:title="@string/pay_in_iframe_post_sign.title"
         tools:menu="@menu/connect_payin"
         tools:navigationIcon="@drawable/ic_close" />
