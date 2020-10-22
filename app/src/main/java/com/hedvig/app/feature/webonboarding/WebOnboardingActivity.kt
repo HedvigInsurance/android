@@ -13,7 +13,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.apollo.defaultLocale
@@ -21,9 +21,11 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.activity_web_onboarding.*
+import org.koin.android.ext.android.inject
 import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
+    private val marketProvider: MarketProvider by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,13 +52,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 if (url?.contains("connect-payment") == true) {
                     view?.stopLoading()
                     setIsLoggedIn(true)
-                    startActivity(
-                        ConnectPaymentActivity.newInstance(
-                            this@WebOnboardingActivity,
-                            withExplainer = true,
-                            withoutHistory = true
-                        )
-                    )
+                    marketProvider.market?.connectPayin(this@WebOnboardingActivity)?.let { startActivity(it) }
                     return
                 }
                 super.doUpdateVisitedHistory(view, url, isReload)
@@ -102,7 +98,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     companion object {
         private const val UTF_8 = "UTF-8"
-       
+
         fun newInstance(context: Context) = Intent(context, WebOnboardingActivity::class.java)
     }
 }

@@ -1,12 +1,14 @@
 package com.hedvig.app.feature.insurance
 
 import com.hedvig.app.MockActivity
+import com.hedvig.app.MockContractDetailViewModel
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_TRAVEL
 import com.hedvig.app.MockInsuranceViewModel.Companion.SWEDISH_HOUSE
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -18,6 +20,11 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_NO_RENEWAL
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -30,6 +37,7 @@ class InsuranceMockActivity : MockActivity() {
         module {
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<InsuranceViewModel> { MockInsuranceViewModel() }
+            viewModel<ContractDetailViewModel> { MockContractDetailViewModel() }
         }
     )
 
@@ -61,7 +69,7 @@ class InsuranceMockActivity : MockActivity() {
         }
         clickableItem("Renewal /w SE apartment") {
             MockInsuranceViewModel.apply {
-                insuranceMockData = INSURANCE_DATA
+                insuranceMockData = INSURANCE_DATA_SWEDISH_APARTMENT
                 shouldError = false
             }
             startActivity(
@@ -85,7 +93,7 @@ class InsuranceMockActivity : MockActivity() {
         }
         clickableItem("No Renewal /w SE apartment") {
             MockInsuranceViewModel.apply {
-                insuranceMockData = INSURANCE_DATA_NO_RENEWAL
+                insuranceMockData = INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
                 shouldError = false
             }
             startActivity(
@@ -144,8 +152,21 @@ class InsuranceMockActivity : MockActivity() {
             )
         }
         header("Detail Screen")
-        clickableItem("No particular data") {
-            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity))
+        clickableItem("Swedish Apartment") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Swedish House") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_HOUSE
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Norwegian Home Contents") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
+        clickableItem("Norwegian Travel") {
+            MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_TRAVEL
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
         }
     }
 }

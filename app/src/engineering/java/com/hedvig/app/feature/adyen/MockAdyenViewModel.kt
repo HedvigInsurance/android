@@ -1,14 +1,14 @@
-package com.hedvig.app
+package com.hedvig.app.feature.adyen
 
-import androidx.lifecycle.MutableLiveData
 import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.hedvig.app.feature.adyen.AdyenViewModel
 import org.json.JSONObject
 
 class MockAdyenViewModel : AdyenViewModel() {
-    override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
-    override fun loadPaymentMethods() {
-        paymentMethods.postValue(PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject("""{
+    init {
+        _paymentMethods.postValue(
+            PaymentMethodsApiResponse.SERIALIZER.deserialize(
+                JSONObject(
+                    """{
   "groups": [
     {
       "name": "Credit Card",
@@ -59,6 +59,9 @@ class MockAdyenViewModel : AdyenViewModel() {
       "type": "scheme"
     }
   ]
-}""")))
+}"""
+                )
+            )
+        )
     }
 }

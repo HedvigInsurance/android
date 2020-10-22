@@ -145,13 +145,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.profile.ui.payment.connect.ConnectPaymentActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -286,6 +279,18 @@
             android:name=".feature.insurance.ui.detail.ContractDetailActivity"
             android:configChanges="keyboard|keyboardHidden"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.AdyenConnectPayinActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.trustly.TrustlyConnectPayinActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
 
         <meta-data

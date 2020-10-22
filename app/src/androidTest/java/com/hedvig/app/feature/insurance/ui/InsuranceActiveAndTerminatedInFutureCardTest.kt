@@ -12,6 +12,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
