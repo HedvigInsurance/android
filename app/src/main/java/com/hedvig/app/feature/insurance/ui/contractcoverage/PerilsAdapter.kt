@@ -10,6 +10,7 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilBottomSheet
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.peril_detail.view.*

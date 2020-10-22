@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!-- TODO: Remove 'root'-id (unnecessary) -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -35,4 +36,4 @@
 
     </LinearLayout>
 
-</com.hedvig.app.ui.view.HedvigCardView>
+</com.google.android.material.card.MaterialCardView>
