@@ -218,7 +218,7 @@ class InsuranceAdapter(
                         }
                     }
                     root.setHapticClickListener {
-                        root.context.startActivity(ContractDetailActivity.newInstance(root.context))
+                        root.context.startActivity(ContractDetailActivity.newInstance(root.context, contract.id))
                     }
                 }
             }
