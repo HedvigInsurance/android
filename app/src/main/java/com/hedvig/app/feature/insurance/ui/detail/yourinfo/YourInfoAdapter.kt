@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
 import com.hedvig.app.databinding.ContractDetailYourInfoRowBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
 class YourInfoAdapter :
-    ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(YourInfoDiffCallback()) {
+    ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
         is YourInfoModel.Header -> R.layout.contract_detail_your_info_header
