@@ -26,7 +26,7 @@ class CoverageAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CoverageModel.Header -> R.layout.contract_detail_coverage_header
-        is CoverageModel.Peril -> R.layout.peril_detail // TODO: Rename to fit naming scheme
+        is CoverageModel.Peril -> R.layout.peril_detail
         is CoverageModel.InsurableLimit -> R.layout.contract_detail_coverage_row
     }
 
@@ -68,11 +68,11 @@ class CoverageAdapter(
                     when (data) {
                         is CoverageModel.Header.Perils -> text =
                             context.getString(
-                                com.hedvig.app.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+                                R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
                                 data.typeOfContract.displayNameDefinite(context)
                             )
                         CoverageModel.Header.InsurableLimits -> setText(
-                            com.hedvig.app.R.string.CONTRACT_COVERAGE_MORE_INFO
+                            R.string.CONTRACT_COVERAGE_MORE_INFO
                         )
                     }
                 }
@@ -126,7 +126,8 @@ class CoverageAdapter(
                         root.context,
                         data.inner
                     )
-                        .show(fragmentManager,
+                        .show(
+                            fragmentManager,
                             PerilBottomSheet.TAG
                         )
                 }
