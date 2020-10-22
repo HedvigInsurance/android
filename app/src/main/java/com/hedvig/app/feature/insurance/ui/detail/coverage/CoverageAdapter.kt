@@ -15,6 +15,8 @@ import com.hedvig.app.databinding.ContractDetailCoverageRowBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
