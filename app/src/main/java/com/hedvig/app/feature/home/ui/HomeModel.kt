@@ -25,6 +25,8 @@ sealed class HomeModel {
         ) : BigText()
     }
 
+    data class UpcomingRenewal(val upcomingRenewal: List<HomeQuery.Contract>) : HomeModel()
+
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
@@ -38,8 +40,8 @@ sealed class HomeModel {
     object ConnectPayin : HomeModel()
 
     data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
-    
-    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>): HomeModel()
+
+    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
 
     object CommonClaimTitle : HomeModel()
 

@@ -68,6 +68,10 @@ data class HomeDataBuilder(
                     } else {
                         null
                     }
+                ),
+                upcomingRenewal = HomeQuery.UpcomingRenewal(
+                    renewalDate = LocalDate.now(),
+                    draftCertificateUrl = "https://www.example.com"
                 )
             )
         },

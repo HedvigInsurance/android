@@ -6,6 +6,8 @@ import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
+val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
+
 val HOME_DATA_ACTIVE_IN_FUTURE =
     HomeDataBuilder(listOf(ContractStatus.ACTIVE_IN_FUTURE)).build()
 

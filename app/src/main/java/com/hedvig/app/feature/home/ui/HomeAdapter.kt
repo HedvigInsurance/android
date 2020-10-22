@@ -19,6 +19,7 @@ import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
+import com.hedvig.app.databinding.RenewalListBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -67,6 +68,7 @@ class HomeAdapter(
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
+        R.layout.renewal_list -> ViewHolder.UpcomingRenewal(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -82,6 +84,7 @@ class HomeAdapter(
         HomeModel.Error -> R.layout.home_error
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
+        is HomeModel.UpcomingRenewal -> R.layout.renewal_list
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -226,6 +229,26 @@ class HomeAdapter(
                 root.setHapticClickListener {
                     tracker.startClaimContained()
                     HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+                }
+            }
+        }
+
+        class UpcomingRenewal(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.renewal_list)) {
+            private val binding by viewBinding(RenewalListBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
+            ): Any? = with(binding) {
+                if (data !is HomeModel.UpcomingRenewal) {
+                    return invalid(data)
+                }
+                root.adapter = UpcomingRenewalAdapter(tracker).also {
+                    it.submitList(data.upcomingRenewal)
                 }
             }
         }

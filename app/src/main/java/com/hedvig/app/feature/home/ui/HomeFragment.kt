@@ -66,7 +66,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
-            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder, tracker, marketProvider)
+            adapter = HomeAdapter(
+                parentFragmentManager,
+                model::load,
+                requestBuilder,
+                tracker,
+                marketProvider
+            )
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -151,7 +157,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BodyText.Terminated,
                     HomeModel.StartClaimOutlined,
                     HomeModel.HowClaimsWork(successData.howClaimsWork)
-                    )
+                )
             }
 
             if (isActive(successData.contracts)) {
@@ -160,6 +166,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
+                    if (hasUpcomingRenewal(successData.contracts)) {
+                        HomeModel.UpcomingRenewal(upcomingRenewals(contracts = successData.contracts))
+                    } else {
+                        null
+                    },
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.ConnectPayin
                     } else {
@@ -212,5 +223,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
         private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
+
+        private fun hasUpcomingRenewal(contracts: List<HomeQuery.Contract>) =
+            contracts.all { it.upcomingRenewal != null }
+
+        private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+            contracts.filter { it.upcomingRenewal != null }
     }
 }
