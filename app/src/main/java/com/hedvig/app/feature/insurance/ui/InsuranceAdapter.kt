@@ -176,6 +176,8 @@ class InsuranceAdapter(
 
                                 }
                             }
+                        } ?: run {
+                            container.setBackgroundResource(R.color.hedvig_light_gray)
                         }
                     }
 
@@ -216,11 +218,7 @@ class InsuranceAdapter(
                         }
                     }
                     root.setHapticClickListener {
-                        startActivity(
-                            root.context,
-                            ContractDetailActivity.newInstance(root.context),
-                            null
-                        )
+                        root.context.startActivity(ContractDetailActivity.newInstance(root.context))
                     }
                 }
             }

@@ -40,8 +40,8 @@
             tools:visibility="visible" />
 
         <ImageView
-            android:layout_width="@dimen/base_margin_triple"
-            android:layout_height="@dimen/base_margin_triple"
+            android:layout_width="@dimen/contract_card_logo_size"
+            android:layout_height="@dimen/contract_card_logo_size"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_hedvig_h"

@@ -37,10 +37,8 @@ class ContractPillAdapter :
                                 text.context.getString(R.string.insurance_tab_covers_you_tag)
                                     .toUpperCase()
                         } else {
-                            text.text = "${
-                                text.context.getString(R.string.insurance_tab_covers_you_tag)
-                                    .toUpperCase()
-                            }+${item.noOfCoInsured}"
+                            text.text = text.context.getString(R.string.insurance_tab_covers_you_plus_tag, item.noOfCoInsured)
+                                .toUpperCase()
                         }
                     }
                     is ContractModel.Student -> {
