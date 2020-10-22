@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
+import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -77,7 +78,7 @@ class ContractDetailTabAdapter(activity: AppCompatActivity) : FragmentStateAdapt
     override fun createFragment(position: Int) = when (position) {
         0 -> YourInfoFragment()
         1 -> Fragment()
-        2 -> Fragment()
+        2 -> DocumentsFragment()
         else -> Fragment()
     }
 }
