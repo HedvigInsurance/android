@@ -35,8 +35,8 @@ import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
 import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModelImpl
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl

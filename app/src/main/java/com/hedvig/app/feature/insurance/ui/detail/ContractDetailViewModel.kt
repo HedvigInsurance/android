@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui.contractdetail
+package com.hedvig.app.feature.insurance.ui.detail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,8 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
-    abstract val data: LiveData<InsuranceQuery.Contract>
+    protected val _data = MutableLiveData<InsuranceQuery.Contract>()
+    val data: LiveData<InsuranceQuery.Contract> = _data
 
     abstract fun loadContract(id: String)
     abstract suspend fun triggerFreeTextChat()
@@ -21,7 +22,6 @@ class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
     private val chatRepository: ChatRepository
 ) : ContractDetailViewModel() {
-    override val data = MutableLiveData<InsuranceQuery.Contract>()
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
@@ -42,7 +42,7 @@ class ContractDetailViewModelImpl(
                 ?.contracts
                 ?.firstOrNull { it.id == id }
 
-            data.postValue(contract)
+            _data.postValue(contract)
         }
     }
 
