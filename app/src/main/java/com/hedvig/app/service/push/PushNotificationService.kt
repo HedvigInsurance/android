@@ -13,9 +13,12 @@ import com.hedvig.app.service.push.managers.GenericNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import i
+import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
+    private val paymentNotificationManager: PaymentNotificationManager by inject()
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
@@ -25,7 +28,7 @@ class PushNotificationService : FirebaseMessagingService() {
 
         ChatNotificationManager.createChannel(this)
         ReferralsNotificationManager.createChannel(this)
-        PaymentNotificationManager.createChannel(this)
+        paymentNotificationManager.createChannel(this)
         GenericNotificationManager.createChannel(this)
     }
 
@@ -54,9 +57,9 @@ class PushNotificationService : FirebaseMessagingService() {
                 .sendReferralNotification(this, remoteMessage)
             NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager
                 .sendReferralsEnabledNotification(this)
-            NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> PaymentNotificationManager
+            NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> paymentNotificationManager
                 .sendDirectDebitNotification(this)
-            NOTIFICATION_TYPE_PAYMENT_FAILED -> PaymentNotificationManager
+            NOTIFICATION_TYPE_PAYMENT_FAILED -> paymentNotificationManager
                 .sendPaymentFailedNotification(this)
 /*
             NOTIFICATION_TYPE_CLAIM_PAID -> PaymentNotificationManager

@@ -1,6 +1,6 @@
 package com.hedvig.app.mocks
 
-import com.hedvig.app.MockAdyenViewModel
+import com.hedvig.app.feature.adyen.MockAdyenViewModel
 import com.hedvig.app.MockContractDetailViewModel
 import com.hedvig.app.MockInsuranceViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModel

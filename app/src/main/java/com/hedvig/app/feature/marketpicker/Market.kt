@@ -2,6 +2,9 @@ package com.hedvig.app.feature.marketpicker
 
 import android.content.Context
 import androidx.fragment.app.FragmentManager
+import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.AdyenCurrency
+import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -12,6 +15,16 @@ enum class Market {
     SE,
     NO,
     DK;
+
+    fun connectPayin(context: Context) = when (this) {
+        SE -> TrustlyConnectPayinActivity.newInstance(
+            context
+        )
+        NO, DK -> AdyenConnectPayinActivity.newInstance(
+            context,
+            AdyenCurrency.fromMarket(this)
+        )
+    }
 
     val flag: Int
         get() = when (this) {
