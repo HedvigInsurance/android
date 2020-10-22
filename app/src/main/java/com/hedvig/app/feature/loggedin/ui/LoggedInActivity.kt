@@ -379,7 +379,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         fun newInstance(
             context: Context,
             withoutHistory: Boolean = false,
-            initialTab: LoggedInTabs = LoggedInTabs.HOME
+            initialTab: LoggedInTabs = LoggedInTabs.HOME,
+            isFromOnboarding: Boolean = false
         ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
@@ -387,6 +388,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
                 putExtra(INITIAL_TAB, initialTab)
+                putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
             }
 
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"

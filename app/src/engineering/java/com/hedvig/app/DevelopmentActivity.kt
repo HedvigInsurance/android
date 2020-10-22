@@ -4,26 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
+import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
-import com.hedvig.app.feature.loggedin.MockWhatsNewViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
-import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
-import com.hedvig.app.testdata.feature.loggedin.WHATS_NEW
+import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity
-import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
-import org.koin.dsl.module
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     private val binding by viewBinding(ActivityDevelopmentBinding::bind)
@@ -63,7 +56,13 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
                     startActivity(Intent(this, LoggedInMockActivity::class.java))
                 },
-                DevelopmentScreenAdapter . DevelopmentScreenItem . Row ("`VectorDrawable`-gallery") {
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Adyen") {
+                    startActivity(Intent(this, AdyenMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Trustly") {
+                    startActivity(Intent(this, TrustlyMockActivity::class.java))
+                },
+                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                     startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
                 },
                 DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {

@@ -8,12 +8,15 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.service.push.setupNotificationChannel
 
-object PaymentNotificationManager {
+class PaymentNotificationManager(
+    private val marketProvider: MarketProvider
+) {
     fun sendDirectDebitNotification(context: Context) {
+        val market = marketProvider.market ?: return
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -24,10 +27,7 @@ object PaymentNotificationManager {
                     )
                 )
                 addNextIntentWithParentStack(
-                    Intent(
-                        context,
-                        ConnectPaymentActivity::class.java
-                    )
+                    market.connectPayin(context)
                 )
                 getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
             }
@@ -131,8 +131,10 @@ object PaymentNotificationManager {
         )
     }
 
-    private const val PAYMENTS_CHANNEL_ID = "hedvig-payments"
-    private const val CONNECT_DIRECT_DEBIT_NOTIFICATION_ID = 3
-    private const val CLAIM_PAID_NOTIFICATION_ID = 4
-    private const val PAYMENT_FAILED_NOTIFICATION_ID = 5
+    companion object {
+        private const val PAYMENTS_CHANNEL_ID = "hedvig-payments"
+        private const val CONNECT_DIRECT_DEBIT_NOTIFICATION_ID = 3
+        private const val CLAIM_PAID_NOTIFICATION_ID = 4
+        private const val PAYMENT_FAILED_NOTIFICATION_ID = 5
+    }
 }

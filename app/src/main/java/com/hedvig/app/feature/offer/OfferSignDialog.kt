@@ -14,7 +14,6 @@ import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.getMarket
@@ -129,13 +128,7 @@ class OfferSignDialog : DialogFragment() {
         }
 
         handler.postDelayed({
-            startActivity(
-                ConnectPaymentActivity.newInstance(
-                    requireContext(),
-                    withExplainer = true,
-                    withoutHistory = true
-                )
-            )
+            market?.connectPayin(requireContext())?.let { requireContext().startActivity(it) }
         }, 1000)
     }
 
