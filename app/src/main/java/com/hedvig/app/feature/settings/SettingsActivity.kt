@@ -118,6 +118,10 @@ class SettingsActivity : BaseActivity() {
                         lp.entryValues =
                             resources.getStringArray(R.array.language_settings_values_no)
                     }
+                    Market.DK -> {
+                        lp.entries = resources.getStringArray(R.array.language_settings_dk)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
+                    }
                 }
 
                 if (lp.value == null) {

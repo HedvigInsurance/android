@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -25,12 +25,12 @@ android {
 
         minSdkVersion 23
         versionCode 43
-        versionName '4.6.0'
+        versionName '4.7.0'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
 
-        resConfigs "en", "en-rNO", "en-rSE", "nb-rNO", "sv-rSE"
+        resConfigs "en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"
 
         testInstrumentationRunner "com.hedvig.app.TestRunner"
     }
@@ -58,6 +58,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://giraffe.hedvig.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://giraffe.hedvig.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.hedvig.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = true
             resValue "string", "file_provider_authority", "\"com.hedvig.android.file.provider\""
 
             minifyEnabled true
@@ -72,6 +73,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = true
             resValue "string", "file_provider_authority", "\"com.hedvig.android.test.file.provider\""
 
             minifyEnabled true
@@ -86,6 +88,7 @@ android {
             buildConfigField "String", "WS_GRAPHQL_URL", "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             buildConfigField "String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\""
             buildConfigField "String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\""
+            manifestPlaceholders.firebaseCrashlyticsCollectionEnabled = false
 
             resValue "string", "file_provider_authority", "\"com.hedvig.android.dev.file.provider\""
 
@@ -119,13 +122,13 @@ dependencies {
 
     // AndroidX
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.media:media:1.1.0'
+    implementation 'androidx.media:media:1.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
     implementation "androidx.preference:preference-ktx:1.1.1"
-    implementation "androidx.core:core-ktx:1.3.1"
+    implementation "androidx.core:core-ktx:1.3.2"
     implementation 'com.google.android:flexbox:2.0.1'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
@@ -145,27 +148,24 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
     // Okhttp
-    def okhttp3_version = '4.7.2'
+    def okhttp3_version = '4.9.0'
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.8.0"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp3_version"
 
     // Firebase
-    implementation 'com.google.android.gms:play-services-base:17.3.0'
-    releaseImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    stagingImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.android.gms:play-services-base:17.4.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
 
-    implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
+    implementation "com.google.firebase:firebase-dynamic-links:19.1.1"
     implementation 'com.google.firebase:firebase-config:19.2.0'
-    implementation "com.google.firebase:firebase-messaging:20.2.4"
+    implementation "com.google.firebase:firebase-messaging:20.3.0"
 
     implementation "com.mixpanel.android:mixpanel-android:5.8.4"
 
     // Koin
-    def koin_version = "2.1.5"
+    def koin_version = "2.2.0-rc-2"
     implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-android-viewmodel:$koin_version"
-
-    implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -180,8 +180,8 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.10.3'
 
     // coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.4'
 
     // ReactiveX
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
@@ -223,12 +223,12 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     // test
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
     androidTestImplementation 'com.agoda.kakao:kakao:2.3.2'
     androidTestImplementation 'org.powermock:powermock-core:2.0.6'
     androidTestImplementation "com.apollographql.apollo:apollo-idling-resource:$apollo_version"

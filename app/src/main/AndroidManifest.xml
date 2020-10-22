@@ -16,12 +16,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:theme="@style/Hedvig.Theme"
         android:name=".HedvigApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:theme="@style/Hedvig.Theme">
         <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -139,13 +139,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.profile.ui.payment.PaymentHistoryActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.payment.connect.ConnectPaymentActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -282,6 +275,18 @@
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.AdyenConnectPayinActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.trustly.TrustlyConnectPayinActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -289,6 +294,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="${firebaseCrashlyticsCollectionEnabled}" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

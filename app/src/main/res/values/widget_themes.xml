@@ -65,4 +65,12 @@
         <item name="colorOnSurface">?colorPrimary</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">?textAppearanceBody1</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.Toolbar.ErrorAction" parent="">
+        <item name="actionMenuTextColor">?colorError</item>
+    </style>
+
 </resources>

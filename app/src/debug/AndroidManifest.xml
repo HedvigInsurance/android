@@ -69,6 +69,16 @@
             android:label="Logged In Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.adyen.AdyenMockActivity"
+            android:label="Adyen Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
+            android:name=".feature.trustly.TrustlyMockActivity"
+            android:label="Trustly Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>
