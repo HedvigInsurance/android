@@ -211,6 +211,7 @@ class InsuranceAdapter(
                         }
                     }
                     root.setHapticClickListener {
+                        root.transitionName = TRANSITION_NAME
                         root.context.startActivity(
                             ContractDetailActivity.newInstance(
                                 root.context,
@@ -240,6 +241,8 @@ class InsuranceAdapter(
     }
 
     companion object {
+        private const val TRANSITION_NAME = "contract_card"
+
         private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
 
         private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int

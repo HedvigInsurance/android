@@ -25,6 +25,8 @@
         <item name="fontFamily">@font/favorit_book</item>
         <item name="android:fontFamily">@font/favorit_book</item>
 
+        <item name="android:windowActivityTransitions">true</item>
+
         <item name="shapeAppearanceLargeComponent">
             @style/Hedvig.ShapeAppearance.LargeComponent
         </item>
