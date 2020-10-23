@@ -105,7 +105,22 @@ class InsuranceDataBuilder(
                         )
                     } else {
                         null
-                    }
+                    },
+                    asDanishHomeContentAgreement = if (type == TypeOfContract.DK_HOME_CONTENT) {
+                        InsuranceQuery.AsDanishHomeContentAgreement(
+                            address = InsuranceQuery.Address3(
+                                fragments = InsuranceQuery.Address3.Fragments(
+                                    AddressFragment(
+                                        street = "Testvägen 1",
+                                        postalCode = "123 45",
+                                        city = "Tensta",
+                                    )
+                                )
+                            )
+                        )
+                    } else {
+                        null
+                    },
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(

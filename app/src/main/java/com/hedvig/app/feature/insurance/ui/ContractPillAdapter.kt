@@ -4,13 +4,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractPillBinding
-import com.hedvig.app.util.extensions.getStringIdForCard
+import com.hedvig.app.getLocale
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class ContractPillAdapter :
     ListAdapter<ContractModel, ContractPillAdapter.ViewHolder>(DiffCallback()) {
@@ -27,36 +26,37 @@ class ContractPillAdapter :
         fun bind(item: ContractModel) {
             binding.apply {
                 when (item) {
-                    is ContractModel.ContractType -> {
-                        text.text =
-                            text.context.getString(item.type.getStringIdForCard()).toUpperCase()
+                    is ContractModel.Address -> {
+                        item.currentAgreement.asDanishHomeContentAgreement?.let {
+                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                                getLocale(text.context)
+                            )
+                        }
+                        item.currentAgreement.asNorwegianHomeContentAgreement?.let {
+                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                                getLocale(text.context)
+                            )
+                        }
+                        item.currentAgreement.asSwedishApartmentAgreement?.let {
+                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                                getLocale(text.context)
+                            )
+                        }
+                        item.currentAgreement.asSwedishHouseAgreement?.let {
+                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                                getLocale(text.context)
+                            )
+                        }
                     }
                     is ContractModel.NoOfCoInsured -> {
                         if (item.noOfCoInsured == 0) {
                             text.text =
                                 text.context.getString(R.string.insurance_tab_covers_you_tag)
-                                    .toUpperCase()
                         } else {
-                            text.text = text.context.getString(R.string.insurance_tab_covers_you_plus_tag, item.noOfCoInsured)
-                                .toUpperCase()
-                        }
-                    }
-                    is ContractModel.Student -> {
-                        when (item.type) {
-                            TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                            TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
-                                text.text =
-                                    text.context.getString(R.string.insurance_tab_student_tag)
-                                        .toUpperCase()
-                            }
-                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
-                                text.text = text.context.getString(R.string.insurance_tab_youth_tag)
-                                    .toUpperCase()
-                            }
-                            else -> {
-                                e { "Invalid data passed to ${ContractModel.Student::class.simpleName}" }
-                            }
+                            text.text = text.context.getString(
+                                R.string.insurance_tab_covers_you_plus_tag,
+                                item.noOfCoInsured
+                            )
                         }
                     }
                 }
@@ -74,7 +74,6 @@ class DiffCallback : DiffUtil.ItemCallback<ContractModel>() {
 }
 
 sealed class ContractModel {
-    data class ContractType(val type: TypeOfContract) : ContractModel()
+    data class Address(val currentAgreement: InsuranceQuery.CurrentAgreement) : ContractModel()
     data class NoOfCoInsured(val noOfCoInsured: Int) : ContractModel()
-    data class Student(val type: TypeOfContract) : ContractModel()
 }

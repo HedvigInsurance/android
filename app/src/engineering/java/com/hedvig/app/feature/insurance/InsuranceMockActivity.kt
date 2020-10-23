@@ -16,9 +16,7 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
-import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
-import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_NO_RENEWAL
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
