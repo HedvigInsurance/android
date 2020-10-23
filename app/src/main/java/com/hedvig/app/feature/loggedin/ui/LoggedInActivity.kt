@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
@@ -15,6 +16,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
@@ -71,6 +73,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralsIncentive: MonetaryAmount
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs

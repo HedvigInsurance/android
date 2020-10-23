@@ -3,13 +3,15 @@ package com.hedvig.app.feature.insurance.ui.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
@@ -21,13 +23,22 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.time.format.DateTimeFormatter
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
     private val binding by viewBinding(ContractDetailActivityBinding::bind)
     private val model: ContractDetailViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+        window.sharedElementEnterTransition = MaterialContainerTransform().apply {
+            addTarget(R.id.card)
+            duration = 300L
+        }
+        window.sharedElementReturnTransition = MaterialContainerTransform().apply {
+            addTarget(R.id.card)
+            duration = 250L
+        }
         super.onCreate(savedInstanceState)
 
         val id = intent.getStringExtra(ID)
@@ -64,6 +75,8 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                     }
                 }
             }.attach()
+            card.arrow.isVisible = false
+            card.root.transitionName = "contract_card"
         }
 
         model.data.observe(this) {
@@ -80,18 +93,6 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
         fun newInstance(context: Context, id: String) =
             Intent(context, ContractDetailActivity::class.java).apply {
                 putExtra(ID, id)
-            }
-
-        private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
-
-        private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
-            get() {
-                asNorwegianTravelAgreement?.numberCoInsured?.let { return it }
-                asSwedishHouseAgreement?.numberCoInsured?.let { return it }
-                asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
-                asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
-                e { "Unable to infer amount coinsured for agreement: $this" }
-                return 0
             }
     }
 }

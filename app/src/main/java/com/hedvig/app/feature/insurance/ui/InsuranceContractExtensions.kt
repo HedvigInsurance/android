@@ -4,14 +4,12 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
-import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import e
 import java.time.format.DateTimeFormatter
 
 fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
-binding.apply {
+    binding.apply {
         status.fragments.contractStatusFragment.let { contractStatus ->
             contractStatus.asPendingStatus?.let {
                 firstStatusPill.show()
@@ -108,7 +106,6 @@ binding.apply {
             }
         }
     }
-
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
 

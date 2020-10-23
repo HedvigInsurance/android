@@ -1,5 +1,8 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,7 +120,12 @@ class InsuranceAdapter(
                             ContractDetailActivity.newInstance(
                                 root.context,
                                 contract.id
-                            )
+                            ),
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                root.context.getActivity()!!,
+                                root,
+                                TRANSITION_NAME
+                            ).toBundle()
                         )
                     }
                 }
@@ -143,6 +151,11 @@ class InsuranceAdapter(
 
     companion object {
         private const val TRANSITION_NAME = "contract_card"
+
+        tailrec fun Context?.getActivity(): Activity? = when (this) {
+            is Activity -> this
+            else -> (this as? ContextWrapper)?.baseContext?.getActivity()
+        }
     }
 }
 
