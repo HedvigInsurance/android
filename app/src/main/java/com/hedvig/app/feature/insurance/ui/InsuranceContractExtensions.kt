@@ -78,7 +78,6 @@ binding.apply {
             }
         }
 
-
         contractName.text = displayName
 
         contractPills.adapter = ContractPillAdapter().also { adapter ->
@@ -108,18 +107,8 @@ binding.apply {
                 }
             }
         }
-        root.setHapticClickListener {
-            root.transitionName = TRANSITION_NAME
-            root.context.startActivity(
-                ContractDetailActivity.newInstance(
-                    root.context,
-                    id
-                )
-            )
-        }
     }
 
-private const val TRANSITION_NAME = "contract_card"
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
 

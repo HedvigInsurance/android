@@ -9,7 +9,6 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
@@ -20,10 +19,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import e
-import java.time.format.DateTimeFormatter
 
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
@@ -114,6 +110,17 @@ class InsuranceAdapter(
 
             fun bind(contract: InsuranceQuery.Contract) {
                 contract.bindTo(binding)
+                binding.apply {
+                    root.setHapticClickListener {
+                        root.transitionName = TRANSITION_NAME
+                        root.context.startActivity(
+                            ContractDetailActivity.newInstance(
+                                root.context,
+                                contract.id
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -132,6 +139,10 @@ class InsuranceAdapter(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TRANSITION_NAME = "contract_card"
     }
 }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -35,8 +36,6 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             e { "Programmer error: ID not provided to ${this.javaClass.name}" }
             return
         }
-        model.data.observe(this) { it.bindTo(binding.card) }
-        model.loadContract(id)
 
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
@@ -66,6 +65,14 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                 }
             }.attach()
         }
+
+        model.data.observe(this) {
+            it.bindTo(binding.card)
+            binding.card.apply {
+                arrow.isVisible = false
+            }
+        }
+        model.loadContract(id)
     }
 
     companion object {

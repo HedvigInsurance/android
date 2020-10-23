@@ -2,15 +2,15 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginStart="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double"
-    android:layout_marginTop="@dimen/base_margin_half"
-    android:layout_marginBottom="@dimen/base_margin_half"
-    android:layout_height="@dimen/contract_card_height"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/color_divider"
     android:layout_width="match_parent"
-    android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard">
+    android:layout_height="@dimen/contract_card_height"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_half"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginBottom="@dimen/base_margin_half"
+    android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard"
+    app:strokeColor="@color/color_divider"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -26,8 +26,8 @@
             android:background="@drawable/background_pill"
             android:backgroundTint="@color/yellow"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="AWAITING START DATE"
             tools:visibility="visible" />
 
@@ -35,30 +35,30 @@
             android:id="@+id/secondStatusPill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin"
             android:background="@drawable/background_pill"
             android:backgroundTint="@color/yellow"
             android:visibility="gone"
-            android:layout_marginTop="@dimen/base_margin"
-            app:layout_constraintTop_toBottomOf="@id/firstStatusPill"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/firstStatusPill"
             tools:text="AWAITING START DATE"
             tools:visibility="visible" />
 
         <ImageView
             android:layout_width="@dimen/contract_card_logo_size"
             android:layout_height="@dimen/contract_card_logo_size"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_hedvig_h"
             app:tint="@color/lavender_900" />
 
         <TextView
             android:id="@+id/contractName"
-            android:textAppearance="?textAppearanceHeadline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/contractPills"
             android:layout_marginBottom="@dimen/base_margin"
+            android:textAppearance="?textAppearanceHeadline6"
+            app:layout_constraintBottom_toTopOf="@id/contractPills"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Home Insurance" />
 
@@ -66,23 +66,24 @@
             android:id="@+id/contractPills"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-            app:layout_constraintEnd_toStartOf="@+id/imageView"
-            android:orientation="horizontal"
             android:layout_marginEnd="@dimen/base_margin"
+            android:orientation="horizontal"
+            app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/arrow"
+            app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="6"
             tools:listitem="@layout/contract_pill" />
 
 
         <ImageView
+            android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_arrow_forward"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@null"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/imageView" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_arrow_forward" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
