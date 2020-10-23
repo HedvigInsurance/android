@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
-import java.lang.reflect.Type
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
