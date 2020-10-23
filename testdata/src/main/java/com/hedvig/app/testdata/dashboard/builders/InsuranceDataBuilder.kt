@@ -97,7 +97,8 @@ class InsuranceDataBuilder(
                     ),
                     asNorwegianHomeContentAgreement = null,
                     asNorwegianTravelAgreement = null,
-                    asSwedishHouseAgreement = null
+                    asSwedishHouseAgreement = null,
+                    asDanishHomeContentAgreement = null
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(

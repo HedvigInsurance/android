@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
@@ -191,34 +190,39 @@ class InsuranceAdapter(
                             TypeOfContract.SE_APARTMENT_RENT,
                             TypeOfContract.NO_HOME_CONTENT_OWN,
                             TypeOfContract.NO_HOME_CONTENT_RENT,
-                            TypeOfContract.NO_TRAVEL,
-                            TypeOfContract.NO_TRAVEL_YOUTH,
-                            TypeOfContract.DK_HOME_CONTENT -> {
-                                adapter.submitList(
-                                    listOf(
-                                        ContractModel.ContractType(contract.typeOfContract),
-                                        ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
-                                    )
-                                )
-                            }
+                            TypeOfContract.DK_HOME_CONTENT,
                             TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                             TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                             TypeOfContract.SE_APARTMENT_STUDENT_BRF,
                             TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
                                 adapter.submitList(
                                     listOf(
-                                        ContractModel.ContractType(contract.typeOfContract),
-                                        ContractModel.Student(contract.typeOfContract),
+                                        ContractModel.Address(
+                                            currentAgreement = if (isHomeInsurance(contract)) {
+                                                contract.currentAgreement
+                                            } else {
+                                                null
+                                            }
+                                        ),
                                         ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
                                     )
                                 )
+                            }
+                            TypeOfContract.NO_TRAVEL,
+                            TypeOfContract.NO_TRAVEL_YOUTH -> {
+                                adapter.submitList(listOf(ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)))
                             }
                             TypeOfContract.UNKNOWN__ -> {
                             }
                         }
                     }
                     root.setHapticClickListener {
-                        root.context.startActivity(ContractDetailActivity.newInstance(root.context, contract.id))
+                        root.context.startActivity(
+                            ContractDetailActivity.newInstance(
+                                root.context,
+                                contract.id
+                            )
+                        )
                     }
                 }
             }
@@ -253,6 +257,14 @@ class InsuranceAdapter(
                 e { "Unable to infer amount coinsured for agreement: $this" }
                 return 0
             }
+
+        private fun isHomeInsurance(contract: InsuranceQuery.Contract): Boolean {
+            contract.currentAgreement.asDanishHomeContentAgreement?.let { return true }
+            contract.currentAgreement.asNorwegianHomeContentAgreement?.let { return true }
+            contract.currentAgreement.asSwedishApartmentAgreement?.let { return true }
+            contract.currentAgreement.asSwedishHouseAgreement?.let { return true }
+            return false
+        }
     }
 }
 
