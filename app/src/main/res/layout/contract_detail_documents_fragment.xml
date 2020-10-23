@@ -8,5 +8,6 @@
     android:id="@+id/recycler"
     android:paddingTop="@dimen/base_margin_triple"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:context=".feature.insurance.ui.detail.documents.DocumentsFragment"
     tools:itemCount="2"
     tools:listitem="@layout/contract_detail_documents_document" />
