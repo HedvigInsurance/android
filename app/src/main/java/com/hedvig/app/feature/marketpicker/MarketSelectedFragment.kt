@@ -4,17 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.feature.norway.NorwegianAuthenticationActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -61,32 +56,12 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 tracker.signUp()
-                when (market) {
-                    Market.SE -> startActivity(
-                        ChatActivity.newInstance(requireContext())
-                            .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) })
-                    Market.NO -> {
-                        startActivity(WebOnboardingActivity.newInstance(requireContext()))
-                    }
-                    Market.DK -> {
-                        startActivity(WebOnboardingActivity.newInstance(requireContext()))
-                    }
-                }
+                marketProvider.market?.onboarding(requireContext())?.let { startActivity(it) }
             }
 
             logIn.setHapticClickListener {
                 tracker.logIn()
-                when (market) {
-                    Market.SE -> {
-                        AuthenticateDialog().show(parentFragmentManager, AuthenticateDialog.TAG)
-                    }
-                    Market.NO -> {
-                        startActivity(NorwegianAuthenticationActivity.newInstance(requireContext()))
-                    }
-                    Market.DK -> {
-                        requireContext().makeToast("Not Implemented!")
-                    }
-                }
+                marketProvider.market?.openAuth(requireContext(), parentFragmentManager)
             }
         }
     }
