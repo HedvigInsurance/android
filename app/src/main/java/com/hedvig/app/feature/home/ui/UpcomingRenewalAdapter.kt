@@ -52,8 +52,6 @@ class UpcomingRenewalAdapter(val tracker: HomeTracker) :
                             }
                         }
                     }
-
-                    dismiss.setHapticClickListener { root.remove() }
                 }
             }
         }

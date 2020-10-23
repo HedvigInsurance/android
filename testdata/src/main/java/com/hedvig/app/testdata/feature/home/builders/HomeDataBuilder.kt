@@ -16,7 +16,8 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Trasig telefon").build(),
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
-    private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList()
+    private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
+    private val upcomingRenewal: HomeQuery.UpcomingRenewal? = null
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
@@ -69,10 +70,7 @@ data class HomeDataBuilder(
                         null
                     }
                 ),
-                upcomingRenewal = HomeQuery.UpcomingRenewal(
-                    renewalDate = LocalDate.now(),
-                    draftCertificateUrl = "https://www.example.com"
-                )
+                upcomingRenewal = upcomingRenewal
             )
         },
         isEligibleToCreateClaim = contracts.any { it == ContractStatus.ACTIVE },
