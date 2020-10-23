@@ -2,8 +2,13 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="@dimen/base_margin_double"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_half"
+    android:layout_marginBottom="@dimen/base_margin_half"
     android:layout_height="@dimen/contract_card_height"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/color_divider"
     android:layout_width="match_parent"
     android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard">
 

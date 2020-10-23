@@ -197,13 +197,7 @@ class InsuranceAdapter(
                             TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
                                 adapter.submitList(
                                     listOf(
-                                        ContractModel.Address(
-                                            currentAgreement = if (isHomeInsurance(contract)) {
-                                                contract.currentAgreement
-                                            } else {
-                                                null
-                                            }
-                                        ),
+                                        ContractModel.Address(contract.currentAgreement),
                                         ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
                                     )
                                 )
@@ -257,14 +251,6 @@ class InsuranceAdapter(
                 e { "Unable to infer amount coinsured for agreement: $this" }
                 return 0
             }
-
-        private fun isHomeInsurance(contract: InsuranceQuery.Contract): Boolean {
-            contract.currentAgreement.asDanishHomeContentAgreement?.let { return true }
-            contract.currentAgreement.asNorwegianHomeContentAgreement?.let { return true }
-            contract.currentAgreement.asSwedishApartmentAgreement?.let { return true }
-            contract.currentAgreement.asSwedishHouseAgreement?.let { return true }
-            return false
-        }
     }
 }
 

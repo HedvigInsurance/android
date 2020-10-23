@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
+import java.lang.reflect.Type
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
@@ -17,7 +18,8 @@ class InsuranceDataBuilder(
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
-        )
+        ),
+    private val displayName: String = "Hemförsäkring"
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -74,7 +76,7 @@ class InsuranceDataBuilder(
                         )
                     )
                 ),
-                displayName = "Hemförsäkring",
+                displayName = displayName,
                 typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(

@@ -11,13 +11,10 @@ val INSURANCE_DATA =
 val INSURANCE_DATA_STUDENT =
     InsuranceDataBuilder(
         typeOfContract = TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-        contracts = listOf(ContractStatus.ACTIVE)
+        contracts = listOf(ContractStatus.ACTIVE),
+        displayName = "Hemförsäkring Student"
     ).build()
 val INSURANCE_DATA_ACTIVE_AND_TERMINATED =
     InsuranceDataBuilder(
         contracts = listOf(ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE)
-    ).build()
-val INSURANCE_DATA_NO_RENEWAL =
-    InsuranceDataBuilder(
-        renewal = null, contracts = listOf(ContractStatus.ACTIVE)
     ).build()

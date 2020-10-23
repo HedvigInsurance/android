@@ -55,7 +55,7 @@ class InsuranceStudentCardTest {
             insuranceRecycler {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     contractName {
-                        hasText("Hemförsäkring")
+                        hasText("Hemförsäkring Student")
                     }
                     contractPills {
                         childAt<InsuranceScreen.ContractPill>(0) {
