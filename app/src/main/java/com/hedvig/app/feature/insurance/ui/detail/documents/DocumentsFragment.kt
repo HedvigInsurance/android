@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
@@ -15,6 +17,9 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.apply {
+            doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
             adapter = DocumentsAdapter()
             model.data.observe(viewLifecycleOwner) { data ->
                 (adapter as? DocumentsAdapter)?.submitList(
