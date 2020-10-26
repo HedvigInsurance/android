@@ -9,6 +9,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?colorSurface"
         app:navigationIcon="@drawable/ic_back" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -30,7 +31,7 @@
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorSurface"
+                android:background="?colorSurface"
                 android:minHeight="@dimen/tab_layout_height"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 

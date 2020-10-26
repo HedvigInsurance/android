@@ -9,7 +9,9 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailCoverageFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -19,6 +21,9 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.apply {
+            doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
             adapter = CoverageAdapter(requestBuilder, parentFragmentManager)
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
