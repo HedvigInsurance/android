@@ -21,7 +21,7 @@
         <item name="textColorLargeButton">@color/textColorLargeButton</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
-        <item name="textColorThird">@color/textColorThird</item>
+        <item name="android:textColorTertiary">@color/textColorThird</item>
         <item name="fontFamily">@font/favorit_book</item>
         <item name="android:fontFamily">@font/favorit_book</item>
 
@@ -80,7 +80,6 @@
     <attr name="colorButton" format="reference" />
     <attr name="textColorLink" format="reference" />
     <attr name="textColorLargeButton" format="reference" />
-    <attr name="textColorThird" format="reference" />
     <attr name="colorPlaceholder" format="reference" />
     <attr name="colorWarning" format="reference" />
 

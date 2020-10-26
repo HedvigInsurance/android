@@ -29,6 +29,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
     private val model: ContractDetailViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        postponeEnterTransition()
         window.apply {
             requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
             sharedElementEnterTransition = sharedElementTransition()
@@ -76,6 +77,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
 
         model.data.observe(this) {
             it.bindTo(binding.card)
+            startPostponedEnterTransition()
         }
         model.loadContract(id)
     }
