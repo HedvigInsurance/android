@@ -9,7 +9,8 @@ import java.time.LocalDate
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
 val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE), upcomingRenewal = HomeQuery.UpcomingRenewal(
+    contracts = listOf(ContractStatus.ACTIVE, ContractStatus.ACTIVE),
+    upcomingRenewal = HomeQuery.UpcomingRenewal(
         renewalDate = LocalDate.now(),
         draftCertificateUrl = "https://www.example.com"
     )

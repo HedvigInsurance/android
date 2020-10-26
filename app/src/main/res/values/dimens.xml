@@ -131,5 +131,6 @@
     <dimen name="home_error_icon_size">32dp</dimen>
     <dimen name="dismissible_page_illustration_size">200dp</dimen>
     <dimen name="tab_layout_height">48dp</dimen>
+    <dimen name="upcoming_renewal_card_button_margin_bottom">1dp</dimen>
 
 </resources>

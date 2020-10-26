@@ -166,11 +166,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
-                    if (hasUpcomingRenewal(successData.contracts)) {
-                        HomeModel.UpcomingRenewal(upcomingRenewals(contracts = successData.contracts))
-                    } else {
-                        null
-                    },
+                    *upcomingRenewals(successData.contracts).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.ConnectPayin
                     } else {
@@ -191,6 +187,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     ) = importantMessages
         .filterNotNull()
         .map { HomeModel.PSA(it) }
+
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+        contracts.filter { it.upcomingRenewal != null }
+            .map { HomeModel.UpcomingRenewal(it) }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,
@@ -223,11 +223,5 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
         private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
-
-        private fun hasUpcomingRenewal(contracts: List<HomeQuery.Contract>) =
-            contracts.all { it.upcomingRenewal != null }
-
-        private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
-            contracts.filter { it.upcomingRenewal != null }
     }
 }

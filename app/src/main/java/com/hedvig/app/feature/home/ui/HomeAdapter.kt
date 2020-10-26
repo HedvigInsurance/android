@@ -19,7 +19,7 @@ import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
-import com.hedvig.app.databinding.RenewalListBinding
+import com.hedvig.app.databinding.UpconingRenewalCardBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -35,8 +35,10 @@ import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
@@ -68,7 +70,7 @@ class HomeAdapter(
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.home_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
-        R.layout.renewal_list -> ViewHolder.UpcomingRenewal(parent)
+        R.layout.upconing_renewal_card -> ViewHolder.UpcomingRenewal(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -84,7 +86,7 @@ class HomeAdapter(
         HomeModel.Error -> R.layout.home_error
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
-        is HomeModel.UpcomingRenewal -> R.layout.renewal_list
+        is HomeModel.UpcomingRenewal -> R.layout.upconing_renewal_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -234,8 +236,8 @@ class HomeAdapter(
         }
 
         class UpcomingRenewal(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.renewal_list)) {
-            private val binding by viewBinding(RenewalListBinding::bind)
+            ViewHolder(parent.inflate(R.layout.upconing_renewal_card)) {
+            private val binding by viewBinding(UpconingRenewalCardBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -247,8 +249,23 @@ class HomeAdapter(
                 if (data !is HomeModel.UpcomingRenewal) {
                     return invalid(data)
                 }
-                root.adapter = UpcomingRenewalAdapter(tracker).also {
-                    it.submitList(data.upcomingRenewal)
+                data.contract.upcomingRenewal?.let { upcomingRenewal ->
+                    body.text = body.context.getString(
+                        R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+                        daysLeft(upcomingRenewal.renewalDate)
+                    )
+
+                    val maybeLinkUri = runCatching {
+                        Uri.parse(upcomingRenewal.draftCertificateUrl)
+                    }
+                    action.setHapticClickListener {
+                        tracker.showRenewal()
+                        maybeLinkUri.getOrNull()?.let { uri ->
+                            if (action.context.canOpenUri(uri)) {
+                                action.context.openUri(uri)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -416,6 +433,11 @@ class HomeAdapter(
                 }
             }
         }
+    }
+
+    companion object {
+        fun daysLeft(date: LocalDate) =
+            ChronoUnit.DAYS.between(date, LocalDate.now()).toInt()
     }
 }
 
