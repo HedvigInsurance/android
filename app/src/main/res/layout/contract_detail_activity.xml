@@ -9,7 +9,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         app:navigationIcon="@drawable/ic_back" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -31,6 +30,7 @@
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorSurface"
                 android:minHeight="@dimen/tab_layout_height"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
@@ -39,14 +39,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- TODO: Replace this with an insurance card, once it is built in a separate PR. -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?colorSurface"
-                        android:layout_gravity="center_vertical"
-                        android:text="Insurance card placeholder"
-                        android:textAppearance="?textAppearanceHeadline3" />
+                    <include
+                        android:id="@+id/card"
+                        layout="@layout/insurance_contract_card" />
 
                     <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tabContainer"
