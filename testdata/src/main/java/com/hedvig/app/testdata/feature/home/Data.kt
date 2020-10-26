@@ -9,7 +9,7 @@ val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
 val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE, ContractStatus.ACTIVE),
-    renewalDate = LocalDate.now()
+    renewalDate = LocalDate.now().plusDays(1L)
 ).build()
 
 val HOME_DATA_ACTIVE_IN_FUTURE =

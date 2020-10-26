@@ -189,8 +189,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         .map { HomeModel.PSA(it) }
 
     private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
-        contracts.filter { it.upcomingRenewal != null }
-            .map { HomeModel.UpcomingRenewal(it) }
+        contracts.mapNotNull { c ->
+            c.upcomingRenewal?.let {
+                HomeModel.UpcomingRenewal(it)
+            }
+        }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,

@@ -25,7 +25,7 @@ sealed class HomeModel {
         ) : BigText()
     }
 
-    data class UpcomingRenewal(val contract: HomeQuery.Contract) : HomeModel()
+    data class UpcomingRenewal(val upcomingRenewal: HomeQuery.UpcomingRenewal) : HomeModel()
 
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
