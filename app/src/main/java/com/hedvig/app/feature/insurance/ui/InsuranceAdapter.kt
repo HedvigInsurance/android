@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +17,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -116,17 +114,19 @@ class InsuranceAdapter(
                 binding.apply {
                     root.setHapticClickListener {
                         root.transitionName = TRANSITION_NAME
-                        root.context.startActivity(
-                            ContractDetailActivity.newInstance(
-                                root.context,
-                                contract.id
-                            ),
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                root.context.getActivity()!!,
-                                root,
-                                TRANSITION_NAME
-                            ).toBundle()
-                        )
+                        root.context.getActivity()?.let { activity ->
+                            root.context.startActivity(
+                                ContractDetailActivity.newInstance(
+                                    root.context,
+                                    contract.id
+                                ),
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    activity,
+                                    root,
+                                    TRANSITION_NAME
+                                ).toBundle()
+                            )
+                        }
                     }
                 }
             }
@@ -151,11 +151,6 @@ class InsuranceAdapter(
 
     companion object {
         private const val TRANSITION_NAME = "contract_card"
-
-        tailrec fun Context?.getActivity(): Activity? = when (this) {
-            is Activity -> this
-            else -> (this as? ContextWrapper)?.baseContext?.getActivity()
-        }
     }
 }
 

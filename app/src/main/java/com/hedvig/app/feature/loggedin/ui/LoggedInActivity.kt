@@ -16,7 +16,6 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
-import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
@@ -74,7 +73,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
