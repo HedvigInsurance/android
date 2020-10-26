@@ -1,126 +1,105 @@
-package com.hedvig.app.testdata.feature.insurance.builders
+package com.hedvig.app.testdata.dashboard.builders
 
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
-    private val type: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
-    private val coinsured: Int = 2,
+    private val contracts: List<ContractStatus> = emptyList(),
+    private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_BRF,
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
         ),
+    private val displayName: String = "Hemförsäkring"
 ) {
 
     fun build() = InsuranceQuery.Data(
-        contracts = listOf(
+        contracts = contracts.map { c ->
             InsuranceQuery.Contract(
                 id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
                 status = InsuranceQuery.Status(
                     fragments = InsuranceQuery.Status.Fragments(
                         contractStatusFragment = ContractStatusFragment(
-                            asPendingStatus = null,
-                            asActiveInFutureStatus = null,
-                            asActiveStatus = ContractStatusFragment.AsActiveStatus(
-                                pastInception = LocalDate.of(2020, 2, 1)
-                            ),
-                            asActiveInFutureAndTerminatedInFutureStatus = null,
+                            asPendingStatus = if (c == ContractStatus.PENDING) {
+                                ContractStatusFragment.AsPendingStatus(
+                                    pendingSince = null
+                                )
+                            } else {
+                                null
+                            },
+                            asActiveInFutureStatus = when (c) {
+                                ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
+                                    futureInception = LocalDate.of(2025, 1, 1)
+                                )
+                                ContractStatus.ACTIVE_IN_FUTURE_INVALID -> ContractStatusFragment.AsActiveInFutureStatus(
+                                    futureInception = null
+                                )
+                                else -> null
+                            },
+                            asActiveStatus = if (c == ContractStatus.ACTIVE) {
+                                ContractStatusFragment.AsActiveStatus(
+                                    pastInception = LocalDate.now()
+                                )
+                            } else {
+                                null
+                            },
+                            asActiveInFutureAndTerminatedInFutureStatus = if (c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+                                ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
+                                    futureInception = LocalDate.of(2024, 1, 1),
+                                    futureTermination = LocalDate.of(2034, 1, 1)
+                                )
+                            } else {
+                                null
+                            },
                             asTerminatedInFutureStatus = null,
-                            asTerminatedTodayStatus = null,
-                            asTerminatedStatus = null
+                            asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
+                                ContractStatusFragment.AsTerminatedTodayStatus(today = LocalDate.now())
+                            } else {
+                                null
+                            },
+                            asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
+                                ContractStatusFragment.AsTerminatedStatus(
+                                    termination = null
+                                )
+                            } else {
+                                null
+                            }
                         )
                     )
                 ),
-                displayName = "Hemförsäkring",
-                typeOfContract = type,
+                displayName = displayName,
+                typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
                     asAgreementCore = InsuranceQuery.AsAgreementCore(
                         certificateUrl = "https://www.example.com"
                     ),
-                    asSwedishApartmentAgreement = if (type == TypeOfContract.SE_APARTMENT_RENT) {
-                        InsuranceQuery.AsSwedishApartmentAgreement(
-                            address = InsuranceQuery.Address(
-                                fragments = InsuranceQuery.Address.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta"
-                                    )
-                                )
-                            ),
-                            numberCoInsured = coinsured,
-                            squareMeters = 50,
-                            saType = SwedishApartmentLineOfBusiness.RENT
-                        )
-                    } else {
-                        null
-                    },
-                    asNorwegianHomeContentAgreement = if (type == TypeOfContract.NO_HOME_CONTENT_RENT) {
-                        InsuranceQuery.AsNorwegianHomeContentAgreement(
-                            address = InsuranceQuery.Address2(
-                                fragments = InsuranceQuery.Address2.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta"
-                                    )
-                                )
-                            ),
-                            numberCoInsured = coinsured,
-                            squareMeters = 50,
-                            nhcType = NorwegianHomeContentLineOfBusiness.RENT
-                        )
-                    } else {
-                        null
-                    },
-                    asNorwegianTravelAgreement = if (type == TypeOfContract.NO_TRAVEL) {
-                        InsuranceQuery.AsNorwegianTravelAgreement(
-                            numberCoInsured = coinsured
-                        )
-                    } else {
-                        null
-                    },
-                    asSwedishHouseAgreement = if (type == TypeOfContract.SE_HOUSE) {
-                        InsuranceQuery.AsSwedishHouseAgreement(
-                            address = InsuranceQuery.Address1(
-                                fragments = InsuranceQuery.Address1.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta",
-                                    )
-                                )
-                            ),
-                            numberCoInsured = coinsured,
-                            squareMeters = 50,
-                        )
-                    } else {
-                        null
-                    },
-                    asDanishHomeContentAgreement = if (type == TypeOfContract.DK_HOME_CONTENT) {
-                        InsuranceQuery.AsDanishHomeContentAgreement(
-                            address = InsuranceQuery.Address3(
-                                fragments = InsuranceQuery.Address3.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta",
-                                    )
+                    asSwedishApartmentAgreement = InsuranceQuery.AsSwedishApartmentAgreement(
+                        address = InsuranceQuery.Address(
+                            fragments = InsuranceQuery.Address.Fragments(
+                                AddressFragment(
+                                    street = "Testvägen 1",
+                                    postalCode = "123 45",
+                                    city = "Tensta"
                                 )
                             )
-                        )
-                    } else {
-                        null
-                    },
+                        ),
+                        numberCoInsured = 2,
+                        squareMeters = 50,
+                        saType = SwedishApartmentLineOfBusiness.RENT
+                    ),
+                    asNorwegianHomeContentAgreement = null,
+                    asNorwegianTravelAgreement = null,
+                    asSwedishHouseAgreement = null,
+                    asDanishHomeContentAgreement = null
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(
@@ -235,6 +214,6 @@ class InsuranceDataBuilder(
                     url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
                 )
             )
-        )
+        }
     )
 }

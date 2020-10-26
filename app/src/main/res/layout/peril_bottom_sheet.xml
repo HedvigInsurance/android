@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_quintuple">
+    android:paddingBottom="@dimen/base_margin_quintuple"
+    tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
 
     <ImageView
         android:layout_width="wrap_content"

@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
+import com.google.android.material.card.MaterialCardView
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilBottomSheet
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import kotlinx.android.synthetic.main.peril_detail.view.*
@@ -36,7 +38,7 @@ class PerilsAdapter(
             .from(parent.context)
             .inflate(R.layout.peril_detail, parent, false)
     ) {
-        private val root = itemView.root
+        private val root = itemView as MaterialCardView
         private val label = itemView.label
         private val icon = itemView.icon
 
