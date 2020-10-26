@@ -6,11 +6,9 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
@@ -19,12 +17,10 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import e
-import java.time.format.DateTimeFormatter
 
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
@@ -114,111 +110,23 @@ class InsuranceAdapter(
             private val binding by viewBinding(InsuranceContractCardBinding::bind)
 
             fun bind(contract: InsuranceQuery.Contract) {
+                contract.bindTo(binding)
                 binding.apply {
-                    contract.status.fragments.contractStatusFragment.let { contractStatus ->
-                        contractStatus.asPendingStatus?.let {
-                            firstStatusPill.show()
-                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
-                        }
-                        contractStatus.asActiveInFutureStatus?.let { activeInFuture ->
-                            firstStatusPill.show()
-                            firstStatusPill.text = firstStatusPill.resources.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
-                                dateTimeFormatter.format(activeInFuture.futureInception)
-                            )
-                        }
-                        contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
-                            firstStatusPill.show()
-                            firstStatusPill.text = firstStatusPill.resources.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
-                                dateTimeFormatter.format(activeAndTerminated.futureInception)
-                            )
-                            secondStatusPill.show()
-                            secondStatusPill.text = secondStatusPill.context.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
-                                dateTimeFormatter.format(activeAndTerminated.futureTermination)
-                            )
-                        }
-                        contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
-                            firstStatusPill.show()
-                            firstStatusPill.text = firstStatusPill.resources.getString(
-                                R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
-                                dateTimeFormatter.format(terminatedInFuture.futureTermination)
-                            )
-                        }
-                        contractStatus.asTerminatedTodayStatus?.let {
-                            firstStatusPill.show()
-                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
-                        }
-                        contractStatus.asTerminatedStatus?.let {
-                            firstStatusPill.show()
-                            firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
-                        }
-                        contractStatus.asActiveStatus?.let {
-                            when (contract.typeOfContract) {
-                                TypeOfContract.SE_HOUSE,
-                                TypeOfContract.SE_APARTMENT_BRF,
-                                TypeOfContract.SE_APARTMENT_RENT,
-                                TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                                TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                                TypeOfContract.NO_HOME_CONTENT_OWN,
-                                TypeOfContract.NO_HOME_CONTENT_RENT,
-                                TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                                TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
-                                    container.setBackgroundResource(R.drawable.card_home_background)
-                                }
-                                TypeOfContract.NO_TRAVEL,
-                                TypeOfContract.NO_TRAVEL_YOUTH,
-                                TypeOfContract.DK_HOME_CONTENT -> {
-                                    container.setBackgroundResource(R.drawable.card_travel_background)
-                                }
-                                TypeOfContract.UNKNOWN__ -> {
-
-                                }
-                            }
-                        } ?: run {
-                            container.setBackgroundResource(R.color.hedvig_light_gray)
-                        }
-                    }
-
-
-                    contractName.text = contract.displayName
-
-                    contractPills.adapter = ContractPillAdapter().also { adapter ->
-                        when (contract.typeOfContract) {
-                            TypeOfContract.SE_HOUSE,
-                            TypeOfContract.SE_APARTMENT_BRF,
-                            TypeOfContract.SE_APARTMENT_RENT,
-                            TypeOfContract.NO_HOME_CONTENT_OWN,
-                            TypeOfContract.NO_HOME_CONTENT_RENT,
-                            TypeOfContract.NO_TRAVEL,
-                            TypeOfContract.NO_TRAVEL_YOUTH,
-                            TypeOfContract.DK_HOME_CONTENT -> {
-                                adapter.submitList(
-                                    listOf(
-                                        ContractModel.ContractType(contract.typeOfContract),
-                                        ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
-                                    )
-                                )
-                            }
-                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                            TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                            TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
-                                adapter.submitList(
-                                    listOf(
-                                        ContractModel.ContractType(contract.typeOfContract),
-                                        ContractModel.Student(contract.typeOfContract),
-                                        ContractModel.NoOfCoInsured(contract.currentAgreement.numberCoInsured)
-                                    )
-                                )
-                            }
-                            TypeOfContract.UNKNOWN__ -> {
-                            }
-                        }
-                    }
                     root.setHapticClickListener {
-                        root.context.startActivity(ContractDetailActivity.newInstance(root.context, contract.id))
+                        root.transitionName = TRANSITION_NAME
+                        root.context.getActivity()?.let { activity ->
+                            root.context.startActivity(
+                                ContractDetailActivity.newInstance(
+                                    root.context,
+                                    contract.id
+                                ),
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    activity,
+                                    root,
+                                    TRANSITION_NAME
+                                ).toBundle()
+                            )
+                        }
                     }
                 }
             }
@@ -242,17 +150,7 @@ class InsuranceAdapter(
     }
 
     companion object {
-        private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
-
-        private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
-            get() {
-                asNorwegianTravelAgreement?.numberCoInsured?.let { return it }
-                asSwedishHouseAgreement?.numberCoInsured?.let { return it }
-                asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
-                asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
-                e { "Unable to infer amount coinsured for agreement: $this" }
-                return 0
-            }
+        private const val TRANSITION_NAME = "contract_card"
     }
 }
 

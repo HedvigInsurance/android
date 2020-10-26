@@ -55,17 +55,17 @@ class InsuranceStudentCardTest {
             insuranceRecycler {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     contractName {
-                        hasText("Hemförsäkring")
+                        hasText("Hemförsäkring Student")
                     }
                     contractPills {
                         childAt<InsuranceScreen.ContractPill>(0) {
                             text {
-                                hasText(context().getString(R.string.SWEDISH_APARTMENT_LOB_BRF).toUpperCase())
+                                hasText("TESTVÄGEN 1")
                             }
                         }
                         childAt<InsuranceScreen.ContractPill>(1) {
                             text {
-                                hasText(context().getString(R.string.insurance_tab_student_tag).toUpperCase())
+                                hasAnyText()
                             }
                         }
                     }

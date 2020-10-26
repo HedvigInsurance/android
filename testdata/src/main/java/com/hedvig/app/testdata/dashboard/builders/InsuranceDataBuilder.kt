@@ -17,7 +17,8 @@ class InsuranceDataBuilder(
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
-        )
+        ),
+    private val displayName: String = "Hemförsäkring"
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -74,7 +75,7 @@ class InsuranceDataBuilder(
                         )
                     )
                 ),
-                displayName = "Hemförsäkring",
+                displayName = displayName,
                 typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
@@ -97,7 +98,8 @@ class InsuranceDataBuilder(
                     ),
                     asNorwegianHomeContentAgreement = null,
                     asNorwegianTravelAgreement = null,
-                    asSwedishHouseAgreement = null
+                    asSwedishHouseAgreement = null,
+                    asDanishHomeContentAgreement = null
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(
