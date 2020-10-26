@@ -20,6 +20,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
+import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import org.koin.android.viewmodel.dsl.viewModel
@@ -35,6 +36,13 @@ class HomeMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Home Screen")
+        clickableItem("Upcoming Renewal") {
+            MockHomeViewModel.apply {
+                homeMockData = HOME_DATA_UPCOMING_RENEWAL
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
         clickableItem("Pending") {
             MockHomeViewModel.apply {
                 homeMockData = HOME_DATA_PENDING
