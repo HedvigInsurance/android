@@ -1,6 +1,5 @@
 package com.hedvig.app.testdata.feature.home
 
-import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
@@ -10,10 +9,7 @@ val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
 val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE, ContractStatus.ACTIVE),
-    upcomingRenewal = HomeQuery.UpcomingRenewal(
-        renewalDate = LocalDate.now(),
-        draftCertificateUrl = "https://www.example.com"
-    )
+    renewalDate = LocalDate.now()
 ).build()
 
 val HOME_DATA_ACTIVE_IN_FUTURE =
