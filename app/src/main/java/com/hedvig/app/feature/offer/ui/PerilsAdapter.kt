@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui.contractcoverage
+package com.hedvig.app.feature.offer.ui
 
 import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater

@@ -33,8 +33,6 @@ import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
@@ -256,7 +254,6 @@ val whatsNewModule = module {
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
-    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
 
 val marketingModule = module {

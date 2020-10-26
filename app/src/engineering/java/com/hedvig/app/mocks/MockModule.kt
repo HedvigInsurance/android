@@ -5,7 +5,6 @@ import com.hedvig.app.MockContractDetailViewModel
 import com.hedvig.app.MockInsuranceViewModel
 import com.hedvig.app.feature.adyen.AdyenViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
@@ -29,7 +28,6 @@ val mockModule = module {
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
     viewModel<InsuranceViewModel> { MockInsuranceViewModel(get()) }
-    viewModel<ContractCoverageViewModel> { MockContractCoverageViewModel(get()) }
     viewModel<MarketingViewModel> { MockMarketingViewModel() }
     viewModel<AdyenViewModel> { MockAdyenViewModel() }
 }
