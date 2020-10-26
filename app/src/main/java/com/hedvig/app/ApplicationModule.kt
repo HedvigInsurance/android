@@ -63,8 +63,6 @@ import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -99,6 +97,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
+import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
+import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -230,13 +230,9 @@ val viewModelModule = module {
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
-    viewModel {
-        RedeemCodeViewModel(
-            get()
-        )
-    }
+    viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { NorwegianAuthenticationViewModel(get()) }
+    viewModel { ZignSecAuthViewModel(get(), get()) }
 }
 
 val marketPickerModule = module {
@@ -331,11 +327,11 @@ val repositoriesModule = module {
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }
-    single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
+    single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
 }
 

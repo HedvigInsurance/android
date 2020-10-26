@@ -12,7 +12,7 @@ abstract class MarketProvider {
 
 class MarketProviderImpl(
     private val context: Context,
-    private val app: HedvigApplication
+    app: HedvigApplication
 ) : MarketProvider() {
     override val market
         get() = context.getMarket()

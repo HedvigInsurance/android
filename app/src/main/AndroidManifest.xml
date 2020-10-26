@@ -23,6 +23,13 @@
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
         <activity
+            android:name=".feature.zignsec.ZignSecAuthenticationActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -215,7 +222,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.webonboarding.WebOnboardingActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -223,15 +229,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
-        <activity
-            android:name=".feature.norway.NorwegianAuthenticationActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.marketing.ui.MarketingActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -245,14 +242,12 @@
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.referrals.ui.ReferralsInformationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.referrals.ui.editcode.ReferralsEditCodeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -311,7 +306,6 @@
         <service
             android:name=".feature.adyen.AdyenDropInService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
     </application>
 
 </manifest>
