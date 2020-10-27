@@ -41,15 +41,16 @@ class ContractDetailViewModelImpl(
 
             if (response.getOrNull()?.hasErrors() == true) {
                 _data.postValue(Result.failure(Error()))
+                return@launch
             }
 
-            val contract = response
+            response
                 .getOrNull()
                 ?.data
                 ?.contracts
-                ?.firstOrNull { it.id == id }
-
-            _data.postValue(contract)
+                ?.firstOrNull { it.id == id }?.let {contract ->
+                    _data.postValue(Result.success(contract))
+                }
         }
     }
 

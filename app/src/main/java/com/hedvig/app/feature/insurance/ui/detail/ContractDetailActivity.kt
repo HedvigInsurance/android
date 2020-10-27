@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.view.Window
@@ -19,6 +20,11 @@ import com.hedvig.app.feature.insurance.ui.bindTo
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
+import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -74,11 +80,26 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             }.attach()
             card.arrow.isInvisible = true
             card.root.transitionName = "contract_card"
+            error.retry.setHapticClickListener {
+                model.loadContract(id)
+            }
         }
 
-        model.data.observe(this) {
-            it.bindTo(binding.card)
-            startPostponedEnterTransition()
+        model.data.observe(this) { result ->
+            binding.apply {
+                if (result.isFailure) {
+                    content.remove()
+                    error.root.apply {
+                        show()
+                        setBackgroundColor(context.colorAttr(R.attr.colorSurface))
+                    }
+                } else {
+                    content.show()
+                    error.root.remove()
+                    result.getOrNull()?.bindTo(binding.card)
+                    startPostponedEnterTransition()
+                }
+            }
         }
         model.loadContract(id)
     }
