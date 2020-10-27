@@ -60,7 +60,7 @@ class ErrorTest {
                     retry { click() }
                 }
                 childAt<InsuranceScreen.ContractCard>(1) {
-                    firstStatusPill { isVisible() }
+                    contractName { isVisible() }
                 }
             }
         }
