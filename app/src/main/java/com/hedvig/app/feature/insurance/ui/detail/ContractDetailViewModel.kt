@@ -11,8 +11,8 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
-    protected val _data = MutableLiveData<InsuranceQuery.Contract>()
-    val data: LiveData<InsuranceQuery.Contract> = _data
+    protected val _data = MutableLiveData<Result<InsuranceQuery.Contract>>()
+    val data: LiveData<Result<InsuranceQuery.Contract>> = _data
 
     abstract fun loadContract(id: String)
     abstract suspend fun triggerFreeTextChat()
@@ -32,8 +32,15 @@ class ContractDetailViewModelImpl(
             }
 
             if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
+                response.exceptionOrNull()?.let { exception ->
+                    _data.postValue(Result.failure(exception))
+                    e(exception)
+                }
                 return@launch
+            }
+
+            if (response.getOrNull()?.hasErrors() == true) {
+                _data.postValue(Result.failure(Error()))
             }
 
             val contract = response
