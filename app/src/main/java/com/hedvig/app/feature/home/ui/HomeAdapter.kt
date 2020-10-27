@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
-import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
@@ -68,7 +68,7 @@ class HomeAdapter(
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
         R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
-        R.layout.home_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
         else -> throw Error("Invalid view type")
@@ -83,7 +83,7 @@ class HomeAdapter(
         is HomeModel.ConnectPayin -> R.layout.home_info_card
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
-        HomeModel.Error -> R.layout.home_error
+        HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
         is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
@@ -416,8 +416,8 @@ class HomeAdapter(
             }
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {
-            private val binding by viewBinding(HomeErrorBinding::bind)
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+            private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
