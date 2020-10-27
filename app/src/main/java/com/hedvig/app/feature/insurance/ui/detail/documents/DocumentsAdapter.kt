@@ -23,12 +23,12 @@ class DocumentsAdapter :
     class ViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.contract_detail_documents_document)) {
         private val binding by viewBinding(ContractDetailDocumentsDocumentBinding::bind)
-        fun bind(data: DocumentsModel) = with(binding.root) {
-            text = data.label
+        fun bind(data: DocumentsModel) = with(binding) {
+            text.text = data.label
             val uri = android.net.Uri.parse(data.url)
-            setHapticClickListener {
-                if (context.canOpenUri(uri)) {
-                    context.openUri(uri)
+            root.setHapticClickListener {
+                if (root.context.canOpenUri(uri)) {
+                    root.context.openUri(uri)
                 }
             }
         }
