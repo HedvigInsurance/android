@@ -7,7 +7,7 @@ import android.transition.ChangeBounds
 import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -15,8 +15,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
-import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.bindTo
+import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.util.extensions.viewBinding
@@ -59,20 +59,20 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             TabLayoutMediator(tabContainer, tabContent) { tab, position ->
                 when (position) {
                     0 -> {
-                        tab.text = "Your info"
+                        tab.setText(R.string.insurance_details_view_tab_1_title)
                     }
                     1 -> {
-                        tab.text = "Coverage"
+                        tab.setText(R.string.insurance_details_view_tab_2_title)
                     }
                     2 -> {
-                        tab.text = "Documents"
+                        tab.setText(R.string.insurance_details_view_tab_3_title)
                     }
                     else -> {
                         e { "Invalid tab index: $position" }
                     }
                 }
             }.attach()
-            card.arrow.isVisible = false
+            card.arrow.isInvisible = true
             card.root.transitionName = "contract_card"
         }
 

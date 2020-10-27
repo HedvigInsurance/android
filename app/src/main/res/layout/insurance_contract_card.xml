@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintWidth_max="@dimen/contract_card_max_width"
         app:strokeColor="@color/color_divider"
         app:strokeWidth="1dp">
