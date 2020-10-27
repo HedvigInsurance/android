@@ -128,7 +128,8 @@ class OfferSignDialog : DialogFragment() {
         }
 
         handler.postDelayed({
-            market?.connectPayin(requireContext())?.let { requireContext().startActivity(it) }
+            market?.connectPayin(requireContext(), isPostSign = true)
+                ?.let { requireContext().startActivity(it) }
         }, 1000)
     }
 
