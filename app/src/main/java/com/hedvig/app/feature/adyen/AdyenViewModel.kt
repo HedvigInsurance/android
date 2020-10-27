@@ -30,9 +30,11 @@ class AdyenViewModelImpl(
                 return@launch
             }
 
-            _paymentMethods.postValue(
-                response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse
-            )
+            response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse?.let {
+                _paymentMethods.postValue(
+                    it
+                )
+            }
         }
     }
 }

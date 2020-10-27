@@ -52,7 +52,10 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 if (url?.contains("connect-payment") == true) {
                     view?.stopLoading()
                     setIsLoggedIn(true)
-                    marketProvider.market?.connectPayin(this@WebOnboardingActivity)?.let { startActivity(it) }
+                    marketProvider.market?.connectPayin(
+                        this@WebOnboardingActivity,
+                        isPostSign = true
+                    )?.let { startActivity(it) }
                     return
                 }
                 super.doUpdateVisitedHistory(view, url, isReload)

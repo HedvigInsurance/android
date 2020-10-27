@@ -138,4 +138,6 @@
     <dimen name="contract_card_height">200dp</dimen>
     <dimen name="contract_card_logo_size">24dp</dimen>
     <dimen name="large_button_corner_radius">8dp</dimen>
+    <dimen name="contract_card_max_width">380dp</dimen>
+
 </resources>
