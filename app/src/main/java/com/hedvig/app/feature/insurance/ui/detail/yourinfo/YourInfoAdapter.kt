@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
-import com.hedvig.app.databinding.ContractDetailYourInfoRowBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
@@ -17,12 +17,12 @@ class YourInfoAdapter :
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
         is YourInfoModel.Header -> R.layout.contract_detail_your_info_header
-        is YourInfoModel.Row -> R.layout.contract_detail_your_info_row
+        is YourInfoModel.Row -> R.layout.contract_detail_row
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_your_info_header -> ViewHolder.Header(parent)
-        R.layout.contract_detail_your_info_row -> ViewHolder.Row(parent)
+        R.layout.contract_detail_row -> ViewHolder.Row(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -55,8 +55,8 @@ class YourInfoAdapter :
         }
 
         class Row(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_your_info_row)) {
-            private val binding by viewBinding(ContractDetailYourInfoRowBinding::bind)
+            ViewHolder(parent.inflate(R.layout.contract_detail_row)) {
+            private val binding by viewBinding(ContractDetailRowBinding::bind)
             override fun bind(data: YourInfoModel) = with(binding) {
                 if (data !is YourInfoModel.Row) {
                     return invalid(data)
