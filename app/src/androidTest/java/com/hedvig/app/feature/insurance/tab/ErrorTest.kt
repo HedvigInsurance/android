@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui
+package com.hedvig.app.feature.insurance.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -6,13 +6,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
-import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
-import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -22,10 +19,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class InsuranceActiveAndTerminatedInFutureCardTest {
+class ErrorTest {
 
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+
+    var shouldFail = true
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -35,9 +34,12 @@ class InsuranceActiveAndTerminatedInFutureCardTest {
             )
         },
         InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                INSURANCE_DATA_ACTIVE_AND_TERMINATED
-            )
+            if (shouldFail) {
+                shouldFail = false
+                graphQLError("error")
+            } else {
+                success(INSURANCE_DATA)
+            }
         }
     )
 
@@ -45,7 +47,7 @@ class InsuranceActiveAndTerminatedInFutureCardTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun showsCorrectContentOnSActivatedAndTerminatedInFeatureContract() {
+    fun shouldShowErrorOnGraphQLError() {
         val intent = LoggedInActivity.newInstance(
             ApplicationProvider.getApplicationContext(),
             initialTab = LoggedInTabs.INSURANCE
@@ -54,13 +56,11 @@ class InsuranceActiveAndTerminatedInFutureCardTest {
 
         onScreen<InsuranceScreen> {
             insuranceRecycler {
+                childAt<InsuranceScreen.Error>(1) {
+                    retry { click() }
+                }
                 childAt<InsuranceScreen.ContractCard>(1) {
-                    firstStatusPill {
-                        hasAnyText()
-                    }
-                    secondStatusPill{
-                        hasAnyText()
-                    }
+                    firstStatusPill { isVisible() }
                 }
             }
         }
