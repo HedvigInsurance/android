@@ -34,13 +34,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                             it.saType.displayName(requireContext()),
                             it.squareMeters
                         ) + coinsuredSection(it.numberCoInsured) +
-                            YourInfoModel.Paragraph(
-                                getString(R.string.insurance_details_view_your_info_co_insured_footer)
-                            ) + YourInfoModel.Header(
-                            getString(R.string.insurance_details_view_your_info_edit_insurance_title)
-                        ) + YourInfoModel.Paragraph(
-                            getString(R.string.insurance_details_view_your_info_edit_insurance_description)
-                        ) + YourInfoModel.Button
+                            changeSection()
 
                     )
                     return@observe
@@ -52,9 +46,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                             getString(R.string.SWEDISH_HOUSE_LOB),
                             it.squareMeters
                         ) + coinsuredSection(it.numberCoInsured) +
-                            YourInfoModel.Paragraph(
-                                getString(R.string.insurance_details_view_your_info_co_insured_footer)
-                            )
+                            changeSection()
                     )
                     return@observe
                 }
@@ -65,14 +57,14 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                             it.nhcType?.displayName(requireContext()) ?: "",
                             it.squareMeters
                         ) + coinsuredSection(it.numberCoInsured) +
-                            YourInfoModel.Paragraph(getString(R.string.insurance_details_view_your_info_co_insured_footer))
+                            changeSection()
                     )
                     return@observe
                 }
                 data.currentAgreement.asNorwegianTravelAgreement?.let {
                     (adapter as? YourInfoAdapter)?.submitList(
                         coinsuredSection(it.numberCoInsured) +
-                            YourInfoModel.Paragraph(getString(R.string.insurance_details_view_your_info_co_insured_footer))
+                            changeSection()
                     )
                     return@observe
                 }
@@ -81,7 +73,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
     }
 
     private fun homeSection(address: AddressFragment, typeTranslated: String, sqm: Int) = listOf(
-        YourInfoModel.Header(getString(R.string.CONTRACT_DETAIL_HOME_TITLE)),
+        YourInfoModel.Header.Details,
         YourInfoModel.Row(
             getString(R.string.CONTRACT_DETAIL_HOME_ADDRESS),
             address.street,
@@ -101,7 +93,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
     )
 
     private fun coinsuredSection(amount: Int) = listOf(
-        YourInfoModel.Header(getString(R.string.CONTRACT_DETAIL_COINSURED_TITLE)),
+        YourInfoModel.Header.Coinsured,
         YourInfoModel.Row(
             getString(R.string.CONTRACT_DETAIL_COINSURED_TITLE),
             when (amount) {
@@ -109,7 +101,18 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                 1 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ONE_COINSURED)
                 else -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
             }
+        ),
+        YourInfoModel.Paragraph(
+            getString(R.string.insurance_details_view_your_info_co_insured_footer)
         )
+    )
+
+    private fun changeSection() = listOf(
+        YourInfoModel.Header.Change,
+        YourInfoModel.Paragraph(
+            getString(R.string.insurance_details_view_your_info_edit_insurance_description)
+        ),
+        YourInfoModel.OpenChatButton
     )
 
     companion object {

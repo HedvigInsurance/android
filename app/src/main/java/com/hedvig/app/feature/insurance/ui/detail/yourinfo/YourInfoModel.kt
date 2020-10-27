@@ -1,7 +1,11 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
 sealed class YourInfoModel {
-    data class Header(val text: String) : YourInfoModel()
+    sealed class Header : YourInfoModel() {
+        object Details : Header()
+        object Coinsured : Header()
+        object Change : Header()
+    }
 
     data class Row(
         val label: String,
@@ -10,5 +14,5 @@ sealed class YourInfoModel {
 
     data class Paragraph(val text: String) : YourInfoModel()
 
-    object Button : YourInfoModel()
+    object OpenChatButton : YourInfoModel()
 }

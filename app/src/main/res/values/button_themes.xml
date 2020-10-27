@@ -11,7 +11,6 @@
         <item name="backgroundTint">@color/hedvig_large_button_state</item>
         <item name="android:padding">@dimen/base_margin_double</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
-        <item name="cornerRadius">@dimen/large_button_corner_radius</item>
     </style>
 
     <style name="Hedvig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
@@ -26,7 +25,6 @@
         <item name="android:padding">@dimen/base_margin_double</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
         <item name="strokeColor">?colorPrimary</item>
-        <item name="cornerRadius">@dimen/large_button_corner_radius</item>
     </style>
 
 </resources>

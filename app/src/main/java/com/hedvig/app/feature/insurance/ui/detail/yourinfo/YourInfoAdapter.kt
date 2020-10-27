@@ -23,7 +23,7 @@ class YourInfoAdapter :
         is YourInfoModel.Header -> R.layout.contract_detail_your_info_header
         is YourInfoModel.Row -> R.layout.contract_detail_your_info_row
         is YourInfoModel.Paragraph -> R.layout.your_info_paragraph
-        YourInfoModel.Button -> R.layout.your_info_chat_button
+        YourInfoModel.OpenChatButton -> R.layout.your_info_chat_button
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -52,7 +52,13 @@ class YourInfoAdapter :
                 if (data !is YourInfoModel.Header) {
                     return invalid(data)
                 }
-                root.text = data.text
+                root.setText(
+                    when (data) {
+                        YourInfoModel.Header.Details -> R.string.CONTRACT_DETAIL_HOME_TITLE
+                        YourInfoModel.Header.Coinsured -> R.string.CONTRACT_DETAIL_COINSURED_TITLE
+                        YourInfoModel.Header.Change -> R.string.insurance_details_view_your_info_edit_insurance_title
+                    }
+                )
             }
         }
 
