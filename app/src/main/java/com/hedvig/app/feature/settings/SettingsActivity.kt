@@ -96,7 +96,7 @@ class SettingsActivity : BaseActivity() {
                                 )
                                 requireContext().setAuthenticationToken(null)
                                 requireContext().setIsLoggedIn(false)
-                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 mixpanel.reset()
                                 requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }
