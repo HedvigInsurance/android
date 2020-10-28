@@ -92,7 +92,7 @@ class ProfileAdapter(
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
                                 }
