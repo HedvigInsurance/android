@@ -25,6 +25,7 @@ class DocumentsAdapter :
         private val binding by viewBinding(ContractDetailDocumentsDocumentBinding::bind)
         fun bind(data: DocumentsModel) = with(binding) {
             text.text = data.label
+            subtitle.text = data.subtitle
             val uri = android.net.Uri.parse(data.url)
             root.setHapticClickListener {
                 if (root.context.canOpenUri(uri)) {

@@ -138,5 +138,5 @@
     <dimen name="contract_card_height">200dp</dimen>
     <dimen name="contract_card_logo_size">24dp</dimen>
     <dimen name="contract_card_max_width">380dp</dimen>
-
+    <dimen name="contract_document_card">80dp</dimen>
 </resources>
