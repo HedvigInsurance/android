@@ -97,8 +97,8 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                     content.show()
                     error.root.remove()
                     result.getOrNull()?.bindTo(binding.card)
-                    startPostponedEnterTransition()
                 }
+                startPostponedEnterTransition()
             }
         }
         model.loadContract(id)

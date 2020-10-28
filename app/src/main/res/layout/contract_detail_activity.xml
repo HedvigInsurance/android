@@ -14,7 +14,7 @@
 
     <include
         android:id="@+id/error"
-        layout="@layout/home_error"
+        layout="@layout/generic_error"
         android:visibility="gone" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
