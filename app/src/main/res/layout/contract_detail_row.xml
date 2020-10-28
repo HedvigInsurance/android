@@ -10,7 +10,7 @@
         android:id="@+id/label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceBody1"
+        android:textAppearance="?textAppearanceSubtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/content"
         app:layout_constraintStart_toStartOf="parent"
