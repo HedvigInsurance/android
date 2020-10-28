@@ -11,8 +11,6 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
-import com.hedvig.app.feature.insurance.ui.contractcoverage.InsurableLimitsAdapter
-import com.hedvig.app.feature.insurance.ui.contractcoverage.PerilsAdapter
 import com.hedvig.app.feature.offer.OfferRedeemCodeDialog
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker

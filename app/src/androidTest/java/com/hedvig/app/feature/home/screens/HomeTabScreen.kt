@@ -20,6 +20,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
             {
                 itemType(::HomePSAItem)
                 itemType(::HowClaimsWork)
+                itemType(::UpcomingRenewal)
                 itemType(::BigTextItem)
                 itemType(::BodyTextItem)
                 itemType(::StartClaimItem)
@@ -40,6 +41,14 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class HowClaimsWork(parent: Matcher<View>) : KRecyclerItem<HowClaimsWork>(parent) {
         val button = KButton(parent) { withId(R.id.button) }
+    }
+
+    class UpcomingRenewal(parent: Matcher<View>) : KRecyclerItem<UpcomingRenewal>(parent) {
+        val button = KButton(parent) { withId(R.id.action) }
+        val link = KIntent {
+            hasAction(Intent.ACTION_VIEW)
+            hasData("https://www.example.com")
+        }
     }
 
     class BigTextItem(parent: Matcher<View>) : KRecyclerItem<BigTextItem>(parent) {
