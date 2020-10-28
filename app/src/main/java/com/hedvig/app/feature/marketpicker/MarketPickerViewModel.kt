@@ -1,10 +1,8 @@
 package com.hedvig.app.feature.marketpicker
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.HedvigApplication
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
@@ -107,7 +104,8 @@ class MarketPickerViewModelImpl(
                 context.getMarket()?.let { market ->
                     _data.postValue(
                         PickerState(
-                            market, context.getLanguage()
+                            market,
+                            context.getLanguage() ?: Language.getAvailableLanguages(market).first()
                         )
                     )
                 }
