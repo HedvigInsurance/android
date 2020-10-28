@@ -21,21 +21,23 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             adapter = DocumentsAdapter()
-            model.data.observe(viewLifecycleOwner) { data ->
-                (adapter as? DocumentsAdapter)?.submitList(
-                    listOfNotNull(
-                        data.currentAgreement.asAgreementCore?.certificateUrl?.let {
+            model.data.observe(viewLifecycleOwner) { d ->
+                d.getOrNull()?.let { data ->
+                    (adapter as? DocumentsAdapter)?.submitList(
+                        listOfNotNull(
+                            data.currentAgreement.asAgreementCore?.certificateUrl?.let {
+                                DocumentsModel(
+                                    getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+                                    it
+                                )
+                            },
                             DocumentsModel(
-                                getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
-                                it
+                                getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+                                data.termsAndConditions.url
                             )
-                        },
-                        DocumentsModel(
-                            getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
-                            data.termsAndConditions.url
                         )
                     )
-                )
+                }
             }
         }
     }

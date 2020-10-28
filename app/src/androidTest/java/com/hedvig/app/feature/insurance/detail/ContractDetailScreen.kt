@@ -14,6 +14,8 @@ import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 class ContractDetailScreen : Screen<ContractDetailScreen>() {
+    val retry = KButton { withId(R.id.retry) }
+
     val tabContent = KViewPager2({ withId(R.id.tabContent) }, {
         itemType(::YourInfoTab)
         itemType(::CoverageTab)

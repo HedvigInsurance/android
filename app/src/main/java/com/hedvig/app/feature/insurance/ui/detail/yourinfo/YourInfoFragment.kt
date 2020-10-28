@@ -26,42 +26,44 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             }
             adapter = YourInfoAdapter()
 
-            model.data.observe(viewLifecycleOwner) { data ->
-                data.currentAgreement.asSwedishApartmentAgreement?.let {
-                    (adapter as? YourInfoAdapter)?.submitList(
-                        homeSection(
-                            it.address.fragments.addressFragment,
-                            it.squareMeters,
-                            it.saType.displayName(requireContext())
-                        ) + coinsuredSection(it.numberCoInsured)
-                    )
-                    return@observe
-                }
-                data.currentAgreement.asSwedishHouseAgreement?.let {
-                    (adapter as? YourInfoAdapter)?.submitList(
-                        homeSection(
-                            it.address.fragments.addressFragment,
-                            it.squareMeters,
-                            getString(R.string.SWEDISH_HOUSE_LOB)
-                        ) + coinsuredSection(it.numberCoInsured)
-                    )
-                    return@observe
-                }
-                data.currentAgreement.asNorwegianHomeContentAgreement?.let {
-                    (adapter as? YourInfoAdapter)?.submitList(
-                        homeSection(
-                            it.address.fragments.addressFragment,
-                            it.squareMeters,
-                            it.nhcType?.displayName(requireContext()) ?: ""
-                        ) + coinsuredSection(it.numberCoInsured)
-                    )
-                    return@observe
-                }
-                data.currentAgreement.asNorwegianTravelAgreement?.let {
-                    (adapter as? YourInfoAdapter)?.submitList(
-                        coinsuredSection(it.numberCoInsured)
-                    )
-                    return@observe
+            model.data.observe(viewLifecycleOwner) { d ->
+                d.getOrNull()?.let { data ->
+                    data.currentAgreement.asSwedishApartmentAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            homeSection(
+                                it.address.fragments.addressFragment,
+                                it.squareMeters,
+                                it.saType.displayName(requireContext())
+                            ) + coinsuredSection(it.numberCoInsured)
+                        )
+                        return@observe
+                    }
+                    data.currentAgreement.asSwedishHouseAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            homeSection(
+                                it.address.fragments.addressFragment,
+                                it.squareMeters,
+                                getString(R.string.SWEDISH_HOUSE_LOB)
+                            ) + coinsuredSection(it.numberCoInsured)
+                        )
+                        return@observe
+                    }
+                    data.currentAgreement.asNorwegianHomeContentAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            homeSection(
+                                it.address.fragments.addressFragment,
+                                it.squareMeters,
+                                it.nhcType?.displayName(requireContext()) ?: ""
+                            ) + coinsuredSection(it.numberCoInsured)
+                        )
+                        return@observe
+                    }
+                    data.currentAgreement.asNorwegianTravelAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            coinsuredSection(it.numberCoInsured)
+                        )
+                        return@observe
+                    }
                 }
             }
         }
