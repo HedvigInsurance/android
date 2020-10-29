@@ -30,7 +30,9 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -343,6 +345,11 @@ class HomeAdapter(
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
+                }
+
+                if (root.context.isDarkThemeActive) {
+                    root.cardElevation = 0f
+                    root.setCardBackgroundColor(root.context.compatColor(R.color.color_hedvig_off_white_7))
                 }
 
                 when (data) {

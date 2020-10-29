@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="@id/codeLabel"
         tools:visibility="visible" />
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/codeContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
 
         </com.facebook.shimmer.ShimmerFrameLayout>
 
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/codeFootnote"
