@@ -14,7 +14,6 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.hide
@@ -79,7 +78,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     }
 
     private fun loadData() {
-        model.data.observe(lifecycleOwner = this) { data ->
+        model.data.observe(this) { data ->
             if (data == null) {
                 return@observe
             }

@@ -28,7 +28,9 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     fun refreshProfileAsync() = apolloClientWrapper
         .apolloClient
         .query(profileQuery)
+        .toBuilder()
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
         .toDeferred()
 
     fun updateEmailAsync(input: String): Deferred<Response<UpdateEmailMutation.Data>> {
@@ -123,7 +125,9 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         val response = apolloClientWrapper
             .apolloClient
             .query(PayinMethodQuery())
+            .toBuilder()
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
             .toDeferred()
             .await()
 

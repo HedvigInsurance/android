@@ -45,8 +45,10 @@ class ChatRepository(
         messagesQuery = ChatMessagesQuery()
         return apolloClientWrapper.apolloClient
             .query(messagesQuery)
+            .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
             .watcher()
             .toFlow()
     }
@@ -54,8 +56,10 @@ class ChatRepository(
     fun messageIdsAsync() = apolloClientWrapper
         .apolloClient
         .query(ChatMessageIdQuery())
+        .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
         .toDeferred()
 
     fun subscribeToChatMessages() =
