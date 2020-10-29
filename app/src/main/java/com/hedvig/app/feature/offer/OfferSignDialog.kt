@@ -17,7 +17,6 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
 import kotlinx.android.synthetic.main.dialog_sign.*
 import org.koin.android.ext.android.inject
@@ -38,7 +37,7 @@ class OfferSignDialog : DialogFragment() {
         dialog.setCanceledOnTouchOutside(false)
 
         offerViewModel.clearPreviousErrors()
-        offerViewModel.signError.observe(lifecycleOwner = this) { err ->
+        offerViewModel.signError.observe(viewLifecycleOwner) { err ->
             if (err == true) {
                 dialog.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
                 dialog.setCanceledOnTouchOutside(true)
@@ -47,10 +46,10 @@ class OfferSignDialog : DialogFragment() {
                 dialog.setCanceledOnTouchOutside(false)
             }
         }
-        offerViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
+        offerViewModel.autoStartToken.observe(viewLifecycleOwner) { data ->
             data?.signOfferV2?.autoStartToken?.let { autoStartToken -> startBankId(autoStartToken) }
         }
-        offerViewModel.signStatus.observe(lifecycleOwner = this) { data ->
+        offerViewModel.signStatus.observe(viewLifecycleOwner) { data ->
             data?.let { d ->
                 bindStatus(d)
             }

@@ -20,8 +20,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.dp
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -280,8 +278,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
 
     companion object {
         private const val ITEM_ID = "ITEM_ID"
-
-        private val BUTTON_CORNER_RADIUS = 112.dp.toFloat()
 
         private const val SAVE_BUTTON_TRANSITION_DURATION = 200L
 

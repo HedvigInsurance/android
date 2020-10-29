@@ -12,8 +12,8 @@ import androidx.fragment.app.DialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -76,13 +76,13 @@ abstract class RedeemCodeDialog : DialogFragment() {
 
     private fun resetErrorState() {
         dialog?.bottomSheetAddPromotionCodeEditText?.background =
-            requireContext().getDrawable(R.drawable.background_edit_text_rounded_corners)
+            requireContext().compatDrawable(R.drawable.background_edit_text_rounded_corners)
         dialog?.bottomSheetPromotionCodeMissingCode?.remove()
     }
 
     private fun wrongPromotionCode() {
         dialog?.bottomSheetAddPromotionCodeEditText?.background =
-            requireContext().getDrawable(R.drawable.background_edit_text_rounded_corners_failed)
+            requireContext().compatDrawable(R.drawable.background_edit_text_rounded_corners_failed)
         dialog?.bottomSheetPromotionCodeMissingCode?.show()
     }
 }

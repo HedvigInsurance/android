@@ -33,7 +33,6 @@ import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.centerX
 import com.hedvig.app.util.extensions.view.centerY

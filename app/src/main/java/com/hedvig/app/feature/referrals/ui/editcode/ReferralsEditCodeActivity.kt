@@ -10,7 +10,6 @@ import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.dismissKeyboard

@@ -9,7 +9,6 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.makeToast
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import e
 import kotlinx.android.synthetic.main.referrals_receiver_activity.*
@@ -26,7 +25,7 @@ class ReferralsReceiverActivity : BaseActivity() {
         setContentView(R.layout.referrals_receiver_activity)
 
         referralViewModel.apply {
-            redeemCodeStatus.observe(lifecycleOwner = this@ReferralsReceiverActivity) { data ->
+            redeemCodeStatus.observe(this@ReferralsReceiverActivity) { data ->
                 if (data != null) {
                     startChat()
                 } else {
