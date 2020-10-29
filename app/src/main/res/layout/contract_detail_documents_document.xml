@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_marginBottom="@dimen/base_margin"
-    android:layout_height="@dimen/contract_document_card">
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/contract_document_card">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:padding="@dimen/base_margin_double">
 
         <ImageView
@@ -25,22 +27,28 @@
 
         <TextView
             android:id="@+id/text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceSubtitle1"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/subtitle"
-            tools:text="Insurance letter" />
+            tools:text="Insurance letter"
+            app:layout_constraintEnd_toStartOf="@+id/arrow" />
 
         <TextView
             android:id="@+id/subtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBody2"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintTop_toBottomOf="@id/text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintEnd_toStartOf="@id/arrow"
             tools:text="Insurance letter" />
 
         <ImageView
