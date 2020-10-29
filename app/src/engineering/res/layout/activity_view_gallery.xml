@@ -57,6 +57,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Subtitle 2"
+                android:textAppearance="?textAppearanceSubtitle2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Body 1"
                 android:textAppearance="?textAppearanceBody1" />
 
@@ -65,12 +71,6 @@
                 android:layout_height="wrap_content"
                 android:text="Body 2"
                 android:textAppearance="?textAppearanceBody2" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Body 3"
-                android:textAppearance="?textAppearanceCaption" />
 
             <TextView
                 android:layout_width="wrap_content"

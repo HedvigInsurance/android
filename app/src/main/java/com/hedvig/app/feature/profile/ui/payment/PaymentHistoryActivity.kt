@@ -7,7 +7,6 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -36,7 +35,7 @@ class PaymentHistoryActivity : BaseActivity() {
 
         paymentHistory.adapter = PaymentHistoryAdapter()
 
-        profileViewModel.data.observe(lifecycleOwner = this) { data ->
+        profileViewModel.data.observe(this) { data ->
             data?.chargeHistory?.let { chargeHistory ->
                 (paymentHistory.adapter as? PaymentHistoryAdapter)?.items =
                     listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)

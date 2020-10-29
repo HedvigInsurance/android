@@ -124,7 +124,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     .replace(R.id.tabContent, id.fragment)
                     .commitAllowingStateLoss()
 
-                setupToolBar(id)
+                setupToolBar()
                 animateGradient(id)
                 lastSelectedTab = id
                 true
@@ -156,7 +156,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bindData()
-            setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
+            setupToolBar()
         }
     }
 
@@ -243,13 +243,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
             LoggedInTabs.REFERRALS -> {
-                startActivity(
-                    ReferralsInformationActivity.newInstance(
-                        this,
-                        referralTermsUrl,
-                        referralsIncentive
+                if (::referralTermsUrl.isInitialized && ::referralsIncentive.isInitialized) {
+                    startActivity(
+                        ReferralsInformationActivity.newInstance(
+                            this,
+                            referralTermsUrl,
+                            referralsIncentive
+                        )
                     )
-                )
+                }
             }
         }
         return true
@@ -303,7 +305,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                     ?: LoggedInTabs.HOME
                 binding.bottomNavigation.selectedItemId = initialTab.id()
-                setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
+                setupToolBar()
                 binding.loggedInRoot.show()
             }
 
@@ -322,7 +324,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
     }
 
-    private fun setupToolBar(id: LoggedInTabs?) {
+    private fun setupToolBar() {
         invalidateOptionsMenu()
     }
 

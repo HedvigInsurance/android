@@ -8,7 +8,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding

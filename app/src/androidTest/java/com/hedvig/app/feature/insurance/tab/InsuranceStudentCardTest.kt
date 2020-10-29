@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui
+package com.hedvig.app.feature.insurance.tab
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -6,7 +6,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -15,7 +14,6 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,12 +56,12 @@ class InsuranceStudentCardTest {
                         hasText("Hemförsäkring Student")
                     }
                     contractPills {
-                        childAt<InsuranceScreen.ContractPill>(0) {
+                        childAt<InsuranceScreen.ContractCard.ContractPill>(0) {
                             text {
                                 hasText("TESTVÄGEN 1")
                             }
                         }
-                        childAt<InsuranceScreen.ContractPill>(1) {
+                        childAt<InsuranceScreen.ContractCard.ContractPill>(1) {
                             text {
                                 hasAnyText()
                             }

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
 import com.hedvig.app.databinding.ContractDetailYourInfoRowBinding
 import com.hedvig.app.databinding.YourInfoChatButtonBinding
@@ -24,6 +25,7 @@ class YourInfoAdapter :
         is YourInfoModel.Row -> R.layout.contract_detail_your_info_row
         is YourInfoModel.Paragraph -> R.layout.your_info_paragraph
         YourInfoModel.OpenChatButton -> R.layout.your_info_chat_button
+        is YourInfoModel.Row -> R.layout.contract_detail_row
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -31,6 +33,7 @@ class YourInfoAdapter :
         R.layout.contract_detail_your_info_row -> ViewHolder.Row(parent)
         R.layout.your_info_paragraph -> ViewHolder.Paragraph(parent)
         R.layout.your_info_chat_button -> ViewHolder.Button(parent)
+        R.layout.contract_detail_row -> ViewHolder.Row(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -63,8 +66,8 @@ class YourInfoAdapter :
         }
 
         class Row(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_your_info_row)) {
-            private val binding by viewBinding(ContractDetailYourInfoRowBinding::bind)
+            ViewHolder(parent.inflate(R.layout.contract_detail_row)) {
+            private val binding by viewBinding(ContractDetailRowBinding::bind)
             override fun bind(data: YourInfoModel) = with(binding) {
                 if (data !is YourInfoModel.Row) {
                     return invalid(data)

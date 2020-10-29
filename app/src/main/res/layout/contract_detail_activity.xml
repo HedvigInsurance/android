@@ -12,7 +12,13 @@
         android:background="?colorSurface"
         app:navigationIcon="@drawable/ic_back" />
 
+    <include
+        android:id="@+id/error"
+        layout="@layout/generic_error"
+        android:visibility="gone" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

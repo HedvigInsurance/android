@@ -7,7 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
 import com.hedvig.app.util.extensions.makeKeyboardAware
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
@@ -62,7 +61,7 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
         dialog.gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
         dialog.gifRecyclerView.adapter = adapter
 
-        chatViewModel.gifs.observe(lifecycleOwner = this) { data ->
+        chatViewModel.gifs.observe(viewLifecycleOwner) { data ->
             data?.gifs?.let { gifs ->
                 (dialog.gifRecyclerView.adapter as? GifAdapter)?.items = gifs.filterNotNull()
                 if (gifs.isEmpty()) {

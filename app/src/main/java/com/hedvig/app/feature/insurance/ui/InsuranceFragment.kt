@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
@@ -78,7 +77,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         if (data.isFailure) {
             (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
-                listOf(InsuranceModel.Error)
+                listOf(InsuranceModel.Header, InsuranceModel.Error)
             return
         }
 

@@ -80,8 +80,8 @@
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:layout_marginBottom="@dimen/base_margin"
                 android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-                android:tint="@color/white"
-                app:srcCompat="@drawable/ic_settings" />
+                app:srcCompat="@drawable/ic_settings"
+                app:tint="@color/white" />
 
         </LinearLayout>
 

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -29,7 +30,6 @@ import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
@@ -38,10 +38,10 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -52,9 +52,9 @@ import java.io.File
 import java.io.IOException
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
-
     private val chatViewModel: ChatViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
+    private val binding by viewBinding(ActivityChatBinding::bind)
 
     private val tracker: ChatTracker by inject()
 
@@ -85,29 +85,31 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
-        val chatInputHeight = input.measureTextInput()
-        val toolbarHeight = getViewHeight(toolbar)
-        messages.updatePadding(
-            top = messages.paddingTop + toolbarHeight,
-            bottom = messages.paddingBottom + chatInputHeight
-        )
-        initialChatPadding = messages.paddingBottom
-
-        chatRoot.setEdgeToEdgeSystemUiFlags(true)
-
-        input.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-        }
-
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-
-        messages.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(
-                top = initialState.paddings.top + insets.systemWindowInsetTop,
-                bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+        binding.apply {
+            val chatInputHeight = input.measureTextInput()
+            val toolbarHeight = getViewHeight(toolbar)
+            messages.updatePadding(
+                top = messages.paddingTop + toolbarHeight,
+                bottom = messages.paddingBottom + chatInputHeight
             )
+            initialChatPadding = messages.paddingBottom
+
+            chatRoot.setEdgeToEdgeSystemUiFlags(true)
+
+            input.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            }
+
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
+
+            messages.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(
+                    top = initialState.paddings.top + insets.systemWindowInsetTop,
+                    bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
+                )
+            }
         }
 
         initializeToolbarButtons()
@@ -137,7 +139,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun initializeInput() {
-        input.initialize(
+        binding.input.initialize(
             sendTextMessage = { message ->
                 scrollToBottom(true)
                 chatViewModel.respondToLastMessage(message)
@@ -178,7 +180,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 chatViewModel.uploadClaim(path)
             },
             tracker = tracker,
-            chatRecyclerView = messages,
+            chatRecyclerView = binding.messages,
             chatRecyclerViewInitialPadding = initialChatPadding
         )
     }
@@ -194,18 +196,18 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
             )
         }, tracker = tracker)
-        messages.addOnScrollListener(adapter.recyclerViewPreloader)
-        messages.adapter = adapter
+        binding.messages.addOnScrollListener(adapter.recyclerViewPreloader)
+        binding.messages.adapter = adapter
     }
 
     private fun initializeToolbarButtons() {
-        settings.setHapticClickListener {
+        binding.settings.setHapticClickListener {
             tracker.settings()
             startActivity(SettingsActivity.newInstance(this))
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
-            restart.setOnClickListener {
+            binding.restart.setOnClickListener {
                 tracker.restartChat()
                 showAlert(
                     R.string.CHAT_RESET_DIALOG_TITLE,
@@ -219,23 +221,24 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     }
                 )
             }
-            restart.contentDescription = getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
-            restart.show()
+            binding.restart.contentDescription =
+                getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
+            binding.restart.show()
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-            close.setOnClickListener {
+            binding.close.setOnClickListener {
                 tracker.closeChat()
                 onBackPressed()
             }
-            close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
-            close.show()
+            binding.close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
+            binding.close.show()
         }
     }
 
     private fun initializeKeyboardVisibilityHandler() {
-        chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
-            val heightDiff = chatRoot.calculateNonFullscreenHeightDiff()
+        binding.chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
+            val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
             if (heightDiff > isKeyboardBreakPoint) {
                 if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
                 this.keyboardHeight = heightDiff - systemNavHeight
@@ -249,22 +252,22 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun observeData() {
-        chatViewModel.messages.observe(lifecycleOwner = this) { data ->
+        chatViewModel.messages.observe(this) { data ->
             data?.let { bindData(it, forceScrollToBottom) }
         }
         // Maybe we should move the loading into the chatViewModel instead
-        chatViewModel.sendMessageResponse.observe(lifecycleOwner = this) { response ->
+        chatViewModel.sendMessageResponse.observe(this) { response ->
             if (response == true) {
-                input.clearInput()
+                binding.input.clearInput()
             }
         }
-        chatViewModel.takePictureUploadOutcome.observe(lifecycleOwner = this) {
+        chatViewModel.takePictureUploadOutcome.observe(this) {
             attachPickerDialog?.uploadingTakenPicture(false)
             currentPhotoPath?.let { File(it).delete() }
         }
 
 
-        chatViewModel.networkError.observe(lifecycleOwner = this) { networkError ->
+        chatViewModel.networkError.observe(this) { networkError ->
             if (networkError == true) {
                 showAlert(
                     R.string.NETWORK_ERROR_ALERT_TITLE,
@@ -284,13 +287,13 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private fun scrollToBottom(smooth: Boolean) {
         if (smooth) {
-            (messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(
-                messages,
+            (binding.messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(
+                binding.messages,
                 null,
                 0
             )
         } else {
-            (messages.layoutManager as LinearLayoutManager).scrollToPosition(0)
+            (binding.messages.layoutManager as LinearLayoutManager).scrollToPosition(0)
         }
     }
 
@@ -301,13 +304,13 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 it
             )
         }
-        input.message = firstMessage
+        binding.input.message = firstMessage
         if (firstMessage is ParagraphInput) {
             triggerScrollToBottom = true
         }
-        (messages.adapter as? ChatAdapter)?.let {
+        (binding.messages.adapter as? ChatAdapter)?.let {
             it.messages = data.messages.filterNotNull()
-            val layoutManager = messages.layoutManager as LinearLayoutManager
+            val layoutManager = binding.messages.layoutManager as LinearLayoutManager
             val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
             if (pos == 0) {
                 triggerScrollToBottom = true
@@ -349,9 +352,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     preventOpenAttachFileHandler.postDelayed(resetPreventOpenAttachFile, 100)
                 }
 
-                input.rotateFileUploadIcon(false)
+                binding.input.rotateFileUploadIcon(false)
                 if (!isKeyboardShown) {
-                    input.updatePadding(bottom = 0)
+                    binding.input.updatePadding(bottom = 0)
                 }
                 this.attachPickerDialog = null
             },
@@ -359,14 +362,14 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 chatViewModel.uploadFile(uri)
             }
         )
-        chatViewModel.fileUploadOutcome.observe(lifecycleOwner = this) { data ->
+        chatViewModel.fileUploadOutcome.observe(this) { data ->
             data?.uri?.path?.let { path ->
                 attachPickerDialog.imageWasUploaded(path)
             }
         }
         attachPickerDialog.pickerHeight = keyboardHeight
         if (!isKeyboardShown) {
-            input.updatePadding(bottom = keyboardHeight)
+            binding.input.updatePadding(bottom = keyboardHeight)
         }
         attachPickerDialog.show()
 
@@ -377,7 +380,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             }
         }
 
-        input.rotateFileUploadIcon(true)
+        binding.input.rotateFileUploadIcon(true)
         this.attachPickerDialog = attachPickerDialog
     }
 
@@ -480,7 +483,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     startTakePicture()
             REQUEST_AUDIO_PERMISSION ->
                 if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
-                    input.audioRecorderPermissionGranted()
+                    binding.input.audioRecorderPermissionGranted()
             else -> { // Ignore all other requests.
             }
         }

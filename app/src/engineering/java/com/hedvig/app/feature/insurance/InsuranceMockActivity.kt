@@ -166,5 +166,12 @@ class InsuranceMockActivity : MockActivity() {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_TRAVEL
             startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
         }
+        clickableItem("Swedish Apartment Error") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+                shouldError = true
+            }
+            startActivity(ContractDetailActivity.newInstance(this@InsuranceMockActivity, ""))
+        }
     }
 }

@@ -5,8 +5,14 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMEN
 
 class MockContractDetailViewModel : ContractDetailViewModel() {
     override fun loadContract(id: String) {
-        mockData.contracts.find { it.id == id }?.let { _data.value = it } ?: run {
-            _data.value = mockData.contracts[0]
+        if (shouldError) {
+            shouldError = false
+            _data.postValue(Result.failure(Error()))
+            return
+        } else {
+            mockData.contracts.find { it.id == id }?.let { _data.value = Result.success(it) } ?: run {
+                _data.value = Result.success(mockData.contracts[0])
+            }
         }
     }
 
@@ -14,5 +20,6 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
 
     companion object {
         var mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+        var shouldError = false
     }
 }

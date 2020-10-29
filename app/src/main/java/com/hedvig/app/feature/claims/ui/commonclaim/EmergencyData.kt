@@ -15,10 +15,6 @@ data class EmergencyData(
     val eligibleToClaim: Boolean
 ) : Parcelable {
     companion object {
-        fun from(data: CommonClaimQuery.CommonClaim, eligibleToClaim: Boolean): EmergencyData? {
-            TODO("Remove")
-        }
-
         fun from(data: HomeQuery.CommonClaim, eligibleToClaim: Boolean): EmergencyData? {
             val layout = data.layout.asEmergency ?: return null
             return EmergencyData(

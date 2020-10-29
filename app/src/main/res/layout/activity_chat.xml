@@ -74,8 +74,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/hedvig_logo_margin_top"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:tint="?colorPrimary"
-            app:srcCompat="@drawable/ic_hedvig_wordmark" />
+            app:srcCompat="@drawable/ic_hedvig_wordmark"
+            app:tint="?colorPrimary" />
 
         <ImageView
             android:id="@+id/settings"

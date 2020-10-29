@@ -26,7 +26,9 @@ class HomeRepository(
     fun reloadHomeAsync() = apolloClientWrapper
         .apolloClient
         .query(homeQuery)
+        .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
         .toDeferred()
 }
