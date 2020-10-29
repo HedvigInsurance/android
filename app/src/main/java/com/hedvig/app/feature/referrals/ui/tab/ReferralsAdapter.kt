@@ -27,7 +27,6 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -263,12 +262,6 @@ class ReferralsAdapter(
                 tracker: ReferralsTracker
             ) {
                 binding.apply {
-
-                    if (root.context.isDarkThemeActive) {
-                        codeContainer.cardElevation = 0f
-                        codeContainer.setCardBackgroundColor(root.context.compatColor(R.color.color_hedvig_off_white_7))
-                    }
-
                     when (data) {
                         ReferralsModel.Code.LoadingCode -> {
                             codePlaceholder.show()
@@ -334,11 +327,6 @@ class ReferralsAdapter(
             private val binding by viewBinding(ReferralsRowBinding::bind)
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.apply {
-
-                    if (root.context.isDarkThemeActive) {
-                        root.setBackgroundColor(root.context.compatColor(R.color.color_hedvig_off_white_7))
-                    }
-
                     when (data) {
                         ReferralsModel.Referral.LoadingReferral -> {
                             placeholders.show()

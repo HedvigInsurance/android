@@ -140,4 +140,5 @@
     <dimen name="contract_card_max_width">380dp</dimen>
     <dimen name="peril_icon_size">24dp</dimen>
     <dimen name="peril_card_size">56dp</dimen>
+    <dimen name="logged_in_card_elevation">1dp</dimen>
 </resources>
