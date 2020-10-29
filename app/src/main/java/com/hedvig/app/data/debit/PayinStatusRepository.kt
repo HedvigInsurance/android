@@ -21,7 +21,9 @@ class PayinStatusRepository(
         val response = apolloClientWrapper
             .apolloClient
             .query(payinStatusQuery)
+            .toBuilder()
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
             .toDeferred()
             .await()
 

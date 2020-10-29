@@ -132,7 +132,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         it.status.asActiveInFutureStatus?.futureInception
                             ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
                     }
-                    .min()
+                    .minOrNull()
 
                 if (firstInceptionDate == null) {
                     (binding.recycler.adapter as? HomeAdapter)?.items = listOf(

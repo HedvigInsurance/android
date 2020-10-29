@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 
 fun View.show(): View {
@@ -140,8 +141,8 @@ fun Toolbar.setupToolbar(
 ) {
     activity.setSupportActionBar(this)
     activity.supportActionBar?.setDisplayShowTitleEnabled(false)
-    icon?.let { icon ->
-        this.navigationIcon = this.context.getDrawable(icon)
+    icon?.let { ic ->
+        this.navigationIcon = this.context.compatDrawable(ic)
     }
     backAction?.let {
         this.setNavigationOnClickListener { it() }
@@ -202,7 +203,6 @@ fun Toolbar.setupToolbar(
         }
     }
 }
-
 
 fun NestedScrollView.setupToolbarScrollListener(
     toolbar: Toolbar

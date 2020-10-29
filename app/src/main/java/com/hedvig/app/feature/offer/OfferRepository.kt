@@ -139,7 +139,9 @@ class OfferRepository(
 
     fun fetchSignStatusAsync() =
         apolloClientWrapper.apolloClient.query(SignStatusQuery())
+            .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .build()
             .toDeferred()
 
     fun chooseStartDateAsync(id: String, date: LocalDate) =
