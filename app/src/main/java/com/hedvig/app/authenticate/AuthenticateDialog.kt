@@ -1,85 +1,87 @@
 package com.hedvig.app.authenticate
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
+import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.QR
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setIsLoggedIn
-import kotlinx.android.synthetic.main.dialog_authenticate.*
+import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class AuthenticateDialog : DialogFragment() {
+    private val model: UserViewModel by viewModel()
+    private val binding by viewBinding(DialogAuthenticateBinding::bind)
 
-    private val userViewModel: UserViewModel by viewModel()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.dialog_authenticate, container, false)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_authenticate, null)
-
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        dialog.setContentView(view)
-        dialog.setCanceledOnTouchOutside(false)
-
-        userViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
-            data?.swedishBankIdAuth?.autoStartToken?.let { autoStartToken ->
-                val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
-                val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
-                if (requireContext().canOpenUri(bankIdUri)) {
-                    startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            bankIdUri
-                        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        model.autoStartToken.observe(viewLifecycleOwner) { data ->
+            val autoStartToken = data.swedishBankIdAuth.autoStartToken
+            val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
+            val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
+            if (requireContext().canOpenUri(bankIdUri)) {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        bankIdUri
                     )
-                } else {
-                    QR
-                        .with(requireContext())
-                        .load(autoStartUrl)
-                        .into(dialog.qrCode)
-                }
+                )
+            } else {
+                QR
+                    .with(requireContext())
+                    .load(autoStartUrl)
+                    .into(binding.qrCode)
             }
         }
-        userViewModel.authStatus.observe(lifecycleOwner = this) { data ->
-            data?.authStatus?.status?.let { bindNewStatus(it) }
+        model.authStatus.observe(viewLifecycleOwner) { data ->
+            data.authStatus?.status?.let(::bindNewStatus)
         }
-        userViewModel.fetchBankIdStartToken()
-
-        return dialog
+        model.fetchBankIdStartToken()
     }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?) =
+        super.onCreateDialog(savedInstanceState).apply {
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setCanceledOnTouchOutside(false)
+        }
 
     private fun bindNewStatus(state: AuthState) = when (state) {
         AuthState.INITIATED -> {
-            dialog?.authTitle?.text = getString(R.string.BANK_ID_AUTH_TITLE_INITIATED)
+            binding.authTitle.text = getString(R.string.BANK_ID_AUTH_TITLE_INITIATED)
         }
         AuthState.IN_PROGRESS -> {
-            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
+            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
         AuthState.UNKNOWN__,
         AuthState.FAILED -> {
-            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
+            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)
         }
         AuthState.SUCCESS -> {
-            dialog?.authTitle?.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
+            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             requireContext().setIsLoggedIn(true)
             GlobalScope.launch(Dispatchers.IO) {
-                FirebaseInstanceId.getInstance().deleteInstanceId()
+                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
             }
             dismiss()
             startActivity(Intent(this.context, LoggedInActivity::class.java).apply {

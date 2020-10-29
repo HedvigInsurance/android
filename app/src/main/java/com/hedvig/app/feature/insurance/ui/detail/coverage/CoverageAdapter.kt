@@ -11,7 +11,7 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
-import com.hedvig.app.databinding.ContractDetailCoverageRowBinding
+import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
@@ -29,13 +29,13 @@ class CoverageAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CoverageModel.Header -> R.layout.contract_detail_coverage_header
         is CoverageModel.Peril -> R.layout.peril_detail
-        is CoverageModel.InsurableLimit -> R.layout.contract_detail_coverage_row
+        is CoverageModel.InsurableLimit -> R.layout.contract_detail_row
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
         R.layout.peril_detail -> ViewHolder.Peril(parent)
-        R.layout.contract_detail_coverage_row -> ViewHolder.InsurableLimit(parent)
+        R.layout.contract_detail_row -> ViewHolder.InsurableLimit(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -137,8 +137,8 @@ class CoverageAdapter(
         }
 
         class InsurableLimit(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_coverage_row)) {
-            private val binding by viewBinding(ContractDetailCoverageRowBinding::bind)
+            ViewHolder(parent.inflate(R.layout.contract_detail_row)) {
+            private val binding by viewBinding(ContractDetailRowBinding::bind)
             override fun bind(
                 data: CoverageModel,
                 requestBuilder: RequestBuilder<PictureDrawable>,
