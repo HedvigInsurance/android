@@ -7,7 +7,6 @@ import android.view.View
 import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R

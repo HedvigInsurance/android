@@ -3,7 +3,6 @@ package com.hedvig.app.feature.keygear.ui.itemdetail
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.observe
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet
 import org.koin.android.viewmodel.ext.android.sharedViewModel

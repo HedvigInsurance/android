@@ -3,7 +3,6 @@ package com.hedvig.app.feature.trustly
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.observe
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
