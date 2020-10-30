@@ -32,9 +32,11 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.squareMeters,
-                                it.saType.displayName(requireContext())
-                            ) + coinsuredSection(it.numberCoInsured)
+                                it.saType.displayName(requireContext()),
+                                it.squareMeters
+                            ) + coinsuredSection(it.numberCoInsured) +
+                                changeSection()
+
                         )
                         return@observe
                     }
@@ -42,9 +44,10 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.squareMeters,
-                                getString(R.string.SWEDISH_HOUSE_LOB)
-                            ) + coinsuredSection(it.numberCoInsured)
+                                getString(R.string.SWEDISH_HOUSE_LOB),
+                                it.squareMeters
+                            ) + coinsuredSection(it.numberCoInsured) +
+                                changeSection()
                         )
                         return@observe
                     }
@@ -52,15 +55,17 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.squareMeters,
-                                it.nhcType?.displayName(requireContext()) ?: ""
-                            ) + coinsuredSection(it.numberCoInsured)
+                                it.nhcType?.displayName(requireContext()) ?: "",
+                                it.squareMeters
+                            ) + coinsuredSection(it.numberCoInsured) +
+                                changeSection()
                         )
                         return@observe
                     }
                     data.currentAgreement.asNorwegianTravelAgreement?.let {
                         (adapter as? YourInfoAdapter)?.submitList(
-                            coinsuredSection(it.numberCoInsured)
+                            coinsuredSection(it.numberCoInsured) +
+                                changeSection()
                         )
                         return@observe
                     }
@@ -69,7 +74,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
         }
     }
 
-    private fun homeSection(address: AddressFragment, sqm: Int, typeTranslated: String) = listOf(
+    private fun homeSection(address: AddressFragment, typeTranslated: String, sqm: Int) = listOf(
         YourInfoModel.Header.Details,
         YourInfoModel.Row(
             getString(R.string.CONTRACT_DETAIL_HOME_ADDRESS),
@@ -80,25 +85,34 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             address.postalCode,
         ),
         YourInfoModel.Row(
+            getString(R.string.CONTRACT_DETAIL_HOME_TYPE),
+            typeTranslated,
+        ),
+        YourInfoModel.Row(
             getString(R.string.CONTRACT_DETAIL_HOME_SIZE),
             getString(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, sqm),
         ),
-        YourInfoModel.Row(
-            getString(R.string.CONTRACT_DETAIL_HOME_TYPE),
-            typeTranslated,
-        )
     )
 
     private fun coinsuredSection(amount: Int) = listOf(
         YourInfoModel.Header.Coinsured,
         YourInfoModel.Row(
-            getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER),
+            getString(R.string.CONTRACT_DETAIL_COINSURED_TITLE),
             when (amount) {
                 0 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ZERO_COINSURED)
                 1 -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ONE_COINSURED)
                 else -> getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, amount)
             }
+        ),
+        YourInfoModel.Paragraph(
+            getString(R.string.insurance_details_view_your_info_co_insured_footer)
         )
+    )
+
+    private fun changeSection() = listOf(
+        YourInfoModel.Header.Change,
+        YourInfoModel.ChangeParagraph,
+        YourInfoModel.OpenChatButton
     )
 
     companion object {

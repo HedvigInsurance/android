@@ -5,5 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/recycler"
     android:clipToPadding="false"
+    android:paddingStart="@dimen/base_margin_double"
+    android:paddingEnd="@dimen/base_margin_double"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
