@@ -37,6 +37,11 @@ query InsuranceQuery($locale: Locale!) {
         squareMeters
         nhcType: type
       }
+      ... on DanishHomeContentAgreement{
+        address{
+          ...AddressFragment
+        }
+      }
       ... on NorwegianTravelAgreement {
         numberCoInsured
       }

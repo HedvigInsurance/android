@@ -47,9 +47,9 @@ class OfferViewModelImpl(
             offerRepository
                 .offer()
                 .onEach { response ->
-                    data.postValue(response.data)
+                    response.data?.let { data.postValue(it) }
                 }
-                .catch { e -> e(e) }
+                .catch { e(it) }
                 .collect()
         }
     }
@@ -86,16 +86,22 @@ class OfferViewModelImpl(
     override fun startSign() {
         viewModelScope.launch {
             offerRepository.subscribeSignStatus()
-                .onEach { signStatus.postValue(it.data?.signStatus?.status?.fragments?.signStatusFragment) }
+                .onEach { response ->
+                    response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
+                        signStatus.postValue(
+                            it
+                        )
+                    }
+                }
                 .catch { e(it) }
                 .launchIn(this)
 
             val response = runCatching { offerRepository.startSignAsync().await() }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
         }
     }
 
@@ -106,12 +112,12 @@ class OfferViewModelImpl(
     override fun manuallyRecheckSignStatus() {
         viewModelScope.launch {
             val response = runCatching { offerRepository.fetchSignStatusAsync().await() }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()
-                ?.let { signStatus.postValue(it.data?.signStatus?.fragments?.signStatusFragment) }
+            response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
+                ?.let { signStatus.postValue(it) }
         }
     }
 
@@ -120,7 +126,7 @@ class OfferViewModelImpl(
             val response = runCatching {
                 offerRepository.chooseStartDateAsync(id, date).await()
             }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
@@ -137,7 +143,7 @@ class OfferViewModelImpl(
             val response = runCatching {
                 offerRepository.removeStartDateAsync(id).await()
             }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }

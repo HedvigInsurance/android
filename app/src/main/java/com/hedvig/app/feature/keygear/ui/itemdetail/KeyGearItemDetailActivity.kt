@@ -26,7 +26,6 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets

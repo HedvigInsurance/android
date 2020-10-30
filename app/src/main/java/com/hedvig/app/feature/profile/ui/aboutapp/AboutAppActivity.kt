@@ -11,7 +11,6 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags

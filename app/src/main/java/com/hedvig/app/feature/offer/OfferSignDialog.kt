@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -8,57 +7,64 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.R
+import com.hedvig.app.databinding.DialogSignBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.android.synthetic.main.dialog_sign.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class OfferSignDialog : DialogFragment() {
-    private val offerViewModel: OfferViewModel by sharedViewModel()
+    private val model: OfferViewModel by sharedViewModel()
+    private val binding by viewBinding(DialogSignBinding::bind)
     private val tracker: OfferTracker by inject()
 
     val handler = Handler()
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.dialog_sign, container, false)
 
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_sign, null)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.setContentView(view)
-        dialog.setCanceledOnTouchOutside(false)
-
-        offerViewModel.clearPreviousErrors()
-        offerViewModel.signError.observe(lifecycleOwner = this) { err ->
-            if (err == true) {
-                dialog.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
-                dialog.setCanceledOnTouchOutside(true)
-            } else if (err == false) {
-                dialog.signStatus.text = getString(R.string.SIGN_START_BANKID)
-                dialog.setCanceledOnTouchOutside(false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.apply {
+            model.clearPreviousErrors()
+            model.signError.observe(viewLifecycleOwner) { err ->
+                if (err == true) {
+                    signStatus.setText(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                    dialog?.setCanceledOnTouchOutside(true)
+                } else if (err == false) {
+                    signStatus.setText(R.string.SIGN_START_BANKID)
+                    dialog?.setCanceledOnTouchOutside(false)
+                }
             }
-        }
-        offerViewModel.autoStartToken.observe(lifecycleOwner = this) { data ->
-            data?.signOfferV2?.autoStartToken?.let { autoStartToken -> startBankId(autoStartToken) }
-        }
-        offerViewModel.signStatus.observe(lifecycleOwner = this) { data ->
-            data?.let { d ->
-                bindStatus(d)
+            model.autoStartToken.observe(viewLifecycleOwner) { data ->
+                data.signOfferV2.autoStartToken?.let { autoStartToken -> startBankId(autoStartToken) }
             }
+            model.signStatus.observe(viewLifecycleOwner) { data ->
+                bindStatus(data)
+            }
+            model.startSign()
         }
-        offerViewModel.startSign()
-
-        return dialog
     }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?) =
+        super.onCreateDialog(savedInstanceState).apply {
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setCanceledOnTouchOutside(false)
+        }
 
     private fun startBankId(autoStartToken: String) {
         val bankIdUri = Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
@@ -69,7 +75,7 @@ class OfferSignDialog : DialogFragment() {
                 )
             )
         } else {
-            dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
+            binding.signStatus.setText(R.string.SIGN_START_BANKID)
         }
     }
 
@@ -78,20 +84,20 @@ class OfferSignDialog : DialogFragment() {
             BankIdStatus.PENDING -> {
                 when (d.collectStatus!!.code) {
                     "noClient" -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_START_BANKID)
+                        binding.signStatus.setText(R.string.SIGN_START_BANKID)
                     }
                     "unknown", "userSign" -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_IN_PROGRESS)
+                        binding.signStatus.setText(R.string.SIGN_IN_PROGRESS)
                     }
                 }
             }
             BankIdStatus.FAILED -> {
                 when (d.collectStatus!!.code) {
                     "userCancel", "cancelled" -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_CANCELED)
+                        binding.signStatus.setText(R.string.SIGN_CANCELED)
                     }
                     else -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                        binding.signStatus.setText(R.string.SIGN_FAILED_REASON_UNKNOWN)
                     }
                 }
                 dialog?.setCanceledOnTouchOutside(true)
@@ -103,7 +109,7 @@ class OfferSignDialog : DialogFragment() {
                     SignState.COMPLETED -> {
                         dialog?.signStatus?.text = getString(R.string.SIGN_SUCCESSFUL)
                         tracker.userDidSign(
-                            offerViewModel.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
+                            model.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                                 ?.toDouble()
                                 ?: 0.0
                         )
@@ -140,7 +146,7 @@ class OfferSignDialog : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        offerViewModel.manuallyRecheckSignStatus()
+        model.manuallyRecheckSignStatus()
     }
 
     companion object {

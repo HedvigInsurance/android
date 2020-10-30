@@ -7,13 +7,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
@@ -71,6 +71,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralsIncentive: MonetaryAmount
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
@@ -123,7 +124,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     .replace(R.id.tabContent, id.fragment)
                     .commitAllowingStateLoss()
 
-                setupToolBar(id)
+                setupToolBar()
                 animateGradient(id)
                 lastSelectedTab = id
                 true
@@ -155,7 +156,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bindData()
-            setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
+            setupToolBar()
         }
     }
 
@@ -242,13 +243,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
             LoggedInTabs.REFERRALS -> {
-                startActivity(
-                    ReferralsInformationActivity.newInstance(
-                        this,
-                        referralTermsUrl,
-                        referralsIncentive
+                if (::referralTermsUrl.isInitialized && ::referralsIncentive.isInitialized) {
+                    startActivity(
+                        ReferralsInformationActivity.newInstance(
+                            this,
+                            referralTermsUrl,
+                            referralsIncentive
+                        )
                     )
-                )
+                }
             }
         }
         return true
@@ -302,7 +305,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                     ?: LoggedInTabs.HOME
                 binding.bottomNavigation.selectedItemId = initialTab.id()
-                setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
+                setupToolBar()
                 binding.loggedInRoot.show()
             }
 
@@ -321,7 +324,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
     }
 
-    private fun setupToolBar(id: LoggedInTabs?) {
+    private fun setupToolBar() {
         invalidateOptionsMenu()
     }
 

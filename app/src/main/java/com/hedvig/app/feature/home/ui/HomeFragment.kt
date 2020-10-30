@@ -4,7 +4,6 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -66,7 +65,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
-            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder, tracker, marketProvider)
+            adapter = HomeAdapter(
+                parentFragmentManager,
+                model::load,
+                requestBuilder,
+                tracker,
+                marketProvider
+            )
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -127,7 +132,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         it.status.asActiveInFutureStatus?.futureInception
                             ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
                     }
-                    .min()
+                    .minOrNull()
 
                 if (firstInceptionDate == null) {
                     (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
@@ -151,7 +156,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BodyText.Terminated,
                     HomeModel.StartClaimOutlined,
                     HomeModel.HowClaimsWork(successData.howClaimsWork)
-                    )
+                )
             }
 
             if (isActive(successData.contracts)) {
@@ -160,6 +165,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     HomeModel.BigText.Active(firstName),
                     HomeModel.StartClaimContained,
                     HomeModel.HowClaimsWork(successData.howClaimsWork),
+                    *upcomingRenewals(successData.contracts).toTypedArray(),
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         HomeModel.ConnectPayin
                     } else {
@@ -180,6 +186,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     ) = importantMessages
         .filterNotNull()
         .map { HomeModel.PSA(it) }
+
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+        contracts.mapNotNull { c ->
+            c.upcomingRenewal?.let {
+                HomeModel.UpcomingRenewal(it)
+            }
+        }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,

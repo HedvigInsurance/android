@@ -7,7 +7,6 @@ import androidx.core.util.Pair
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN

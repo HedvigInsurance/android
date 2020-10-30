@@ -45,7 +45,7 @@
     </style>
 
     <style name="ThemeOverlay.Hedvig.PSA" parent="">
-        <item name="android:textColorPrimary">@color/color_hedvig_black_67</item>
+        <item name="android:textColorSecondary">@color/color_hedvig_black_67</item>
         <item name="colorPrimary">@color/hedvig_black</item>
         <item name="android:colorBackground">?colorWarning</item>
     </style>
@@ -61,7 +61,15 @@
 
     <style name="ThemeOverlay.Hedvig.RenewalCard" parent="">
         <item name="colorSurface">@color/colorInfoCardSurface</item>
+        <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
+
+    <style name="ThemeOverlay.Hedvig.InsuranceCard" parent="">
+        <item name="android:textColorSecondary">@color/hedvig_black</item>
+        <item name="android:textColorTertiary">@color/text_color_primary_light</item>
         <item name="colorPrimary">@color/hedvig_black</item>
+        <item name="colorSurface">@color/hedvig_white</item>
         <item name="colorOnSurface">?colorPrimary</item>
     </style>
 
@@ -73,4 +81,12 @@
         <item name="actionMenuTextColor">?colorError</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.LoggedInCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/logged_in_card_elevation</item>
+        <item name="cardBackgroundColor">?colorSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
+        <item name="android:colorBackground">?colorSurface</item>
+    </style>
 </resources>

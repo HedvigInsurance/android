@@ -3,7 +3,6 @@ package com.hedvig.app.feature.chat.ui
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.observe
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet

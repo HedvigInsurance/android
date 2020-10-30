@@ -1,12 +1,8 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
-import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity

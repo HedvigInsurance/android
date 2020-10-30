@@ -23,8 +23,10 @@ class ReferralsRepository(
     fun reloadReferralsAsync() = apolloClientWrapper
         .apolloClient
         .query(referralsQuery)
+        .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
         .toDeferred()
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {

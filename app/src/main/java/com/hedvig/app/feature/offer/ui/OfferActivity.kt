@@ -16,7 +16,6 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -75,7 +74,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerViewModel.removeDiscount()
         }
 
-        offerViewModel.data.observe(lifecycleOwner = this) {
+        offerViewModel.data.observe(this) {
             it?.let { data ->
                 data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
                     offerToolbarAddress.text = street

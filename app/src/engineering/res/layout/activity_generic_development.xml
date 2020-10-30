@@ -7,4 +7,5 @@
     android:layout_height="match_parent"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:itemCount="3"
+    android:clipToPadding="false"
     tools:listitem="@layout/development_row" />
