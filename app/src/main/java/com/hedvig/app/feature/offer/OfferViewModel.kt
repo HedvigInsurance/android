@@ -47,9 +47,9 @@ class OfferViewModelImpl(
             offerRepository
                 .offer()
                 .onEach { response ->
-                    data.postValue(response.data)
+                    response.data?.let { data.postValue(it) }
                 }
-                .catch { e -> e(e) }
+                .catch { e(it) }
                 .collect()
         }
     }
@@ -86,7 +86,13 @@ class OfferViewModelImpl(
     override fun startSign() {
         viewModelScope.launch {
             offerRepository.subscribeSignStatus()
-                .onEach { signStatus.postValue(it.data?.signStatus?.status?.fragments?.signStatusFragment) }
+                .onEach { response ->
+                    response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
+                        signStatus.postValue(
+                            it
+                        )
+                    }
+                }
                 .catch { e(it) }
                 .launchIn(this)
 
