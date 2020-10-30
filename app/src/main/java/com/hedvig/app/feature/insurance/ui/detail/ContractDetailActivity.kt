@@ -2,7 +2,6 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.transition.ChangeBounds
 import android.view.Window
@@ -21,7 +20,6 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -78,8 +76,8 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                     }
                 }
             }.attach()
-            card.arrow.isInvisible = true
-            card.root.transitionName = "contract_card"
+            cardContainer.arrow.isInvisible = true
+            cardContainer.card.transitionName = "contract_card"
             error.retry.setHapticClickListener {
                 model.loadContract(id)
             }
@@ -96,7 +94,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                 } else {
                     content.show()
                     error.root.remove()
-                    result.getOrNull()?.bindTo(binding.card)
+                    result.getOrNull()?.bindTo(binding.cardContainer)
                 }
                 startPostponedEnterTransition()
             }

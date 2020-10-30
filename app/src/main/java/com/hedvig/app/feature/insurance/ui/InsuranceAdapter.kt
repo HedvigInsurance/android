@@ -111,18 +111,18 @@ class InsuranceAdapter(
 
             fun bind(contract: InsuranceQuery.Contract) {
                 contract.bindTo(binding)
-                binding.apply {
-                    root.setHapticClickListener {
-                        root.transitionName = TRANSITION_NAME
-                        root.context.getActivity()?.let { activity ->
-                            root.context.startActivity(
+                binding.card.apply {
+                    setHapticClickListener {
+                        transitionName = TRANSITION_NAME
+                        context.getActivity()?.let { activity ->
+                            context.startActivity(
                                 ContractDetailActivity.newInstance(
-                                    root.context,
+                                    context,
                                     contract.id
                                 ),
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     activity,
-                                    root,
+                                    this,
                                     TRANSITION_NAME
                                 ).toBundle()
                             )
