@@ -47,7 +47,7 @@
                     android:orientation="vertical">
 
                     <include
-                        android:id="@+id/card"
+                        android:id="@+id/cardContainer"
                         layout="@layout/insurance_contract_card" />
 
                     <com.google.android.material.tabs.TabLayout
