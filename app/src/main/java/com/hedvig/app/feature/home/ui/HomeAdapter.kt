@@ -347,11 +347,6 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                if (root.context.isDarkThemeActive) {
-                    root.cardElevation = 0f
-                    root.setCardBackgroundColor(root.context.compatColor(R.color.color_hedvig_off_white_7))
-                }
-
                 when (data) {
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
