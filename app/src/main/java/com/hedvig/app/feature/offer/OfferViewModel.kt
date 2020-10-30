@@ -91,11 +91,11 @@ class OfferViewModelImpl(
                 .launchIn(this)
 
             val response = runCatching { offerRepository.startSignAsync().await() }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
         }
     }
 
@@ -106,12 +106,12 @@ class OfferViewModelImpl(
     override fun manuallyRecheckSignStatus() {
         viewModelScope.launch {
             val response = runCatching { offerRepository.fetchSignStatusAsync().await() }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()
-                ?.let { signStatus.postValue(it.data?.signStatus?.fragments?.signStatusFragment) }
+            response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
+                ?.let { signStatus.postValue(it) }
         }
     }
 
@@ -120,7 +120,7 @@ class OfferViewModelImpl(
             val response = runCatching {
                 offerRepository.chooseStartDateAsync(id, date).await()
             }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
@@ -137,7 +137,7 @@ class OfferViewModelImpl(
             val response = runCatching {
                 offerRepository.removeStartDateAsync(id).await()
             }
-            if (response.isFailure) {
+            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
