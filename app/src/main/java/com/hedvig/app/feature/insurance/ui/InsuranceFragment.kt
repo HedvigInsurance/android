@@ -76,8 +76,12 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
-                listOf(InsuranceModel.Header, InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
+                listOf(
+                    InsuranceModel.Header,
+                    InsuranceModel.Error
+                )
+            )
             return
         }
 
@@ -95,8 +99,11 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             }
         }
 
-        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
-            listOf(InsuranceModel.Header) + contracts + upsells
+        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
+            listOf(
+                InsuranceModel.Header
+            ) + contracts + upsells
+        )
     }
 
     companion object {

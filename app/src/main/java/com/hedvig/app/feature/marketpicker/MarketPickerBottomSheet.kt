@@ -26,9 +26,11 @@ class MarketPickerBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
-                it.items = listOf(
-                    MarketAdapterModel.Header,
-                    MarketAdapterModel.MarketList(marketProvider.enabledMarkets)
+                it.submitList(
+                    listOf(
+                        MarketAdapterModel.Header,
+                        MarketAdapterModel.MarketList(marketProvider.enabledMarkets)
+                    )
                 )
             }
         }
