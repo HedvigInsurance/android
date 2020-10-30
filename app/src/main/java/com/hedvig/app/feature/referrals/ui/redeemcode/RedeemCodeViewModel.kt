@@ -20,7 +20,6 @@ class RedeemCodeViewModel(
                 runCatching { redeemReferralCodeRepository.redeemReferralCodeAsync(code).await() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                redeemCodeStatus.postValue(null)
                 return@launch
             }
             response.getOrNull()?.let { redeemCodeStatus.postValue(it.data) }

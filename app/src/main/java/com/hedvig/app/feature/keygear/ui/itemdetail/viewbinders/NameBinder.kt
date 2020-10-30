@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
-import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.KeyGearItemDetailNameSectionBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -11,38 +11,34 @@ import com.hedvig.app.util.extensions.view.openKeyboard
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import kotlinx.android.synthetic.main.key_gear_item_detail_name_section.view.*
 
 class NameBinder(
-    private val root: LinearLayout,
+    private val binding: KeyGearItemDetailNameSectionBinding,
     private val model: KeyGearItemDetailViewModel,
     private val tracker: KeyGearTracker
 ) {
     init {
         var isEditState = false
-        root.addName.setHapticClickListener {
+        binding.addName.setHapticClickListener {
             if (isEditState) {
                 tracker.saveName()
                 hideEditName()
-                root.addName.text =
-                    root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+                binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
                 updateName()
                 isEditState = false
             } else {
                 tracker.editName()
                 focusEditName()
-                root.addName.text =
-                    root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
+                binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
                 isEditState = true
             }
 
         }
 
-        root.nameEditText.setOnEditorActionListener { _, _, _ ->
+        binding.nameEditText.setOnEditorActionListener { _, _, _ ->
             tracker.saveName()
             hideEditName()
-            root.addName.text =
-                root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+            binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
             updateName()
             isEditState = false
             true
@@ -52,41 +48,41 @@ class NameBinder(
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val name = data.fragments.keyGearItemFragment.name
         val category =
-            root.context.resources.getString(data.fragments.keyGearItemFragment.category.label)
+            binding.root.context.getString(data.fragments.keyGearItemFragment.category.label)
 
         if (name.isNullOrBlank()) {
-            root.nameEditText.setText("")
-            root.name.text = category
+            binding.nameEditText.setText("")
+            binding.name.text = category
         } else {
-            root.nameEditText.setText(name)
-            root.nameEditText.setSelection(name.length)
-            root.name.text = name
+            binding.nameEditText.setText(name)
+            binding.nameEditText.setSelection(name.length)
+            binding.name.text = name
         }
     }
 
     private fun updateName() {
-        val name = root.nameEditText.text.toString()
+        val name = binding.nameEditText.text.toString()
         model.updateItemName(name)
     }
 
     private fun focusEditName() {
-        root.name
+        binding.name
             .animate()
             .alpha(0.0f)
             .withEndAction {
-                root.name.remove()
+                binding.name.remove()
             }
             .setDuration(ANIMATE_DURATION)
             .start()
 
-        root.nameEditTextContainer.apply {
+        binding.nameEditTextContainer.apply {
             alpha = 0.0f
             show()
             animate()
                 .alpha(1.0f)
                 .withEndAction {
-                    root.nameEditText.requestFocus()
-                    root.nameEditText.openKeyboard()
+                    binding.nameEditText.requestFocus()
+                    binding.nameEditText.openKeyboard()
                 }
                 .setDuration(ANIMATE_DURATION)
                 .start()
@@ -94,18 +90,18 @@ class NameBinder(
     }
 
     private fun hideEditName() {
-        root.nameEditTextContainer.apply {
+        binding.nameEditTextContainer.apply {
             animate()
                 .alpha(0f)
                 .withEndAction {
-                    root.nameEditText.dismissKeyboard()
-                    root.nameEditTextContainer.remove()
+                    binding.nameEditText.dismissKeyboard()
+                    binding.nameEditTextContainer.remove()
                 }
                 .setDuration(ANIMATE_DURATION)
                 .start()
         }
 
-        root.name.apply {
+        binding.name.apply {
             alpha = 0.0f
             show()
             animate()

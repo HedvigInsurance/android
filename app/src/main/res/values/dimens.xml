@@ -1,7 +1,5 @@
 <resources>
 
-    <dimen name="app_bar_height">128dp</dimen>
-
     <dimen name="base_margin_half">4dp</dimen>
     <dimen name="base_margin">8dp</dimen>
     <dimen name="base_margin_double">16dp</dimen>
