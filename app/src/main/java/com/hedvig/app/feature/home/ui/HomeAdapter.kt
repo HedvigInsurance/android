@@ -30,9 +30,7 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
