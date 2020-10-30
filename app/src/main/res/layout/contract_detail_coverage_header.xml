@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_quintuple"
-    android:layout_marginEnd="@dimen/base_margin_double"
     android:layout_marginBottom="@dimen/base_margin"
     tools:text="@string/CONTRACT_COVERAGE_CONTRACT_TYPE"
     android:textAppearance="?textAppearanceHeadline6" />

@@ -29,12 +29,10 @@ class CoverageItemDecoration : RecyclerView.ItemDecoration() {
 
             when (spanIndex) {
                 SPAN_LEFT -> {
-                    outRect.left = BASE_MARGIN_DOUBLE
                     outRect.right = BASE_MARGIN_HALF
                 }
                 SPAN_RIGHT -> {
                     outRect.left = BASE_MARGIN_HALF
-                    outRect.right = BASE_MARGIN_DOUBLE
                 }
             }
             return

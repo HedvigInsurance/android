@@ -9,5 +9,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:spanCount="2"
     android:clipToPadding="false"
+    android:paddingStart="@dimen/base_margin_double"
+    android:paddingEnd="@dimen/base_margin_double"
     tools:context=".feature.insurance.ui.detail.coverage.CoverageFragment"
     tools:listitem="@layout/peril_detail" />
