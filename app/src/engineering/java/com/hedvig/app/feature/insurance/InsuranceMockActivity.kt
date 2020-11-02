@@ -17,6 +17,7 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
@@ -128,6 +129,18 @@ class InsuranceMockActivity : MockActivity() {
         clickableItem("Norwegian home") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = NORWEGIAN_HOME_CONTENTS
+                shouldError = false
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    this@InsuranceMockActivity,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
+        clickableItem("One Active + One Terminated") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
                 shouldError = false
             }
             startActivity(
