@@ -13,12 +13,14 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceErrorBinding
+import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -52,7 +54,7 @@ class InsuranceAdapter(
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader -> R.layout.insurance_terminated_contracts_header
-        InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
+        is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.insurance_error
     }
 
@@ -166,11 +168,25 @@ class InsuranceAdapter(
 
         class TerminatedContracts(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.insurance_terminated_contracts)) {
+            private val binding by viewBinding(InsuranceTerminatedContractsBinding::bind)
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
                 tracker: InsuranceTracker
-            ) = Unit
+            ) = with(binding) {
+                if (data !is InsuranceModel.TerminatedContracts) {
+                    return invalid(data)
+                }
+
+                caption.text = caption.resources.getQuantityString(
+                    R.plurals.insurances_tab_terminated_insurance_subtitile,
+                    data.quantity,
+                    data.quantity
+                )
+                root.setHapticClickListener {
+                    root.context.makeToast("TODO: Implement screen") // This TODO left intentionally in code
+                }
+            }
         }
     }
 
@@ -195,5 +211,5 @@ sealed class InsuranceModel {
     object Error : InsuranceModel()
 
     object TerminatedContractsHeader : InsuranceModel()
-    object TerminatedContracts : InsuranceModel()
+    data class TerminatedContracts(val quantity: Int) : InsuranceModel()
 }

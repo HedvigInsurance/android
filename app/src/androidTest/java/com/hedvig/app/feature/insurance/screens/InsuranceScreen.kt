@@ -40,5 +40,7 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
         val text = KTextView { withMatcher(parent) }
     }
 
-    class TerminatedContracts(parent: Matcher<View>) : KRecyclerItem<TerminatedContracts>(parent)
+    class TerminatedContracts(parent: Matcher<View>) : KRecyclerItem<TerminatedContracts>(parent) {
+        val caption = KTextView(parent) { withId(R.id.caption) }
+    }
 }

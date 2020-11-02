@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.hasPluralText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +42,7 @@ class TerminatedContractsTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowErrorOnGraphQLError() {
+    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() {
         val intent = LoggedInActivity.newInstance(
             ApplicationProvider.getApplicationContext(),
             initialTab = LoggedInTabs.INSURANCE
@@ -51,7 +52,15 @@ class TerminatedContractsTest {
         onScreen<InsuranceScreen> {
             insuranceRecycler {
                 childAt<InsuranceScreen.TerminatedContractsHeader>(2) { text { hasText(R.string.insurances_tab_more_title) } }
-                childAt<InsuranceScreen.TerminatedContracts>(3) { isVisible() }
+                childAt<InsuranceScreen.TerminatedContracts>(3) {
+                    caption {
+                        hasPluralText(
+                            R.plurals.insurances_tab_terminated_insurance_subtitile,
+                            1,
+                            1
+                        )
+                    }
+                }
             }
         }
     }

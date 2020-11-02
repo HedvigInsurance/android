@@ -107,15 +107,17 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         )
     }
 
-    private fun terminatedRow(contracts: List<InsuranceQuery.Contract>) =
-        if (hasTerminatedContracts(contracts)) {
+    private fun terminatedRow(contracts: List<InsuranceQuery.Contract>): List<InsuranceModel> {
+        val terminatedContracts = amountOfTerminatedContracts(contracts)
+        return if (terminatedContracts > 0) {
             listOf(
                 InsuranceModel.TerminatedContractsHeader,
-                InsuranceModel.TerminatedContracts
+                InsuranceModel.TerminatedContracts(terminatedContracts)
             )
         } else {
             emptyList()
         }
+    }
 
     companion object {
         private val UPSELL_HOME_CONTENTS =
@@ -141,7 +143,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         fun doesNotHaveTravelInsurance(contracts: List<InsuranceQuery.Contract>) =
             contracts.none { it.currentAgreement.asNorwegianTravelAgreement != null }
 
-        fun hasTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
-            contracts.any { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
+        fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
+            contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
     }
 }
