@@ -53,21 +53,11 @@ class ReferralsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.referrals_title -> ViewHolder.TitleViewHolder(parent)
-        R.layout.referrals_header -> ViewHolder.HeaderViewHolder(
-            parent
-        )
-        R.layout.referrals_code -> ViewHolder.CodeViewHolder(
-            parent
-        )
-        R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(
-            parent
-        )
-        R.layout.referrals_row -> ViewHolder.ReferralViewHolder(
-            parent
-        )
-        R.layout.referrals_error -> ViewHolder.ErrorViewHolder(
-            parent
-        )
+        R.layout.referrals_header -> ViewHolder.HeaderViewHolder(parent)
+        R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent)
+        R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
+        R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
+        R.layout.referrals_error -> ViewHolder.ErrorViewHolder(parent)
         else -> throw Error("Invalid viewType")
     }
 
@@ -250,8 +240,11 @@ class ReferralsAdapter(
                 .inflate(R.layout.referrals_code, parent, false)
         ) {
             private val binding by viewBinding(ReferralsCodeBinding::bind)
-
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker
+            ) {
                 binding.apply {
                     when (data) {
                         ReferralsModel.Code.LoadingCode -> {
@@ -316,7 +309,10 @@ class ReferralsAdapter(
                 .inflate(R.layout.referrals_row, parent, false)
         ) {
             private val binding by viewBinding(ReferralsRowBinding::bind)
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.apply {
                     when (data) {
