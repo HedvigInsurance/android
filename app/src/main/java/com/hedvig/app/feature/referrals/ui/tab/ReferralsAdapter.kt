@@ -309,10 +309,6 @@ class ReferralsAdapter(
                 .inflate(R.layout.referrals_row, parent, false)
         ) {
             private val binding by viewBinding(ReferralsRowBinding::bind)
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.apply {
                     when (data) {
