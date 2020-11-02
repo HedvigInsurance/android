@@ -3,25 +3,18 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import kotlinx.android.synthetic.main.payment_history_item.view.*
-import kotlinx.android.synthetic.main.payout_history_header.view.*
-import kotlinx.android.synthetic.main.payout_history_title.view.*
+import com.hedvig.app.databinding.PaymentHistoryItemBinding
+import com.hedvig.app.databinding.PayoutHistoryHeaderBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.extensions.viewBinding
 
-class PaymentHistoryAdapter(
-) : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
+class PaymentHistoryAdapter :
+    ListAdapter<ChargeWrapper, PaymentHistoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-    var items: List<ChargeWrapper> = listOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    override fun getItemCount() = items.size
-
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is ChargeWrapper.Title -> R.layout.payout_history_title
         is ChargeWrapper.Header -> R.layout.payout_history_header
         is ChargeWrapper.Item -> R.layout.payment_history_item
@@ -42,10 +35,10 @@ class PaymentHistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
-                (items[position] as? ChargeWrapper.Header)?.let { holder.bind(it) }
+                (getItem(position) as? ChargeWrapper.Header)?.let { holder.bind(it) }
             }
             is ViewHolder.ItemViewHolder -> {
-                (items[position] as? ChargeWrapper.Item)?.let { holder.bind(it) }
+                (getItem(position) as? ChargeWrapper.Item)?.let { holder.bind(it) }
             }
         }
     }
@@ -56,7 +49,6 @@ class PaymentHistoryAdapter(
                 .from(parent.context)
                 .inflate(R.layout.payout_history_title, parent, false)
         ) {
-            val title: TextView = itemView.title
         }
 
         class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
@@ -64,10 +56,10 @@ class PaymentHistoryAdapter(
                 .from(parent.context)
                 .inflate(R.layout.payout_history_header, parent, false)
         ) {
-            val year: TextView = itemView.header
+            private val binding by viewBinding(PayoutHistoryHeaderBinding::bind)
 
             fun bind(item: ChargeWrapper.Header) {
-                year.text = item.year.toString()
+                binding.header.text = item.year.toString()
             }
         }
 
@@ -76,15 +68,15 @@ class PaymentHistoryAdapter(
                 .from(parent.context)
                 .inflate(R.layout.payment_history_item, parent, false)
         ) {
-            val date: TextView = itemView.date
-            val amount: TextView = itemView.amount
-
+            private val binding by viewBinding(PaymentHistoryItemBinding::bind)
             fun bind(item: ChargeWrapper.Item) {
-                date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
-                amount.text = amount.context.getString(
-                    R.string.PAYMENT_HISTORY_AMOUNT,
-                    item.charge.amount.amount.toBigDecimal().toInt()
-                )
+                binding.apply {
+                    date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
+                    amount.text = amount.context.getString(
+                        R.string.PAYMENT_HISTORY_AMOUNT,
+                        item.charge.amount.amount.toBigDecimal().toInt()
+                    )
+                }
             }
         }
     }

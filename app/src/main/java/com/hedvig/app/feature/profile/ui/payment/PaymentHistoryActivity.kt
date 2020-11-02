@@ -14,13 +14,11 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.android.synthetic.main.activity_payment_history.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class PaymentHistoryActivity : BaseActivity() {
+class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
     private val profileViewModel: ProfileViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_history)
-
         paymentHistory.setEdgeToEdgeSystemUiFlags(true)
         paymentHistory.doOnApplyWindowInsets { view, insets, initialState ->
             view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
@@ -37,8 +35,9 @@ class PaymentHistoryActivity : BaseActivity() {
 
         profileViewModel.data.observe(this) { data ->
             data?.chargeHistory?.let { chargeHistory ->
-                (paymentHistory.adapter as? PaymentHistoryAdapter)?.items =
+                (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
                     listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+                )
             }
         }
     }

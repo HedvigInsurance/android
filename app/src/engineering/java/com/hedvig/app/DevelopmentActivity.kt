@@ -24,52 +24,54 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.root.adapter = DevelopmentScreenAdapter(
-            listOf(
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {
-                    startActivity(
-                        LoggedInActivity.newInstance(this)
-                    )
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
-                    startActivity(Intent(this, ReferralsMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Chat") {
-                    startActivity(Intent(this, ChatMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
-                    startActivity(Intent(this, OfferMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
-                    startActivity(Intent(this, HomeMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Insurance") {
-                    startActivity(Intent(this, InsuranceMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
-                    startActivity(Intent(this, ProfileMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Market Picker"){
-                    startActivity(Intent(this, MarketPickerMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
-                    startActivity(Intent(this, LoggedInMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Adyen") {
-                    startActivity(Intent(this, AdyenMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Trustly") {
-                    startActivity(Intent(this, TrustlyMockActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
-                    startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {
-                    startActivity(ViewGalleryActivity.newInstance(this))
-                },
-                DevelopmentScreenAdapter.DevelopmentScreenItem.Footer
+        binding.root.adapter = DevelopmentScreenAdapter().also {
+            it.submitList(
+                listOf(
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {
+                        startActivity(
+                            LoggedInActivity.newInstance(this)
+                        )
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
+                        startActivity(Intent(this, ReferralsMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Chat") {
+                        startActivity(Intent(this, ChatMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
+                        startActivity(Intent(this, OfferMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
+                        startActivity(Intent(this, HomeMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Insurance") {
+                        startActivity(Intent(this, InsuranceMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
+                        startActivity(Intent(this, ProfileMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Market Picker") {
+                        startActivity(Intent(this, MarketPickerMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
+                        startActivity(Intent(this, LoggedInMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Adyen") {
+                        startActivity(Intent(this, AdyenMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Trustly") {
+                        startActivity(Intent(this, TrustlyMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
+                        startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {
+                        startActivity(ViewGalleryActivity.newInstance(this))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Footer
+                )
             )
-        )
+        }
     }
 }

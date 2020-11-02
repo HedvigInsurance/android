@@ -5,22 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.CreateKeyGearItemCategoryBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.create_key_gear_item_category.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class CategoryAdapter(
     private val setActiveCategory: (Category) -> Unit
-) : RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
-    var categories: List<Category> = listOf()
-        set(value) {
-            val callback = CategoryDiffCallback(field, value)
-            val result = DiffUtil.calculateDiff(callback)
-            field = value
-            result.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<Category,CategoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(
@@ -29,13 +25,13 @@ class CategoryAdapter(
             )
         )
 
-    override fun getItemCount() = categories.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(categories[position], setActiveCategory)
+        holder.bind(getItem(position), setActiveCategory)
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val text: TextView = view.text
+        private val binding by viewBinding(CreateKeyGearItemCategoryBinding::bind)
+        private val text: TextView = binding.text
 
         fun bind(data: Category, setActiveCategory: (Category) -> Unit) {
             text.text = text.resources.getString(data.category.label)

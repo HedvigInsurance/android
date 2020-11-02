@@ -15,13 +15,14 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.databinding.CreateKeyGearItemNewPhotoBinding
+import com.hedvig.app.databinding.CreateKeyGearItemPhotoBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.performOnLongPressHapticFeedback
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.create_key_gear_item_new_photo.view.*
-import kotlinx.android.synthetic.main.create_key_gear_item_photo.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class PhotosAdapter(
     private val tracker: KeyGearTracker,
@@ -101,7 +102,8 @@ class PhotosAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Photo(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
-            val photo: ImageView = view.photo
+            private val binding by viewBinding(CreateKeyGearItemPhotoBinding::bind)
+            val photo: ImageView = binding.photo
 
             fun bind(
                 data: com.hedvig.app.feature.keygear.ui.createitem.Photo,
@@ -130,7 +132,8 @@ class PhotosAdapter(
         }
 
         class AddPhoto(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
-            val root: ConstraintLayout = view.addPhoto
+            private val binding by viewBinding(CreateKeyGearItemNewPhotoBinding::bind)
+            val root: ConstraintLayout = binding.addPhoto
 
             fun bind(
                 takePhoto: () -> Unit,

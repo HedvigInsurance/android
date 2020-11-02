@@ -19,11 +19,12 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.R
+import com.hedvig.app.databinding.KeyGearItemDetailPhotoBinding
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
-import kotlinx.android.synthetic.main.key_gear_item_detail_photo.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class PhotosAdapter(
     firstPhotoUrl: String?,
@@ -106,7 +107,8 @@ class PhotosAdapter(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val photo: ImageView = view.photo
-        val background: FrameLayout = view.photoBackground
+        private val binding by viewBinding(KeyGearItemDetailPhotoBinding::bind)
+        val photo: ImageView = binding.photo
+        val background: FrameLayout = binding.photoBackground
     }
 }

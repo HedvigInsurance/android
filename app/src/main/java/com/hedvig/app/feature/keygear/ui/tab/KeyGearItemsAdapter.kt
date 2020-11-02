@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -18,28 +18,25 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.databinding.KeyGearAddItemBinding
+import com.hedvig.app.databinding.KeyGearItemBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import kotlinx.android.synthetic.main.key_gear_add_item.view.*
-import kotlinx.android.synthetic.main.key_gear_item.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class KeyGearItemsAdapter(
     private val tracker: KeyGearTracker,
     private val createItem: (view: View) -> Unit,
     private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit
-) : RecyclerView.Adapter<KeyGearItemsAdapter.ViewHolder>() {
-    var items: List<KeyGearItemsQuery.KeyGearItem> = listOf()
-        set(value) {
-            val callback = KeyGearItemsDiffCallback(field, value)
-            val result = DiffUtil.calculateDiff(callback)
-            result.dispatchUpdatesTo(this)
-            field = value
-        }
+) : ListAdapter<KeyGearItemsQuery.KeyGearItem, KeyGearItemsAdapter.ViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
 
     override fun getItemViewType(position: Int) = when (position) {
         0 -> NEW_ITEM
@@ -66,8 +63,6 @@ class KeyGearItemsAdapter(
         }
     }
 
-    override fun getItemCount() = items.size + 1
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.NewItem -> {
@@ -77,7 +72,7 @@ class KeyGearItemsAdapter(
                 }
             }
             is ViewHolder.Item -> {
-                val item = items[position - 1]
+                val item = getItem(position - 1)
                 holder.root.setHapticClickListener {
                     openItem(
                         holder.root,
@@ -126,14 +121,16 @@ class KeyGearItemsAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class NewItem(view: View) : ViewHolder(view) {
-            val root: ConstraintLayout = view.root
+            val binding by viewBinding(KeyGearAddItemBinding::bind)
+            val root: ConstraintLayout = binding.root
         }
 
         class Item(view: View) : ViewHolder(view) {
-            val root: FrameLayout = view.keyGearItemRoot
-            val image: ImageView = view.itemPhoto
-            val name: TextView = view.name
-            val autoAdded: TextView = view.autoAddedTag
+            val binding by viewBinding(KeyGearItemBinding::bind)
+            val root: FrameLayout = binding.keyGearItemRoot
+            val image: ImageView = binding.itemPhoto
+            val name: TextView = binding.name
+            val autoAdded: TextView = binding.autoAddedTag
         }
     }
 }

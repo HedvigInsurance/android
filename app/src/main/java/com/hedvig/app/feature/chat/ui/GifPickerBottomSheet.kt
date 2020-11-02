@@ -63,7 +63,7 @@ class GifPickerBottomSheet : RoundedBottomSheetDialogFragment() {
 
         chatViewModel.gifs.observe(viewLifecycleOwner) { data ->
             data?.gifs?.let { gifs ->
-                (dialog.gifRecyclerView.adapter as? GifAdapter)?.items = gifs.filterNotNull()
+                (dialog.gifRecyclerView.adapter as? GifAdapter)?.submitList(gifs.filterNotNull())
                 if (gifs.isEmpty()) {
                     dialog.gifRecyclerView.remove()
                     dialog.emptyGifLabel.show()

@@ -1,61 +1,42 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.binders
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.KeyGearItemDetailCoverageRowBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.compatDrawable
-import kotlinx.android.synthetic.main.key_gear_item_detail_coverage_row.view.*
+import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.viewBinding
 
 class CoverageAdapter(
     private val isExceptions: Boolean
-) : RecyclerView.Adapter<CoverageAdapter.ViewHolder>() {
-    var items: List<String> = listOf()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(Callback(field, value))
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<String, CoverageAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.key_gear_item_detail_coverage_row, parent, false)
-    )
-
-    override fun getItemCount() = items.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.label.text = items[position]
-        holder.label.setCompoundDrawablesWithIntrinsicBounds(
-            holder.label.context.compatDrawable(
-                if (isExceptions) {
-                    R.drawable.ic_cross
-                } else {
-                    R.drawable.ic_filled_checkmark_small
-                }
-            ), null, null, null
-        )
+        holder.bind(getItem(position), isExceptions)
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val label: TextView = view.label
-    }
-
-    class Callback(
-        private val old: List<String>,
-        private val new: List<String>
-    ) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            old[oldItemPosition] == new[newItemPosition]
-
-        override fun getOldListSize() = old.size
-
-        override fun getNewListSize() = new.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            areItemsTheSame(oldItemPosition, newItemPosition)
+    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        parent.inflate(R.layout.key_gear_item_detail_coverage_row)
+    ) {
+        private val binding by viewBinding(KeyGearItemDetailCoverageRowBinding::bind)
+        fun bind(item: String, isExceptions: Boolean) {
+            binding.apply {
+                label.text = item
+                label.setCompoundDrawablesWithIntrinsicBounds(
+                    label.context.compatDrawable(
+                        if (isExceptions) {
+                            R.drawable.ic_cross
+                        } else {
+                            R.drawable.ic_filled_checkmark_small
+                        }
+                    ), null, null, null
+                )
+            }
+        }
     }
 }

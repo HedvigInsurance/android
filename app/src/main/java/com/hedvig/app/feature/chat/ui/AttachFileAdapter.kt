@@ -20,16 +20,16 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.app.R
+import com.hedvig.app.databinding.AttachFileImageItemBinding
+import com.hedvig.app.databinding.CameraAndMiscItemBinding
 import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.attach_file_image_item.view.*
-import kotlinx.android.synthetic.main.camera_and_misc_item.view.*
-import kotlinx.android.synthetic.main.loading_spinner.view.*
 
 class AttachFileAdapter(
     private val context: Context,
@@ -172,10 +172,11 @@ class AttachFileAdapter(
                 false
             )
         ) {
-            val cameraButton: FrameLayout = itemView.cameraButton
-            val cameraIcon: ImageView = itemView.cameraIcon
-            val loadingSpinner: ProgressBar = itemView.loadingSpinner
-            val miscButton: FrameLayout = itemView.miscButton
+            private val binding by viewBinding(CameraAndMiscItemBinding::bind)
+            val cameraButton: FrameLayout = binding.cameraButton
+            val cameraIcon: ImageView = binding.cameraIcon
+            val loadingSpinner: ProgressBar = binding.loadingSpinner.root
+            val miscButton: FrameLayout = binding.miscButton
         }
 
         class ImageViewHolder(parent: ViewGroup) : ViewHolder(
@@ -185,10 +186,11 @@ class AttachFileAdapter(
                 false
             )
         ) {
-            val attachFileImage: ImageView = itemView.attachFileImage
-            val attachFileImageContainer: FrameLayout = itemView.attachFileContainer
-            val attachFileSendButton: Button = itemView.attachFileSendButton
-            val loadingSpinner: ProgressBar = itemView.loadingSpinner
+            private val binding by viewBinding(AttachFileImageItemBinding::bind)
+            val attachFileImage: ImageView = binding.attachFileImage
+            val attachFileImageContainer: FrameLayout = binding.attachFileContainer
+            val attachFileSendButton: Button = binding.attachFileSendButton
+            val loadingSpinner: ProgressBar = binding.loadSpinner.root
         }
     }
 

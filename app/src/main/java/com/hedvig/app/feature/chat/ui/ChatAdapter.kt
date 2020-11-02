@@ -20,18 +20,19 @@ import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ChatMessageFileUploadBinding
+import com.hedvig.app.databinding.ChatMessageHedvigBinding
+import com.hedvig.app.databinding.ChatMessageUserBinding
+import com.hedvig.app.databinding.ChatMessageUserGiphyBinding
+import com.hedvig.app.databinding.ChatMessageUserImageBinding
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.chat_message_file_upload.view.*
-import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
-import kotlinx.android.synthetic.main.chat_message_user.view.*
-import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
-import kotlinx.android.synthetic.main.chat_message_user_image.view.*
 
 class ChatAdapter(
     private val context: Context,
@@ -233,7 +234,8 @@ class ChatAdapter(
             ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val message: TextView = view.hedvigMessage
+        private val binding by viewBinding(ChatMessageHedvigBinding::bind)
+        val message: TextView = binding.hedvigMessage
 
         fun reset() {
             message.remove()
@@ -250,7 +252,8 @@ class ChatAdapter(
     }
 
     inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.messageImage
+        private val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
+        val image: ImageView = binding.messageImage
 
         fun bind(url: String?) {
             Glide
@@ -263,9 +266,10 @@ class ChatAdapter(
     }
 
     inner class UserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val message: TextView = view.userMessage
-        val edit: ImageButton = view.editMessage
-        val status: TextView = view.statusMessage
+        private val binding by viewBinding(ChatMessageUserBinding::bind)
+        val message: TextView = binding.userMessage
+        val edit: ImageButton = binding.editMessage
+        val status: TextView = binding.statusMessage
 
         fun bind(text: String?, position: Int, statusMessage: String?, editAllowed: Boolean) {
             message.text = text
@@ -291,7 +295,8 @@ class ChatAdapter(
     }
 
     inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.messageImage
+        private val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
+        val image: ImageView = binding.messageImage
 
         fun bind(url: String?) {
             Glide
@@ -304,7 +309,8 @@ class ChatAdapter(
     }
 
     inner class ImageUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.uploadedImage
+        private val binding by viewBinding(ChatMessageUserImageBinding::bind)
+        val image: ImageView = binding.uploadedImage
 
         fun bind() {
             image.remove()
@@ -312,7 +318,8 @@ class ChatAdapter(
     }
 
     inner class ImageUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.uploadedImage
+        private val binding by viewBinding(ChatMessageUserImageBinding::bind)
+        val image: ImageView = binding.uploadedImage
 
         fun bind(url: String?) {
             Glide
@@ -325,7 +332,8 @@ class ChatAdapter(
     }
 
     inner class FileUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val label: TextView = view.fileUploadLabel
+        private val binding by viewBinding(ChatMessageFileUploadBinding::bind)
+        val label: TextView = binding.fileUploadLabel
 
         fun bind(url: String?) {
             val asUri = Uri.parse(url)

@@ -76,8 +76,8 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     private fun showCharityPicker(options: List<ProfileQuery.CashbackOption>) {
         selectCharityContainer.show()
         cashbackOptions.adapter =
-            CharityAdapter(options, this) { id ->
-                profileViewModel.selectCashback(id)
+            CharityAdapter(this) { id -> profileViewModel.selectCashback(id) }.also {
+                it.submitList(options)
             }
         selectCharityHowDoesItWorkButton.setHapticClickListener {
             tracker.howDoesItWorkClick()

@@ -6,18 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.CashbackOptionBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.cashback_option.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class CharityAdapter(
-    val items: List<ProfileQuery.CashbackOption>,
     val context: Context,
     val clickListener: (String) -> Unit
-) : RecyclerView.Adapter<CharityAdapter.CashbackOptionViewHolder>() {
-    override fun getItemCount(): Int = items.size
+) : ListAdapter<ProfileQuery.CashbackOption, CharityAdapter.CashbackOptionViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CashbackOptionViewHolder =
         CashbackOptionViewHolder(
@@ -29,7 +30,7 @@ class CharityAdapter(
         )
 
     override fun onBindViewHolder(holder: CashbackOptionViewHolder, position: Int) {
-        val item = items[position]
+        val item = getItem(position)
         holder.title.text = item.name
         holder.paragraph.text = item.paragraph
 
@@ -43,8 +44,9 @@ class CharityAdapter(
     }
 
     class CashbackOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.cashbackOptionTitle
-        val paragraph: TextView = view.cashbackOptionParagraph
-        val button: Button = view.cashbackSelect
+        private val binding by viewBinding(CashbackOptionBinding::bind)
+        val title: TextView = binding.cashbackOptionTitle
+        val paragraph: TextView = binding.cashbackOptionParagraph
+        val button: Button = binding.cashbackSelect
     }
 }
