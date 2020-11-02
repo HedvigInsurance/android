@@ -17,11 +17,14 @@
         <item name="android:textColor">@color/hedvig_text_button_state</item>
     </style>
 
-    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" >
+        <item name="strokeColor">?colorPrimary</item>
+    </style>
 
     <style name="Hedvig.Button.Outlined.Large">
         <item name="android:padding">@dimen/base_margin_double</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
+        <item name="strokeColor">?colorPrimary</item>
     </style>
 
 </resources>

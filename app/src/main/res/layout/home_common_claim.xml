@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/base_margin"
+    android:theme="@style/ThemeOverlay.Hedvig.LoggedInCardView"
     tools:layout_margin="@dimen/base_margin"
     tools:layout_width="160dp">
 

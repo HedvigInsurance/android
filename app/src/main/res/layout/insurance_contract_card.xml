@@ -12,6 +12,7 @@
         android:layout_marginTop="@dimen/base_margin_half"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_half"
+        android:id="@+id/card"
         android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

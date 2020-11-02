@@ -26,15 +26,19 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
                     (adapter as? DocumentsAdapter)?.submitList(
                         listOfNotNull(
                             data.currentAgreement.asAgreementCore?.certificateUrl?.let {
-                                DocumentsModel(
-                                    getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
-                                    it
-                                )
-                            },
                             DocumentsModel(
-                                getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
-                                data.termsAndConditions.url
+                                getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+                                getString(R.string.insurance_details_view_documents_full_terms_subtitle),
+                                it
                             )
+
+                        },
+                        DocumentsModel(
+                            getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+                            getString(R.string.insurance_details_view_documents_insurance_letter_subtitle),
+                            data.termsAndConditions.url
+                            )
+
                         )
                     )
                 }

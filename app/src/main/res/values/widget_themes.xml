@@ -81,4 +81,12 @@
         <item name="actionMenuTextColor">?colorError</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.LoggedInCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/logged_in_card_elevation</item>
+        <item name="cardBackgroundColor">?colorSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
+        <item name="android:colorBackground">?colorSurface</item>
+    </style>
 </resources>
