@@ -14,6 +14,8 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
         KRecyclerView({ withId(R.id.insuranceRecycler) }, {
             itemType(::ContractCard)
             itemType(::Error)
+            itemType(::TerminatedContractsHeader)
+            itemType(::TerminatedContracts)
         })
 
     class ContractCard(parent: Matcher<View>) : KRecyclerItem<ContractCard>(parent) {
@@ -32,4 +34,11 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
     class Error(parent: Matcher<View>) : KRecyclerItem<Error>(parent) {
         val retry = KButton(parent) { withId(R.id.retry) }
     }
+
+    class TerminatedContractsHeader(parent: Matcher<View>) :
+        KRecyclerItem<TerminatedContractsHeader>(parent) {
+        val text = KTextView { withMatcher(parent) }
+    }
+
+    class TerminatedContracts(parent: Matcher<View>) : KRecyclerItem<TerminatedContracts>(parent)
 }

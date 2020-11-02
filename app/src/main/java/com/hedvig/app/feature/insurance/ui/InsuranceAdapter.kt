@@ -39,6 +39,10 @@ class InsuranceAdapter(
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.insurance_error -> ViewHolder.Error(parent)
+        R.layout.insurance_terminated_contracts_header -> ViewHolder.TerminatedContractsHeader(
+            parent
+        )
+        R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -66,6 +70,8 @@ class InsuranceAdapter(
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.insurance_header
+        InsuranceModel.TerminatedContractsHeader -> R.layout.insurance_terminated_contracts_header
+        InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.insurance_error
     }
 
@@ -147,6 +153,12 @@ class InsuranceAdapter(
                 }
             }
         }
+
+        class TerminatedContractsHeader(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.insurance_terminated_contracts_header))
+
+        class TerminatedContracts(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.insurance_terminated_contracts))
     }
 
     companion object {
@@ -168,4 +180,7 @@ sealed class InsuranceModel {
     ) : InsuranceModel()
 
     object Error : InsuranceModel()
+
+    object TerminatedContractsHeader : InsuranceModel()
+    object TerminatedContracts : InsuranceModel()
 }
