@@ -137,6 +137,21 @@ class InsuranceDataBuilder(
                                             svgUrl = "/app-content-service/fire.svg"
                                         )
                                     )
+                                ),
+                                covered = listOf(
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered"
+                                ),
+                                exceptions = listOf(
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions"
                                 )
                             )
                         )
@@ -156,6 +171,21 @@ class InsuranceDataBuilder(
                                             svgUrl = "/app-content-service/fire.svg"
                                         )
                                     )
+                                ),
+                                covered = listOf(
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered"
+                                ),
+                                exceptions = listOf(
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions"
                                 )
                             )
                         )
@@ -175,6 +205,21 @@ class InsuranceDataBuilder(
                                             svgUrl = "/app-content-service/fire.svg"
                                         )
                                     )
+                                ),
+                                covered = listOf(
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered"
+                                ),
+                                exceptions = listOf(
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions"
                                 )
                             )
                         )
@@ -194,6 +239,21 @@ class InsuranceDataBuilder(
                                             svgUrl = "/app-content-service/fire.svg"
                                         )
                                     )
+                                ),
+                                covered = listOf(
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered"
+                                ),
+                                exceptions = listOf(
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions"
                                 )
                             )
                         )
@@ -213,6 +273,21 @@ class InsuranceDataBuilder(
                                             svgUrl = "/app-content-service/fire.svg"
                                         )
                                     )
+                                ),
+                                covered = listOf(
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered",
+                                    "Covered"
+                                ),
+                                exceptions = listOf(
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions",
+                                    "Exceptions"
                                 )
                             )
                         )

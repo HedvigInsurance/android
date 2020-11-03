@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="@dimen/base_margin_quintuple"
+    android:gravity="center_horizontal"
     tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
 
     <ImageView
@@ -16,32 +17,22 @@
         android:contentDescription="@null"
         app:srcCompat="@drawable/bottom_sheet_handle" />
 
-    <LinearLayout
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_width="@dimen/peril_bottom_sheet_icon_size"
+        android:layout_height="@dimen/peril_bottom_sheet_icon_size"
+        android:contentDescription="@null"
+        tools:src="@drawable/ic_active" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:orientation="horizontal"
-        tools:ignore="UseCompoundDrawables">
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@null"
-            tools:src="@drawable/ic_active" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:textAppearance="?textAppearanceHeadline5"
-            tools:text="Eldsvåda" />
-
-    </LinearLayout>
+        android:textAppearance="?textAppearanceHeadline5"
+        tools:text="Eldsvåda" />
 
     <TextView
         android:id="@+id/body"
@@ -50,7 +41,23 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_triple"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:textAlignment="center"
         android:textAppearance="?textAppearanceBody1"
         tools:text="Vi hjälper dig med reparation, ersättningsboende och sanering om det skulle börja brinna i din villa eller någon annan försäkrad byggnad. Och om ditt hus blir totalskadat ersätter vi dig med en likadan eller motsvarande villa." />
+
+    <ImageView
+        android:id="@+id/moreInfoIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        app:srcCompat="@drawable/ic_chevron_up"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceSubtitle2"
+        android:textSize="12sp"
+        android:text="TODO Read More" />
 
 </LinearLayout>

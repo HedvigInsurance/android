@@ -112,8 +112,10 @@ android {
 
 dependencies {
     implementation project(':apollo')
+    implementation 'androidx.wear:wear:1.0.0'
 
     androidTestImplementation project(':testdata')
+    compileOnly 'com.google.android.wearable:wearable:2.6.0'
     debugImplementation project(':testdata')
     stagingImplementation project(':testdata')
 
