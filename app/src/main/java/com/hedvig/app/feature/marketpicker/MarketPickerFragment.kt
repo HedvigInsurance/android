@@ -34,10 +34,12 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
             var firstLayout = true
             viewModel.data.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
-                    items = listOf(
-                        Model.Button,
-                        Model.LanguageModel(data.language),
-                        Model.MarketModel(data.market)
+                    submitList(
+                        listOf(
+                            Model.Button,
+                            Model.LanguageModel(data.language),
+                            Model.MarketModel(data.market)
+                        )
                     )
                 }
                 // Need too do this else the recyclerview might not show until user scrolls

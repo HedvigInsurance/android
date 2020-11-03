@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.PerilDetailBinding
@@ -29,13 +30,13 @@ class CoverageAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CoverageModel.Header -> R.layout.contract_detail_coverage_header
         is CoverageModel.Peril -> R.layout.peril_detail
-        is CoverageModel.InsurableLimit -> R.layout.contract_detail_row
+        is CoverageModel.InsurableLimit -> R.layout.contract_coverage_detail_row
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
         R.layout.peril_detail -> ViewHolder.Peril(parent)
-        R.layout.contract_detail_row -> ViewHolder.InsurableLimit(parent)
+        R.layout.contract_coverage_detail_row -> ViewHolder.InsurableLimit(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -91,7 +92,10 @@ class CoverageAdapter(
                     TypeOfContract.NO_HOME_CONTENT_RENT,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                    TypeOfContract.DK_HOME_CONTENT -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
+                    TypeOfContract.DK_HOME_CONTENT_OWN,
+                    TypeOfContract.DK_HOME_CONTENT_RENT,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT, -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
                     TypeOfContract.NO_TRAVEL,
                     TypeOfContract.NO_TRAVEL_YOUTH -> context.getString(R.string.INSURANCE_TYPE_TRAVEL_DEFINITE)
                     TypeOfContract.UNKNOWN__ -> ""
@@ -137,8 +141,8 @@ class CoverageAdapter(
         }
 
         class InsurableLimit(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_row)) {
-            private val binding by viewBinding(ContractDetailRowBinding::bind)
+            ViewHolder(parent.inflate(R.layout.contract_coverage_detail_row)) {
+            private val binding by viewBinding(ContractCoverageDetailRowBinding::bind)
             override fun bind(
                 data: CoverageModel,
                 requestBuilder: RequestBuilder<PictureDrawable>,
@@ -147,9 +151,12 @@ class CoverageAdapter(
                 if (data !is CoverageModel.InsurableLimit) {
                     return invalid(data)
                 }
-
                 label.text = data.inner.label
                 content.text = data.inner.limit
+                info.setHapticClickListener {
+                    InsurableLimitsBottomSheet.newInstance(data.inner)
+                        .show(fragmentManager, InsurableLimitsBottomSheet.TAG)
+                }
             }
         }
     }

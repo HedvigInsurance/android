@@ -14,6 +14,7 @@ import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format
@@ -96,9 +97,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             invites.adapter = ReferralsAdapter({
-                (invites.adapter as? ReferralsAdapter)?.setLoading()
                 referralsViewModel.load()
-            }, tracker)
+            }, tracker).also {
+                it.submitList(LOADING_STATE)
+            }
 
             swipeToRefresh.setOnRefreshListener {
                 referralsViewModel.setRefreshing(true)
@@ -111,9 +113,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
             referralsViewModel.data.observe(viewLifecycleOwner) { data ->
                 if (data.isFailure) {
-                    (invites.adapter as? ReferralsAdapter)?.items = listOf(
-                        ReferralsModel.Title,
-                        ReferralsModel.Error
+                    (invites.adapter as? ReferralsAdapter)?.submitList(
+                        listOf(
+                            ReferralsModel.Title,
+                            ReferralsModel.Error
+                        )
                     )
                 }
 
@@ -154,10 +158,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 }
 
                 if (successData.referralInformation.invitations.isEmpty() && successData.referralInformation.referredBy == null) {
-                    (invites.adapter as? ReferralsAdapter)?.items = listOf(
-                        ReferralsModel.Title,
-                        ReferralsModel.Header.LoadedEmptyHeader(successData),
-                        ReferralsModel.Code.LoadedCode(successData)
+                    (invites.adapter as? ReferralsAdapter)?.submitList(
+                        listOf(
+                            ReferralsModel.Title,
+                            ReferralsModel.Header.LoadedEmptyHeader(successData),
+                            ReferralsModel.Code.LoadedCode(successData)
+                        )
                     )
                     return@observe
                 }
@@ -185,7 +191,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                     items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
                 }
 
-                (invites.adapter as? ReferralsAdapter)?.items = items
+                (invites.adapter as? ReferralsAdapter)?.submitList(items)
 
             }
         }

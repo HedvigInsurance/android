@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
@@ -16,7 +16,7 @@ import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -25,14 +25,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
     private val retry: () -> Unit
-) :
-    RecyclerView.Adapter<InsuranceAdapter.ViewHolder>() {
-    var items: List<InsuranceModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(GenericDiffUtilCallback(field, value))
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
@@ -44,17 +37,15 @@ class InsuranceAdapter(
         }
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.ContractViewHolder -> {
-                (items[position] as? InsuranceModel.Contract)?.let {
+                (getItem(position) as? InsuranceModel.Contract)?.let {
                     holder.bind(it.inner)
                 }
             }
             is ViewHolder.UpsellViewHolder -> {
-                (items[position] as? InsuranceModel.Upsell)?.let { holder.bind(it) }
+                (getItem(position) as? InsuranceModel.Upsell)?.let { holder.bind(it) }
             }
             is ViewHolder.Error -> {
                 holder.bind(retry, tracker)
@@ -62,7 +53,7 @@ class InsuranceAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
         is InsuranceModel.Upsell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.insurance_header

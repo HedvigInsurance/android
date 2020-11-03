@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.fragment.ReferralFragment
@@ -19,6 +19,7 @@ import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedColorLerp
@@ -39,24 +40,9 @@ import org.javamoney.moneta.Money
 class ReferralsAdapter(
     private val reload: () -> Unit,
     private val tracker: ReferralsTracker
-) : RecyclerView.Adapter<ReferralsAdapter.ViewHolder>() {
-    var items: List<ReferralsModel> = LOADING_STATE
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                ReferralsDiffCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-    fun setLoading() {
-        items = LOADING_STATE
-    }
-
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         ReferralsModel.Title -> R.layout.referrals_title
         is ReferralsModel.Header -> R.layout.referrals_header
         is ReferralsModel.Code -> R.layout.referrals_code
@@ -75,10 +61,8 @@ class ReferralsAdapter(
         else -> throw Error("Invalid viewType")
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], reload, tracker)
+        holder.bind(getItem(position), reload, tracker)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -382,7 +366,6 @@ class ReferralsAdapter(
                     }
                 }
             }
-
             companion object {
                 private val ReferralFragment.name: String?
                     get() {
@@ -411,7 +394,7 @@ class ReferralsAdapter(
     }
 
     companion object {
-        private val LOADING_STATE = listOf(
+        val LOADING_STATE = listOf(
             ReferralsModel.Title,
             ReferralsModel.Header.LoadingHeader,
             ReferralsModel.Code.LoadingCode,

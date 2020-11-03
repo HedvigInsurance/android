@@ -3,16 +3,13 @@ package com.hedvig.app.feature.marketpicker
 import android.app.Dialog
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.LanguageRecyclerItemBinding
 import com.hedvig.app.databinding.PickerHeaderBinding
-import com.hedvig.app.databinding.PickerItemLayoutBinding
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
@@ -20,18 +17,9 @@ class MarketPickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) : RecyclerView.Adapter<MarketPickerBottomSheetAdapter.ViewHolder>() {
-    var items: List<MarketAdapterModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                GenericDiffUtilCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<MarketAdapterModel, MarketPickerBottomSheetAdapter.ViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.picker_header -> ViewHolder.Header(parent)
@@ -39,16 +27,14 @@ class MarketPickerBottomSheetAdapter(
         else -> throw Error("Invalid view type")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         MarketAdapterModel.Header -> R.layout.picker_header
         is MarketAdapterModel.MarketList -> R.layout.language_recycler_item
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel, tracker, dialog)
+        holder.bind(getItem(position), viewModel, tracker, dialog)
     }
-
-    override fun getItemCount() = items.size
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
@@ -76,9 +62,11 @@ class MarketPickerBottomSheetAdapter(
                 }
 
                 binding.root.adapter =
-                    MarketItemAdapter(viewModel, tracker, dialog).also {
-                        it.items = item.markets
-                    }
+                    MarketItemAdapter(
+                        viewModel,
+                        tracker,
+                        dialog
+                    ).also { it.submitList(item.markets) }
             }
         }
 
@@ -90,7 +78,7 @@ class MarketPickerBottomSheetAdapter(
                 dialog: Dialog?
             ) {
                 val binding by viewBinding(PickerHeaderBinding::bind)
-                binding.header.text = binding.header.context.getText(R.string.market_picker_modal_title)
+                binding.header.setText(R.string.market_picker_modal_title)
             }
         }
     }

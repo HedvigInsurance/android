@@ -24,7 +24,7 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
-        val item = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position) ?: return
+        val item = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position) ?: return
 
         if (item is HomeModel.CommonClaim) {
             val spanIndex =
@@ -44,7 +44,7 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         }
 
         if (item is HomeModel.ConnectPayin) {
-            val prev = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position - 1) ?: return
+            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
             if (prev is HomeModel.ConnectPayin) {
                 outRect.top = BASE_MARGIN
             }
@@ -55,7 +55,7 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         }
 
         if (item is HomeModel.BigText) {
-            val prev = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position - 1) ?: return
+            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
             if (prev is HomeModel.PSA) {
                 outRect.top = BASE_MARGIN_DOUBLE
             }
@@ -72,9 +72,9 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         val adapter = (parent.adapter as? HomeAdapter)
         parent.children.forEach { view ->
             val position = parent.getChildAdapterPosition(view)
-            val item = adapter?.items?.getOrNull(position) ?: return
+            val item = adapter?.currentList?.getOrNull(position) ?: return
 
-            val prev = (parent.adapter as? HomeAdapter)?.items?.getOrNull(position - 1) ?: return
+            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
             if (prev is HomeModel.PSA && item is HomeModel.PSA) {
                 divider?.draw(c)
             }

@@ -111,7 +111,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
     fun bind(data: KeyGearItemsQuery.Data) = with(binding) {
         binding.loadingSpinner.root.remove()
-        (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItems
+        (items.adapter as? KeyGearItemsAdapter)?.submitList(data.keyGearItems)
         items.show()
 
         if (data.keyGearItems.isEmpty() || !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }) {

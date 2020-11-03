@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -16,6 +14,7 @@ import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityKeyGearItemDetailBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
@@ -27,16 +26,16 @@ import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.android.synthetic.main.activity_key_gear_item_detail.*
-import kotlinx.android.synthetic.main.key_gear_item_detail_photos_section.view.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
     private val model: KeyGearItemDetailViewModel by viewModel()
+    private val binding by viewBinding(ActivityKeyGearItemDetailBinding::bind)
     private val tracker: KeyGearTracker by inject()
 
     private lateinit var photosBinder: PhotosBinder
@@ -52,22 +51,24 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         supportPostponeEnterTransition()
 
-        root.setEdgeToEdgeSystemUiFlags(true)
-        initializeToolbar()
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
+            initializeToolbar()
 
-        photosBinder = PhotosBinder(
-            photosSection as FrameLayout,
-            intent.getStringExtra(FIRST_PHOTO_URL),
-            intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
-        ) { supportStartPostponedEnterTransition() }
-        valuationBinder = ValuationBinder(valuationSection as LinearLayout, tracker)
-        coverageBinder = CoverageBinder(coverageSection as LinearLayout)
-        nameBinder = NameBinder(nameSection as LinearLayout, model, tracker)
-        receiptBinder =
-            ReceiptBinder(receiptSection as LinearLayout, supportFragmentManager, tracker)
+            photosBinder = PhotosBinder(
+                photosSection,
+                intent.getStringExtra(FIRST_PHOTO_URL),
+                intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
+            ) { supportStartPostponedEnterTransition() }
+            valuationBinder = ValuationBinder(valuationSection, tracker)
+            coverageBinder = CoverageBinder(coverageSection)
+            nameBinder = NameBinder(nameSection, model, tracker)
+            receiptBinder =
+                ReceiptBinder(receiptSection, supportFragmentManager, tracker)
 
-        scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
         }
 
         model.data.observe(this) { data ->
@@ -100,36 +101,38 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun initializeToolbar() {
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        val backDrawable = compatDrawable(R.drawable.ic_back)
-        backDrawable?.setTint(compatColor(R.color.white))
-        toolbar.navigationIcon = backDrawable
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-
-        scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
-            val positionInSpan =
-                scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
-            val percentage = positionInSpan / toolbar.height
-
-            // Avoid some unnecessary background color updates
-            if (percentage < -1 || percentage > 2) {
-                return@setOnScrollChangeListener
+        binding.apply {
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
 
-            toolbar.setBackgroundColor(
-                boundedColorLerp(
-                    Color.TRANSPARENT,
-                    compatColor(R.color.translucent_tool_bar),
-                    percentage
+            setSupportActionBar(toolbar)
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+            val backDrawable = compatDrawable(R.drawable.ic_back)
+            backDrawable?.setTint(compatColor(R.color.white))
+            toolbar.navigationIcon = backDrawable
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+
+            scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+                val positionInSpan =
+                    scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
+                val percentage = positionInSpan / toolbar.height
+
+                // Avoid some unnecessary background color updates
+                if (percentage < -1 || percentage > 2) {
+                    return@setOnScrollChangeListener
+                }
+
+                toolbar.setBackgroundColor(
+                    boundedColorLerp(
+                        Color.TRANSPARENT,
+                        compatColor(R.color.translucent_tool_bar),
+                        percentage
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -147,16 +150,18 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
     }
 
     private fun revealWithAnimation() {
-        postPhotosSections.show()
-        val initialTranslation = postPhotosSections.translationY
+        binding.apply {
+            postPhotosSections.show()
+            val initialTranslation = postPhotosSections.translationY
 
-        postPhotosSections
-            .spring(SpringAnimation.TRANSLATION_Y)
-            .addUpdateListener { _, value, _ ->
-                val progress = boundedProgress(initialTranslation, 0f, value)
-                postPhotosSections.alpha = progress
-            }
-            .animateToFinalPosition(0f)
+            postPhotosSections
+                .spring(SpringAnimation.TRANSLATION_Y)
+                .addUpdateListener { _, value, _ ->
+                    val progress = boundedProgress(initialTranslation, 0f, value)
+                    postPhotosSections.alpha = progress
+                }
+                .animateToFinalPosition(0f)
+        }
     }
 
     companion object {

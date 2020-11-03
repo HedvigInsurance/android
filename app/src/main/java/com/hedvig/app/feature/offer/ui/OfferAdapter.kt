@@ -4,13 +4,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
+import com.hedvig.app.databinding.AdditionalBuildingsRowBinding
+import com.hedvig.app.databinding.OfferFactAreaBinding
+import com.hedvig.app.databinding.OfferHeaderBinding
+import com.hedvig.app.databinding.OfferPerilAreaBinding
+import com.hedvig.app.databinding.OfferSwitchBinding
+import com.hedvig.app.databinding.OfferTermsAreaBinding
 import com.hedvig.app.feature.offer.OfferRedeemCodeDialog
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
@@ -18,6 +24,7 @@ import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.getStringId
@@ -27,33 +34,16 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
 import e
-import kotlinx.android.synthetic.main.additional_buildings_row.view.*
-import kotlinx.android.synthetic.main.offer_fact_area.view.*
-import kotlinx.android.synthetic.main.offer_header.view.*
-import kotlinx.android.synthetic.main.offer_header.view.title
-import kotlinx.android.synthetic.main.offer_peril_area.view.*
-import kotlinx.android.synthetic.main.offer_switch.view.*
-import kotlinx.android.synthetic.main.offer_terms_area.view.*
 import java.time.LocalDate
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
     private val removeDiscount: () -> Unit
-) : RecyclerView.Adapter<OfferAdapter.ViewHolder>() {
-    var items: List<OfferModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                OfferDiffCallback(
-                    field, value
-                )
-            )
-
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(parent)
@@ -66,7 +56,7 @@ class OfferAdapter(
         else -> throw Error("Invalid viewType: $viewType")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         OfferModel.Info -> R.layout.offer_info_area
         is OfferModel.Facts -> R.layout.offer_fact_area
@@ -76,10 +66,8 @@ class OfferAdapter(
         OfferModel.Footer -> R.layout.offer_footer
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, tracker, removeDiscount)
+        holder.bind(getItem(position), fragmentManager, tracker, removeDiscount)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -91,15 +79,7 @@ class OfferAdapter(
         )
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_header)) {
-            private val title = itemView.title
-            private val premium = itemView.premium
-            private val premiumContainer = itemView.premiumContainer
-            private val grossPremium = itemView.grossPremium
-            private val startDateContainer = itemView.startDateContainer
-            private val startDate = itemView.startDate
-            private val discountButton = itemView.discountButton
-            private val campaign = itemView.campaign
-            private val sign = itemView.sign
+            private val binding by viewBinding(OfferHeaderBinding::bind)
 
             override fun bind(
                 data: OfferModel,
@@ -108,133 +88,134 @@ class OfferAdapter(
                 removeDiscount: () -> Unit
             ) {
                 if (data is OfferModel.Header) {
-                    data.inner.lastQuoteOfMember.asCompleteQuote?.let { quote ->
-                        title.text = title.resources.getString(quote.typeOfContract.getStringId())
-                        premium.text =
-                            quote.insuranceCost.fragments.costFragment.monthlyNet.fragments.monetaryAmountFragment.toMonetaryAmount()
-                                .format(premium.context)
-                        val gross =
-                            quote.insuranceCost.fragments.costFragment.monthlyGross.fragments.monetaryAmountFragment.toMonetaryAmount()
-                        if (gross.isZero) {
-                            grossPremium.setStrikethrough(true)
-                            grossPremium.text = gross.format(grossPremium.context)
-                        }
-
-                        startDateContainer.setHapticClickListener {
-                            tracker.chooseStartDate()
-                            ChangeDateBottomSheet.newInstance(
-                                ChangeDateBottomSheetData(
-                                    quote.id,
-                                    quote.currentInsurer?.switchable == true
-                                )
-                            )
-                                .show(
-                                    fragmentManager,
-                                    ChangeDateBottomSheet.TAG
-                                )
-                        }
-
-                        val sd = quote.startDate
-
-                        if (sd != null) {
-                            if (sd == LocalDate.now()) {
-                                startDate.setText(R.string.START_DATE_TODAY)
-                            } else {
-                                startDate.text = sd.toString()
-                            }
-                        } else {
-                            if (quote.currentInsurer?.switchable == true) {
-                                startDate.setText(R.string.ACTIVATE_INSURANCE_END_BTN)
-                            } else {
-                                startDate.setText(R.string.START_DATE_TODAY)
-                            }
-                        }
-
-                        data.inner.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.let { incentive ->
-                            discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
-
-                            incentive.asFreeMonths?.let { freeMonths ->
-                                campaign.text = campaign.resources.getString(
-                                    R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
-                                    freeMonths.quantity
-                                )
-                                campaign.show()
-                                premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                    binding.apply {
+                        data.inner.lastQuoteOfMember.asCompleteQuote?.let { quote ->
+                            title.text =
+                                title.resources.getString(quote.typeOfContract.getStringId())
+                            premium.text =
+                                quote.insuranceCost.fragments.costFragment.monthlyNet.fragments.monetaryAmountFragment.toMonetaryAmount()
+                                    .format(premium.context)
+                            val gross =
+                                quote.insuranceCost.fragments.costFragment.monthlyGross.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            if (gross.isZero) {
+                                grossPremium.setStrikethrough(true)
+                                grossPremium.text = gross.format(grossPremium.context)
                             }
 
-                            incentive.asMonthlyCostDeduction?.let {
-                                campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
-                                campaign.show()
-                                premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
-                            }
-
-                            incentive.asPercentageDiscountMonths?.let { pdm ->
-                                campaign.text = if (pdm.pdmQuantity == 1) {
-                                    campaign.resources.getString(
-                                        R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                        pdm.percentageDiscount.toInt()
+                            startDateContainer.setHapticClickListener {
+                                tracker.chooseStartDate()
+                                ChangeDateBottomSheet.newInstance(
+                                    ChangeDateBottomSheetData(
+                                        quote.id,
+                                        quote.currentInsurer?.switchable == true
                                     )
-                                } else {
-                                    campaign.resources.getString(
-                                        R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                        pdm.percentageDiscount.toInt(),
-                                        pdm.pdmQuantity
-                                    )
-                                }
-                                campaign.show()
-                                premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
-                            }
-
-                            discountButton.setHapticClickListener {
-                                tracker.removeDiscount()
-                                discountButton.context.showAlert(
-                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
-                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
-                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
-                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
-                                    {
-                                        removeDiscount()
-                                    })
-                            }
-
-                            // Remove campaign views if campaign type is unknown
-                            if (
-                                incentive.asFreeMonths == null
-                                && incentive.asMonthlyCostDeduction == null
-                                && incentive.asNoDiscount == null
-                                && incentive.asPercentageDiscountMonths == null
-                            ) {
-                                premiumContainer.background = null
-                                campaign.remove()
-                            }
-
-                        } ?: run {
-                            discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                            premiumContainer.background = null
-                            campaign.remove()
-                            discountButton.setHapticClickListener {
-                                tracker.addDiscount()
-                                OfferRedeemCodeDialog.newInstance()
+                                )
                                     .show(
                                         fragmentManager,
-                                        OfferRedeemCodeDialog.TAG
+                                        ChangeDateBottomSheet.TAG
                                     )
                             }
+
+                            val sd = quote.startDate
+
+                            if (sd != null) {
+                                if (sd == LocalDate.now()) {
+                                    startDate.setText(R.string.START_DATE_TODAY)
+                                } else {
+                                    startDate.text = sd.toString()
+                                }
+                            } else {
+                                if (quote.currentInsurer?.switchable == true) {
+                                    startDate.setText(R.string.ACTIVATE_INSURANCE_END_BTN)
+                                } else {
+                                    startDate.setText(R.string.START_DATE_TODAY)
+                                }
+                            }
+
+                            data.inner.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.let { incentive ->
+                                discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+
+                                incentive.asFreeMonths?.let { freeMonths ->
+                                    campaign.text = campaign.resources.getString(
+                                        R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
+                                        freeMonths.quantity
+                                    )
+                                    campaign.show()
+                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                                }
+
+                                incentive.asMonthlyCostDeduction?.let {
+                                    campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
+                                    campaign.show()
+                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                                }
+
+                                incentive.asPercentageDiscountMonths?.let { pdm ->
+                                    campaign.text = if (pdm.pdmQuantity == 1) {
+                                        campaign.resources.getString(
+                                            R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
+                                            pdm.percentageDiscount.toInt()
+                                        )
+                                    } else {
+                                        campaign.resources.getString(
+                                            R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
+                                            pdm.percentageDiscount.toInt(),
+                                            pdm.pdmQuantity
+                                        )
+                                    }
+                                    campaign.show()
+                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
+                                }
+
+                                discountButton.setHapticClickListener {
+                                    tracker.removeDiscount()
+                                    discountButton.context.showAlert(
+                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
+                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
+                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
+                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                                        {
+                                            removeDiscount()
+                                        })
+                                }
+
+                                // Remove campaign views if campaign type is unknown
+                                if (
+                                    incentive.asFreeMonths == null
+                                    && incentive.asMonthlyCostDeduction == null
+                                    && incentive.asNoDiscount == null
+                                    && incentive.asPercentageDiscountMonths == null
+                                ) {
+                                    premiumContainer.background = null
+                                    campaign.remove()
+                                }
+
+                            } ?: run {
+                                discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+                                premiumContainer.background = null
+                                campaign.remove()
+                                discountButton.setHapticClickListener {
+                                    tracker.addDiscount()
+                                    OfferRedeemCodeDialog.newInstance()
+                                        .show(
+                                            fragmentManager,
+                                            OfferRedeemCodeDialog.TAG
+                                        )
+                                }
+                            }
                         }
-                    }
 
-                    sign.setHapticClickListener {
-                        tracker.floatingSign()
-                        OfferSignDialog.newInstance().show(
-                            fragmentManager,
-                            OfferSignDialog.TAG
-                        )
+                        sign.setHapticClickListener {
+                            tracker.floatingSign()
+                            OfferSignDialog.newInstance().show(
+                                fragmentManager,
+                                OfferSignDialog.TAG
+                            )
+                        }
+                        return
                     }
-
-                    return
+                    e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
                 }
-
-                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
             }
         }
 
@@ -248,24 +229,10 @@ class OfferAdapter(
         }
 
         class Facts(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_fact_area)) {
-            private val expandandableContentView = itemView.expandableContentView
-            private val livingSpace = itemView.livingSpace
-            private val coinsured = itemView.coinsured
-            private val offerExpirationDate = itemView.offerExpirationDate
-            private val ancillarySpaceLabel = itemView.ancillarySpaceLabel
-            private val ancillarySpace = itemView.ancillarySpace
-            private val yearOfConstructionLabel = itemView.yearOfConstructionLabel
-            private val yearOfConstruction = itemView.yearOfConstruction
-            private val bathroomsLabel = itemView.bathroomsLabel
-            private val bathrooms = itemView.bathrooms
-            private val subletedLabel = itemView.subletedLabel
-            private val subleted = itemView.subleted
-            private val additionalBuildingsTitle = itemView.additionalBuildingsTitle
-            private val additionalBuildingsContainer = itemView.additionalBuildingsContainer
-            private val additionalBuildingsSeparator = itemView.additionalBuildingsSeparator
+            private val binding by viewBinding(OfferFactAreaBinding::bind)
 
             init {
-                expandandableContentView.initialize()
+                binding.expandableContentView.initialize()
             }
 
             override fun bind(
@@ -275,122 +242,131 @@ class OfferAdapter(
                 removeDiscount: () -> Unit
             ) {
                 if (data is OfferModel.Facts) {
-                    data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishApartmentQuoteDetails?.let { swedishApartmentQuote ->
-                        ancillarySpaceLabel.remove()
-                        ancillarySpace.remove()
-                        yearOfConstructionLabel.remove()
-                        yearOfConstruction.remove()
-                        bathroomsLabel.remove()
-                        bathrooms.remove()
-                        subletedLabel.remove()
-                        subleted.remove()
-                        additionalBuildingsTitle.remove()
-                        additionalBuildingsContainer.remove()
-                        additionalBuildingsSeparator.remove()
+                    binding.apply {
+                        data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishApartmentQuoteDetails?.let { swedishApartmentQuote ->
+                            ancillarySpaceLabel.remove()
+                            ancillarySpace.remove()
+                            yearOfConstructionLabel.remove()
+                            yearOfConstruction.remove()
+                            bathroomsLabel.remove()
+                            bathrooms.remove()
+                            subletedLabel.remove()
+                            subleted.remove()
+                            additionalBuildingsTitle.remove()
+                            additionalBuildingsContainer.remove()
+                            additionalBuildingsSeparator.remove()
 
-                        bindCommon(
-                            swedishApartmentQuote.livingSpace,
-                            swedishApartmentQuote.householdSize
-                        )
+                            bindCommon(
+                                swedishApartmentQuote.livingSpace,
+                                swedishApartmentQuote.householdSize
+                            )
 
-                        expandandableContentView.contentSizeChanged()
-                    }
-
-                    data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishHouseQuoteDetails?.let { swedishHouseQuote ->
-                        bindCommon(swedishHouseQuote.livingSpace, swedishHouseQuote.householdSize)
-                        ancillarySpaceLabel.show()
-                        ancillarySpace.show()
-                        ancillarySpace.text = ancillarySpace.resources.getString(
-                            R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
-                            swedishHouseQuote.ancillarySpace
-                        )
-
-                        yearOfConstructionLabel.show()
-                        yearOfConstruction.show()
-                        yearOfConstruction.text = swedishHouseQuote.yearOfConstruction.toString()
-
-                        bathroomsLabel.show()
-                        bathrooms.show()
-                        bathrooms.text = swedishHouseQuote.numberOfBathrooms.toString()
-
-                        subletedLabel.show()
-                        subleted.show()
-                        subleted.text = if (swedishHouseQuote.isSubleted) {
-                            subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
-                        } else {
-                            subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
+                            expandableContentView.contentSizeChanged()
                         }
 
-                        swedishHouseQuote.extraBuildings.let { extraBuildings ->
-                            if (extraBuildings.isEmpty()) {
-                                additionalBuildingsContainer.remove()
-                                additionalBuildingsTitle.remove()
-                                additionalBuildingsSeparator.remove()
+                        data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishHouseQuoteDetails?.let { swedishHouseQuote ->
+                            bindCommon(
+                                swedishHouseQuote.livingSpace,
+                                swedishHouseQuote.householdSize
+                            )
+                            ancillarySpaceLabel.show()
+                            ancillarySpace.show()
+                            ancillarySpace.text = ancillarySpace.resources.getString(
+                                R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
+                                swedishHouseQuote.ancillarySpace
+                            )
+
+                            yearOfConstructionLabel.show()
+                            yearOfConstruction.show()
+                            yearOfConstruction.text =
+                                swedishHouseQuote.yearOfConstruction.toString()
+
+                            bathroomsLabel.show()
+                            bathrooms.show()
+                            bathrooms.text = swedishHouseQuote.numberOfBathrooms.toString()
+
+                            subletedLabel.show()
+                            subleted.show()
+                            subleted.text = if (swedishHouseQuote.isSubleted) {
+                                subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
                             } else {
-                                additionalBuildingsTitle.show()
-                                additionalBuildingsContainer.show()
-                                bindExtraBuildings(extraBuildings)
+                                subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
                             }
-                        }
 
-                        expandandableContentView.contentSizeChanged()
+                            swedishHouseQuote.extraBuildings.let { extraBuildings ->
+                                if (extraBuildings.isEmpty()) {
+                                    additionalBuildingsContainer.remove()
+                                    additionalBuildingsTitle.remove()
+                                    additionalBuildingsSeparator.remove()
+                                } else {
+                                    additionalBuildingsTitle.show()
+                                    additionalBuildingsContainer.show()
+                                    bindExtraBuildings(extraBuildings)
+                                }
+                            }
+
+                            expandableContentView.contentSizeChanged()
+                        }
+                        return
                     }
-                    return
                 }
 
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
             }
 
             private fun bindCommon(dataLivingSpace: Int, personsInHousehold: Int) {
-                livingSpace.text =
-                    livingSpace.resources.getString(
-                        R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
-                        dataLivingSpace
+                binding.apply {
+                    livingSpace.text =
+                        livingSpace.resources.getString(
+                            R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
+                            dataLivingSpace
+                        )
+                    coinsured.text = personsInHousehold.toString()
+                    offerExpirationDate.text = offerExpirationDate.resources.getString(
+                        R.string.OFFER_INFO_OFFER_EXPIRES,
+                        LocalDate.now().plusMonths(1).toString()
                     )
-                coinsured.text = personsInHousehold.toString()
-                offerExpirationDate.text = offerExpirationDate.resources.getString(
-                    R.string.OFFER_INFO_OFFER_EXPIRES,
-                    LocalDate.now().plusMonths(1).toString()
-                )
+                }
             }
 
             private fun bindExtraBuildings(extraBuildings: List<OfferQuery.ExtraBuilding>) {
-                additionalBuildingsTitle.show()
-                additionalBuildingsSeparator.show()
+                binding.apply {
+                    additionalBuildingsTitle.show()
+                    additionalBuildingsSeparator.show()
 
-                extraBuildings.forEach { eb ->
-                    val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
-                    val row = LayoutInflater
-                        .from(additionalBuildingsContainer.context)
-                        .inflate(
-                            R.layout.additional_buildings_row,
-                            additionalBuildingsContainer,
-                            false
-                        )
-                    row.title.text = extraBuilding.displayName
+                    extraBuildings.forEach { eb ->
+                        val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
+                        val row = LayoutInflater
+                            .from(additionalBuildingsContainer.context)
+                            .inflate(
+                                R.layout.additional_buildings_row,
+                                additionalBuildingsContainer,
+                                false
+                            )
+                        val binding by viewBinding(AdditionalBuildingsRowBinding::bind)
+                        binding.title.text = extraBuilding.displayName
 
-                    var bodyText =
-                        row.resources.getString(
-                            R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
-                            extraBuilding.area
-                        )
-                    if (extraBuilding.hasWaterConnected) {
-                        bodyText += ", " + row.resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                        var bodyText =
+                            row.resources.getString(
+                                R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
+                                extraBuilding.area
+                            )
+                        if (extraBuilding.hasWaterConnected) {
+                            bodyText += ", " + row.resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                        }
+                        binding.body.text = bodyText
+                        additionalBuildingsContainer.addView(row)
                     }
-                    row.body.text = bodyText
-                    additionalBuildingsContainer.addView(row)
+                    additionalBuildingsContainer.show()
                 }
-
-                additionalBuildingsContainer.show()
             }
         }
 
         class Perils(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_peril_area)) {
-            private val perils = itemView.perils
-            private val perilInfo = itemView.perilInfo
+            private val binding by viewBinding(OfferPerilAreaBinding::bind)
 
             init {
-                perils.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
+                binding.perils.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
             }
 
             override fun bind(
@@ -399,37 +375,39 @@ class OfferAdapter(
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit
             ) {
-                if (perils.adapter == null) {
-                    perils.adapter =
-                        PerilsAdapter(fragmentManager, perils.context.buildRequestBuilder())
-                }
-
-                if (data is OfferModel.Perils) {
-                    val items = data.inner.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
-                        .map { it.fragments.perilFragment }
-                    (perils.adapter as? PerilsAdapter)?.items = items
-
-                    when (data.inner.lastQuoteOfMember.asCompleteQuote?.typeOfContract) {
-                        TypeOfContract.SE_HOUSE -> {
-                            perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_HOUSE)
-                        }
-                        TypeOfContract.SE_APARTMENT_BRF,
-                        TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                        TypeOfContract.NO_HOME_CONTENT_OWN,
-                        TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN
-                        -> {
-                            perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_BRF)
-                        }
-                        TypeOfContract.NO_HOME_CONTENT_RENT,
-                        TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                        TypeOfContract.SE_APARTMENT_RENT,
-                        TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
-                            perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_RENTAL)
-                        }
-                        else -> {
-                        }
+                binding.apply {
+                    if (perils.adapter == null) {
+                        perils.adapter =
+                            PerilsAdapter(fragmentManager, perils.context.buildRequestBuilder())
                     }
-                    return
+
+                    if (data is OfferModel.Perils) {
+                        val items = data.inner.lastQuoteOfMember.asCompleteQuote?.perils.orEmpty()
+                            .map { it.fragments.perilFragment }
+                        (perils.adapter as? PerilsAdapter)?.submitList(items)
+
+                        when (data.inner.lastQuoteOfMember.asCompleteQuote?.typeOfContract) {
+                            TypeOfContract.SE_HOUSE -> {
+                                perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_HOUSE)
+                            }
+                            TypeOfContract.SE_APARTMENT_BRF,
+                            TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+                            TypeOfContract.NO_HOME_CONTENT_OWN,
+                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN
+                            -> {
+                                perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_BRF)
+                            }
+                            TypeOfContract.NO_HOME_CONTENT_RENT,
+                            TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+                            TypeOfContract.SE_APARTMENT_RENT,
+                            TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
+                                perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_RENTAL)
+                            }
+                            else -> {
+                            }
+                        }
+                        return
+                    }
                 }
 
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
@@ -437,12 +415,13 @@ class OfferAdapter(
         }
 
         class Terms(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_terms_area)) {
-            private val insurableLimits = itemView.insurableLimits
-            private val termsDocuments = itemView.termsDocuments
+            private val binding by viewBinding(OfferTermsAreaBinding::bind)
 
             init {
-                insurableLimits.adapter = InsurableLimitsAdapter()
-                insurableLimits.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_DOUBLE))
+                binding.apply {
+                    insurableLimits.adapter = InsurableLimitsAdapter()
+                    insurableLimits.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_DOUBLE))
+                }
             }
 
             override fun bind(
@@ -451,16 +430,22 @@ class OfferAdapter(
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit
             ) {
-                if (termsDocuments.adapter == null) {
-                    termsDocuments.adapter = TermsAdapter(tracker)
-                }
-                if (data is OfferModel.Terms) {
-                    data.inner.lastQuoteOfMember.asCompleteQuote?.insurableLimits?.map { it.fragments.insurableLimitsFragment }
-                        ?.let { (insurableLimits.adapter as? InsurableLimitsAdapter)?.items = it }
-                    data.inner.lastQuoteOfMember.asCompleteQuote?.insuranceTerms?.let {
-                        (termsDocuments.adapter as? TermsAdapter)?.items = it
+                binding.apply {
+                    if (termsDocuments.adapter == null) {
+                        termsDocuments.adapter = TermsAdapter(tracker)
                     }
-                    return
+                    if (data is OfferModel.Terms) {
+                        data.inner.lastQuoteOfMember.asCompleteQuote?.insurableLimits?.map { it.fragments.insurableLimitsFragment }
+                            ?.let {
+                                (insurableLimits.adapter as? InsurableLimitsAdapter)?.submitList(
+                                    it
+                                )
+                            }
+                        data.inner.lastQuoteOfMember.asCompleteQuote?.insuranceTerms?.let {
+                            (termsDocuments.adapter as? TermsAdapter)?.submitList(it)
+                        }
+                        return
+                    }
                 }
 
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
@@ -468,7 +453,7 @@ class OfferAdapter(
         }
 
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
-            private val title = itemView.switchTitle
+            private val binding by viewBinding(OfferSwitchBinding::bind)
             override fun bind(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
@@ -477,8 +462,11 @@ class OfferAdapter(
             ) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName
-                        ?: title.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
-                    title.text = title.resources.getString(R.string.OFFER_SWITCH_TITLE_APP, insurer)
+                        ?: binding.switchTitle.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
+                    binding.switchTitle.text = binding.switchTitle.resources.getString(
+                        R.string.OFFER_SWITCH_TITLE_APP,
+                        insurer
+                    )
                     return
                 }
 
@@ -531,35 +519,3 @@ sealed class OfferModel {
     object Footer : OfferModel()
 }
 
-class OfferDiffCallback(
-    private val old: List<OfferModel>,
-    private val new: List<OfferModel>
-) : DiffUtil.Callback() {
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldItem = old[oldItemPosition]
-        val newItem = new[newItemPosition]
-        if (oldItem is OfferModel.Header && newItem is OfferModel.Header) {
-            return true
-        }
-
-        if (oldItem is OfferModel.Facts && newItem is OfferModel.Facts) {
-            return true
-        }
-
-        if (oldItem is OfferModel.Perils && newItem is OfferModel.Perils) {
-            return true
-        }
-
-        if (oldItem is OfferModel.Terms && newItem is OfferModel.Terms) {
-            return true
-        }
-
-        return oldItem == newItem
-    }
-
-    override fun getOldListSize() = old.size
-    override fun getNewListSize() = new.size
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        old[oldItemPosition] == new[newItemPosition]
-}
