@@ -5,10 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import com.hedvig.app.R
-import kotlinx.android.synthetic.main.dialog_validation.*
+import com.hedvig.app.databinding.DialogValidationBinding
+import com.hedvig.app.util.extensions.viewBinding
 
-class ValidationDialog : androidx.fragment.app.DialogFragment() {
+class ValidationDialog : DialogFragment() {
+    private val binding by viewBinding(DialogValidationBinding::bind)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -19,10 +23,10 @@ class ValidationDialog : androidx.fragment.app.DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.let { args ->
-            dialogTitle.text = resources.getString(args.getInt(TITLE))
-            dialogParagraph.text = resources.getString(args.getInt(PARAGRAPH))
-            dialogConfirm.text = resources.getString(args.getInt(DISMISS))
+        binding.apply {
+            dialogTitle.text = resources.getString(requireArguments().getInt(TITLE))
+            dialogParagraph.text = resources.getString(requireArguments().getInt(PARAGRAPH))
+            dialogConfirm.text = resources.getString(requireArguments().getInt(DISMISS))
 
             dialogConfirm.setOnClickListener {
                 dialog?.dismiss()
@@ -41,16 +45,12 @@ class ValidationDialog : androidx.fragment.app.DialogFragment() {
             @StringRes title: Int,
             @StringRes paragraph: Int,
             @StringRes dismiss: Int
-        ): ValidationDialog {
-            val dialog = ValidationDialog()
-            val arguments = Bundle()
-            arguments.apply {
-                putInt(TITLE, title)
-                putInt(PARAGRAPH, paragraph)
-                putInt(DISMISS, dismiss)
-            }
-            dialog.arguments = arguments
-            return dialog
+        ) = ValidationDialog().apply {
+            arguments = bundleOf(
+                TITLE to title,
+                PARAGRAPH to paragraph,
+                DISMISS to dismiss
+            )
         }
     }
 }

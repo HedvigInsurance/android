@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.EditText
-import kotlinx.android.synthetic.main.chat_input_view.view.*
 
 class ChatTextInput : EditText {
 
@@ -99,11 +98,11 @@ class ChatTextInput : EditText {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        inputText.addTextChangedListener(inputTextWatcher)
+        addTextChangedListener(inputTextWatcher)
     }
 
     override fun onDetachedFromWindow() {
-        inputText.removeTextChangedListener(inputTextWatcher)
+        removeTextChangedListener(inputTextWatcher)
         super.onDetachedFromWindow()
     }
 
