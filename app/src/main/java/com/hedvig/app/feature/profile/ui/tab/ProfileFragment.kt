@@ -79,7 +79,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
 
         model.data.observe(viewLifecycleOwner) { data ->
-            (binding.recycler.adapter as? ProfileAdapter)?.items = listOf(
+            (binding.recycler.adapter as? ProfileAdapter)?.submitList(listOf(
                 ProfileModel.Title,
                 ProfileModel.Row(
                     getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -129,6 +129,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                 },
                 ProfileModel.Logout
+            )
             )
         }
     }

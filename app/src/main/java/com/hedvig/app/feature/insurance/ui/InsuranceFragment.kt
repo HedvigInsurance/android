@@ -77,7 +77,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         if (data.isFailure) {
             (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
-                listOf(InsuranceModel.Header, InsuranceModel.Error)
+                listOf(
+                    InsuranceModel.Header,
+                    InsuranceModel.Error
+                )
             )
             return
         }
