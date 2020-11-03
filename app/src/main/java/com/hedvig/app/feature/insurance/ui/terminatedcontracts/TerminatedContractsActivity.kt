@@ -3,6 +3,7 @@ package com.hedvig.app.feature.insurance.ui.terminatedcontracts
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
@@ -11,6 +12,8 @@ import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -22,22 +25,30 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.recycler.adapter = InsuranceAdapter(tracker, model::load)
-
-        model.data.observe(this) { data ->
-            if (data.isFailure) {
-                (binding.recycler.adapter as? InsuranceAdapter)?.submitList(listOf(InsuranceModel.Error))
-                return@observe
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
-
-            data.getOrNull()?.contracts?.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
-                ?.let { terminatedContracts ->
-                    (binding.recycler.adapter as? InsuranceAdapter)?.submitList(terminatedContracts.map {
-                        InsuranceModel.Contract(
-                            it
-                        )
-                    })
+            recycler.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
+            recycler.adapter = InsuranceAdapter(tracker, model::load)
+            model.data.observe(this@TerminatedContractsActivity) { data ->
+                if (data.isFailure) {
+                    (recycler.adapter as? InsuranceAdapter)?.submitList(listOf(InsuranceModel.Error))
+                    return@observe
                 }
+
+                data.getOrNull()?.contracts?.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
+                    ?.let { terminatedContracts ->
+                        (recycler.adapter as? InsuranceAdapter)?.submitList(terminatedContracts.map {
+                            InsuranceModel.Contract(
+                                it
+                            )
+                        })
+                    }
+            }
         }
     }
 
