@@ -5,7 +5,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -47,26 +46,13 @@ class GifAdapter(
 
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
-        holder.apply {
-            getItem(position).url?.let { url ->
-                Glide
-                    .with(image)
-                    .load(Uri.parse(url))
-                    .transform(CenterCrop(), RoundedCorners(40))
-                    .into(image)
-                    .clearOnDetach()
-
-                image.setHapticClickListener {
-                    sendGif(url)
-                }
-            }
-        }
+        holder.bind(getItem(position), sendGif)
     }
 
     override fun onViewRecycled(holder: GifViewHolder) {
         Glide
-            .with(holder.image)
-            .clear(holder.image)
+            .with(holder.binding.gifImage)
+            .clear(holder.binding.gifImage)
     }
 
     inner class GifPreloadModelProvider : ListPreloader.PreloadModelProvider<GifQuery.Gif> {
@@ -83,7 +69,22 @@ class GifAdapter(
     }
 
     class GifViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding by viewBinding(GifItemBinding::bind)
-        val image: ImageView = binding.gifImage
+        val binding by viewBinding(GifItemBinding::bind)
+        fun bind(item: GifQuery.Gif, sendGif: (String) -> Unit) {
+            binding.apply {
+                item.url?.let { url ->
+                    Glide
+                        .with(gifImage)
+                        .load(Uri.parse(url))
+                        .transform(CenterCrop(), RoundedCorners(40))
+                        .into(gifImage)
+                        .clearOnDetach()
+
+                    gifImage.setHapticClickListener {
+                        sendGif(url)
+                    }
+                }
+            }
+        }
     }
 }

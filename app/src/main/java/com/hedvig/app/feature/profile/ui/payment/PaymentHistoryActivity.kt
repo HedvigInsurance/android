@@ -37,11 +37,12 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
 
             paymentHistory.adapter = PaymentHistoryAdapter()
 
-        profileViewModel.data.observe(this) { data ->
-            data?.chargeHistory?.let { chargeHistory ->
-                (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
-                    listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
-                )
+            profileViewModel.data.observe(this@PaymentHistoryActivity) { data ->
+                data?.chargeHistory?.let { chargeHistory ->
+                    (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
+                        listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+                    )
+                }
             }
         }
     }

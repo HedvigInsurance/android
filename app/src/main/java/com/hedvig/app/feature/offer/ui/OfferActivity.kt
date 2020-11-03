@@ -95,21 +95,22 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             })
                     } else {
                         (offerScroll.adapter as? OfferAdapter)?.submitList(
-                            OfferModel.Header(data),
-                            OfferModel.Info,
-                            OfferModel.Facts(data),
-                            OfferModel.Perils(data),
-                            OfferModel.Terms(data),
-                            data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
-                                if (currentInsurer.switchable == true) {
-                                    OfferModel.Switcher(currentInsurer.displayName)
-                                } else {
-                                    null
-                                }
-                            },
-                            OfferModel.Footer
+                            listOf(
+                                OfferModel.Header(data),
+                                OfferModel.Info,
+                                OfferModel.Facts(data),
+                                OfferModel.Perils(data),
+                                OfferModel.Terms(data),
+                                data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
+                                    if (currentInsurer.switchable == true) {
+                                        OfferModel.Switcher(currentInsurer.displayName)
+                                    } else {
+                                        null
+                                    }
+                                },
+                                OfferModel.Footer
+                            )
                         )
-                    )
                     }
                 }
             }

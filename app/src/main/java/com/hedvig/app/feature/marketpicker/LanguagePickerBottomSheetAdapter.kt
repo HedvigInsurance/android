@@ -79,8 +79,7 @@ class LanguagePickerBottomSheetAdapter(
                 dialog: Dialog?
             ) {
                 val binding by viewBinding(PickerHeaderBinding::bind)
-                binding.header.text =
-                    binding.header.context.getText(R.string.language_picker_modal_title)
+                binding.header.setText(R.string.language_picker_modal_title)
             }
         }
 

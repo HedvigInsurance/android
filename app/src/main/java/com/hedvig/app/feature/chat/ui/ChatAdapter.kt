@@ -213,18 +213,18 @@ class ChatAdapter(
         when (holder) {
             is HedvigGiphyMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.messageImage)
+                    .clear(holder.binding.messageImage)
             }
             is GiphyUserMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.messageImage)
+                    .clear(holder.binding.messageImage)
             }
             is ImageUploadUserMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.uploadedImage)
+                    .clear(holder.binding.uploadedImage)
             }
         }
     }
@@ -235,10 +235,8 @@ class ChatAdapter(
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
         private val binding by viewBinding(ChatMessageHedvigBinding::bind)
-        val message: TextView = binding.hedvigMessage
-
         fun reset() {
-            message.remove()
+            binding.hedvigMessage.remove()
         }
 
         fun bind(text: String?) {
@@ -246,103 +244,104 @@ class ChatAdapter(
             if (text == "") {
                 return
             }
-            message.show()
-            message.text = text
+            binding.hedvigMessage.apply {
+                show()
+                this.text = text
+            }
         }
     }
 
     inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
-        val image: ImageView = binding.messageImage
-
+        val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(messageImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(messageImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class UserMessage(view: View) : RecyclerView.ViewHolder(view) {
         private val binding by viewBinding(ChatMessageUserBinding::bind)
-        val message: TextView = binding.userMessage
-        val edit: ImageButton = binding.editMessage
-        val status: TextView = binding.statusMessage
-
-        fun bind(text: String?, position: Int, statusMessage: String?, editAllowed: Boolean) {
-            message.text = text
-            if (statusMessage != null && position == 1) {
-                status.text = statusMessage
-                status.show()
-            } else {
-                status.text = ""
-                status.remove()
-            }
-            if (editAllowed) {
-                edit.show()
-                edit.setHapticClickListener {
-                    tracker.editMessage()
-                    onPressEdit()
+        fun bind(text: String?, position: Int, statusText: String?, editAllowed: Boolean) {
+            binding.apply {
+                userMessage.text = text
+                if (statusText != null && position == 1) {
+                    statusMessage.text = statusText
+                    statusMessage.show()
+                } else {
+                    statusMessage.text = ""
+                    statusMessage.remove()
                 }
-                message.updateMargin(end = baseMargin)
-            } else {
-                edit.remove()
-                message.updateMargin(end = doubleMargin)
+                if (editAllowed) {
+                    editMessage.show()
+                    editMessage.setHapticClickListener {
+                        tracker.editMessage()
+                        onPressEdit()
+                    }
+                    userMessage.updateMargin(end = baseMargin)
+                } else {
+                    editMessage.remove()
+                    userMessage.updateMargin(end = doubleMargin)
+                }
             }
         }
     }
 
     inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
-        val image: ImageView = binding.messageImage
-
+        val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(messageImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(messageImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class ImageUserMessage(view: View) : RecyclerView.ViewHolder(view) {
         private val binding by viewBinding(ChatMessageUserImageBinding::bind)
-        val image: ImageView = binding.uploadedImage
 
         fun bind() {
-            image.remove()
+            binding.uploadedImage.remove()
         }
     }
 
     inner class ImageUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding by viewBinding(ChatMessageUserImageBinding::bind)
-        val image: ImageView = binding.uploadedImage
+        val binding by viewBinding(ChatMessageUserImageBinding::bind)
 
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(uploadedImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(uploadedImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class FileUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
         private val binding by viewBinding(ChatMessageFileUploadBinding::bind)
-        val label: TextView = binding.fileUploadLabel
-
         fun bind(url: String?) {
             val asUri = Uri.parse(url)
             val extension = getExtension(asUri)
 
-            label.text = label.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
-            label.setHapticClickListener {
-                tracker.openUploadedFile()
-                label.context.openUri(Uri.parse(url))
+            binding.apply {
+                fileUploadLabel.text =
+                    fileUploadLabel.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
+                fileUploadLabel.setHapticClickListener {
+                    tracker.openUploadedFile()
+                    fileUploadLabel.context.openUri(Uri.parse(url))
+                }
             }
         }
     }

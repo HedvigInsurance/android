@@ -78,8 +78,7 @@ class MarketPickerBottomSheetAdapter(
                 dialog: Dialog?
             ) {
                 val binding by viewBinding(PickerHeaderBinding::bind)
-                binding.header.text =
-                    binding.header.context.getText(R.string.market_picker_modal_title)
+                binding.header.setText(R.string.market_picker_modal_title)
             }
         }
     }

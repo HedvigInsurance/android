@@ -6,10 +6,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader
@@ -70,70 +66,10 @@ class AttachFileAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         when (viewHolder) {
             is ViewHolder.CameraAndMiscViewHolder -> {
-                if (isUploadingTakenPicture) {
-                    viewHolder.loadingSpinner.show()
-                    viewHolder.cameraIcon.remove()
-                } else {
-                    viewHolder.loadingSpinner.remove()
-                    viewHolder.cameraIcon.show()
-                }
-                viewHolder.cameraButton.setHapticClickListener {
-                    takePhoto()
-                }
-                viewHolder.miscButton.setHapticClickListener {
-                    showUploadFileDialog()
-                }
+                viewHolder.bind(isUploadingTakenPicture, takePhoto, showUploadFileDialog)
             }
             is ViewHolder.ImageViewHolder -> {
-                viewHolder.apply {
-                    val image = attachImageData[position - 1]
-                    val params = attachFileImage.layoutParams
-                    val margin =
-                        attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
-                    params.height = pickerHeight - margin
-                    params.width = pickerHeight - margin
-                    attachFileImage.layoutParams = params
-                    Glide
-                        .with(attachFileImage.context)
-                        .load(image.path)
-                        .transform(
-                            MultiTransformation(
-                                CenterCrop(),
-                                RoundedCorners(roundedCornersRadius)
-                            )
-                        )
-                        .into(attachFileImage)
-                        .clearOnDetach()
-                    attachFileSendButton.remove()
-                    attachFileSendButton.setHapticClickListener {
-                        image.isLoading = true
-                        uploadFile(Uri.parse(image.path))
-                        attachFileSendButton.fadeOut()
-                        loadingSpinner.fadeIn()
-                    }
-                    if (image.isLoading) {
-                        loadingSpinner.show()
-                    } else {
-                        loadingSpinner.remove()
-                    }
-                    val outValue = TypedValue()
-                    attachFileImageContainer.context.theme.resolveAttribute(
-                        android.R.attr.selectableItemBackgroundBorderless,
-                        outValue,
-                        true
-                    )
-                    attachFileImageContainer.foreground =
-                        attachFileImageContainer.context.compatDrawable(outValue.resourceId)
-
-                    attachFileImageContainer.setHapticClickListener {
-
-                        attachFileSendButton.show()
-                        attachFileSendButton.fadeIn(endAction = {
-                            attachFileImageContainer.foreground = null
-                            attachFileImageContainer.setOnClickListener(null)
-                        })
-                    }
-                }
+                viewHolder.bind(attachImageData, pickerHeight, roundedCornersRadius, uploadFile)
             }
         }
     }
@@ -159,8 +95,8 @@ class AttachFileAdapter(
         when (holder) {
             is ViewHolder.ImageViewHolder -> {
                 Glide
-                    .with(holder.attachFileImage)
-                    .clear(holder.attachFileImage)
+                    .with(holder.binding.attachFileImage)
+                    .clear(holder.binding.attachFileImage)
             }
         }
     }
@@ -173,11 +109,28 @@ class AttachFileAdapter(
                 false
             )
         ) {
-            private val binding by viewBinding(CameraAndMiscItemBinding::bind)
-            val cameraButton: FrameLayout = binding.cameraButton
-            val cameraIcon: ImageView = binding.cameraIcon
-            val loadingSpinner: ProgressBar = binding.loadingSpinner.root
-            val miscButton: FrameLayout = binding.miscButton
+            val binding by viewBinding(CameraAndMiscItemBinding::bind)
+            fun bind(
+                isUploadingTakenPicture: Boolean,
+                takePhoto: () -> Unit,
+                showUploadFileDialog: () -> Unit
+            ) {
+                binding.apply {
+                    if (isUploadingTakenPicture) {
+                        loadingSpinner.root.show()
+                        cameraIcon.remove()
+                    } else {
+                        loadingSpinner.root.remove()
+                        cameraIcon.show()
+                    }
+                    cameraButton.setHapticClickListener {
+                        takePhoto()
+                    }
+                    miscButton.setHapticClickListener {
+                        showUploadFileDialog()
+                    }
+                }
+            }
         }
 
         class ImageViewHolder(parent: ViewGroup) : ViewHolder(
@@ -187,11 +140,63 @@ class AttachFileAdapter(
                 false
             )
         ) {
-            private val binding by viewBinding(AttachFileImageItemBinding::bind)
-            val attachFileImage: ImageView = binding.attachFileImage
-            val attachFileImageContainer: FrameLayout = binding.attachFileContainer
-            val attachFileSendButton: Button = binding.attachFileSendButton
-            val loadingSpinner: ProgressBar = binding.loadSpinner.root
+            val binding by viewBinding(AttachFileImageItemBinding::bind)
+            fun bind(
+                attachImageData: List<AttachImageData>,
+                pickerHeight: Int,
+                roundedCornersRadius: Int,
+                uploadFile: (Uri) -> Unit
+            ) {
+                binding.apply {
+                    val image = attachImageData[position - 1]
+                    val params = attachFileImage.layoutParams
+                    val margin =
+                        attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
+                    params.height = pickerHeight - margin
+                    params.width = pickerHeight - margin
+                    attachFileImage.layoutParams = params
+                    Glide
+                        .with(attachFileImage.context)
+                        .load(image.path)
+                        .transform(
+                            MultiTransformation(
+                                CenterCrop(),
+                                RoundedCorners(roundedCornersRadius)
+                            )
+                        )
+                        .into(attachFileImage)
+                        .clearOnDetach()
+                    attachFileSendButton.remove()
+                    attachFileSendButton.setHapticClickListener {
+                        image.isLoading = true
+                        uploadFile(Uri.parse(image.path))
+                        attachFileSendButton.fadeOut()
+                        loadSpinner.root.fadeIn()
+                    }
+                    if (image.isLoading) {
+                        loadSpinner.root.show()
+                    } else {
+                        loadSpinner.root.remove()
+                    }
+                    val outValue = TypedValue()
+                    attachFileContainer.context.theme.resolveAttribute(
+                        android.R.attr.selectableItemBackgroundBorderless,
+                        outValue,
+                        true
+                    )
+                    attachFileContainer.foreground =
+                        attachFileContainer.context.compatDrawable(outValue.resourceId)
+
+                    attachFileContainer.setHapticClickListener {
+
+                        attachFileSendButton.show()
+                        attachFileSendButton.fadeIn(endAction = {
+                            attachFileContainer.foreground = null
+                            attachFileContainer.setOnClickListener(null)
+                        })
+                    }
+                }
+            }
         }
     }
 
