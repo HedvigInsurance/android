@@ -6,15 +6,17 @@ import android.os.Bundle
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityKeyGearValuationInfoBinding
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
-import kotlinx.android.synthetic.main.activity_key_gear_valuation_info.*
 import java.util.Locale
 
 class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_valuation_info) {
+    private val binding by viewBinding(ActivityKeyGearValuationInfoBinding::bind)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,7 +26,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         safeLet(category, valuationData) { c, vd ->
             setPercentage(vd.ratio)
             if (vd.valuationType == ValuationType.FIXED) {
-                body.setMarkdownText(
+                binding.body.setMarkdownText(
                     getString(
                         R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
                         getString(c.label).toLowerCase(Locale.getDefault()),
@@ -34,7 +36,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                     )
                 )
             } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
-                body.setMarkdownText(
+                binding.body.setMarkdownText(
                     getString(
                         R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
                         getString(c.label),
@@ -44,13 +46,13 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
             }
         }
 
-        close.setHapticClickListener {
+        binding.close.setHapticClickListener {
             onBackPressed()
         }
     }
 
     private fun setPercentage(percentage: Int) {
-        valuationPercentage.text = "$percentage%"
+        binding.valuationPercentage.text = "$percentage%"
     }
 
     companion object {

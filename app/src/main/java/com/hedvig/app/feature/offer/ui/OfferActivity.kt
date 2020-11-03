@@ -5,10 +5,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -19,16 +21,15 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.android.synthetic.main.activity_offer.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
-
-    private val offerViewModel: OfferViewModel by viewModel()
+    private val model: OfferViewModel by viewModel()
+    private val binding by viewBinding(ActivityOfferBinding::bind)
     private val tracker: OfferTracker by inject()
 
     private var scrollInitialPaddingTop = 0
@@ -36,60 +37,64 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        offerRoot.setEdgeToEdgeSystemUiFlags(true)
-        scrollInitialPaddingTop = offerScroll.paddingTop
-        offerToolbar.doOnLayout { applyInsets(it.height) }
+        binding.apply {
+            offerRoot.setEdgeToEdgeSystemUiFlags(true)
+            scrollInitialPaddingTop = offerScroll.paddingTop
+            offerToolbar.doOnLayout { applyInsets(it.height) }
 
-        offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            applyInsets(view.height)
-        }
-        setSupportActionBar(offerToolbar)
-
-        offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
-
-        offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            private var scrollY = 0
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                scrollY += dy
-
-                val percentage = scrollY.toFloat() / offerToolbar.height
-
-                offerToolbar.setBackgroundColor(
-                    boundedColorLerp(
-                        Color.TRANSPARENT,
-                        compatColor(R.color.translucent_tool_bar),
-                        percentage
-                    )
-                )
+            offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                applyInsets(view.height)
             }
-        })
+            setSupportActionBar(offerToolbar)
 
-        offerScroll.adapter = OfferAdapter(
-            supportFragmentManager,
-            tracker
-        ) {
-            offerViewModel.removeDiscount()
-        }
+            offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
 
-        offerViewModel.data.observe(this) {
-            it?.let { data ->
-                data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
-                    offerToolbarAddress.text = street
+            offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                private var scrollY = 0
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    scrollY += dy
+
+                    val percentage = scrollY.toFloat() / offerToolbar.height
+
+                    offerToolbar.setBackgroundColor(
+                        boundedColorLerp(
+                            Color.TRANSPARENT,
+                            compatColor(R.color.translucent_tool_bar),
+                            percentage
+                        )
+                    )
                 }
+            })
 
-                if (data.contracts.isNotEmpty()) {
-                    storeBoolean(IS_VIEWING_OFFER, false)
-                    startActivity(Intent(this, LoggedInActivity::class.java).apply {
-                        putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    })
-                } else {
-                    (offerScroll.adapter as? OfferAdapter)?.submitList(
-                        listOfNotNull(
+            offerScroll.adapter = OfferAdapter(
+                supportFragmentManager,
+                tracker
+            ) {
+                model.removeDiscount()
+            }
+
+            model.data.observe(this@OfferActivity) {
+                it?.let { data ->
+                    data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
+                        offerToolbarAddress.text = street
+                    }
+
+                    if (data.contracts.isNotEmpty()) {
+                        storeBoolean(IS_VIEWING_OFFER, false)
+                        startActivity(
+                            Intent(
+                                this@OfferActivity,
+                                LoggedInActivity::class.java
+                            ).apply {
+                                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            })
+                    } else {
+                        (offerScroll.adapter as? OfferAdapter)?.submitList(
                             OfferModel.Header(data),
                             OfferModel.Info,
                             OfferModel.Facts(data),
@@ -105,25 +110,26 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             OfferModel.Footer
                         )
                     )
+                    }
                 }
             }
-        }
 
-        settings.setHapticClickListener {
-            tracker.settings()
-            startActivity(SettingsActivity.newInstance(this))
-        }
+            settings.setHapticClickListener {
+                tracker.settings()
+                startActivity(SettingsActivity.newInstance(this@OfferActivity))
+            }
 
-        offerChatButton.setHapticClickListener {
-            tracker.openChat()
-            offerViewModel.triggerOpenChat {
-                startClosableChat(true)
+            offerChatButton.setHapticClickListener {
+                tracker.openChat()
+                model.triggerOpenChat {
+                    startClosableChat(true)
+                }
             }
         }
     }
 
     private fun applyInsets(height: Int) {
-        offerScroll.updatePadding(top = height + scrollInitialPaddingTop)
+        binding.offerScroll.updatePadding(top = height + scrollInitialPaddingTop)
     }
 
     companion object {

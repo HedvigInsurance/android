@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -19,8 +20,8 @@ import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -29,10 +30,11 @@ import org.koin.android.ext.android.inject
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
     private val marketProvider: MarketProvider by inject()
+    private val binding by viewBinding(ActivitySplashBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        root.setEdgeToEdgeSystemUiFlags(true)
+        binding.root.setEdgeToEdgeSystemUiFlags(true)
     }
 
     override fun onStart() {
@@ -184,7 +186,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     }
 
     private inline fun runSplashAnimation(crossinline andThen: () -> Unit) {
-        splashAnimation.avdDoOnEnd { andThen() }
-        splashAnimation.avdStart()
+        binding.splashAnimation.avdDoOnEnd { andThen() }
+        binding.splashAnimation.avdStart()
     }
 }

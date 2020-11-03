@@ -1,11 +1,10 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.binders
 
-import android.widget.LinearLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import kotlinx.android.synthetic.main.key_gear_item_detail_coverage_section.view.*
+import com.hedvig.app.databinding.KeyGearItemDetailCoverageSectionBinding
 
 class CoverageBinder(
-    private val root: LinearLayout
+    private val root: KeyGearItemDetailCoverageSectionBinding
 ) {
     init {
         root.covered.adapter = CoverageAdapter(false)

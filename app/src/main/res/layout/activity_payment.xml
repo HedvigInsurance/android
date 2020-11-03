@@ -19,7 +19,9 @@
             android:layout_marginBottom="?attr/actionBarSize"
             android:orientation="vertical">
 
-            <include layout="@layout/loading_spinner" />
+            <include
+                android:id="@+id/loadingSpinner"
+                layout="@layout/loading_spinner" />
 
             <TextView
                 android:id="@+id/header"
@@ -29,13 +31,21 @@
                 android:text="@string/PROFILE_PAYMENT_TITLE"
                 android:textAppearance="?textAppearanceHeadline4" />
 
-            <include layout="@layout/failed_payments_card" />
+            <include
+                android:id="@+id/failedPaymentsCard"
+                layout="@layout/failed_payments_card" />
 
-            <include layout="@layout/next_payment_card" />
+            <include
+                android:id="@+id/nextPaymentCard"
+                layout="@layout/next_payment_card" />
 
-            <include layout="@layout/connect_bank_account_card" />
+            <include
+                android:id="@+id/connectBankAccountCard"
+                layout="@layout/connect_bank_account_card" />
 
-            <include layout="@layout/campaign_information_section" />
+            <include
+                android:id="@+id/campaignInformationSection"
+                layout="@layout/campaign_information_section" />
 
             <View
                 android:id="@+id/campaignInformationSeparator"
@@ -46,7 +56,9 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <include layout="@layout/payment_details_section" />
+            <include
+                android:id="@+id/paymentDetailsSection"
+                layout="@layout/payment_details_section" />
 
             <View
                 android:id="@+id/paymentHistorySeparator"
@@ -68,7 +80,9 @@
                 tools:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
                 tools:visibility="visible" />
 
-            <include layout="@layout/payment_history_section" />
+            <include
+                android:id="@+id/paymentHistorySection"
+                layout="@layout/payment_history_section" />
 
             <View
                 android:id="@+id/endSeparator"
