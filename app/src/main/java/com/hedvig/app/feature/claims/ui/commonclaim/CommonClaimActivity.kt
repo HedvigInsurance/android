@@ -46,11 +46,9 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
             toolbar.title = data.title
 
             bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(
-                    data.bulletPoints,
-                    BuildConfig.BASE_URL,
-                    requestBuilder
-                )
+                BulletPointsAdapter(BuildConfig.BASE_URL, requestBuilder).also {
+                    it.submitList(data.bulletPoints)
+                }
         }
 
         binding.apply {

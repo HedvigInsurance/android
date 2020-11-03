@@ -106,7 +106,7 @@ class InsuranceDataBuilder(
                     } else {
                         null
                     },
-                    asDanishHomeContentAgreement = if (type == TypeOfContract.DK_HOME_CONTENT) {
+                    asDanishHomeContentAgreement = if (type == TypeOfContract.DK_HOME_CONTENT_OWN) {
                         InsuranceQuery.AsDanishHomeContentAgreement(
                             address = InsuranceQuery.Address3(
                                 fragments = InsuranceQuery.Address3.Fragments(

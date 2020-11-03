@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,13 +13,14 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.databinding.CreateKeyGearItemNewPhotoBinding
+import com.hedvig.app.databinding.CreateKeyGearItemPhotoBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.performOnLongPressHapticFeedback
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.create_key_gear_item_new_photo.view.*
-import kotlinx.android.synthetic.main.create_key_gear_item_photo.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class PhotosAdapter(
     private val tracker: KeyGearTracker,
@@ -101,47 +100,50 @@ class PhotosAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Photo(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
-            val photo: ImageView = view.photo
-
+            private val binding by viewBinding(CreateKeyGearItemPhotoBinding::bind)
             fun bind(
                 data: com.hedvig.app.feature.keygear.ui.createitem.Photo,
                 deletePhoto: (photo: com.hedvig.app.feature.keygear.ui.createitem.Photo) -> Unit
             ) {
-                Glide
-                    .with(photo)
-                    .load(data.uri)
-                    .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                    .into(photo)
+                binding.apply {
+                    Glide
+                        .with(photo)
+                        .load(data.uri)
+                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
+                        .into(photo)
 
-                photo.setOnCreateContextMenuListener { _, v, _ ->
-                    v.performOnLongPressHapticFeedback()
-                    val popup = PopupMenu(v.context, v)
-                    popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
-                    popup.setOnMenuItemClickListener { item ->
-                        if (item.itemId == R.id.delete) {
-                            tracker.deletePhoto()
-                            deletePhoto(data)
+                    photo.setOnCreateContextMenuListener { _, v, _ ->
+                        v.performOnLongPressHapticFeedback()
+                        val popup = PopupMenu(v.context, v)
+                        popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
+                        popup.setOnMenuItemClickListener { item ->
+                            if (item.itemId == R.id.delete) {
+                                tracker.deletePhoto()
+                                deletePhoto(data)
+                            }
+                            true
                         }
-                        true
+                        popup.show()
                     }
-                    popup.show()
                 }
             }
         }
 
         class AddPhoto(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
-            val root: ConstraintLayout = view.addPhoto
+            private val binding by viewBinding(CreateKeyGearItemNewPhotoBinding::bind)
 
             fun bind(
                 takePhoto: () -> Unit,
                 requestPhotoPermissionsAndTakePhoto: () -> Unit
             ) {
-                root.setHapticClickListener {
-                    tracker.addPhoto()
-                    if (root.context.hasPermissions(Manifest.permission.CAMERA)) {
-                        takePhoto()
-                    } else {
-                        requestPhotoPermissionsAndTakePhoto()
+                binding.addPhoto.apply {
+                    setHapticClickListener {
+                        tracker.addPhoto()
+                        if (context.hasPermissions(Manifest.permission.CAMERA)) {
+                            takePhoto()
+                        } else {
+                            requestPhotoPermissionsAndTakePhoto()
+                        }
                     }
                 }
             }

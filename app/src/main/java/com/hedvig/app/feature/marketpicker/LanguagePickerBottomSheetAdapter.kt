@@ -3,13 +3,13 @@ package com.hedvig.app.feature.marketpicker
 import android.app.Dialog
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.LanguageRecyclerItemBinding
 import com.hedvig.app.databinding.PickerHeaderBinding
 import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -18,19 +18,9 @@ class LanguagePickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) : RecyclerView.Adapter<LanguagePickerBottomSheetAdapter.ViewHolder>() {
-
-    var items: List<LanguageAdapterModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                GenericDiffUtilCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<LanguageAdapterModel, LanguagePickerBottomSheetAdapter.ViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.picker_header -> ViewHolder.Header(parent)
@@ -39,17 +29,15 @@ class LanguagePickerBottomSheetAdapter(
         else -> throw Error("Invalid view type")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         LanguageAdapterModel.Header -> R.layout.picker_header
         LanguageAdapterModel.Description -> R.layout.picker_description
         is LanguageAdapterModel.LanguageList -> R.layout.language_recycler_item
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel, tracker, dialog)
+        holder.bind(getItem(position), viewModel, tracker, dialog)
     }
-
-    override fun getItemCount() = items.size
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
@@ -78,7 +66,7 @@ class LanguagePickerBottomSheetAdapter(
 
                 binding.root.adapter =
                     LanguageItemAdapter(viewModel, tracker, dialog).also {
-                        it.items = item.languages
+                        it.submitList(item.languages)
                     }
             }
         }
@@ -91,7 +79,7 @@ class LanguagePickerBottomSheetAdapter(
                 dialog: Dialog?
             ) {
                 val binding by viewBinding(PickerHeaderBinding::bind)
-                binding.header.text = binding.header.context.getText(R.string.language_picker_modal_title)
+                binding.header.setText(R.string.language_picker_modal_title)
             }
         }
 
