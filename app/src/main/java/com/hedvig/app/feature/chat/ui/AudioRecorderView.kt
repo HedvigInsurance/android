@@ -5,7 +5,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.util.AttributeSet
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AudioRecorderViewBinding
@@ -24,7 +24,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class AudioRecorderView : LinearLayout {
+class AudioRecorderView : FrameLayout {
     private val binding by viewBinding(AudioRecorderViewBinding::bind)
 
     constructor(context: Context) : super(context)
