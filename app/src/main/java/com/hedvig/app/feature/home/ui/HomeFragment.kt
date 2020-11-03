@@ -75,7 +75,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        (binding.recycler.adapter as? HomeAdapter)?.items?.getOrNull(position)
+                        (binding.recycler.adapter as? HomeAdapter)?.currentList?.getOrNull(position)
                             ?.let { item ->
                                 return when (item) {
                                     is HomeModel.CommonClaim -> 1
@@ -102,27 +102,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 return@observe
             }
             if (homeData.isFailure) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.Error
-                )
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                 return@observe
             }
 
             val successData = homeData.getOrNull() ?: return@observe
             val firstName = successData.member.firstName
             if (firstName == null) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.Error
-                )
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Pending(
-                        firstName
-                    ),
-
-                    HomeModel.BodyText.Pending
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.Pending(
+                            firstName
+                        ), HomeModel.BodyText.Pending
+                    )
                 )
             }
             if (isActiveInFuture(successData.contracts)) {
@@ -135,47 +131,50 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     .minOrNull()
 
                 if (firstInceptionDate == null) {
-                    (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                        HomeModel.Error
-                    )
+                    (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                     return@observe
                 }
 
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.ActiveInFuture(
-                        firstName,
-                        firstInceptionDate
-                    ),
-                    HomeModel.BodyText.ActiveInFuture
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.ActiveInFuture(
+                            firstName,
+                            firstInceptionDate
+                        ), HomeModel.BodyText.ActiveInFuture
+                    )
                 )
             }
 
             if (isTerminated(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Terminated(firstName),
-                    HomeModel.BodyText.Terminated,
-                    HomeModel.StartClaimOutlined,
-                    HomeModel.HowClaimsWork(successData.howClaimsWork)
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.Terminated(firstName),
+                        HomeModel.BodyText.Terminated,
+                        HomeModel.StartClaimOutlined,
+                        HomeModel.HowClaimsWork(successData.howClaimsWork)
+                    )
                 )
             }
 
             if (isActive(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
-                    *psaItems(successData.importantMessages).toTypedArray(),
-                    HomeModel.BigText.Active(firstName),
-                    HomeModel.StartClaimContained,
-                    HomeModel.HowClaimsWork(successData.howClaimsWork),
-                    *upcomingRenewals(successData.contracts).toTypedArray(),
-                    if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                        HomeModel.ConnectPayin
-                    } else {
-                        null
-                    },
-                    HomeModel.CommonClaimTitle,
-                    *commonClaimsItems(
-                        successData.commonClaims,
-                        successData.isEligibleToCreateClaim
-                    ).toTypedArray()
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOfNotNull(
+                        *psaItems(successData.importantMessages).toTypedArray(),
+                        HomeModel.BigText.Active(firstName),
+                        HomeModel.StartClaimContained,
+                        HomeModel.HowClaimsWork(successData.howClaimsWork),
+                        *upcomingRenewals(successData.contracts).toTypedArray(),
+                        if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+                            HomeModel.ConnectPayin
+                        } else {
+                            null
+                        },
+                        HomeModel.CommonClaimTitle,
+                        *commonClaimsItems(
+                            successData.commonClaims,
+                            successData.isEligibleToCreateClaim
+                        ).toTypedArray()
+                    )
                 )
             }
         }

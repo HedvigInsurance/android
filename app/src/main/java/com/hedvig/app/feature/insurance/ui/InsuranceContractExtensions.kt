@@ -59,12 +59,16 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.NO_HOME_CONTENT_OWN,
                     TypeOfContract.NO_HOME_CONTENT_RENT,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                    TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT -> {
+                    TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+                    TypeOfContract.DK_HOME_CONTENT_OWN,
+                    TypeOfContract.DK_HOME_CONTENT_RENT,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+                    -> {
                         container.setBackgroundResource(R.drawable.card_home_background)
                     }
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH,
-                    TypeOfContract.DK_HOME_CONTENT -> {
+                    TypeOfContract.NO_TRAVEL_YOUTH -> {
                         container.setBackgroundResource(R.drawable.card_travel_background)
                     }
                     TypeOfContract.UNKNOWN__ -> {
@@ -85,7 +89,10 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                 TypeOfContract.SE_APARTMENT_RENT,
                 TypeOfContract.NO_HOME_CONTENT_OWN,
                 TypeOfContract.NO_HOME_CONTENT_RENT,
-                TypeOfContract.DK_HOME_CONTENT,
+                TypeOfContract.DK_HOME_CONTENT_OWN,
+                TypeOfContract.DK_HOME_CONTENT_RENT,
+                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
                 TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                 TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                 TypeOfContract.SE_APARTMENT_STUDENT_BRF,

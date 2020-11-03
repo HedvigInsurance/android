@@ -20,18 +20,19 @@ import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ChatMessageFileUploadBinding
+import com.hedvig.app.databinding.ChatMessageHedvigBinding
+import com.hedvig.app.databinding.ChatMessageUserBinding
+import com.hedvig.app.databinding.ChatMessageUserGiphyBinding
+import com.hedvig.app.databinding.ChatMessageUserImageBinding
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.chat_message_file_upload.view.*
-import kotlinx.android.synthetic.main.chat_message_hedvig.view.*
-import kotlinx.android.synthetic.main.chat_message_user.view.*
-import kotlinx.android.synthetic.main.chat_message_user_giphy.view.*
-import kotlinx.android.synthetic.main.chat_message_user_image.view.*
 
 class ChatAdapter(
     private val context: Context,
@@ -212,18 +213,18 @@ class ChatAdapter(
         when (holder) {
             is HedvigGiphyMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.messageImage)
+                    .clear(holder.binding.messageImage)
             }
             is GiphyUserMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.messageImage)
+                    .clear(holder.binding.messageImage)
             }
             is ImageUploadUserMessage -> {
                 Glide
-                    .with(holder.image)
-                    .clear(holder.image)
+                    .with(holder.binding.uploadedImage)
+                    .clear(holder.binding.uploadedImage)
             }
         }
     }
@@ -233,10 +234,9 @@ class ChatAdapter(
             ?: position.toLong()
 
     inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val message: TextView = view.hedvigMessage
-
+        private val binding by viewBinding(ChatMessageHedvigBinding::bind)
         fun reset() {
-            message.remove()
+            binding.hedvigMessage.remove()
         }
 
         fun bind(text: String?) {
@@ -244,97 +244,104 @@ class ChatAdapter(
             if (text == "") {
                 return
             }
-            message.show()
-            message.text = text
+            binding.hedvigMessage.apply {
+                show()
+                this.text = text
+            }
         }
     }
 
     inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.messageImage
-
+        val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(messageImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(messageImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class UserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val message: TextView = view.userMessage
-        val edit: ImageButton = view.editMessage
-        val status: TextView = view.statusMessage
-
-        fun bind(text: String?, position: Int, statusMessage: String?, editAllowed: Boolean) {
-            message.text = text
-            if (statusMessage != null && position == 1) {
-                status.text = statusMessage
-                status.show()
-            } else {
-                status.text = ""
-                status.remove()
-            }
-            if (editAllowed) {
-                edit.show()
-                edit.setHapticClickListener {
-                    tracker.editMessage()
-                    onPressEdit()
+        private val binding by viewBinding(ChatMessageUserBinding::bind)
+        fun bind(text: String?, position: Int, statusText: String?, editAllowed: Boolean) {
+            binding.apply {
+                userMessage.text = text
+                if (statusText != null && position == 1) {
+                    statusMessage.text = statusText
+                    statusMessage.show()
+                } else {
+                    statusMessage.text = ""
+                    statusMessage.remove()
                 }
-                message.updateMargin(end = baseMargin)
-            } else {
-                edit.remove()
-                message.updateMargin(end = doubleMargin)
+                if (editAllowed) {
+                    editMessage.show()
+                    editMessage.setHapticClickListener {
+                        tracker.editMessage()
+                        onPressEdit()
+                    }
+                    userMessage.updateMargin(end = baseMargin)
+                } else {
+                    editMessage.remove()
+                    userMessage.updateMargin(end = doubleMargin)
+                }
             }
         }
     }
 
     inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.messageImage
-
+        val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(messageImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(messageImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class ImageUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.uploadedImage
+        private val binding by viewBinding(ChatMessageUserImageBinding::bind)
 
         fun bind() {
-            image.remove()
+            binding.uploadedImage.remove()
         }
     }
 
     inner class ImageUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.uploadedImage
+        val binding by viewBinding(ChatMessageUserImageBinding::bind)
 
         fun bind(url: String?) {
-            Glide
-                .with(image)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-                .into(image)
-                .clearOnDetach()
+            binding.apply {
+                Glide
+                    .with(uploadedImage)
+                    .load(url)
+                    .transform(FitCenter(), RoundedCorners(40))
+                    .into(uploadedImage)
+                    .clearOnDetach()
+            }
         }
     }
 
     inner class FileUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
-        val label: TextView = view.fileUploadLabel
-
+        private val binding by viewBinding(ChatMessageFileUploadBinding::bind)
         fun bind(url: String?) {
             val asUri = Uri.parse(url)
             val extension = getExtension(asUri)
 
-            label.text = label.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
-            label.setHapticClickListener {
-                tracker.openUploadedFile()
-                label.context.openUri(Uri.parse(url))
+            binding.apply {
+                fileUploadLabel.text =
+                    fileUploadLabel.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
+                fileUploadLabel.setHapticClickListener {
+                    tracker.openUploadedFile()
+                    fileUploadLabel.context.openUri(Uri.parse(url))
+                }
             }
         }
     }

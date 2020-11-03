@@ -12,13 +12,11 @@ class CoverageBinder(
     }
 
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        (root.covered.adapter as? CoverageAdapter)?.items =
-            data.fragments.keyGearItemFragment.covered.mapNotNull {
-                it.title?.translations?.getOrNull(0)?.text
-            }
-        (root.exceptions.adapter as? CoverageAdapter)?.items =
-            data.fragments.keyGearItemFragment.exceptions.mapNotNull {
-                it.title?.translations?.getOrNull(0)?.text
-            }
+        (root.covered.adapter as? CoverageAdapter)?.submitList(data.fragments.keyGearItemFragment.covered.mapNotNull {
+            it.title?.translations?.getOrNull(0)?.text
+        })
+        (root.exceptions.adapter as? CoverageAdapter)?.submitList(data.fragments.keyGearItemFragment.exceptions.mapNotNull {
+            it.title?.translations?.getOrNull(0)?.text
+        })
     }
 }

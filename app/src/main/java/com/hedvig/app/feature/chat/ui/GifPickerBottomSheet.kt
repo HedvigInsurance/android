@@ -61,7 +61,7 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
 
             model.gifs.observe(viewLifecycleOwner) { data ->
                 data?.gifs?.let { gifs ->
-                    (gifRecyclerView.adapter as? GifAdapter)?.items = gifs.filterNotNull()
+                    (gifRecyclerView.adapter as? GifAdapter)?.submitList(gifs.filterNotNull())
                     if (gifs.isEmpty()) {
                         gifRecyclerView.remove()
                         emptyGifLabel.show()

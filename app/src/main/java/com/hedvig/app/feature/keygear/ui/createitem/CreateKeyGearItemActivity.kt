@@ -164,14 +164,14 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
 
     private fun bindCategories(data: List<Category>) {
-        binding.apply {
-            (categories.adapter as? CategoryAdapter)?.categories = data
+       binding.apply {
+        (categories.adapter as? CategoryAdapter)?.submitList(data)
 
-            if (data.any { c -> c.selected }) {
-                saveContainer.show()
-                saveContainer
-                    .spring(SpringAnimation.TRANSLATION_Y)
-                    .animateToFinalPosition(0f)
+        if (data.any { c -> c.selected }) {
+            saveContainer.show()
+            saveContainer
+                .spring(SpringAnimation.TRANSLATION_Y)
+                .animateToFinalPosition(0f)
             }
         }
     }

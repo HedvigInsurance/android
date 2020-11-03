@@ -29,12 +29,13 @@ class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
             recycler.adapter = LanguagePickerBottomSheetAdapter(model, tracker, dialog)
             model.data.observe(viewLifecycleOwner) { state ->
                 state.market?.let { market ->
-                    (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.items =
+                    (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.submitList(
                         listOf(
                             LanguageAdapterModel.Header,
                             LanguageAdapterModel.Description,
                             LanguageAdapterModel.LanguageList(Language.getAvailableLanguages(market))
                         )
+                    )
                 }
             }
         }
