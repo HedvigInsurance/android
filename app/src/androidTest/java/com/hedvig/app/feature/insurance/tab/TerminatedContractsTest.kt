@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.insurance.tab
 
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 class TerminatedContractsTest {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -54,14 +54,12 @@ class TerminatedContractsTest {
                 childAt<InsuranceScreen.TerminatedContractsHeader>(2) { text { hasText(R.string.insurances_tab_more_title) } }
                 childAt<InsuranceScreen.TerminatedContracts>(3) {
                     caption {
-                        hasPluralText(
-                            R.plurals.insurances_tab_terminated_insurance_subtitile,
-                            1,
-                            1
-                        )
+                        hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
                     }
+                    click()
                 }
             }
+            terminatedContractsScreen { intended() }
         }
     }
 }

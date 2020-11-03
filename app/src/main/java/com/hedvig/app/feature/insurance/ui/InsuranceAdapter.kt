@@ -17,6 +17,7 @@ import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
+import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
@@ -184,7 +185,7 @@ class InsuranceAdapter(
                     data.quantity
                 )
                 root.setHapticClickListener {
-                    root.context.makeToast("TODO: Implement screen") // This TODO left intentionally in code
+                    root.context.startActivity(TerminatedContractsActivity.newInstance(root.context))
                 }
             }
         }
