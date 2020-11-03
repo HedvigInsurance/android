@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
-import android.widget.LinearLayout
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
+import com.hedvig.app.databinding.KeyGearItemDetailValuationSectionBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.keygear.KeyGearValuationInfoActivity
@@ -15,24 +15,23 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.safeLet
-import kotlinx.android.synthetic.main.key_gear_item_detail_valuation_section.view.*
 
 class ValuationBinder(
-    private val root: LinearLayout,
+    private val binding: KeyGearItemDetailValuationSectionBinding,
     private val tracker: KeyGearTracker
 ) {
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val valuation =
             data.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation
         if (valuation == null) {
-            root.valuationMoreInfo.remove()
+            binding.valuationMoreInfo.remove()
 
-            root.addPurchaseInfo.show()
-            root.addPurchaseInfo.setHapticClickListener {
+            binding.addPurchaseInfo.show()
+            binding.addPurchaseInfo.setHapticClickListener {
                 tracker.addPurchaseInfo()
-                root.context.startActivity(
+                binding.root.context.startActivity(
                     KeyGearValuationActivity.newInstance(
-                        root.context,
+                        binding.root.context,
                         data.fragments.keyGearItemFragment.id
                     )
                 )
@@ -45,7 +44,7 @@ class ValuationBinder(
             bindValuation(data, marketValuation.ratio)
         }
 
-        root.deductible.text = buildSpannedString {
+        binding.deductible.text = buildSpannedString {
             bold {
                 scale(2.0f) {
                     append(
@@ -55,7 +54,7 @@ class ValuationBinder(
                 }
             }
             append(" ")
-            append(root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_CURRENCY))
+            append(binding.root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_CURRENCY))
             append("\n")
         }
     }
@@ -73,11 +72,11 @@ class ValuationBinder(
     }
 
     private fun bindValuation(data: KeyGearItemQuery.KeyGearItem, ratio: Int) {
-        root.addPurchaseInfo.remove()
+        binding.addPurchaseInfo.remove()
 
-        root.valuationMoreInfo.show()
+        binding.valuationMoreInfo.show()
         val category = data.fragments.keyGearItemFragment.category
-        root.valuationMoreInfo.setHapticClickListener {
+        binding.valuationMoreInfo.setHapticClickListener {
             tracker.valuationMoreInfo()
             safeLet(
                 data.fragments.keyGearItemFragment.purchasePrice?.amount,
@@ -89,9 +88,9 @@ class ValuationBinder(
                         val valuation =
                             item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
                                 ?: return@safeLet
-                        root.context.startActivity(
+                        binding.root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
-                                root.context,
+                                binding.root.context,
                                 category,
                                 ValuationData.from(
                                     amount,
@@ -106,9 +105,9 @@ class ValuationBinder(
                         val valuation =
                             item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue
                                 ?: return@safeLet
-                        root.context.startActivity(
+                        binding.root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
-                                root.context,
+                                binding.root.context,
                                 item.fragments.keyGearItemFragment.category,
                                 ValuationData.from(
                                     amount,
@@ -122,15 +121,15 @@ class ValuationBinder(
                 }
             }
         }
-        root.valuation.show()
-        root.valuation.text = buildSpannedString {
+        binding.valuation.show()
+        binding.valuation.text = buildSpannedString {
             bold {
                 scale(2.0f) {
                     append("$ratio %")
                 }
             }
             append("\n")
-            append(root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL))
+            append(binding.root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL))
         }
     }
 }

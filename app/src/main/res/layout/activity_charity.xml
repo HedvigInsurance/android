@@ -26,6 +26,7 @@
 
             <include
                 layout="@layout/loading_spinner"
+                android:id="@+id/loadingSpinner"
                 tools:visibility="gone" />
 
             <TextView

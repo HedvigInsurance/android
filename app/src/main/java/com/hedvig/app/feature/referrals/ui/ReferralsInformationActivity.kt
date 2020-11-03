@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityReferralsInformationBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
@@ -13,16 +14,17 @@ import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_referrals_information.*
 import org.javamoney.moneta.Money
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
+    private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
     private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,29 +39,34 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
             return
         }
 
-        root.setEdgeToEdgeSystemUiFlags(true)
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
 
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
 
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
+            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
 
-        scrollView.setupToolbarScrollListener(toolbar)
+            scrollView.setupToolbarScrollListener(toolbar)
 
-        val incentive = Money.of(incentiveAmount, incentiveCurrency)
-        body.text = getString(R.string.referrals_info_sheet_body, incentive.format(this))
+            val incentive = Money.of(incentiveAmount, incentiveCurrency)
+            body.text = getString(
+                R.string.referrals_info_sheet_body,
+                incentive.format(this@ReferralsInformationActivity)
+            )
 
-        val termsAsUri = Uri.parse(termsUrl)
+            val termsAsUri = Uri.parse(termsUrl)
 
-        termsAndConditions.setHapticClickListener {
-            tracker.termsAndConditions()
-            if (canOpenUri(termsAsUri)) {
-                openUri(termsAsUri)
+            termsAndConditions.setHapticClickListener {
+                tracker.termsAndConditions()
+                if (canOpenUri(termsAsUri)) {
+                    openUri(termsAsUri)
+                }
             }
         }
     }
