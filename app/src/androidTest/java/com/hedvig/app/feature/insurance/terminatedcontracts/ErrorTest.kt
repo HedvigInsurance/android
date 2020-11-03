@@ -17,15 +17,22 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SuccessTest {
+class ErrorTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(TerminatedContractsActivity::class.java, false, false)
 
+    var shouldFail = true
+
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
-            success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+            if (shouldFail) {
+                shouldFail = false
+                graphQLError("error")
+            } else {
+                success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+            }
         }
     )
 
@@ -33,11 +40,14 @@ class SuccessTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowOneTerminatedContractWhenUserHasOneTerminatedContract() {
+    fun shouldShowErrorOnGraphQLError() {
         activityRule.launchActivity(TerminatedContractsActivity.newInstance(context()))
 
         onScreen<TerminatedContractsScreen> {
             recycler {
+                childAt<InsuranceScreen.Error>(0) {
+                    retry { click() }
+                }
                 childAt<InsuranceScreen.ContractCard>(0) {
                     contractName { isVisible() }
                 }
