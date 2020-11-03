@@ -5,15 +5,16 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ExpandableContentViewBinding
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.expandable_content_view.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class ExpandableContentView : ConstraintLayout {
+    private val binding by viewBinding(ExpandableContentViewBinding::bind)
     private var hasInflated: Boolean = false
     private var expandedContentHeight: Int = -1
 
@@ -29,33 +30,37 @@ class ExpandableContentView : ConstraintLayout {
         defStyle
     )
 
-    var expanded: Boolean = false
+    private var expanded: Boolean = false
         set(value) {
             field = value
-            expandableContentToggle.text = if (field) {
-                context.getString(R.string.OFFER_HOUSE_SUMMARY_BUTTON_MINIMIZE)
-            } else {
-                context.getString(R.string.OFFER_HOUSE_SUMMARY_BUTTON_EXPAND)
-            }
-            ValueAnimator.ofInt(
-                expandableContentContainer.height,
-                if (field) {
-                    expandedContentHeight
-                } else {
-                    collapsedHeight
-                }
-            ).apply {
-                interpolator = DecelerateInterpolator()
-                duration = ANIMATION_DURATION_MILLIS
-                addUpdateListener { va ->
-                    expandableContentContainer.updateHeight(va.animatedValue as Int)
+            binding.apply {
+                expandableContentToggle.setText(
                     if (field) {
-                        bottomFadeOut.alpha = 1.0f - animatedFraction
+                        R.string.OFFER_HOUSE_SUMMARY_BUTTON_MINIMIZE
                     } else {
-                        bottomFadeOut.alpha = animatedFraction
+                        R.string.OFFER_HOUSE_SUMMARY_BUTTON_EXPAND
                     }
+                )
+                ValueAnimator.ofInt(
+                    expandableContentContainer.height,
+                    if (field) {
+                        expandedContentHeight
+                    } else {
+                        collapsedHeight
+                    }
+                ).apply {
+                    interpolator = DecelerateInterpolator()
+                    duration = ANIMATION_DURATION_MILLIS
+                    addUpdateListener { va ->
+                        expandableContentContainer.updateHeight(va.animatedValue as Int)
+                        if (field) {
+                            bottomFadeOut.alpha = 1.0f - animatedFraction
+                        } else {
+                            bottomFadeOut.alpha = animatedFraction
+                        }
+                    }
+                    start()
                 }
-                start()
             }
         }
 
@@ -66,7 +71,7 @@ class ExpandableContentView : ConstraintLayout {
 
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
         if (hasInflated) {
-            expandableContentContainer.addView(child, index, params)
+            binding.expandableContentContainer.addView(child, index, params)
         } else {
             super.addView(child, index, params)
         }
@@ -74,26 +79,30 @@ class ExpandableContentView : ConstraintLayout {
 
     fun initialize() {
         contentSizeChanged()
-        expandableContentContainer.updateHeight(collapsedHeight)
+        binding.apply {
+            expandableContentContainer.updateHeight(collapsedHeight)
 
-        expandableContentToggle.setHapticClickListener {
-            expanded = !expanded
-        }
+            expandableContentToggle.setHapticClickListener {
+                expanded = !expanded
+            }
 
-        expandableContentContainer.setOnClickListener {
-            if (!expanded) {
-                performOnTapHapticFeedback()
-                expanded = true
+            expandableContentContainer.setOnClickListener {
+                if (!expanded) {
+                    performOnTapHapticFeedback()
+                    expanded = true
+                }
             }
         }
     }
 
     fun contentSizeChanged() {
-        expandableContentContainer.measure(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT
-        )
-        expandedContentHeight = expandableContentContainer.measuredHeight
+        binding.apply {
+            expandableContentContainer.measure(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+            )
+            expandedContentHeight = expandableContentContainer.measuredHeight
+        }
     }
 
     companion object {

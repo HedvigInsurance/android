@@ -10,16 +10,18 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
+import com.hedvig.app.databinding.DatePickLayoutBinding
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
-import kotlinx.android.synthetic.main.date_pick_layout.view.*
 
 class DateInputView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyle: Int = 0
 ) : FrameLayout(context, attributeSet, defStyle) {
+    private val binding by viewBinding(DatePickLayoutBinding::bind)
 
     init {
         LayoutInflater.from(context).inflate(R.layout.date_pick_layout, this, true)
@@ -42,15 +44,15 @@ class DateInputView @JvmOverloads constructor(
         set(value) {
             field = value
             animateHint()
-            dateText.show()
-            dateText.text = text
+            binding.dateText.show()
+            binding.dateText.text = text
         }
 
     private fun animateHint() {
         val animateDistance =
             (getViewHeight() - BASE_MARGIN) / 2f
 
-        dateHint.spring(
+        binding.dateHint.spring(
             SpringAnimation.TRANSLATION_Y,
             SpringForce.STIFFNESS_HIGH,
             SpringForce.DAMPING_RATIO_NO_BOUNCY
@@ -58,7 +60,7 @@ class DateInputView @JvmOverloads constructor(
     }
 
     private fun setHintBackgroundColor(backgroundColorId: Int) {
-        dateHint.setBackgroundColor(backgroundColorId)
+        binding.dateHint.setBackgroundColor(backgroundColorId)
     }
 
     private fun getViewHeight(): Int {

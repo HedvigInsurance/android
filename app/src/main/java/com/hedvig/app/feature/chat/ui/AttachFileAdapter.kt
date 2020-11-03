@@ -21,6 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.AttachImageData
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
@@ -122,7 +123,7 @@ class AttachFileAdapter(
                         true
                     )
                     attachFileImageContainer.foreground =
-                        attachFileImageContainer.context.getDrawable(outValue.resourceId)
+                        attachFileImageContainer.context.compatDrawable(outValue.resourceId)
 
                     attachFileImageContainer.setHapticClickListener {
 

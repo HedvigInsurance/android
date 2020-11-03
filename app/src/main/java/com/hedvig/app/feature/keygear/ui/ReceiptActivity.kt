@@ -20,6 +20,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityReceiptBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
@@ -27,10 +28,10 @@ import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_receipt.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,52 +40,55 @@ import java.io.File
 import java.io.FileOutputStream
 
 class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
+    private val binding by viewBinding(ActivityReceiptBinding::bind)
     private val fileService: FileService by inject()
     private val tracker: KeyGearTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.setEdgeToEdgeSystemUiFlags(true)
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
 
-        topBar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
-        }
-
-        val fileUrl = intent.getStringExtra(RECEIPT_URL)
-        if (fileUrl == null) {
-            e { "Programmer error: No file url passed to ${this.javaClass}" }
-            return
-        }
-
-        close.setHapticClickListener {
-            onBackPressed()
-        }
-
-        share.setHapticClickListener {
-            tracker.shareReceipt()
-            shareImage(fileUrl)
-        }
-
-        download.setHapticClickListener {
-            tracker.downloadReceipt()
-            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                downloadFile(fileUrl)
-            } else {
-                askForPermissions(
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    EXTERNAL_STORAGE_REQUEST_CODE
-                )
+            topBar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
             }
-        }
 
-        if (appearsToBeAnImage(fileUrl)) {
-            receipt.show()
-            loadImage(fileUrl)
-        } else {
-            share.remove()
-            fileIcon.show()
-            download.show()
+            val fileUrl = intent.getStringExtra(RECEIPT_URL)
+            if (fileUrl == null) {
+                e { "Programmer error: No file url passed to ${this.javaClass}" }
+                return
+            }
+
+            close.setHapticClickListener {
+                onBackPressed()
+            }
+
+            share.setHapticClickListener {
+                tracker.shareReceipt()
+                shareImage(fileUrl)
+            }
+
+            download.setHapticClickListener {
+                tracker.downloadReceipt()
+                if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    downloadFile(fileUrl)
+                } else {
+                    askForPermissions(
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        EXTERNAL_STORAGE_REQUEST_CODE
+                    )
+                }
+            }
+
+            if (appearsToBeAnImage(fileUrl)) {
+                receipt.show()
+                loadImage(fileUrl)
+            } else {
+                share.remove()
+                fileIcon.show()
+                download.show()
+            }
         }
     }
 
@@ -108,7 +112,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         Glide.with(this)
             .load(fileUrl)
             .transform(CenterCrop())
-            .into(receipt)
+            .into(binding.receipt)
     }
 
     private fun shareImage(fileUrl: String) {
@@ -177,7 +181,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
         Snackbar
             .make(
-                root,
+                binding.root,
                 getString(
                     R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR,
                     filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)
