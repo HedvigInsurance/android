@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -103,48 +101,49 @@ class PhotosAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class Photo(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
             private val binding by viewBinding(CreateKeyGearItemPhotoBinding::bind)
-            val photo: ImageView = binding.photo
-
             fun bind(
                 data: com.hedvig.app.feature.keygear.ui.createitem.Photo,
                 deletePhoto: (photo: com.hedvig.app.feature.keygear.ui.createitem.Photo) -> Unit
             ) {
-                Glide
-                    .with(photo)
-                    .load(data.uri)
-                    .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                    .into(photo)
+                binding.apply {
+                    Glide
+                        .with(photo)
+                        .load(data.uri)
+                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
+                        .into(photo)
 
-                photo.setOnCreateContextMenuListener { _, v, _ ->
-                    v.performOnLongPressHapticFeedback()
-                    val popup = PopupMenu(v.context, v)
-                    popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
-                    popup.setOnMenuItemClickListener { item ->
-                        if (item.itemId == R.id.delete) {
-                            tracker.deletePhoto()
-                            deletePhoto(data)
+                    photo.setOnCreateContextMenuListener { _, v, _ ->
+                        v.performOnLongPressHapticFeedback()
+                        val popup = PopupMenu(v.context, v)
+                        popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
+                        popup.setOnMenuItemClickListener { item ->
+                            if (item.itemId == R.id.delete) {
+                                tracker.deletePhoto()
+                                deletePhoto(data)
+                            }
+                            true
                         }
-                        true
+                        popup.show()
                     }
-                    popup.show()
                 }
             }
         }
 
         class AddPhoto(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
             private val binding by viewBinding(CreateKeyGearItemNewPhotoBinding::bind)
-            val root: ConstraintLayout = binding.addPhoto
 
             fun bind(
                 takePhoto: () -> Unit,
                 requestPhotoPermissionsAndTakePhoto: () -> Unit
             ) {
-                root.setHapticClickListener {
-                    tracker.addPhoto()
-                    if (root.context.hasPermissions(Manifest.permission.CAMERA)) {
-                        takePhoto()
-                    } else {
-                        requestPhotoPermissionsAndTakePhoto()
+                binding.addPhoto.apply {
+                    setHapticClickListener {
+                        tracker.addPhoto()
+                        if (context.hasPermissions(Manifest.permission.CAMERA)) {
+                            takePhoto()
+                        } else {
+                            requestPhotoPermissionsAndTakePhoto()
+                        }
                     }
                 }
             }

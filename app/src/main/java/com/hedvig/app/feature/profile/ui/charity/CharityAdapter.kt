@@ -17,8 +17,10 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class CharityAdapter(
     val context: Context,
-    val clickListener: (String) -> Unit
-) : ListAdapter<ProfileQuery.CashbackOption, CharityAdapter.CashbackOptionViewHolder>(GenericDiffUtilItemCallback()) {
+    private val clickListener: (String) -> Unit
+) : ListAdapter<ProfileQuery.CashbackOption, CharityAdapter.CashbackOptionViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CashbackOptionViewHolder =
         CashbackOptionViewHolder(
@@ -30,17 +32,7 @@ class CharityAdapter(
         )
 
     override fun onBindViewHolder(holder: CashbackOptionViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.title.text = item.name
-        holder.paragraph.text = item.paragraph
-
-        holder.button.text =
-            holder.itemView.resources.getString(R.string.PROFILE_CHARITY_SELECT_BUTTON, item.name)
-        holder.button.setHapticClickListener {
-            item.id?.let { id ->
-                clickListener(id)
-            }
-        }
+        holder.bind(getItem(position), clickListener)
     }
 
     class CashbackOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -48,5 +40,22 @@ class CharityAdapter(
         val title: TextView = binding.cashbackOptionTitle
         val paragraph: TextView = binding.cashbackOptionParagraph
         val button: Button = binding.cashbackSelect
+        fun bind(item: ProfileQuery.CashbackOption, clickListener: (String) -> Unit) {
+            binding.apply {
+                cashbackOptionTitle.text = item.name
+                cashbackOptionParagraph.text = item.paragraph
+
+                cashbackSelect.text =
+                    cashbackSelect.resources.getString(
+                        R.string.PROFILE_CHARITY_SELECT_BUTTON,
+                        item.name
+                    )
+                cashbackSelect.setHapticClickListener {
+                    item.id?.let { id ->
+                        clickListener(id)
+                    }
+                }
+            }
+        }
     }
 }

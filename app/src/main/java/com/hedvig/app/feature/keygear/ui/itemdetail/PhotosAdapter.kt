@@ -6,8 +6,6 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -55,60 +53,67 @@ class PhotosAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val photoUrl = photoUrls.getOrNull(position)
-        if (photoUrl != null) {
-            holder.background.setBackgroundColor(Color.TRANSPARENT)
-            holder.photo.updateLayoutParams {
-                width = ViewGroup.LayoutParams.MATCH_PARENT
-                height = ViewGroup.LayoutParams.MATCH_PARENT
-            }
-            Glide.with(holder.photo)
-                .load(photoUrls[position])
-                .transform(CenterCrop())
-                .addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        photoDidLoad()
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        photoDidLoad()
-                        return false
-                    }
-                })
-                .into(holder.photo)
-            if (position == 0) {
-                holder.background.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
-            }
-        } else {
-            holder.background.setBackgroundResource(R.drawable.background_rounded_corners)
-            holder.background.backgroundTintList =
-                ColorStateList.valueOf(holder.background.context.compatColor(R.color.dark_purple))
-            holder.photo.updateLayoutParams {
-                width = ViewGroup.LayoutParams.WRAP_CONTENT
-                height = ViewGroup.LayoutParams.WRAP_CONTENT
-            }
-            holder.photo.setImageDrawable(holder.photo.context.compatDrawable(category.illustration))
-            if (position == 0) {
-                holder.background.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
-            }
-        }
+        holder.bind(photoUrls[position], category, photoDidLoad, position)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding by viewBinding(KeyGearItemDetailPhotoBinding::bind)
-        val photo: ImageView = binding.photo
-        val background: FrameLayout = binding.photoBackground
+        fun bind(
+            photoUrl: String?,
+            category: KeyGearItemCategory,
+            photoDidLoad: () -> Unit,
+            position: Int
+        ) {
+            binding.apply {
+                if (photoUrl != null) {
+                    photoBackground.setBackgroundColor(Color.TRANSPARENT)
+                    photo.updateLayoutParams {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                    Glide.with(photo)
+                        .load(photoUrl)
+                        .transform(CenterCrop())
+                        .addListener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                photoDidLoad()
+                                return false
+                            }
+
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                photoDidLoad()
+                                return false
+                            }
+                        })
+                        .into(photo)
+                    if (position == 0) {
+                        photoBackground.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
+                    }
+                } else {
+                    photoBackground.setBackgroundResource(R.drawable.background_rounded_corners)
+                    photoBackground.backgroundTintList =
+                        ColorStateList.valueOf(photoBackground.context.compatColor(R.color.dark_purple))
+                    photo.updateLayoutParams {
+                        width = ViewGroup.LayoutParams.WRAP_CONTENT
+                        height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                    photo.setImageDrawable(photo.context.compatDrawable(category.illustration))
+                    if (position == 0) {
+                        photoBackground.transitionName = KeyGearFragment.ITEM_BACKGROUND_TRANSITION_NAME
+                    }
+                }
+            }
+        }
     }
 }
