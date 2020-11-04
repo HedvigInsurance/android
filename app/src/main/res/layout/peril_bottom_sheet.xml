@@ -9,13 +9,34 @@
     android:gravity="center_horizontal"
     tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin"
-        android:contentDescription="@null"
-        app:srcCompat="@drawable/bottom_sheet_handle" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+        android:paddingStart="@dimen/base_margin_triple"
+        android:paddingEnd="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="@dimen/peril_bottom_sheet_close_icon_size"
+            android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+            app:srcCompat="@drawable/ic_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/bottom_sheet_handle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <ImageView
@@ -45,19 +66,27 @@
         android:textAppearance="?textAppearanceBody1"
         tools:text="Vi hjälper dig med reparation, ersättningsboende och sanering om det skulle börja brinna i din villa eller någon annan försäkrad byggnad. Och om ditt hus blir totalskadat ersätter vi dig med en likadan eller motsvarande villa." />
 
-    <ImageView
-        android:id="@+id/moreInfoIcon"
+    <LinearLayout
+        android:id="@+id/readMoreContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_marginTop="@dimen/base_margin_double"
-        app:srcCompat="@drawable/ic_chevron_up"
-        android:contentDescription="@null" />
+        android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceSubtitle2"
-        android:textSize="12sp"
-        android:text="TODO Read More" />
+        <ImageView
+            android:id="@+id/moreInfoIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_chevron_up"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceCaption"
+            android:text="TODO Read More" />
+    </LinearLayout>
+
 
 </LinearLayout>
