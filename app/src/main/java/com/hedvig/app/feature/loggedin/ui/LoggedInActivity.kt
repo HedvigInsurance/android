@@ -10,6 +10,8 @@ import android.view.MenuItem
 import android.view.Window
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
+import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -42,7 +44,7 @@ import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -87,10 +89,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             toolbar.doOnLayout { view ->
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
-
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-                loggedInViewModel.updateBottomTabInset(view.measuredHeight)
+                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+                loggedInViewModel.updateBottomTabInset(view.measuredHeight + view.marginBottom)
             }
 
             val isDarkTheme = isDarkThemeActive
