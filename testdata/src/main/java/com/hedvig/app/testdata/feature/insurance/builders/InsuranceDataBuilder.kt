@@ -152,7 +152,8 @@ class InsuranceDataBuilder(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                )
+                                ),
+                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
 
@@ -186,7 +187,8 @@ class InsuranceDataBuilder(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                )
+                                ),
+                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
 
@@ -220,7 +222,8 @@ class InsuranceDataBuilder(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                )
+                                ),
+                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
 
@@ -254,7 +257,8 @@ class InsuranceDataBuilder(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                )
+                                ),
+                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
 
@@ -288,7 +292,8 @@ class InsuranceDataBuilder(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                )
+                                ),
+                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
 

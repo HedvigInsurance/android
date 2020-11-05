@@ -142,6 +142,8 @@
     <dimen name="logged_in_card_elevation">1dp</dimen>
     <dimen name="peril_bottom_sheet_icon_size">48dp</dimen>
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
+    <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
+    <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
     <!--
     Because the window insets on round devices are larger than 15dp, this padding only applies
     to square screens.
