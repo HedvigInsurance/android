@@ -72,6 +72,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        window.allowReturnTransitionOverlap = true
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
