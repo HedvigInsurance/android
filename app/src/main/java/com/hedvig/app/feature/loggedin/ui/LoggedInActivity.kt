@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.Window
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
+import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -42,7 +43,6 @@ import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -81,7 +81,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
             toolbar.doOnLayout { view ->
@@ -89,8 +89,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-                loggedInViewModel.updateBottomTabInset(view.measuredHeight)
+                view.post {
+                    view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+                    view.doOnLayout {
+                        loggedInViewModel.updateBottomTabInset(view.measuredHeight)
+                    }
+                }
             }
 
             val isDarkTheme = isDarkThemeActive
