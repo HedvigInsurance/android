@@ -211,7 +211,7 @@ dependencies {
     implementation "dev.chrisbanes:insetter-ktx:0.2.1"
 
     // markwon
-    implementation "io.noties.markwon:core:4.2.1"
+    implementation "io.noties.markwon:core:4.6.0"
 
     // adyen
     implementation 'com.adyen.checkout:drop-in:3.6.4'
