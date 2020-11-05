@@ -87,7 +87,13 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         val successData = data.getOrNull() ?: return
 
-        val contracts = successData.contracts.map { InsuranceModel.Contract(it) }
+        val contracts = successData.contracts.mapNotNull {
+            if (it.status.fragments.contractStatusFragment.asTerminatedStatus == null) {
+                InsuranceModel.Contract(it)
+            } else {
+                null
+            }
+        }
 
         val upsells = mutableListOf<InsuranceModel.Upsell>()
 
@@ -100,10 +106,20 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
 
         (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
-            listOf(
-                InsuranceModel.Header
-            ) + contracts + upsells
+            listOf(InsuranceModel.Header) + contracts + terminatedRow(successData.contracts) + upsells
         )
+    }
+
+    private fun terminatedRow(contracts: List<InsuranceQuery.Contract>): List<InsuranceModel> {
+        val terminatedContracts = amountOfTerminatedContracts(contracts)
+        return if (terminatedContracts > 0) {
+            listOf(
+                InsuranceModel.TerminatedContractsHeader,
+                InsuranceModel.TerminatedContracts(terminatedContracts)
+            )
+        } else {
+            emptyList()
+        }
     }
 
     companion object {
@@ -129,5 +145,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         fun doesNotHaveTravelInsurance(contracts: List<InsuranceQuery.Contract>) =
             contracts.none { it.currentAgreement.asNorwegianTravelAgreement != null }
+
+        fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
+            contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
     }
 }

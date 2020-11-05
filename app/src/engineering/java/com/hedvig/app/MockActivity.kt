@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
@@ -18,6 +19,9 @@ abstract class MockActivity : AppCompatActivity(R.layout.activity_generic_develo
     protected abstract val mocks: List<Module>
 
     abstract fun adapter(): GenericDevelopmentAdapter
+
+    val context: Context
+        get() = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
