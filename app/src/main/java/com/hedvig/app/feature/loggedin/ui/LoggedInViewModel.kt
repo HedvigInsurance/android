@@ -22,7 +22,7 @@ abstract class LoggedInViewModel : ViewModel() {
     val toolbarInset: LiveData<Int> = _toolbarInset
 
     fun updateBottomTabInset(newInset: Int) {
-        _bottomTabInset.postValue(newInset)
+        _bottomTabInset.value = newInset
     }
 
     fun updateToolbarInset(newInset: Int) {
