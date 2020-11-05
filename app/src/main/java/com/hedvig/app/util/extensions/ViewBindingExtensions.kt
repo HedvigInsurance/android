@@ -22,6 +22,11 @@ inline fun <T : ViewBinding> RecyclerView.ViewHolder.viewBinding(crossinline bin
         binder(itemView)
     }
 
+inline fun <T : ViewBinding> ViewGroup.viewBinding(crossinline binder: (View) -> T) =
+    lazy(LazyThreadSafetyMode.NONE) {
+        binder(this)
+    }
+
 class FragmentViewBindingDelegate<T : ViewBinding>(
     val fragment: Fragment,
     val viewBindingFactory: (View) -> T

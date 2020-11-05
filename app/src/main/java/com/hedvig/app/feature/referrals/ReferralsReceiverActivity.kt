@@ -5,55 +5,47 @@ import android.content.Intent
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ReferralsReceiverActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.referrals_receiver_activity.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ReferralsReceiverActivity : BaseActivity() {
-
+class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activity) {
+    private val binding by viewBinding(ReferralsReceiverActivityBinding::bind)
     private val referralViewModel: RedeemCodeViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.referrals_receiver_activity)
 
-        referralViewModel.apply {
-            redeemCodeStatus.observe(this@ReferralsReceiverActivity) { data ->
-                if (data != null) {
-                    startChat()
-                } else {
-                    // TODO let' create string for this
-                    makeToast("The code ${intent.getStringExtra(EXTRA_REFERRAL_CODE)} is invalid!")
+        binding.apply {
+            referralViewModel.redeemCodeStatus.observe(this@ReferralsReceiverActivity) { startChat() }
+            referralReceiverContinueButton.setHapticClickListener {
+                tracker.redeemReferralCode()
+                val referralCode = intent.getStringExtra(EXTRA_REFERRAL_CODE)
+                if (referralCode == null) {
+                    e { "Programmer error: EXTRA_REFERRAL_CODE not passed to ${this.javaClass}" }
+                    return@setHapticClickListener
                 }
+                referralViewModel.redeemReferralCode(referralCode)
             }
-        }
-        referralReceiverContinueButton.setHapticClickListener {
-            tracker.redeemReferralCode()
-            val referralCode = intent.getStringExtra(EXTRA_REFERRAL_CODE)
-            if (referralCode == null) {
-                e { "Programmer error: EXTRA_REFERRAL_CODE not passed to ${this.javaClass}" }
-                return@setHapticClickListener
+            referralReceiverContinueWithoutButton.setHapticClickListener {
+                tracker.skipReferralCode()
+                startChat()
             }
-            referralViewModel.redeemReferralCode(referralCode)
+            val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()
+            if (incentive == null) {
+                e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not passed to ${this.javaClass}" }
+                return
+            }
+            referralsReceiverTitle.text =
+                getString(R.string.REFERRAL_STARTSCREEN_HEADLINE, incentive)
         }
-        referralReceiverContinueWithoutButton.setHapticClickListener {
-            tracker.skipReferralCode()
-            startChat()
-        }
-        val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()
-        if (incentive == null) {
-            e { "Programmer error: EXTRA_REFERRAL_INCENTIVE not passed to ${this.javaClass}" }
-            return
-        }
-        referralsReceiverTitle.text = getString(R.string.REFERRAL_STARTSCREEN_HEADLINE, incentive)
-        referralsReceiverBody.text = getString(R.string.REFERRAL_STARTSCREEN_BODY)
     }
 
     private fun startChat() {

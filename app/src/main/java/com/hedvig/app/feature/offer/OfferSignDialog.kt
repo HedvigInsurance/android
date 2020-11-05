@@ -21,7 +21,6 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.android.synthetic.main.dialog_sign.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -107,7 +106,7 @@ class OfferSignDialog : DialogFragment() {
                     SignState.IN_PROGRESS, SignState.INITIATED -> {
                     }
                     SignState.COMPLETED -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_SUCCESSFUL)
+                        binding.signStatus.setText(R.string.SIGN_SUCCESSFUL)
                         tracker.userDidSign(
                             model.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
                                 ?.toDouble()
@@ -116,7 +115,7 @@ class OfferSignDialog : DialogFragment() {
                         goToDirectDebit()
                     }
                     else -> {
-                        dialog?.signStatus?.text = getString(R.string.SIGN_FAILED_REASON_UNKNOWN)
+                        binding.signStatus.setText(R.string.SIGN_FAILED_REASON_UNKNOWN)
                     }
                 }
             }

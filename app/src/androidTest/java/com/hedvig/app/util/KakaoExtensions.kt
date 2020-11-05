@@ -1,6 +1,7 @@
 package com.hedvig.app.util
 
 import android.content.Context
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.assertion.ViewAssertions
@@ -20,6 +21,9 @@ fun KDatePicker.setDate(date: LocalDate) = setDate(date.year, date.monthValue, d
 
 fun KTextView.hasText(@StringRes resId: Int, vararg formatArgs: Any) =
     hasText(ApplicationProvider.getApplicationContext<Context>().getString(resId, *formatArgs))
+
+fun KTextView.hasPluralText(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any) =
+    hasText(context().resources.getQuantityString(resId, quantity, *formatArgs))
 
 fun KBottomNavigationView.hasNumberOfMenuItems(matcherNumber: Int) {
     view.check(

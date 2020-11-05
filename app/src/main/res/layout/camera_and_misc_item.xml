@@ -20,9 +20,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_chat_take_picture"/>
+            android:src="@drawable/ic_chat_take_picture" />
 
-        <include layout="@layout/loading_spinner"/>
+        <include
+            layout="@layout/loading_spinner"
+            android:id="@+id/loadingSpinner" />
 
     </FrameLayout>
 
@@ -39,6 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_chat_grid"/>
+            android:src="@drawable/ic_chat_grid" />
     </FrameLayout>
 </LinearLayout>

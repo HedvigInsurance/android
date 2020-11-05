@@ -44,7 +44,7 @@
             android:layout_marginTop="@dimen/base_margin"
             android:gravity="center"
             android:textAppearance="?textAppearanceBody1"
-            tools:text="@string/REFERRAL_STARTSCREEN_BODY" />
+            android:text="@string/REFERRAL_STARTSCREEN_BODY" />
 
         <Button
             android:id="@+id/referralReceiverContinueButton"

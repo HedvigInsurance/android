@@ -4,16 +4,13 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.feature.marketpicker.Market.NO
-import com.hedvig.app.feature.marketpicker.Market.SE
-import com.hedvig.app.util.GenericDiffUtilCallback
-import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.storeBoolean
@@ -26,20 +23,7 @@ class PickerAdapter(
     private val viewModel: MarketPickerViewModel,
     private val marketingViewModel: MarketingViewModel,
     private val tracker: MarketPickerTracker
-) :
-    RecyclerView.Adapter<PickerAdapter.ViewHolder>() {
-
-    var items: List<Model> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                GenericDiffUtilCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<Model, PickerAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         MARKET -> ViewHolder.Market(parent)
@@ -48,17 +32,21 @@ class PickerAdapter(
         else -> throw Error("Invalid view type")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is Model.MarketModel -> MARKET
         is Model.LanguageModel -> LANGUAGE
         Model.Button -> BUTTON
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], parentFragmentManager, viewModel, marketingViewModel, tracker)
+        holder.bind(
+            getItem(position),
+            parentFragmentManager,
+            viewModel,
+            marketingViewModel,
+            tracker
+        )
     }
-
-    override fun getItemCount() = items.size
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 

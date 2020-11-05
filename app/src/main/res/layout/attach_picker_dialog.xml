@@ -15,7 +15,9 @@
         android:background="?android:colorBackground"
         tools:ignore="UselessParent">
 
-        <include layout="@layout/loading_spinner" />
+        <include
+            android:id="@+id/loadingSpinner"
+            layout="@layout/loading_spinner" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/attachFileRecyclerView"

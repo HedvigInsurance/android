@@ -27,6 +27,8 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <include layout="@layout/loading_spinner" />
+    <include
+        layout="@layout/loading_spinner"
+        android:id="@+id/loadSpinner" />
 
 </FrameLayout>
