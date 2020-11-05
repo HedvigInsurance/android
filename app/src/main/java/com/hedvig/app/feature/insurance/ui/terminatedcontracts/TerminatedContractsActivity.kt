@@ -3,7 +3,9 @@ package com.hedvig.app.feature.insurance.ui.terminatedcontracts
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import androidx.core.view.updatePadding
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
@@ -23,6 +25,11 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     private val tracker: InsuranceTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        window.allowEnterTransitionOverlap = true
+        window.enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+        window.returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+        postponeEnterTransition()
         super.onCreate(savedInstanceState)
 
         binding.apply {
@@ -33,6 +40,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             recycler.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
             recycler.adapter = InsuranceAdapter(tracker, model::load)
             model.data.observe(this@TerminatedContractsActivity) { data ->
                 if (data.isFailure) {
@@ -47,6 +55,9 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                                 it
                             )
                         })
+                        recycler.post {
+                            startPostponedEnterTransition()
+                        }
                     }
             }
         }

@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
@@ -18,10 +19,10 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -119,6 +120,10 @@ class InsuranceAdapter(
                 card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
+                        if (activity is LoggedInActivity) {
+                            activity.window.reenterTransition = null
+                            activity.window.exitTransition = null
+                        }
                         card.context.startActivity(
                             ContractDetailActivity.newInstance(
                                 card.context,
@@ -185,7 +190,16 @@ class InsuranceAdapter(
                     data.quantity
                 )
                 root.setHapticClickListener {
-                    root.context.startActivity(TerminatedContractsActivity.newInstance(root.context))
+                    root.context.getActivity()?.let { activity ->
+                        activity.window.exitTransition =
+                            MaterialSharedAxis(MaterialSharedAxis.X, true)
+                        activity.window.reenterTransition =
+                            MaterialSharedAxis(MaterialSharedAxis.X, false)
+                        root.context.startActivity(
+                            TerminatedContractsActivity.newInstance(root.context),
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle()
+                        )
+                    }
                 }
             }
         }
