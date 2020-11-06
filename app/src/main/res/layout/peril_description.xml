@@ -6,6 +6,7 @@
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_triple"
     android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginBottom="@dimen/base_margin_triple"
     android:textAlignment="center"
     android:textAppearance="?textAppearanceBody1"
     tools:text="Vi hjälper dig med reparation, ersättningsboende och sanering om det skulle börja brinna i din villa eller någon annan försäkrad byggnad. Och om ditt hus blir totalskadat ersätter vi dig med en likadan eller motsvarande villa." />

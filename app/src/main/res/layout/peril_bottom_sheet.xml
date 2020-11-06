@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_quintuple"
     android:gravity="center_horizontal"
     tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
 
@@ -23,7 +22,6 @@
             app:srcCompat="@drawable/ic_close"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
             android:contentDescription="@null" />
 
         <ImageView
@@ -39,61 +37,34 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <!--    <ImageView
-          android:id="@+id/icon"
-          android:layout_marginTop="@dimen/base_margin_triple"
-          android:layout_width="@dimen/peril_bottom_sheet_icon_size"
-          android:layout_height="@dimen/peril_bottom_sheet_icon_size"
-          android:contentDescription="@null"
-          tools:src="@drawable/ic_active" />
-
-      <TextView
-          android:id="@+id/title"
-          android:layout_marginTop="@dimen/base_margin_triple"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textAppearance="?textAppearanceHeadline5"
-          tools:text="Eldsvåda" />
-
-      <TextView
-          android:id="@+id/body"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="@dimen/base_margin_double"
-          android:layout_marginTop="@dimen/base_margin_triple"
-          android:layout_marginEnd="@dimen/base_margin_double"
-          android:textAlignment="center"
-          android:textAppearance="?textAppearanceBody1"
-          tools:text="Vi hjälper dig med reparation, ersättningsboende och sanering om det skulle börja brinna i din villa eller någon annan försäkrad byggnad. Och om ditt hus blir totalskadat ersätter vi dig med en likadan eller motsvarande villa." />
-
-      <LinearLayout
-          android:id="@+id/readMoreContainer"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:orientation="vertical"
-          android:layout_marginTop="@dimen/base_margin_double"
-          android:gravity="center">
-
-          <ImageView
-              android:id="@+id/moreInfoIcon"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              app:srcCompat="@drawable/ic_chevron_up"
-              android:contentDescription="@null" />
-
-          <TextView
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:textAppearance="?textAppearanceCaption"
-              android:text="TODO Read More" />
-      </LinearLayout>-->
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/coversAndExceptions"
-        android:layout_width="wrap_content"
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_sextuple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/covered_and_exception_item" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/readMoreContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/moreInfoIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_chevron_up"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceCaption"
+            android:text="TODO Read More" />
+    </LinearLayout>
+
+</FrameLayout>

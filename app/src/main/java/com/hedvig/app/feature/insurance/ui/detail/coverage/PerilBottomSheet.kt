@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import android.content.Context
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,13 @@ import android.view.WindowManager
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PerilBottomSheetBinding
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -33,63 +36,58 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        val title = requireArguments().getString(TITLE)
-        val description = requireArguments().getString(DESCRIPTION)
-        val iconUrl = requireArguments().getString(ICON_URL)
-        val exception = requireArguments().getStringArrayList(EXCEPTIONS)
-        val covered = requireArguments().getStringArrayList(COVERED)
-        val info = requireArguments().getString(INFO)
+        val window = requireActivity().window
+        val defaultStatusBarColor = dialog?.window?.statusBarColor
+        val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
 
         binding.apply {
-            close.setHapticClickListener {
-                this@PerilBottomSheet.dismiss()
-            }
+            close.alpha = 0f
             val parentLayout =
                 dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             parentLayout?.let { parent ->
                 val behaviour = BottomSheetBehavior.from(parent)
+                behaviour.setPeekHeight(dpToPx(380f).toInt(), true)
+                readMoreContainer.translationY = dpToPx(310f)
                 behaviour.addBottomSheetCallback(
                     object : BottomSheetCallback() {
 
                         override fun onStateChanged(bottomSheet: View, newState: Int) {
                             when (newState) {
                                 BottomSheetBehavior.STATE_EXPANDED -> {
-                                    close.show()
-                                    safeLet(
-                                        title,
-                                        description,
-                                        info,
-                                        covered,
-                                        exception,
-                                        iconUrl
-                                    ) { t, d, i, c, e, u ->
-                                        (coversAndExceptions.adapter as CoveredAndExceptionAdapter).submitList(
-                                            expandedList(t, d, i, c, e, u)
-                                        )
+                                    dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                                    dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                                    dialog?.window?.statusBarColor =
+                                        requireContext().colorAttr(R.attr.colorSurface)
+                                    if (!requireContext().isDarkThemeActive) {
+                                        dialog?.window?.decorView?.systemUiVisibility =
+                                            window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                                     }
+
+                                    close.setHapticClickListener {
+                                        this@PerilBottomSheet.dismiss()
+                                    }
+                                    readMoreContainer.remove()
                                 }
-                                BottomSheetBehavior.STATE_DRAGGING -> {
+                                STATE_DRAGGING -> {
+                                    defaultStatusBarColor?.let {
+                                        dialog?.window?.statusBarColor = it
+                                    }
+                                    defaultSystemUiVisibility?.let {
+                                        dialog?.window?.decorView?.systemUiVisibility = it
+                                    }
+                                    dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                                    //defaultStatusBarColor?.let { window.statusBarColor = it }
+                                    readMoreContainer.show()
                                 }
                                 BottomSheetBehavior.STATE_COLLAPSED -> {
-                                    close.remove()
-                                    safeLet(iconUrl, title, description) { i, t, b ->
-                                        (coversAndExceptions.adapter as CoveredAndExceptionAdapter).submitList(
-                                            startList(i, t, b)
-                                        )
-                                    }
-                                }
-                                BottomSheetBehavior.STATE_HALF_EXPANDED -> {
-                                }
-                                BottomSheetBehavior.STATE_HIDDEN -> {
-                                    close.remove()
-                                }
-                                BottomSheetBehavior.STATE_SETTLING -> {
-
+                                    close.setOnClickListener(null)
                                 }
                             }
                         }
 
                         override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                            readMoreContainer.alpha = 1 - slideOffset
+                            close.alpha = slideOffset
                         }
                     })
             }
@@ -101,21 +99,30 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
             val title = requireArguments().getString(TITLE)
             val description = requireArguments().getString(DESCRIPTION)
             val iconUrl = requireArguments().getString(ICON_URL)
+            val exception = requireArguments().getStringArrayList(EXCEPTIONS)
+            val covered = requireArguments().getStringArrayList(COVERED)
+            val info = requireArguments().getString(INFO)
 
             if (title == null || description == null || iconUrl == null) {
                 e { "Programmer error: Missing either TITLE, BODY or ICON_URL in ${this@PerilBottomSheet.javaClass.name}" }
                 return
             }
 
-            coversAndExceptions.adapter = CoveredAndExceptionAdapter().also {
-                safeLet(iconUrl, title, description) { i, t, b ->
+            recycler.adapter = CoveredAndExceptionAdapter().also {
+                safeLet(
+                    title,
+                    description,
+                    info,
+                    covered,
+                    exception,
+                    iconUrl
+                ) { t, d, i, c, e, u ->
                     it.submitList(
-                        startList(i, t, b)
+                        expandedList(t, d, i, c, e, u)
                     )
                 }
             }
-
-            pill.setHapticClickListener {
+            readMoreContainer.setHapticClickListener {
                 expandSheet()
             }
         }
@@ -132,14 +139,18 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun startList(i: String, t: String, b: String) = listOf(
-        CoveredAndExceptionModel.Icon(i),
-        CoveredAndExceptionModel.Title(t),
-        CoveredAndExceptionModel.Description(b),
-        CoveredAndExceptionModel.MoreInfo {
-            expandSheet()
-        }
-    )
+    private fun dpToPx(dp: Float) =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+
+    private fun setupFullHeight(bottomSheet: View) {
+        val layoutParams = bottomSheet.layoutParams
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
+        bottomSheet.layoutParams = layoutParams
+    }
 
     private fun expandedList(
         title: String,
@@ -166,12 +177,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
 
     private fun exceptionItems(list: ArrayList<String>) = list.map {
         CoveredAndExceptionModel.Exception(it)
-    }
-
-    private fun setupFullHeight(bottomSheet: View) {
-        val layoutParams = bottomSheet.layoutParams
-        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-        bottomSheet.layoutParams = layoutParams
     }
 
     companion object {
