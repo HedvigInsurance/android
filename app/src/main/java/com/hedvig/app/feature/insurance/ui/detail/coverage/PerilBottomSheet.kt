@@ -2,11 +2,13 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -20,9 +22,7 @@ import com.hedvig.app.databinding.PerilBottomSheetBinding
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import e
@@ -39,11 +39,27 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val defaultStatusBarColor = dialog?.window?.statusBarColor
         val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
+        val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         binding.apply {
             close.alpha = 0f
+            dialog?.setOnShowListener { dialogInterface ->
+                val coordinator = (dialogInterface as BottomSheetDialog)
+                    .findViewById<CoordinatorLayout>(com.google.android.material.R.id.coordinator)
+                val containerLayout =
+                    dialogInterface.findViewById<FrameLayout>(com.google.android.material.R.id.container)
+                val shadow =
+                    bottomSheetDialog.layoutInflater.inflate(R.layout.bottom_sheet_shadow, null)
+
+                shadow.layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.BOTTOM
+                }
+                containerLayout?.addView(shadow)
+            }
             (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
                 behaviour.setPeekHeight(380.dp, true)
-                readMoreContainer.translationY = 310.dp.toFloat()
                 behaviour.addBottomSheetCallback(
                     object : BottomSheetCallback() {
 
@@ -63,7 +79,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                     close.setHapticClickListener {
                                         this@PerilBottomSheet.dismiss()
                                     }
-                                    readMoreContainer.remove()
                                 }
                                 STATE_DRAGGING -> {
                                     defaultStatusBarColor?.let {
@@ -73,7 +88,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                         dialog?.window?.decorView?.systemUiVisibility = it
                                     }
                                     dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                                    readMoreContainer.show()
                                 }
                                 BottomSheetBehavior.STATE_COLLAPSED -> {
                                     close.setOnClickListener(null)
@@ -82,7 +96,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                         }
 
                         override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                            readMoreContainer.alpha = 1 - slideOffset
                             close.alpha = slideOffset
                         }
                     })
@@ -112,9 +125,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                         expandedList(t, d, i, c, e, u)
                     )
                 }
-            }
-            readMoreContainer.setHapticClickListener {
-                expandSheet()
             }
         }
     }
