@@ -11,12 +11,14 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PerilBottomSheetBinding
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -34,20 +36,14 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.peril_bottom_sheet, container, false)
 
-    override fun onStart() {
-        super.onStart()
-        val window = requireActivity().window
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val defaultStatusBarColor = dialog?.window?.statusBarColor
         val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
-
         binding.apply {
             close.alpha = 0f
-            val parentLayout =
-                dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            parentLayout?.let { parent ->
-                val behaviour = BottomSheetBehavior.from(parent)
-                behaviour.setPeekHeight(dpToPx(380f).toInt(), true)
-                readMoreContainer.translationY = dpToPx(310f)
+            (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
+                behaviour.setPeekHeight(380.dp, true)
+                readMoreContainer.translationY = 310.dp.toFloat()
                 behaviour.addBottomSheetCallback(
                     object : BottomSheetCallback() {
 
@@ -55,12 +51,13 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                             when (newState) {
                                 BottomSheetBehavior.STATE_EXPANDED -> {
                                     dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                                    dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                                     dialog?.window?.statusBarColor =
                                         requireContext().colorAttr(R.attr.colorSurface)
                                     if (!requireContext().isDarkThemeActive) {
-                                        dialog?.window?.decorView?.systemUiVisibility =
-                                            window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                        dialog?.window?.decorView?.let {
+                                            it.systemUiVisibility =
+                                                it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                        }
                                     }
 
                                     close.setHapticClickListener {
@@ -76,7 +73,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                         dialog?.window?.decorView?.systemUiVisibility = it
                                     }
                                     dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                                    //defaultStatusBarColor?.let { window.statusBarColor = it }
                                     readMoreContainer.show()
                                 }
                                 BottomSheetBehavior.STATE_COLLAPSED -> {
@@ -91,11 +87,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                         }
                     })
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.apply {
             val title = requireArguments().getString(TITLE)
             val description = requireArguments().getString(DESCRIPTION)
             val iconUrl = requireArguments().getString(ICON_URL)
@@ -138,13 +129,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
             behaviour.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
-
-    private fun dpToPx(dp: Float) =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            resources.displayMetrics
-        )
 
     private fun setupFullHeight(bottomSheet: View) {
         val layoutParams = bottomSheet.layoutParams
