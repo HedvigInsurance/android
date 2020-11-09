@@ -3,7 +3,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.likandr.lokalise'
+apply plugin: 'com.hedvig.android.lokalise'
 
 apply plugin: 'com.jaredsburrows.license'
 licenseReport {
@@ -252,5 +252,7 @@ lokaliseProperties.load(new FileInputStream(rootProject.file("lokalise.propertie
 lokalise {
     id lokaliseProperties['id']
     token lokaliseProperties['token']
+
+    downloadConfig {}
 }
 
