@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
+import util.toArrayList
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
@@ -145,18 +146,17 @@ class InsuranceDataBuilder(
                                     "Covered",
                                     "Covered",
                                     "Covered"
-                                ),
+                                ).toArrayList(),
                                 exceptions = listOf(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                ),
+                                ).toArrayList(),
                                 info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
-
                     ),
                     InsuranceQuery.Peril(
                         fragments = InsuranceQuery.Peril.Fragments(
@@ -180,18 +180,17 @@ class InsuranceDataBuilder(
                                     "Covered",
                                     "Covered",
                                     "Covered"
-                                ),
+                                ).toArrayList(),
                                 exceptions = listOf(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                ),
+                                ).toArrayList(),
                                 info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
-
                     ),
                     InsuranceQuery.Peril(
                         fragments = InsuranceQuery.Peril.Fragments(
@@ -215,18 +214,17 @@ class InsuranceDataBuilder(
                                     "Covered",
                                     "Covered",
                                     "Covered"
-                                ),
+                                ).toArrayList(),
                                 exceptions = listOf(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                ),
+                                ).toArrayList(),
                                 info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
                             )
                         )
-
                     ),
                     InsuranceQuery.Peril(
                         fragments = InsuranceQuery.Peril.Fragments(
@@ -250,18 +248,18 @@ class InsuranceDataBuilder(
                                     "Covered",
                                     "Covered",
                                     "Covered"
-                                ),
+                                ).toArrayList(),
                                 exceptions = listOf(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                ),
+                                ).toArrayList(),
                                 info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+
                             )
                         )
-
                     ),
                     InsuranceQuery.Peril(
                         fragments = InsuranceQuery.Peril.Fragments(
@@ -285,18 +283,18 @@ class InsuranceDataBuilder(
                                     "Covered",
                                     "Covered",
                                     "Covered"
-                                ),
+                                ).toArrayList(),
                                 exceptions = listOf(
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions",
                                     "Exceptions"
-                                ),
+                                ).toArrayList(),
                                 info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+
                             )
                         )
-
                     )
                 ),
                 insurableLimits = listOf(
