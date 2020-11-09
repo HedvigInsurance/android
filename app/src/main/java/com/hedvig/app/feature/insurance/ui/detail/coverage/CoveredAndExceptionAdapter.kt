@@ -15,7 +15,6 @@ import com.hedvig.app.databinding.PerilMoreInfoBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
 import com.hedvig.app.databinding.PerilTitleBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
 
@@ -31,7 +30,6 @@ class CoveredAndExceptionAdapter :
         R.layout.peril_icon -> ViewHolder.IconViewHolder(parent)
         R.layout.peril_title -> ViewHolder.TitleViewHolder(parent)
         R.layout.peril_description -> ViewHolder.DescriptionViewHolder(parent)
-        R.layout.peril_more_info -> ViewHolder.MoreInfoViewHolder(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -51,7 +49,6 @@ class CoveredAndExceptionAdapter :
         is CoveredAndExceptionModel.Icon -> R.layout.peril_icon
         is CoveredAndExceptionModel.Title -> R.layout.peril_title
         is CoveredAndExceptionModel.Description -> R.layout.peril_description
-        is CoveredAndExceptionModel.MoreInfo -> R.layout.peril_more_info
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -167,18 +164,6 @@ class CoveredAndExceptionAdapter :
                 binding.root.text = item.text
             }
         }
-
-        class MoreInfoViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.peril_more_info, parent, false)
-        ) {
-            private val binding by viewBinding(PerilMoreInfoBinding::bind)
-            override fun bind(item: CoveredAndExceptionModel) {
-                if (item !is CoveredAndExceptionModel.MoreInfo) {
-                    return
-                }
-                binding.root.setHapticClickListener { item.action() }
-            }
-        }
     }
 }
 
@@ -186,7 +171,6 @@ sealed class CoveredAndExceptionModel {
     data class Icon(val link: String) : CoveredAndExceptionModel()
     data class Title(val text: String) : CoveredAndExceptionModel()
     data class Description(val text: String) : CoveredAndExceptionModel()
-    data class MoreInfo(val action: () -> Unit) : CoveredAndExceptionModel()
     data class Covered(val text: String) : CoveredAndExceptionModel()
     data class Exception(val text: String) : CoveredAndExceptionModel()
     sealed class Header : CoveredAndExceptionModel() {
