@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
@@ -116,7 +117,16 @@ class InsuranceDataBuilder(
                                         city = "Tensta",
                                     )
                                 )
-                            )
+                            ),
+                            numberCoInsured = coinsured,
+                            squareMeters = 50,
+                            dhcType = when (type) {
+                                TypeOfContract.DK_HOME_CONTENT_OWN -> DanishHomeContentLineOfBusiness.OWN
+                                TypeOfContract.DK_HOME_CONTENT_RENT -> DanishHomeContentLineOfBusiness.RENT
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN -> DanishHomeContentLineOfBusiness.STUDENT_OWN
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> DanishHomeContentLineOfBusiness.STUDENT_RENT
+                                else -> throw Error("Unreachable")
+                            }
                         )
                     } else {
                         null

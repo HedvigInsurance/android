@@ -4,11 +4,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
+import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment.Companion.displayName
-import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -19,24 +19,28 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SwedishApartmentTest {
+class DanishHomeContentsTest {
     @get:Rule
     val activityRule = ActivityTestRule(ContractDetailActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse { success(INSURANCE_DATA_SWEDISH_APARTMENT) }
+        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                INSURANCE_DATA_DANISH_HOME_CONTENTS
+            )
+        }
     )
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowCoinsuredForSwedishApartmentContract() {
+    fun shouldShowCoinsuredForDanishHomeContentsContract() {
         activityRule.launchActivity(
             ContractDetailActivity.newInstance(
                 context(),
-                INSURANCE_DATA_SWEDISH_APARTMENT.contracts[0].id
+                INSURANCE_DATA_DANISH_HOME_CONTENTS.contracts[0].id
             )
         )
 
@@ -59,7 +63,7 @@ class SwedishApartmentTest {
                             label { hasText(R.string.CONTRACT_DETAIL_HOME_TYPE) }
                             content {
                                 hasText(
-                                    SwedishApartmentLineOfBusiness.RENT.displayName(
+                                    DanishHomeContentLineOfBusiness.RENT.displayName(
                                         context()
                                     )
                                 )

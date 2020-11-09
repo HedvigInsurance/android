@@ -21,3 +21,7 @@ val INSURANCE_DATA_ACTIVE_AND_TERMINATED =
 val INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE, ContractStatus.TERMINATED)
 ).build()
+val INSURANCE_DATA_DANISH_HOME_CONTENTS = InsuranceDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE),
+    typeOfContract = TypeOfContract.DK_HOME_CONTENT_OWN
+).build()

@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
@@ -82,24 +83,61 @@ class InsuranceDataBuilder(
                     asAgreementCore = InsuranceQuery.AsAgreementCore(
                         certificateUrl = "https://www.example.com"
                     ),
-                    asSwedishApartmentAgreement = InsuranceQuery.AsSwedishApartmentAgreement(
-                        address = InsuranceQuery.Address(
-                            fragments = InsuranceQuery.Address.Fragments(
-                                AddressFragment(
-                                    street = "Testvägen 1",
-                                    postalCode = "123 45",
-                                    city = "Tensta"
+                    asSwedishApartmentAgreement = when (typeOfContract) {
+                        TypeOfContract.SE_APARTMENT_BRF,
+                        TypeOfContract.SE_APARTMENT_RENT,
+                        TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+                        TypeOfContract.SE_APARTMENT_STUDENT_RENT -> InsuranceQuery.AsSwedishApartmentAgreement(
+                            address = InsuranceQuery.Address(
+                                fragments = InsuranceQuery.Address.Fragments(
+                                    AddressFragment(
+                                        street = "Testvägen 1",
+                                        postalCode = "123 45",
+                                        city = "Tensta"
+                                    )
                                 )
-                            )
-                        ),
-                        numberCoInsured = 2,
-                        squareMeters = 50,
-                        saType = SwedishApartmentLineOfBusiness.RENT
-                    ),
+                            ),
+                            numberCoInsured = 2,
+                            squareMeters = 50,
+                            saType = when (typeOfContract) {
+                                TypeOfContract.SE_APARTMENT_BRF -> SwedishApartmentLineOfBusiness.BRF
+                                TypeOfContract.SE_APARTMENT_STUDENT_BRF -> SwedishApartmentLineOfBusiness.STUDENT_BRF
+                                TypeOfContract.SE_APARTMENT_RENT -> SwedishApartmentLineOfBusiness.RENT
+                                TypeOfContract.SE_APARTMENT_STUDENT_RENT -> SwedishApartmentLineOfBusiness.STUDENT_RENT
+                                else -> throw Error("Unreachable")
+                            }
+                        )
+                        else -> null
+                    },
                     asNorwegianHomeContentAgreement = null,
                     asNorwegianTravelAgreement = null,
                     asSwedishHouseAgreement = null,
-                    asDanishHomeContentAgreement = null
+                    asDanishHomeContentAgreement = when (typeOfContract) {
+                        TypeOfContract.DK_HOME_CONTENT_OWN,
+                        TypeOfContract.DK_HOME_CONTENT_RENT,
+                        TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+                        TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> InsuranceQuery.AsDanishHomeContentAgreement(
+                            address = InsuranceQuery.Address3(
+                                fragments = InsuranceQuery.Address3.Fragments(
+                                    AddressFragment(
+                                        street = "Testvägen 1",
+                                        postalCode = "123 45",
+                                        city = "Tensta"
+                                    )
+                                )
+                            ),
+                            numberCoInsured = 2,
+                            squareMeters = 50,
+                            dhcType = when (typeOfContract) {
+                                TypeOfContract.DK_HOME_CONTENT_OWN -> DanishHomeContentLineOfBusiness.OWN
+                                TypeOfContract.DK_HOME_CONTENT_RENT -> DanishHomeContentLineOfBusiness.RENT
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN -> DanishHomeContentLineOfBusiness.STUDENT_OWN
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> DanishHomeContentLineOfBusiness.STUDENT_RENT
+                                else -> throw Error("Unreachable")
+                            }
+                        )
+                        else -> null
+                    }
                 ),
                 perils = listOf(
                     InsuranceQuery.Peril(

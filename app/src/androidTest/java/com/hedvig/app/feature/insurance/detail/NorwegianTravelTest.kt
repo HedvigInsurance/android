@@ -46,7 +46,7 @@ class NorwegianTravelTest {
                             text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                         }
                         childAt<ContractDetailScreen.YourInfoTab.Row>(1) {
-                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER) }
+                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                             content { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
                         }
                     }
