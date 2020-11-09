@@ -50,7 +50,7 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         binding.apply {
             close.alpha = 0f
             (dialog as? BottomSheetDialog)?.behavior?.setPeekHeight(380.dp, true)
-            
+
             dialog?.setOnShowListener { dialogInterface ->
                 val containerLayout =
                     (dialogInterface as BottomSheetDialog).findViewById<FrameLayout>(com.google.android.material.R.id.container)
@@ -67,7 +67,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                 }
                 containerLayout?.addView(shadow)
                 (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-                    // behaviour.setPeekHeight(380.dp, true)
                     behaviour.addBottomSheetCallback(
                         object : BottomSheetCallback() {
 

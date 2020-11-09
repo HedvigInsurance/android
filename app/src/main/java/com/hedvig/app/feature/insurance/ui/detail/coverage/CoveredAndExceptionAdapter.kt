@@ -102,13 +102,13 @@ class CoveredAndExceptionAdapter :
                 binding.root.apply {
                     when (item) {
                         CoveredAndExceptionModel.Header.CoveredHeader -> {
-                            text = "TODO This is covered"
+                            setText(R.string.PERIL_MODAL_COVERAGE_TITLE)
                         }
                         CoveredAndExceptionModel.Header.ExceptionHeader -> {
-                            text = "TODO Exceptions"
+                            setText(R.string.PERIL_MODAL_EXCEPTIONS_TITLE)
                         }
                         CoveredAndExceptionModel.Header.InfoHeader -> {
-                            text = "TODO Think about"
+                            setText(R.string.PERIL_MODAL_INFO_TITLE)
                         }
                     }
                 }
