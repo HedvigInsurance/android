@@ -11,7 +11,6 @@ import com.hedvig.app.databinding.CoveredAndExceptionHeaderBinding
 import com.hedvig.app.databinding.CoveredAndExceptionItemBinding
 import com.hedvig.app.databinding.PerilDescriptionBinding
 import com.hedvig.app.databinding.PerilIconBinding
-import com.hedvig.app.databinding.PerilMoreInfoBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
 import com.hedvig.app.databinding.PerilTitleBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
