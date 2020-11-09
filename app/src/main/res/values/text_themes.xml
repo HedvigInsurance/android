@@ -12,6 +12,7 @@
 
     <style name="Hedvig.TextAppearance.Body2" parent="TextAppearance.MaterialComponents.Body2">
         <item name="lineHeight">22sp</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">

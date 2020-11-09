@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import android.widget.ImageView
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -40,15 +40,24 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         val defaultStatusBarColor = dialog?.window?.statusBarColor
         val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
         val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        val title = requireArguments().getString(TITLE)
+        val description = requireArguments().getString(DESCRIPTION)
+        val iconUrl = requireArguments().getString(ICON_URL)
+        val exception = requireArguments().getStringArrayList(EXCEPTIONS)
+        val covered = requireArguments().getStringArrayList(COVERED)
+        val info = requireArguments().getString(INFO)
+
         binding.apply {
             close.alpha = 0f
+            (dialog as? BottomSheetDialog)?.behavior?.setPeekHeight(380.dp, true)
+            
             dialog?.setOnShowListener { dialogInterface ->
-                val coordinator = (dialogInterface as BottomSheetDialog)
-                    .findViewById<CoordinatorLayout>(com.google.android.material.R.id.coordinator)
                 val containerLayout =
-                    dialogInterface.findViewById<FrameLayout>(com.google.android.material.R.id.container)
+                    (dialogInterface as BottomSheetDialog).findViewById<FrameLayout>(com.google.android.material.R.id.container)
                 val shadow =
                     bottomSheetDialog.layoutInflater.inflate(R.layout.bottom_sheet_shadow, null)
+                val chevron = shadow.findViewById<ImageView>(R.id.chevron)
+                chevron.setHapticClickListener { expandSheet() }
 
                 shadow.layoutParams = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -57,58 +66,53 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                     gravity = Gravity.BOTTOM
                 }
                 containerLayout?.addView(shadow)
-            }
-            (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-                behaviour.setPeekHeight(380.dp, true)
-                behaviour.addBottomSheetCallback(
-                    object : BottomSheetCallback() {
+                (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
+                    // behaviour.setPeekHeight(380.dp, true)
+                    behaviour.addBottomSheetCallback(
+                        object : BottomSheetCallback() {
 
-                        override fun onStateChanged(bottomSheet: View, newState: Int) {
-                            when (newState) {
-                                BottomSheetBehavior.STATE_EXPANDED -> {
-                                    dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                                    dialog?.window?.statusBarColor =
-                                        requireContext().colorAttr(R.attr.colorSurface)
-                                    if (!requireContext().isDarkThemeActive) {
-                                        dialog?.window?.decorView?.let {
-                                            it.systemUiVisibility =
-                                                it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                                when (newState) {
+                                    BottomSheetBehavior.STATE_EXPANDED -> {
+                                        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                                        dialog?.window?.statusBarColor =
+                                            requireContext().colorAttr(R.attr.colorSurface)
+                                        if (!requireContext().isDarkThemeActive) {
+                                            dialog?.window?.decorView?.let {
+                                                it.systemUiVisibility =
+                                                    it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                            }
+                                        }
+
+                                        close.setHapticClickListener {
+                                            this@PerilBottomSheet.dismiss()
                                         }
                                     }
-
-                                    close.setHapticClickListener {
-                                        this@PerilBottomSheet.dismiss()
+                                    STATE_DRAGGING -> {
+                                        defaultStatusBarColor?.let {
+                                            dialog?.window?.statusBarColor = it
+                                        }
+                                        defaultSystemUiVisibility?.let {
+                                            dialog?.window?.decorView?.systemUiVisibility = it
+                                        }
+                                        dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                                     }
-                                }
-                                STATE_DRAGGING -> {
-                                    defaultStatusBarColor?.let {
-                                        dialog?.window?.statusBarColor = it
+                                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                                        close.setOnClickListener(null)
                                     }
-                                    defaultSystemUiVisibility?.let {
-                                        dialog?.window?.decorView?.systemUiVisibility = it
-                                    }
-                                    dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                                }
-                                BottomSheetBehavior.STATE_COLLAPSED -> {
-                                    close.setOnClickListener(null)
                                 }
                             }
-                        }
 
-                        override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                            close.alpha = slideOffset
-                        }
-                    })
+                            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                                close.alpha = slideOffset
+                                shadow.alpha = 1 - slideOffset
+                            }
+                        })
+                }
             }
-            val title = requireArguments().getString(TITLE)
-            val description = requireArguments().getString(DESCRIPTION)
-            val iconUrl = requireArguments().getString(ICON_URL)
-            val exception = requireArguments().getStringArrayList(EXCEPTIONS)
-            val covered = requireArguments().getStringArrayList(COVERED)
-            val info = requireArguments().getString(INFO)
 
-            if (title == null || description == null || iconUrl == null) {
-                e { "Programmer error: Missing either TITLE, BODY or ICON_URL in ${this@PerilBottomSheet.javaClass.name}" }
+            if (title == null || description == null || iconUrl == null || exception == null || covered == null || info == null) {
+                e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
                 return
             }
 
