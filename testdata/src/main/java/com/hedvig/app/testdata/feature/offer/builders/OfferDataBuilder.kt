@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import java.time.LocalDate
 
 data class OfferDataBuilder(
@@ -25,7 +26,7 @@ data class OfferDataBuilder(
     private val extraBuildings: List<OfferQuery.ExtraBuilding> = emptyList(),
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
-    private val perils: List<OfferQuery.Peril> = emptyList(),
+    private val perils: List<OfferQuery.Peril> = PerilBuilder().offerQueryBuild(),
     private val termsAndConditionsUrl: String = "https://www.example.com",
     private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
     private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),

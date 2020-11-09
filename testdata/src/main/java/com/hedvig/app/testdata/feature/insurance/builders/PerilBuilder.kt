@@ -2,11 +2,12 @@ package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import util.toArrayList
 
 class PerilBuilder {
 
-    fun build() = listOf(
+    fun insuranceQueryBuild() = listOf(
         InsuranceQuery.Peril(
             fragments = InsuranceQuery.Peril.Fragments(
                 PerilFragment(
@@ -146,6 +147,181 @@ class PerilBuilder {
         ),
         InsuranceQuery.Peril(
             fragments = InsuranceQuery.Peril.Fragments(
+                PerilFragment(
+                    title = "Mock",
+                    description = "Mock",
+                    icon = PerilFragment.Icon(
+                        variants = PerilFragment.Variants(
+                            dark = PerilFragment.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = PerilFragment.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    ),
+                    covered = listOf(
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered"
+                    ).toArrayList(),
+                    exceptions = listOf(
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions"
+                    ).toArrayList(),
+                    info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+
+                )
+            )
+        )
+    )
+
+    fun offerQueryBuild() = listOf(
+        OfferQuery.Peril(
+            fragments = OfferQuery.Peril.Fragments(
+                PerilFragment(
+                    title = "Mock",
+                    description = "Mock",
+                    icon = PerilFragment.Icon(
+                        variants = PerilFragment.Variants(
+                            dark = PerilFragment.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = PerilFragment.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    ),
+                    covered = listOf(
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered"
+                    ).toArrayList(),
+                    exceptions = listOf(
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions"
+                    ).toArrayList(),
+                    info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+                )
+            )
+        ),
+        OfferQuery.Peril(
+            fragments = OfferQuery.Peril.Fragments(
+                PerilFragment(
+                    title = "Mock",
+                    description = "Mock",
+                    icon = PerilFragment.Icon(
+                        variants = PerilFragment.Variants(
+                            dark = PerilFragment.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = PerilFragment.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    ),
+                    covered = listOf(
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered"
+                    ).toArrayList(),
+                    exceptions = listOf(
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions"
+                    ).toArrayList(),
+                    info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+                )
+            )
+        ),
+        OfferQuery.Peril(
+            fragments = OfferQuery.Peril.Fragments(
+                PerilFragment(
+                    title = "Mock",
+                    description = "Mock",
+                    icon = PerilFragment.Icon(
+                        variants = PerilFragment.Variants(
+                            dark = PerilFragment.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = PerilFragment.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    ),
+                    covered = listOf(
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered"
+                    ).toArrayList(),
+                    exceptions = listOf(
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions"
+                    ).toArrayList(),
+                    info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+                )
+            )
+        ),
+        OfferQuery.Peril(
+            fragments = OfferQuery.Peril.Fragments(
+                PerilFragment(
+                    title = "Mock",
+                    description = "Mock",
+                    icon = PerilFragment.Icon(
+                        variants = PerilFragment.Variants(
+                            dark = PerilFragment.Dark(
+                                svgUrl = "/app-content-service/fire_dark.svg"
+                            ),
+                            light = PerilFragment.Light(
+                                svgUrl = "/app-content-service/fire.svg"
+                            )
+                        )
+                    ),
+                    covered = listOf(
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered",
+                        "Covered"
+                    ).toArrayList(),
+                    exceptions = listOf(
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions",
+                        "Exceptions"
+                    ).toArrayList(),
+                    info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+
+                )
+            )
+        ),
+        OfferQuery.Peril(
+            fragments = OfferQuery.Peril.Fragments(
                 PerilFragment(
                     title = "Mock",
                     description = "Mock",

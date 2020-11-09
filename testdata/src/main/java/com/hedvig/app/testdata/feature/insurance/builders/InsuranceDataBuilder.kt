@@ -121,7 +121,7 @@ class InsuranceDataBuilder(
                         null
                     },
                 ),
-                perils = PerilBuilder().build(),
+                perils = PerilBuilder().insuranceQueryBuild(),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
                         fragments = InsuranceQuery.InsurableLimit.Fragments(
