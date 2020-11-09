@@ -95,7 +95,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             })
                     } else {
                         (offerScroll.adapter as? OfferAdapter)?.submitList(
-                            listOf(
+                            listOfNotNull(
                                 OfferModel.Header(data),
                                 OfferModel.Info,
                                 OfferModel.Facts(data),
