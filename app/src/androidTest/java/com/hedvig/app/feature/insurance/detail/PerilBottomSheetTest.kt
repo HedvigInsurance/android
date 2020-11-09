@@ -49,6 +49,11 @@ class PerilBottomSheetTest {
                         }
                     }
                     chevron.click()
+                    sheetRecycler {
+                        childAt<ContractDetailScreen.CoverageTab.Title>(1) {
+                            title.hasAnyText()
+                        }
+                    }
                 }
             }
         }

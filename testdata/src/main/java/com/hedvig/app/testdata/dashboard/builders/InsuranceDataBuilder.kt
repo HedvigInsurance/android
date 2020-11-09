@@ -3,11 +3,11 @@ package com.hedvig.app.testdata.dashboard.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
-import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
+import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import java.time.LocalDate
 
 class InsuranceDataBuilder(
@@ -101,183 +101,7 @@ class InsuranceDataBuilder(
                     asSwedishHouseAgreement = null,
                     asDanishHomeContentAgreement = null
                 ),
-                perils = listOf(
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                ),
-                                covered = listOf(
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered"
-                                ),
-                                exceptions = listOf(
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions"
-                                ),
-                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                ),
-                                covered = listOf(
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered"
-                                ),
-                                exceptions = listOf(
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions"
-                                ),
-                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                ),
-                                covered = listOf(
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered"
-                                ),
-                                exceptions = listOf(
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions"
-                                ),
-                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                ),
-                                covered = listOf(
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered"
-                                ),
-                                exceptions = listOf(
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions"
-                                ),
-                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                ),
-                                covered = listOf(
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered",
-                                    "Covered"
-                                ),
-                                exceptions = listOf(
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions",
-                                    "Exceptions"
-                                ),
-                                info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
-                            )
-                        )
-
-                    )
-                ),
+                perils = PerilBuilder().build(),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
                         fragments = InsuranceQuery.InsurableLimit.Fragments(

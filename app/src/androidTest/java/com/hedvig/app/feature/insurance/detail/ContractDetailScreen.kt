@@ -42,8 +42,12 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             val content = KTextView(parent) { withId(R.id.content) }
         }
 
-        class PerilBottomSheetScreen : Screen<PerilBottomSheetScreen>() {
-            val body = KTextView { withId(R.id.body) }
+        val sheetRecycler = KRecyclerView(parent, { withId(R.id.recycler) }, {
+            itemType(::Title)
+        })
+
+        class Title(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
+            val title = KTextView { withId(R.id.title) }
         }
     }
 

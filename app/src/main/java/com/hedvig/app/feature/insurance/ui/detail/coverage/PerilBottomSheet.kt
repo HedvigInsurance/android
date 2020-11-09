@@ -1,15 +1,16 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.os.bundleOf
+import com.bumptech.glide.RequestBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
@@ -26,10 +27,12 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import e
+import org.koin.android.ext.android.inject
 import java.util.ArrayList
 
 class PerilBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(PerilBottomSheetBinding::bind)
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,7 +60,10 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                 val shadow =
                     bottomSheetDialog.layoutInflater.inflate(R.layout.bottom_sheet_shadow, null)
                 val chevron = shadow.findViewById<ImageView>(R.id.chevron)
-                chevron.setHapticClickListener { expandSheet() }
+                chevron.setHapticClickListener {
+                    (dialog as? BottomSheetDialog)?.behavior?.state =
+                        BottomSheetBehavior.STATE_EXPANDED
+                }
 
                 shadow.layoutParams = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -73,7 +79,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                             override fun onStateChanged(bottomSheet: View, newState: Int) {
                                 when (newState) {
                                     BottomSheetBehavior.STATE_EXPANDED -> {
-                                        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                                         dialog?.window?.statusBarColor =
                                             requireContext().colorAttr(R.attr.colorSurface)
                                         if (!requireContext().isDarkThemeActive) {
@@ -94,7 +99,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                         defaultSystemUiVisibility?.let {
                                             dialog?.window?.decorView?.systemUiVisibility = it
                                         }
-                                        dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                                     }
                                     BottomSheetBehavior.STATE_COLLAPSED -> {
                                         close.setOnClickListener(null)
@@ -115,7 +119,7 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                 return
             }
 
-            recycler.adapter = CoveredAndExceptionAdapter().also {
+            recycler.adapter = PerilAdapter(requestBuilder).also {
                 safeLet(
                     title,
                     description,
@@ -132,23 +136,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun expandSheet() {
-        val parentLayout =
-            dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-
-        parentLayout?.let { parent ->
-            val behaviour = BottomSheetBehavior.from(parent)
-            setupFullHeight(parent)
-            behaviour.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-    }
-
-    private fun setupFullHeight(bottomSheet: View) {
-        val layoutParams = bottomSheet.layoutParams
-        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-        bottomSheet.layoutParams = layoutParams
-    }
-
     private fun expandedList(
         title: String,
         description: String,
@@ -156,25 +143,17 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         covered: ArrayList<String>,
         exceptions: ArrayList<String>,
         iconLink: String
-    ) = listOfNotNull(
+    ) = listOf(
         CoveredAndExceptionModel.Icon(iconLink),
         CoveredAndExceptionModel.Title(title),
         CoveredAndExceptionModel.Description(description),
         CoveredAndExceptionModel.Header.CoveredHeader,
-        *coveredItems(covered).toTypedArray(),
+        *covered.map { CoveredAndExceptionModel.CommonDenominator.Covered(it) }.toTypedArray(),
         CoveredAndExceptionModel.Header.ExceptionHeader,
-        *exceptionItems(exceptions).toTypedArray(),
+        *exceptions.map { CoveredAndExceptionModel.CommonDenominator.Exception(it) }.toTypedArray(),
         CoveredAndExceptionModel.Header.InfoHeader,
         CoveredAndExceptionModel.Paragraph(info)
     )
-
-    private fun coveredItems(list: ArrayList<String>) = list.map {
-        CoveredAndExceptionModel.Covered(it)
-    }
-
-    private fun exceptionItems(list: ArrayList<String>) = list.map {
-        CoveredAndExceptionModel.Exception(it)
-    }
 
     companion object {
         private const val TITLE = "TITLE"
