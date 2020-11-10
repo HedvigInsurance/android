@@ -86,6 +86,7 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.trustly.TrustlyViewModel
@@ -233,6 +234,7 @@ val viewModelModule = module {
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { ZignSecAuthViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get()) }
 }
 
 val marketPickerModule = module {
