@@ -132,8 +132,10 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
             ),
             displayName = "Hemförsäkring",
             typeOfContract = TypeOfContract.SE_APARTMENT_RENT,
-            upcomingRenewal = InsuranceQuery.UpcomingRenewal(renewalDate = LocalDate.now(),
-                draftCertificateUrl = "https://www.example.com"),
+            upcomingRenewal = InsuranceQuery.UpcomingRenewal(
+                renewalDate = LocalDate.now(),
+                draftCertificateUrl = "https://www.example.com"
+            ),
             currentAgreement = InsuranceQuery.CurrentAgreement(
                 asAgreementCore = InsuranceQuery.AsAgreementCore(
                     certificateUrl = "https://www.example.com"
@@ -441,6 +443,14 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
 
         val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL = InsuranceQuery.Data(
             listOf(NORWEGIAN_HOME_CONTENTS_CONTRACT, NORWEGIAN_TRAVEL_CONTRACT)
+        )
+
+        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL_AND_SWEDISH_APARTMENT = InsuranceQuery.Data(
+            listOf(
+                NORWEGIAN_HOME_CONTENTS_CONTRACT,
+                NORWEGIAN_TRAVEL_CONTRACT,
+                SWEDISH_APARTMENT_CONTRACT
+            )
         )
     }
 }
