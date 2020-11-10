@@ -19,6 +19,7 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import org.awaitility.Duration
@@ -54,11 +55,9 @@ class ForeverDeepLinkTest {
 
     @Before
     fun setup() {
-        previousLoginStatus = ApplicationProvider.getApplicationContext<Context>().isLoggedIn()
+        previousLoginStatus = context().isLoggedIn()
 
-        ApplicationProvider
-            .getApplicationContext<Context>()
-            .setIsLoggedIn(true)
+        context().setIsLoggedIn(true)
     }
 
     @Test
@@ -66,10 +65,7 @@ class ForeverDeepLinkTest {
         activityRule.launchActivity(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
-                    "https://${
-                        ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.FIREBASE_LINK_DOMAIN)
-                    }/forever"
+                    "https://${context().getString(R.string.FIREBASE_LINK_DOMAIN)}/forever"
                 )
             }
         )
@@ -92,6 +88,6 @@ class ForeverDeepLinkTest {
 
     @After
     fun teardown() {
-        ApplicationProvider.getApplicationContext<Context>().setIsLoggedIn(previousLoginStatus)
+        context().setIsLoggedIn(previousLoginStatus)
     }
 }
