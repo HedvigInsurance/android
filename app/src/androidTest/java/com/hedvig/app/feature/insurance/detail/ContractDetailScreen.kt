@@ -29,7 +29,6 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             itemType(::Peril)
             itemType(::Row)
         })
-        val chevron = KImageView { withId(R.id.chevron) }
 
         class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
             val text = KTextView { withMatcher(parent) }
@@ -42,12 +41,15 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             val content = KTextView(parent) { withId(R.id.content) }
         }
 
-        val sheetRecycler = KRecyclerView(parent, { withId(R.id.recycler) }, {
-            itemType(::Title)
-        })
+        class BottomSheetScreen : Screen<BottomSheetScreen>() {
+            val sheetRecycler = KRecyclerView({ withId(R.id.recycler) }, {
+                itemType(::Title)
+            })
+            val chevron = KImageView { withId(R.id.chevron) }
 
-        class Title(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
-            val title = KTextView { withId(R.id.title) }
+            class Title(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
+                val title = KTextView { withId(R.id.title) }
+            }
         }
     }
 

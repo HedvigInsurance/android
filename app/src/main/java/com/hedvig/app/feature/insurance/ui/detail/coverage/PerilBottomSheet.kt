@@ -26,6 +26,7 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
+import d
 import e
 import org.koin.android.ext.android.inject
 import java.util.ArrayList
@@ -108,7 +109,12 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
 
                             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                                 close.alpha = slideOffset
-                                shadow.alpha = 1 - slideOffset
+                                if (slideOffset < 0) {
+                                    shadow.alpha = (slideOffset + 1f) * 0.5f
+                                } else {
+                                    shadow.alpha = 1 - slideOffset
+                                }
+                                d { slideOffset.toString() }
                             }
                         })
                 }
@@ -144,15 +150,15 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         exceptions: ArrayList<String>,
         iconLink: String
     ) = listOf(
-        CoveredAndExceptionModel.Icon(iconLink),
-        CoveredAndExceptionModel.Title(title),
-        CoveredAndExceptionModel.Description(description),
-        CoveredAndExceptionModel.Header.CoveredHeader,
-        *covered.map { CoveredAndExceptionModel.CommonDenominator.Covered(it) }.toTypedArray(),
-        CoveredAndExceptionModel.Header.ExceptionHeader,
-        *exceptions.map { CoveredAndExceptionModel.CommonDenominator.Exception(it) }.toTypedArray(),
-        CoveredAndExceptionModel.Header.InfoHeader,
-        CoveredAndExceptionModel.Paragraph(info)
+        PerilModel.Icon(iconLink),
+        PerilModel.Title(title),
+        PerilModel.Description(description),
+        PerilModel.Header.CoveredHeader,
+        *covered.map { PerilModel.PerilList.Covered(it) }.toTypedArray(),
+        PerilModel.Header.ExceptionHeader,
+        *exceptions.map { PerilModel.PerilList.Exception(it) }.toTypedArray(),
+        PerilModel.Header.InfoHeader,
+        PerilModel.Paragraph(info)
     )
 
     companion object {

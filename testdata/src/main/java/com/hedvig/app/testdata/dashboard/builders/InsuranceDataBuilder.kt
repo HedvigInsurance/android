@@ -101,7 +101,7 @@ class InsuranceDataBuilder(
                     asSwedishHouseAgreement = null,
                     asDanishHomeContentAgreement = null
                 ),
-                perils = PerilBuilder().insuranceQueryBuild(),
+                perils = PerilBuilder().insuranceQueryBuild(5),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
                         fragments = InsuranceQuery.InsurableLimit.Fragments(

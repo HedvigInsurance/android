@@ -26,7 +26,7 @@ data class OfferDataBuilder(
     private val extraBuildings: List<OfferQuery.ExtraBuilding> = emptyList(),
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
-    private val perils: List<OfferQuery.Peril> = PerilBuilder().offerQueryBuild(),
+    private val perils: List<OfferQuery.Peril> = PerilBuilder().offerQueryBuild(5),
     private val termsAndConditionsUrl: String = "https://www.example.com",
     private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
     private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),

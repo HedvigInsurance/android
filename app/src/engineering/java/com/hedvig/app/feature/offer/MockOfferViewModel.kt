@@ -128,7 +128,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = PerilBuilder().offerQueryBuild(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"
@@ -212,7 +212,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = PerilBuilder().offerQueryBuild(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"

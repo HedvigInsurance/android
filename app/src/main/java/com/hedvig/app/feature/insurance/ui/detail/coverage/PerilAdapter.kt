@@ -21,7 +21,7 @@ import e
 class PerilAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>
 ) :
-    ListAdapter<CoveredAndExceptionModel, PerilAdapter.ViewHolder>(
+    ListAdapter<PerilModel, PerilAdapter.ViewHolder>(
         GenericDiffUtilItemCallback()
     ) {
 
@@ -42,24 +42,24 @@ class PerilAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        CoveredAndExceptionModel.Header.CoveredHeader -> R.layout.covered_and_exception_header
-        CoveredAndExceptionModel.Header.ExceptionHeader -> R.layout.covered_and_exception_header
-        CoveredAndExceptionModel.Header.InfoHeader -> R.layout.covered_and_exception_header
-        is CoveredAndExceptionModel.Paragraph -> R.layout.peril_paragraph
-        is CoveredAndExceptionModel.Icon -> R.layout.peril_icon
-        is CoveredAndExceptionModel.Title -> R.layout.peril_title
-        is CoveredAndExceptionModel.Description -> R.layout.peril_description
-        is CoveredAndExceptionModel.CommonDenominator.Covered -> R.layout.covered_and_exception_item
-        is CoveredAndExceptionModel.CommonDenominator.Exception -> R.layout.covered_and_exception_item
+        PerilModel.Header.CoveredHeader -> R.layout.covered_and_exception_header
+        PerilModel.Header.ExceptionHeader -> R.layout.covered_and_exception_header
+        PerilModel.Header.InfoHeader -> R.layout.covered_and_exception_header
+        is PerilModel.Paragraph -> R.layout.peril_paragraph
+        is PerilModel.Icon -> R.layout.peril_icon
+        is PerilModel.Title -> R.layout.peril_title
+        is PerilModel.Description -> R.layout.peril_description
+        is PerilModel.PerilList.Covered -> R.layout.covered_and_exception_item
+        is PerilModel.PerilList.Exception -> R.layout.covered_and_exception_item
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
-            item: CoveredAndExceptionModel,
+            item: PerilModel,
             requestBuilder: RequestBuilder<PictureDrawable>
         )
 
-        fun invalid(data: CoveredAndExceptionModel) {
+        fun invalid(data: PerilModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
@@ -67,20 +67,20 @@ class PerilAdapter(
             ViewHolder(parent.inflate(R.layout.covered_and_exception_item)) {
             private val binding by viewBinding(CoveredAndExceptionItemBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.CommonDenominator) {
+                if (item !is PerilModel.PerilList) {
                     invalid(item)
                     return
                 }
                 binding.apply {
                     when (item) {
-                        is CoveredAndExceptionModel.CommonDenominator.Covered -> {
+                        is PerilModel.PerilList.Covered -> {
                             icon.setImageResource(R.drawable.ic_checkmark_in_circle)
                             text.text = item.text
                         }
-                        is CoveredAndExceptionModel.CommonDenominator.Exception -> {
+                        is PerilModel.PerilList.Exception -> {
                             icon.setImageResource(R.drawable.ic_terminated_colorless)
                             text.text = item.text
                         }
@@ -93,23 +93,23 @@ class PerilAdapter(
             ViewHolder(parent.inflate(R.layout.covered_and_exception_header)) {
             private val binding by viewBinding(CoveredAndExceptionHeaderBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.Header) {
+                if (item !is PerilModel.Header) {
                     invalid(item)
                     return
                 }
                 binding.root.apply {
                     setText(
                         when (item) {
-                            CoveredAndExceptionModel.Header.CoveredHeader -> {
+                            PerilModel.Header.CoveredHeader -> {
                                 R.string.PERIL_MODAL_COVERAGE_TITLE
                             }
-                            CoveredAndExceptionModel.Header.ExceptionHeader -> {
+                            PerilModel.Header.ExceptionHeader -> {
                                 R.string.PERIL_MODAL_EXCEPTIONS_TITLE
                             }
-                            CoveredAndExceptionModel.Header.InfoHeader -> {
+                            PerilModel.Header.InfoHeader -> {
                                 R.string.PERIL_MODAL_INFO_TITLE
                             }
                         }
@@ -121,10 +121,10 @@ class PerilAdapter(
         class Paragraph(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_paragraph)) {
             private val binding by viewBinding(PerilParagraphBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.Paragraph) {
+                if (item !is PerilModel.Paragraph) {
                     invalid(item)
                     return
                 }
@@ -135,10 +135,10 @@ class PerilAdapter(
         class Icon(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_icon)) {
             private val binding by viewBinding(PerilIconBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.Icon) {
+                if (item !is PerilModel.Icon) {
                     invalid(item)
                     return
                 }
@@ -151,10 +151,10 @@ class PerilAdapter(
         class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_title)) {
             private val binding by viewBinding(PerilTitleBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.Title) {
+                if (item !is PerilModel.Title) {
                     invalid(item)
                     return
                 }
@@ -166,10 +166,10 @@ class PerilAdapter(
             ViewHolder(parent.inflate(R.layout.peril_description)) {
             private val binding by viewBinding(PerilDescriptionBinding::bind)
             override fun bind(
-                item: CoveredAndExceptionModel,
+                item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
             ) {
-                if (item !is CoveredAndExceptionModel.Description) {
+                if (item !is PerilModel.Description) {
                     invalid(item)
                     return
                 }
