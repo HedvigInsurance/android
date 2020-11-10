@@ -13,5 +13,7 @@ fun TextView.setStrikethrough(strikethrough: Boolean) {
 }
 
 fun TextView.setMarkdownText(text: String) {
-    Markwon.create(context).setMarkdown(this, text)
+    Markwon
+        .create(context)
+        .setMarkdown(this, text)
 }
