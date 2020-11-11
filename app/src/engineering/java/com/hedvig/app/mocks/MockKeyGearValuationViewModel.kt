@@ -41,7 +41,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 )
             )
         )
-        Handler().postDelayed({
+        Handler(getMainLooper()).postDelayed({
             // uploadResult.postValue()
         }, 500L)
     }

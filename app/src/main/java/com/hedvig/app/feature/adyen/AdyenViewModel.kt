@@ -19,10 +19,9 @@ class AdyenViewModelImpl(
 
     init {
         viewModelScope.launch {
-            val response = kotlin.runCatching {
+            val response = runCatching {
                 adyenRepository
-                    .paymentMethodsAsync()
-                    .await()
+                    .paymentMethods()
             }
 
             if (response.isFailure) {

@@ -27,8 +27,7 @@ class ContractDetailViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 insuranceRepository
-                    .dashboardAsync()
-                    .await()
+                    .insurance()
             }
 
             if (response.isFailure) {
@@ -48,14 +47,14 @@ class ContractDetailViewModelImpl(
                 .getOrNull()
                 ?.data
                 ?.contracts
-                ?.firstOrNull { it.id == id }?.let {contract ->
+                ?.firstOrNull { it.id == id }?.let { contract ->
                     _data.postValue(Result.success(contract))
                 }
         }
     }
 
     override suspend fun triggerFreeTextChat() {
-        val response = runCatching { chatRepository.triggerFreeTextChatAsync().await() }
+        val response = runCatching { chatRepository.triggerFreeTextChat() }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e(it) }
         }

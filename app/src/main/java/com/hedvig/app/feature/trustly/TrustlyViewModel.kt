@@ -17,7 +17,7 @@ class TrustlyViewModelImpl(
 ) : TrustlyViewModel() {
     init {
         viewModelScope.launch {
-            val response = runCatching { repository.startTrustlySessionAsync().await() }
+            val response = runCatching { repository.startTrustlySession() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch

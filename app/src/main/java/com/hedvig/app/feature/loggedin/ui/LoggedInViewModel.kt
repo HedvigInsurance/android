@@ -42,8 +42,7 @@ class LoggedInViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 loggedInRepository
-                    .loggedInDataAsync()
-                    .await()
+                    .loggedInData()
             }
 
             response.getOrNull()?.data?.let { _data.postValue(it) }

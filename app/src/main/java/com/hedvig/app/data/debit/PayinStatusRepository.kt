@@ -1,6 +1,6 @@
 package com.hedvig.app.data.debit
 
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -24,7 +24,6 @@ class PayinStatusRepository(
             .toBuilder()
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             .build()
-            .toDeferred()
             .await()
 
         response.data?.let { data ->
