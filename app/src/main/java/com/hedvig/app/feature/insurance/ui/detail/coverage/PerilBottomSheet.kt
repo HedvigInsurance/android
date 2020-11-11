@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -79,6 +80,9 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                     defaultSystemUiVisibility?.let {
                                         dialog?.window?.decorView?.systemUiVisibility = it
                                     }
+                                }
+                                STATE_COLLAPSED -> {
+                                    close.setOnClickListener(null)
                                 }
                             }
                         }
