@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.referrals
 
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 
@@ -13,7 +14,7 @@ class MockReferralsViewModel : ReferralsViewModel() {
 
     override fun load() {
         if (shouldSucceed) {
-            Handler().postDelayed({
+            Handler(getMainLooper()).postDelayed({
                 if (!hasLoadedOnce) {
                     hasLoadedOnce = true
                     _data.postValue(Result.success(referralsData))

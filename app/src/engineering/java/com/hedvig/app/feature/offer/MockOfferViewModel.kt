@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -21,7 +22,7 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        Handler().postDelayed({
+        Handler(getMainLooper()).postDelayed({
             data.postValue(mockData)
         }, 500)
     }
