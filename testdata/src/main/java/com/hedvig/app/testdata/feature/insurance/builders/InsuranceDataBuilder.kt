@@ -3,7 +3,6 @@ package com.hedvig.app.testdata.feature.insurance.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
-import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
@@ -122,103 +121,7 @@ class InsuranceDataBuilder(
                         null
                     },
                 ),
-                perils = listOf(
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-
-                    ),
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(
-                            PerilFragment(
-                                title = "Mock",
-                                description = "Mock",
-                                icon = PerilFragment.Icon(
-                                    variants = PerilFragment.Variants(
-                                        dark = PerilFragment.Dark(
-                                            svgUrl = "/app-content-service/fire_dark.svg"
-                                        ),
-                                        light = PerilFragment.Light(
-                                            svgUrl = "/app-content-service/fire.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-
-                    )
-                ),
+                perils = PerilBuilder().insuranceQueryBuild(5),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
                         fragments = InsuranceQuery.InsurableLimit.Fragments(

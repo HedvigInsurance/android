@@ -12,7 +12,6 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
-import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
@@ -95,7 +94,8 @@ class CoverageAdapter(
                     TypeOfContract.DK_HOME_CONTENT_OWN,
                     TypeOfContract.DK_HOME_CONTENT_RENT,
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT, -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+                    -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
                     TypeOfContract.NO_TRAVEL,
                     TypeOfContract.NO_TRAVEL_YOUTH -> context.getString(R.string.INSURANCE_TYPE_TRAVEL_DEFINITE)
                     TypeOfContract.UNKNOWN__ -> ""

@@ -5,7 +5,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
-import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -15,28 +15,24 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class CoverageTest {
+class PerilBottomSheetTest {
     @get:Rule
     val activityRule = ActivityTestRule(ContractDetailActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
-            )
-        }
+        InsuranceQuery.QUERY_DOCUMENT to apolloResponse { success(INSURANCE_DATA_SWEDISH_HOUSE) }
     )
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowCoverageItems() {
+    fun shouldExpandBottomSheet() {
         activityRule.launchActivity(
             ContractDetailActivity.newInstance(
                 context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id
+                INSURANCE_DATA_SWEDISH_HOUSE.contracts[0].id
             )
         )
 
@@ -46,10 +42,18 @@ class CoverageTest {
                     recycler {
                         hasSize(
                             2
-                                + INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].let { it.perils.size + it.insurableLimits.size }
+                                + INSURANCE_DATA_SWEDISH_HOUSE.contracts[0].let { it.perils.size + it.insurableLimits.size }
                         )
                         childAt<ContractDetailScreen.CoverageTab.Peril>(3) {
                             click()
+                        }
+                    }
+                    onScreen<ContractDetailScreen.CoverageTab.PerilBottomSheetScreen> {
+                        chevron.click()
+                        sheetRecycler {
+                            childAt<ContractDetailScreen.CoverageTab.PerilBottomSheetScreen.Title>(1) {
+                                title.hasAnyText()
+                            }
                         }
                     }
                 }
