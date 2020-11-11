@@ -89,7 +89,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         val contracts = successData.contracts.map(InsuranceModel::Contract).let { contractModels ->
             if (hasNotOnlyTerminatedContracts(successData.contracts)) {
-                contractModels.filter { it.inner.status.fragments.contractStatusFragment.asTerminatedStatus != null }
+                contractModels.filter { it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null }
             } else {
                 contractModels
             }
