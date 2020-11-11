@@ -6,40 +6,43 @@ import android.os.Bundle
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.android.synthetic.main.activity_payment_history.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class PaymentHistoryActivity : BaseActivity() {
+class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
+    private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
     private val profileViewModel: ProfileViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_history)
 
-        paymentHistory.setEdgeToEdgeSystemUiFlags(true)
-        paymentHistory.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-        paymentHistory.setupToolbarScrollListener(toolbar)
+        binding.apply {
+            paymentHistory.setEdgeToEdgeSystemUiFlags(true)
+            paymentHistory.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+            paymentHistory.setupToolbarScrollListener(toolbar)
 
-        paymentHistory.adapter = PaymentHistoryAdapter()
+            paymentHistory.adapter = PaymentHistoryAdapter()
 
-        profileViewModel.data.observe(lifecycleOwner = this) { data ->
-            data?.chargeHistory?.let { chargeHistory ->
-                (paymentHistory.adapter as? PaymentHistoryAdapter)?.items =
-                    listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+            profileViewModel.data.observe(this@PaymentHistoryActivity) { data ->
+                data?.chargeHistory?.let { chargeHistory ->
+                    (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
+                        listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+                    )
+                }
             }
         }
     }

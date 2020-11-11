@@ -2,12 +2,12 @@ package com.hedvig.app.feature.marketpicker
 
 import android.app.Dialog
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerItemLayoutBinding
 import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -16,27 +16,13 @@ class MarketItemAdapter(
     private val viewModel: MarketPickerViewModel,
     private val tracker: MarketPickerTracker,
     private val dialog: Dialog?
-) : RecyclerView.Adapter<MarketItemAdapter.ViewHolder>() {
-
-    var items: List<Market> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                GenericDiffUtilCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<Market, MarketItemAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], viewModel, tracker, dialog)
+        holder.bind(getItem(position), viewModel, tracker, dialog)
     }
-
-    override fun getItemCount() = items.size
 
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         parent.inflate(R.layout.picker_item_layout)

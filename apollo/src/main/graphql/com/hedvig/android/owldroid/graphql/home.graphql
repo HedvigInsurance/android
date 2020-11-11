@@ -3,6 +3,10 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     firstName
   }
   contracts {
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
+    }
     switchedFromInsuranceProvider
     status {
       ... on PendingStatus {

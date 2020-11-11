@@ -4,7 +4,6 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -17,6 +16,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -31,6 +31,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val tracker: HomeTracker by inject()
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val marketProvider: MarketProvider by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +65,17 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
-            adapter = HomeAdapter(parentFragmentManager, model::load, requestBuilder, tracker)
+            adapter = HomeAdapter(
+                parentFragmentManager,
+                model::load,
+                requestBuilder,
+                tracker,
+                marketProvider
+            )
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        (binding.recycler.adapter as? HomeAdapter)?.items?.getOrNull(position)
+                        (binding.recycler.adapter as? HomeAdapter)?.currentList?.getOrNull(position)
                             ?.let { item ->
                                 return when (item) {
                                     is HomeModel.CommonClaim -> 1
@@ -95,27 +102,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 return@observe
             }
             if (homeData.isFailure) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.Error
-                )
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                 return@observe
             }
 
             val successData = homeData.getOrNull() ?: return@observe
             val firstName = successData.member.firstName
             if (firstName == null) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.Error
-                )
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Pending(
-                        firstName
-                    ),
-
-                    HomeModel.BodyText.Pending
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.Pending(
+                            firstName
+                        ), HomeModel.BodyText.Pending
+                    )
                 )
             }
             if (isActiveInFuture(successData.contracts)) {
@@ -125,49 +128,53 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         it.status.asActiveInFutureStatus?.futureInception
                             ?: it.status.asActiveInFutureAndTerminatedInFutureStatus?.futureInception
                     }
-                    .min()
+                    .minOrNull()
 
                 if (firstInceptionDate == null) {
-                    (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                        HomeModel.Error
-                    )
+                    (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
                     return@observe
                 }
 
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.ActiveInFuture(
-                        firstName,
-                        firstInceptionDate
-                    ),
-                    HomeModel.BodyText.ActiveInFuture
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.ActiveInFuture(
+                            firstName,
+                            firstInceptionDate
+                        ), HomeModel.BodyText.ActiveInFuture
+                    )
                 )
             }
 
             if (isTerminated(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOf(
-                    HomeModel.BigText.Terminated(firstName),
-                    HomeModel.BodyText.Terminated,
-                    HomeModel.StartClaimOutlined,
-                    HomeModel.HowClaimsWork(successData.howClaimsWork)
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOf(
+                        HomeModel.BigText.Terminated(firstName),
+                        HomeModel.BodyText.Terminated,
+                        HomeModel.StartClaimOutlined,
+                        HomeModel.HowClaimsWork(successData.howClaimsWork)
                     )
+                )
             }
 
             if (isActive(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.items = listOfNotNull(
-                    *psaItems(successData.importantMessages).toTypedArray(),
-                    HomeModel.BigText.Active(firstName),
-                    HomeModel.StartClaimContained,
-                    HomeModel.HowClaimsWork(successData.howClaimsWork),
-                    if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                        HomeModel.ConnectPayin
-                    } else {
-                        null
-                    },
-                    HomeModel.CommonClaimTitle,
-                    *commonClaimsItems(
-                        successData.commonClaims,
-                        successData.isEligibleToCreateClaim
-                    ).toTypedArray()
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                    listOfNotNull(
+                        *psaItems(successData.importantMessages).toTypedArray(),
+                        HomeModel.BigText.Active(firstName),
+                        HomeModel.StartClaimContained,
+                        HomeModel.HowClaimsWork(successData.howClaimsWork),
+                        *upcomingRenewals(successData.contracts).toTypedArray(),
+                        if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+                            HomeModel.ConnectPayin
+                        } else {
+                            null
+                        },
+                        HomeModel.CommonClaimTitle,
+                        *commonClaimsItems(
+                            successData.commonClaims,
+                            successData.isEligibleToCreateClaim
+                        ).toTypedArray()
+                    )
                 )
             }
         }
@@ -178,6 +185,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     ) = importantMessages
         .filterNotNull()
         .map { HomeModel.PSA(it) }
+
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+        contracts.mapNotNull { c ->
+            c.upcomingRenewal?.let {
+                HomeModel.UpcomingRenewal(it)
+            }
+        }
 
     private fun commonClaimsItems(
         commonClaims: List<HomeQuery.CommonClaim>,

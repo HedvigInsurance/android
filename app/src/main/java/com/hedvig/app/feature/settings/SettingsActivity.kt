@@ -11,33 +11,35 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.setMarket
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
+import com.hedvig.app.util.extensions.viewBinding
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.android.synthetic.main.activity_settings.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : BaseActivity(R.layout.activity_settings) {
+    private val binding by viewBinding(ActivitySettingsBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
         supportFragmentManager
@@ -50,6 +52,7 @@ class SettingsActivity : BaseActivity() {
         private val mixpanel: MixpanelAPI by inject()
         private val marketProvider: MarketProvider by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
+        private val model: SettingsViewModel by viewModel()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -96,7 +99,7 @@ class SettingsActivity : BaseActivity() {
                                 )
                                 requireContext().setAuthenticationToken(null)
                                 requireContext().setIsLoggedIn(false)
-                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 mixpanel.reset()
                                 requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }
@@ -120,7 +123,8 @@ class SettingsActivity : BaseActivity() {
                     }
                     Market.DK -> {
                         lp.entries = resources.getStringArray(R.array.language_settings_dk)
-                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
+                        lp.entryValues =
+                            resources.getStringArray(R.array.language_settings_values_dk)
                     }
                 }
 
@@ -131,7 +135,9 @@ class SettingsActivity : BaseActivity() {
                     (newValue as? String)?.let { v ->
                         Language
                             .from(v)
-                            .apply(requireContext())
+                            .apply(requireContext())?.let { ctx ->
+                                model.save(makeLocaleString(ctx), defaultLocale(ctx))
+                            }
                         LocalBroadcastManager
                             .getInstance(requireContext())
                             .sendBroadcast(Intent(LOCALE_BROADCAST))

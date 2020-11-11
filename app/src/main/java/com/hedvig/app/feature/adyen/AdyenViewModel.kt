@@ -9,17 +9,15 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class AdyenViewModel : ViewModel() {
-    abstract val paymentMethods: LiveData<PaymentMethodsApiResponse>
-
-    abstract fun loadPaymentMethods()
+    protected val _paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
+    val paymentMethods: LiveData<PaymentMethodsApiResponse> = _paymentMethods
 }
 
 class AdyenViewModelImpl(
     private val adyenRepository: AdyenRepository
 ) : AdyenViewModel() {
-    override val paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
 
-    override fun loadPaymentMethods() {
+    init {
         viewModelScope.launch {
             val response = kotlin.runCatching {
                 adyenRepository
@@ -32,9 +30,11 @@ class AdyenViewModelImpl(
                 return@launch
             }
 
-            paymentMethods.postValue(
-                response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse
-            )
+            response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse?.let {
+                _paymentMethods.postValue(
+                    it
+                )
+            }
         }
     }
 }

@@ -4,13 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -24,13 +24,7 @@ import kotlinx.coroutines.withContext
 
 class ProfileAdapter(
     private val lifecycleOwner: LifecycleOwner
-) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
-    var items: List<ProfileModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(GenericDiffUtilCallback(field, value))
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.profile_title -> ViewHolder.Title(parent)
@@ -40,7 +34,7 @@ class ProfileAdapter(
         else -> throw Error("Invalid viewType")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         ProfileModel.Title -> R.layout.profile_title
         is ProfileModel.Row -> R.layout.profile_row
         ProfileModel.Subtitle -> R.layout.profile_subtitle
@@ -48,10 +42,8 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], lifecycleOwner)
+        holder.bind(getItem(position), lifecycleOwner)
     }
-
-    override fun getItemCount() = items.size
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner): Any?
@@ -92,7 +84,7 @@ class ProfileAdapter(
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                FirebaseInstanceId.getInstance().deleteInstanceId()
+                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
                                 }

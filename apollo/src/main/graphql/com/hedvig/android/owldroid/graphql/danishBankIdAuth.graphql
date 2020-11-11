@@ -1,0 +1,5 @@
+mutation DanishAuth {
+  danishBankIdAuth {
+    redirectUrl
+  }
+}

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.LanguagePickerBottomSheetBinding
@@ -30,12 +29,13 @@ class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
             recycler.adapter = LanguagePickerBottomSheetAdapter(model, tracker, dialog)
             model.data.observe(viewLifecycleOwner) { state ->
                 state.market?.let { market ->
-                    (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.items =
+                    (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.submitList(
                         listOf(
                             LanguageAdapterModel.Header,
                             LanguageAdapterModel.Description,
                             LanguageAdapterModel.LanguageList(Language.getAvailableLanguages(market))
                         )
+                    )
                 }
             }
         }

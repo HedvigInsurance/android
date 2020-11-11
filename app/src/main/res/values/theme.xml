@@ -21,9 +21,11 @@
         <item name="textColorLargeButton">@color/textColorLargeButton</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
-        <item name="textColorThird">@color/textColorThird</item>
+        <item name="android:textColorTertiary">@color/textColorThird</item>
         <item name="fontFamily">@font/favorit_book</item>
         <item name="android:fontFamily">@font/favorit_book</item>
+
+        <item name="android:windowActivityTransitions">true</item>
 
         <item name="shapeAppearanceLargeComponent">
             @style/Hedvig.ShapeAppearance.LargeComponent
@@ -40,6 +42,7 @@
         <!-- Button Variants -->
         <item name="materialButtonContainedLargeStyle">@style/Hedvig.Button.Large</item>
         <item name="materialButtonOutlinedLargeStyle">@style/Hedvig.Button.Outlined.Large</item>
+        <item name="materialButtonOutlinedStyle">@style/Hedvig.Button.Outlined</item>
         <item name="materialButtonTextStyle">@style/Hedvig.Button.Text</item>
 
         <!-- Material Typography variants -->
@@ -66,7 +69,7 @@
         <item name="actionMenuTextColor">@color/hedvig_text_button_state</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="materialAlertDialogTheme">@style/AlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Hedvig.Dialog.Alert</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -78,15 +81,8 @@
     <attr name="colorButton" format="reference" />
     <attr name="textColorLink" format="reference" />
     <attr name="textColorLargeButton" format="reference" />
-    <attr name="textColorThird" format="reference" />
     <attr name="colorPlaceholder" format="reference" />
     <attr name="colorWarning" format="reference" />
-
-    <style name="AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="buttonBarButtonStyle">?materialButtonTextStyle</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:letterSpacing">0</item>
-    </style>
 
     <style name="Hedvig.Theme.Widgets.Chat.Hedvig" parent="Hedvig.Theme">
         <item name="colorSurface">@color/colorChatHedvigBackground</item>

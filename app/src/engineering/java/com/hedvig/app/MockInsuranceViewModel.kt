@@ -72,7 +72,8 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                 ),
                 asNorwegianHomeContentAgreement = null,
                 asNorwegianTravelAgreement = null,
-                asSwedishApartmentAgreement = null
+                asSwedishApartmentAgreement = null,
+                asDanishHomeContentAgreement = null
             ),
             perils = listOf(
                 InsuranceQuery.Peril(
@@ -153,7 +154,8 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                 ),
                 asNorwegianHomeContentAgreement = null,
                 asNorwegianTravelAgreement = null,
-                asSwedishHouseAgreement = null
+                asSwedishHouseAgreement = null,
+                asDanishHomeContentAgreement = null
             ),
             perils = listOf(
                 InsuranceQuery.Peril(
@@ -311,7 +313,8 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                 ),
                 asSwedishApartmentAgreement = null,
                 asNorwegianTravelAgreement = null,
-                asSwedishHouseAgreement = null
+                asSwedishHouseAgreement = null,
+                asDanishHomeContentAgreement = null
             ),
             perils = listOf(
                 InsuranceQuery.Peril(
@@ -379,7 +382,8 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                     numberCoInsured = 2
                 ),
                 asSwedishApartmentAgreement = null,
-                asSwedishHouseAgreement = null
+                asSwedishHouseAgreement = null,
+                asDanishHomeContentAgreement = null
             ),
             perils = listOf(
                 InsuranceQuery.Peril(

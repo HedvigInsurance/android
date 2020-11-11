@@ -9,19 +9,20 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityReferralsEditCodeBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.dismissKeyboard
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_referrals_edit_code.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
+    private val binding by viewBinding(ActivityReferralsEditCodeBinding::bind)
     private val tracker: ReferralsTracker by inject()
     private val model: ReferralsEditCodeViewModel by viewModel()
 
@@ -32,136 +33,129 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        root.setEdgeToEdgeSystemUiFlags(true)
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
 
-        toolbar.doOnLayout { applyInsets(it.height) }
+            toolbar.doOnLayout { applyInsets(it.height) }
 
-        toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            applyInsets(view.height)
-        }
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                applyInsets(view.height)
+            }
 
-        scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
+            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
 
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-        toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.save -> {
-                    tracker.submitCode()
-                    toolbar.dismissKeyboard()
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+            toolbar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.save -> {
+                        tracker.submitCode()
+                        toolbar.dismissKeyboard()
+                        submit()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            val currentCode = intent.getStringExtra(CODE)
+
+            if (currentCode == null) {
+                e { "Programmer error: `CODE` not passed to ${this.javaClass.name}" }
+            }
+
+            code.setText(currentCode)
+            code.onChange { newValue ->
+                model.setIsDirty()
+                when (validate(newValue)) {
+                    ValidationResult.VALID -> {
+                        toolbar.menu.findItem(R.id.save).isEnabled = true
+                        codeContainer.error = null
+                    }
+                    ValidationResult.TOO_SHORT -> {
+                        toolbar.menu.findItem(R.id.save).isEnabled = false
+                        codeContainer.error = null
+                    }
+                    ValidationResult.TOO_LONG -> {
+                        toolbar.menu.findItem(R.id.save).isEnabled = false
+                        codeContainer.error =
+                            getString(R.string.referrals_change_code_sheet_error_max_length)
+                    }
+                }
+            }
+            code.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    code.dismissKeyboard()
                     submit()
-                    true
+                    return@setOnEditorActionListener true
                 }
-                else -> false
+                false
             }
-        }
 
-        val currentCode = intent.getStringExtra(CODE)
+            model.isSubmitting.observe(this@ReferralsEditCodeActivity) { iss ->
+                isSubmitting = iss
 
-        if (currentCode == null) {
-            e { "Programmer error: `CODE` not passed to ${this.javaClass.name}" }
-        }
-
-        code.setText(currentCode)
-        code.onChange { newValue ->
-            model.setIsDirty()
-            when (validate(newValue)) {
-                ValidationResult.VALID -> {
-                    toolbar.menu.findItem(R.id.save).isEnabled = true
-                    codeContainer.error = null
-                }
-                ValidationResult.TOO_SHORT -> {
-                    toolbar.menu.findItem(R.id.save).isEnabled = false
-                    codeContainer.error = null
-                }
-                ValidationResult.TOO_LONG -> {
-                    toolbar.menu.findItem(R.id.save).isEnabled = false
-                    codeContainer.error =
-                        getString(R.string.referrals_change_code_sheet_error_max_length)
+                toolbar.menu.findItem(R.id.save).let { save ->
+                    if (isSubmitting) {
+                        save.actionView = layoutInflater.inflate(
+                            R.layout.toolbar_loading_spinner,
+                            null
+                        )
+                        save.isEnabled = false
+                    } else {
+                        save.actionView = null
+                        save.isEnabled = true
+                    }
                 }
             }
-        }
-        code.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                code.dismissKeyboard()
-                submit()
-                return@setOnEditorActionListener true
-            }
-            false
-        }
+            model.dirty.observe(this@ReferralsEditCodeActivity) { dirty = it }
 
-        model.isSubmitting.observe(this) { iss ->
-            if (iss == null) {
-                return@observe
-            }
-            isSubmitting = iss
+            model.data.observe(this@ReferralsEditCodeActivity) { data ->
 
-            toolbar.menu.findItem(R.id.save).let { save ->
-                if (isSubmitting) {
-                    save.actionView = layoutInflater.inflate(
-                        R.layout.toolbar_loading_spinner,
-                        null
-                    )
-                    save.isEnabled = false
-                } else {
-                    save.actionView = null
-                    save.isEnabled = true
-                }
-            }
-        }
-        model.dirty.observe(this) {
-            if (it != null) {
-                dirty = it
-            }
-        }
-
-        model.data.observe(this) { data ->
-            if (data == null) {
-                return@observe
-            }
-
-            if (data.isFailure) {
-                codeContainer.error = getString(R.string.referrals_change_code_sheet_general_error)
-                return@observe
-            }
-
-            data.getOrNull()?.updateReferralCampaignCode?.let { urcc ->
-                urcc.asSuccessfullyUpdatedCode?.let {
-                    codeContainer.error = null
-                    finish()
-                    return@observe
-                }
-                urcc.asCodeAlreadyTaken?.let {
-                    codeContainer.error =
-                        getString(R.string.referrals_change_code_sheet_error_claimed_code)
-                    return@observe
-                }
-                urcc.asCodeTooShort?.let {
+                if (data.isFailure) {
                     codeContainer.error =
                         getString(R.string.referrals_change_code_sheet_general_error)
                     return@observe
                 }
-                urcc.asCodeTooLong?.let {
-                    codeContainer.error =
-                        getString(R.string.referrals_change_code_sheet_error_max_length)
-                    return@observe
-                }
-                urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
-                    codeContainer.error =
-                        getString(
-                            R.string.referrals_change_code_sheet_error_change_limit_reached,
-                            maximumNumberOfUpdates
-                        )
-                    return@observe
-                }
 
-                codeContainer.error =
-                    getString(R.string.referrals_change_code_sheet_general_error)
-                return@observe
+                data.getOrNull()?.updateReferralCampaignCode?.let { urcc ->
+                    urcc.asSuccessfullyUpdatedCode?.let {
+                        codeContainer.error = null
+                        finish()
+                        return@observe
+                    }
+                    urcc.asCodeAlreadyTaken?.let {
+                        codeContainer.error =
+                            getString(R.string.referrals_change_code_sheet_error_claimed_code)
+                        return@observe
+                    }
+                    urcc.asCodeTooShort?.let {
+                        codeContainer.error =
+                            getString(R.string.referrals_change_code_sheet_general_error)
+                        return@observe
+                    }
+                    urcc.asCodeTooLong?.let {
+                        codeContainer.error =
+                            getString(R.string.referrals_change_code_sheet_error_max_length)
+                        return@observe
+                    }
+                    urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
+                        codeContainer.error =
+                            getString(
+                                R.string.referrals_change_code_sheet_error_change_limit_reached,
+                                maximumNumberOfUpdates
+                            )
+                        return@observe
+                    }
+
+                    codeContainer.error =
+                        getString(R.string.referrals_change_code_sheet_general_error)
+                    return@observe
+                }
             }
         }
     }
@@ -193,14 +187,14 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         if (isSubmitting) {
             return
         }
-        val enteredCode = code.text.toString()
+        val enteredCode = binding.code.text.toString()
         if (validate(enteredCode) == ValidationResult.VALID) {
             model.changeCode(enteredCode)
         }
     }
 
     private fun applyInsets(toolbarHeight: Int) {
-        scrollView.updatePadding(top = toolbarHeight)
+        binding.scrollView.updatePadding(top = toolbarHeight)
     }
 
     companion object {

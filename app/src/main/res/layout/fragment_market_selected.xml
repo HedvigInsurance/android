@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:text="@string/MARKETING_SCREEN_CTA"
+        android:text="@string/MARKETING_GET_HEDVIG"
         android:transitionName="marketButton"
         app:layout_constraintBottom_toTopOf="@id/logIn" />
 

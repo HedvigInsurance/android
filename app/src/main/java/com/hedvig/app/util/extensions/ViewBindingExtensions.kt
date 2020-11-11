@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.hedvig.app.util.safeLet
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -23,9 +23,15 @@ inline fun <T : ViewBinding> RecyclerView.ViewHolder.viewBinding(crossinline bin
         binder(itemView)
     }
 
+inline fun <T : ViewBinding> ViewGroup.viewBinding(crossinline binder: (View) -> T) =
+    lazy(LazyThreadSafetyMode.NONE) {
+        binder(this)
+    }
+
 class FragmentViewBindingDelegate<T : ViewBinding>(
-    val fragment: Fragment,
-    val viewBindingFactory: (View) -> T
+    private val fragment: Fragment,
+    private val viewBindingFactory: (View) -> T,
+    private val cleanup: (T.() -> Unit)? = null
 ) : ReadOnlyProperty<Fragment, T> {
     private var binding: T? = null
 
@@ -35,6 +41,7 @@ class FragmentViewBindingDelegate<T : ViewBinding>(
                 fragment.viewLifecycleOwnerLiveData.observe(fragment) { viewLifecycleOwner ->
                     viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
                         override fun onDestroy(owner: LifecycleOwner) {
+                            safeLet(binding, cleanup) { binding, cleanup -> cleanup(binding) }
                             binding = null
                         }
                     })
@@ -58,5 +65,5 @@ class FragmentViewBindingDelegate<T : ViewBinding>(
     }
 }
 
-fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T) =
-    FragmentViewBindingDelegate(this, viewBindingFactory)
+fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T, cleanup: (T.() -> Unit)? = null) =
+    FragmentViewBindingDelegate(this, viewBindingFactory, cleanup)

@@ -7,7 +7,6 @@ import androidx.core.util.Pair
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
@@ -112,7 +111,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
     fun bind(data: KeyGearItemsQuery.Data) = with(binding) {
         binding.loadingSpinner.root.remove()
-        (items.adapter as? KeyGearItemsAdapter)?.items = data.keyGearItems
+        (items.adapter as? KeyGearItemsAdapter)?.submitList(data.keyGearItems)
         items.show()
 
         if (data.keyGearItems.isEmpty() || !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }) {

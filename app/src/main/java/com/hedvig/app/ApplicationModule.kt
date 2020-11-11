@@ -27,6 +27,7 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -35,10 +36,8 @@ import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModel
-import com.hedvig.app.feature.insurance.ui.contractcoverage.ContractCoverageViewModelImpl
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -50,7 +49,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -61,14 +59,13 @@ import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
+import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationRepository
-import com.hedvig.app.feature.norway.NorwegianAuthenticationViewModel
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -92,7 +89,11 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
+import com.hedvig.app.feature.trustly.TrustlyViewModel
+import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -100,8 +101,11 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
+import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
+import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
@@ -230,13 +234,10 @@ val viewModelModule = module {
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
     viewModel { UserViewModel(get(), get()) }
-    viewModel {
-        RedeemCodeViewModel(
-            get()
-        )
-    }
+    viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { NorwegianAuthenticationViewModel(get()) }
+    viewModel { ZignSecAuthViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get()) }
 }
 
 val marketPickerModule = module {
@@ -254,7 +255,6 @@ val whatsNewModule = module {
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
-    viewModel<ContractCoverageViewModel> { ContractCoverageViewModelImpl(get()) }
 }
 
 val marketingModule = module {
@@ -302,6 +302,14 @@ val homeModule = module {
     viewModel<HomeViewModel> { HomeViewModelImpl(get(), get()) }
 }
 
+val connectPaymentModule = module {
+    viewModel { ConnectPaymentViewModel(get(), get()) }
+}
+
+val trustlyModule = module {
+    viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -328,12 +336,13 @@ val repositoriesModule = module {
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
     single { MarketRepository(get()) }
-    single { NorwegianAuthenticationRepository(get()) }
     single { AdyenRepository(get(), get()) }
     single { EmbarkRepository(get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
+    single { ZignSecAuthRepository(get()) }
+    single { TrustlyRepository(get()) }
 }
 
 val trackerModule = module {
@@ -362,4 +371,8 @@ val marketPickerTrackerModule = module {
 
 val marketProviderModule = module {
     single<MarketProvider> { MarketProviderImpl(get(), get()) }
+}
+
+val notificationModule = module {
+    single { PaymentNotificationManager(get()) }
 }

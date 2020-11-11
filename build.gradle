@@ -21,7 +21,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.apollographql.apollo:apollo-gradle-plugin:$apollo_version"
         classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
-        classpath 'com.github.likandr:lokalise-plugin:1.3'
+        classpath "com.hedvig.android:lokalise-plugin:1.4"
         classpath "net.rdrei.android.buildtimetracker:gradle-plugin:0.11.1"
     }
 }

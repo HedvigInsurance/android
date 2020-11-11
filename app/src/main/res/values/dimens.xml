@@ -1,7 +1,5 @@
 <resources>
 
-    <dimen name="app_bar_height">128dp</dimen>
-
     <dimen name="base_margin_half">4dp</dimen>
     <dimen name="base_margin">8dp</dimen>
     <dimen name="base_margin_double">16dp</dimen>
@@ -130,5 +128,16 @@
     <dimen name="numbered_bullet_background_sphere_size">32sp</dimen>
     <dimen name="home_error_icon_size">32dp</dimen>
     <dimen name="dismissible_page_illustration_size">200dp</dimen>
-
+    <dimen name="pill_corner_radius">4dp</dimen>
+    <dimen name="pill_padding_vertical">4dp</dimen>
+    <dimen name="pill_padding_horizontal">6dp</dimen>
+    <dimen name="tab_layout_height">48dp</dimen>
+    <dimen name="upcoming_renewal_card_button_margin_bottom">1dp</dimen>
+    <dimen name="contract_card_height">200dp</dimen>
+    <dimen name="contract_card_logo_size">24dp</dimen>
+    <dimen name="contract_card_max_width">380dp</dimen>
+    <dimen name="contract_document_card">80dp</dimen>
+    <dimen name="peril_icon_size">24dp</dimen>
+    <dimen name="peril_card_size">56dp</dimen>
+    <dimen name="logged_in_card_elevation">1dp</dimen>
 </resources>

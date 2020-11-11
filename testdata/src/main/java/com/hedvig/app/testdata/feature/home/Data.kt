@@ -3,8 +3,14 @@ package com.hedvig.app.testdata.feature.home
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
+import java.time.LocalDate
 
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
+
+val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE, ContractStatus.ACTIVE),
+    renewalDate = LocalDate.now().plusDays(1L)
+).build()
 
 val HOME_DATA_ACTIVE_IN_FUTURE =
     HomeDataBuilder(listOf(ContractStatus.ACTIVE_IN_FUTURE)).build()

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
@@ -80,7 +79,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
 
         model.data.observe(viewLifecycleOwner) { data ->
-            (binding.recycler.adapter as? ProfileAdapter)?.items = listOf(
+            (binding.recycler.adapter as? ProfileAdapter)?.submitList(listOf(
                 ProfileModel.Title,
                 ProfileModel.Row(
                     getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -130,6 +129,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                 },
                 ProfileModel.Logout
+            )
             )
         }
     }

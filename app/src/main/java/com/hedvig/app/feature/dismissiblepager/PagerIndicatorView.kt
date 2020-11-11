@@ -3,14 +3,10 @@ package com.hedvig.app.feature.dismissiblepager
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.DiffUtil
 import com.hedvig.app.R
-import com.hedvig.app.util.GenericDiffUtilCallback
 import com.hedvig.app.util.boundedColorLerp
-import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setScaleXY

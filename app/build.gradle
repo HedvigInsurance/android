@@ -3,7 +3,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.likandr.lokalise'
+apply plugin: 'com.hedvig.android.lokalise'
 
 apply plugin: 'com.jaredsburrows.license'
 licenseReport {
@@ -25,7 +25,7 @@ android {
 
         minSdkVersion 23
         versionCode 43
-        versionName '4.6.0'
+        versionName '4.8.1'
 
         resValue "string", "build_config_package", "com.hedvig.app"
         vectorDrawables.useSupportLibrary = true
@@ -212,7 +212,7 @@ dependencies {
     implementation "dev.chrisbanes:insetter-ktx:0.2.1"
 
     // markwon
-    implementation "io.noties.markwon:core:4.2.1"
+    implementation "io.noties.markwon:core:4.6.0"
 
     // adyen
     implementation 'com.adyen.checkout:drop-in:3.6.4'
@@ -256,5 +256,7 @@ lokaliseProperties.load(new FileInputStream(rootProject.file("lokalise.propertie
 lokalise {
     id lokaliseProperties['id']
     token lokaliseProperties['token']
+
+    downloadConfig {}
 }
 

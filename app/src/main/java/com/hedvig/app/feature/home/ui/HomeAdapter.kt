@@ -5,28 +5,29 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
-import com.hedvig.app.databinding.HomeErrorBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
+import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
-import com.hedvig.app.feature.profile.ui.payment.connect.ConnectPaymentActivity
-import com.hedvig.app.util.GenericDiffUtilCallback
+import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -34,26 +35,18 @@ import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
     private val retry: () -> Unit,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
-    private val tracker: HomeTracker
-) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
-    var items: List<HomeModel> = emptyList()
-        set(value) {
-            val diff = DiffUtil.calculateDiff(
-                GenericDiffUtilCallback(
-                    field,
-                    value
-                )
-            )
-            field = value
-            diff.dispatchUpdatesTo(this)
-        }
+    private val tracker: HomeTracker,
+    private val marketProvider: MarketProvider
+) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
@@ -64,13 +57,13 @@ class HomeAdapter(
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
         R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
-        R.layout.home_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
+        R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
         else -> throw Error("Invalid view type")
     }
 
-    override fun getItemCount() = items.size
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
@@ -78,13 +71,21 @@ class HomeAdapter(
         is HomeModel.ConnectPayin -> R.layout.home_info_card
         HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
-        HomeModel.Error -> R.layout.home_error
+        HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
+        is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], fragmentManager, retry, requestBuilder, tracker)
+        holder.bind(
+            getItem(position),
+            fragmentManager,
+            retry,
+            requestBuilder,
+            tracker,
+            marketProvider
+        )
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -93,7 +94,8 @@ class HomeAdapter(
             fragmentManager: FragmentManager,
             retry: () -> Unit,
             requestBuilder: RequestBuilder<PictureDrawable>,
-            tracker: HomeTracker
+            tracker: HomeTracker,
+            marketProvider: MarketProvider
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -112,7 +114,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -155,7 +158,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -183,7 +187,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
@@ -204,7 +209,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
@@ -217,6 +223,40 @@ class HomeAdapter(
             }
         }
 
+        class UpcomingRenewal(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
+            private val binding by viewBinding(UpcomingRenewalCardBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
+            ): Any? = with(binding) {
+                if (data !is HomeModel.UpcomingRenewal) {
+                    return invalid(data)
+                }
+                val upcomingRenewal = data.upcomingRenewal
+                body.text = body.context.getString(
+                    R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+                    daysLeft(upcomingRenewal.renewalDate)
+                )
+
+                val maybeLinkUri = runCatching {
+                    Uri.parse(upcomingRenewal.draftCertificateUrl)
+                }
+                action.setHapticClickListener {
+                    tracker.showRenewal()
+                    maybeLinkUri.getOrNull()?.let { uri ->
+                        if (action.context.canOpenUri(uri)) {
+                            action.context.openUri(uri)
+                        }
+                    }
+                }
+            }
+        }
+
         class InfoCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_info_card)) {
             private val binding by viewBinding(HomeInfoCardBinding::bind)
             override fun bind(
@@ -224,7 +264,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ) = with(binding) {
                 if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
@@ -235,7 +276,8 @@ class HomeAdapter(
                 action.setText(R.string.info_card_missing_payment_button_text)
                 action.setHapticClickListener {
                     tracker.addPaymentMethod()
-                    action.context.startActivity(ConnectPaymentActivity.newInstance(action.context))
+                    marketProvider.market?.connectPayin(action.context)
+                        ?.let { action.context.startActivity(it) }
                 }
             }
         }
@@ -248,7 +290,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ) = with(binding) {
                 if (data !is HomeModel.PSA) {
                     return invalid(data)
@@ -270,7 +313,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = Unit
         }
 
@@ -282,7 +326,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
@@ -333,7 +378,8 @@ class HomeAdapter(
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 if (data !is HowClaimsWork) {
                     return invalid(data)
@@ -358,14 +404,15 @@ class HomeAdapter(
             }
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_error)) {
-            private val binding by viewBinding(HomeErrorBinding::bind)
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+            private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker
+                tracker: HomeTracker,
+                marketProvider: MarketProvider
             ): Any? = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
@@ -374,4 +421,10 @@ class HomeAdapter(
             }
         }
     }
+
+    companion object {
+        fun daysLeft(date: LocalDate) =
+            ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
+    }
 }
+

@@ -1,34 +1,25 @@
 package com.hedvig.app
 
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.app.DevelopmentScreenAdapter.ViewHolder.Header.Companion.DEVELOPMENT_PREFERENCES
-import com.hedvig.app.feature.insurance.ui.contractdetail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 
-class MockContractDetailViewModel(context: Context) : ContractDetailViewModel() {
-    override val data = MutableLiveData<InsuranceQuery.Contract>()
-
-    private val mockData: InsuranceQuery.Data
-
-    init {
-        val mockPersona = context
-            .getSharedPreferences(DEVELOPMENT_PREFERENCES, Context.MODE_PRIVATE)
-            .getInt("mockPersona", 0)
-
-        mockData = when (mockPersona) {
-            0 -> MockInsuranceViewModel.SWEDISH_APARTMENT
-            1 -> MockInsuranceViewModel.SWEDISH_HOUSE
-            2 -> MockInsuranceViewModel.NORWEGIAN_HOME_CONTENTS
-            3 -> MockInsuranceViewModel.NORWEGIAN_TRAVEL
-            4 -> MockInsuranceViewModel.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-            else -> MockInsuranceViewModel.SWEDISH_APARTMENT
+class MockContractDetailViewModel : ContractDetailViewModel() {
+    override fun loadContract(id: String) {
+        if (shouldError) {
+            shouldError = false
+            _data.postValue(Result.failure(Error()))
+            return
+        } else {
+            mockData.contracts.find { it.id == id }?.let { _data.value = Result.success(it) } ?: run {
+                _data.value = Result.success(mockData.contracts[0])
+            }
         }
     }
 
-    override fun loadContract(id: String) {
-        data.value = mockData.contracts.find { it.id == id }
-    }
-
     override suspend fun triggerFreeTextChat() = Unit
+
+    companion object {
+        var mockData = INSURANCE_DATA_SWEDISH_APARTMENT
+        var shouldError = false
+    }
 }

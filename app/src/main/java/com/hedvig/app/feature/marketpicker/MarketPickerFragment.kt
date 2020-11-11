@@ -1,12 +1,8 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
-import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -38,10 +34,12 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
             var firstLayout = true
             viewModel.data.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
-                    items = listOf(
-                        Model.Button,
-                        Model.LanguageModel(data.language),
-                        Model.MarketModel(data.market)
+                    submitList(
+                        listOf(
+                            Model.Button,
+                            Model.LanguageModel(data.language),
+                            Model.MarketModel(data.market)
+                        )
                     )
                 }
                 // Need too do this else the recyclerview might not show until user scrolls

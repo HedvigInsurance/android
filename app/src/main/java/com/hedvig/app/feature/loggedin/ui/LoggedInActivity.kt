@@ -7,13 +7,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import androidx.core.view.doOnLayout
 import androidx.core.view.isEmpty
+import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
@@ -42,7 +43,6 @@ import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -71,6 +71,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralsIncentive: MonetaryAmount
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        window.allowReturnTransitionOverlap = true
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
@@ -80,7 +82,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             toolbar.background.alpha = 0
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 loggedInViewModel.updateToolbarInset(view.measuredHeight)
             }
             toolbar.doOnLayout { view ->
@@ -88,8 +90,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-                loggedInViewModel.updateBottomTabInset(view.measuredHeight)
+                view.post {
+                    view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+                    view.doOnLayout {
+                        loggedInViewModel.updateBottomTabInset(view.measuredHeight)
+                    }
+                }
             }
 
             val isDarkTheme = isDarkThemeActive
@@ -123,7 +129,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     .replace(R.id.tabContent, id.fragment)
                     .commitAllowingStateLoss()
 
-                setupToolBar(id)
+                setupToolBar()
                 animateGradient(id)
                 lastSelectedTab = id
                 true
@@ -155,7 +161,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             }
 
             bindData()
-            setupToolBar(LoggedInTabs.fromId(bottomNavigation.selectedItemId))
+            setupToolBar()
         }
     }
 
@@ -242,13 +248,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
             LoggedInTabs.REFERRALS -> {
-                startActivity(
-                    ReferralsInformationActivity.newInstance(
-                        this,
-                        referralTermsUrl,
-                        referralsIncentive
+                if (::referralTermsUrl.isInitialized && ::referralsIncentive.isInitialized) {
+                    startActivity(
+                        ReferralsInformationActivity.newInstance(
+                            this,
+                            referralTermsUrl,
+                            referralsIncentive
+                        )
                     )
-                )
+                }
             }
         }
         return true
@@ -302,7 +310,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                     ?: LoggedInTabs.HOME
                 binding.bottomNavigation.selectedItemId = initialTab.id()
-                setupToolBar(LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId))
+                setupToolBar()
                 binding.loggedInRoot.show()
             }
 
@@ -321,7 +329,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         whatsNewViewModel.fetchNews()
     }
 
-    private fun setupToolBar(id: LoggedInTabs?) {
+    private fun setupToolBar() {
         invalidateOptionsMenu()
     }
 
@@ -379,7 +387,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         fun newInstance(
             context: Context,
             withoutHistory: Boolean = false,
-            initialTab: LoggedInTabs = LoggedInTabs.HOME
+            initialTab: LoggedInTabs = LoggedInTabs.HOME,
+            isFromOnboarding: Boolean = false
         ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
@@ -387,6 +396,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
                 putExtra(INITIAL_TAB, initialTab)
+                putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
             }
 
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
