@@ -80,9 +80,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                         dialog?.window?.decorView?.systemUiVisibility = it
                                     }
                                 }
-                                BottomSheetBehavior.STATE_COLLAPSED -> {
-                                    close.setOnClickListener(null)
-                                }
                             }
                         }
 
@@ -98,12 +95,16 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                             chevronContainer.alpha = 1 - slideOffset
                         }
                     })
+                chevron.setHapticClickListener {
+                    behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                }
             }
 
             if (peril == null) {
                 e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
                 return
             }
+
 
             recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
                 adapter.submitList(
