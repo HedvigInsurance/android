@@ -3,12 +3,10 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.core.os.bundleOf
 import com.bumptech.glide.RequestBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -20,16 +18,14 @@ import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PerilBottomSheetBinding
+import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.safeLet
-import d
 import e
 import org.koin.android.ext.android.inject
-import java.util.ArrayList
 
 class PerilBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(PerilBottomSheetBinding::bind)
@@ -43,101 +39,83 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val defaultStatusBarColor = dialog?.window?.statusBarColor
         val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
-        val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        val title = requireArguments().getString(TITLE)
-        val description = requireArguments().getString(DESCRIPTION)
-        val iconUrl = requireArguments().getString(ICON_URL)
-        val exception = requireArguments().getStringArrayList(EXCEPTIONS)
-        val covered = requireArguments().getStringArrayList(COVERED)
-        val info = requireArguments().getString(INFO)
+        val peril = requireArguments().getParcelable<Peril>(PERIL)
 
         binding.apply {
             close.alpha = 0f
-            (dialog as? BottomSheetDialog)?.behavior?.setPeekHeight(380.dp, true)
-
-            dialog?.setOnShowListener { dialogInterface ->
-                val containerLayout =
-                    (dialogInterface as BottomSheetDialog).findViewById<FrameLayout>(com.google.android.material.R.id.container)
-                val shadow =
-                    bottomSheetDialog.layoutInflater.inflate(R.layout.bottom_sheet_shadow, null)
-                val chevron = shadow.findViewById<ImageView>(R.id.chevron)
-                chevron.setHapticClickListener {
-                    (dialog as? BottomSheetDialog)?.behavior?.state =
-                        BottomSheetBehavior.STATE_EXPANDED
-                }
-
-                shadow.layoutParams = FrameLayout.LayoutParams(
+            (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
+                val peekHeight = 380.dp
+                behaviour.setPeekHeight(peekHeight, true)
+                chevronContainer.measure(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    gravity = Gravity.BOTTOM
-                }
-                containerLayout?.addView(shadow)
-                (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-                    behaviour.addBottomSheetCallback(
-                        object : BottomSheetCallback() {
+                )
+                val chevronContainerHeight = chevronContainer.measuredHeight
+                val startTranslation = (peekHeight - chevronContainerHeight).toFloat()
+                chevronContainer.translationY = startTranslation
+                behaviour.addBottomSheetCallback(
+                    object : BottomSheetCallback() {
 
-                            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                                when (newState) {
-                                    BottomSheetBehavior.STATE_EXPANDED -> {
-                                        dialog?.window?.statusBarColor =
-                                            requireContext().colorAttr(R.attr.colorSurface)
-                                        if (!requireContext().isDarkThemeActive) {
-                                            dialog?.window?.decorView?.let {
-                                                it.systemUiVisibility =
-                                                    it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                                            }
-                                        }
-
-                                        close.setHapticClickListener {
-                                            this@PerilBottomSheet.dismiss()
+                        override fun onStateChanged(bottomSheet: View, newState: Int) {
+                            when (newState) {
+                                BottomSheetBehavior.STATE_EXPANDED -> {
+                                    dialog?.window?.statusBarColor =
+                                        requireContext().colorAttr(R.attr.colorSurface)
+                                    if (!requireContext().isDarkThemeActive) {
+                                        dialog?.window?.decorView?.let {
+                                            it.systemUiVisibility =
+                                                it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                                         }
                                     }
-                                    STATE_DRAGGING -> {
-                                        defaultStatusBarColor?.let {
-                                            dialog?.window?.statusBarColor = it
-                                        }
-                                        defaultSystemUiVisibility?.let {
-                                            dialog?.window?.decorView?.systemUiVisibility = it
-                                        }
-                                    }
-                                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                                        close.setOnClickListener(null)
+
+                                    close.setHapticClickListener {
+                                        this@PerilBottomSheet.dismiss()
                                     }
                                 }
-                            }
-
-                            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                                close.alpha = slideOffset
-                                if (slideOffset < 0) {
-                                    shadow.alpha = (slideOffset + 1f) * 0.5f
-                                } else {
-                                    shadow.alpha = 1 - slideOffset
+                                STATE_DRAGGING -> {
+                                    defaultStatusBarColor?.let {
+                                        dialog?.window?.statusBarColor = it
+                                    }
+                                    defaultSystemUiVisibility?.let {
+                                        dialog?.window?.decorView?.systemUiVisibility = it
+                                    }
                                 }
-                                d { slideOffset.toString() }
+                                BottomSheetBehavior.STATE_COLLAPSED -> {
+                                    close.setOnClickListener(null)
+                                }
                             }
-                        })
-                }
+                        }
+
+                        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                            close.alpha = slideOffset
+                            chevronContainer.translationY =
+                                boundedLerp(
+                                    startTranslation,
+                                    (binding.root.height - chevronContainer.height).toFloat(),
+                                    slideOffset
+                                )
+                            binding.root.height
+                            chevronContainer.alpha = 1 - slideOffset
+                        }
+                    })
             }
 
-            if (title == null || description == null || iconUrl == null || exception == null || covered == null || info == null) {
+            if (peril == null) {
                 e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
                 return
             }
 
-            recycler.adapter = PerilAdapter(requestBuilder).also {
-                safeLet(
-                    title,
-                    description,
-                    info,
-                    covered,
-                    exception,
-                    iconUrl
-                ) { t, d, i, c, e, u ->
-                    it.submitList(
-                        expandedList(t, d, i, c, e, u)
+            recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
+                adapter.submitList(
+                    expandedList(
+                        peril.title,
+                        peril.description,
+                        peril.info,
+                        peril.covered,
+                        peril.exception,
+                        peril.iconUrl
                     )
-                }
+                )
             }
         }
     }
@@ -146,8 +124,8 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
         title: String,
         description: String,
         info: String,
-        covered: ArrayList<String>,
-        exceptions: ArrayList<String>,
+        covered: List<String>,
+        exceptions: List<String>,
         iconLink: String
     ) = listOf(
         PerilModel.Icon(iconLink),
@@ -162,29 +140,26 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
     )
 
     companion object {
-        private const val TITLE = "TITLE"
-        private const val DESCRIPTION = "BODY"
-        private const val ICON_URL = "ICON_URL"
-        private const val EXCEPTIONS = "EXCEPTIONS"
-        private const val COVERED = "COVERED"
-        private const val INFO = "INFO"
+        private const val PERIL = "PERIL"
 
         val TAG = PerilBottomSheet::class.java.name
 
         fun newInstance(context: Context, peril: PerilFragment) = PerilBottomSheet().apply {
             arguments = bundleOf(
-                TITLE to peril.title,
-                DESCRIPTION to peril.description,
-                ICON_URL to "${BuildConfig.BASE_URL}${
-                    if (context.isDarkThemeActive) {
-                        peril.icon.variants.dark.svgUrl
-                    } else {
-                        peril.icon.variants.light.svgUrl
-                    }
-                }",
-                EXCEPTIONS to peril.exceptions,
-                COVERED to peril.covered,
-                INFO to peril.info
+                PERIL to Peril(
+                    title = peril.title,
+                    description = peril.description,
+                    iconUrl = "${BuildConfig.BASE_URL}${
+                        if (context.isDarkThemeActive) {
+                            peril.icon.variants.dark.svgUrl
+                        } else {
+                            peril.icon.variants.light.svgUrl
+                        }
+                    }",
+                    exception = peril.exceptions,
+                    covered = peril.covered,
+                    info = peril.info
+                )
             )
         }
     }

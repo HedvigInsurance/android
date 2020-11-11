@@ -45,4 +45,25 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/covered_and_exception_item" />
 
+    <FrameLayout
+        android:id="@+id/chevronContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/peril_shadow"
+            android:layout_gravity="bottom" />
+
+        <ImageView
+            android:id="@+id/chevron"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_chevron_up"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
 </FrameLayout>

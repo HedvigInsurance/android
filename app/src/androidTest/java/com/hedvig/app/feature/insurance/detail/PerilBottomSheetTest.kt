@@ -48,10 +48,10 @@ class PerilBottomSheetTest {
                             click()
                         }
                     }
-                    onScreen<ContractDetailScreen.CoverageTab.BottomSheetScreen> {
+                    onScreen<ContractDetailScreen.CoverageTab.PerilBottomSheetScreen> {
                         chevron.click()
                         sheetRecycler {
-                            childAt<ContractDetailScreen.CoverageTab.BottomSheetScreen.Title>(1) {
+                            childAt<ContractDetailScreen.CoverageTab.PerilBottomSheetScreen.Title>(1) {
                                 title.hasAnyText()
                             }
                         }
