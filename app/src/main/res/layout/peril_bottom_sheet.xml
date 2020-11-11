@@ -19,6 +19,7 @@
             android:id="@+id/close"
             android:layout_width="@dimen/peril_bottom_sheet_close_icon_size"
             android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_close"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -23,7 +23,9 @@ import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import org.koin.android.ext.android.inject
@@ -68,10 +70,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                                 it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                                         }
                                     }
-
-                                    close.setHapticClickListener {
-                                        this@PerilBottomSheet.dismiss()
-                                    }
                                 }
                                 STATE_DRAGGING -> {
                                     defaultStatusBarColor?.let {
@@ -80,9 +78,10 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                                     defaultSystemUiVisibility?.let {
                                         dialog?.window?.decorView?.systemUiVisibility = it
                                     }
+                                    close.show()
                                 }
                                 STATE_COLLAPSED -> {
-                                    close.setOnClickListener(null)
+                                    close.remove()
                                 }
                             }
                         }
@@ -107,6 +106,9 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
             if (peril == null) {
                 e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
                 return
+            }
+            close.setHapticClickListener {
+                this@PerilBottomSheet.dismiss()
             }
             recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
                 adapter.submitList(
