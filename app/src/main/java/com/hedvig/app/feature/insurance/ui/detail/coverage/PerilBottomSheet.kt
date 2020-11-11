@@ -104,8 +104,6 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                 e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
                 return
             }
-
-
             recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
                 adapter.submitList(
                     expandedList(
