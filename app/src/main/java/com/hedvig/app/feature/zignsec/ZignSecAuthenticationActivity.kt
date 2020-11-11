@@ -49,7 +49,7 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
                             e { "Failed to log in" }
                             return true
                         }
-                        view?.loadUrl(request?.url?.toString())
+                        request?.url?.toString()?.let { view?.loadUrl(it) }
                         return true
                     }
                 }

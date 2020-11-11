@@ -5,6 +5,7 @@ import android.net.Uri
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
@@ -69,7 +70,6 @@ class KeyGearItemsRepository(
         val response = apolloClientWrapper
             .apolloClient
             .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
-            .toDeferred()
             .await()
 
         val newPrice =
