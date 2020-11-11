@@ -24,7 +24,7 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin"
         android:background="@drawable/chat_background_edit_text_rounded_corners"
-        android:hint="@string/CHAT_GIPHY_SEARCH_HINT"
+        android:hint="@string/SEARCH_BAR_GIF"
         android:importantForAutofill="no"
         android:inputType="text"
         android:paddingStart="@dimen/base_margin_double"

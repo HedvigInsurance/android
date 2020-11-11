@@ -4,6 +4,7 @@ import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.ApolloClientWrapper
 import e
 import i
@@ -11,9 +12,9 @@ import i
 class LanguageRepository(
     private val apolloClientWrapper: ApolloClientWrapper
 ) {
-    fun setLanguage(acceptLanguage: String) = apolloClientWrapper
+    fun setLanguage(acceptLanguage: String, locale: Locale) = apolloClientWrapper
         .apolloClient
-        .mutate(UpdateLanguageMutation(acceptLanguage))
+        .mutate(UpdateLanguageMutation(acceptLanguage, locale))
         .enqueue(object : ApolloCall.Callback<UpdateLanguageMutation.Data>() {
             override fun onFailure(e: ApolloException) {
                 e { "$e Failed to update language" }
