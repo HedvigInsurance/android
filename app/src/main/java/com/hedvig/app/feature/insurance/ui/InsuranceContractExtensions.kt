@@ -82,7 +82,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     }
                 }
             } ?: run {
-                container.setBackgroundResource(R.color.hedvig_light_gray)
+                container.setBackgroundResource(R.color.color_card_inactive)
                 blur.remove()
             }
         }
