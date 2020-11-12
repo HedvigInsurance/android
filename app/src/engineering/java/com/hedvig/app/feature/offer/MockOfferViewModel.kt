@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 
@@ -127,7 +128,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = listOf(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"
@@ -211,7 +212,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = listOf(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"

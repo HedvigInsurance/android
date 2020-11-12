@@ -11,4 +11,7 @@ fragment PerilFragment on PerilV2 {
       }
     }
   }
+  covered
+  exceptions
+  info
 }

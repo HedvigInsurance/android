@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
+import com.hedvig.app.util.context
 import com.hedvig.app.util.hasError
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +22,7 @@ class CodeTooLongValidationTest {
     fun shouldNotAllowSubmitWhenCodeIsTooLongAndShowAnError() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 "TEST123"
             )
         )

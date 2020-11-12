@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +50,7 @@ class NoFutureInceptionErrorTest {
 
     @Test
     fun shouldShowErrorWhenUserHasNoFutureInception() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         onScreen<HomeTabScreen> {
             recycler {

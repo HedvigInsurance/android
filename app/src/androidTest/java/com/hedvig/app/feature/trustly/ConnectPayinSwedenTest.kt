@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.trustly
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
@@ -19,6 +18,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -59,7 +59,7 @@ class ConnectPayinSwedenTest {
 
     @Test
     fun shouldOpenConnectPayinTrustly() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.InfoCardItem>(3) {

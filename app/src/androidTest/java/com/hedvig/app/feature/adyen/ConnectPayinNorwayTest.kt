@@ -19,6 +19,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -59,7 +60,7 @@ class ConnectPayinNorwayTest {
 
     @Test
     fun shouldOpenConnectPayinAdyen() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.InfoCardItem>(3) {
