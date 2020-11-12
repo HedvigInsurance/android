@@ -7,6 +7,6 @@
     android:layout_marginTop="@dimen/base_margin_half"
     android:layout_marginEnd="@dimen/base_margin"
     android:background="@drawable/background_pill"
-    android:backgroundTint="@color/color_surface_22"
+    android:backgroundTint="@color/color_divider"
     android:textAppearance="?textAppearanceCaption"
     tools:text="Rental" />
