@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
+import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import e
@@ -58,7 +59,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.SE_APARTMENT_STUDENT_RENT,
                     -> {
                         container.setBackgroundResource(R.drawable.card_apartment_background)
-                        blur.setColorFilter(blur.context.getColor(R.color.color_card_blur_apartment))
+                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_apartment))
                     }
                     TypeOfContract.SE_HOUSE,
                     TypeOfContract.NO_HOME_CONTENT_OWN,
@@ -70,12 +71,12 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> {
                         container.setBackgroundResource(R.drawable.card_house_background)
-                        blur.setColorFilter(blur.context.getColor(R.color.color_card_blur_house))
+                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_house))
                     }
                     TypeOfContract.NO_TRAVEL,
                     TypeOfContract.NO_TRAVEL_YOUTH -> {
                         container.setBackgroundResource(R.drawable.card_travel_background)
-                        blur.setColorFilter(blur.context.getColor(R.color.color_card_blur_travel))
+                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
                     }
                     TypeOfContract.UNKNOWN__ -> {
 
@@ -88,7 +89,6 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
         }
 
         contractName.text = displayName
-        contractPills.isLayoutFrozen = true
         contractPills.adapter = ContractPillAdapter().also { adapter ->
             when (typeOfContract) {
                 TypeOfContract.SE_HOUSE,

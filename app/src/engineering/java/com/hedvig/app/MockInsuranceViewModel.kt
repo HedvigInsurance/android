@@ -44,13 +44,5 @@ class MockInsuranceViewModel(context: Context) : InsuranceViewModel() {
                 INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts[0]
             )
         )
-
-        val NORWEGIAN_HOME_CONTENTS_AND_TRAVEL_AND_SWEDISH_APARTMENT = InsuranceQuery.Data(
-            listOf(
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0],
-                INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts[0],
-                INSURANCE_DATA_SWEDISH_APARTMENT.contracts[0]
-            )
-        )
     }
 }

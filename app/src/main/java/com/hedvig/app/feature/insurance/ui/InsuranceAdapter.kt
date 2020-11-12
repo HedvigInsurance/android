@@ -117,7 +117,7 @@ class InsuranceAdapter(
                     return invalid(data)
                 }
                 data.inner.bindTo(binding)
-                root.setHapticClickListener {
+                card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
                         if (activity is LoggedInActivity) {
