@@ -359,13 +359,14 @@ class ReferralsAdapter(
                             status.context.getString(R.string.referalls_invitee_states_awaiting___)
                     }
                     data.asTerminatedReferral?.let {
-                        icon.setImageResource(R.drawable.ic_terminated_colorless)
+                        icon.setImageResource(R.drawable.ic_x_in_circle)
                         status.background = null
                         status.text =
                             status.context.getString(R.string.referalls_invitee_states_terminated)
                     }
                 }
             }
+
             companion object {
                 private val ReferralFragment.name: String?
                     get() {
