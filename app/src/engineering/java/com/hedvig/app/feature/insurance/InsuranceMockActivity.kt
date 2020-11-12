@@ -19,7 +19,9 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
@@ -164,10 +166,34 @@ class InsuranceMockActivity : MockActivity() {
                 )
             )
         }
+        clickableItem("Terminated") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_TERMINATED
+                shouldError = false
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    context,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
         clickableItem("Norwegian home Error") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = NORWEGIAN_HOME_CONTENTS
                 shouldError = true
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    context,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
+        clickableItem("Danish Home Contents") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_DANISH_HOME_CONTENTS
+                shouldError = false
             }
             startActivity(
                 LoggedInActivity.newInstance(
@@ -197,6 +223,13 @@ class InsuranceMockActivity : MockActivity() {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_SWEDISH_APARTMENT
                 shouldError = true
+            }
+            startActivity(ContractDetailActivity.newInstance(context, ""))
+        }
+        clickableItem("Danish Home Contents") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_DANISH_HOME_CONTENTS
+                shouldError = false
             }
             startActivity(ContractDetailActivity.newInstance(context, ""))
         }

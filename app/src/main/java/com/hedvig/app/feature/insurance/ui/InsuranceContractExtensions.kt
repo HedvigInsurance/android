@@ -129,6 +129,7 @@ private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
         asSwedishHouseAgreement?.numberCoInsured?.let { return it }
         asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
         asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
+        asDanishHomeContentAgreement?.numberCoInsured?.let { return it }
         e { "Unable to infer amount coinsured for agreement: $this" }
         return 0
     }

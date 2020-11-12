@@ -87,11 +87,11 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         val successData = data.getOrNull() ?: return
 
-        val contracts = successData.contracts.mapNotNull {
-            if (it.status.fragments.contractStatusFragment.asTerminatedStatus == null) {
-                InsuranceModel.Contract(it)
+        val contracts = successData.contracts.map(InsuranceModel::Contract).let { contractModels ->
+            if (hasNotOnlyTerminatedContracts(successData.contracts)) {
+                contractModels.filter { it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null }
             } else {
-                null
+                contractModels
             }
         }
 
@@ -112,7 +112,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     private fun terminatedRow(contracts: List<InsuranceQuery.Contract>): List<InsuranceModel> {
         val terminatedContracts = amountOfTerminatedContracts(contracts)
-        return if (terminatedContracts > 0) {
+        return if (hasNotOnlyTerminatedContracts(contracts)) {
             listOf(
                 InsuranceModel.TerminatedContractsHeader,
                 InsuranceModel.TerminatedContracts(terminatedContracts)
@@ -148,5 +148,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
             contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
+
+        fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contract>): Boolean {
+            val terminatedContracts = amountOfTerminatedContracts(contracts)
+            return (terminatedContracts > 0 && contracts.size != terminatedContracts)
+        }
     }
 }

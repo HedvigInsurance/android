@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -115,8 +117,8 @@ class MarketPickerViewModelImpl(
 
     override fun uploadLanguage() {
         data.value?.let { data ->
-            data.language?.apply(context)?.let { language ->
-                languageRepository.setLanguage(makeLocaleString(language))
+            data.language?.apply(context)?.let { ctx ->
+                languageRepository.setLanguage(makeLocaleString(ctx), defaultLocale(ctx))
             }
         }
     }

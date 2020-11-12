@@ -1,56 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_quintuple"
+    android:gravity="center_horizontal"
     tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin"
-        android:contentDescription="@null"
-        app:srcCompat="@drawable/bottom_sheet_handle" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:orientation="horizontal"
-        tools:ignore="UseCompoundDrawables">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+        android:paddingStart="@dimen/base_margin_triple"
+        android:paddingEnd="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double">
 
         <ImageView
-            android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@null"
-            tools:src="@drawable/ic_active" />
+            android:id="@+id/close"
+            android:layout_width="@dimen/peril_bottom_sheet_close_icon_size"
+            android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@null" />
 
-        <TextView
-            android:id="@+id/title"
+        <ImageView
+            android:id="@+id/pill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:textAppearance="?textAppearanceHeadline5"
-            tools:text="Eldsvåda" />
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/bottom_sheet_handle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:textAppearance="?textAppearanceBody1"
-        tools:text="Vi hjälper dig med reparation, ersättningsboende och sanering om det skulle börja brinna i din villa eller någon annan försäkrad byggnad. Och om ditt hus blir totalskadat ersätter vi dig med en likadan eller motsvarande villa." />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_sextuple"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/covered_and_exception_item" />
 
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/chevronContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/peril_shadow"
+            android:layout_gravity="bottom" />
+
+        <ImageView
+            android:id="@+id/chevron"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_chevron_up"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
+</FrameLayout>

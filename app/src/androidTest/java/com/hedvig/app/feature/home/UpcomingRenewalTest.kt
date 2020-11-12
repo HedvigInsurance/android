@@ -22,6 +22,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
 import io.mockk.every
 import io.mockk.mockk
@@ -50,7 +51,7 @@ class UpcomingRenewalTest {
 
     @Test
     fun shouldOpenPSALinksAndConnectPayment() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         stubExternalIntents()
         Screen.onScreen<HomeTabScreen> {
             recycler {
