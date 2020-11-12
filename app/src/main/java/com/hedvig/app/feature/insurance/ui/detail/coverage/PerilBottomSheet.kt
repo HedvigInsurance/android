@@ -99,6 +99,7 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                         }
                     })
                 chevron.setHapticClickListener {
+                    close.show()
                     behaviour.state = BottomSheetBehavior.STATE_EXPANDED
                 }
             }
