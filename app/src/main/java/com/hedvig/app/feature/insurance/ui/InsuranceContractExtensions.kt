@@ -112,6 +112,9 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                 }
             }
         }
+        // Prevent this `RecyclerView` from eating clicks in the parent `MaterialCardView`.
+        // Alternative implementation path: extend `RecyclerView` and make `onTouchEvent` always return `false`.
+        contractPills.suppressLayout(true)
     }
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
