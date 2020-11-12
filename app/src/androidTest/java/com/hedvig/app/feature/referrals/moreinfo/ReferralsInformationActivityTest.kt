@@ -3,7 +3,6 @@ package com.hedvig.app.feature.referrals.moreinfo
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -23,6 +22,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.hamcrest.CoreMatchers.not
 import org.javamoney.moneta.Money
 import org.junit.Rule
@@ -50,7 +50,7 @@ class ReferralsInformationActivityTest {
     @Test
     fun shouldOpenInformationActivityWhenClickingMoreInformationAction() {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -70,7 +70,7 @@ class ReferralsInformationActivityTest {
         onScreen<ReferralsInformationScreen> {
             body {
                 containsText(
-                    Money.of(10, "SEK").format(ApplicationProvider.getApplicationContext())
+                    Money.of(10, "SEK").format(context())
                 )
             }
             termsAndConditions { click() }

@@ -14,6 +14,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
@@ -41,7 +42,7 @@ class EmptyTest {
     @Test
     fun shouldShowEmptyStateWhenLoadedWithNoItems() {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -56,7 +57,7 @@ class EmptyTest {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }

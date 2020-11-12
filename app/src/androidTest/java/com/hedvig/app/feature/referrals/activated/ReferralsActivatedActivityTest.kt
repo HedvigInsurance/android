@@ -15,6 +15,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.javamoney.moneta.Money
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -58,7 +59,7 @@ class ReferralsActivatedActivityTest {
             body {
                 isVisible()
                 containsText(
-                    Money.of(10, "SEK").format(ApplicationProvider.getApplicationContext())
+                    Money.of(10, "SEK").format(context())
                 )
             }
         }

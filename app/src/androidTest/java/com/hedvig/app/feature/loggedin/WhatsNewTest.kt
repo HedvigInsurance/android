@@ -16,6 +16,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +43,7 @@ class WhatsNewTest {
 
     @Test
     fun shouldOpenWhatsNew() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         onScreen<WelcomeScreen> {
             close {
