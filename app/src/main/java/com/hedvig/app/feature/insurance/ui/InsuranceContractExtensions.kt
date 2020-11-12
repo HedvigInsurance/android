@@ -88,7 +88,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
         }
 
         contractName.text = displayName
-
+        contractPills.isLayoutFrozen = true
         contractPills.adapter = ContractPillAdapter().also { adapter ->
             when (typeOfContract) {
                 TypeOfContract.SE_HOUSE,
