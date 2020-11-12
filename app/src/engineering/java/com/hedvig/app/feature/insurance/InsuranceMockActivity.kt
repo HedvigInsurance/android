@@ -4,7 +4,6 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL
-import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_HOME_CONTENTS_AND_TRAVEL_AND_SWEDISH_APARTMENT
 import com.hedvig.app.MockInsuranceViewModel.Companion.NORWEGIAN_TRAVEL
 import com.hedvig.app.MockInsuranceViewModel.Companion.SWEDISH_HOUSE
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -21,8 +20,8 @@ import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
-import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
@@ -49,18 +48,6 @@ class InsuranceMockActivity : MockActivity() {
         clickableItem("Active on and Terminated on") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = INSURANCE_DATA_ACTIVE_AND_TERMINATED
-                shouldError = false
-            }
-            startActivity(
-                LoggedInActivity.newInstance(
-                    context,
-                    initialTab = LoggedInTabs.INSURANCE
-                )
-            )
-        }
-        clickableItem("Norwegian travel and home contract and SE Apartment") {
-            MockInsuranceViewModel.apply {
-                insuranceMockData = NORWEGIAN_HOME_CONTENTS_AND_TRAVEL_AND_SWEDISH_APARTMENT
                 shouldError = false
             }
             startActivity(
