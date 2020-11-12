@@ -18,6 +18,7 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
@@ -176,6 +177,18 @@ class InsuranceMockActivity : MockActivity() {
                 )
             )
         }
+        clickableItem("Danish Home Contents") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_DANISH_HOME_CONTENTS
+                shouldError = false
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    context,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
@@ -197,6 +210,13 @@ class InsuranceMockActivity : MockActivity() {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_SWEDISH_APARTMENT
                 shouldError = true
+            }
+            startActivity(ContractDetailActivity.newInstance(context, ""))
+        }
+        clickableItem("Danish Home Contents") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_DANISH_HOME_CONTENTS
+                shouldError = false
             }
             startActivity(ContractDetailActivity.newInstance(context, ""))
         }
