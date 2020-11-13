@@ -35,8 +35,7 @@ class ZignSecAuthViewModel(
                     Market.NO -> {
                         val response = runCatching {
                             repository
-                                .startNorwegianAuthAsync()
-                                .await()
+                                .startNorwegianAuth()
                         }
                         if (response.isFailure) {
                             response.exceptionOrNull()?.let { e(it) }
@@ -46,8 +45,7 @@ class ZignSecAuthViewModel(
                     Market.DK -> {
                         val response = runCatching {
                             repository
-                                .startDanishAuthAsync()
-                                .await()
+                                .startDanishAuth()
                         }
                         if (response.isFailure) {
                             response.exceptionOrNull()?.let { e(it) }

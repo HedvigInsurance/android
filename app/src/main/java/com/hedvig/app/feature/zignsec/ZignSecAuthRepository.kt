@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.zignsec
 
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.DanishAuthMutation
@@ -10,15 +10,15 @@ import com.hedvig.app.ApolloClientWrapper
 class ZignSecAuthRepository(
     private val apolloClientWrapper: ApolloClientWrapper
 ) {
-    fun startDanishAuthAsync() = apolloClientWrapper
+    suspend fun startDanishAuth() = apolloClientWrapper
         .apolloClient
         .mutate(DanishAuthMutation())
-        .toDeferred()
+        .await()
 
-    fun startNorwegianAuthAsync() = apolloClientWrapper
+    suspend fun startNorwegianAuth() = apolloClientWrapper
         .apolloClient
         .mutate(NorwegianBankIdAuthMutation())
-        .toDeferred()
+        .await()
 
     fun authStatus() = apolloClientWrapper
         .apolloClient

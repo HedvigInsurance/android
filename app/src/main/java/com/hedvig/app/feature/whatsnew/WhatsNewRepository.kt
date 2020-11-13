@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.BuildConfig
@@ -11,13 +11,13 @@ class WhatsNewRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val context: Context
 ) {
-    fun whatsNewAsync(sinceVersion: String? = null) =
+    suspend fun whatsNew(sinceVersion: String? = null) =
         apolloClientWrapper.apolloClient.query(
             WhatsNewQuery(
                 locale = defaultLocale(context),
                 sinceVersion = sinceVersion ?: latestSeenNews()
             )
-        ).toDeferred()
+        ).await()
 
     fun removeNewsForNewUser() {
         if (latestSeenNews() == NEWS_BASELINE_VERSION) {

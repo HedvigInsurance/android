@@ -24,8 +24,7 @@ class ReplyWorker(
 
         val idsResponse = runCatching {
             chatRepository
-                .messageIdsAsync()
-                .await()
+                .messageIds()
         }
 
         if (idsResponse.isFailure) {
@@ -37,11 +36,10 @@ class ReplyWorker(
             idsResponse.getOrNull()?.data?.messages?.first() ?: return Result.failure()
         val sendChatMessageResponse = runCatching {
             chatRepository
-                .sendChatMessageAsync(
+                .sendChatMessage(
                     lastChatMessage.globalId,
                     replyText
                 )
-                .await()
         }
 
         if (sendChatMessageResponse.isFailure) {

@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.profile.data
 
-import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
@@ -9,12 +9,9 @@ import com.hedvig.android.owldroid.graphql.PayinMethodQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
-import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.ApolloClientWrapper
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.flow.Flow
 
 class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
     private val profileQuery = ProfileQuery()
@@ -25,25 +22,19 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         .watcher()
         .toFlow()
 
-    fun refreshProfileAsync() = apolloClientWrapper
+    suspend fun refreshProfile() = apolloClientWrapper
         .apolloClient
         .query(profileQuery)
         .toBuilder()
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
         .build()
-        .toDeferred()
+        .await()
 
-    fun updateEmailAsync(input: String): Deferred<Response<UpdateEmailMutation.Data>> {
-        val updateEmailMutation = UpdateEmailMutation(input)
+    suspend fun updateEmail(input: String) =
+        apolloClientWrapper.apolloClient.mutate(UpdateEmailMutation(input)).await()
 
-        return apolloClientWrapper.apolloClient.mutate(updateEmailMutation).toDeferred()
-    }
-
-    fun updatePhoneNumberAsync(input: String): Deferred<Response<UpdatePhoneNumberMutation.Data>> {
-        val updatePhoneNumberMutation = UpdatePhoneNumberMutation(input)
-
-        return apolloClientWrapper.apolloClient.mutate(updatePhoneNumberMutation).toDeferred()
-    }
+    suspend fun updatePhoneNumber(input: String) =
+        apolloClientWrapper.apolloClient.mutate(UpdatePhoneNumberMutation(input)).await()
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClientWrapper.apolloClient
@@ -66,11 +57,8 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    fun selectCashback(id: String): Flow<Response<SelectCashbackMutation.Data>> {
-        val selectCashbackMutation = SelectCashbackMutation(id = id)
-
-        return apolloClientWrapper.apolloClient.mutate(selectCashbackMutation).toFlow()
-    }
+    suspend fun selectCashback(id: String) =
+        apolloClientWrapper.apolloClient.mutate(SelectCashbackMutation(id)).await()
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClientWrapper.apolloClient
@@ -114,13 +102,6 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    fun startTrustlySessionAsync(): Deferred<Response<StartDirectDebitRegistrationMutation.Data>> {
-        val startDirectDebitRegistrationMutation = StartDirectDebitRegistrationMutation()
-
-        return apolloClientWrapper.apolloClient.mutate(startDirectDebitRegistrationMutation)
-            .toDeferred()
-    }
-
     suspend fun refreshPayinMethod() {
         val response = apolloClientWrapper
             .apolloClient
@@ -128,7 +109,6 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .toBuilder()
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             .build()
-            .toDeferred()
             .await()
 
         response.data?.let { newData ->

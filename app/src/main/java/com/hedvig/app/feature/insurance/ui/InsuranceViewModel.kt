@@ -26,8 +26,7 @@ class InsuranceViewModelImpl(
         viewModelScope.launch {
             val dashboardResponse = runCatching {
                 insuranceRepository
-                    .dashboardAsync()
-                    .await()
+                    .insurance()
             }
             if (dashboardResponse.isFailure) {
                 dashboardResponse.exceptionOrNull()?.let { exception ->

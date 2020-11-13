@@ -22,9 +22,7 @@ class MockProfileViewModel : ProfileViewModel() {
     override fun saveInputs(emailInput: String, phoneNumberInput: String) = Unit
     override fun emailChanged(newEmail: String) = Unit
     override fun phoneNumberChanged(newPhoneNumber: String) = Unit
-    override fun refreshBankAccountInfo() = Unit
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) = Unit
-    override fun startTrustlySession() = Unit
     override fun refreshProfile() = Unit
 
     companion object {

@@ -214,7 +214,6 @@ class OfferAdapter(
                         }
                         return
                     }
-                    e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
                 }
             }
         }

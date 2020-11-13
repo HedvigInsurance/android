@@ -66,7 +66,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private var isKeyboardShown = false
     private var preventOpenAttachFile = false
-    private var preventOpenAttachFileHandler = Handler()
+    private var preventOpenAttachFileHandler = Handler(mainLooper)
 
     private val resetPreventOpenAttachFile = { preventOpenAttachFile = false }
 
