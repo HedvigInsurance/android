@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.referrals
 
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_SUCCESS
@@ -16,7 +17,7 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
         if (!shouldLoad) {
             return
         }
-        Handler().postDelayed({
+        Handler(getMainLooper()).postDelayed({
             _isSubmitting.postValue(false)
             if (!shouldSucceed) {
                 _data.postValue(Result.failure(Error()))

@@ -11,13 +11,11 @@ abstract class ProfileViewModel : ViewModel() {
     abstract val dirty: MutableLiveData<Boolean>
     abstract val trustlyUrl: LiveEvent<String>
 
-    abstract fun startTrustlySession()
     abstract fun selectCashback(id: String)
     abstract fun triggerFreeTextChat(done: () -> Unit)
     abstract fun saveInputs(emailInput: String, phoneNumberInput: String)
     abstract fun emailChanged(newEmail: String)
     abstract fun phoneNumberChanged(newPhoneNumber: String)
-    abstract fun refreshBankAccountInfo()
     abstract fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data)
     abstract fun refreshProfile()
 }

@@ -23,8 +23,7 @@ class BaseTabViewModel constructor(
         viewModelScope.launch {
             val response = runCatching {
                 chatRepository
-                    .triggerFreeTextChatAsync()
-                    .await()
+                    .triggerFreeTextChat()
             }
 
             if (response.isFailure) {
