@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -11,6 +10,7 @@ import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_SHORT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.hasError
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +38,7 @@ class CodeTooShortErrorTest {
     fun shouldShowGenericErrorWhenCodeIsTooShort() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 "TEST123"
             )
         )

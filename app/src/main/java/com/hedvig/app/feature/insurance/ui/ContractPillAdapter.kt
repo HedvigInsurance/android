@@ -47,6 +47,11 @@ class ContractPillAdapter :
                                 getLocale(text.context)
                             )
                         }
+                        item.currentAgreement.asDanishHomeContentAgreement?.let {
+                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                                getLocale(text.context)
+                            )
+                        }
                     }
                     is ContractModel.NoOfCoInsured -> {
                         if (item.noOfCoInsured == 0) {

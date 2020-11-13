@@ -9,7 +9,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment.Companion.displayName
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
-import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -61,10 +60,6 @@ class NorwegianHomeContentsTest {
                             content { hasText("123 45") }
                         }
                         childAt<ContractDetailScreen.YourInfoTab.Row>(3) {
-                            label { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE) }
-                            content { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, 50) }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(4) {
                             label { hasText(R.string.CONTRACT_DETAIL_HOME_TYPE) }
                             content {
                                 hasText(
@@ -74,11 +69,15 @@ class NorwegianHomeContentsTest {
                                 )
                             }
                         }
+                        childAt<ContractDetailScreen.YourInfoTab.Row>(4) {
+                            label { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE) }
+                            content { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, 50) }
+                        }
                         childAt<ContractDetailScreen.YourInfoTab.Header>(5) {
                             text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                         }
                         childAt<ContractDetailScreen.YourInfoTab.Row>(6) {
-                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER) }
+                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                             content { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
                         }
                     }

@@ -16,6 +16,7 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,7 +49,7 @@ class SuccessTest {
     fun shouldUpdateCodeWhenCodeIsAccepted() {
         activityRule.launchActivity(
             LoggedInActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 initialTab = LoggedInTabs.REFERRALS
             )
         )

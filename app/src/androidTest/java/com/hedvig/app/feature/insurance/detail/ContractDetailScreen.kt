@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.detail
 
 import android.content.Intent
 import android.view.View
+import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.pager2.KViewPager2
 import com.agoda.kakao.pager2.KViewPagerItem
@@ -41,7 +42,14 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
         }
 
         class PerilBottomSheetScreen : Screen<PerilBottomSheetScreen>() {
-            val body = KTextView { withId(R.id.body) }
+            val sheetRecycler = KRecyclerView({ withId(R.id.recycler) }, {
+                itemType(::Title)
+            })
+            val chevron = KImageView { withId(R.id.chevron) }
+
+            class Title(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
+                val title = KTextView { withId(R.id.title) }
+            }
         }
     }
 
