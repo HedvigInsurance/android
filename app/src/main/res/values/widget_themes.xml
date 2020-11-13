@@ -66,11 +66,12 @@
 
 
     <style name="ThemeOverlay.Hedvig.InsuranceCard" parent="">
-        <item name="android:textColorSecondary">@color/hedvig_black</item>
-        <item name="android:textColorTertiary">@color/text_color_primary_light</item>
-        <item name="colorPrimary">@color/hedvig_black</item>
         <item name="colorSurface">@color/hedvig_white</item>
         <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.InsuranceCard.StatusPill" parent="">
+        <item name="android:textColorTertiary">@color/text_color_primary_light</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

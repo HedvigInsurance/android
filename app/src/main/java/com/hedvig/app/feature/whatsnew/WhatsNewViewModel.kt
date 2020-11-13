@@ -21,7 +21,7 @@ class WhatsNewViewModelImpl(
 
     override fun fetchNews(sinceVersion: String?) {
         viewModelScope.launch {
-            val response = runCatching { whatsNewRepository.whatsNewAsync(sinceVersion).await() }
+            val response = runCatching { whatsNewRepository.whatsNew(sinceVersion) }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch

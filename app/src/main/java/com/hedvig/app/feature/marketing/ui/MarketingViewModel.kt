@@ -42,8 +42,7 @@ class MarketingViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 marketingRepository
-                    .marketingBackgroundAsync()
-                    .await()
+                    .marketingBackground()
             }
 
             response.getOrNull()?.data?.appMarketingImages?.firstOrNull()

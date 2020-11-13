@@ -206,7 +206,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         val currentEpochDay = LocalDate.now().toEpochDay()
         if (shouldShowTooltip(getLastOpen(), currentEpochDay)) {
             if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
-                Handler().postDelayed({
+                Handler(mainLooper).postDelayed({
                     binding.toolbar.performOnTapHapticFeedback()
                     ViewTooltip
                         .on(binding.toolbar.menu.getItem(0).actionView)

@@ -25,8 +25,7 @@ class AdyenDropInService : DropInService(), CoroutineScope {
     override fun makeDetailsCall(actionComponentData: JSONObject) = runBlocking(coroutineContext) {
         val response = runCatching {
             adyenRepository
-                .submitAdditionalPaymentDetailsAsync(actionComponentData)
-                .await()
+                .submitAdditionalPaymentDetails(actionComponentData)
         }
 
         val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
@@ -47,8 +46,7 @@ class AdyenDropInService : DropInService(), CoroutineScope {
         runBlocking(coroutineContext) {
             val response = runCatching {
                 adyenRepository
-                    .tokenizePaymentDetailsAsync(paymentComponentData)
-                    .await()
+                    .tokenizePaymentDetails(paymentComponentData)
             }
 
             val result = response.getOrNull()?.data?.tokenizePaymentDetails

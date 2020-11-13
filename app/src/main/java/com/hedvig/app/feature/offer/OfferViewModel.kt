@@ -56,7 +56,7 @@ class OfferViewModelImpl(
 
     override fun removeDiscount() {
         viewModelScope.launch {
-            val result = runCatching { offerRepository.removeDiscountAsync().await() }
+            val result = runCatching { offerRepository.removeDiscount() }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -74,7 +74,7 @@ class OfferViewModelImpl(
 
     override fun triggerOpenChat(done: () -> Unit) {
         viewModelScope.launch {
-            val result = runCatching { offerRepository.triggerOpenChatFromOfferAsync().await() }
+            val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -96,7 +96,7 @@ class OfferViewModelImpl(
                 .catch { e(it) }
                 .launchIn(this)
 
-            val response = runCatching { offerRepository.startSignAsync().await() }
+            val response = runCatching { offerRepository.startSign() }
             if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -111,7 +111,7 @@ class OfferViewModelImpl(
 
     override fun manuallyRecheckSignStatus() {
         viewModelScope.launch {
-            val response = runCatching { offerRepository.fetchSignStatusAsync().await() }
+            val response = runCatching { offerRepository.fetchSignStatus() }
             if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -124,7 +124,7 @@ class OfferViewModelImpl(
     override fun chooseStartDate(id: String, date: LocalDate) {
         viewModelScope.launch {
             val response = runCatching {
-                offerRepository.chooseStartDateAsync(id, date).await()
+                offerRepository.chooseStartDate(id, date)
             }
             if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }
@@ -141,7 +141,7 @@ class OfferViewModelImpl(
     override fun removeStartDate(id: String) {
         viewModelScope.launch {
             val response = runCatching {
-                offerRepository.removeStartDateAsync(id).await()
+                offerRepository.removeStartDate(id)
             }
             if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
                 response.exceptionOrNull()?.let { e(it) }

@@ -229,7 +229,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                         }
                         .start()
 
-                    Handler().postDelayed({
+                    Handler(mainLooper).postDelayed({
                         createdLabel.spring(SpringAnimation.TRANSLATION_Y)
                             .addUpdateListener { _, value, _ ->
                                 createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)

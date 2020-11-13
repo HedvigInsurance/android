@@ -53,7 +53,7 @@ class ReferralsViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            runCatching { referralsRepository.reloadReferralsAsync().await() }
+            runCatching { referralsRepository.reloadReferrals() }
             _isRefreshing.postValue(false)
         }
     }

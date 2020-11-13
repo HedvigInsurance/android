@@ -81,7 +81,7 @@ class PerilAdapter(
                             text.text = item.text
                         }
                         is PerilModel.PerilList.Exception -> {
-                            icon.setImageResource(R.drawable.ic_terminated_colorless)
+                            icon.setImageResource(R.drawable.ic_x_in_circle)
                             text.text = item.text
                         }
                     }

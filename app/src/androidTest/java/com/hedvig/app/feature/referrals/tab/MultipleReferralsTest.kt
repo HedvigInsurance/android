@@ -121,7 +121,7 @@ class MultipleReferralsTest {
                     textPlaceholder { isGone() }
                     name { hasText("Example 3") }
                     referee { isGone() }
-                    icon { hasDrawable(R.drawable.ic_terminated_colorless) }
+                    icon { hasDrawable(R.drawable.ic_x_in_circle) }
                 }
             }
         }
