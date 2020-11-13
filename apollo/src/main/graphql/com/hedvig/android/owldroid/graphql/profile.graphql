@@ -32,7 +32,7 @@ query Profile {
   nextChargeDate
   chargeHistory {
     amount {
-      amount
+      ...MonetaryAmountFragment
     }
     date
   }

@@ -1,20 +1,31 @@
 package com.hedvig.app.feature.profile.ui.payment
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
+import com.hedvig.app.databinding.ConnectBankAccountCardBinding
+import com.hedvig.app.databinding.FailedPaymentsCardBinding
+import com.hedvig.app.databinding.NextPaymentCardBinding
+import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.getMarket
+import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.hide
@@ -26,6 +37,7 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class PaymentActivity : BaseActivity(R.layout.activity_payment) {
@@ -369,4 +381,177 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 || it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
         }
     }
+}
+
+class PaymentAdapter(
+    private val marketProvider: MarketProvider
+) :
+    ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+    sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        abstract fun bind(data: PaymentModel, marketProvider: MarketProvider): Any?
+
+        fun invalid(data: PaymentModel) {
+            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
+        }
+
+        class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_header)) {
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = Unit
+        }
+
+        class FailedPayments(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.failed_payments_card)) {
+            private val binding by viewBinding(FailedPaymentsCardBinding::bind)
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = with(binding) {
+                if (data !is PaymentModel.FailedPayments) {
+                    return invalid(data)
+                }
+
+                failedPaymentsParagraph.text = failedPaymentsParagraph.context.getString(
+                    R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+                    data.failedCharges,
+                    data.nextChargeDate
+                )
+            }
+        }
+
+        class NextPayment(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.next_payment_card)) {
+            private val binding by viewBinding(NextPaymentCardBinding::bind)
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = with(binding) {
+                if (data !is PaymentModel.NextPayment) {
+                    return invalid(data)
+                }
+
+                nextPaymentAmount.text = nextPaymentAmount.context.getString(
+                    R.string.PAYMENTS_CURRENT_PREMIUM,
+                    data.inner.chargeEstimation.charge.amount.toBigDecimal().toInt()
+                )
+
+                val discount = data.inner.chargeEstimation.discount.amount.toBigDecimal().toInt()
+                if (discount > 0 && data.inner.balance.failedCharges == 0) {
+                    nextPaymentGross.show()
+                    nextPaymentGross.text = nextPaymentGross.context.getString(
+                        R.string.PAYMENTS_FULL_PREMIUM,
+                        data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
+                            ?.toInt()
+                    )
+                }
+
+                if (PaymentActivity.isActive(data.inner.contracts)) {
+                    nextPaymentDate.text =
+                        data.inner.nextChargeDate?.format(PaymentActivity.DATE_FORMAT)
+                } else if (PaymentActivity.isPending(data.inner.contracts)) {
+                    nextPaymentDate.background.compatSetTint(nextPaymentDate.context.compatColor(R.color.sunflower_300))
+                    nextPaymentDate.setTextColor(nextPaymentDate.context.compatColor(R.color.off_black))
+                    nextPaymentDate.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
+                }
+
+                val incentive =
+                    data.inner.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+                incentive?.asFreeMonths?.let { freeMonthsIncentive ->
+                    freeMonthsIncentive.quantity?.let { quantity ->
+                        discountSphereText.text = buildSpannedString {
+                            scale(20f / 12f) {
+                                append("$quantity\n")
+                            }
+                            append(
+                                if (quantity > 1) {
+                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                                } else {
+                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                                }
+                            )
+                        }
+                        discountSphere.show()
+                    }
+                }
+                incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
+                    discountSphere.show()
+                    discountSphereText.text =
+                        if (percentageDiscountMonthsIncentive.pdmQuantity > 1) {
+                            discountSphereText.context.getString(
+                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_MANY,
+                                percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
+                                percentageDiscountMonthsIncentive.pdmQuantity
+                            )
+                        } else {
+                            discountSphere.context.getString(
+                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_ONE,
+                                percentageDiscountMonthsIncentive.percentageDiscount.toInt()
+                            )
+                        }
+                }
+            }
+        }
+
+        class ConnectPayment(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.connect_bank_account_card)) {
+            private val binding by viewBinding(ConnectBankAccountCardBinding::bind)
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = with(binding) {
+                connectBankAccount.setHapticClickListener {
+                    marketProvider.market?.connectPayin(connectBankAccount.context)
+                        ?.let { connectBankAccount.context.startActivity(it) }
+                }
+            }
+        }
+
+        class PaymentHistoryHeader(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payment_history_header)) {
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = Unit
+        }
+
+        class Charge(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payment_history_item)) {
+            private val binding by viewBinding(PaymentHistoryItemBinding::bind)
+            override fun bind(data: PaymentModel, marketProvider: MarketProvider) = with(binding) {
+                if (data !is PaymentModel.Charge) {
+                    return invalid(data)
+                }
+
+                date.text = data.inner.date.format(PaymentActivity.DATE_FORMAT)
+                // amount.text = data.inner.amount // TODO: format as `MonetaryAmount`
+            }
+        }
+    }
+
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
+        PaymentModel.Header -> R.layout.payment_header
+        is PaymentModel.FailedPayments -> R.layout.failed_payments_card
+        is PaymentModel.NextPayment -> R.layout.next_payment_card
+        PaymentModel.ConnectPayment -> R.layout.connect_bank_account_card
+        PaymentModel.PaymentHistoryHeader -> R.layout.payment_history_header
+        is PaymentModel.Charge -> R.layout.payment_history_item
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.payment_header -> ViewHolder.Header(parent)
+        R.layout.failed_payments_card -> ViewHolder.FailedPayments(parent)
+        R.layout.next_payment_card -> ViewHolder.NextPayment(parent)
+        R.layout.connect_bank_account_card -> ViewHolder.ConnectPayment(parent)
+        R.layout.payment_history_header -> ViewHolder.PaymentHistoryHeader(parent)
+        R.layout.payment_history_item -> ViewHolder.Charge(parent)
+        else -> throw Error("Invalid viewType: $viewType")
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(getItem(position), marketProvider)
+    }
+}
+
+sealed class PaymentModel {
+    object Header : PaymentModel()
+    data class FailedPayments(
+        val failedCharges: Int,
+        val nextChargeDate: LocalDate
+    ) : PaymentModel()
+
+    data class NextPayment(
+        val inner: ProfileQuery.Data
+    ) : PaymentModel()
+
+    object ConnectPayment : PaymentModel()
+
+    object PaymentHistoryHeader : PaymentModel()
+
+    data class Charge(val inner: ProfileQuery.ChargeHistory) : PaymentModel()
 }
