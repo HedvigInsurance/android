@@ -19,9 +19,6 @@
             android:layout_marginBottom="?attr/actionBarSize"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/loadingSpinner"
-                layout="@layout/loading_spinner" />
 
             <TextView
                 android:id="@+id/header"

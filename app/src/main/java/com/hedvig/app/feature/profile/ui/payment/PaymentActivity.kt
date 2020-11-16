@@ -59,7 +59,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 market?.connectPayin(this@PaymentActivity)?.let { startActivity(it) }
             }
 
-            binding.connectBankAccountCard.connectBankAccount.setHapticClickListener {
+            connectBankAccountCard.connectBankAccount.setHapticClickListener {
                 tracker.connectBankAccount()
                 market?.connectPayin(this@PaymentActivity)?.let { startActivity(it) }
             }
