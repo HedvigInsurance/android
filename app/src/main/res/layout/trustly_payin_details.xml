@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/campaignInformationContainer"
+    android:id="@+id/bankAccountContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
@@ -10,56 +10,50 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/campaignInformationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceSubtitle1"
-        tools:text="Aktuell kampanj" />
+        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD"
+        android:textAppearance="?textAppearanceSubtitle1" />
 
     <TextView
-        android:id="@+id/campaignInformationLabelOne"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:textAppearance="?textAppearanceBody2"
-        tools:text="Från" />
+        android:text="@string/PAYMENTS_DIRECT_DEBIT"
+        android:textAppearance="?textAppearanceBody2" />
 
     <TextView
-        android:id="@+id/campaignInformationFieldOne"
+        android:id="@+id/directDebitStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:textAppearance="?textAppearanceSubtitle1"
-        tools:text="Partner XYZ" />
+        tools:text="Aktivt" />
 
     <TextView
-        android:id="@+id/lastFreeDayLabel"
+        android:id="@+id/accountNumberLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:text="@string/PAYMENTS_CAMPAIGN_LFD"
-        android:textAppearance="?textAppearanceBody2"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/PAYMENTS_SUBTITLE_ACCOUNT"
+        android:textAppearance="?textAppearanceBody2" />
 
     <TextView
-        android:id="@+id/lastFreeDay"
+        android:id="@+id/accountNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
         android:textAppearance="?textAppearanceSubtitle1"
-        android:visibility="gone"
-        tools:text="2019-06-28"
-        tools:visibility="visible" />
+        tools:text="SEB **** 8347" />
 
     <TextView
-        android:id="@+id/willUpdateWhenStartDateIsSet"
+        android:id="@+id/bankAccountUnderChangeParagraph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:text="@string/PAYMENTS_NO_STARTDATE_HELP_MESSAGE"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
         android:textAppearance="?textAppearanceCaption"
         android:visibility="gone"
         tools:visibility="visible" />
-
 </LinearLayout>

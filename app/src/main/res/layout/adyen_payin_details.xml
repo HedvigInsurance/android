@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adyenActivePaymentMethodContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_quadruple"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/paymentMethodHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cardType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:textAppearance="?textAppearanceBody2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/paymentMethodHeadline"
+        tools:text="Mastercard" />
+
+    <TextView
+        android:id="@+id/maskedCardNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceBody2"
+        app:layout_constraintBaseline_toBaselineOf="@id/cardType"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="**** 1234" />
+
+    <TextView
+        android:id="@+id/validUntilLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/PAYMENTS_CREDIT_CARD_EXPIRY_DATE_LABEL"
+        android:textAppearance="?textAppearanceBody2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardType" />
+
+    <TextView
+        android:id="@+id/validUntil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceBody2"
+        app:layout_constraintBaseline_toBaselineOf="@id/validUntilLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="01/2025" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

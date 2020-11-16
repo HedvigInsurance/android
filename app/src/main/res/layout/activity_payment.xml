@@ -6,107 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".feature.profile.ui.payment.PaymentActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/root"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
-            android:orientation="vertical">
-
-            <include
-                android:id="@+id/loadingSpinner"
-                layout="@layout/loading_spinner" />
-
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:text="@string/PROFILE_PAYMENT_TITLE"
-                android:textAppearance="?textAppearanceHeadline4" />
-
-            <include
-                android:id="@+id/failedPaymentsCard"
-                layout="@layout/failed_payments_card" />
-
-            <include
-                android:id="@+id/nextPaymentCard"
-                layout="@layout/next_payment_card" />
-
-            <include
-                android:id="@+id/connectBankAccountCard"
-                layout="@layout/connect_bank_account_card" />
-
-            <include
-                android:id="@+id/campaignInformationSection"
-                layout="@layout/campaign_information_section" />
-
-            <View
-                android:id="@+id/campaignInformationSeparator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@drawable/divider"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <include
-                android:id="@+id/paymentDetailsSection"
-                layout="@layout/payment_details_section" />
-
-            <View
-                android:id="@+id/paymentHistorySeparator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@drawable/divider"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <Button
-                android:id="@+id/changeBankAccount"
-                style="?attr/materialButtonTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:visibility="gone"
-                tools:text="@string/PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT"
-                tools:visibility="visible" />
-
-            <include
-                android:id="@+id/paymentHistorySection"
-                layout="@layout/payment_history_section" />
-
-            <View
-                android:id="@+id/endSeparator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:background="@drawable/divider"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <Button
-                android:id="@+id/redeemCode"
-                style="?attr/materialButtonTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/base_margin"
-                android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="1"
+        tools:listitem="@layout/next_payment_card" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

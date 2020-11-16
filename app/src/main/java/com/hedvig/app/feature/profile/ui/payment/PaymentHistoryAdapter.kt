@@ -72,10 +72,10 @@ class PaymentHistoryAdapter :
             fun bind(item: ChargeWrapper.Item) {
                 binding.apply {
                     date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
-                    amount.text = amount.context.getString(
-                        R.string.PAYMENT_HISTORY_AMOUNT,
-                        item.charge.amount.amount.toBigDecimal().toInt()
-                    )
+                    //amount.text = amount.context.getString(
+                    //    R.string.PAYMENT_HISTORY_AMOUNT,
+                    //    item.charge.amount.amount.toBigDecimal().toInt()
+                    //)
                 }
             }
         }
