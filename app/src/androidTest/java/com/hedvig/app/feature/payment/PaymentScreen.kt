@@ -18,6 +18,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
         itemType(::ConnectPayin)
         itemType(::Charge)
         itemType(::PaymentHistoryLink)
+        itemType(::TrustlyPayinDetails)
     })
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
@@ -34,6 +35,11 @@ class PaymentScreen : Screen<PaymentScreen>() {
     }
 
     class PaymentHistoryLink(parent: Matcher<View>) : KRecyclerItem<PaymentHistoryLink>(parent)
+
+    class TrustlyPayinDetails(parent: Matcher<View>) : KRecyclerItem<TrustlyPayinDetails>(parent) {
+        val accountNumber = KTextView(parent) { withId(R.id.accountNumber) }
+        val status = KTextView(parent){withId(R.id.directDebitStatus)}
+    }
 
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }

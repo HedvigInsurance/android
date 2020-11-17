@@ -35,4 +35,10 @@ query Payment {
       displayName
     }
   }
+  bankAccount {
+    ... BankAccountFragment
+  }
+  activePaymentMethods {
+    ... ActivePaymentMethodsFragment
+  }
 }

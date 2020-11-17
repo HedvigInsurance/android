@@ -8,11 +8,15 @@ import java.time.LocalDate
 val PAYIN_STATUS_DATA_NEEDS_SETUP = PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)
 val PAYIN_STATUS_DATA_ACTIVE = PayinStatusQuery.Data(PayinMethodStatus.ACTIVE)
 
-val PAYMENT_DATA = PaymentDataBuilder().build()
+val PAYMENT_DATA_NOT_CONNECTED = PaymentDataBuilder().build()
 val PAYMENT_DATA_FAILED_PAYMENTS = PaymentDataBuilder(failedCharges = 1).build()
 val PAYMENT_DATA_HISTORIC_PAYMENTS = PaymentDataBuilder(
     chargeHistory = listOf(
         ChargeHistoryBuilder().build(),
-        ChargeHistoryBuilder(date = LocalDate.now() - 2.months).build()
+        ChargeHistoryBuilder(date = LocalDate.now() - 2.months).build(),
     )
+).build()
+val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
+    payinType = PayinType.TRUSTLY,
+    payinConnected = true,
 ).build()

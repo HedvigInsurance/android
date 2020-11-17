@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -94,7 +93,14 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         } else {
                             null
                         },
-                        *(paymentHistory(paymentData)).toTypedArray()
+                        *(paymentHistory(paymentData)).toTypedArray(),
+                        paymentData.bankAccount?.let {
+                            PaymentModel.TrustlyPayinDetails(
+                                it,
+                                payinStatusData.payinMethodStatus
+                            )
+                        },
+                        paymentData.activePaymentMethods?.let { PaymentModel.AdyenPayinDetails(it) }
                     )
                 )
             }
@@ -497,11 +503,11 @@ sealed class PaymentModel {
     object PaymentHistoryLink : PaymentModel()
 
     data class TrustlyPayinDetails(
-        val bankAccount: ProfileQuery.BankAccount,
+        val bankAccount: PaymentQuery.BankAccount,
         val status: PayinMethodStatus
     ) : PaymentModel()
 
-    data class AdyenPayinDetails(val inner: ProfileQuery.ActivePaymentMethods) : PaymentModel()
+    data class AdyenPayinDetails(val inner: PaymentQuery.ActivePaymentMethods) : PaymentModel()
 
     sealed class Link : PaymentModel() {
         object TrustlyChangePayin : Link()

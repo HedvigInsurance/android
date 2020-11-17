@@ -11,9 +11,10 @@ import com.hedvig.app.mocks.MockPaymentViewModel
 import com.hedvig.app.paymentModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
-import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -27,17 +28,17 @@ class PaymentMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Payment Screen")
-        clickableItem("Active + Payment Connected") {
+        clickableItem("Active + Connect Payment") {
             MockPaymentViewModel.apply {
-                paymentData = PAYMENT_DATA
-                payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+                paymentData = PAYMENT_DATA_NOT_CONNECTED
+                payinStatusData = PAYIN_STATUS_DATA_NEEDS_SETUP
             }
 
             startActivity(PaymentActivity.newInstance(context))
         }
-        clickableItem("Active + Connect Payment") {
+        clickableItem("Active + Trustly Connected") {
             MockPaymentViewModel.apply {
-                paymentData = PAYMENT_DATA
+                paymentData = PAYMENT_DATA_TRUSTLY_CONNECTED
                 payinStatusData = PAYIN_STATUS_DATA_NEEDS_SETUP
             }
 

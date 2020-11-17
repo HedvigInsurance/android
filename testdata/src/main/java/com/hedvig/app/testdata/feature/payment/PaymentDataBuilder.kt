@@ -1,5 +1,7 @@
 package com.hedvig.app.testdata.feature.payment
 
+import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.owldroid.fragment.BankAccountFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -19,7 +21,9 @@ data class PaymentDataBuilder(
     private val chargeHistory: List<PaymentQuery.ChargeHistory> = emptyList(),
     private val freeUntil: LocalDate? = null,
     private val cost: CostFragment = CostBuilder().build(),
-    private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList()
+    private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList(),
+    private val payinType: PayinType = PayinType.TRUSTLY,
+    private val payinConnected: Boolean = false,
 ) {
     fun build() = PaymentQuery.Data(
         contracts = contracts.map {
@@ -68,6 +72,39 @@ data class PaymentDataBuilder(
                 costFragment = cost
             )
         ),
-        redeemedCampaigns = redeemedCampaigns
+        redeemedCampaigns = redeemedCampaigns,
+        bankAccount = if (payinType == PayinType.TRUSTLY && payinConnected) {
+            PaymentQuery.BankAccount(
+                fragments = PaymentQuery.BankAccount.Fragments(
+                    BankAccountFragment(
+                        bankName = "Testbanken",
+                        descriptor = "**** 1234"
+                    )
+                )
+            )
+        } else {
+            null
+        },
+        activePaymentMethods = if (payinType == PayinType.ADYEN && payinConnected) {
+            PaymentQuery.ActivePaymentMethods(
+                fragments = PaymentQuery.ActivePaymentMethods.Fragments(
+                    ActivePaymentMethodsFragment(
+                        storedPaymentMethodsDetails = ActivePaymentMethodsFragment.StoredPaymentMethodsDetails(
+                            brand = "Testkortet",
+                            lastFourDigits = "1234",
+                            expiryMonth = "01",
+                            expiryYear = "2050",
+                        )
+                    )
+                )
+            )
+        } else {
+            null
+        }
     )
+}
+
+enum class PayinType {
+    TRUSTLY,
+    ADYEN,
 }
