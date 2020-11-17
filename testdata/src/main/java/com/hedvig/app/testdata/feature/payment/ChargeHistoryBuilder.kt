@@ -2,9 +2,8 @@ package com.hedvig.app.testdata.feature.payment
 
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.app.util.months
 import java.time.LocalDate
-import java.time.Period
-import java.time.temporal.TemporalAmount
 
 data class ChargeHistoryBuilder(
     private val amount: String = "139.00",
@@ -24,5 +23,3 @@ data class ChargeHistoryBuilder(
     )
 }
 
-inline val Int.months: TemporalAmount
-    get() = Period.ofMonths(this)
