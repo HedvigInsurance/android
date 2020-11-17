@@ -10,7 +10,7 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
-import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
@@ -31,7 +31,7 @@ class PayinNotConnectedTest {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA) },
+        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
         PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) }
     )
 

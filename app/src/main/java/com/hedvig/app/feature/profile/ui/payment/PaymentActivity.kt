@@ -439,8 +439,9 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                cardType.text =
-                    data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand
+                data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand?.let {
+                    cardType.text = it
+                }
                 maskedCardNumber.text =
                     "**** ${data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits}"
                 validUntil.text =

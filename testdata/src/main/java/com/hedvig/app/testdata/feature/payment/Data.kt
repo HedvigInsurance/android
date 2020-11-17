@@ -20,3 +20,7 @@ val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
     payinType = PayinType.TRUSTLY,
     payinConnected = true,
 ).build()
+val PAYMENT_DATA_ADYEN_CONNECTED = PaymentDataBuilder(
+    payinType = PayinType.ADYEN,
+    payinConnected = true,
+).build()
