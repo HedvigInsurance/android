@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.payment
 
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 class PaymentHistoryTest {
 
     @get:Rule
-    val activityRule = ActivityTestRule(PaymentActivity::class.java, false, false)
+    val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -69,7 +69,11 @@ class PaymentHistoryTest {
                         )
                     }
                 }
+                childAt<PaymentScreen.PaymentHistoryLink>(4) {
+                    click()
+                }
             }
+            paymentHistory { intended() }
         }
     }
 }

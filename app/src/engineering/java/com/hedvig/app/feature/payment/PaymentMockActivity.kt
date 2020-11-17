@@ -6,19 +6,22 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.genericDevelopmentAdapter
+import com.hedvig.app.marketProviderModule
 import com.hedvig.app.mocks.MockPaymentViewModel
 import com.hedvig.app.paymentModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class PaymentMockActivity : MockActivity() {
     private val marketProvider = MockMarketProvider()
-    override val original = listOf(paymentModule)
+    override val original = listOf(paymentModule, marketProviderModule)
     override val mocks = listOf(module {
-        single<PaymentViewModel> { MockPaymentViewModel() }
+        viewModel<PaymentViewModel> { MockPaymentViewModel() }
         single<MarketProvider> { marketProvider }
     })
 
@@ -43,6 +46,14 @@ class PaymentMockActivity : MockActivity() {
         clickableItem("Failed Payments") {
             MockPaymentViewModel.apply {
                 paymentData = PAYMENT_DATA_FAILED_PAYMENTS
+                payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
+
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Payment History") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_HISTORIC_PAYMENTS
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
             }
 

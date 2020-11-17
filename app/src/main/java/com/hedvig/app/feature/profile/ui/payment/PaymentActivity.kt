@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.text.buildSpannedString
 import androidx.core.text.scale
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +27,6 @@ import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentLinkBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -34,14 +34,13 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
-import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setStrikethrough
-import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.android.ext.android.inject
@@ -59,17 +58,17 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val market = getMarket()
-        if (market == null) {
-            startActivity(MarketingActivity.newInstance(this))
-        }
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
 
-            setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
-                onBackPressed()
+            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
+            recycler.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
             recycler.adapter = PaymentAdapter(marketProvider, supportFragmentManager)
 
             model.data.observe(this@PaymentActivity) { (paymentData, payinStatusData) ->
@@ -106,7 +105,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         listOfNotNull(
             PaymentModel.PaymentHistoryHeader,
             data.chargeHistory.getOrNull(0)?.let { PaymentModel.Charge(it) },
-            data.chargeHistory.getOrNull(1)?.let { PaymentModel.Charge(it) }
+            data.chargeHistory.getOrNull(1)?.let { PaymentModel.Charge(it) },
+            PaymentModel.PaymentHistoryLink
         )
     } else {
         emptyList()
