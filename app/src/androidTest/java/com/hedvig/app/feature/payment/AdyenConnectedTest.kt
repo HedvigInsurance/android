@@ -5,16 +5,24 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.app.R
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
+import com.hedvig.app.marketProviderModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_ADYEN_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.dsl.module
 
 @RunWith(AndroidJUnit4::class)
 class AdyenConnectedTest {
@@ -31,8 +39,17 @@ class AdyenConnectedTest {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
+    private val marketProvider = mockk<MarketProvider>(relaxed = true)
+
+    @get:Rule
+    val mockModuleRule = KoinMockModuleRule(
+        listOf(marketProviderModule),
+        listOf(module { single { marketProvider } })
+    )
+
     @Test
     fun shouldShowCardInformationWhenAdyenIsConnected() {
+        every { marketProvider.market } returns Market.NO
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
@@ -45,7 +62,14 @@ class AdyenConnectedTest {
                         containsText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryYear)
                     }
                 }
+                childAt<PaymentScreen.Link>(2) {
+                    button {
+                        hasText(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
+                        click()
+                    }
+                }
             }
+            adyenConnectPayin { intended() }
         }
     }
 }

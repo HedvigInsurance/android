@@ -8,6 +8,7 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import org.hamcrest.Matcher
@@ -20,6 +21,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
         itemType(::PaymentHistoryLink)
         itemType(::TrustlyPayinDetails)
         itemType(::AdyenPayinDetails)
+        itemType(::Link)
     })
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
@@ -48,6 +50,11 @@ class PaymentScreen : Screen<PaymentScreen>() {
         val validUntil = KTextView(parent) { withId(R.id.validUntil) }
     }
 
+    class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
+        val button = KButton { withId(R.id.link) }
+    }
+
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }
+    val adyenConnectPayin = KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }
 }

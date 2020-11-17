@@ -12,6 +12,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
@@ -94,13 +95,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                             null
                         },
                         *(paymentHistory(paymentData)).toTypedArray(),
-                        paymentData.bankAccount?.let {
-                            PaymentModel.TrustlyPayinDetails(
-                                it,
-                                payinStatusData.payinMethodStatus
-                            )
-                        },
-                        paymentData.activePaymentMethods?.let { PaymentModel.AdyenPayinDetails(it) }
+                        *(payinDetails(paymentData, payinStatusData)).toTypedArray()
                     )
                 )
             }
@@ -116,6 +111,25 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         )
     } else {
         emptyList()
+    }
+
+    private fun payinDetails(
+        paymentData: PaymentQuery.Data,
+        payinStatusData: PayinStatusQuery.Data
+    ): List<PaymentModel> {
+        paymentData.bankAccount?.let { bankAccount ->
+            return listOf(
+                PaymentModel.TrustlyPayinDetails(bankAccount, payinStatusData.payinMethodStatus),
+                PaymentModel.Link.TrustlyChangePayin,
+            )
+        }
+        paymentData.activePaymentMethods?.let { activePaymentMethods ->
+            return listOf(
+                PaymentModel.AdyenPayinDetails(activePaymentMethods),
+                PaymentModel.Link.AdyenChangePayin,
+            )
+        }
+        return emptyList()
     }
 
     companion object {
@@ -460,7 +474,7 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                root.setText(
+                link.setText(
                     when (data) {
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
@@ -468,17 +482,19 @@ class PaymentAdapter(
                     }
                 )
 
-                root.setHapticClickListener {
-                    when (data) {
-                        PaymentModel.Link.TrustlyChangePayin,
-                        PaymentModel.Link.AdyenChangePayin -> marketProvider.market?.connectPayin(
-                            root.context
-                        )?.let { root.context.startActivity(it) }
-                        PaymentModel.Link.RedeemDiscountCode -> RefetchingRedeemCodeDialog
+                link.setHapticClickListener(when (data) {
+                    PaymentModel.Link.TrustlyChangePayin,
+                    PaymentModel.Link.AdyenChangePayin -> { _ ->
+                        marketProvider.market?.connectPayin(
+                            link.context
+                        )?.let { link.context.startActivity(it) }
+                    }
+                    PaymentModel.Link.RedeemDiscountCode -> { _ ->
+                        RefetchingRedeemCodeDialog
                             .newInstance()
                             .show(fragmentManager, RefetchingRedeemCodeDialog.TAG)
                     }
-                }
+                })
             }
         }
     }
