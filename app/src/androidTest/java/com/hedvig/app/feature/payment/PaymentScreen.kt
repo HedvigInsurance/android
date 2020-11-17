@@ -15,6 +15,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     val recycler = KRecyclerView({ withId(R.id.recycler) }, {
         itemType(::FailedPayments)
         itemType(::ConnectPayin)
+        itemType(::Charge)
     })
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
@@ -23,6 +24,11 @@ class PaymentScreen : Screen<PaymentScreen>() {
 
     class ConnectPayin(parent: Matcher<View>) : KRecyclerItem<ConnectPayin>(parent) {
         val connect = KButton(parent) { withId(R.id.connectBankAccount) }
+    }
+
+    class Charge(parent: Matcher<View>) : KRecyclerItem<Charge>(parent) {
+        val amount = KTextView(parent) { withId(R.id.amount) }
+        val date = KTextView(parent) { withId(R.id.date) }
     }
 
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }

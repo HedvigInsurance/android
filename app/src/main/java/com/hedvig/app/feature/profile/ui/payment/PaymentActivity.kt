@@ -94,11 +94,22 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                             PaymentModel.ConnectPayment
                         } else {
                             null
-                        }
+                        },
+                        *(paymentHistory(paymentData)).toTypedArray()
                     )
                 )
             }
         }
+    }
+
+    private fun paymentHistory(data: PaymentQuery.Data) = if (data.chargeHistory.isNotEmpty()) {
+        listOfNotNull(
+            PaymentModel.PaymentHistoryHeader,
+            data.chargeHistory.getOrNull(0)?.let { PaymentModel.Charge(it) },
+            data.chargeHistory.getOrNull(1)?.let { PaymentModel.Charge(it) }
+        )
+    } else {
+        emptyList()
     }
 
     companion object {
@@ -482,7 +493,7 @@ sealed class PaymentModel {
     data class CampaignInformation(val inner: PaymentQuery.Data) : PaymentModel()
 
     object PaymentHistoryHeader : PaymentModel()
-    data class Charge(val inner: ProfileQuery.ChargeHistory) : PaymentModel()
+    data class Charge(val inner: PaymentQuery.ChargeHistory) : PaymentModel()
     object PaymentHistoryLink : PaymentModel()
 
     data class TrustlyPayinDetails(

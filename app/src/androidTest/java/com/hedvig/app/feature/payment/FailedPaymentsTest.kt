@@ -34,7 +34,7 @@ class FailedPaymentsTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowCostWhenUserHasActiveContract() {
+    fun shouldShowWarningWhenUserHasMissedPayments() {
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
