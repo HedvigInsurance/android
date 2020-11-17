@@ -9,13 +9,18 @@ import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
+    private val marketProvider: MarketProvider by inject()
+    private val viewModel: OnboardingViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,11 +29,26 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
+            recycler.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
             setSupportActionBar(toolbar)
             supportActionBar?.title = "TODO Choose Plan"
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
+            recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
+            viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { quote ->
+                (recycler.adapter as OnboardingAdapter).submitList(
+                    listOf(
+                        OnboardingModel.Quote.Bundle(quote is OnboardingModel.Quote.Bundle),
+                        OnboardingModel.Quote.Content(quote is OnboardingModel.Quote.Content),
+                        OnboardingModel.Quote.Travel(quote is OnboardingModel.Quote.Travel),
+                        OnboardingModel.Info,
+                        OnboardingModel.Button
+                    )
+                )
+            }
         }
     }
 

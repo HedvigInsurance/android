@@ -8,8 +8,7 @@
         android:id="@+id/radioButton"
         android:clickable="false"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:buttonTint="@color/picker_radio_button_state"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/text"
