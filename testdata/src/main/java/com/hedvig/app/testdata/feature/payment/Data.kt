@@ -7,6 +7,7 @@ import java.time.LocalDate
 
 val PAYIN_STATUS_DATA_NEEDS_SETUP = PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)
 val PAYIN_STATUS_DATA_ACTIVE = PayinStatusQuery.Data(PayinMethodStatus.ACTIVE)
+val PAYIN_STATUS_DATA_PENDING = PayinStatusQuery.Data(PayinMethodStatus.PENDING)
 
 val PAYMENT_DATA_NOT_CONNECTED = PaymentDataBuilder().build()
 val PAYMENT_DATA_FAILED_PAYMENTS = PaymentDataBuilder(failedCharges = 1).build()

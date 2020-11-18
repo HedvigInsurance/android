@@ -10,7 +10,7 @@ import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.marketProviderModule
-import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
+import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_PENDING
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith
 import org.koin.dsl.module
 
 @RunWith(AndroidJUnit4::class)
-class TrustlyConnectedTest {
+class TrustlyPendingTest {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
@@ -33,7 +33,7 @@ class TrustlyConnectedTest {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) }
     )
 
     @get:Rule
@@ -48,7 +48,7 @@ class TrustlyConnectedTest {
     )
 
     @Test
-    fun shouldShowBankAccountInformationWhenTrustlyIsConnected() {
+    fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() {
         every { marketProvider.market } returns Market.SE
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
@@ -59,8 +59,8 @@ class TrustlyConnectedTest {
                         containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName)
                         containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
                     }
-                    status { hasText(R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE) }
-                    pending { isGone() }
+                    status { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
+                    pending { isVisible() }
                 }
                 childAt<PaymentScreen.Link>(2) {
                     button {

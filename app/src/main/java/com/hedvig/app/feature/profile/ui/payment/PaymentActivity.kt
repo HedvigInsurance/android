@@ -78,29 +78,34 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
                 (recycler.adapter as? PaymentAdapter)?.submitList(
                     listOfNotNull(
-                        safeLet(
-                            paymentData.balance.failedCharges,
-                            paymentData.nextChargeDate
-                        ) { failedCharges, nextChargeDate ->
-                            if (failedCharges > 0) {
-                                PaymentModel.FailedPayments(failedCharges, nextChargeDate)
-                            } else {
-                                null
-                            }
-                        },
+                        failedPayments(paymentData),
                         PaymentModel.NextPayment(paymentData),
-                        if (payinStatusData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                            PaymentModel.ConnectPayment
-                        } else {
-                            null
-                        },
-                        *(paymentHistory(paymentData)).toTypedArray(),
-                        *(payinDetails(paymentData, payinStatusData)).toTypedArray()
+                        connectPayment(payinStatusData),
+                        *paymentHistory(paymentData),
+                        *payinDetails(paymentData, payinStatusData),
                     )
                 )
             }
         }
     }
+
+    private fun failedPayments(data: PaymentQuery.Data) = safeLet(
+        data.balance.failedCharges,
+        data.nextChargeDate
+    ) { failedCharges, nextChargeDate ->
+        if (failedCharges > 0) {
+            PaymentModel.FailedPayments(failedCharges, nextChargeDate)
+        } else {
+            null
+        }
+    }
+
+    private fun connectPayment(data: PayinStatusQuery.Data) =
+        if (data.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+            PaymentModel.ConnectPayment
+        } else {
+            null
+        }
 
     private fun paymentHistory(data: PaymentQuery.Data) = if (data.chargeHistory.isNotEmpty()) {
         listOfNotNull(
@@ -108,28 +113,28 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             data.chargeHistory.getOrNull(0)?.let { PaymentModel.Charge(it) },
             data.chargeHistory.getOrNull(1)?.let { PaymentModel.Charge(it) },
             PaymentModel.PaymentHistoryLink
-        )
+        ).toTypedArray()
     } else {
-        emptyList()
+        emptyArray()
     }
 
     private fun payinDetails(
         paymentData: PaymentQuery.Data,
         payinStatusData: PayinStatusQuery.Data
-    ): List<PaymentModel> {
+    ): Array<PaymentModel> {
         paymentData.bankAccount?.let { bankAccount ->
-            return listOf(
+            return arrayOf(
                 PaymentModel.TrustlyPayinDetails(bankAccount, payinStatusData.payinMethodStatus),
                 PaymentModel.Link.TrustlyChangePayin,
             )
         }
         paymentData.activePaymentMethods?.let { activePaymentMethods ->
-            return listOf(
+            return arrayOf(
                 PaymentModel.AdyenPayinDetails(activePaymentMethods),
                 PaymentModel.Link.AdyenChangePayin,
             )
         }
-        return emptyList()
+        return emptyArray()
     }
 
     companion object {

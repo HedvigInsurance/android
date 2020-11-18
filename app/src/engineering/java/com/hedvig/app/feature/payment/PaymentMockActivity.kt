@@ -11,6 +11,7 @@ import com.hedvig.app.mocks.MockPaymentViewModel
 import com.hedvig.app.paymentModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
+import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_PENDING
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_ADYEN_CONNECTED
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
@@ -41,6 +42,14 @@ class PaymentMockActivity : MockActivity() {
             MockPaymentViewModel.apply {
                 paymentData = PAYMENT_DATA_TRUSTLY_CONNECTED
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
+
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Active + Trustly, Recently changed") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_TRUSTLY_CONNECTED
+                payinStatusData = PAYIN_STATUS_DATA_PENDING
             }
 
             startActivity(PaymentActivity.newInstance(context))

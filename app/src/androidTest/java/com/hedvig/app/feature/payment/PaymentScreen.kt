@@ -42,6 +42,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     class TrustlyPayinDetails(parent: Matcher<View>) : KRecyclerItem<TrustlyPayinDetails>(parent) {
         val accountNumber = KTextView(parent) { withId(R.id.accountNumber) }
         val status = KTextView(parent) { withId(R.id.directDebitStatus) }
+        val pending = KTextView(parent) { withId(R.id.bankAccountUnderChangeParagraph) }
     }
 
     class AdyenPayinDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayinDetails>(parent) {
