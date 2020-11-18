@@ -8,7 +8,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PlanCalculatePriceButtonBinding
 import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.remove
@@ -21,7 +21,7 @@ class OnboardingAdapter(
     val viewModel: OnboardingViewModel,
     val marketProvider: MarketProvider
 ) :
-    ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+    ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(OnboardingDiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.plan_card -> ViewHolder.QuoteType(parent)
@@ -132,8 +132,12 @@ class OnboardingAdapter(
                 marketProvider: MarketProvider,
             ) {
                 binding.root.setHapticClickListener { button ->
-                    marketProvider.market?.onboarding(button.context)
-                        ?.let { button.context.startActivity(it) }
+                    button.context.startActivity(
+                        WebOnboardingActivity.newNoInstance(
+                            button.context,
+                            viewModel.getSelectedNoPlan()
+                        )
+                    )
                 }
             }
         }

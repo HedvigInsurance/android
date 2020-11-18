@@ -14,7 +14,9 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.onbarding.NoPlan
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.apollo.defaultLocale
@@ -32,6 +34,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val noPlan = intent.getStringExtra(NO_PLAN)?.let { NoPlan.valueOf(it) }
 
         binding.apply {
             openSettings.setHapticClickListener {
@@ -93,7 +96,11 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 else -> "no/"
             }
 
-            webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+            when (marketProvider.market) {
+                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member/${noPlan?.getEmbarkPath()}/start?variation=android#token=${encodedToken}")
+                Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+                else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+            }
         }
     }
 
@@ -118,6 +125,12 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     companion object {
         private const val UTF_8 = "UTF-8"
+        private const val NO_PLAN = "NO_PLAN"
+        fun newNoInstance(context: Context, noPlan: NoPlan?): Intent {
+            val intent = Intent(context, WebOnboardingActivity::class.java)
+            intent.putExtra(NO_PLAN, noPlan?.name)
+            return intent
+        }
 
         fun newInstance(context: Context) = Intent(context, WebOnboardingActivity::class.java)
     }

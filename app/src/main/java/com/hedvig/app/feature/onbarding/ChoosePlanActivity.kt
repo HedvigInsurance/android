@@ -10,6 +10,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -37,6 +38,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
+            recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
             viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { quote ->
                 (recycler.adapter as OnboardingAdapter).submitList(
