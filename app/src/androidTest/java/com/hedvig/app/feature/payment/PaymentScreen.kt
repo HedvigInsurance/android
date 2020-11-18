@@ -16,6 +16,8 @@ import org.hamcrest.Matcher
 class PaymentScreen : Screen<PaymentScreen>() {
     val recycler = KRecyclerView({ withId(R.id.recycler) }, {
         itemType(::FailedPayments)
+        itemType(::NextPayment)
+        itemType(::Campaign)
         itemType(::ConnectPayin)
         itemType(::Charge)
         itemType(::PaymentHistoryLink)
@@ -26,6 +28,16 @@ class PaymentScreen : Screen<PaymentScreen>() {
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
         val paragraph = KTextView(parent) { withId(R.id.failedPaymentsParagraph) }
+    }
+
+    class NextPayment(parent: Matcher<View>) : KRecyclerItem<NextPayment>(parent) {
+        val discountBubble = KTextView(parent) { withId(R.id.discountSphereText) }
+        val gross = KTextView(parent) { withId(R.id.nextPaymentGross) }
+    }
+
+    class Campaign(parent: Matcher<View>) : KRecyclerItem<Campaign>(parent) {
+        val owner = KTextView(parent) { withId(R.id.campaignInformationFieldOne) }
+        val lastFreeDay = KTextView(parent) { withId(R.id.lastFreeDay) }
     }
 
     class ConnectPayin(parent: Matcher<View>) : KRecyclerItem<ConnectPayin>(parent) {

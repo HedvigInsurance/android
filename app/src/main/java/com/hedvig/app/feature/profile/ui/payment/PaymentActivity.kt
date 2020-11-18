@@ -81,6 +81,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         failedPayments(paymentData),
                         PaymentModel.NextPayment(paymentData),
                         connectPayment(payinStatusData),
+                        campaign(paymentData),
                         *paymentHistory(paymentData),
                         *payinDetails(paymentData, payinStatusData),
                     )
@@ -88,6 +89,15 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             }
         }
     }
+
+    private fun campaign(data: PaymentQuery.Data) =
+        data.redeemedCampaigns.getOrNull(0)?.let { campaign ->
+            if (campaign.fragments.incentiveFragment.incentive?.asFreeMonths != null || campaign.fragments.incentiveFragment.incentive?.asMonthlyCostDeduction != null) {
+                PaymentModel.CampaignInformation(data)
+            } else {
+                null
+            }
+        }
 
     private fun failedPayments(data: PaymentQuery.Data) = safeLet(
         data.balance.failedCharges,
@@ -251,20 +261,17 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                // nextPaymentAmount.text = nextPaymentAmount.context.getString(
-                //     R.string.PAYMENTS_CURRENT_PREMIUM,
-                //     data.inner.chargeEstimation.charge.amount.toBigDecimal().toInt()
-                // )
+                nextPaymentAmount.text =
+                    data.inner.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount()
+                        .format(nextPaymentAmount.context)
 
-                // val discount = data.inner.chargeEstimation.discount.amount.toBigDecimal().toInt()
-                // if (discount > 0 && data.inner.balance.failedCharges == 0) {
-                //     nextPaymentGross.show()
-                //     nextPaymentGross.text = nextPaymentGross.context.getString(
-                //         R.string.PAYMENTS_FULL_PREMIUM,
-                //         data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
-                //             ?.toInt()
-                //     )
-                // }
+                val discount =
+                    data.inner.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
+                if (discount.isPositive && data.inner.balance.failedCharges == 0) {
+                    nextPaymentGross.show()
+                    data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                        ?.format(nextPaymentGross.context)?.let { nextPaymentGross.text = it }
+                }
 
                 if (PaymentActivity.isActive(data.inner.contracts)) {
                     nextPaymentDate.text =

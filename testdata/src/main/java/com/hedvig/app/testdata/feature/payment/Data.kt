@@ -1,6 +1,8 @@
 package com.hedvig.app.testdata.feature.payment
 
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.util.months
 import java.time.LocalDate
@@ -24,4 +26,26 @@ val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
 val PAYMENT_DATA_ADYEN_CONNECTED = PaymentDataBuilder(
     payinType = PayinType.ADYEN,
     payinConnected = true,
+).build()
+val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
+    freeUntil = LocalDate.now() + 3.months,
+    redeemedCampaigns = listOf(
+        PaymentQuery.RedeemedCampaign(
+            owner = PaymentQuery.Owner(
+                displayName = "Test Owner"
+            ),
+            fragments = PaymentQuery.RedeemedCampaign.Fragments(
+                IncentiveFragment(
+                    incentive = IncentiveFragment.Incentive(
+                        asFreeMonths = IncentiveFragment.AsFreeMonths(
+                            quantity = 3
+                        ),
+                        asMonthlyCostDeduction = null,
+                        asNoDiscount = null,
+                        asPercentageDiscountMonths = null,
+                    )
+                )
+            )
+        )
+    )
 ).build()
