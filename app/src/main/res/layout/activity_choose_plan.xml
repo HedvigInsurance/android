@@ -5,15 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".feature.onbarding.ChoosePlanActivity">
+    tools:context=".feature.onbarding.ui.ChoosePlanActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="TODO Choose plan"
         app:titleTextColor="?colorPrimary" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -21,9 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:clipToPadding="false"
         android:paddingStart="@dimen/base_margin_double"
         android:paddingEnd="@dimen/base_margin_double"
-        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>

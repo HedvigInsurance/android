@@ -22,14 +22,15 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
+        <activity android:name=".feature.onbarding.ui.MoreOptionsActivity"></activity>
         <activity
-            android:name=".feature.onbarding.ChoosePlanActivity"
+            android:name=".feature.onbarding.ui.ChoosePlanActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
+            android:parentActivityName=".feature.marketing.ui.MarketingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize"
-            android:parentActivityName=".feature.marketing.ui.MarketingActivity" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

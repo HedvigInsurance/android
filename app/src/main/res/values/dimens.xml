@@ -145,4 +145,5 @@
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
     <dimen name="plan_card_height">130dp</dimen>
+    <dimen name="more_options_list_item_height">48dp</dimen>
 </resources>

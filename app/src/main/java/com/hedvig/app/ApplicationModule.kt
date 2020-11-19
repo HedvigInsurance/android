@@ -67,6 +67,8 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.onbarding.MoreOptionsRepository
+import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
 import com.hedvig.app.feature.onbarding.OnboardingViewModel
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
@@ -237,6 +239,7 @@ val viewModelModule = module {
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { OnboardingViewModel() }
+    viewModel { MoreOptionsViewModel(get()) }
 }
 
 val marketPickerModule = module {
@@ -337,6 +340,7 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { MoreOptionsRepository(get()) }
 }
 
 val trackerModule = module {

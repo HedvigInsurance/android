@@ -7,7 +7,7 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.onbarding.ChoosePlanActivity
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity

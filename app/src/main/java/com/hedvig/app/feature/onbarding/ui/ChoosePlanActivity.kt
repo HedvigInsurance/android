@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding
+package com.hedvig.app.feature.onbarding.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,8 +10,9 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.onbarding.OnboardingModel
+import com.hedvig.app.feature.onbarding.OnboardingViewModel
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -34,7 +35,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             setSupportActionBar(toolbar)
-            supportActionBar?.title = "TODO Choose Plan"
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
@@ -61,7 +61,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.moreOptions -> {
-            makeToast("TODO")
+            startActivity(MoreOptionsActivity.newInstance(this))
             true
         }
         else -> {

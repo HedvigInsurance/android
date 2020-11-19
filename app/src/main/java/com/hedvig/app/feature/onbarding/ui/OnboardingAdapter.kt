@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding
+package com.hedvig.app.feature.onbarding.ui
 
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +8,9 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PlanCalculatePriceButtonBinding
 import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.onbarding.OnboardingDiffUtilCallback
+import com.hedvig.app.feature.onbarding.OnboardingModel
+import com.hedvig.app.feature.onbarding.OnboardingViewModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.inflate
