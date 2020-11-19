@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.feature.profile.data.ProfileRepository
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.util.LiveEvent
 import kotlinx.coroutines.launch
 
 class ConnectPaymentViewModel(
     private val payinStatusRepository: PayinStatusRepository,
-    private val profileRepository: ProfileRepository
+    private val paymentRepository: PaymentRepository
 ) : ViewModel() {
     private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
     val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
@@ -27,7 +27,7 @@ class ConnectPaymentViewModel(
             viewModelScope.launch {
                 runCatching {
                     payinStatusRepository.refreshPayinStatus()
-                    profileRepository.refreshPayinMethod()
+                    paymentRepository.refreshPayinMethod()
                 }
             }
         }
@@ -53,6 +53,7 @@ sealed class ConnectPaymentScreenState {
     data class Connect(
         val transitionType: TransitionType
     ) : ConnectPaymentScreenState()
+
     data class Result(val success: Boolean) : ConnectPaymentScreenState()
 }
 
