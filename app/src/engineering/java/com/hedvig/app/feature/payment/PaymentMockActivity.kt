@@ -17,6 +17,7 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FREE_MONTHS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PERCENTAGE_CAMPAIGN
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_REFERRAL
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import org.koin.android.viewmodel.dsl.viewModel
@@ -67,6 +68,14 @@ class PaymentMockActivity : MockActivity() {
         clickableItem("Active + Referral") {
             MockPaymentViewModel.apply {
                 paymentData = PAYMENT_DATA_REFERRAL
+                payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
+
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Active + Percentage Discount") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_PERCENTAGE_CAMPAIGN
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
             }
 

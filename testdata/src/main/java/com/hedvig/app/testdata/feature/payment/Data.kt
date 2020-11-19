@@ -79,4 +79,24 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
         )
     )
 ).build()
+val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
+    redeemedCampaigns = listOf(
+        PaymentQuery.RedeemedCampaign(
+            owner = null,
+            fragments = PaymentQuery.RedeemedCampaign.Fragments(
+                IncentiveFragment(
+                    incentive = IncentiveFragment.Incentive(
+                        asFreeMonths = null,
+                        asMonthlyCostDeduction = null,
+                        asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
+                            percentageDiscount = 20.0,
+                            pdmQuantity = 2
+                        ),
+                        asNoDiscount = null,
+                    )
+                )
+            )
+        )
+    )
+).build()
 val PAYMENT_DATA_INACTIVE = PaymentDataBuilder(contracts = listOf(ContractStatus.PENDING)).build()
