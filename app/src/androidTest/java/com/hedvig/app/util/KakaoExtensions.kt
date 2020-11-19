@@ -1,12 +1,13 @@
 package com.hedvig.app.util
 
-import android.content.Context
+import android.app.Activity
+import android.app.Instrumentation
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.assertion.ViewAssertions
 import com.agoda.kakao.bottomnav.KBottomNavigationView
 import com.agoda.kakao.edit.KTextInputLayout
+import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.picker.date.KDatePicker
 import com.agoda.kakao.text.KTextView
 import java.time.LocalDate
@@ -27,5 +28,10 @@ fun KTextView.hasPluralText(@PluralsRes resId: Int, quantity: Int, vararg format
 
 fun KBottomNavigationView.hasNumberOfMenuItems(matcherNumber: Int) {
     view.check(
-        ViewAssertions.matches(HasNumberOfMenuItemsCheck(matcherNumber)))
+        ViewAssertions.matches(HasNumberOfMenuItemsCheck(matcherNumber))
+    )
+}
+
+fun KIntent.stub() {
+    intending(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
 }

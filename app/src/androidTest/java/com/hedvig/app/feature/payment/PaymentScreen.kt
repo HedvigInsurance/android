@@ -34,6 +34,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
         val discountBubble = KTextView(parent) { withId(R.id.discountSphereText) }
         val gross = KTextView(parent) { withId(R.id.nextPaymentGross) }
         val net = KTextView(parent) { withId(R.id.nextPaymentAmount) }
+        val paymentDate = KTextView(parent) { withId(R.id.nextPaymentDate) }
     }
 
     class Campaign(parent: Matcher<View>) : KRecyclerItem<Campaign>(parent) {

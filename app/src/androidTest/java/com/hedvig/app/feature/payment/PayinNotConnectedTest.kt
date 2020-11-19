@@ -16,6 +16,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -53,6 +54,7 @@ class PayinNotConnectedTest {
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
+            trustlyConnectPayin { stub() }
             recycler {
                 childAt<PaymentScreen.ConnectPayin>(1) {
                     connect { click() }

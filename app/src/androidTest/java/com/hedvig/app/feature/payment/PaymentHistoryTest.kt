@@ -14,6 +14,7 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,6 +39,7 @@ class PaymentHistoryTest {
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
+            paymentHistory { stub() }
             recycler {
                 childAt<PaymentScreen.Charge>(2) {
                     amount {
