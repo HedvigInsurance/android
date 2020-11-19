@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months
 import java.time.LocalDate
 
@@ -41,6 +42,34 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
                             quantity = 3
                         ),
                         asMonthlyCostDeduction = null,
+                        asNoDiscount = null,
+                        asPercentageDiscountMonths = null,
+                    )
+                )
+            )
+        )
+    )
+).build()
+val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
+    discount = "20.00",
+    cost = CostBuilder(
+        discountAmount = "20.00",
+        netAmount = "119.00",
+        grossAmount = "139.00"
+    ).build(),
+    charge = "119.00",
+    redeemedCampaigns = listOf(
+        PaymentQuery.RedeemedCampaign(
+            owner = null,
+            fragments = PaymentQuery.RedeemedCampaign.Fragments(
+                IncentiveFragment(
+                    incentive = IncentiveFragment.Incentive(
+                        asFreeMonths = null,
+                        asMonthlyCostDeduction = IncentiveFragment.AsMonthlyCostDeduction(
+                            amount = IncentiveFragment.Amount(
+                                amount = "20.00"
+                            )
+                        ),
                         asNoDiscount = null,
                         asPercentageDiscountMonths = null,
                     )

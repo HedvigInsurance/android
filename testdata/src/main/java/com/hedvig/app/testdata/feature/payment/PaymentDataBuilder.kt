@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 data class PaymentDataBuilder(
     private val contracts: List<ContractStatus> = listOf(ContractStatus.ACTIVE),
-    private val failedCharges: Int? = null,
+    private val failedCharges: Int? = 0,
     private val currency: String = "SEK",
     private val discount: String = "0.00",
     private val subscription: String = "139.00",
@@ -20,7 +20,12 @@ data class PaymentDataBuilder(
     private val nextChargeDate: LocalDate? = LocalDate.now().withDayOfMonth(27),
     private val chargeHistory: List<PaymentQuery.ChargeHistory> = emptyList(),
     private val freeUntil: LocalDate? = null,
-    private val cost: CostFragment = CostBuilder().build(),
+    private val cost: CostFragment = CostBuilder(
+        grossAmount = "139.00",
+        netAmount = "139.00",
+        discountAmount = "139.00",
+        currency = currency
+    ).build(),
     private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList(),
     private val payinType: PayinType = PayinType.TRUSTLY,
     private val payinConnected: Boolean = false,
@@ -42,7 +47,7 @@ data class PaymentDataBuilder(
             charge = PaymentQuery.Charge(
                 fragments = PaymentQuery.Charge.Fragments(
                     MonetaryAmountFragment(
-                        amount = "139.00",
+                        amount = charge,
                         currency = currency
                     )
                 )

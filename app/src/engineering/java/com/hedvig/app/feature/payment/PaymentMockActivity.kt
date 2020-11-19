@@ -17,6 +17,7 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FREE_MONTHS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_REFERRAL
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -58,6 +59,14 @@ class PaymentMockActivity : MockActivity() {
         clickableItem("Active + Adyen Connected") {
             MockPaymentViewModel.apply {
                 paymentData = PAYMENT_DATA_ADYEN_CONNECTED
+                payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
+
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Active + Referral") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_REFERRAL
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
             }
 
