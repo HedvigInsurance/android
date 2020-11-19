@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months
 import java.time.LocalDate
@@ -78,3 +79,4 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
         )
     )
 ).build()
+val PAYMENT_DATA_INACTIVE = PaymentDataBuilder(contracts = listOf(ContractStatus.PENDING)).build()
