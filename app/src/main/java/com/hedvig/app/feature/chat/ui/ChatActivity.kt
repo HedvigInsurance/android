@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import android.view.View
@@ -66,7 +67,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private var isKeyboardShown = false
     private var preventOpenAttachFile = false
-    private var preventOpenAttachFileHandler = Handler(mainLooper)
+    private var preventOpenAttachFileHandler = Handler(Looper.getMainLooper())
 
     private val resetPreventOpenAttachFile = { preventOpenAttachFile = false }
 
