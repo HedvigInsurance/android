@@ -20,6 +20,7 @@ import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentLinkBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -107,7 +108,7 @@ class PaymentAdapter(
                 }
 
                 failedPaymentsParagraph.text = failedPaymentsParagraph.context.getString(
-                    com.hedvig.app.R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+                    R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
                     data.failedCharges,
                     data.nextChargeDate
                 )
@@ -144,13 +145,13 @@ class PaymentAdapter(
                         ?.format(nextPaymentGross.context)?.let { nextPaymentGross.text = it }
                 }
 
-                if (com.hedvig.app.feature.profile.ui.payment.PaymentActivity.isActive(data.inner.contracts)) {
+                if (PaymentActivity.isActive(data.inner.contracts)) {
                     nextPaymentDate.text =
-                        data.inner.nextChargeDate?.format(com.hedvig.app.feature.profile.ui.payment.PaymentActivity.DATE_FORMAT)
-                } else if (com.hedvig.app.feature.profile.ui.payment.PaymentActivity.isPending(data.inner.contracts)) {
-                    nextPaymentDate.background.compatSetTint(nextPaymentDate.context.compatColor(com.hedvig.app.R.color.sunflower_300))
-                    nextPaymentDate.setTextColor(nextPaymentDate.context.compatColor(com.hedvig.app.R.color.off_black))
-                    nextPaymentDate.setText(com.hedvig.app.R.string.PAYMENTS_CARD_NO_STARTDATE)
+                        data.inner.nextChargeDate?.format(PaymentActivity.DATE_FORMAT)
+                } else if (PaymentActivity.isPending(data.inner.contracts)) {
+                    nextPaymentDate.background.compatSetTint(nextPaymentDate.context.compatColor(R.color.sunflower_300))
+                    nextPaymentDate.setTextColor(nextPaymentDate.context.compatColor(R.color.off_black))
+                    nextPaymentDate.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
                 }
 
                 val incentive =
@@ -163,9 +164,9 @@ class PaymentAdapter(
                             }
                             append(
                                 if (quantity > 1) {
-                                    discountSphere.context.getString(com.hedvig.app.R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
+                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
                                 } else {
-                                    discountSphere.context.getString(com.hedvig.app.R.string.PAYMENTS_OFFER_SINGLE_MONTH)
+                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
                                 }
                             )
                         }
@@ -177,13 +178,13 @@ class PaymentAdapter(
                     discountSphereText.text =
                         if (percentageDiscountMonthsIncentive.pdmQuantity > 1) {
                             discountSphereText.context.getString(
-                                com.hedvig.app.R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_MANY,
+                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_MANY,
                                 percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
                                 percentageDiscountMonthsIncentive.pdmQuantity
                             )
                         } else {
                             discountSphere.context.getString(
-                                com.hedvig.app.R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_ONE,
+                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_ONE,
                                 percentageDiscountMonthsIncentive.percentageDiscount.toInt()
                             )
                         }
@@ -223,22 +224,22 @@ class PaymentAdapter(
                 val incentive =
                     data.inner.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
                 incentive?.asFreeMonths?.let {
-                    campaignInformationTitle.setText(com.hedvig.app.R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
-                    campaignInformationLabelOne.setText(com.hedvig.app.R.string.PAYMENTS_CAMPAIGN_OWNER)
+                    campaignInformationTitle.setText(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
+                    campaignInformationLabelOne.setText(R.string.PAYMENTS_CAMPAIGN_OWNER)
                     data.inner.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
                         campaignInformationFieldOne.text = displayName
                     }
 
                     when {
-                        com.hedvig.app.feature.profile.ui.payment.PaymentActivity.isActive(data.inner.contracts) -> {
+                        PaymentActivity.isActive(data.inner.contracts) -> {
                             data.inner.insuranceCost?.freeUntil?.let { freeUntil ->
                                 lastFreeDay.text =
-                                    freeUntil.format(com.hedvig.app.feature.profile.ui.payment.PaymentActivity.DATE_FORMAT)
+                                    freeUntil.format(PaymentActivity.DATE_FORMAT)
                             }
                             lastFreeDay.show()
                             lastFreeDayLabel.show()
                         }
-                        com.hedvig.app.feature.profile.ui.payment.PaymentActivity.isPending(data.inner.contracts) -> {
+                        PaymentActivity.isPending(data.inner.contracts) -> {
                             willUpdateWhenStartDateIsSet.show()
                         }
                         else -> {
@@ -246,14 +247,14 @@ class PaymentAdapter(
                     }
                 }
                 incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
-                    campaignInformationTitle.setText(com.hedvig.app.R.string.PAYMENTS_SUBTITLE_DISCOUNT)
-                    campaignInformationLabelOne.setText(com.hedvig.app.R.string.PAYMENTS_DISCOUNT_ZERO)
+                    campaignInformationTitle.setText(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
+                    campaignInformationLabelOne.setText(R.string.PAYMENTS_DISCOUNT_ZERO)
                     monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()
                         ?.toString()
                         ?.let { amount ->
                             campaignInformationFieldOne.text =
                                 campaignInformationFieldOne.context.getString(
-                                    com.hedvig.app.R.string.PAYMENTS_DISCOUNT_AMOUNT,
+                                    R.string.PAYMENTS_DISCOUNT_AMOUNT,
                                     amount
                                 )
                         }
@@ -285,7 +286,7 @@ class PaymentAdapter(
                 }
 
                 date.text =
-                    data.inner.date.format(com.hedvig.app.feature.profile.ui.payment.PaymentActivity.DATE_FORMAT)
+                    data.inner.date.format(PaymentActivity.DATE_FORMAT)
                 amount.text = data.inner.amount.fragments.monetaryAmountFragment.toMonetaryAmount()
                     .format(amount.context)
             }
@@ -302,7 +303,7 @@ class PaymentAdapter(
             ) = with(binding) {
                 root.setHapticClickListener {
                     root.context.startActivity(
-                        com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity.newInstance(
+                        PaymentHistoryActivity.newInstance(
                             root.context
                         )
                     )
@@ -326,20 +327,20 @@ class PaymentAdapter(
                 accountNumber.text =
                     "${data.bankAccount.fragments.bankAccountFragment.bankName} ${data.bankAccount.fragments.bankAccountFragment.descriptor}"
                 when (data.status) {
-                    com.hedvig.android.owldroid.type.PayinMethodStatus.ACTIVE -> directDebitStatus.setText(
-                        com.hedvig.app.R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE
+                    PayinMethodStatus.ACTIVE -> directDebitStatus.setText(
+                        R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE
                     )
-                    com.hedvig.android.owldroid.type.PayinMethodStatus.PENDING -> directDebitStatus.setText(
-                        com.hedvig.app.R.string.PAYMENTS_DIRECT_DEBIT_PENDING
+                    PayinMethodStatus.PENDING -> directDebitStatus.setText(
+                        R.string.PAYMENTS_DIRECT_DEBIT_PENDING
                     )
-                    com.hedvig.android.owldroid.type.PayinMethodStatus.NEEDS_SETUP -> directDebitStatus.setText(
-                        com.hedvig.app.R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP
+                    PayinMethodStatus.NEEDS_SETUP -> directDebitStatus.setText(
+                        R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP
                     )
                     else -> {
                     }
                 }
                 bankAccountUnderChangeParagraph.isVisible =
-                    data.status == com.hedvig.android.owldroid.type.PayinMethodStatus.PENDING
+                    data.status == PayinMethodStatus.PENDING
             }
         }
 
@@ -380,25 +381,25 @@ class PaymentAdapter(
 
                 link.setText(
                     when (data) {
-                        com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.TrustlyChangePayin -> com.hedvig.app.R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
-                        com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.AdyenChangePayin -> com.hedvig.app.R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
-                        com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.RedeemDiscountCode -> com.hedvig.app.R.string.REFERRAL_ADDCOUPON_HEADLINE
+                        PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
+                        PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
+                        PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
                     }
                 )
 
                 link.setHapticClickListener(when (data) {
-                    com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.TrustlyChangePayin,
-                    com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.AdyenChangePayin -> { _ ->
+                    PaymentModel.Link.TrustlyChangePayin,
+                    PaymentModel.Link.AdyenChangePayin -> { _ ->
                         marketProvider.market?.connectPayin(
                             link.context
                         )?.let { link.context.startActivity(it) }
                     }
-                    com.hedvig.app.feature.profile.ui.payment.PaymentModel.Link.RedeemDiscountCode -> { _ ->
+                    PaymentModel.Link.RedeemDiscountCode -> { _ ->
                         tracker.clickRedeemCode()
-                        com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog.newInstance()
+                        RefetchingRedeemCodeDialog.newInstance()
                             .show(
                                 fragmentManager,
-                                com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog.TAG
+                                RefetchingRedeemCodeDialog.TAG
                             )
                     }
                 })
