@@ -66,7 +66,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     }
 
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
-        val button = KButton { withId(R.id.link) }
+        val button = KButton(parent) { withId(R.id.link) }
     }
 
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }

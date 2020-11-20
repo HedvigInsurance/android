@@ -84,6 +84,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         campaign(paymentData),
                         *paymentHistory(paymentData),
                         *payinDetails(paymentData, payinStatusData),
+                        redeemCampaign(paymentData),
                     )
                 )
             }
@@ -145,6 +146,12 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             )
         }
         return emptyArray()
+    }
+
+    private fun redeemCampaign(data: PaymentQuery.Data) = if (data.redeemedCampaigns.isEmpty()) {
+        PaymentModel.Link.RedeemDiscountCode
+    } else {
+        null
     }
 
     companion object {

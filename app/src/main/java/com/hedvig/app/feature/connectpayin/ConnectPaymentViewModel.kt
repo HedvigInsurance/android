@@ -27,7 +27,7 @@ class ConnectPaymentViewModel(
             viewModelScope.launch {
                 runCatching {
                     payinStatusRepository.refreshPayinStatus()
-                    paymentRepository.refreshPayinMethod()
+                    paymentRepository.refresh()
                 }
             }
         }

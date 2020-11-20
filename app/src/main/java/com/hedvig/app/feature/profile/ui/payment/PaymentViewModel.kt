@@ -22,6 +22,8 @@ abstract class PaymentViewModel : ViewModel() {
     protected val _paymentData = MutableLiveData<PaymentQuery.Data>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
     val data = combineTuple(_paymentData, _payinStatusData)
+
+    abstract fun load()
 }
 
 class PaymentViewModelImpl(
@@ -44,6 +46,12 @@ class PaymentViewModelImpl(
                 .launchIn(this)
         }
     }
+
+    override fun load() {
+        viewModelScope.launch {
+            paymentRepository.refresh()
+        }
+    }
 }
 
 class PaymentRepository(
@@ -56,7 +64,7 @@ class PaymentRepository(
         .watcher()
         .toFlow()
 
-    suspend fun refreshPayinMethod() = apolloClientWrapper
+    suspend fun refresh() = apolloClientWrapper
         .apolloClient
         .query(paymentQuery)
         .toBuilder()
