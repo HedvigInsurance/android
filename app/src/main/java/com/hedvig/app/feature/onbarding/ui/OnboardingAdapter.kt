@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.onbarding.ui
 
-import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -15,6 +17,7 @@ import com.hedvig.app.feature.onbarding.OnboardingModel
 import com.hedvig.app.feature.onbarding.OnboardingViewModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -124,30 +127,20 @@ class OnboardingAdapter(
             private fun animate(distance: Float) {
                 binding.apply {
                     val shimmerStartPosition = shimmer.x
-                    ObjectAnimator.ofFloat(shimmer, TRANSLATION_X, distance)
-                        .apply {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
                             duration = 500
-                            addListener(object : Animator.AnimatorListener {
-                                override fun onAnimationStart(animation: Animator?) {
-                                }
 
-                                override fun onAnimationEnd(animation: Animator?) {
-                                    shimmer.translationX = shimmerStartPosition
-                                }
-
-                                override fun onAnimationCancel(animation: Animator?) {
-                                }
-
-                                override fun onAnimationRepeat(animation: Animator?) {
-                                }
-                            })
+                            addUpdateListener { animation ->
+                                shimmer.translationX = animation.animatedValue as Float
+                            }
+                            doOnEnd {
+                                shimmer.translationX = shimmerStartPosition
+                            }
                             start()
                         }
+                    }, 300)
                 }
-            }
-
-            companion object {
-                private const val TRANSLATION_X = "translationX"
             }
         }
 
