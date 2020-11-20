@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.onbarding.ui
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -81,6 +83,7 @@ class OnboardingAdapter(
                                 "TODO Combination of both contents and travel insurance"
                             name.text = "TODO Bundle"
                             root.setHapticClickListener {
+                                animate(root.width.toFloat() + shimmer.width.toFloat())
                                 viewModel.setSelectedQuoteType(OnboardingModel.Quote.Bundle(true))
                             }
                         }
@@ -95,6 +98,7 @@ class OnboardingAdapter(
                                 "TODO Contents insurance covers everything in your home"
                             name.text = "TODO Content"
                             root.setHapticClickListener {
+                                animate(root.width.toFloat() + shimmer.width.toFloat())
                                 viewModel.setSelectedQuoteType(OnboardingModel.Quote.Content(true))
                             }
                         }
@@ -109,11 +113,41 @@ class OnboardingAdapter(
                                 "TODO Travel insurance protects you and your family when you're travelling"
                             name.text = "TODO Travel"
                             root.setHapticClickListener {
+                                animate(root.width.toFloat() + shimmer.width.toFloat())
                                 viewModel.setSelectedQuoteType(OnboardingModel.Quote.Travel(true))
                             }
                         }
                     }
                 }
+            }
+
+            private fun animate(distance: Float) {
+                binding.apply {
+                    val shimmerStartPosition = shimmer.x
+                    ObjectAnimator.ofFloat(shimmer, TRANSLATION_X, distance)
+                        .apply {
+                            duration = 500
+                            addListener(object : Animator.AnimatorListener {
+                                override fun onAnimationStart(animation: Animator?) {
+                                }
+
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    shimmer.translationX = shimmerStartPosition
+                                }
+
+                                override fun onAnimationCancel(animation: Animator?) {
+                                }
+
+                                override fun onAnimationRepeat(animation: Animator?) {
+                                }
+                            })
+                            start()
+                        }
+                }
+            }
+
+            companion object {
+                private const val TRANSLATION_X = "translationX"
             }
         }
 
