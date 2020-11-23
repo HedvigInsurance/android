@@ -4,9 +4,6 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 
-fun ProfileQuery.Campaign.monthlyCostDeductionIncentive() =
-    this.incentive?.asMonthlyCostDeduction
-
 //TODO fix real translation
 fun TypeOfContract.getStringId() = when (this) {
     TypeOfContract.SE_HOUSE -> R.string.SWEDISH_HOUSE_LOB

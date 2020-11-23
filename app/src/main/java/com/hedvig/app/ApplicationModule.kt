@@ -74,6 +74,7 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
@@ -343,6 +344,7 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { PaymentRepository(get()) }
 }
 
 val trackerModule = module {

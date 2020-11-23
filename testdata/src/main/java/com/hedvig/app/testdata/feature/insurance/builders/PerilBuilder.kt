@@ -3,7 +3,7 @@ package com.hedvig.app.testdata.feature.insurance.builders
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import util.toArrayList
+import com.hedvig.app.util.toArrayList
 
 class PerilBuilder {
 
