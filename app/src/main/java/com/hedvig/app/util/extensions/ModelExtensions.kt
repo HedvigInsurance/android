@@ -1,6 +1,5 @@
 package com.hedvig.app.util.extensions
 
-import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 
@@ -21,6 +20,10 @@ fun TypeOfContract.getStringId() = when (this) {
     TypeOfContract.DK_HOME_CONTENT_RENT,
     TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
     TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+    TypeOfContract.DK_TRAVEL_STUDENT,
+    TypeOfContract.DK_TRAVEL,
+    TypeOfContract.DK_ACCIDENT,
+    TypeOfContract.DK_ACCIDENT_STUDENT
     -> R.string.PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS
     TypeOfContract.UNKNOWN__ -> R.string.dummy_string
 }

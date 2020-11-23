@@ -97,7 +97,13 @@ class CoverageAdapter(
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
                     -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH -> context.getString(R.string.INSURANCE_TYPE_TRAVEL_DEFINITE)
+                    TypeOfContract.NO_TRAVEL_YOUTH,
+                    TypeOfContract.DK_TRAVEL,
+                    TypeOfContract.DK_TRAVEL_STUDENT -> context.getString(
+                        R.string.INSURANCE_TYPE_TRAVEL_DEFINITE
+                    )
+                    TypeOfContract.DK_ACCIDENT,
+                    TypeOfContract.DK_ACCIDENT_STUDENT -> context.getString(R.string.PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS)
                     TypeOfContract.UNKNOWN__ -> ""
                 }
             }
