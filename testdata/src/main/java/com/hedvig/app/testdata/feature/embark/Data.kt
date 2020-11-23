@@ -837,3 +837,18 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder
             .build()
     )
 ).build()
+
+val STORY_WITH_TOOLTIP = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                tooltip = listOf(
+                    EmbarkStoryQuery.Tooltip(
+                        title = "Tooltip Title",
+                        description = "Tooltip Description"
+                    )
+                )
+            )
+            .build()
+    )
+).build()

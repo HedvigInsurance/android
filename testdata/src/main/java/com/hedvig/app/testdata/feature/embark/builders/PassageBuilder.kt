@@ -10,7 +10,8 @@ data class PassageBuilder(
     private val response: MessageFragment = MessageBuilder(text = "").build(),
     private val redirects: List<EmbarkStoryQuery.Redirect> = emptyList(),
     private val action: EmbarkStoryQuery.Action,
-    private val api: EmbarkStoryQuery.Api? = null
+    private val api: EmbarkStoryQuery.Api? = null,
+    private val tooltip: List<EmbarkStoryQuery.Tooltip> = emptyList()
 ) {
     fun build() = EmbarkStoryQuery.Passage(
         name = name,
@@ -27,6 +28,7 @@ data class PassageBuilder(
                 response
             )
         ),
+        tooltips = tooltip,
         redirects = redirects,
         action = action,
         api = api

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.observe
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
@@ -33,6 +32,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             setResult(Activity.RESULT_CANCELED)
             finish()
             return
+        }
+
+        binding.apply {
+            setSupportActionBar(toolbar)
         }
 
         model.load(storyName)

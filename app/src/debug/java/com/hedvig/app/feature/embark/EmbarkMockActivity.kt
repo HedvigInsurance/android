@@ -20,6 +20,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_SELECT_ACTION_AND_CUSTO
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEMPLATE_MESSAGE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
@@ -81,6 +82,13 @@ class EmbarkMockActivity : MockActivity() {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_TEMPLATE_MESSAGE
+            }
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        header("Toolbar")
+        clickableItem("Tooltip") {
+            MockEmbarkViewModel.apply {
+                mockedData = STORY_WITH_TOOLTIP
             }
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
