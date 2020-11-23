@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AdyenPayinDetailsBinding
@@ -27,6 +28,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -80,10 +82,6 @@ class PaymentAdapter(
             fragmentManager: FragmentManager,
             tracker: PaymentTracker
         ): Any?
-
-        fun invalid(data: PaymentModel) {
-            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
-        }
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_header)) {
             override fun bind(
@@ -145,10 +143,10 @@ class PaymentAdapter(
                         ?.format(nextPaymentGross.context)?.let { nextPaymentGross.text = it }
                 }
 
-                if (PaymentActivity.isActive(data.inner.contracts)) {
+                if (isActive(data.inner.contracts)) {
                     nextPaymentDate.text =
                         data.inner.nextChargeDate?.format(PaymentActivity.DATE_FORMAT)
-                } else if (PaymentActivity.isPending(data.inner.contracts)) {
+                } else if (isPending(data.inner.contracts)) {
                     nextPaymentDate.background.compatSetTint(nextPaymentDate.context.compatColor(R.color.sunflower_300))
                     nextPaymentDate.setTextColor(nextPaymentDate.context.compatColor(R.color.off_black))
                     nextPaymentDate.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
@@ -231,7 +229,7 @@ class PaymentAdapter(
                     }
 
                     when {
-                        PaymentActivity.isActive(data.inner.contracts) -> {
+                        isActive(data.inner.contracts) -> {
                             data.inner.insuranceCost?.freeUntil?.let { freeUntil ->
                                 lastFreeDay.text =
                                     freeUntil.format(PaymentActivity.DATE_FORMAT)
@@ -239,7 +237,7 @@ class PaymentAdapter(
                             lastFreeDay.show()
                             lastFreeDayLabel.show()
                         }
-                        PaymentActivity.isPending(data.inner.contracts) -> {
+                        isPending(data.inner.contracts) -> {
                             willUpdateWhenStartDateIsSet.show()
                         }
                         else -> {
@@ -260,6 +258,7 @@ class PaymentAdapter(
                         }
                 }
             }
+
         }
 
         class PaymentHistoryHeader(parent: ViewGroup) :
@@ -404,6 +403,20 @@ class PaymentAdapter(
                     }
                 })
             }
+        }
+    }
+
+    companion object {
+        private fun isActive(contracts: List<PaymentQuery.Contract>) = contracts.any {
+            it.status.fragments.contractStatusFragment.asActiveStatus != null
+                || it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null
+                || it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
+        }
+
+        private fun isPending(contracts: List<PaymentQuery.Contract>) = contracts.all {
+            it.status.fragments.contractStatusFragment.asPendingStatus != null
+                || it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null
+                || it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
         }
     }
 }

@@ -128,18 +128,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     companion object {
         val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL yyyy")
 
-        fun isActive(contracts: List<PaymentQuery.Contract>) = contracts.any {
-            it.status.fragments.contractStatusFragment.asActiveStatus != null
-                || it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null
-                || it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
-        }
-
-        fun isPending(contracts: List<PaymentQuery.Contract>) = contracts.all {
-            it.status.fragments.contractStatusFragment.asPendingStatus != null
-                || it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null
-                || it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
-        }
-
         fun newInstance(context: Context) = Intent(context, PaymentActivity::class.java)
     }
 }
