@@ -130,6 +130,13 @@ class InsuranceDataBuilder(
                     } else {
                         null
                     },
+                    asDanishTravelAgreement = when (type) {
+                        TypeOfContract.DK_TRAVEL,
+                        TypeOfContract.DK_TRAVEL_STUDENT -> InsuranceQuery.AsDanishTravelAgreement(
+                            numberCoInsured = 2
+                        )
+                        else -> null
+                    }
                 ),
                 perils = PerilBuilder().insuranceQueryBuild(5),
                 insurableLimits = listOf(

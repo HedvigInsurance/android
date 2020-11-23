@@ -80,6 +80,13 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         )
                         return@observe
                     }
+                    data.currentAgreement.asDanishTravelAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            coinsuredSection(it.numberCoInsured) +
+                                changeSection()
+                        )
+                        return@observe
+                    }
                 }
             }
         }

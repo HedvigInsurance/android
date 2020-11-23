@@ -9,3 +9,4 @@ val INSURANCE_DATA_SWEDISH_HOUSE = InsuranceDataBuilder(type = TypeOfContract.SE
 val INSURANCE_DATA_NORWEGIAN_TRAVEL = InsuranceDataBuilder(type = TypeOfContract.NO_TRAVEL).build()
 val INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS =
     InsuranceDataBuilder(type = TypeOfContract.NO_HOME_CONTENT_RENT).build()
+val INSURANCE_DATA_DANISH_TRAVEL = InsuranceDataBuilder(type = TypeOfContract.DK_TRAVEL).build()
