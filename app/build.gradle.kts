@@ -47,6 +47,7 @@ android {
     }
 
     buildTypes {
+        maybeCreate("staging")
         named("release") {
             applicationIdSuffix = ".app"
 
@@ -71,7 +72,7 @@ android {
             )
         }
 
-        create("staging") {
+        named("staging") {
             applicationIdSuffix = ".test.app"
 
             buildConfigField("String", "APP_ID", "\"com.hedvig.test.app\"")
@@ -150,7 +151,8 @@ dependencies {
 
     androidTestImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
-    //stagingImplementation project(":testdata")
+
+    "stagingImplementation"(project(":testdata"))
 
     coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
     implementation(kotlin("stdlib", Dependencies.Versions.kotlin))
@@ -284,4 +286,6 @@ lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties"))
 lokalise {
     id = lokaliseProperties.getProperty("id")
     token = lokaliseProperties.getProperty("token")
+
+    downloadConfig = com.likandr.gradle.config.DownloadConfig()
 }
