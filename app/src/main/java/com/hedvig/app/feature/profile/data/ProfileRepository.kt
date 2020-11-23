@@ -102,62 +102,6 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
             .execute()
     }
 
-    suspend fun refreshPayinMethod() {
-        val response = apolloClientWrapper
-            .apolloClient
-            .query(PayinMethodQuery())
-            .toBuilder()
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
-            .await()
-
-        response.data?.let { newData ->
-            newData.bankAccount?.let { newBankAccount ->
-                val cachedData = apolloClientWrapper
-                    .apolloClient
-                    .apolloStore
-                    .read(profileQuery)
-                    .execute()
-
-                apolloClientWrapper
-                    .apolloClient
-                    .apolloStore
-                    .writeAndPublish(
-                        profileQuery,
-                        cachedData.copy(
-                            bankAccount = ProfileQuery.BankAccount(
-                                fragments = ProfileQuery.BankAccount.Fragments(newBankAccount.fragments.bankAccountFragment)
-                            )
-                        )
-                    )
-                    .execute()
-            }
-
-            newData.activePaymentMethods?.let { newActivePaymentMethods ->
-                val cachedData = apolloClientWrapper
-                    .apolloClient
-                    .apolloStore
-                    .read(profileQuery)
-                    .execute()
-
-                apolloClientWrapper
-                    .apolloClient
-                    .apolloStore
-                    .writeAndPublish(
-                        profileQuery,
-                        cachedData.copy(
-                            activePaymentMethods = ProfileQuery.ActivePaymentMethods(
-                                fragments = ProfileQuery.ActivePaymentMethods.Fragments(
-                                    newActivePaymentMethods.fragments.activePaymentMethodsFragment
-                                )
-                            )
-                        )
-                    )
-                    .execute()
-            }
-        }
-    }
-
     fun logoutAsync() =
         apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred()
 }
