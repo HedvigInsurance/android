@@ -52,7 +52,7 @@
         <activity
             android:name=".feature.insurance.InsuranceMockActivity"
             android:label="Insurance Mock Screen"
-            android:theme="@style/Hedvig.Theme"/>
+            android:theme="@style/Hedvig.Theme" />
 
         <activity
             android:name=".feature.profile.ProfileMockActivity"
@@ -61,8 +61,8 @@
 
         <activity
             android:name=".feature.marketpicker.MarketPickerMockActivity"
-            android:label="Home Mock Screen" 
-            android:theme="@style/Hedvig.Theme"/>
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
 
         <activity
             android:name=".feature.loggedin.LoggedInMockActivity"
@@ -78,6 +78,8 @@
             android:name=".feature.trustly.TrustlyMockActivity"
             android:label="Trustly Mock Screen"
             android:theme="@style/Hedvig.Theme" />
+
+        <activity android:name=".feature.payment.PaymentMockActivity" />
 
     </application>
 

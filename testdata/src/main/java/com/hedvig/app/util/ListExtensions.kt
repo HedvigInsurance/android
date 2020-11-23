@@ -1,4 +1,4 @@
-package util
+package com.hedvig.app.util
 
 import java.util.ArrayList
 
