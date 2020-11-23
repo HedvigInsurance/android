@@ -47,4 +47,10 @@
 
     <color name="text_color_primary_light">#AB121212</color>
 
+    <item name="color_card_blur_apartment" type="color">#efeac6</item>
+    <item name="color_card_blur_house" type="color">#f8b992</item>
+    <item name="color_card_blur_travel" type="color">#e2ccce</item>
+    <item name="color_card_inactive" type="color">@color/hedvig_light_gray</item>
+
+
 </resources>

@@ -55,9 +55,5 @@ class CoverageTest {
                 }
             }
         }
-
-        onScreen<ContractDetailScreen.CoverageTab.PerilBottomSheetScreen> {
-            body { hasText("Mock") }
-        }
     }
 }

@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_ALREADY_TAKEN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.hasError
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +38,7 @@ class CodeAlreadyTakenTest {
     fun shouldShowAlreadyTakenErrorWhenCodeIsAlreadyTaken() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 "TEST123"
             )
         )

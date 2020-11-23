@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.fragment.AddressFragment
+import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.R
@@ -61,6 +62,16 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                                 changeSection()
                         )
                         return@observe
+                    }
+                    data.currentAgreement.asDanishHomeContentAgreement?.let {
+                        (adapter as? YourInfoAdapter)?.submitList(
+                            homeSection(
+                                it.address.fragments.addressFragment,
+                                it.dhcType?.displayName(requireContext()) ?: "",
+                                it.squareMeters
+                            ) + coinsuredSection(it.numberCoInsured) +
+                                changeSection()
+                        )
                     }
                     data.currentAgreement.asNorwegianTravelAgreement?.let {
                         (adapter as? YourInfoAdapter)?.submitList(
@@ -132,6 +143,15 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                 NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
                 NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
                 NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
+            }
+
+        internal fun DanishHomeContentLineOfBusiness.displayName(context: Context) =
+            when (this) {
+                DanishHomeContentLineOfBusiness.RENT -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_RENT)
+                DanishHomeContentLineOfBusiness.OWN -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_OWN)
+                DanishHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_STUDENT_RENT)
+                DanishHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_STUDENT_OWN)
+                DanishHomeContentLineOfBusiness.UNKNOWN__ -> ""
             }
     }
 }

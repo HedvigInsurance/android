@@ -3,7 +3,7 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Theme
@@ -102,7 +102,7 @@ open class HedvigApplication : Application() {
 
     private suspend fun acquireHedvigToken() {
         val response = runCatching {
-            apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).toDeferred().await()
+            apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).await()
         }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }

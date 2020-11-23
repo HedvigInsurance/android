@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -15,6 +14,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
@@ -42,7 +42,7 @@ class OneRefereeTest {
     @Test
     fun shouldShowActiveStateWhenUserHasOneReferee() {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -57,7 +57,7 @@ class OneRefereeTest {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -66,14 +66,14 @@ class OneRefereeTest {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -107,7 +107,7 @@ class OneRefereeTest {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                 }

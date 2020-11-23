@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
+import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +19,7 @@ class CodeTooShortValidationTest {
     fun shouldNotAllowSubmitWhenCodeFieldIsBlank() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 "TEST123"
             )
         )

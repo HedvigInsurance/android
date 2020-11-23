@@ -6,6 +6,8 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.os.Looper.getMainLooper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +31,7 @@ class OfferSignDialog : DialogFragment() {
     private val binding by viewBinding(DialogSignBinding::bind)
     private val tracker: OfferTracker by inject()
 
-    val handler = Handler()
+    val handler = Handler(getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater,

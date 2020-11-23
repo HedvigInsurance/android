@@ -33,7 +33,7 @@ class UserViewModel(
                 .catch { e(it) }
                 .launchIn(this)
 
-            val response = runCatching { userRepository.fetchAutoStartTokenAsync().await() }
+            val response = runCatching { userRepository.fetchAutoStartToken() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
@@ -44,7 +44,7 @@ class UserViewModel(
 
     fun logout(callback: () -> Unit) {
         CoroutineScope(IO).launch {
-            val response = runCatching { userRepository.logoutAsync().await() }
+            val response = runCatching { userRepository.logout() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
                 return@launch

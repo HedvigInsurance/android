@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -14,6 +13,7 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +41,7 @@ class OpenEditCodeTest {
     fun shouldOpenEditCodeScreenWhenPressingEdit() {
         activityRule.launchActivity(
             LoggedInActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 initialTab = LoggedInTabs.REFERRALS
             )
         )
