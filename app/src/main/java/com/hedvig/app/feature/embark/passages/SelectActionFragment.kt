@@ -40,8 +40,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                     model.navigateToPassage(selectAction.link)
                 }
             }.apply {
-                items = data.actions
+                submitList(data.actions)
             }
+            actions.addItemDecoration(SelectActionDecoration())
         }
     }
 

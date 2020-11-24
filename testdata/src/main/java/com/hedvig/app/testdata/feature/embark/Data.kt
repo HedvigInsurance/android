@@ -63,6 +63,15 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
             listOf(
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_FIRST_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
                 ).build()
             )
         ).build()
@@ -75,6 +84,9 @@ val STANDARD_SECOND_PASSAGE_BUILDER =
         messages = listOf(STANDARD_SECOND_MESSAGE),
         action = SelectActionBuilder(
             listOf(
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build(),
                 SelectOptionBuilder(
                     link = STANDARD_SECOND_LINK
                 ).build()

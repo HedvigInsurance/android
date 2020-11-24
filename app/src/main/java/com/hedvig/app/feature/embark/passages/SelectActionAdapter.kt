@@ -1,41 +1,36 @@
 package com.hedvig.app.feature.embark.passages
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.EmbarkSelectActionItemBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import kotlinx.android.synthetic.main.embark_select_action_item.view.*
+import com.hedvig.app.util.extensions.viewBinding
 
 class SelectActionAdapter(
     private val onActionSelected: (SelectAction) -> Unit
-) : RecyclerView.Adapter<SelectActionAdapter.ViewHolder>() {
-    var items = listOf<SelectAction>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+) : ListAdapter<SelectAction, SelectActionAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
-    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position], onActionSelected)
+        holder.bind(getItem(position), onActionSelected)
     }
 
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater
-            .from(parent.context)
-            .inflate(R.layout.embark_select_action_item, parent, false)
-    ) {
-        private val action = itemView.action
-
+    class ViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.embark_select_action_item)) {
+        private val binding by viewBinding(EmbarkSelectActionItemBinding::bind)
         fun bind(
             item: SelectAction,
             onActionSelected: (SelectAction) -> Unit
         ) {
-            action.text = item.label
-            action.setHapticClickListener { onActionSelected(item) }
+            binding.apply {
+                text.text = item.label
+                root.setHapticClickListener { onActionSelected(item) }
+            }
         }
     }
 }
