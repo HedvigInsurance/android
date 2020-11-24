@@ -34,7 +34,16 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                 items = data.messages
             }
 
-            filledTextField.hint = data.hint
+            filledTextField.hint = data.placeholder
+
+            input.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    filledTextField.hint = "Hint"
+                } else {
+                    filledTextField.hint = data.placeholder
+                }
+            }
+
             input.onChange { text ->
                 textActionSubmit.isEnabled = text.isNotEmpty()
             }
@@ -65,7 +74,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 @Parcelize
 data class TextActionData(
     val link: String,
-    val hint: String,
+    val placeholder: String,
     val messages: List<String>,
     val submitLabel: String,
     val key: String,
