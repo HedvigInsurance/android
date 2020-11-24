@@ -74,7 +74,9 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                         blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_house))
                     }
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH -> {
+                    TypeOfContract.NO_TRAVEL_YOUTH,
+                    TypeOfContract.DK_TRAVEL,
+                    TypeOfContract.DK_TRAVEL_STUDENT -> {
                         container.setBackgroundResource(R.drawable.card_travel_background)
                         blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
                     }
@@ -112,7 +114,9 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     )
                 }
                 TypeOfContract.NO_TRAVEL,
-                TypeOfContract.NO_TRAVEL_YOUTH -> {
+                TypeOfContract.NO_TRAVEL_YOUTH,
+                TypeOfContract.DK_TRAVEL,
+                TypeOfContract.DK_TRAVEL_STUDENT -> {
                     adapter.submitList(listOf(ContractModel.NoOfCoInsured(currentAgreement.numberCoInsured)))
                 }
                 TypeOfContract.UNKNOWN__ -> {
@@ -133,6 +137,7 @@ private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
         asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
         asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
         asDanishHomeContentAgreement?.numberCoInsured?.let { return it }
+        asDanishTravelAgreement?.numberCoInsured?.let { return it }
         e { "Unable to infer amount coinsured for agreement: $this" }
         return 0
     }
