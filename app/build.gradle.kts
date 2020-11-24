@@ -190,7 +190,6 @@ dependencies {
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:$okhttp3_version")
     implementation("ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0")
 
-
     // Firebase
     implementation("com.google.android.gms:play-services-base:17.5.0")
     implementation("com.google.firebase:firebase-crashlytics:17.2.2")
