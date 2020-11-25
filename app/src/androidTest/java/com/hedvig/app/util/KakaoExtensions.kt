@@ -9,6 +9,7 @@ import com.agoda.kakao.bottomnav.KBottomNavigationView
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.picker.date.KDatePicker
+import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KTextView
 import java.time.LocalDate
 
@@ -35,3 +36,5 @@ fun KBottomNavigationView.hasNumberOfMenuItems(matcherNumber: Int) {
 fun KIntent.stub() {
     intending(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
 }
+
+fun KSwipeRefreshLayout.swipeDownInCenter() = view.perform(CustomViewActions.swipeDownInCenter())
