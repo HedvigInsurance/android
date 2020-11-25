@@ -32,23 +32,31 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
             }
             setSupportActionBar(toolbar)
 
-            recycler.adapter = MoreOptionsAdapter()
+            recycler.adapter = MoreOptionsAdapter(viewModel)
 
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
                 if (result.isSuccess) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
                         listOf(
                             MoreOptionsModel.Header,
-                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId(it) },
+                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
+                            MoreOptionsModel.Version,
+                            MoreOptionsModel.Settings,
+                            MoreOptionsModel.Copyright
+                        )
+                    )
+                } else {
+                    (recycler.adapter as MoreOptionsAdapter).submitList(
+                        listOf(
+                            MoreOptionsModel.Header,
+                            MoreOptionsModel.UserId.Error,
                             MoreOptionsModel.Version,
                             MoreOptionsModel.Settings,
                             MoreOptionsModel.Copyright
                         )
                     )
                 }
-                //TODO Handle failure result
             }
-
         }
     }
 

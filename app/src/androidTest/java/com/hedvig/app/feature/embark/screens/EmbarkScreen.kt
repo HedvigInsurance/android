@@ -23,7 +23,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     val selectActions =
         KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
 
-    val textActionInput = KEditText { withId(R.id.textActionInput) }
+    val textActionInput = KEditText { withId(R.id.input) }
     val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
 
     val upgradeApp = KButton { withId(R.id.upgradeApp) }
@@ -33,6 +33,8 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
             hasScheme("market")
         }
     }
+
+    val moreOptionsButton = KButton { withId(R.id.moreOptions) }
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }

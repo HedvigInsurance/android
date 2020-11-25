@@ -3,7 +3,9 @@ package com.hedvig.app.feature.embark
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.genericDevelopmentAdapter
+import com.hedvig.app.moreOptionsModule
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_BINARY_REDIRECT
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_EQUALS_EXPRESSION
@@ -28,9 +30,10 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class EmbarkMockActivity : MockActivity() {
-    override val original = listOf(embarkModule)
+    override val original = listOf(embarkModule, moreOptionsModule)
     override val mocks = listOf(module {
         viewModel<EmbarkViewModel> { MockEmbarkViewModel() }
+        viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
     })
 
     override fun adapter() = genericDevelopmentAdapter {
@@ -186,6 +189,12 @@ class EmbarkMockActivity : MockActivity() {
                 graphQLQueryResponse = jsonObjectOf("hello" to "world")
             }
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        header("More Options")
+        clickableItem("More Options ") {
+            MockEmbarkViewModel.mockedData = STANDARD_STORY
+            MockMoreOptionsViewModel.shouldLoad = false
+            startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
         }
     }
 }

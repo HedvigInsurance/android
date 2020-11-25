@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
-        android:text="TODO Version"
+        android:text="@string/embark_onboarding_more_options.version_label"
         android:textAppearance="?textAppearanceSubtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/icon"

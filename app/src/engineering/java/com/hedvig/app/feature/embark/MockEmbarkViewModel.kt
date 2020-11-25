@@ -9,8 +9,7 @@ class MockEmbarkViewModel : EmbarkViewModel() {
         if (!shouldLoad) {
             return
         }
-        storyData =
-            mockedData
+        storyData = mockedData
         displayInitialPassage()
     }
 
