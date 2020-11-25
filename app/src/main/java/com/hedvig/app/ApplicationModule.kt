@@ -28,6 +28,8 @@ import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.embark.MoreOptionsRepository
+import com.hedvig.app.feature.embark.MoreOptionsViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -239,6 +241,7 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { MoreOptionsViewModel(get()) }
 }
 
 val marketPickerModule = module {
@@ -345,6 +348,7 @@ val repositoriesModule = module {
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
     single { PaymentRepository(get()) }
+    single { MoreOptionsRepository(get()) }
 }
 
 val trackerModule = module {

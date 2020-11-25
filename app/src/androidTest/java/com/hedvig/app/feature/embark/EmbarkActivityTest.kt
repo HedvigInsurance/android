@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

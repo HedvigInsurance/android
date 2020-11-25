@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark
 
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_BINARY_REDIRECT
