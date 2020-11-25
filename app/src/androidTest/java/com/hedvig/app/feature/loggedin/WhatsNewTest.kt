@@ -1,16 +1,12 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity.Companion.EXTRA_IS_FROM_ONBOARDING
-import com.hedvig.app.testdata.feature.loggedin.WELCOME_DATA_ONE_PAGE
 import com.hedvig.app.testdata.feature.loggedin.WHATS_NEW
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule

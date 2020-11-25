@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.adyen
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
@@ -20,6 +19,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -64,6 +64,7 @@ class ConnectPayinNorwayTest {
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.InfoCardItem>(3) {
+                    connectPayinAdyen { stub() }
                     action {
                         click()
                     }
