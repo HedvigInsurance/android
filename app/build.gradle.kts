@@ -265,7 +265,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test:rules:1.3.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.3.0")
     androidTestImplementation("com.agoda.kakao:kakao:2.3.4")
@@ -276,7 +275,6 @@ dependencies {
     androidTestImplementation("org.awaitility:awaitility:3.1.6")
     androidTestImplementation("org.awaitility:awaitility-kotlin:3.1.6")
     androidTestImplementation("io.mockk:mockk-android:1.10.0")
-    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.2.0")
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.2")
 }
