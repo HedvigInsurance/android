@@ -49,4 +49,5 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 28
+          target: google_apis
           script: ./gradlew connectedDebugAndroidTest
