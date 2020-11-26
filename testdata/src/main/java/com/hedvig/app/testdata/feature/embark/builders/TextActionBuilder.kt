@@ -18,6 +18,7 @@ data class TextActionBuilder(
                 ),
                 placeholder = placeholder
             )
-        )
+        ),
+        asEmbarkTextActionSet = null,
     )
 }
