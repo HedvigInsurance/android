@@ -9,20 +9,20 @@ jobs:
         uses: actions/checkout@v2
       - name: Create secrets
         run: |
-          echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
+          echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties;
           cat <<EOT > app/src/debug/res/values/adyen.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
               <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
-          EOT
+          EOT;
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
           <?xml version="1.0" encoding="utf-8" ?>
           <resources>
               <string name="MIXPANEL_PROJECT_TOKEN" translatable="false">${MIXPANEL_PROJECT_TOKEN}</string>
           </resources>
-          EOT
+          EOT;
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
