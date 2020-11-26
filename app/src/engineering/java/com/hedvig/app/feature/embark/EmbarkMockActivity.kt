@@ -191,7 +191,7 @@ class EmbarkMockActivity : MockActivity() {
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
         header("More Options")
-        clickableItem("More Options ") {
+        clickableItem("More Options Error") {
             MockEmbarkViewModel.mockedData = STANDARD_STORY
             MockMoreOptionsViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
