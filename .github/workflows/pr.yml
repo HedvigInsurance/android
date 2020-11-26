@@ -17,14 +17,12 @@ jobs:
               <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
           EOT
-          ;
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
           <?xml version="1.0" encoding="utf-8" ?>
           <resources>
               <string name="MIXPANEL_PROJECT_TOKEN" translatable="false">${MIXPANEL_PROJECT_TOKEN}</string>
           </resources>
           EOT
-          ;
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
