@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Create Lokalise secret
         run: echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
         env:
