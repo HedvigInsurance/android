@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.home.seconds
 import com.hedvig.app.feature.referrals.deeplinks.ForeverDeepLinkTest
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.loggedin.CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT
@@ -18,7 +19,6 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
-import org.awaitility.Duration
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -62,7 +62,7 @@ class TerminatedTest {
         activityRule.launchActivity(null)
 
         onScreen<ForeverDeepLinkTest.SplashScreen> {
-            await atMost Duration.FIVE_SECONDS untilAsserted {
+            await atMost 5.seconds untilAsserted {
                 animation { doesNotExist() }
             }
         }

@@ -12,11 +12,9 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.hasText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.test.fail
 
 @RunWith(AndroidJUnit4::class)
 class ContractDetailErrorTest {
@@ -52,7 +50,7 @@ class ContractDetailErrorTest {
         )
 
         Screen.onScreen<ContractDetailScreen> {
-            retry{
+            retry {
                 click()
             }
             tabContent {
