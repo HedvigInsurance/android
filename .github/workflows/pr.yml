@@ -7,8 +7,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Create Lokalise secret
         run: echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
         env:
@@ -36,6 +34,8 @@ jobs:
           EOT
         env:
           MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
+      - name: Debug step
+        run: ls -altrh;ls -altrh app/src/debug/res/values
       - name: Download Apollo Schema
         run: ./gradlew apollo:downloadApolloSchema
       - name: Download Translations
