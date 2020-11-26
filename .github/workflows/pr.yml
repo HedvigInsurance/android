@@ -35,7 +35,7 @@ jobs:
         env:
           MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
       - name: Debug step
-        run: ls -altrh;ls -altrh app/src/debug/res/values
+        run: wc -c lokalise.properties;wc -c app/src/debug/res/values/adyen.xml;wc -c app/src/debug/res/values/mixpanel.xml
       - name: Download Apollo Schema
         run: ./gradlew apollo:downloadApolloSchema
       - name: Download Translations
