@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -22,6 +21,7 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
+import com.hedvig.app.util.stub
 import com.hedvig.app.util.stubExternalIntents
 import io.mockk.every
 import io.mockk.mockk
@@ -69,12 +69,13 @@ class ActiveInfoCardsTest {
 
         onScreen<HomeTabScreen> {
             recycler {
-                childAt<HomeTabScreen.BigTextItem>(0) {
+                childAt<HomeTabScreen.BigTextItem>(1) {
                     text { hasText(R.string.home_tab_welcome_title, "Test") }
                 }
                 childAt<HomeTabScreen.InfoCardItem>(4) {
                     title { hasText(R.string.info_card_missing_payment_title) }
                     body { hasText(R.string.info_card_missing_payment_body) }
+                    connectPayinAdyen { stub() }
                     action {
                         hasText(R.string.info_card_missing_payment_button_text)
                         click()
