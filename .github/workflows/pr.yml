@@ -1,0 +1,42 @@
+name: PR
+
+on: pull_request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create secrets
+        run: |
+          echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
+          cat <<EOT > app/src/debug/res/values/adyen.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
+              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+          </resources>
+          EOT
+          cat <<EOT > app/src/debug/res/values/mixpanel.xml
+          <?xml version="1.0" encoding="utf-8" ?>
+          <resources>
+              <string name="MIXPANEL_PROJECT_TOKEN" translatable="false">${MIXPANEL_PROJECT_TOKEN}</string>
+          </resources>
+          EOT
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
+          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+          MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
+      - name: Download Apollo Schema
+        run: ./gradlew apollo:downloadApolloSchema
+      - name: Download Translations
+        run: ./gradlew app:downloadStrings
+      - name: Generate License-report
+        run: ./gradlew licenseReleaseReport
+      - name: Instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          script: ./gradlew connectedDebugAndroidTest
