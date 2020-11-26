@@ -8,7 +8,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Create Lokalise secret
-        run: echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
+        run: |
+          cat <<EOT > lokalise.properties
+          id=${LOKALISE_ID}
+          token=${LOKALISE_TOKEN}
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
