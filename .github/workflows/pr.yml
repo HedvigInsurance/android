@@ -3,13 +3,17 @@ name: PR
 on: pull_request
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Create secrets
+      - name: Create Lokalise secret
+        run: echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Create Adyen secret
         run: |
-          echo "id=${LOKALISE_ID}\ntoken=${LOKALISE_TOKEN}" > lokalise.properties;
           cat <<EOT > app/src/debug/res/values/adyen.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
@@ -17,6 +21,11 @@ jobs:
               <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
           EOT
+        env:
+          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
+          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+      - name: Create Mixpanel secret
+        run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
           <?xml version="1.0" encoding="utf-8" ?>
           <resources>
@@ -24,10 +33,6 @@ jobs:
           </resources>
           EOT
         env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
           MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
       - name: Download Apollo Schema
         run: ./gradlew apollo:downloadApolloSchema
