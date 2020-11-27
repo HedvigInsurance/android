@@ -51,8 +51,6 @@ jobs:
         run: ./gradlew app:downloadStrings
       - name: Generate License-report
         run: ./gradlew licenseReleaseReport
-      - name: Build for testing
-        run: ./gradlew assembleDebugAndroidTest
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
