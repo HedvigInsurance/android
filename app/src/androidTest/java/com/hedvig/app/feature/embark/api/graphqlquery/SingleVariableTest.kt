@@ -49,7 +49,7 @@ class SingleVariableTest {
         )
 
         onScreen<EmbarkScreen> {
-            textActionInput { typeText("world") }
+            textActionSingleInput { typeText("world") }
             textActionSubmit { click() }
             await atMost TWO_SECONDS untilAsserted {
                 messages {

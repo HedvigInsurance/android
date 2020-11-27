@@ -40,7 +40,7 @@ class CustomTextActionResponseTest {
         )
 
         onScreen<EmbarkScreen> {
-            textActionInput { typeText("Test") }
+            textActionSingleInput { typeText("Test") }
             textActionSubmit { click() }
             response {
                 isVisible()

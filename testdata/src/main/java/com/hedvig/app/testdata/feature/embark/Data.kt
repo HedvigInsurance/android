@@ -151,14 +151,26 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
             action = TextActionSetBuilder(
-                firstKey = "FOO",
-                secondKey = "BAR",
                 link = STANDARD_FIRST_LINK,
+                textActions = listOf(
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "First Placeholder",
+                            key = "FOO"
+                        )
+                    ),
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "Second Placeholder",
+                            key = "BAR"
+                        )
+                    ),
+                )
             ).build()
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
-                MessageBuilder("{BAR} was entered")
+                MessageBuilder("{FOO} {BAR} was entered")
                     .build()
             )
         ).build()

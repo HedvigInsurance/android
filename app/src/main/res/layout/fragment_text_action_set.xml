@@ -38,44 +38,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:padding="@dimen/base_margin_double">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/firstTextField"
-                style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/inputRecycler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/embark_input_item" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/firstInput"
-                    style="@style/ThemeOverlay.Hedvig.TextInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/secondTextField"
-                style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/secondInput"
-                    style="@style/ThemeOverlay.Hedvig.TextInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+        </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <Button
