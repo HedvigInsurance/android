@@ -37,14 +37,19 @@ jobs:
           EOT
         env:
           MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
-      - name: Debug step
-        run: wc -c lokalise.properties;wc -c app/src/debug/res/values/adyen.xml;wc -c app/src/debug/res/values/mixpanel.xml
       - name: Download Apollo Schema
         run: ./gradlew apollo:downloadApolloSchema
       - name: Download Translations
         run: ./gradlew app:downloadStrings
       - name: Generate License-report
         run: ./gradlew licenseReleaseReport
+      - name: Build for testing
+        run: ./gradlew assembleDebugAndroidTest
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
