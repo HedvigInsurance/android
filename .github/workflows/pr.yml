@@ -57,6 +57,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 28
+          arch: x86_64
           target: google_apis
           disable-animations: false
           script: ./gradlew connectedDebugAndroidTest
