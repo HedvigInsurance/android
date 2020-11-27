@@ -43,16 +43,14 @@ jobs:
         run: ./gradlew app:downloadStrings
       - name: Generate License-report
         run: ./gradlew licenseReleaseReport
-      - name: Build for testing
-        run: ./gradlew assembleDebugAndroidTest
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
+      - name: Build for testing
+        run: ./gradlew assembleDebugAndroidTest
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 28
-          target: google_apis_playstore
+          api-level: 29
           script: ./gradlew connectedDebugAndroidTest
