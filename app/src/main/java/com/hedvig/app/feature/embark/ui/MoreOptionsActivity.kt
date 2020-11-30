@@ -47,17 +47,17 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                             MoreOptionsModel.Copyright
                         )
                     )
-                } else {
-                    (recycler.adapter as MoreOptionsAdapter).submitList(
-                        listOf(
-                            MoreOptionsModel.Header,
-                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
-                            MoreOptionsModel.Version,
-                            MoreOptionsModel.Settings,
-                            MoreOptionsModel.Copyright
-                        )
-                    )
+                    return@observe
                 }
+                (recycler.adapter as MoreOptionsAdapter).submitList(
+                    listOf(
+                        MoreOptionsModel.Header,
+                        result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
+                        MoreOptionsModel.Version,
+                        MoreOptionsModel.Settings,
+                        MoreOptionsModel.Copyright
+                    )
+                )
             }
         }
     }

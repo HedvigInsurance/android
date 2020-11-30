@@ -34,8 +34,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
         }
     }
 
-    val moreOptionsButton = KButton { withId(R.id.moreOptions) }
-
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }
     }

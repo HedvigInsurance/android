@@ -1,13 +1,11 @@
 package com.hedvig.app.feature.embark
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.MoreOptionsQuery
-import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.MoreOptionsScreen
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.testdata.feature.embark.MORE_OPTIONS_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
@@ -20,7 +18,7 @@ import org.junit.runner.RunWith
 class MoreOptionsTest {
 
     @get:Rule
-    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(MoreOptionsActivity::class.java, false, false)
 
     var shouldFail = true
 
@@ -38,25 +36,12 @@ class MoreOptionsTest {
 
     @Test
     fun openMoreOptionsActivity() {
-
-        activityRule.launchActivity(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
-            )
-        )
-        onScreen<EmbarkScreen> {
-            moreOptionsButton {
-                click()
-            }
-        }
+        activityRule.launchActivity(MoreOptionsActivity.newInstance(context()))
         onScreen<MoreOptionsScreen> {
             recycler {
-                childAt<MoreOptionsScreen.Reload>(1) {
-                    reload.click()
-                }
-                childAt<MoreOptionsScreen.Id>(1) {
-                    id {
+                childAt<MoreOptionsScreen.Row>(1) {
+                    info {
+                        click()
                         hasText("1234567890")
                     }
                 }
