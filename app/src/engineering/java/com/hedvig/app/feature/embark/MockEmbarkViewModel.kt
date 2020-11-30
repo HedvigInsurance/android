@@ -17,7 +17,7 @@ class MockEmbarkViewModel : EmbarkViewModel() {
         jsonObjectOf("data" to graphQLQueryResponse)
 
     companion object {
-        var shouldLoad = false
+        var shouldLoad = true
         var mockedData = STANDARD_STORY
         var graphQLQueryResponse: JSONObject? = null
     }

@@ -24,12 +24,14 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.dsl.module
 
 @RunWith(AndroidJUnit4::class)
+@Ignore("Causes flakiness")
 class UnknownGeoTest {
     @get:Rule
     val activityRule = ActivityTestRule(MarketingActivity::class.java, false, false)

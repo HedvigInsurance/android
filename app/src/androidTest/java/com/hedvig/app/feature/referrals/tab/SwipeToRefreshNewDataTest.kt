@@ -14,6 +14,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.swipeDownInCenter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,9 +61,11 @@ class SwipeToRefreshNewDataTest {
             recycler {
                 hasSize(3)
             }
-            swipeToRefresh { swipeDown() }
+            swipeToRefresh { swipeDownInCenter() }
             recycler { hasSize(5) }
             swipeToRefresh { isNotRefreshing() }
         }
     }
 }
+
+

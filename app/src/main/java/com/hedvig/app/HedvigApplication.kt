@@ -74,6 +74,7 @@ open class HedvigApplication : Application() {
                     notificationModule,
                     marketPickerModule,
                     moreOptionsModule,
+                    textActionSetModule,
                 )
             )
         }

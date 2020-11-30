@@ -12,7 +12,8 @@ data class SelectActionBuilder(
                 options = options
             )
         ),
-        asEmbarkTextAction = null
+        asEmbarkTextAction = null,
+        asEmbarkTextActionSet = null,
     )
 }
 
