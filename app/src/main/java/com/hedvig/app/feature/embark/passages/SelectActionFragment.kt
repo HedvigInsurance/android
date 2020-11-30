@@ -28,7 +28,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
         binding.apply {
             messages.adapter = MessageAdapter().apply {
-                items = data.messages
+                submitList(data.messages)
             }
             actions.adapter = SelectActionAdapter { selectAction ->
                 selectAction.keys.zip(selectAction.values).forEach { (key, value) ->

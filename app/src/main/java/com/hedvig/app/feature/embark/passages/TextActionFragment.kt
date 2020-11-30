@@ -31,7 +31,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
         binding.apply {
             messages.adapter = MessageAdapter().apply {
-                items = data.messages
+                submitList(data.messages)
             }
 
             filledTextField.hint = data.hint

@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
     text = "test message"
@@ -146,13 +147,44 @@ val STORY_WITH_TEXT_ACTION = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionSetBuilder(
+                link = STANDARD_FIRST_LINK,
+                textActions = listOf(
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "First Placeholder",
+                            key = "FOO"
+                        )
+                    ),
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "Second Placeholder",
+                            key = "BAR"
+                        )
+                    ),
+                )
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{FOO} {BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
 val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
                 action = EmbarkStoryQuery.Action(
                     asEmbarkSelectAction = null,
-                    asEmbarkTextAction = null
+                    asEmbarkTextAction = null,
+                    asEmbarkTextActionSet = null,
                 )
             )
             .build()
