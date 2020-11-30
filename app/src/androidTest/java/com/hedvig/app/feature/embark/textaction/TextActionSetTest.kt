@@ -46,15 +46,19 @@ class TextActionSetTest {
             textActionSubmit { isDisabled() }
             textActionSet {
                 childAt<EmbarkScreen.TextAction>(0) {
-                    // textField { hasHint("First Placeholder") }
-                    input { typeText("First Text") }
+                    input {
+                        typeText("First Text")
+                        hasHint("First Placeholder")
+                    }
                 }
             }
             textActionSubmit { isDisabled() }
             textActionSet {
                 childAt<EmbarkScreen.TextAction>(1) {
-                    // textField { hasHint("Second Placeholder") }
-                    input { typeText("Second Text") }
+                    input {
+                        hasHint("Second Placeholder")
+                        typeText("Second Text")
+                    }
                 }
             }
             textActionSubmit {

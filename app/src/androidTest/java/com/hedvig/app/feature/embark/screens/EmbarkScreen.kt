@@ -41,7 +41,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     }
 
     class TextAction(parent: Matcher<View>) : KRecyclerItem<TextAction>(parent) {
-        val textField = KTextInputLayout(parent) { withId(R.id.textField) }
         val input = KEditText(parent) { withId(R.id.input) }
     }
 
