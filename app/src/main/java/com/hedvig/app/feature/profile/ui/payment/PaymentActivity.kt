@@ -126,7 +126,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     }
 
     companion object {
-        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd, LLL yyyy")
+        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         fun newInstance(context: Context) = Intent(context, PaymentActivity::class.java)
     }
