@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

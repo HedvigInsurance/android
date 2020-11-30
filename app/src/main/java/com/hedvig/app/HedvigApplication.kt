@@ -73,6 +73,7 @@ open class HedvigApplication : Application() {
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
+                    moreOptionsModule,
                     textActionSetModule,
                 )
             )
