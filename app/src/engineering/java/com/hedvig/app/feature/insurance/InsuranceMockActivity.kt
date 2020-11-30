@@ -253,6 +253,13 @@ class InsuranceMockActivity : MockActivity() {
             }
             startActivity(ContractDetailActivity.newInstance(context, ""))
         }
+        clickableItem("Danish Accident") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_DANISH_ACCIDENT
+                shouldError = false
+            }
+            startActivity(ContractDetailActivity.newInstance(context, ""))
+        }
         header("Terminated Contracts-Screen")
         clickableItem("One Active + One Terminated") {
             MockInsuranceViewModel.apply {
