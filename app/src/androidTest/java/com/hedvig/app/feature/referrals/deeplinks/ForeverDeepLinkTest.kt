@@ -2,7 +2,6 @@ package com.hedvig.app.feature.referrals.deeplinks
 
 import android.content.Intent
 import android.net.Uri
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.screen.Screen
@@ -21,6 +20,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -28,10 +28,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ForeverDeepLinkTest {
+class ForeverDeepLinkTest : TestCase() {
 
     private var previousLoginStatus = false
 
@@ -59,7 +57,7 @@ class ForeverDeepLinkTest {
     }
 
     @Test
-    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() {
+    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() = run {
         activityRule.launchActivity(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
