@@ -267,7 +267,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.3.0")
-    androidTestImplementation("com.agoda.kakao:kakao:2.3.4")
+    androidTestImplementation("com.agoda.kakao:kakao:2.3.2")
     androidTestImplementation("org.powermock:powermock-core:2.0.6")
     androidTestImplementation("com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}")
     androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")

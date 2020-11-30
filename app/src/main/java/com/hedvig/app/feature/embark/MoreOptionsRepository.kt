@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.MoreOptionsQuery
 import com.hedvig.app.ApolloClientWrapper
 
 class MoreOptionsRepository(
-    val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClientWrapper: ApolloClientWrapper
 ) {
     suspend fun memberId() = apolloClientWrapper.apolloClient.query(MoreOptionsQuery())
         .await()

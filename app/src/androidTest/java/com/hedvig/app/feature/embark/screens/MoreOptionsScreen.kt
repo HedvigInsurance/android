@@ -16,10 +16,10 @@ class MoreOptionsScreen : Screen<MoreOptionsScreen>() {
         })
 
     class Reload(parent: Matcher<View>) : KRecyclerItem<Reload>(parent) {
-        val reload = KTextView { withId(R.id.memberId) }
+        val reload = KTextView(parent) { withId(R.id.memberId) }
     }
 
     class Id(parent: Matcher<View>) : KRecyclerItem<Id>(parent) {
-        val id = KTextView { withId(R.id.memberId) }
+        val id = KTextView(parent) { withId(R.id.memberId) }
     }
 }

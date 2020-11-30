@@ -11,6 +11,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.MORE_OPTIONS_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +41,7 @@ class MoreOptionsTest {
 
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 this.javaClass.name
             )
         )

@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -31,21 +30,14 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
             setSupportActionBar(toolbar)
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
 
             recycler.adapter = MoreOptionsAdapter(viewModel)
 
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
-                if (result.isSuccess) {
-                    (recycler.adapter as MoreOptionsAdapter).submitList(
-                        listOf(
-                            MoreOptionsModel.Header,
-                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
-                            MoreOptionsModel.Version,
-                            MoreOptionsModel.Settings,
-                            MoreOptionsModel.Copyright
-                        )
-                    )
-                } else {
+                if (result.isFailure) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
                         listOf(
                             MoreOptionsModel.Header,
@@ -55,18 +47,18 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                             MoreOptionsModel.Copyright
                         )
                     )
+                } else {
+                    (recycler.adapter as MoreOptionsAdapter).submitList(
+                        listOf(
+                            MoreOptionsModel.Header,
+                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
+                            MoreOptionsModel.Version,
+                            MoreOptionsModel.Settings,
+                            MoreOptionsModel.Copyright
+                        )
+                    )
                 }
             }
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
         }
     }
 
