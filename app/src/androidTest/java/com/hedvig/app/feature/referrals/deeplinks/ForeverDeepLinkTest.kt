@@ -26,9 +26,11 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore("Causes problems with Espresso")
 class ForeverDeepLinkTest : TestCase() {
 
     private var previousLoginStatus = false
