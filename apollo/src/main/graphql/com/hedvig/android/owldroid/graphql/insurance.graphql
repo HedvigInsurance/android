@@ -51,6 +51,9 @@ query InsuranceQuery($locale: Locale!) {
       ... on DanishTravelAgreement {
         numberCoInsured
       }
+      ... on DanishAccidentAgreement {
+        numberCoInsured
+      }
     }
     perils(locale: $locale) {
       ... PerilFragment

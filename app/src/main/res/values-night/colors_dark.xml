@@ -37,6 +37,7 @@
     <item name="color_card_blur_apartment" type="color">#cbb583</item>
     <item name="color_card_blur_house" type="color">#ec955f</item>
     <item name="color_card_blur_travel" type="color">#c6ad8a</item>
+    <item name="color_card_blur_accident" type="color">#ec955f</item>
     <item name="color_card_inactive" type="color">#252525</item>
 
     <!-- Compatibility with Adyen -->

@@ -25,6 +25,10 @@ val INSURANCE_DATA_DANISH_HOME_CONTENTS = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
     typeOfContract = TypeOfContract.DK_HOME_CONTENT_OWN
 ).build()
+val INSURANCE_DATA_DANISH_ACCIDENT = InsuranceDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE),
+    typeOfContract = TypeOfContract.DK_ACCIDENT
+).build()
 val INSURANCE_DATA_TERMINATED = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.TERMINATED)
 ).build()

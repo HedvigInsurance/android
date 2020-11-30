@@ -50,6 +50,7 @@
     <item name="color_card_blur_apartment" type="color">#efeac6</item>
     <item name="color_card_blur_house" type="color">#f8b992</item>
     <item name="color_card_blur_travel" type="color">#e2ccce</item>
+    <item name="color_card_blur_accident" type="color">#f8b992</item>
     <item name="color_card_inactive" type="color">@color/hedvig_light_gray</item>
 
 
