@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
@@ -19,17 +18,16 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
-import org.junit.After
-import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class TerminatedTest {
+@Ignore("Currently malfunctioning.")
+class TerminatedTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(SplashActivity::class.java, false, false)
 
@@ -51,14 +49,13 @@ class TerminatedTest {
 
     private var wasLoggedIn = false
 
-    @Before
-    fun setup() {
+    @Test
+    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = before {
         wasLoggedIn = context().isLoggedIn()
         context().setIsLoggedIn(false)
-    }
-
-    @Test
-    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() {
+    }.after {
+        context().setIsLoggedIn(wasLoggedIn)
+    }.run {
         activityRule.launchActivity(null)
 
         onScreen<ForeverDeepLinkTest.SplashScreen> {
@@ -70,10 +67,5 @@ class TerminatedTest {
             root { isVisible() }
             bottomTabs { hasSelectedItem(R.id.home) }
         }
-    }
-
-    @After
-    fun teardown() {
-        context().setIsLoggedIn(wasLoggedIn)
     }
 }

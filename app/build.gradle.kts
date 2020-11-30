@@ -282,6 +282,7 @@ dependencies {
     androidTestImplementation("org.awaitility:awaitility:4.0.2")
     androidTestImplementation("org.awaitility:awaitility-kotlin:4.0.2")
     androidTestImplementation("io.mockk:mockk-android:1.10.0")
+    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.2.0")
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.2")
 }
