@@ -1,11 +1,7 @@
 package com.hedvig.app.feature.home
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.os.SystemClock
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.NoMatchingViewException
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
@@ -18,6 +14,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.ignoreExceptionsInstanceOf
@@ -26,11 +23,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.Duration
 
-@RunWith(AndroidJUnit4::class)
-class ShowTooltipTest {
+class ShowTooltipTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
@@ -61,7 +56,7 @@ class ShowTooltipTest {
     }
 
     @Test
-    fun shouldShowTooltipAfterThirtyDays() {
+    fun shouldShowTooltipAfterThirtyDays() = run {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         Screen.onScreen<LoggedInScreen> {
             await atMost 5.seconds ignoreExceptionsInstanceOf (NoMatchingViewException::class) untilAsserted {

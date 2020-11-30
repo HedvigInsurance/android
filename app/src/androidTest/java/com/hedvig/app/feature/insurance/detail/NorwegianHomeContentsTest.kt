@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.detail
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
@@ -14,12 +13,11 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class NorwegianHomeContentsTest {
+class NorwegianHomeContentsTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(ContractDetailActivity::class.java, false, false)
 
@@ -36,7 +34,7 @@ class NorwegianHomeContentsTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowCoinsuredForNorwegianHomeContentsContract() {
+    fun shouldShowCoinsuredForNorwegianHomeContentsContract() = run {
         activityRule.launchActivity(
             ContractDetailActivity.newInstance(
                 context(),

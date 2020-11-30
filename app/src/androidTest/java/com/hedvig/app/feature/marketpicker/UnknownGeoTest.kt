@@ -2,13 +2,11 @@ package com.hedvig.app.feature.marketpicker
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Language
@@ -20,6 +18,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.After
@@ -27,12 +26,10 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
 @Ignore("Causes flakiness")
-class UnknownGeoTest {
+class UnknownGeoTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(MarketingActivity::class.java, false, false)
 
@@ -79,7 +76,7 @@ class UnknownGeoTest {
     }
 
     @Test
-    fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() {
+    fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() = run {
         activityRule.launchActivity(MarketingActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
