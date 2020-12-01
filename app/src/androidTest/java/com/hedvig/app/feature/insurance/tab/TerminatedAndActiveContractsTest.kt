@@ -16,6 +16,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasPluralText
+import com.hedvig.app.util.stub
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,6 +51,7 @@ class TerminatedAndActiveContractsTest {
         activityRule.launchActivity(intent)
 
         onScreen<InsuranceScreen> {
+            terminatedContractsScreen { stub() }
             insuranceRecycler {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     firstStatusPill { isGone() }

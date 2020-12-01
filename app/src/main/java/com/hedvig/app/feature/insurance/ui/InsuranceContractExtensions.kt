@@ -74,9 +74,16 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                         blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_house))
                     }
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH -> {
+                    TypeOfContract.NO_TRAVEL_YOUTH,
+                    TypeOfContract.DK_TRAVEL,
+                    TypeOfContract.DK_TRAVEL_STUDENT -> {
                         container.setBackgroundResource(R.drawable.card_travel_background)
                         blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
+                    }
+                    TypeOfContract.DK_ACCIDENT,
+                    TypeOfContract.DK_ACCIDENT_STUDENT -> {
+                        container.setBackgroundResource(R.drawable.card_accident_background)
+                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_accident))
                     }
                     TypeOfContract.UNKNOWN__ -> {
 
@@ -112,7 +119,11 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     )
                 }
                 TypeOfContract.NO_TRAVEL,
-                TypeOfContract.NO_TRAVEL_YOUTH -> {
+                TypeOfContract.NO_TRAVEL_YOUTH,
+                TypeOfContract.DK_TRAVEL,
+                TypeOfContract.DK_TRAVEL_STUDENT,
+                TypeOfContract.DK_ACCIDENT,
+                TypeOfContract.DK_ACCIDENT_STUDENT -> {
                     adapter.submitList(listOf(ContractModel.NoOfCoInsured(currentAgreement.numberCoInsured)))
                 }
                 TypeOfContract.UNKNOWN__ -> {
@@ -133,6 +144,8 @@ private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
         asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
         asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
         asDanishHomeContentAgreement?.numberCoInsured?.let { return it }
+        asDanishTravelAgreement?.numberCoInsured?.let { return it }
+        asDanishAccidentAgreement?.numberCoInsured?.let { return it }
         e { "Unable to infer amount coinsured for agreement: $this" }
         return 0
     }

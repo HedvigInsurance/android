@@ -1,8 +1,7 @@
 package com.hedvig.app.feature.insurance.tab
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -23,7 +22,7 @@ import org.junit.runner.RunWith
 class InsuranceActiveAndTerminatedInFutureCardTest {
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -56,7 +55,7 @@ class InsuranceActiveAndTerminatedInFutureCardTest {
                     firstStatusPill {
                         hasAnyText()
                     }
-                    secondStatusPill{
+                    secondStatusPill {
                         hasAnyText()
                     }
                 }

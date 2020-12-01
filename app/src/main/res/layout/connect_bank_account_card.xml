@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.hedvig.app.ui.view.HedvigCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/connectBankAccountCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double"
-    android:visibility="gone"
-    tools:visibility="visible">
+    android:layout_marginEnd="@dimen/base_margin_double">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -59,4 +56,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.hedvig.app.ui.view.HedvigCardView>
+</com.google.android.material.card.MaterialCardView>

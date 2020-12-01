@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -13,6 +12,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,6 +42,7 @@ class ProfileToolbarMenuTest {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         onScreen<LoggedInScreen> {
+            chat { stub() }
             root { isVisible() }
             bottomTabs { setSelectedItem(R.id.profile) }
             openChat {

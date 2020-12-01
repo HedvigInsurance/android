@@ -19,6 +19,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -63,6 +64,7 @@ class ConnectPayinSwedenTest {
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.InfoCardItem>(3) {
+                    connectPayinTrustly { stub() }
                     action {
                         click()
                     }

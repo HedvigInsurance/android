@@ -1,9 +1,7 @@
 package com.hedvig.app.feature.referrals.deeplinks
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.image.KImageView
