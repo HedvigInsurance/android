@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -23,15 +22,14 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.hedvig.app.util.stub
 import com.hedvig.app.util.stubExternalIntents
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
-class ActiveInfoCardsTest {
+class ActiveInfoCardsTest : TestCase() {
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
@@ -62,7 +60,7 @@ class ActiveInfoCardsTest {
     )
 
     @Test
-    fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() {
+    fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() = run {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         stubExternalIntents()

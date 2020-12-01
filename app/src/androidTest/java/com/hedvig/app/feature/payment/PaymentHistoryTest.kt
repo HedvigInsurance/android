@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.payment
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -15,12 +14,11 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class PaymentHistoryTest {
+class PaymentHistoryTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
@@ -35,7 +33,7 @@ class PaymentHistoryTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowPaymentHistoryWhenUserHasHistoricPayments() {
+    fun shouldShowPaymentHistoryWhenUserHasHistoricPayments() = run {
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {

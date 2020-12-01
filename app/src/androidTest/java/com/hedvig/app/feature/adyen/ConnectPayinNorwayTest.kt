@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.adyen
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -20,15 +19,14 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
-class ConnectPayinNorwayTest {
+class ConnectPayinNorwayTest : TestCase() {
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
@@ -59,7 +57,7 @@ class ConnectPayinNorwayTest {
     )
 
     @Test
-    fun shouldOpenConnectPayinAdyen() {
+    fun shouldOpenConnectPayinAdyen() = run {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         Screen.onScreen<HomeTabScreen> {
             recycler {

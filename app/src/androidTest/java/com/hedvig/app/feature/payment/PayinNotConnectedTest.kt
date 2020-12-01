@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.payment
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -17,15 +16,14 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
-class PayinNotConnectedTest {
+class PayinNotConnectedTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
@@ -48,7 +46,7 @@ class PayinNotConnectedTest {
     )
 
     @Test
-    fun shouldShowConnectPayinWhenPayinIsNotConnected() {
+    fun shouldShowConnectPayinWhenPayinIsNotConnected() = run {
         every { marketProvider.market } returns Market.SE
 
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
