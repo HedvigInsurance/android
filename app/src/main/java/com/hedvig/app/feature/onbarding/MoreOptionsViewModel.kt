@@ -8,15 +8,21 @@ import com.hedvig.android.owldroid.graphql.MoreOptionsQuery
 import e
 import kotlinx.coroutines.launch
 
-class MoreOptionsViewModel(private val moreOptionsRepository: MoreOptionsRepository) : ViewModel() {
-    private val _data = MutableLiveData<Result<MoreOptionsQuery.Data>>()
+abstract class MoreOptionsViewModel : ViewModel() {
+    protected val _data = MutableLiveData<Result<MoreOptionsQuery.Data>>()
     val data: LiveData<Result<MoreOptionsQuery.Data>> = _data
+    abstract fun load()
+}
+
+class MoreOptionsViewModelImpl(
+    private val moreOptionsRepository: MoreOptionsRepository
+) : MoreOptionsViewModel() {
 
     init {
         load()
     }
 
-    fun load() {
+    override fun load() {
         viewModelScope.launch {
             val response = runCatching {
                 moreOptionsRepository.memberId()

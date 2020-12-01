@@ -4,5 +4,5 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/base_margin_triple"
     android:layout_marginBottom="@dimen/base_margin_triple"
-    android:text="TODO Information"
+    android:text="@string/embark_onboarding_more_options.information_section_title"
     android:textAppearance="?textAppearanceHeadline6" />

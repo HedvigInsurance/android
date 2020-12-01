@@ -3,6 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/base_margin_double"
-    android:text="TODO © Hedvig AB 2020"
+    android:text="@string/embark_onboarding_more_options.copyright_text"
     android:textAlignment="center"
     android:textAppearance="?textAppearanceCaption" />

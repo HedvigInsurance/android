@@ -12,6 +12,7 @@ import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
+import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
@@ -33,6 +34,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                         startActivity(
                             LoggedInActivity.newInstance(this)
                         )
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Onboarding") {
+                        startActivity(Intent(this, OnboardingMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
                         startActivity(Intent(this, ReferralsMockActivity::class.java))

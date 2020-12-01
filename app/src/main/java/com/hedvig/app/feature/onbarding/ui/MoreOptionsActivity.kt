@@ -3,7 +3,6 @@ package com.hedvig.app.feature.onbarding.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -21,6 +20,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
@@ -30,36 +30,35 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
             setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
 
-            recycler.adapter = MoreOptionsAdapter()
+            recycler.adapter = MoreOptionsAdapter(viewModel)
 
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
-                if (result.isSuccess) {
+                if (result.isFailure) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
                         listOf(
                             MoreOptionsModel.Header,
-                            result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId(it) },
+                            MoreOptionsModel.UserId.Error,
                             MoreOptionsModel.Version,
                             MoreOptionsModel.Settings,
                             MoreOptionsModel.Copyright
                         )
                     )
+                    return@observe
                 }
-                //TODO Handle failure result
+                (recycler.adapter as MoreOptionsAdapter).submitList(
+                    listOf(
+                        MoreOptionsModel.Header,
+                        result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
+                        MoreOptionsModel.Version,
+                        MoreOptionsModel.Settings,
+                        MoreOptionsModel.Copyright
+                    )
+                )
             }
-
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
         }
     }
 
@@ -67,4 +66,3 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
         fun newInstance(context: Context) = Intent(context, MoreOptionsActivity::class.java)
     }
 }
-
