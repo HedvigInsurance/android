@@ -54,7 +54,7 @@ class PayinNotConnectedTest : TestCase() {
         onScreen<PaymentScreen> {
             trustlyConnectPayin { stub() }
             recycler {
-                childAt<PaymentScreen.ConnectPayin>(1) {
+                childAt<PaymentScreen.ConnectPayin>(0) {
                     connect { click() }
                 }
             }

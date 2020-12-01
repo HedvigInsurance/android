@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AdyenPayinDetailsBinding
 import com.hedvig.app.databinding.CampaignInformationSectionBinding
-import com.hedvig.app.databinding.ConnectBankAccountCardBinding
+import com.hedvig.app.databinding.ConnectPayinCardBinding
 import com.hedvig.app.databinding.FailedPaymentsCardBinding
 import com.hedvig.app.databinding.NextPaymentCardBinding
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
@@ -46,7 +46,7 @@ class PaymentAdapter(
         PaymentModel.Header -> R.layout.payment_header
         is PaymentModel.FailedPayments -> R.layout.failed_payments_card
         is PaymentModel.NextPayment -> R.layout.next_payment_card
-        PaymentModel.ConnectPayment -> R.layout.connect_bank_account_card
+        PaymentModel.ConnectPayment -> R.layout.connect_payin_card
         is PaymentModel.CampaignInformation -> R.layout.campaign_information_section
         PaymentModel.PaymentHistoryHeader -> R.layout.payment_history_header
         is PaymentModel.Charge -> R.layout.payment_history_item
@@ -61,7 +61,7 @@ class PaymentAdapter(
         R.layout.payment_header -> ViewHolder.Header(parent)
         R.layout.failed_payments_card -> ViewHolder.FailedPayments(parent)
         R.layout.next_payment_card -> ViewHolder.NextPayment(parent)
-        R.layout.connect_bank_account_card -> ViewHolder.ConnectPayment(parent)
+        R.layout.connect_payin_card -> ViewHolder.ConnectPayment(parent)
         R.layout.campaign_information_section -> ViewHolder.CampaignInformation(parent)
         R.layout.payment_history_header -> ViewHolder.PaymentHistoryHeader(parent)
         R.layout.payment_history_item -> ViewHolder.Charge(parent)
@@ -193,17 +193,17 @@ class PaymentAdapter(
         }
 
         class ConnectPayment(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.connect_bank_account_card)) {
-            private val binding by viewBinding(ConnectBankAccountCardBinding::bind)
+            ViewHolder(parent.inflate(R.layout.connect_payin_card)) {
+            private val binding by viewBinding(ConnectPayinCardBinding::bind)
             override fun bind(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
                 tracker: PaymentTracker
             ) = with(binding) {
-                connectBankAccount.setHapticClickListener {
-                    marketProvider.market?.connectPayin(connectBankAccount.context)
-                        ?.let { connectBankAccount.context.startActivity(it) }
+                connect.setHapticClickListener {
+                    marketProvider.market?.connectPayin(connect.context)
+                        ?.let { connect.context.startActivity(it) }
                 }
             }
         }

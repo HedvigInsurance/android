@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double">
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:theme="@style/ThemeOverlay.Hedvig.WarningCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@id/cardTitle"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
@@ -25,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@id/cardParagraph"
+            android:id="@+id/paragraph"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/base_margin_double"
@@ -33,18 +34,18 @@
             android:layout_marginEnd="@dimen/base_margin_double"
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_DESCRIPTION"
             android:textAppearance="?textAppearanceBody2"
-            app:layout_constraintTop_toBottomOf="@id/cardTitle" />
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
         <View
-            android:id="@id/cardSeparator"
+            android:id="@+id/separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/base_margin_triple"
             android:background="@drawable/divider"
-            app:layout_constraintTop_toBottomOf="@id/cardParagraph" />
+            app:layout_constraintTop_toBottomOf="@id/paragraph" />
 
         <Button
-            android:id="@id/connectBankAccount"
+            android:id="@+id/connect"
             style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +53,7 @@
             android:text="@string/PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardSeparator" />
+            app:layout_constraintTop_toBottomOf="@id/separator" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
