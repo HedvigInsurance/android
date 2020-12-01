@@ -14,6 +14,8 @@ import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
 import com.hedvig.app.feature.embark.passages.TextActionFragment
+import com.hedvig.app.feature.embark.passages.TextActionSetData
+import com.hedvig.app.feature.embark.passages.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
@@ -75,6 +77,24 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         .beginTransaction()
                         .replace(R.id.passageContainer, textActionFragment)
                         .commit()
+                    return@observe
+                }
+
+                passage.action?.asEmbarkTextActionSet?.let { textActionSet ->
+                    textActionSet.data?.let { data ->
+                        val textActionSetData =
+                            TextActionSetData.from(
+                                passage.messages.map { it.fragments.messageFragment.text },
+                                data,
+                                passage.name
+                            )
+                        val textActionSetFragment =
+                            TextActionSetFragment.newInstance(textActionSetData)
+                        supportFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.passageContainer, textActionSetFragment)
+                            .commit()
+                    }
                     return@observe
                 }
 
