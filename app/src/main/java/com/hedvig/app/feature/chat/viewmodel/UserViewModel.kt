@@ -38,7 +38,7 @@ class UserViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
         }
     }
 
