@@ -104,7 +104,7 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                failedPaymentsParagraph.text = failedPaymentsParagraph.context.getString(
+                paragraph.text = paragraph.context.getString(
                     R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
                     data.failedCharges,
                     data.nextChargeDate

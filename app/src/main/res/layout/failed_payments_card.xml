@@ -5,33 +5,47 @@
     android:id="@+id/failedPaymentsCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:theme="@style/ThemeOverlay.Hedvig.WarningCard"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
     android:layout_marginEnd="@dimen/base_margin_double">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_rounded_corners"
-        android:backgroundTint="?colorError"
         android:orientation="horizontal"
         android:padding="@dimen/base_margin_double">
 
         <ImageView
-            android:layout_width="@dimen/icon_failure_small_size"
-            android:layout_height="@dimen/icon_failure_small_size"
-            android:contentDescription="@null"
-            app:srcCompat="@drawable/icon_failure" />
-
-        <TextView
-            android:id="@+id/failedPaymentsParagraph"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin"
+            android:contentDescription="@null"
+            android:id="@+id/icon"
+            app:srcCompat="@drawable/ic_warning_triangle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title"
+            tools:text="TODO"
+            android:layout_marginStart="@dimen/base_margin_double"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintTop_toTopOf="@id/icon" />
+
+        <TextView
+            android:id="@+id/paragraph"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            android:layout_marginTop="@dimen/base_margin"
+            app:layout_constraintStart_toStartOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBody2"
-            android:textColor="?colorOnError"
             tools:text="Du ligger 3 månader efter med dina betalningar. Vi kommer att dra mer pengar än din ordinarie premie den 21 juni, 2019." />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
