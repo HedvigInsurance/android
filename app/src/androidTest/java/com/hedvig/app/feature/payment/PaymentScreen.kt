@@ -10,7 +10,9 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
+import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
 class PaymentScreen : Screen<PaymentScreen>() {
@@ -23,6 +25,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
         itemType(::PaymentHistoryLink)
         itemType(::TrustlyPayinDetails)
         itemType(::AdyenPayinDetails)
+        itemType(::AddDiscount)
         itemType(::Link)
     })
 
@@ -65,6 +68,8 @@ class PaymentScreen : Screen<PaymentScreen>() {
         val validUntil = KTextView(parent) { withId(R.id.validUntil) }
     }
 
+    class AddDiscount(parent: Matcher<View>) : KRecyclerItem<AddDiscount>(parent)
+
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
         val button = KButton(parent) { withId(R.id.link) }
     }
@@ -72,4 +77,11 @@ class PaymentScreen : Screen<PaymentScreen>() {
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }
     val adyenConnectPayin = KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }
+}
+
+object RedeemCode : KScreen<RedeemCode>() {
+    override val layoutId = R.layout.promotion_code_dialog
+    override val viewClass = RedeemCodeDialog::class.java
+
+    val redeem = KButton { withId(R.id.bottomSheetAddPromotionCodeButton) }
 }

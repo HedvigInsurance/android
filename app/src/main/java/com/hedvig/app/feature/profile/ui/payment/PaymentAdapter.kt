@@ -19,6 +19,7 @@ import com.hedvig.app.databinding.NextPaymentCardBinding
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentLinkBinding
+import com.hedvig.app.databinding.PaymentRedeemCodeBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
@@ -33,7 +34,6 @@ import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class PaymentAdapter(
     private val marketProvider: MarketProvider,
@@ -54,6 +54,7 @@ class PaymentAdapter(
         is PaymentModel.TrustlyPayinDetails -> R.layout.trustly_payin_details
         is PaymentModel.AdyenPayinDetails -> R.layout.adyen_payin_details
         is PaymentModel.Link -> R.layout.payment_link
+        PaymentModel.RedeemDiscountCode -> R.layout.payment_redeem_code
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -67,6 +68,7 @@ class PaymentAdapter(
         R.layout.payment_history_link -> ViewHolder.PaymentHistoryLink(parent)
         R.layout.trustly_payin_details -> ViewHolder.TrustlyPayinDetails(parent)
         R.layout.adyen_payin_details -> ViewHolder.AdyenPayinDetails(parent)
+        R.layout.payment_redeem_code -> ViewHolder.RedeemDiscountCode(parent)
         R.layout.payment_link -> ViewHolder.Link(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -258,7 +260,6 @@ class PaymentAdapter(
                         }
                 }
             }
-
         }
 
         class PaymentHistoryHeader(parent: ViewGroup) :
@@ -366,6 +367,24 @@ class PaymentAdapter(
             }
         }
 
+        class RedeemDiscountCode(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
+            private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
+            override fun bind(
+                data: PaymentModel,
+                marketProvider: MarketProvider,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker
+            ) = with(binding) {
+                root.setHapticClickListener {
+                    tracker.clickRedeemCode()
+                    RefetchingRedeemCodeDialog
+                        .newInstance()
+                        .show(fragmentManager, RefetchingRedeemCodeDialog.TAG)
+                }
+            }
+        }
+
         class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_link)) {
             private val binding by viewBinding(PaymentLinkBinding::bind)
             override fun bind(
@@ -382,26 +401,14 @@ class PaymentAdapter(
                     when (data) {
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
-                        PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
                     }
                 )
 
-                link.setHapticClickListener(when (data) {
-                    PaymentModel.Link.TrustlyChangePayin,
-                    PaymentModel.Link.AdyenChangePayin -> { _ ->
-                        marketProvider.market?.connectPayin(
-                            link.context
-                        )?.let { link.context.startActivity(it) }
-                    }
-                    PaymentModel.Link.RedeemDiscountCode -> { _ ->
-                        tracker.clickRedeemCode()
-                        RefetchingRedeemCodeDialog.newInstance()
-                            .show(
-                                fragmentManager,
-                                RefetchingRedeemCodeDialog.TAG
-                            )
-                    }
-                })
+                link.setHapticClickListener {
+                    marketProvider.market?.connectPayin(
+                        link.context
+                    )?.let { link.context.startActivity(it) }
+                }
             }
         }
     }
