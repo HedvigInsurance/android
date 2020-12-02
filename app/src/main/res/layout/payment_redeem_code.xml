@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="?materialButtonTextStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground">
-
-    <TextView
-        style="?materialButtonTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:text="@string/REFERRAL_ADDCOUPON_HEADLINE" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:contentDescription="@null"
-        app:srcCompat="@drawable/ic_add_circle" />
-
-</FrameLayout>
+    android:foreground="?selectableItemBackground"
+    android:paddingStart="@dimen/base_margin_double"
+    android:paddingEnd="@dimen/base_margin_double"
+    android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
+    android:textAlignment="viewStart"
+    app:drawableEndCompat="@drawable/ic_add_circle" />
