@@ -25,7 +25,6 @@ class PaymentScreen : Screen<PaymentScreen>() {
         itemType(::PaymentHistoryLink)
         itemType(::TrustlyPayinDetails)
         itemType(::AdyenPayinDetails)
-        itemType(::AddDiscount)
         itemType(::Link)
     })
 
@@ -68,10 +67,8 @@ class PaymentScreen : Screen<PaymentScreen>() {
         val validUntil = KTextView(parent) { withId(R.id.validUntil) }
     }
 
-    class AddDiscount(parent: Matcher<View>) : KRecyclerItem<AddDiscount>(parent)
-
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
-        val button = KButton(parent) { withId(R.id.link) }
+        val button = KTextView { withMatcher(parent) }
     }
 
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }

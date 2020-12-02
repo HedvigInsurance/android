@@ -4,6 +4,7 @@ import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
@@ -35,7 +36,8 @@ class NoCampaignTest : TestCase() {
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.AddDiscount>(1) {
+                childAt<PaymentScreen.Link>(1) {
+                    button { hasText(R.string.REFERRAL_ADDCOUPON_HEADLINE) }
                     click()
                 }
             }

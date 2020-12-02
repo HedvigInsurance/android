@@ -18,7 +18,6 @@ import com.hedvig.app.databinding.FailedPaymentsCardBinding
 import com.hedvig.app.databinding.NextPaymentCardBinding
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
-import com.hedvig.app.databinding.PaymentLinkBinding
 import com.hedvig.app.databinding.PaymentRedeemCodeBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
@@ -53,8 +52,7 @@ class PaymentAdapter(
         PaymentModel.PaymentHistoryLink -> R.layout.payment_history_link
         is PaymentModel.TrustlyPayinDetails -> R.layout.trustly_payin_details
         is PaymentModel.AdyenPayinDetails -> R.layout.adyen_payin_details
-        is PaymentModel.Link -> R.layout.payment_link
-        PaymentModel.RedeemDiscountCode -> R.layout.payment_redeem_code
+        is PaymentModel.Link -> R.layout.payment_redeem_code
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -68,8 +66,7 @@ class PaymentAdapter(
         R.layout.payment_history_link -> ViewHolder.PaymentHistoryLink(parent)
         R.layout.trustly_payin_details -> ViewHolder.TrustlyPayinDetails(parent)
         R.layout.adyen_payin_details -> ViewHolder.AdyenPayinDetails(parent)
-        R.layout.payment_redeem_code -> ViewHolder.RedeemDiscountCode(parent)
-        R.layout.payment_link -> ViewHolder.Link(parent)
+        R.layout.payment_redeem_code -> ViewHolder.Link(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -362,8 +359,6 @@ class PaymentAdapter(
                 }
                 maskedCardNumber.text =
                     "**** ${data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits}"
-                validUntil.text =
-                    "${data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryMonth}/${data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryYear}"
             }
         }
 
@@ -385,8 +380,8 @@ class PaymentAdapter(
             }
         }
 
-        class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_link)) {
-            private val binding by viewBinding(PaymentLinkBinding::bind)
+        class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
+            private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
             override fun bind(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
@@ -397,18 +392,38 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                link.setText(
+                root.setText(
                     when (data) {
+                        PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
                     }
                 )
 
-                link.setHapticClickListener {
-                    marketProvider.market?.connectPayin(
-                        link.context
-                    )?.let { link.context.startActivity(it) }
-                }
+                root.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0, 0, when (data) {
+                        PaymentModel.Link.RedeemDiscountCode -> R.drawable.ic_add_circle
+                        PaymentModel.Link.TrustlyChangePayin,
+                        PaymentModel.Link.AdyenChangePayin -> R.drawable.ic_edit
+                    }, 0
+                )
+
+                root.setHapticClickListener(when (data) {
+                    PaymentModel.Link.TrustlyChangePayin,
+                    PaymentModel.Link.AdyenChangePayin -> { _ ->
+                        marketProvider.market?.connectPayin(
+                            root.context
+                        )?.let { root.context.startActivity(it) }
+                    }
+                    PaymentModel.Link.RedeemDiscountCode -> { _ ->
+                        tracker.clickRedeemCode()
+                        RefetchingRedeemCodeDialog.newInstance()
+                            .show(
+                                fragmentManager,
+                                RefetchingRedeemCodeDialog.TAG
+                            )
+                    }
+                })
             }
         }
     }
