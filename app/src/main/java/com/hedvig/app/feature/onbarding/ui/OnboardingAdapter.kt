@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.onbarding.ui
 
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Handler
 import android.os.Looper
@@ -14,7 +13,7 @@ import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onbarding.OnboardingDiffUtilCallback
 import com.hedvig.app.feature.onbarding.OnboardingModel
-import com.hedvig.app.feature.onbarding.OnboardingViewModel
+import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
@@ -26,7 +25,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.invalidData
 
 class OnboardingAdapter(
-    val viewModel: OnboardingViewModel,
+    val viewModel: ChoosePlanViewModel,
     val marketProvider: MarketProvider
 ) :
     ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(OnboardingDiffUtilCallback()) {
@@ -53,7 +52,7 @@ class OnboardingAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             item: OnboardingModel,
-            viewModel: OnboardingViewModel,
+            viewModel: ChoosePlanViewModel,
             marketProvider: MarketProvider,
         )
 
@@ -61,7 +60,7 @@ class OnboardingAdapter(
             private val binding by viewBinding(PlanCardBinding::bind)
             override fun bind(
                 item: OnboardingModel,
-                viewModel: OnboardingViewModel,
+                viewModel: ChoosePlanViewModel,
                 marketProvider: MarketProvider,
             ) {
                 if (item !is OnboardingModel.Quote) {
@@ -147,7 +146,7 @@ class OnboardingAdapter(
         class Info(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.plan_info)) {
             override fun bind(
                 item: OnboardingModel,
-                viewModel: OnboardingViewModel,
+                viewModel: ChoosePlanViewModel,
                 marketProvider: MarketProvider,
             ) {
             }
@@ -158,7 +157,7 @@ class OnboardingAdapter(
             private val binding by viewBinding(PlanCalculatePriceButtonBinding::bind)
             override fun bind(
                 item: OnboardingModel,
-                viewModel: OnboardingViewModel,
+                viewModel: ChoosePlanViewModel,
                 marketProvider: MarketProvider,
             ) {
                 binding.root.setHapticClickListener { button ->

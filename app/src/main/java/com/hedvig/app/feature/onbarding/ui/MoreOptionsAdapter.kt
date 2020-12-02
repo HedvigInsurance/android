@@ -8,6 +8,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
 import com.hedvig.app.databinding.SettingsBinding
+import com.hedvig.app.feature.onbarding.MoreOptionsModel
 import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -134,14 +135,3 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
     }
 }
 
-sealed class MoreOptionsModel {
-    object Header : MoreOptionsModel()
-    sealed class UserId : MoreOptionsModel() {
-        data class Success(val id: String) : UserId()
-        object Error : UserId()
-    }
-
-    object Version : MoreOptionsModel()
-    object Settings : MoreOptionsModel()
-    object Copyright : MoreOptionsModel()
-}

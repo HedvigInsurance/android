@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.updatePaddingRelative
+import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
+import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.onbarding.OnboardingModel
-import com.hedvig.app.feature.onbarding.OnboardingViewModel
+import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -22,7 +23,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketProvider by inject()
-    private val viewModel: OnboardingViewModel by viewModel()
+    private val viewModel: ChoosePlanViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +41,18 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
-            viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { quote ->
+            viewModel.data.observe(this@ChoosePlanActivity) { response ->
+                if (response.isFailure) {
+                    TODO("Implement error view")
+                    return@observe
+                }
+                val bundles = response.getOrNull()?.embarkStories ?: return@observe
+                getMobileTypes(bundles)
+
+                (recycler.adapter as OnboardingAdapter).submitList(listOf())
+            }
+            viewModel.load()
+            /*viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { quote ->
                 (recycler.adapter as OnboardingAdapter).submitList(
                     listOf(
                         OnboardingModel.Quote.Bundle(quote is OnboardingModel.Quote.Bundle),
@@ -50,7 +62,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                         OnboardingModel.Button
                     )
                 )
-            }
+            }*/
         }
     }
 
@@ -70,6 +82,18 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     }
 
     companion object {
+
+        private const val COMBO = "COMBO"
+        private const val CONTENTS = "CONTENTS"
+        private const val TRAVEL = "TRAVEL"
+
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
+
+        private fun getMobileTypes(bundles: List<ChoosePlanQuery.EmbarkStory>) =
+            bundles.filter { it.type == EmbarkStoryType.APP_ONBOARDING }.map { embarkStory->
+                if (embarkStory.name.contains(COMBO)) {
+
+                }
+            }
     }
 }
