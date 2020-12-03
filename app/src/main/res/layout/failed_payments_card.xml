@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/title"
-            tools:text="TODO"
+            android:text="@string/payments_screen.late_payments_title"
             android:layout_marginStart="@dimen/base_margin_double"
             android:textAppearance="?textAppearanceSubtitle1"
             app:layout_constraintStart_toEndOf="@id/icon"
@@ -44,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBody2"
-            tools:text="Du ligger 3 månader efter med dina betalningar. Vi kommer att dra mer pengar än din ordinarie premie den 21 juni, 2019." />
+            tools:text="@string/PAYMENTS_LATE_PAYMENTS_MESSAGE" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
