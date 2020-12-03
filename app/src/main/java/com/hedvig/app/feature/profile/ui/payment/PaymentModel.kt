@@ -33,6 +33,7 @@ sealed class PaymentModel {
     sealed class Link : PaymentModel() {
         object TrustlyChangePayin : Link()
         object AdyenChangePayin : Link()
-        object RedeemDiscountCode : Link()
     }
+
+    object RedeemDiscountCode : PaymentModel()
 }
