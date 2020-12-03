@@ -12,6 +12,7 @@ jobs:
           cat <<EOT > lokalise.properties
           id=${LOKALISE_ID}
           token=${LOKALISE_TOKEN}
+          EOT
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
@@ -68,6 +69,7 @@ jobs:
           cat <<EOT > lokalise.properties
           id=${LOKALISE_ID}
           token=${LOKALISE_TOKEN}
+          EOT
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
@@ -110,4 +112,4 @@ jobs:
       - run: ./gradlew lintDebug
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
-          xml_path: build/reports/lint-results.xml
+          xml_path: build/reports/lint-debug-results.xml
