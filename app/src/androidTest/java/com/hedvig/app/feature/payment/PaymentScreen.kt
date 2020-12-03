@@ -29,7 +29,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     })
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
-        val paragraph = KTextView(parent) { withId(R.id.failedPaymentsParagraph) }
+        val paragraph = KTextView(parent) { withId(R.id.paragraph) }
     }
 
     class NextPayment(parent: Matcher<View>) : KRecyclerItem<NextPayment>(parent) {
