@@ -331,7 +331,10 @@ class PaymentAdapter(
                     cardType.text = it
                 }
                 maskedCardNumber.text =
-                    "**** ${data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits}"
+                    maskedCardNumber.context.getString(
+                        R.string.payment_screen_credit_card_masking,
+                        data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits
+                    )
             }
         }
 
