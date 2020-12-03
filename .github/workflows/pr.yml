@@ -112,4 +112,4 @@ jobs:
       - run: ./gradlew lintDebug
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
-          xml_path: build/reports/lint-results-debug.xml
+          xml_path: app/build/reports/lint-results-debug.xml
