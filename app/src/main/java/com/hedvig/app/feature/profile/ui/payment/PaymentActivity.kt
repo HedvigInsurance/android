@@ -120,7 +120,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     }
 
     private fun redeemCampaign(data: PaymentQuery.Data) = if (data.redeemedCampaigns.isEmpty()) {
-        PaymentModel.RedeemDiscountCode
+        PaymentModel.Link.RedeemDiscountCode
     } else {
         null
     }
