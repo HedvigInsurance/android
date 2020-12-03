@@ -46,7 +46,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     }
 
     class ConnectPayin(parent: Matcher<View>) : KRecyclerItem<ConnectPayin>(parent) {
-        val connect = KButton(parent) { withId(R.id.connectBankAccount) }
+        val connect = KButton(parent) { withId(R.id.connect) }
     }
 
     class Charge(parent: Matcher<View>) : KRecyclerItem<Charge>(parent) {
