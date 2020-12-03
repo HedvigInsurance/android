@@ -36,10 +36,10 @@ class FreeMonthsCampaignTest : TestCase() {
         onScreen<PaymentScreen> {
             recycler {
                 childAt<PaymentScreen.NextPayment>(0) {
-                    discountBubble {
-                        isVisible()
-                        containsText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asFreeMonths!!.quantity!!.toString())
-                    }
+                    // discountBubble {
+                    //     isVisible()
+                    //     containsText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asFreeMonths!!.quantity!!.toString())
+                    // }
                 }
                 childAt<PaymentScreen.Campaign>(1) {
                     owner { hasText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].owner!!.displayName) }

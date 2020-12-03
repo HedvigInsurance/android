@@ -2,13 +2,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nextPaymentCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double"
-    tools:showIn="@layout/activity_payment">
+    android:layout_marginEnd="@dimen/base_margin_double">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +17,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_top_rounded_corners"
             android:orientation="vertical"
             android:paddingStart="@dimen/base_margin_triple"
             android:paddingTop="@dimen/base_margin_double"
@@ -32,57 +29,39 @@
                 android:layout_height="wrap_content"
                 android:text="@string/PAYMENTS_CARD_TITLE"
                 android:textAppearance="?textAppearanceBody2"
-                android:textColor="?colorOnPrimary"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/nextPaymentAmount"
+                android:id="@+id/amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin"
                 android:textAppearance="?textAppearanceHeadline4"
-                android:textColor="?colorOnPrimary"
                 app:layout_constraintTop_toBottomOf="@id/nextPaymentLabel"
                 tools:text="139 kr" />
 
             <TextView
-                android:id="@+id/nextPaymentGross"
-                android:layout_width="match_parent"
+                android:id="@+id/gross"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBody2"
-                android:textColor="?colorOnPrimary"
+                android:textAppearance="?textAppearanceCaption"
                 android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@id/nextPaymentAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/amount"
                 tools:text="179 kr/mån"
                 tools:visibility="visible" />
 
-            <FrameLayout
-                android:id="@+id/discountSphere"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:background="@drawable/sphere"
-                android:backgroundTint="@color/coral_500"
+            <TextView
+                android:id="@+id/discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_half"
+                android:textAppearance="?textAppearanceCaption"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/discountSphereText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/base_margin_half"
-                    android:layout_marginEnd="@dimen/base_margin_half"
-                    android:gravity="center"
-                    android:lineSpacingExtra="0sp"
-                    android:textAppearance="?textAppearanceCaption"
-                    android:textColor="?colorOnError"
-                    tools:text="3\nGratis\nmånader" />
-
-
-            </FrameLayout>
+                app:layout_constraintBaseline_toBaselineOf="@id/gross"
+                app:layout_constraintStart_toEndOf="@id/gross"
+                tools:text="3 free months"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,20 +72,19 @@
             android:layout_marginBottom="@dimen/base_margin_double">
 
             <TextView
-                android:id="@+id/nextPaymentDateLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:text="@string/PAYMENTS_CARD_DATE"
                 android:textAppearance="?textAppearanceBody2" />
 
-            <View
+            <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/nextPaymentDate"
+                android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/base_margin_double"
