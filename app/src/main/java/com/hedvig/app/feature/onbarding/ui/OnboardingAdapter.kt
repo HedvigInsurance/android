@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.PlanCalculatePriceButtonBinding
 import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onbarding.OnboardingDiffUtilCallback
 import com.hedvig.app.feature.onbarding.OnboardingModel
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
@@ -34,6 +35,7 @@ class OnboardingAdapter(
         R.layout.plan_card -> ViewHolder.QuoteType(parent)
         R.layout.plan_info -> ViewHolder.Info(parent)
         R.layout.plan_calculate_price_button -> ViewHolder.Button(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         else -> {
             throw Error("Unreachable")
         }
@@ -43,6 +45,7 @@ class OnboardingAdapter(
         is OnboardingModel.Quote -> R.layout.plan_card
         OnboardingModel.Info -> R.layout.plan_info
         OnboardingModel.Button -> R.layout.plan_calculate_price_button
+        OnboardingModel.Error -> R.layout.generic_error
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -81,12 +84,13 @@ class OnboardingAdapter(
                                 radioButton.isChecked = true
                             }
                             discount.show()
-                            description.text =
-                                "TODO Combination of both contents and travel insurance"
-                            name.text = "TODO Bundle"
+                            discount.text =
+                                item.embarkStory.metadata.first().asEmbarkStoryMetadataEntryDiscount?.discount
+                            description.text = item.embarkStory.description
+                            name.text = item.embarkStory.title
                             root.setHapticClickListener {
                                 animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(OnboardingModel.Quote.Bundle(true))
+                                viewModel.setSelectedQuoteType(item.copy(selected = true))
                             }
                         }
                         is OnboardingModel.Quote.Content -> {
@@ -96,12 +100,11 @@ class OnboardingAdapter(
                                 blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_apartment))
                                 radioButton.isChecked = true
                             }
-                            description.text =
-                                "TODO Contents insurance covers everything in your home"
-                            name.text = "TODO Content"
+                            description.text = item.embarkStory.description
+                            name.text = item.embarkStory.title
                             root.setHapticClickListener {
                                 animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(OnboardingModel.Quote.Content(true))
+                                viewModel.setSelectedQuoteType(item.copy(selected = true))
                             }
                         }
                         is OnboardingModel.Quote.Travel -> {
@@ -111,12 +114,11 @@ class OnboardingAdapter(
                                 blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
                                 radioButton.isChecked = true
                             }
-                            description.text =
-                                "TODO Travel insurance protects you and your family when you're travelling"
-                            name.text = "TODO Travel"
+                            description.text = item.embarkStory.description
+                            name.text = item.embarkStory.title
                             root.setHapticClickListener {
                                 animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(OnboardingModel.Quote.Travel(true))
+                                viewModel.setSelectedQuoteType(item.copy(selected = true))
                             }
                         }
                     }
@@ -168,6 +170,17 @@ class OnboardingAdapter(
                         )
                     )
                 }
+            }
+        }
+
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+            private val binding by viewBinding(GenericErrorBinding::bind)
+            override fun bind(
+                item: OnboardingModel,
+                viewModel: ChoosePlanViewModel,
+                marketProvider: MarketProvider
+            ) {
+                binding.retry.setHapticClickListener { viewModel.load() }
             }
         }
     }

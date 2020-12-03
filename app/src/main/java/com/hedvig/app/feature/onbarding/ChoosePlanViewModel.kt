@@ -11,10 +11,10 @@ abstract class ChoosePlanViewModel : ViewModel() {
     protected val _data = MutableLiveData<Result<ChoosePlanQuery.Data>>()
     val data: LiveData<Result<ChoosePlanQuery.Data>> = _data
 
-    private val _selectedQuoteType: MutableLiveData<OnboardingModel.Quote> =
-        MutableLiveData(OnboardingModel.Quote.Bundle(true))
-    val selectedQuoteType: LiveData<OnboardingModel.Quote> = _selectedQuoteType
     abstract fun load()
+
+    private val _selectedQuoteType = MutableLiveData<OnboardingModel.Quote>()
+    val selectedQuoteType: LiveData<OnboardingModel.Quote> = _selectedQuoteType
 
     fun setSelectedQuoteType(type: OnboardingModel.Quote) {
         _selectedQuoteType.postValue(type)

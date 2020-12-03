@@ -34,43 +34,40 @@
             android:layout_height="match_parent"
             android:padding="@dimen/base_margin_double">
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceHeadline6"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Bundle" />
-
-            <TextView
-                android:id="@+id/discount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin"
-                android:background="@drawable/background_pill"
-                android:backgroundTint="?colorPrimary"
-                android:padding="@dimen/base_margin_half"
-                android:text="TODO 25% DISCOUNT"
-                android:textAppearance="?textAppearanceOverline"
-                android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard.Discount"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/name"
-                app:layout_constraintStart_toEndOf="@+id/name"
-                app:layout_constraintTop_toTopOf="@id/name"
-                tools:visibility="visible" />
-
-
-            <TextView
-                android:id="@+id/description"
+            <LinearLayout
+                android:id="@+id/topContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
-                android:textAppearance="?textAppearanceBody1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toStartOf="@id/radioButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/name"
-                tools:text="Combination of both contents and travel insurance" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="200dp"
+                    android:textAppearance="?textAppearanceHeadline6"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Contents- and travel insurance" />
+
+                <TextView
+                    android:id="@+id/discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/base_margin"
+                    android:background="@drawable/background_pill"
+                    android:backgroundTint="?colorPrimary"
+                    android:padding="@dimen/base_margin_half"
+                    android:textAppearance="?textAppearanceOverline"
+                    android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard.Discount"
+                    android:visibility="gone"
+                    tools:text="25% DISCOUNT"
+                    tools:visibility="visible" />
+            </LinearLayout>
 
             <RadioButton
                 android:id="@+id/radioButton"
@@ -80,6 +77,17 @@
                 android:clickable="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:textAppearance="?textAppearanceBody1"
+                app:layout_constraintEnd_toStartOf="@id/radioButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topContainer"
+                tools:text="Combination of both contents and travel insurance" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
