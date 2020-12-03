@@ -101,6 +101,12 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download Apollo Schema
+        run: ./gradlew apollo:downloadApolloSchema
+      - name: Download Translations
+        run: ./gradlew app:downloadStrings
+      - name: Generate License-report
+        run: ./gradlew licenseReleaseReport
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
