@@ -59,3 +59,10 @@ jobs:
           target: google_apis
           profile: pixel_3a
           script: ./gradlew connectedDebugAndroidTest
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew lint
+      - uses: yutailang0119/action-android-lint@v1.0.2
+        with:
+          xml_path: build/reports/lint-results.xml
