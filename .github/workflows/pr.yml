@@ -107,7 +107,7 @@ jobs:
         run: ./gradlew app:downloadStrings
       - name: Generate License-report
         run: ./gradlew licenseReleaseReport
-      - run: ./gradlew lintStaging
+      - run: ./gradlew lintDebug
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
           xml_path: build/reports/lint-results.xml
