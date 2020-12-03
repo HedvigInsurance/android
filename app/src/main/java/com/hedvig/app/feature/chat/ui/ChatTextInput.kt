@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.EditText
 
-class ChatTextInput : EditText {
+class ChatTextInput : EditText { // Canary commit! Will be reverted
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
