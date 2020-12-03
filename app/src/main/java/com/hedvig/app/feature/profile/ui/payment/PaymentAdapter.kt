@@ -132,9 +132,9 @@ class PaymentAdapter(
                     data.inner.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount()
                         .format(amount.context)
 
-                val discount =
+                val discountAmount =
                     data.inner.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
-                if (discount.isPositive && data.inner.balance.failedCharges == 0) {
+                if (discountAmount.isPositive && data.inner.balance.failedCharges == 0) {
                     gross.show()
                     data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
                         ?.format(gross.context)?.let { gross.text = it }
@@ -151,13 +151,24 @@ class PaymentAdapter(
 
                 val incentive =
                     data.inner.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+                discount.isVisible =
+                    incentive?.asFreeMonths?.quantity != null || incentive?.asPercentageDiscountMonths != null
                 incentive?.asFreeMonths?.let { freeMonthsIncentive ->
                     freeMonthsIncentive.quantity?.let { quantity ->
-                        // TODO: Text key
+                        discount.text = discount.resources.getQuantityString(
+                            R.plurals.payment_screen_free_month_discount_label,
+                            quantity,
+                            quantity
+                        )
                     }
                 }
                 incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
-                    // TODO: Text key
+                    discount.text = discount.resources.getQuantityString(
+                        R.plurals.payment_screen_percentage_discount_label,
+                        percentageDiscountMonthsIncentive.pdmQuantity,
+                        percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
+                        percentageDiscountMonthsIncentive.pdmQuantity
+                    )
                 }
             }
         }
@@ -335,24 +346,6 @@ class PaymentAdapter(
                         R.string.payment_screen_credit_card_masking,
                         data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits
                     )
-            }
-        }
-
-        class RedeemDiscountCode(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
-            private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
-            override fun bind(
-                data: PaymentModel,
-                marketProvider: MarketProvider,
-                fragmentManager: FragmentManager,
-                tracker: PaymentTracker
-            ) = with(binding) {
-                root.setHapticClickListener {
-                    tracker.clickRedeemCode()
-                    RefetchingRedeemCodeDialog
-                        .newInstance()
-                        .show(fragmentManager, RefetchingRedeemCodeDialog.TAG)
-                }
             }
         }
 
