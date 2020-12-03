@@ -42,6 +42,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    lintOptions {
+        isAbortOnError = false
+    }
+
     packagingOptions {
         exclude("javamoney.properties")
         exclude("README.txt")
