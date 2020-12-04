@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.adyen
+package com.hedvig.app.feature.adyen.payin
 
 import android.content.Context
 import com.adyen.checkout.redirect.RedirectComponent
