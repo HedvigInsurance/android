@@ -1,9 +1,10 @@
 package com.hedvig.app.feature.adyen
 
 import com.adyen.checkout.base.model.PaymentMethodsApiResponse
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import org.json.JSONObject
 
-class MockAdyenViewModel : AdyenViewModel() {
+class MockAdyenConnectPayinViewModel : AdyenConnectPayinViewModel() {
     init {
         _paymentMethods.postValue(
             PaymentMethodsApiResponse.SERIALIZER.deserialize(

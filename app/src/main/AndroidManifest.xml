@@ -265,7 +265,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.adyen.AdyenConnectPayinActivity"
+            android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
