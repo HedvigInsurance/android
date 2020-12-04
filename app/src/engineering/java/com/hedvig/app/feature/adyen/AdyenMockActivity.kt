@@ -2,7 +2,9 @@ package com.hedvig.app.feature.adyen
 
 import com.hedvig.app.MockActivity
 import com.hedvig.app.adyenModule
-import com.hedvig.app.mocks.MockMarketProvider
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
+import com.hedvig.app.feature.home.MockMarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
@@ -13,7 +15,7 @@ class AdyenMockActivity : MockActivity() {
     private val marketProvider = MockMarketProvider()
     override val original = listOf(adyenModule, marketProviderModule)
     override val mocks = listOf(module {
-        single<AdyenViewModel> { MockAdyenViewModel() }
+        single<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
         single<MarketProvider> { marketProvider }
     })
 

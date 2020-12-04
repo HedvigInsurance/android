@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.adyen
+package com.hedvig.app.feature.adyen.payin
 
 import android.app.Activity
 import android.content.Context
@@ -13,6 +13,8 @@ import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.adyen.AdyenCurrency
+import com.hedvig.app.feature.adyen.AdyenDropInService
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
@@ -26,7 +28,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
-    private val adyenViewModel: AdyenViewModel by viewModel()
+    private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
     private lateinit var paymentMethods: PaymentMethodsApiResponse
     private lateinit var currency: AdyenCurrency
@@ -88,7 +90,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             }
         }
 
-        adyenViewModel.paymentMethods.observe(this) {
+        adyenConnectPayinViewModel.paymentMethods.observe(this) {
             paymentMethods = it
 
             if (isPostSign()) {

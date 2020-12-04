@@ -8,7 +8,7 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity

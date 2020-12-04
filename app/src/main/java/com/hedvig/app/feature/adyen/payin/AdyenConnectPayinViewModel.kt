@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.adyen
+package com.hedvig.app.feature.adyen.payin
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,14 +8,14 @@ import com.adyen.checkout.base.model.PaymentMethodsApiResponse
 import e
 import kotlinx.coroutines.launch
 
-abstract class AdyenViewModel : ViewModel() {
+abstract class AdyenConnectPayinViewModel : ViewModel() {
     protected val _paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
     val paymentMethods: LiveData<PaymentMethodsApiResponse> = _paymentMethods
 }
 
-class AdyenViewModelImpl(
+class AdyenConnectPayinViewModelImpl(
     private val adyenRepository: AdyenRepository
-) : AdyenViewModel() {
+) : AdyenConnectPayinViewModel() {
 
     init {
         viewModelScope.launch {
