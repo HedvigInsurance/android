@@ -23,6 +23,7 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.inflate
@@ -148,7 +149,7 @@ class PaymentAdapter(
                     date.text =
                         data.inner.nextChargeDate?.format(PaymentActivity.DATE_FORMAT)
                 } else if (isPending(data.inner.contracts)) {
-                    date.background.compatSetTint(date.context.compatColor(R.color.sunflower_300))
+                    date.background.compatSetTint(date.context.colorAttr(R.attr.colorWarning))
                     date.setTextColor(date.context.compatColor(R.color.off_black))
                     date.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
                 }
