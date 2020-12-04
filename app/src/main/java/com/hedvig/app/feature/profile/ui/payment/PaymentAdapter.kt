@@ -2,8 +2,6 @@ package com.hedvig.app.feature.profile.ui.payment
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.buildSpannedString
-import androidx.core.text.scale
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
@@ -25,6 +23,7 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.inflate
@@ -121,7 +120,7 @@ class PaymentAdapter(
             private val binding by viewBinding(NextPaymentCardBinding::bind)
 
             init {
-                binding.nextPaymentGross.setStrikethrough(true)
+                binding.gross.setStrikethrough(true)
             }
 
             override fun bind(
@@ -134,61 +133,47 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                nextPaymentAmount.text =
+                amount.text =
                     data.inner.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount()
-                        .format(nextPaymentAmount.context)
+                        .format(amount.context)
 
-                val discount =
+                val discountAmount =
                     data.inner.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
-                if (discount.isPositive && data.inner.balance.failedCharges == 0) {
-                    nextPaymentGross.show()
+                if (discountAmount.isPositive && data.inner.balance.failedCharges == 0) {
+                    gross.show()
                     data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                        ?.format(nextPaymentGross.context)?.let { nextPaymentGross.text = it }
+                        ?.format(gross.context)?.let { gross.text = it }
                 }
 
                 if (isActive(data.inner.contracts)) {
-                    nextPaymentDate.text =
+                    date.text =
                         data.inner.nextChargeDate?.format(PaymentActivity.DATE_FORMAT)
                 } else if (isPending(data.inner.contracts)) {
-                    nextPaymentDate.background.compatSetTint(nextPaymentDate.context.compatColor(R.color.sunflower_300))
-                    nextPaymentDate.setTextColor(nextPaymentDate.context.compatColor(R.color.off_black))
-                    nextPaymentDate.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
+                    date.background.compatSetTint(date.context.colorAttr(R.attr.colorWarning))
+                    date.setTextColor(date.context.compatColor(R.color.off_black))
+                    date.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
                 }
 
                 val incentive =
                     data.inner.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
+                discount.isVisible =
+                    incentive?.asFreeMonths?.quantity != null || incentive?.asPercentageDiscountMonths != null
                 incentive?.asFreeMonths?.let { freeMonthsIncentive ->
                     freeMonthsIncentive.quantity?.let { quantity ->
-                        discountSphereText.text = buildSpannedString {
-                            scale(20f / 12f) {
-                                append("$quantity\n")
-                            }
-                            append(
-                                if (quantity > 1) {
-                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_MULTIPLE_MONTHS)
-                                } else {
-                                    discountSphere.context.getString(R.string.PAYMENTS_OFFER_SINGLE_MONTH)
-                                }
-                            )
-                        }
-                        discountSphere.show()
+                        discount.text = discount.resources.getQuantityString(
+                            R.plurals.payment_screen_free_month_discount_label,
+                            quantity,
+                            quantity
+                        )
                     }
                 }
                 incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
-                    discountSphere.show()
-                    discountSphereText.text =
-                        if (percentageDiscountMonthsIncentive.pdmQuantity > 1) {
-                            discountSphereText.context.getString(
-                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_MANY,
-                                percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
-                                percentageDiscountMonthsIncentive.pdmQuantity
-                            )
-                        } else {
-                            discountSphere.context.getString(
-                                R.string.PAYMENTS_DISCOUNT_PERCENTAGE_MONTHS_ONE,
-                                percentageDiscountMonthsIncentive.percentageDiscount.toInt()
-                            )
-                        }
+                    discount.text = discount.resources.getQuantityString(
+                        R.plurals.payment_screen_percentage_discount_label,
+                        percentageDiscountMonthsIncentive.pdmQuantity,
+                        percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
+                        percentageDiscountMonthsIncentive.pdmQuantity
+                    )
                 }
             }
         }
@@ -366,24 +351,6 @@ class PaymentAdapter(
                         R.string.payment_screen_credit_card_masking,
                         data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits
                     )
-            }
-        }
-
-        class RedeemDiscountCode(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
-            private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
-            override fun bind(
-                data: PaymentModel,
-                marketProvider: MarketProvider,
-                fragmentManager: FragmentManager,
-                tracker: PaymentTracker
-            ) = with(binding) {
-                root.setHapticClickListener {
-                    tracker.clickRedeemCode()
-                    RefetchingRedeemCodeDialog
-                        .newInstance()
-                        .show(fragmentManager, RefetchingRedeemCodeDialog.TAG)
-                }
             }
         }
 
