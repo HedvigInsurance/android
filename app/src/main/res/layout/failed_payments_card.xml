@@ -5,10 +5,10 @@
     android:id="@+id/failedPaymentsCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/ThemeOverlay.Hedvig.WarningCard"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double">
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:theme="@style/ThemeOverlay.Hedvig.WarningCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,33 +17,33 @@
         android:padding="@dimen/base_margin_double">
 
         <ImageView
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
-            android:id="@+id/icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_warning_triangle" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/title"
-            android:text="@string/payments_screen.late_payments_title"
             android:layout_marginStart="@dimen/base_margin_double"
             android:textAppearance="?textAppearanceSubtitle1"
             app:layout_constraintStart_toEndOf="@id/icon"
-            app:layout_constraintTop_toTopOf="@id/icon" />
+            app:layout_constraintTop_toTopOf="@id/icon"
+            tools:text="Missed payment" />
 
         <TextView
             android:id="@+id/paragraph"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            android:layout_marginTop="@dimen/base_margin"
-            app:layout_constraintStart_toStartOf="@id/title"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margin"
             android:textAppearance="?textAppearanceBody2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/title"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:text="@string/PAYMENTS_LATE_PAYMENTS_MESSAGE" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

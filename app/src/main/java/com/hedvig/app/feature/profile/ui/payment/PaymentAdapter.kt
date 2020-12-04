@@ -102,6 +102,10 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
+                title.text = title.resources.getQuantityText(
+                    R.plurals.payments_screen_late_payments_title,
+                    data.failedCharges
+                )
                 paragraph.text = paragraph.context.getString(
                     R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
                     data.failedCharges,
