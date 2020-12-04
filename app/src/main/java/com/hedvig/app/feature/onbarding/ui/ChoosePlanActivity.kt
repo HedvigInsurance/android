@@ -14,7 +14,12 @@ import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onbarding.OnboardingModel
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -33,6 +38,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
+            continueButton.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            }
             recycler.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
@@ -42,51 +50,46 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
+
+            continueButton.setHapticClickListener {
+               startActivity(
+                    WebOnboardingActivity.newNoInstance(
+                        this@ChoosePlanActivity,
+                        viewModel.getSelectedNoPlan()
+                    )
+                )
+            }
+
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
-                if (response.isFailure) {
+                val bundles = response.getOrNull()
+                if (response.isFailure || bundles == null) {
                     (recycler.adapter as OnboardingAdapter).submitList(listOf(OnboardingModel.Error))
+                    continueButton.remove()
                     return@observe
                 }
-                val bundles = response.getOrNull()?.embarkStories ?: return@observe
-                getMobileTypes(bundles).find { it is OnboardingModel.Quote.Bundle }?.let {
-                    viewModel.setSelectedQuoteType(
-                        it
-                    )
+                continueButton.show()
+                getMobileTypesNew(bundles).find { it.selected }?.let {
+                    viewModel.setSelectedQuoteType(it)
                 }
                 (recycler.adapter as OnboardingAdapter).submitList(
                     listOfNotNull(
-                        *getMobileTypes(bundles).toTypedArray(),
-                        OnboardingModel.Info,
-                        OnboardingModel.Button
+                        *getMobileTypesNew(bundles).toTypedArray()
                     )
                 )
             }
             viewModel.load()
-            viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { quote ->
-                val data = viewModel.data.value?.getOrNull()?.embarkStories
-                (recycler.adapter as OnboardingAdapter).submitList(
-                    listOf(
-                        data?.find { it.name.contains(COMBO) }?.let { embarkStory ->
-                            OnboardingModel.Quote.Bundle(
-                                selected = quote is OnboardingModel.Quote.Bundle,
-                                embarkStory = embarkStory
-                            )
-                        },
-                        data?.find { it.name.contains(CONTENTS) }?.let { embarkStory ->
-                            OnboardingModel.Quote.Content(
-                                selected = quote is OnboardingModel.Quote.Content,
-                                embarkStory = embarkStory
-                            )
-                        },
-                        data?.find { it.name.contains(TRAVEL) }?.let { embarkStory ->
-                            OnboardingModel.Quote.Travel(
-                                selected = quote is OnboardingModel.Quote.Travel,
-                                embarkStory = embarkStory
-                            )
-                        },
-                        OnboardingModel.Info,
-                        OnboardingModel.Button
+            viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
+                val data = viewModel.data.value?.getOrNull()
+                val bundles = data?.map {
+                    OnboardingModel.Bundle(
+                        selected = it.name == selected.embarkStory.name,
+                        embarkStory = it
                     )
+                }
+                (recycler.adapter as OnboardingAdapter).submitList(
+                    bundles?.let {
+                        listOfNotNull(*it.toTypedArray())
+                    }
                 )
             }
         }
@@ -109,27 +112,18 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
     companion object {
 
-        private const val COMBO = "Combo"
-        private const val CONTENTS = "Contents"
-        private const val TRAVEL = "Travel"
+        const val COMBO = "Combo"
+        const val CONTENTS = "Contents"
+        const val TRAVEL = "Travel"
 
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
 
-        private fun getMobileTypes(bundles: List<ChoosePlanQuery.EmbarkStory>) =
+        private fun getMobileTypesNew(bundles: List<ChoosePlanQuery.EmbarkStory>) =
             bundles.filter { it.type == EmbarkStoryType.APP_ONBOARDING }.map { embarkStory ->
-                when {
-                    embarkStory.name.contains(COMBO) -> {
-                        OnboardingModel.Quote.Bundle(true, embarkStory)
-                    }
-                    embarkStory.name.contains(CONTENTS) -> {
-                        OnboardingModel.Quote.Content(false, embarkStory)
-                    }
-                    embarkStory.name.contains(TRAVEL) -> {
-                        OnboardingModel.Quote.Travel(false, embarkStory)
-                    }
-                    else -> {
-                        null
-                    }
+                if (embarkStory.name.contains(COMBO)) {
+                    OnboardingModel.Bundle(true, embarkStory)
+                } else {
+                    OnboardingModel.Bundle(false, embarkStory)
                 }
             }
     }

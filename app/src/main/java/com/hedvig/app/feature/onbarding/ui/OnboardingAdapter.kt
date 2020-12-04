@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
-import com.hedvig.app.databinding.PlanCalculatePriceButtonBinding
 import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onbarding.OnboardingDiffUtilCallback
 import com.hedvig.app.feature.onbarding.OnboardingModel
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.COMBO
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.CONTENTS
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.TRAVEL
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.inflate
@@ -33,8 +34,6 @@ class OnboardingAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.plan_card -> ViewHolder.QuoteType(parent)
-        R.layout.plan_info -> ViewHolder.Info(parent)
-        R.layout.plan_calculate_price_button -> ViewHolder.Button(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         else -> {
             throw Error("Unreachable")
@@ -42,9 +41,7 @@ class OnboardingAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is OnboardingModel.Quote -> R.layout.plan_card
-        OnboardingModel.Info -> R.layout.plan_info
-        OnboardingModel.Button -> R.layout.plan_calculate_price_button
+        is OnboardingModel.Bundle -> R.layout.plan_card
         OnboardingModel.Error -> R.layout.generic_error
     }
 
@@ -66,17 +63,18 @@ class OnboardingAdapter(
                 viewModel: ChoosePlanViewModel,
                 marketProvider: MarketProvider,
             ) {
-                if (item !is OnboardingModel.Quote) {
+                if (item !is OnboardingModel.Bundle) {
                     invalidData(item)
                     return
                 }
+
                 binding.apply {
                     radioButton.isChecked = false
                     container.setBackgroundResource(R.color.transparent)
                     discount.remove()
                     blur.remove()
-                    when (item) {
-                        is OnboardingModel.Quote.Bundle -> {
+                    when {
+                        item.embarkStory.name.contains(COMBO) -> {
                             if (item.selected) {
                                 container.setBackgroundResource(R.drawable.card_house_background)
                                 blur.show()
@@ -93,7 +91,7 @@ class OnboardingAdapter(
                                 viewModel.setSelectedQuoteType(item.copy(selected = true))
                             }
                         }
-                        is OnboardingModel.Quote.Content -> {
+                        item.embarkStory.name.contains(CONTENTS) -> {
                             if (item.selected) {
                                 container.setBackgroundResource(R.drawable.card_apartment_background)
                                 blur.show()
@@ -107,7 +105,7 @@ class OnboardingAdapter(
                                 viewModel.setSelectedQuoteType(item.copy(selected = true))
                             }
                         }
-                        is OnboardingModel.Quote.Travel -> {
+                        item.embarkStory.name.contains(TRAVEL) -> {
                             if (item.selected) {
                                 container.setBackgroundResource(R.drawable.card_travel_background)
                                 blur.show()
@@ -141,34 +139,6 @@ class OnboardingAdapter(
                             start()
                         }
                     }, 300)
-                }
-            }
-        }
-
-        class Info(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.plan_info)) {
-            override fun bind(
-                item: OnboardingModel,
-                viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider,
-            ) {
-            }
-        }
-
-        class Button(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.plan_calculate_price_button)) {
-            private val binding by viewBinding(PlanCalculatePriceButtonBinding::bind)
-            override fun bind(
-                item: OnboardingModel,
-                viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider,
-            ) {
-                binding.root.setHapticClickListener { button ->
-                    button.context.startActivity(
-                        WebOnboardingActivity.newNoInstance(
-                            button.context,
-                            viewModel.getSelectedNoPlan()
-                        )
-                    )
                 }
             }
         }

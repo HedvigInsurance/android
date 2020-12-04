@@ -5,27 +5,49 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
+import com.hedvig.android.owldroid.type.EmbarkStoryType
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.COMBO
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.CONTENTS
+import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.TRAVEL
 import kotlinx.coroutines.launch
 
 abstract class ChoosePlanViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<ChoosePlanQuery.Data>>()
-    val data: LiveData<Result<ChoosePlanQuery.Data>> = _data
+    protected val _data = MutableLiveData<Result<List<ChoosePlanQuery.EmbarkStory>>>()
+    val data: LiveData<Result<List<ChoosePlanQuery.EmbarkStory>>> = _data
 
     abstract fun load()
 
-    private val _selectedQuoteType = MutableLiveData<OnboardingModel.Quote>()
-    val selectedQuoteType: LiveData<OnboardingModel.Quote> = _selectedQuoteType
+    private val _selectedQuoteType = MutableLiveData<OnboardingModel.Bundle>()
+    val selectedQuoteType: LiveData<OnboardingModel.Bundle> = _selectedQuoteType
 
-    fun setSelectedQuoteType(type: OnboardingModel.Quote) {
+    fun setSelectedQuoteType(type: OnboardingModel.Bundle) {
         _selectedQuoteType.postValue(type)
     }
 
-    fun getSelectedNoPlan() = when (_selectedQuoteType.value) {
-        is OnboardingModel.Quote.Bundle -> NoPlan.BUNDLE
-        is OnboardingModel.Quote.Content -> NoPlan.CONTENT
-        is OnboardingModel.Quote.Travel -> NoPlan.TRAVEL
-        null -> NoPlan.BUNDLE
+    fun getSelectedNoPlan() = when {
+        _selectedQuoteType.value?.embarkStory?.name?.contains(COMBO) == true -> {
+            NoPlan.BUNDLE
+        }
+        _selectedQuoteType.value?.embarkStory?.name?.contains(CONTENTS) == true -> {
+            NoPlan.CONTENT
+        }
+        _selectedQuoteType.value?.embarkStory?.name?.contains(TRAVEL) == true -> {
+            NoPlan.TRAVEL
+        }
+        else -> {
+            NoPlan.BUNDLE
+        }
     }
+
+    // is OnboardingModel.Quote.Bundle -> NoPlan.BUNDLE
+    // is OnboardingModel.Quote.Content -> NoPlan.CONTENT
+    // is OnboardingModel.Quote.Travel -> NoPlan.TRAVEL
+
+/*    companion object {
+        private const val COMBO = "Combo"
+        private const val CONTENTS = "Contents"
+        private const val TRAVEL = "Travel"
+    }*/
 }
 
 class ChoosePlanViewModelImpl(
@@ -48,7 +70,9 @@ class ChoosePlanViewModelImpl(
                 _data.postValue(Result.failure(Error()))
                 return@launch
             }
-            response.getOrNull()?.data?.let { _data.postValue(Result.success(it)) }
+            val onlyAppStories =
+                response.getOrNull()?.data?.embarkStories?.filter { it.type == EmbarkStoryType.APP_ONBOARDING }
+            onlyAppStories?.let { _data.postValue(Result.success(it)) }
         }
     }
 }

@@ -10,6 +10,7 @@
     <dimen name="base_margin_septuple">56dp</dimen>
     <dimen name="base_margin_octuple">64dp</dimen>
     <dimen name="base_margin_dectuple">80dp</dimen>
+    <dimen name="base_margin_undecuple">88dp</dimen>
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
