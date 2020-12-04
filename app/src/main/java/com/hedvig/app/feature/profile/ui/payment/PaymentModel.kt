@@ -31,8 +31,8 @@ sealed class PaymentModel {
     data class AdyenPayinDetails(val inner: PaymentQuery.ActivePaymentMethods) : PaymentModel()
 
     sealed class Link : PaymentModel() {
+        object RedeemDiscountCode : Link()
         object TrustlyChangePayin : Link()
         object AdyenChangePayin : Link()
-        object RedeemDiscountCode : Link()
     }
 }

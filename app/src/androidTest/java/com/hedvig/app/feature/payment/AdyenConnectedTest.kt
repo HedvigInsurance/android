@@ -57,10 +57,6 @@ class AdyenConnectedTest : TestCase() {
                 childAt<PaymentScreen.AdyenPayinDetails>(1) {
                     cardType { hasText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand!!) }
                     maskedCardNumber { containsText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits) }
-                    validUntil {
-                        containsText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryMonth)
-                        containsText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.expiryYear)
-                    }
                 }
                 childAt<PaymentScreen.Link>(2) {
                     button {

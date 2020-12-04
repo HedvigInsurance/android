@@ -37,11 +37,15 @@ class NoCampaignTest : TestCase() {
         onScreen<PaymentScreen> {
             recycler {
                 childAt<PaymentScreen.Link>(1) {
-                    button {
-                        hasText(R.string.REFERRAL_ADDCOUPON_HEADLINE)
-                        click()
-                    }
+                    button { hasText(R.string.REFERRAL_ADDCOUPON_HEADLINE) }
+                    click()
                 }
+            }
+        }
+
+        RedeemCode {
+            redeem {
+                isVisible()
             }
         }
     }
