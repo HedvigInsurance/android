@@ -310,22 +310,17 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                accountNumber.text =
-                    "${data.bankAccount.fragments.bankAccountFragment.bankName} ${data.bankAccount.fragments.bankAccountFragment.descriptor}"
                 when (data.status) {
-                    PayinMethodStatus.ACTIVE -> directDebitStatus.setText(
-                        R.string.PAYMENTS_DIRECT_DEBIT_ACTIVE
-                    )
-                    PayinMethodStatus.PENDING -> directDebitStatus.setText(
-                        R.string.PAYMENTS_DIRECT_DEBIT_PENDING
-                    )
-                    PayinMethodStatus.NEEDS_SETUP -> directDebitStatus.setText(
-                        R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP
-                    )
+                    PayinMethodStatus.ACTIVE -> bank.text =
+                        data.bankAccount.fragments.bankAccountFragment.bankName
+                    PayinMethodStatus.PENDING -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
+                    PayinMethodStatus.NEEDS_SETUP -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
                     else -> {
                     }
                 }
-                bankAccountUnderChangeParagraph.isVisible =
+                accountNumber.isVisible = data.status == PayinMethodStatus.ACTIVE
+                accountNumber.text = data.bankAccount.fragments.bankAccountFragment.descriptor
+                pending.isVisible =
                     data.status == PayinMethodStatus.PENDING
             }
         }

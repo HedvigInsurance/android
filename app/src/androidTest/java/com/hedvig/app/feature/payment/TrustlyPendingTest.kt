@@ -55,11 +55,10 @@ class TrustlyPendingTest : TestCase() {
             trustlyConnectPayin { stub() }
             recycler {
                 childAt<PaymentScreen.TrustlyPayinDetails>(1) {
+                    bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
                     accountNumber {
-                        containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName)
                         containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
                     }
-                    status { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
                     pending { isVisible() }
                 }
                 childAt<PaymentScreen.Link>(2) {

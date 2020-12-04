@@ -56,15 +56,14 @@ class PaymentScreen : Screen<PaymentScreen>() {
     class PaymentHistoryLink(parent: Matcher<View>) : KRecyclerItem<PaymentHistoryLink>(parent)
 
     class TrustlyPayinDetails(parent: Matcher<View>) : KRecyclerItem<TrustlyPayinDetails>(parent) {
+        val bank = KTextView(parent) { withId(R.id.bank) }
         val accountNumber = KTextView(parent) { withId(R.id.accountNumber) }
-        val status = KTextView(parent) { withId(R.id.directDebitStatus) }
-        val pending = KTextView(parent) { withId(R.id.bankAccountUnderChangeParagraph) }
+        val pending = KTextView(parent) { withId(R.id.pending) }
     }
 
     class AdyenPayinDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayinDetails>(parent) {
         val cardType = KTextView(parent) { withId(R.id.cardType) }
         val maskedCardNumber = KTextView(parent) { withId(R.id.maskedCardNumber) }
-        val validUntil = KTextView(parent) { withId(R.id.validUntil) }
     }
 
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
