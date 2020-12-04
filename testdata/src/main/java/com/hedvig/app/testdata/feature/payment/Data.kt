@@ -31,6 +31,14 @@ val PAYMENT_DATA_ADYEN_CONNECTED = PaymentDataBuilder(
 ).build()
 val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
     freeUntil = LocalDate.now() + 3.months,
+    cost = CostBuilder(
+        discountAmount = "139.00",
+        netAmount = "0.00",
+        grossAmount = "139.00"
+    ).build(),
+    subscription = "139.00",
+    discount = "139.00",
+    charge = "0.00",
     redeemedCampaigns = listOf(
         PaymentQuery.RedeemedCampaign(
             owner = PaymentQuery.Owner(

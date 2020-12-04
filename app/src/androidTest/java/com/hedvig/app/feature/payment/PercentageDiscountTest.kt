@@ -36,8 +36,12 @@ class PercentageDiscountTest : TestCase() {
         onScreen<PaymentScreen> {
             recycler {
                 childAt<PaymentScreen.NextPayment>(0) {
-                    discountBubble {
+                    discount {
                         isVisible()
+                        containsText(
+                            PAYMENT_DATA_PERCENTAGE_CAMPAIGN.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asPercentageDiscountMonths!!.percentageDiscount.toInt()
+                                .toString()
+                        )
                     }
                 }
             }
