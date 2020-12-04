@@ -38,16 +38,6 @@ abstract class ChoosePlanViewModel : ViewModel() {
             NoPlan.BUNDLE
         }
     }
-
-    // is OnboardingModel.Quote.Bundle -> NoPlan.BUNDLE
-    // is OnboardingModel.Quote.Content -> NoPlan.CONTENT
-    // is OnboardingModel.Quote.Travel -> NoPlan.TRAVEL
-
-/*    companion object {
-        private const val COMBO = "Combo"
-        private const val CONTENTS = "Contents"
-        private const val TRAVEL = "Travel"
-    }*/
 }
 
 class ChoosePlanViewModelImpl(

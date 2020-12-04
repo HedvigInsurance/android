@@ -1,20 +1,18 @@
 package com.hedvig.app.feature.onboarding
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.MoreOptionsQuery
 import com.hedvig.app.feature.onbarding.ui.MoreOptionsActivity
+import com.hedvig.app.feature.onboarding.screens.MoreOptionsScreen
 import com.hedvig.app.testdata.feature.onboarding.MORE_OPTIONS_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class MoreOptionsTest {
+class MoreOptionsTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(MoreOptionsActivity::class.java, false, false)
@@ -34,8 +32,8 @@ class MoreOptionsTest {
     )
 
     @Test
-    fun openMoreOptionsActivity() {
-        activityRule.launchActivity(MoreOptionsActivity.newInstance(context()))
+    fun openMoreOptionsActivity() = run {
+        activityRule.launchActivity(null)
         onScreen<MoreOptionsScreen> {
             recycler {
                 childAt<MoreOptionsScreen.Row>(1) {

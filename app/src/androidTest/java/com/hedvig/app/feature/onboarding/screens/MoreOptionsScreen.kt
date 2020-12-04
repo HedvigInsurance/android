@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.app.feature.onboarding.screens
 
 import android.view.View
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -11,7 +11,7 @@ import org.hamcrest.Matcher
 class MoreOptionsScreen : Screen<MoreOptionsScreen>() {
     val recycler = KRecyclerView({ withId(R.id.recycler) },
         {
-            itemType(::Row)
+            itemType(MoreOptionsScreen::Row)
         })
 
     class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
