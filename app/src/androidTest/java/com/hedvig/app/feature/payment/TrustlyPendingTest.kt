@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.payment
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -18,15 +17,14 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
-class TrustlyPendingTest {
+class TrustlyPendingTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
@@ -49,7 +47,7 @@ class TrustlyPendingTest {
     )
 
     @Test
-    fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() {
+    fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() = run {
         every { marketProvider.market } returns Market.SE
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
@@ -57,11 +55,10 @@ class TrustlyPendingTest {
             trustlyConnectPayin { stub() }
             recycler {
                 childAt<PaymentScreen.TrustlyPayinDetails>(1) {
+                    bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
                     accountNumber {
-                        containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName)
                         containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
                     }
-                    status { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
                     pending { isVisible() }
                 }
                 childAt<PaymentScreen.Link>(2) {
