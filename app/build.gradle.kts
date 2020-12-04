@@ -42,8 +42,13 @@ android {
         jvmTarget = "1.8"
     }
 
+    lintOptions {
+        isAbortOnError = false
+    }
+
     packagingOptions {
         exclude("javamoney.properties")
+        exclude("README.txt")
     }
 
     buildTypes {
@@ -144,6 +149,14 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
     }
+
+    configurations.all {
+        resolutionStrategy.force(
+            "org.hamcrest:hamcrest-core:2.1",
+            "org.hamcrest:hamcrest-library:2.1",
+            "org.hamcrest:hamcrest:2.1"
+        )
+    }
 }
 
 dependencies {
@@ -231,7 +244,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.9.0")
     kapt("com.github.bumptech.glide:compiler:4.9.0")
     implementation("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
-        //transitive = false
+        setTransitive(false)
     }
 
     //Tooltip
@@ -267,13 +280,13 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.3.0")
     androidTestImplementation("com.agoda.kakao:kakao:2.3.2")
-    androidTestImplementation("org.powermock:powermock-core:2.0.6")
     androidTestImplementation("com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}")
     androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("org.koin:koin-test:$koin_version")
-    androidTestImplementation("org.awaitility:awaitility:3.1.6")
-    androidTestImplementation("org.awaitility:awaitility-kotlin:3.1.6")
+    androidTestImplementation("org.awaitility:awaitility:4.0.2")
+    androidTestImplementation("org.awaitility:awaitility-kotlin:4.0.2")
     androidTestImplementation("io.mockk:mockk-android:1.10.0")
+    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.2.0")
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.2")
 }

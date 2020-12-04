@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -12,12 +11,11 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class FreeMonthsCampaignTest {
+class FreeMonthsCampaignTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(PaymentActivity::class.java, false, false)
@@ -32,7 +30,7 @@ class FreeMonthsCampaignTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowFreeMonthsDiscount() {
+    fun shouldShowFreeMonthsDiscount() = run {
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {

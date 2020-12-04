@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home.howclaimswork
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -17,12 +16,11 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class HowClaimsWorkTest {
+class HowClaimsWorkTest : TestCase() {
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
@@ -40,7 +38,7 @@ class HowClaimsWorkTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenClaimFromHowClaimsWork() {
+    fun shouldOpenClaimFromHowClaimsWork() = run {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
         onScreen<HomeTabScreen> {
             recycler {
