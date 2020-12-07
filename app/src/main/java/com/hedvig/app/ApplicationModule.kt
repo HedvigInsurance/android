@@ -13,9 +13,11 @@ import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.feature.adyen.payin.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
+import com.hedvig.app.feature.adyen.payin.AdyenRepository
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -280,6 +282,7 @@ val paymentModule = module {
 
 val adyenModule = module {
     viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get()) }
+    viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
 val referralsModule = module {
