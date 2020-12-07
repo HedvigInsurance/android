@@ -96,6 +96,11 @@
         <item name="colorSurface">@color/colorChatInputButton</item>
     </style>
 
+    <style name="Hedvig.Theme.Settings" parent="Hedvig.Theme">
+        <item name="android:textColorSecondary">@color/colorPrimaryVariant</item>
+        <item name="android:textColor">?colorPrimary</item>
+    </style>
+
     <style name="ThemeOverlay.Hedvig.MarketingActivity" parent="">
         <item name="colorPrimary">@color/hedvig_white</item>
         <item name="colorButton">@color/hedvig_white</item>
