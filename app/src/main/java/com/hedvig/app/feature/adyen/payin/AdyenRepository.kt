@@ -4,6 +4,7 @@ import android.content.Context
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
+import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
 import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.app.ApolloClientWrapper
@@ -18,6 +19,11 @@ class AdyenRepository(
         .query(
             AdyenPaymentMethodsQuery()
         )
+        .await()
+
+    suspend fun payoutMethods() = apolloClientWrapper
+        .apolloClient
+        .query(AdyenPayoutMethodsQuery())
         .await()
 
     suspend fun tokenizePaymentDetails(data: JSONObject) = apolloClientWrapper
