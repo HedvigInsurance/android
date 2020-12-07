@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import com.adyen.checkout.base.model.payments.Amount
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
@@ -14,12 +15,14 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.AdyenDropInService
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.extensions.makeToast
 import e
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val model: AdyenConnectPayoutViewModel by viewModel()
+
+    private var hasConnected = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,22 +56,37 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
 
             DropIn.startPayment(this, response, dropInConfiguration)
         }
+
+        model.shouldClose.observe(this) { shouldClose ->
+            if (shouldClose) {
+                finish()
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         when (intent?.getStringExtra(DropIn.RESULT_KEY)) {
-            ADYEN_RESULT_CODE_RECEIVED -> makeToast("TODO: Show success")
-            ADYEN_RESULT_CODE_CANCELLED -> makeToast("TODO: Show cancelled")
-            else -> {}
+            ADYEN_RESULT_CODE_RECEIVED -> {
+                hasConnected = true
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.container, ConnectPayoutResultFragment.newInstance())
+                    .commitAllowingStateLoss()
+            }
+            ADYEN_RESULT_CODE_CANCELLED -> finish()
+            else -> {
+            }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_CANCELED) {
-            finish()
-        }
+        Handler(mainLooper).postDelayed({
+            if (!hasConnected && resultCode == Activity.RESULT_CANCELED) {
+                finish()
+            }
+        }, 10) // Needed in order to allow the new intent to arrive in the activity
     }
 
     companion object {
