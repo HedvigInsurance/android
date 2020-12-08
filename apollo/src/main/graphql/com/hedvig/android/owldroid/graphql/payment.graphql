@@ -41,4 +41,9 @@ query Payment {
   activePaymentMethods {
     ... ActivePaymentMethodsFragment
   }
+  activePayoutMethods {
+    storedPaymentMethodsDetails {
+      id
+    }
+  }
 }

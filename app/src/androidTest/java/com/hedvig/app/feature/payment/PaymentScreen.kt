@@ -9,6 +9,7 @@ import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
@@ -73,6 +74,8 @@ class PaymentScreen : Screen<PaymentScreen>() {
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }
     val adyenConnectPayin = KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }
+    val adyenConnectPayout =
+        KIntent { hasComponent { AdyenConnectPayoutActivity::class.java.name } }
 }
 
 object RedeemCode : KScreen<RedeemCode>() {
