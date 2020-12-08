@@ -29,6 +29,7 @@ data class PaymentDataBuilder(
     private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList(),
     private val payinType: PayinType = PayinType.TRUSTLY,
     private val payinConnected: Boolean = false,
+    private val payoutConnected: Boolean = false,
 ) {
     fun build() = PaymentQuery.Data(
         contracts = contracts.map {
@@ -101,6 +102,15 @@ data class PaymentDataBuilder(
                             expiryYear = "2050",
                         )
                     )
+                )
+            )
+        } else {
+            null
+        },
+        activePayoutMethods = if (payoutConnected) {
+            PaymentQuery.ActivePayoutMethods(
+                storedPaymentMethodsDetails = PaymentQuery.StoredPaymentMethodsDetails(
+                    id = "123"
                 )
             )
         } else {
