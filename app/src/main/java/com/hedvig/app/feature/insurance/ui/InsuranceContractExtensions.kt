@@ -59,7 +59,6 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.SE_APARTMENT_STUDENT_RENT,
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
-                    TypeOfContract.SE_HOUSE,
                     TypeOfContract.NO_HOME_CONTENT_OWN,
                     TypeOfContract.NO_HOME_CONTENT_RENT,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
@@ -77,6 +76,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                         container.setBackgroundResource(R.drawable.card_travel_background)
                         blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
                     }
+                    TypeOfContract.SE_HOUSE,
                     TypeOfContract.DK_ACCIDENT,
                     TypeOfContract.DK_ACCIDENT_STUDENT -> {
                         container.setBackgroundResource(R.drawable.card_accident_background)
