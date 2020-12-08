@@ -1,4 +1,4 @@
-package com.hedvig.app.mocks
+package com.hedvig.app.feature.payment
 
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
