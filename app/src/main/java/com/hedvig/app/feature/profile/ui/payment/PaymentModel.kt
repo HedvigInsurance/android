@@ -30,9 +30,15 @@ sealed class PaymentModel {
 
     data class AdyenPayinDetails(val inner: PaymentQuery.ActivePaymentMethods) : PaymentModel()
 
+    object PayoutDetailsHeader : PaymentModel()
+    sealed class PayoutDetailsParagraph : PaymentModel() {
+        object Add : PayoutDetailsParagraph()
+    }
+
     sealed class Link : PaymentModel() {
         object RedeemDiscountCode : Link()
         object TrustlyChangePayin : Link()
         object AdyenChangePayin : Link()
+        object AdyenAddPayout : Link()
     }
 }

@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
@@ -55,6 +56,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         campaign(paymentData),
                         *paymentHistory(paymentData),
                         *payinDetails(paymentData, payinStatusData),
+                        *payoutDetails(paymentData),
                         redeemCampaign(paymentData),
                     )
                 )
@@ -116,6 +118,23 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 PaymentModel.Link.AdyenChangePayin,
             )
         }
+        return emptyArray()
+    }
+
+    private fun payoutDetails(data: PaymentQuery.Data): Array<PaymentModel> {
+        if (marketProvider.market != Market.NO) {
+            return emptyArray()
+        }
+
+        if (data.activePayoutMethods == null) {
+            return arrayOf(
+                PaymentModel.PayoutDetailsHeader,
+                PaymentModel.Link.AdyenAddPayout,
+                PaymentModel.PayoutDetailsParagraph.Add,
+            )
+        }
+
+        // TODO: In coming PRs, implement support for showing connected payout state
         return emptyArray()
     }
 
