@@ -147,6 +147,120 @@ val STORY_WITH_TEXT_ACTION = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.EMAIL
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "9001021234",
+                mask = TextActionBuilder.PERSONAL_NUMBER
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_BIRTH_DATE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.BIRTH_DATE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.BIRTH_DATE_REVERSE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.NORWEGIAN_POSTAL_CODE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.SWEDISH_POSTAL_CODE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
 val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
@@ -156,13 +270,15 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data4(
                             placeholder = "First Placeholder",
-                            key = "FOO"
+                            key = "FOO",
+                            mask = null
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data4(
                             placeholder = "Second Placeholder",
-                            key = "BAR"
+                            key = "BAR",
+                            mask = null
                         )
                     ),
                 )
