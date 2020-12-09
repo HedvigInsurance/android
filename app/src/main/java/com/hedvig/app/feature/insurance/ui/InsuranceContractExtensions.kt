@@ -66,21 +66,21 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.DK_HOME_CONTENT_OWN,
                     TypeOfContract.DK_HOME_CONTENT_RENT,
                     -> {
-                        container.setBackgroundResource(R.drawable.card_apartment_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_apartment))
+                        container.setBackgroundResource(R.drawable.gradient_summer_sky)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_summer_sky))
                     }
                     TypeOfContract.NO_TRAVEL,
                     TypeOfContract.NO_TRAVEL_YOUTH,
                     TypeOfContract.DK_TRAVEL,
                     TypeOfContract.DK_TRAVEL_STUDENT -> {
-                        container.setBackgroundResource(R.drawable.card_travel_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
+                        container.setBackgroundResource(R.drawable.gradient_fall_sunset)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_fall_sunset))
                     }
                     TypeOfContract.SE_HOUSE,
                     TypeOfContract.DK_ACCIDENT,
                     TypeOfContract.DK_ACCIDENT_STUDENT -> {
-                        container.setBackgroundResource(R.drawable.card_accident_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_accident))
+                        container.setBackgroundResource(R.drawable.gradient_spring_fog)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_spring_fog))
                     }
                     TypeOfContract.UNKNOWN__ -> {
 
