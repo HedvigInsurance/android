@@ -23,7 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
 
-class AdyenPayoutNotConnected : TestCase() {
+class AdyenPayoutNotConnectedTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
@@ -53,7 +53,9 @@ class AdyenPayoutNotConnected : TestCase() {
         onScreen<PaymentScreen> {
             adyenConnectPayout { stub() }
             recycler {
-                // TODO
+                childAt<PaymentScreen.Link>(2) {
+                    click()
+                }
             }
             adyenConnectPayout { intended() }
         }
