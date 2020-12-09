@@ -2,6 +2,7 @@ package com.hedvig.app.feature.adyen
 
 import com.adyen.checkout.dropin.service.CallResult
 import com.adyen.checkout.dropin.service.DropInService
+import com.hedvig.app.feature.adyen.payin.AdyenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

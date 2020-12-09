@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentManager
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
-import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
