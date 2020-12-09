@@ -24,6 +24,7 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATE
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_DANISH_TRAVEL
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
@@ -206,6 +207,18 @@ class InsuranceMockActivity : MockActivity() {
         clickableItem("Danish Accident") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = INSURANCE_DATA_DANISH_ACCIDENT
+                shouldError = false
+            }
+            startActivity(
+                LoggedInActivity.newInstance(
+                    context,
+                    initialTab = LoggedInTabs.INSURANCE
+                )
+            )
+        }
+        clickableItem("Danish Home + Danish Travel + Danish Accident") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS
                 shouldError = false
             }
             startActivity(
