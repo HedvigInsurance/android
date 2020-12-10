@@ -53,7 +53,7 @@ class AdyenPayoutNotConnectedTest : TestCase() {
         onScreen<PaymentScreen> {
             adyenConnectPayout { stub() }
             recycler {
-                childAt<PaymentScreen.Link>(3) {
+                childAt<PaymentScreen.Link>(4) {
                     click()
                 }
             }
