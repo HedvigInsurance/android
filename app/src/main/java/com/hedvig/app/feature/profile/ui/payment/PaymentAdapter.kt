@@ -17,6 +17,7 @@ import com.hedvig.app.databinding.NextPaymentCardBinding
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentRedeemCodeBinding
+import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
@@ -28,6 +29,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -51,6 +53,8 @@ class PaymentAdapter(
         PaymentModel.PaymentHistoryLink -> R.layout.payment_history_link
         is PaymentModel.TrustlyPayinDetails -> R.layout.trustly_payin_details
         is PaymentModel.AdyenPayinDetails -> R.layout.adyen_payin_details
+        PaymentModel.PayoutDetailsHeader -> R.layout.payout_details_header
+        is PaymentModel.PayoutDetailsParagraph -> R.layout.payout_details_paragraph
         is PaymentModel.Link -> R.layout.payment_redeem_code
     }
 
@@ -65,6 +69,8 @@ class PaymentAdapter(
         R.layout.payment_history_link -> ViewHolder.PaymentHistoryLink(parent)
         R.layout.trustly_payin_details -> ViewHolder.TrustlyPayinDetails(parent)
         R.layout.adyen_payin_details -> ViewHolder.AdyenPayinDetails(parent)
+        R.layout.payout_details_header -> ViewHolder.PayoutDetailsHeader(parent)
+        R.layout.payout_details_paragraph -> ViewHolder.PayoutDetailsParagraph(parent)
         R.layout.payment_redeem_code -> ViewHolder.Link(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -349,6 +355,37 @@ class PaymentAdapter(
             }
         }
 
+        class PayoutDetailsHeader(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payout_details_header)) {
+            override fun bind(
+                data: PaymentModel,
+                marketProvider: MarketProvider,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker
+            ) = Unit
+        }
+
+        class PayoutDetailsParagraph(parent: ViewGroup) :
+            PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
+            private val binding by viewBinding(PayoutDetailsParagraphBinding::bind)
+            override fun bind(
+                data: PaymentModel,
+                marketProvider: MarketProvider,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker
+            ) = with(binding) {
+                if (data !is PaymentModel.PayoutDetailsParagraph) {
+                    return invalid(data)
+                }
+
+                root.setText(
+                    when (data) {
+                        PaymentModel.PayoutDetailsParagraph.Add -> R.string.payment_screen_pay_out_footer_not_connected
+                    }
+                )
+            }
+        }
+
         class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
             private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
             override fun bind(
@@ -366,15 +403,17 @@ class PaymentAdapter(
                         PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
+                        PaymentModel.Link.AdyenAddPayout -> R.string.payment_screen_connect_pay_out_connect_payout_button
                     }
                 )
 
-                root.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0, 0, when (data) {
-                        PaymentModel.Link.RedeemDiscountCode -> R.drawable.ic_add_circle
+                root.putCompoundDrawablesRelativeWithIntrinsicBounds(
+                    end = when (data) {
+                        PaymentModel.Link.RedeemDiscountCode,
+                        PaymentModel.Link.AdyenAddPayout -> R.drawable.ic_add_circle
                         PaymentModel.Link.TrustlyChangePayin,
                         PaymentModel.Link.AdyenChangePayin -> R.drawable.ic_edit
-                    }, 0
+                    }
                 )
 
                 root.setHapticClickListener(when (data) {
@@ -391,6 +430,10 @@ class PaymentAdapter(
                                 fragmentManager,
                                 RefetchingRedeemCodeDialog.TAG
                             )
+                    }
+                    PaymentModel.Link.AdyenAddPayout -> { _ ->
+                        marketProvider.market?.connectPayout(root.context)
+                            ?.let { root.context.startActivity(it) }
                     }
                 })
             }

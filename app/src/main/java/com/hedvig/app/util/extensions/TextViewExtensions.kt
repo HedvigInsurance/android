@@ -2,6 +2,7 @@ package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import io.noties.markwon.Markwon
 
 fun TextView.setStrikethrough(strikethrough: Boolean) {
@@ -16,4 +17,18 @@ fun TextView.setMarkdownText(text: String) {
     Markwon
         .create(context)
         .setMarkdown(this, text)
+}
+
+fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
+    @DrawableRes start: Int = 0,
+    @DrawableRes top: Int = 0,
+    @DrawableRes end: Int = 0,
+    @DrawableRes bottom: Int = 0,
+) {
+    setCompoundDrawablesRelativeWithIntrinsicBounds(
+        start,
+        top,
+        end,
+        bottom
+    )
 }

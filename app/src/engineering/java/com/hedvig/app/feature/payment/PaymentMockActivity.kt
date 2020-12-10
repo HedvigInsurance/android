@@ -7,7 +7,6 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
-import com.hedvig.app.mocks.MockPaymentViewModel
 import com.hedvig.app.paymentModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
@@ -17,6 +16,7 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FREE_MONTHS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PAYOUT_NOT_CONNECTED
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PERCENTAGE_CAMPAIGN
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_REFERRAL
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
@@ -103,6 +103,13 @@ class PaymentMockActivity : MockActivity() {
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
             }
 
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Payout not connected") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_PAYOUT_NOT_CONNECTED
+                payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
             startActivity(PaymentActivity.newInstance(context))
         }
         marketSpinner { MockMarketProvider.mockedMarket = it }
