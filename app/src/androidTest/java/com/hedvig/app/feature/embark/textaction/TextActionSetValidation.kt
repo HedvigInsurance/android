@@ -67,9 +67,6 @@ class TextActionSetValidation : TestCase() {
                 hasText("Another test passage")
                 click()
             }
-            await atMost Durations.TWO_SECONDS untilAsserted {
-                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("970407-1234 email@hedvig.com was entered") } } }
-            }
         }
     }
 }
