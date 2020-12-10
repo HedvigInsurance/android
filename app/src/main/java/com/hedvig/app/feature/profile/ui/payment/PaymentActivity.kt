@@ -56,9 +56,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         PaymentModel.NextPayment(paymentData),
                         campaign(paymentData),
                         *paymentHistory(paymentData),
+                        redeemCampaign(paymentData),
                         *payinDetails(paymentData, payinStatusData),
                         *payoutDetails(paymentData),
-                        redeemCampaign(paymentData),
                     )
                 )
             }
