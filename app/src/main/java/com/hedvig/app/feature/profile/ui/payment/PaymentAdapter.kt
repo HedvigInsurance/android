@@ -29,6 +29,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -406,13 +407,13 @@ class PaymentAdapter(
                     }
                 )
 
-                root.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0, 0, when (data) {
+                root.putCompoundDrawablesRelativeWithIntrinsicBounds(
+                    end = when (data) {
                         PaymentModel.Link.RedeemDiscountCode,
                         PaymentModel.Link.AdyenAddPayout -> R.drawable.ic_add_circle
                         PaymentModel.Link.TrustlyChangePayin,
                         PaymentModel.Link.AdyenChangePayin -> R.drawable.ic_edit
-                    }, 0
+                    }
                 )
 
                 root.setHapticClickListener(when (data) {
