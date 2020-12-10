@@ -50,6 +50,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
                 (recycler.adapter as? PaymentAdapter)?.submitList(
                     listOfNotNull(
+                        PaymentModel.Header,
                         failedPayments(paymentData),
                         connectPayment(payinStatusData),
                         PaymentModel.NextPayment(paymentData),

@@ -54,14 +54,14 @@ class TrustlyConnectedTest : TestCase() {
         onScreen<PaymentScreen> {
             trustlyConnectPayin { stub() }
             recycler {
-                childAt<PaymentScreen.TrustlyPayinDetails>(1) {
+                childAt<PaymentScreen.TrustlyPayinDetails>(2) {
                     accountNumber {
                         containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
                     }
                     bank { hasText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName) }
                     pending { isGone() }
                 }
-                childAt<PaymentScreen.Link>(2) {
+                childAt<PaymentScreen.Link>(3) {
                     button {
                         hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
                         click()

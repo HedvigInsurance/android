@@ -54,11 +54,11 @@ class AdyenConnectedTest : TestCase() {
         onScreen<PaymentScreen> {
             adyenConnectPayin { stub() }
             recycler {
-                childAt<PaymentScreen.AdyenPayinDetails>(1) {
+                childAt<PaymentScreen.AdyenPayinDetails>(2) {
                     cardType { hasText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand!!) }
                     maskedCardNumber { containsText(PAYMENT_DATA_ADYEN_CONNECTED.activePaymentMethods!!.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits) }
                 }
-                childAt<PaymentScreen.Link>(2) {
+                childAt<PaymentScreen.Link>(3) {
                     button {
                         hasText(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
                         click()
