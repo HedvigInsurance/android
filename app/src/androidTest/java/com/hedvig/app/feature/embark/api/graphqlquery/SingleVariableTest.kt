@@ -13,7 +13,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.jsonObjectOf
-import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.Durations.TWO_SECONDS
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted

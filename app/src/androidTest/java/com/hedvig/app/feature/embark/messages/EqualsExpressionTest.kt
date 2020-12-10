@@ -11,7 +11,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_EQUALS_EXPRESSION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
+import org.awaitility.Durations.TWO_SECONDS
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted

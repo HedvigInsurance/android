@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.EMAIL
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
@@ -279,6 +280,38 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                             placeholder = "Second Placeholder",
                             key = "BAR",
                             mask = null
+                        )
+                    ),
+                )
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{FOO} {BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SET_SECOND_TEXT_WITH_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionSetBuilder(
+                link = STANDARD_FIRST_LINK,
+                textActions = listOf(
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "First Placeholder",
+                            key = "FOO",
+                            mask = null
+                        )
+                    ),
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "Email",
+                            key = "BAR",
+                            mask = EMAIL
                         )
                     ),
                 )

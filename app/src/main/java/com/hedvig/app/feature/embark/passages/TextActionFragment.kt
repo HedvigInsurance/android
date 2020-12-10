@@ -7,14 +7,21 @@ import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
+import com.hedvig.app.feature.embark.BIRTH_DATE
+import com.hedvig.app.feature.embark.BIRTH_DATE_REVERSE
+import com.hedvig.app.feature.embark.EMAIL
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
+import com.hedvig.app.feature.embark.PERSONAL_NUMBER
+import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
+import com.hedvig.app.feature.embark.getInputType
+import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import java.util.regex.Pattern
 
 class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     private val model: EmbarkViewModel by sharedViewModel()
@@ -30,27 +37,34 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             return
         }
 
+        if (data.mask != null) {
+            if (!(data.mask == PERSONAL_NUMBER ||
+                    data.mask == SWEDISH_POSTAL_CODE ||
+                    data.mask == EMAIL ||
+                    data.mask == BIRTH_DATE ||
+                    data.mask == BIRTH_DATE_REVERSE ||
+                    data.mask == NORWEGIAN_POSTAL_CODE)
+            ) {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                    .commit()
+            }
+        }
+
         binding.apply {
             messages.adapter = MessageAdapter().apply {
                 submitList(data.messages)
             }
 
             filledTextField.hint = data.hint
+            data.mask?.let { input.inputType = getInputType(it) }
             input.onChange { text ->
                 if (data.mask == null) {
                     textActionSubmit.isEnabled = text.isNotEmpty()
                 } else {
                     textActionSubmit.isEnabled =
                         text.isNotEmpty() && validationCheck(
-                            when (data.mask) {
-                                PERSONAL_NUMBER -> PERSONAL_NUMBER_REGEX
-                                SWEDISH_POSTAL_CODE -> SWEDISH_POSTAL_CODE_REGEX
-                                EMAIL -> EMAIL_REGEX
-                                BIRTH_DATE -> BIRTH_DATE_REGEX
-                                BIRTH_DATE_REVERSE -> BIRTH_DATE_REVERSE_REGEX
-                                NORWEGIAN_POSTAL_CODE -> NORWEGIAN_POSTAL_CODE_REGEX
-                                else -> ""
-                            }, text
+                            data.mask, text
                         )
                 }
             }
@@ -69,29 +83,12 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     }
 
     companion object {
-        private const val PERSONAL_NUMBER = "PersonalNumber"
-        private const val SWEDISH_POSTAL_CODE = "PostalCode"
-        private const val EMAIL = "Email"
-        private const val BIRTH_DATE = "BirthDate"
-        private const val BIRTH_DATE_REVERSE = "BirthDateReverse"
-        private const val NORWEGIAN_POSTAL_CODE = "NorwegianPostalCode"
-
-        private const val PERSONAL_NUMBER_REGEX = "^\\d{6}\\d{4}$"
-        private const val SWEDISH_POSTAL_CODE_REGEX = "^\\d{3}\\d{2}$"
-        private const val EMAIL_REGEX = "^.+@.+\\..+\$"
-        private const val NORWEGIAN_POSTAL_CODE_REGEX = "^\\d{4}$"
-        private const val BIRTH_DATE_REGEX = "^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
-        private const val BIRTH_DATE_REVERSE_REGEX = "^(0[1-9]|[12]\\d|3[01])-(0[1-9]|1[0-2])-[12]\\d{3}$"
-
         private const val DATA = "DATA"
         fun newInstance(data: TextActionData) = TextActionFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(DATA, data)
             }
         }
-
-        private fun validationCheck(regex: String, text: String) =
-            Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(text).find()
     }
 }
 
