@@ -39,7 +39,7 @@ class PaymentHistoryTest : TestCase() {
         onScreen<PaymentScreen> {
             paymentHistory { stub() }
             recycler {
-                childAt<PaymentScreen.Charge>(2) {
+                childAt<PaymentScreen.Charge>(3) {
                     amount {
                         hasText(
                             PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[0].amount.fragments.monetaryAmountFragment.toMonetaryAmount()
@@ -54,7 +54,7 @@ class PaymentHistoryTest : TestCase() {
                         )
                     }
                 }
-                childAt<PaymentScreen.Charge>(3) {
+                childAt<PaymentScreen.Charge>(4) {
                     amount {
                         hasText(
                             PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[1].amount.fragments.monetaryAmountFragment.toMonetaryAmount()
@@ -69,7 +69,7 @@ class PaymentHistoryTest : TestCase() {
                         )
                     }
                 }
-                childAt<PaymentScreen.PaymentHistoryLink>(4) {
+                childAt<PaymentScreen.PaymentHistoryLink>(5) {
                     click()
                 }
             }

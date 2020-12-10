@@ -37,7 +37,7 @@ class FailedPaymentsTest : TestCase() {
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.FailedPayments>(0) {
+                childAt<PaymentScreen.FailedPayments>(1) {
                     paragraph {
                         hasText(
                             R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
