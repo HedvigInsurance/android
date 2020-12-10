@@ -37,7 +37,7 @@ class FreeMonthsCampaignTest : TestCase() {
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.NextPayment>(0) {
+                childAt<PaymentScreen.NextPayment>(1) {
                     discount {
                         isVisible()
                         containsText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asFreeMonths!!.quantity!!.toString())
@@ -50,7 +50,7 @@ class FreeMonthsCampaignTest : TestCase() {
                         )
                     }
                 }
-                childAt<PaymentScreen.Campaign>(1) {
+                childAt<PaymentScreen.Campaign>(2) {
                     owner { hasText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].owner!!.displayName) }
                     lastFreeDay {
                         hasText(
