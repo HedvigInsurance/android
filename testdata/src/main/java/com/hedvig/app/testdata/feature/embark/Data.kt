@@ -16,6 +16,7 @@ import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.EMAIL
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
@@ -173,7 +174,7 @@ val STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "9001021234",
+                placeholder = "970407-1234",
                 mask = TextActionBuilder.PERSONAL_NUMBER
             ).build()
         ).build(),
@@ -192,7 +193,7 @@ val STORY_WITH_TEXT_ACTION_BIRTH_DATE = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "Test hint",
+                placeholder = "9999-99-99",
                 mask = TextActionBuilder.BIRTH_DATE
             ).build()
         ).build(),
@@ -211,7 +212,7 @@ val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "Test hint",
+                placeholder = "99-99-9999",
                 mask = TextActionBuilder.BIRTH_DATE_REVERSE
             ).build()
         ).build(),
@@ -230,7 +231,7 @@ val STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "Test hint",
+                placeholder = "9999",
                 mask = TextActionBuilder.NORWEGIAN_POSTAL_CODE
             ).build()
         ).build(),
@@ -249,7 +250,7 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "Test hint",
+                placeholder = "999 99",
                 mask = TextActionBuilder.SWEDISH_POSTAL_CODE
             ).build()
         ).build(),
@@ -294,7 +295,7 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
     )
 ).build()
 
-val STORY_WITH_TEXT_ACTION_SET_SECOND_TEXT_WITH_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
+val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
             action = TextActionSetBuilder(
@@ -302,9 +303,9 @@ val STORY_WITH_TEXT_ACTION_SET_SECOND_TEXT_WITH_EMAIL_VALIDATION = EmbarkStoryDa
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data4(
-                            placeholder = "First Placeholder",
+                            placeholder = "901124-1234",
                             key = "FOO",
-                            mask = null
+                            mask = PERSONAL_NUMBER
                         )
                     ),
                     EmbarkStoryQuery.TextAction(

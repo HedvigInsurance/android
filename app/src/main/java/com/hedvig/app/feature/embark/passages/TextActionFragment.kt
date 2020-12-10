@@ -2,6 +2,10 @@ package com.hedvig.app.feature.embark.passages
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
+import android.text.method.DigitsKeyListener
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -14,7 +18,6 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
 import com.hedvig.app.feature.embark.PERSONAL_NUMBER
 import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
-import com.hedvig.app.feature.embark.getInputType
 import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -57,7 +60,73 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             }
 
             filledTextField.hint = data.hint
-            data.mask?.let { input.inputType = getInputType(it) }
+
+            if (data.mask == EMAIL) {
+                input.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            }
+            if (data.mask == BIRTH_DATE ||
+                data.mask == BIRTH_DATE_REVERSE ||
+                data.mask == PERSONAL_NUMBER ||
+                data.mask == SWEDISH_POSTAL_CODE ||
+                data.mask == NORWEGIAN_POSTAL_CODE
+            ) {
+                input.keyListener = DigitsKeyListener.getInstance(
+                    when (data.mask) {
+                        PERSONAL_NUMBER,
+                        BIRTH_DATE,
+                        BIRTH_DATE_REVERSE -> "0123456789-"
+                        NORWEGIAN_POSTAL_CODE -> "0123456789"
+                        SWEDISH_POSTAL_CODE -> "0123456789 "
+                        else -> "0123456789- "
+                    }
+                )
+                var prevLength = 0
+                input.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    ) {
+                        prevLength = input.text.toString().length
+                    }
+
+                    override fun onTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    ) {
+                    }
+
+                    override fun afterTextChanged(editable: Editable) {
+                        val length = editable.length
+                        when (data.mask) {
+                            PERSONAL_NUMBER -> {
+                                if (prevLength < length && length == 6) {
+                                    editable.append("-")
+                                }
+                            }
+                            SWEDISH_POSTAL_CODE -> {
+                                if (prevLength < length && length == 3) {
+                                    editable.append(" ")
+                                }
+                            }
+                            BIRTH_DATE -> {
+                                if (prevLength < length && (length == 4 || length == 7)) {
+                                    editable.append("-")
+                                }
+                            }
+                            BIRTH_DATE_REVERSE -> {
+                                if (prevLength < length && (length == 2 || length == 5)) {
+                                    editable.append("-")
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+
             input.onChange { text ->
                 if (data.mask == null) {
                     textActionSubmit.isEnabled = text.isNotEmpty()

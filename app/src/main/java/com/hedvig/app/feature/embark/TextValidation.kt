@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import android.text.InputType
 import java.util.regex.Pattern
 
 const val PERSONAL_NUMBER = "PersonalNumber"
@@ -10,8 +9,8 @@ const val BIRTH_DATE = "BirthDate"
 const val BIRTH_DATE_REVERSE = "BirthDateReverse"
 const val NORWEGIAN_POSTAL_CODE = "NorwegianPostalCode"
 
-const val PERSONAL_NUMBER_REGEX = "^\\d{6}\\d{4}$"
-const val SWEDISH_POSTAL_CODE_REGEX = "^\\d{3}\\d{2}$"
+const val PERSONAL_NUMBER_REGEX = "^\\d{6}-\\d{4}\$"
+const val SWEDISH_POSTAL_CODE_REGEX = "^\\d{3} \\d{2}$"
 const val EMAIL_REGEX = "^.+@.+\\..+\$"
 const val NORWEGIAN_POSTAL_CODE_REGEX = "^\\d{4}$"
 const val BIRTH_DATE_REGEX = "^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
@@ -29,12 +28,3 @@ fun validationCheck(mask: String, text: String) = Pattern.compile(
     }, Pattern.CASE_INSENSITIVE
 ).matcher(text).find()
 
-fun getInputType(mask: String) = when (mask) {
-    PERSONAL_NUMBER,
-    SWEDISH_POSTAL_CODE,
-    BIRTH_DATE,
-    BIRTH_DATE_REVERSE,
-    NORWEGIAN_POSTAL_CODE -> InputType.TYPE_CLASS_NUMBER
-    EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-    else -> 0
-}

@@ -29,7 +29,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_EMAIL_VALID
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET_SECOND_TEXT_WITH_EMAIL_VALIDATION
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
@@ -84,8 +84,8 @@ class EmbarkMockActivity : MockActivity() {
             }
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
-        clickableItem("Text action set with second text with email validation") {
-            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_SECOND_TEXT_WITH_EMAIL_VALIDATION
+        clickableItem("Text action set first text personal number validation and second text with email validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
         clickableItem("Email text validation") {
