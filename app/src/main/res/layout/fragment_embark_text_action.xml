@@ -47,7 +47,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/filledTextField"
                 style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
-                app:errorEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
