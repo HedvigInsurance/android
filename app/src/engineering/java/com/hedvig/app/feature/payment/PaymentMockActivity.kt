@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_ADYEN_CONNECTED
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FREE_MONTHS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_MANY_ITEMS
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PAYOUT_NOT_CONNECTED
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PERCENTAGE_CAMPAIGN
@@ -109,6 +110,13 @@ class PaymentMockActivity : MockActivity() {
             MockPaymentViewModel.apply {
                 paymentData = PAYMENT_DATA_PAYOUT_NOT_CONNECTED
                 payinStatusData = PAYIN_STATUS_DATA_ACTIVE
+            }
+            startActivity(PaymentActivity.newInstance(context))
+        }
+        clickableItem("Norway + As many items as possible") {
+            MockPaymentViewModel.apply {
+                paymentData = PAYMENT_DATA_MANY_ITEMS
+                payinStatusData = PAYIN_STATUS_DATA_NEEDS_SETUP
             }
             startActivity(PaymentActivity.newInstance(context))
         }
