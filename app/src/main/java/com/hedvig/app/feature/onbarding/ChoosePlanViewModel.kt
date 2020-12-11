@@ -28,21 +28,6 @@ abstract class ChoosePlanViewModel : ViewModel() {
         _selectedQuoteType.value?.embarkStory?.metadata?.find { metadata->
             metadata.asEmbarkStoryMetaDataEntryWebUrlPath != null
         }?.asEmbarkStoryMetaDataEntryWebUrlPath?.path
-
-    fun getSelectedNoPlan() = when {
-        _selectedQuoteType.value?.embarkStory?.name?.contains(COMBO) == true -> {
-            NoPlan.BUNDLE
-        }
-        _selectedQuoteType.value?.embarkStory?.name?.contains(CONTENTS) == true -> {
-            NoPlan.CONTENT
-        }
-        _selectedQuoteType.value?.embarkStory?.name?.contains(TRAVEL) == true -> {
-            NoPlan.TRAVEL
-        }
-        else -> {
-            NoPlan.BUNDLE
-        }
-    }
 }
 
 class ChoosePlanViewModelImpl(
