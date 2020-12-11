@@ -7,8 +7,10 @@ import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.onbarding.MoreOptionsModel
 import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -27,7 +29,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
-            restart.doOnApplyWindowInsets { view, insets, initialState ->
+            logIn.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
             setSupportActionBar(toolbar)
@@ -35,8 +37,11 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 onBackPressed()
             }
 
-            recycler.adapter = MoreOptionsAdapter(viewModel)
+            logIn.setHapticClickListener {
+                startActivity(MarketingActivity.newInstance(this@MoreOptionsActivity, true))
+            }
 
+            recycler.adapter = MoreOptionsAdapter(viewModel)
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
                 if (result.isFailure) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
