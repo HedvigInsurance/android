@@ -113,3 +113,14 @@ jobs:
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
           xml_path: app/build/reports/lint-results-debug.xml
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew install ktlint
+      - name: run ktlint
+        run: |
+          ktlint --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
+      - uses: yutailang0119/action-ktlint@v1.0.0
+        with:
+          xml_path: build/ktlint-report-in-checkstyle-format.xml
