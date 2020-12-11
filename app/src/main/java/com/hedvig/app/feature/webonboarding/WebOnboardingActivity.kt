@@ -16,7 +16,6 @@ import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.onbarding.NoPlan
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.apollo.defaultLocale
@@ -34,7 +33,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val noPlan = intent.getStringExtra(NO_PLAN)?.let { NoPlan.valueOf(it) }
+        val webPath = intent.getStringExtra(WEB_PATH)
 
         binding.apply {
             openSettings.setHapticClickListener {
@@ -97,7 +96,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
             when (marketProvider.market) {
-                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member/${noPlan?.getEmbarkPath()}/start?variation=android#token=${encodedToken}")
+                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${webPath?.substring(1)}/start?variation=android#token=${encodedToken}")
                 Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
                 else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
             }
@@ -125,10 +124,10 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     companion object {
         private const val UTF_8 = "UTF-8"
-        private const val NO_PLAN = "NO_PLAN"
-        fun newNoInstance(context: Context, noPlan: NoPlan?): Intent {
+        private const val WEB_PATH = "WEB_PATH"
+        fun newNoInstance(context: Context, webPath: String?): Intent {
             val intent = Intent(context, WebOnboardingActivity::class.java)
-            intent.putExtra(NO_PLAN, noPlan?.name)
+            intent.putExtra(WEB_PATH, webPath)
             return intent
         }
 

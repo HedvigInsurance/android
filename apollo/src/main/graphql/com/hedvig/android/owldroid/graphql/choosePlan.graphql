@@ -8,6 +8,9 @@ query ChoosePlanQuery($locale: String!) {
       ... on EmbarkStoryMetadataEntryDiscount {
         discount
       }
+      ... on EmbarkStoryMetaDataEntryWebUrlPath {
+        path
+      }
     }
   }
 }

@@ -21,6 +21,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
+import d
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
@@ -52,12 +53,12 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
             continueButton.setHapticClickListener {
-               startActivity(
-                    WebOnboardingActivity.newNoInstance(
-                        this@ChoosePlanActivity,
-                        viewModel.getSelectedNoPlan()
-                    )
-                )
+                startActivity(
+                     WebOnboardingActivity.newNoInstance(
+                         this@ChoosePlanActivity,
+                         viewModel.getWebPath()
+                     )
+                 )
             }
 
             viewModel.data.observe(this@ChoosePlanActivity) { response ->

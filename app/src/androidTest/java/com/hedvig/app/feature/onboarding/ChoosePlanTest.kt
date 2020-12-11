@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.onboarding
 
-import android.content.Intent
-import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
@@ -10,7 +8,6 @@ import com.hedvig.app.feature.onboarding.screens.ChoosePlanScreen
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -19,7 +16,6 @@ class ChoosePlanTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(ChoosePlanActivity::class.java, false, false)
-
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -30,16 +26,15 @@ class ChoosePlanTest : TestCase() {
     fun chooseTravelBundle() = run {
         activityRule.launchActivity(null)
         Screen.onScreen<ChoosePlanScreen> {
-                recycler {
-                    childAt<ChoosePlanScreen.Card>(2) {
-                        radioButton {
-                            isNotChecked()
-                            click()
-                            isChecked()
-                        }
+            recycler {
+                childAt<ChoosePlanScreen.Card>(2) {
+                    radioButton {
+                        isNotChecked()
+                        click()
+                        isChecked()
                     }
                 }
-
+            }
         }
     }
 }

@@ -24,6 +24,11 @@ abstract class ChoosePlanViewModel : ViewModel() {
         _selectedQuoteType.postValue(type)
     }
 
+    fun getWebPath() =
+        _selectedQuoteType.value?.embarkStory?.metadata?.find { metadata->
+            metadata.asEmbarkStoryMetaDataEntryWebUrlPath != null
+        }?.asEmbarkStoryMetaDataEntryWebUrlPath?.path
+
     fun getSelectedNoPlan() = when {
         _selectedQuoteType.value?.embarkStory?.name?.contains(COMBO) == true -> {
             NoPlan.BUNDLE

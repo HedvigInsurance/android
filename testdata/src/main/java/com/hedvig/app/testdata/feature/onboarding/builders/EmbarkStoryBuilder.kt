@@ -11,6 +11,9 @@ class EmbarkStoryBuilder(
         ChoosePlanQuery.Metadatum(
             asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
                 discount = "25%"
+            ),
+            asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+                path = "/no-en/new-member/combo"
             )
         )
     )

@@ -70,55 +70,45 @@ class OnboardingAdapter(
 
                 binding.apply {
                     radioButton.isChecked = false
-                    container.setBackgroundResource(R.color.transparent)
+                    container.setBackgroundResource(R.color.color_card_inactive)
                     discount.remove()
                     blur.remove()
-                    when {
-                        item.embarkStory.name.contains(COMBO) -> {
-                            if (item.selected) {
-                                container.setBackgroundResource(R.drawable.card_house_background)
-                                blur.show()
-                                blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_house))
-                                radioButton.isChecked = true
+
+                    if (item.selected) {
+                        val name = item.embarkStory.name
+                        container.setBackgroundResource(
+                            when {
+                                name.contains(COMBO) -> R.drawable.gradient_summer_sky
+                                name.contains(CONTENTS) -> R.drawable.gradient_fall_sunset
+                                name.contains(TRAVEL) -> R.drawable.gradient_spring_fog
+                                else -> R.drawable.gradient_fall_sunset
                             }
-                            discount.show()
-                            discount.text =
-                                item.embarkStory.metadata.first().asEmbarkStoryMetadataEntryDiscount?.discount
-                            description.text = item.embarkStory.description
-                            name.text = item.embarkStory.title
-                            root.setHapticClickListener {
-                                animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(item.copy(selected = true))
-                            }
-                        }
-                        item.embarkStory.name.contains(CONTENTS) -> {
-                            if (item.selected) {
-                                container.setBackgroundResource(R.drawable.card_apartment_background)
-                                blur.show()
-                                blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_apartment))
-                                radioButton.isChecked = true
-                            }
-                            description.text = item.embarkStory.description
-                            name.text = item.embarkStory.title
-                            root.setHapticClickListener {
-                                animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(item.copy(selected = true))
-                            }
-                        }
-                        item.embarkStory.name.contains(TRAVEL) -> {
-                            if (item.selected) {
-                                container.setBackgroundResource(R.drawable.card_travel_background)
-                                blur.show()
-                                blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
-                                radioButton.isChecked = true
-                            }
-                            description.text = item.embarkStory.description
-                            name.text = item.embarkStory.title
-                            root.setHapticClickListener {
-                                animate(root.width.toFloat() + shimmer.width.toFloat())
-                                viewModel.setSelectedQuoteType(item.copy(selected = true))
-                            }
-                        }
+                        )
+                        blur.show()
+                        blur.setColorFilter(
+                            blur.context.compatColor(
+                                when {
+                                    name.contains(COMBO) -> R.color.blur_summer_sky
+                                    name.contains(CONTENTS) -> R.color.blur_fall_sunset
+                                    name.contains(TRAVEL) -> R.color.blur_spring_fog
+                                    else -> R.color.blur_fall_sunset
+                                }
+                            )
+                        )
+                        radioButton.isChecked = true
+                    }
+                    val discountMetadata =
+                        item.embarkStory.metadata.find { it.asEmbarkStoryMetadataEntryDiscount != null }
+                    if (discountMetadata != null) {
+                        discount.show()
+                        discount.text =
+                            discountMetadata.asEmbarkStoryMetadataEntryDiscount?.discount
+                    }
+                    name.text = item.embarkStory.title
+                    description.text = item.embarkStory.description
+                    root.setHapticClickListener {
+                        animate(root.width.toFloat() + shimmer.width.toFloat())
+                        viewModel.setSelectedQuoteType(item.copy(selected = true))
                     }
                 }
             }
