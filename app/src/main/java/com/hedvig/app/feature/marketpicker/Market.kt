@@ -38,9 +38,9 @@ enum class Market {
 
     val label: Int
         get() = when (this) {
-            SE -> R.string.sweden
-            NO -> R.string.norway
-            DK -> R.string.denmark
+            SE -> R.string.market_sweden
+            NO -> R.string.market_norway
+            DK -> R.string.market_denmark
         }
 
     fun openAuth(context: Context, fragmentManager: FragmentManager) {
