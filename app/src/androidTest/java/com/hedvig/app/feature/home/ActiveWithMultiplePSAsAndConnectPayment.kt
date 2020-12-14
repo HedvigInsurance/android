@@ -67,14 +67,22 @@ class ActiveWithMultiplePSAsAndConnectPayment : TestCase() {
             recycler {
                 childAt<HomeTabScreen.HomePSAItem>(0) {
                     psaLink { stub() }
-                    text { hasText("COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.") }
+                    text {
+                        hasText(
+                            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+                        )
+                    }
                     button {
                         click()
                     }
                     psaLink { intended() }
                 }
                 childAt<HomeTabScreen.HomePSAItem>(1) {
-                    text { hasText("COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.") }
+                    text {
+                        hasText(
+                            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+                        )
+                    }
                     button {
                         click()
                     }
