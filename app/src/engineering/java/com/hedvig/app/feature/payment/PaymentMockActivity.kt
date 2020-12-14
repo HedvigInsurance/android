@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.payment
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.home.MockMarketProvider
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel

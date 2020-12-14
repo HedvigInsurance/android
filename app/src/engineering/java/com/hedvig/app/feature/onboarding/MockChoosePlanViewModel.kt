@@ -13,6 +13,6 @@ class MockChoosePlanViewModel : ChoosePlanViewModel() {
     }
 
     companion object {
-        var mockData = CHOOSE_PLAN_DATA
+        var mockData = CHOOSE_PLAN_DATA.embarkStories
     }
 }

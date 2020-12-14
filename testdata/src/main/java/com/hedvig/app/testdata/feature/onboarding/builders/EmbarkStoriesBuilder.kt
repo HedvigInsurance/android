@@ -50,5 +50,5 @@ class EmbarkStoriesBuilder(
         ).build()
     )
 ) {
-    fun build() = list
+    fun build() = ChoosePlanQuery.Data(embarkStories = list)
 }

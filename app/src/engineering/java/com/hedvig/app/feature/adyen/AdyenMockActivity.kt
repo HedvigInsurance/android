@@ -2,12 +2,11 @@ package com.hedvig.app.feature.adyen
 
 import com.hedvig.app.MockActivity
 import com.hedvig.app.adyenModule
-import com.hedvig.app.feature.home.MockMarketProvider
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.util.extensions.makeToast
-import org.koin.android.ext.android.inject
 import org.koin.dsl.module
 
 class AdyenMockActivity : MockActivity() {

@@ -5,13 +5,13 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketProviderModule
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
@@ -125,15 +125,3 @@ class HomeMockActivity : MockActivity() {
     }
 }
 
-class MockMarketProvider : MarketProvider() {
-    override val market
-        get() = mockedMarket
-
-    override val enabledMarkets
-        get() = mockedEnabledMarkets
-
-    companion object {
-        var mockedMarket: Market? = null
-        var mockedEnabledMarkets = Market.values().toList()
-    }
-}
