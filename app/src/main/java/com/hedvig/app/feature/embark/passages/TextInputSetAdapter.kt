@@ -27,7 +27,7 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
         private val binding by viewBinding(EmbarkInputItemBinding::bind)
         fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel) {
             binding.apply {
-                model.updateHasTextAndIsValidHashMap(position, false)
+                model.updateIsValid(position, false)
                 textField.hint = item.placeholder
                 item.mask?.let { mask ->
                     input.apply {
@@ -39,18 +39,18 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
                 input.onChange { text ->
                     if (item.mask == null) {
                         if (text.isBlank()) {
-                            model.updateHasTextAndIsValidHashMap(position, false)
+                            model.updateIsValid(position, false)
                         } else {
-                            model.updateHasTextAndIsValidHashMap(position, true)
+                            model.updateIsValid(position, true)
                         }
                     } else {
                         if (text.isNotBlank() && validationCheck(
                                 item.mask, text
                             )
                         ) {
-                            model.updateHasTextAndIsValidHashMap(position, true)
+                            model.updateIsValid(position, true)
                         } else {
-                            model.updateHasTextAndIsValidHashMap(position, false)
+                            model.updateIsValid(position, false)
                         }
                     }
                 }

@@ -37,7 +37,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
                 it.submitList(textFieldData(data))
             }
             textActionSubmit.text = data.submitLabel
-            textActionSetViewModel.hasTextAndIsValid.observe(viewLifecycleOwner) { hashMap ->
+            textActionSetViewModel.isValid.observe(viewLifecycleOwner) { hashMap ->
                 if (hashMap.isNotEmpty()) {
                     textActionSubmit.isEnabled = hashMap.all { it.value }
                 }

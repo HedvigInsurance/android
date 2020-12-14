@@ -65,7 +65,7 @@ class TextActionSetValidation : TestCase() {
             }
             textActionSubmit {
                 hasText("Another test passage")
-                click()
+                isEnabled()
             }
         }
     }

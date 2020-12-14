@@ -13,7 +13,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.jsonObjectOf
-import org.awaitility.Durations.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -48,7 +48,7 @@ class SuccessTest {
 
         onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {

@@ -11,7 +11,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Durations.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -43,7 +43,7 @@ class UnaryExpressionRedirectTest {
 
         onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages {
                     firstChild<EmbarkScreen.MessageRow> {
                         text { hasText("a third message") }
