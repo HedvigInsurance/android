@@ -1,21 +1,21 @@
-package com.hedvig.app.feature.onbarding
+package com.hedvig.app.feature.onboarding
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.MoreOptionsQuery
+import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import e
 import kotlinx.coroutines.launch
 
 abstract class MoreOptionsViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<MoreOptionsQuery.Data>>()
-    val data: LiveData<Result<MoreOptionsQuery.Data>> = _data
+    protected val _data = MutableLiveData<Result<MemberIdQuery.Data>>()
+    val data: LiveData<Result<MemberIdQuery.Data>> = _data
     abstract fun load()
 }
 
 class MoreOptionsViewModelImpl(
-    private val moreOptionsRepository: MoreOptionsRepository
+    private val memberIdRepository: MemberIdRepository
 ) : MoreOptionsViewModel() {
 
     init {
@@ -25,7 +25,7 @@ class MoreOptionsViewModelImpl(
     override fun load() {
         viewModelScope.launch {
             val response = runCatching {
-                moreOptionsRepository.memberId()
+                memberIdRepository.memberId()
             }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { exception ->

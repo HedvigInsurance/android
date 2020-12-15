@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".feature.onbarding.ui.ChoosePlanActivity">
+    tools:context=".feature.onboarding.ui.ChoosePlanActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -15,6 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/onboarding_startpage.screen_title"
+        app:navigationIcon="@drawable/ic_back"
         app:titleTextColor="?colorPrimary" />
 
     <androidx.recyclerview.widget.RecyclerView

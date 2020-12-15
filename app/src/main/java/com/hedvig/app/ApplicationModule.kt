@@ -67,12 +67,12 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
-import com.hedvig.app.feature.onbarding.ChoosePlanRepository
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModelImpl
-import com.hedvig.app.feature.onbarding.MoreOptionsRepository
-import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
-import com.hedvig.app.feature.onbarding.MoreOptionsViewModelImpl
+import com.hedvig.app.feature.onboarding.ChoosePlanRepository
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -350,7 +350,7 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
-    single { MoreOptionsRepository(get()) }
+    single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
     single { ChoosePlanRepository(get(), get()) }
 }

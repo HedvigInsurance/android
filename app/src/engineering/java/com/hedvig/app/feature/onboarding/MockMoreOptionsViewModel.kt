@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.onboarding
 
-import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
-import com.hedvig.app.testdata.feature.onboarding.MORE_OPTIONS_DATA
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 
 class MockMoreOptionsViewModel : MoreOptionsViewModel() {
     init {
@@ -19,6 +19,6 @@ class MockMoreOptionsViewModel : MoreOptionsViewModel() {
 
     companion object {
         var shouldLoad = true
-        val mockData = MORE_OPTIONS_DATA
+        val mockData = MEMBER_ID_DATA
     }
 }

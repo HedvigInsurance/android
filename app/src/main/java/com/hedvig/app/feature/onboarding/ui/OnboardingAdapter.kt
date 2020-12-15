@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding.ui
+package com.hedvig.app.feature.onboarding.ui
 
 import android.animation.ValueAnimator
 import android.os.Handler
@@ -11,12 +11,12 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.PlanCardBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onbarding.OnboardingDiffUtilCallback
-import com.hedvig.app.feature.onbarding.OnboardingModel
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.COMBO
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.CONTENTS
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.TRAVEL
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.OnboardingDiffUtilCallback
+import com.hedvig.app.feature.onboarding.OnboardingModel
+import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.COMBO
+import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.CONTENTS
+import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.TRAVEL
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.inflate

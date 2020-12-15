@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding
+package com.hedvig.app.feature.onboarding
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,9 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.COMBO
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.CONTENTS
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity.Companion.TRAVEL
 import kotlinx.coroutines.launch
 
 abstract class ChoosePlanViewModel : ViewModel() {
@@ -39,7 +36,7 @@ class ChoosePlanViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            val response = runCatching { repository.getBundles() }
+            val response = runCatching { repository.bundles() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { exception ->
                     _data.postValue(Result.failure(exception))

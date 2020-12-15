@@ -29,4 +29,15 @@
         app:layout_constraintStart_toEndOf="@id/label"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="231491869921" />
+
+    <ImageView
+        android:id="@+id/settingsArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_forward" />
 </androidx.constraintlayout.widget.ConstraintLayout>

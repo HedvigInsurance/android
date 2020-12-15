@@ -34,10 +34,7 @@
             android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
-        <activity
-            android:name=".feature.onboarding.OnboardingMockActivity"
-            android:label="Onboarding Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
+        <activity android:name=".feature.onboarding.OnboardingMockActivity" />
 
         <activity
             android:name=".feature.chat.ChatMockActivity"

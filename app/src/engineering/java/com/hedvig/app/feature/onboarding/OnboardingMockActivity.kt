@@ -4,10 +4,8 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.choosePlanModule
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
-import com.hedvig.app.feature.onbarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.onbarding.ui.MoreOptionsActivity
+import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
+import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.mocks.MockMarketProvider
@@ -32,6 +30,7 @@ class OnboardingMockActivity : MockActivity() {
         }
         header("More Options")
         clickableItem("ID error") {
+            MockMarketProvider.mockedMarket = Market.NO
             MockMoreOptionsViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@OnboardingMockActivity))
         }

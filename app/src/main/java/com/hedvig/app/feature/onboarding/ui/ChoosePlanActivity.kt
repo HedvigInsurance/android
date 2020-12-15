@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding.ui
+package com.hedvig.app.feature.onboarding.ui
 
 import android.content.Context
 import android.content.Intent
@@ -12,8 +12,8 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.onbarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onbarding.OnboardingModel
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.remove
@@ -21,7 +21,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import d
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
@@ -46,19 +45,18 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
             continueButton.setHapticClickListener {
                 startActivity(
-                     WebOnboardingActivity.newNoInstance(
-                         this@ChoosePlanActivity,
-                         viewModel.getWebPath()
-                     )
-                 )
+                    WebOnboardingActivity.newNoInstance(
+                        this@ChoosePlanActivity,
+                        viewModel.getWebPath()
+                    )
+                )
             }
 
             viewModel.data.observe(this@ChoosePlanActivity) { response ->

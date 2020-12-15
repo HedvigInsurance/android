@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding
+package com.hedvig.app.feature.onboarding
 
 import android.content.Context
 import com.apollographql.apollo.coroutines.await
@@ -13,6 +13,6 @@ class ChoosePlanRepository(
 ) {
     private val locale = defaultLocale(context).toLocaleString()
 
-    suspend fun getBundles() =
+    suspend fun bundles() =
         apolloClientWrapper.apolloClient.query(ChoosePlanQuery(locale)).await()
 }

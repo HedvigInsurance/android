@@ -4,6 +4,6 @@
     <item
         android:id="@+id/moreOptions"
         android:icon="@drawable/ic_more"
-        android:title="TODO moreOptions"
+        android:title="@string/embark_onboarding_more_options.screen_title"
         app:showAsAction="ifRoom" />
 </menu>

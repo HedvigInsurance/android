@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onbarding.ui
+package com.hedvig.app.feature.onboarding.ui
 
 import android.content.Context
 import android.content.Intent
@@ -8,8 +8,8 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.onbarding.MoreOptionsModel
-import com.hedvig.app.feature.onbarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
@@ -32,7 +32,6 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
             logIn.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
-            setSupportActionBar(toolbar)
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
             }
@@ -43,24 +42,13 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
             recycler.adapter = MoreOptionsAdapter(viewModel)
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
-                if (result.isFailure) {
-                    (recycler.adapter as MoreOptionsAdapter).submitList(
-                        listOf(
-                            MoreOptionsModel.Header,
-                            MoreOptionsModel.UserId.Error,
-                            MoreOptionsModel.Version,
-                            MoreOptionsModel.Settings,
-                            MoreOptionsModel.Copyright
-                        )
-                    )
-                    return@observe
-                }
                 (recycler.adapter as MoreOptionsAdapter).submitList(
                     listOf(
                         MoreOptionsModel.Header,
-                        result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
-                        MoreOptionsModel.Version,
-                        MoreOptionsModel.Settings,
+                        result.getOrNull()?.member?.id?.let { MoreOptionsModel.Row.UserId.Success(it) }
+                            ?: MoreOptionsModel.Row.UserId.Error,
+                        MoreOptionsModel.Row.Version,
+                        MoreOptionsModel.Row.Settings,
                         MoreOptionsModel.Copyright
                     )
                 )
