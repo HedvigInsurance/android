@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
@@ -20,7 +21,7 @@ import org.junit.Test
 
 class PendingTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -37,7 +38,7 @@ class PendingTest : TestCase() {
 
     @Test
     fun shouldShowMessageWhenUserHasAllContractsInPendingState() = run {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
+        activityRule.launch(LoggedInActivity.newInstance(context()))
 
         onScreen<HomeTabScreen> {
             recycler {

@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
@@ -20,7 +21,7 @@ import org.junit.Test
 
 class UpcomingRenewalTest : TestCase() {
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -37,7 +38,7 @@ class UpcomingRenewalTest : TestCase() {
 
     @Test
     fun shouldOpenPSALinksAndConnectPayment() = run {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
+        activityRule.launch(LoggedInActivity.newInstance(context()))
         stubExternalIntents()
         Screen.onScreen<HomeTabScreen> {
             recycler {

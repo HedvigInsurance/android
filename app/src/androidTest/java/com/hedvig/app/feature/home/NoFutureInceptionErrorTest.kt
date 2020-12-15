@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
@@ -21,7 +22,7 @@ import org.junit.Test
 
 class NoFutureInceptionErrorTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     var shouldFail = true
 
@@ -47,7 +48,7 @@ class NoFutureInceptionErrorTest : TestCase() {
 
     @Test
     fun shouldShowErrorWhenUserHasNoFutureInception() = run {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
+        activityRule.launch(LoggedInActivity.newInstance(context()))
 
         onScreen<HomeTabScreen> {
             recycler {
