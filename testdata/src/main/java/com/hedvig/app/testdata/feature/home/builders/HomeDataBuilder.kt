@@ -68,6 +68,13 @@ data class HomeDataBuilder(
                         )
                     } else {
                         null
+                    },
+                    asTerminatedInFutureStatus = if (c == ContractStatus.TERMINATED_IN_FUTURE) {
+                        HomeQuery.AsTerminatedInFutureStatus(
+                            futureTermination = LocalDate.now().plusDays(10)
+                        )
+                    } else {
+                        null
                     }
                 ),
                 upcomingRenewal = if (renewalDate != null) {

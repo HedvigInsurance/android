@@ -17,6 +17,7 @@ data class ContractStatusDataBuilder(
                         ContractStatus.ACTIVE -> "ActiveStatus"
                         ContractStatus.TERMINATED_TODAY -> "TerminatedTodayStatus"
                         ContractStatus.TERMINATED -> "TerminatedStatus"
+                        ContractStatus.TERMINATED_IN_FUTURE -> "TerminatedInFuture"
                     }
                 )
             )
