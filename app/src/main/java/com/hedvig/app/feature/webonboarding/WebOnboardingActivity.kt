@@ -88,17 +88,17 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
 
             val localePath = when (defaultLocale(this@WebOnboardingActivity)) {
-                Locale.NB_NO -> "no/"
-                Locale.EN_NO -> "no-en/"
-                Locale.DA_DK -> "dk/"
-                Locale.EN_DK -> "dk-en/"
-                else -> "no/"
+                Locale.NB_NO -> "/no"
+                Locale.EN_NO -> "/no-en"
+                Locale.DA_DK -> "/dk"
+                Locale.EN_DK -> "/dk-en"
+                else -> "/no"
             }
 
             when (marketProvider.market) {
-                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${webPath?.substring(1)}/start?variation=android#token=${encodedToken}")
-                Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
-                else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${webPath}/start?variation=android#token=${encodedToken}")
+                Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
+                else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
             }
         }
     }
