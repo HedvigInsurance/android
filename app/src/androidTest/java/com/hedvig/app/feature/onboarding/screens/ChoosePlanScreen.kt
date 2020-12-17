@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.onboarding.screens
 
+import android.content.Intent
 import android.view.View
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -23,7 +25,10 @@ object ChoosePlanScreen : KScreen<ChoosePlanScreen>() {
     val continueButton = KButton { withId(R.id.continueButton) }
 
     val intent = KIntent {
-        hasExtra("WEB_PATH", "/no-en/new-member/travel")
+        IntentMatchers.hasAction(Intent.ACTION_VIEW)
+        hasExtras {
+            hasEntry("WEB_PATH", "/no-en/new-member/travel")
+        }
     }
 
     class Card(parent: Matcher<View>) : KRecyclerItem<Card>(parent) {

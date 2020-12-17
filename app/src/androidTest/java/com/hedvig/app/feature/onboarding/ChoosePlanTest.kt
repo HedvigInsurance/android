@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.onboarding
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.rule.ActivityTestRule
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.app.feature.onboarding.screens.ChoosePlanScreen
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
@@ -36,6 +35,7 @@ class ChoosePlanTest : TestCase() {
                     }
                 }
             }
+            intent { stub() }
             continueButton { click() }
             intent { intended() }
         }
