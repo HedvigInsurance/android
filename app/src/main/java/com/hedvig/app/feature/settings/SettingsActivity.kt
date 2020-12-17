@@ -22,6 +22,7 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.setMarket
@@ -42,6 +43,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
+        setTheme(R.style.Hedvig_Theme_Settings)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.preferenceContainer, PreferenceFragment())
@@ -69,7 +71,6 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         Theme
                             .from(v)
                             .apply()
-
                     }
                     true
                 }
@@ -79,8 +80,10 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
             if (market == null) {
                 startActivity(MarketingActivity.newInstance(requireContext()))
             }
-            marketPreference?.let { np ->
-                np.setOnPreferenceClickListener {
+            marketPreference?.let { mp ->
+                mp.icon = market?.flag?.let { requireContext().compatDrawable(it) }
+                mp.summary = market?.label?.let { getString(it) }
+                mp.setOnPreferenceClickListener {
                     requireContext().showAlert(
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,

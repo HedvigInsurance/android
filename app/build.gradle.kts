@@ -248,10 +248,10 @@ dependencies {
         setTransitive(false)
     }
 
-    //Tooltip
+    // Tooltip
     implementation("com.github.florent37:viewtooltip:1.2.2")
 
-    //facebook
+    // facebook
     implementation("com.facebook.android:facebook-android-sdk:5.15.3")
 
     // ZXing
@@ -281,7 +281,9 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.3.0")
     androidTestImplementation("com.agoda.kakao:kakao:2.3.2")
-    androidTestImplementation("com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}")
+    androidTestImplementation(
+        "com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}"
+    )
     androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("org.koin:koin-test:$koin_version")
     androidTestImplementation("org.awaitility:awaitility:4.0.2")
