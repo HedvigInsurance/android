@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -43,12 +43,12 @@ class TextActionTest {
 
         onScreen<EmbarkScreen> {
             messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            textActionInput {
+            textActionSingleInput {
                 isVisible()
                 hasHint("Test hint")
             }
             textActionSubmit { isDisabled() }
-            textActionInput { typeText("Test entry") }
+            textActionSingleInput { typeText("Test entry") }
             textActionSubmit {
                 hasText("Another test passage")
                 click()

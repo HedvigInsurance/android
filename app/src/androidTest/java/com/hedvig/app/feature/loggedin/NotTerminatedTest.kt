@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -12,12 +10,11 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class NotTerminatedTest {
+class NotTerminatedTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
@@ -34,7 +31,7 @@ class NotTerminatedTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() {
+    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
         activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         onScreen<LoggedInScreen> {

@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.insurance.tab
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -16,12 +15,12 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasPluralText
+import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class TerminatedAndActiveContractsTest {
+class TerminatedAndActiveContractsTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
@@ -42,7 +41,7 @@ class TerminatedAndActiveContractsTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() {
+    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
             initialTab = LoggedInTabs.INSURANCE
@@ -50,6 +49,7 @@ class TerminatedAndActiveContractsTest {
         activityRule.launchActivity(intent)
 
         onScreen<InsuranceScreen> {
+            terminatedContractsScreen { stub() }
             insuranceRecycler {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     firstStatusPill { isGone() }

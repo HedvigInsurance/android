@@ -31,17 +31,17 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
         binding.apply {
             messages.adapter = MessageAdapter().apply {
-                items = data.messages
+                submitList(data.messages)
             }
 
-            textActionInput.hint = data.hint
-            textActionInput.onChange { text ->
+            filledTextField.hint = data.hint
+            input.onChange { text ->
                 textActionSubmit.isEnabled = text.isNotEmpty()
             }
 
             textActionSubmit.text = data.submitLabel
             textActionSubmit.setHapticClickListener {
-                val inputText = textActionInput.text.toString()
+                val inputText = input.text.toString()
                 model.putInStore("${data.passageName}Result", inputText)
                 model.putInStore(data.key, inputText)
                 val responseText = model.preProcessResponse(data.passageName) ?: inputText

@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.referrals.deeplinks
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.screen.Screen
@@ -13,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.home.seconds
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
@@ -22,18 +20,18 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
-import org.awaitility.Duration
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ForeverDeepLinkTest {
+@Ignore("Causes problems with Espresso")
+class ForeverDeepLinkTest : TestCase() {
 
     private var previousLoginStatus = false
 
@@ -61,7 +59,7 @@ class ForeverDeepLinkTest {
     }
 
     @Test
-    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() {
+    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() = run {
         activityRule.launchActivity(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
@@ -71,7 +69,7 @@ class ForeverDeepLinkTest {
         )
 
         onScreen<SplashScreen> {
-            await atMost Duration.FIVE_SECONDS untilAsserted {
+            await atMost 5.seconds untilAsserted {
                 animation { doesNotExist() }
             }
         }

@@ -22,6 +22,7 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
+        <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -271,15 +272,13 @@
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
-            android:name=".feature.embark.EmbarkActivity"
+            android:name=".feature.embark.ui.EmbarkActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

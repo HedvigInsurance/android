@@ -28,7 +28,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
         binding.apply {
             messages.adapter = MessageAdapter().apply {
-                items = data.messages
+                submitList(data.messages)
             }
             actions.adapter = SelectActionAdapter { selectAction ->
                 selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
@@ -40,8 +40,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                     model.navigateToPassage(selectAction.link)
                 }
             }.apply {
-                items = data.actions
+                submitList(data.actions)
             }
+            actions.addItemDecoration(SelectActionDecoration())
         }
     }
 

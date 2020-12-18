@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
@@ -68,9 +67,7 @@ class InsuranceAdapter(
         }
 
         class UpsellViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.dashboard_upsell, parent, false)
+            parent.inflate(R.layout.dashboard_upsell)
         ) {
             private val binding by viewBinding(DashboardUpsellBinding::bind)
 
@@ -102,9 +99,7 @@ class InsuranceAdapter(
         }
 
         class ContractViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.insurance_contract_card, parent, false)
+            parent.inflate(R.layout.insurance_contract_card)
         ) {
             private val binding by viewBinding(InsuranceContractCardBinding::bind)
 

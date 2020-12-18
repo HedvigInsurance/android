@@ -13,6 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/SETTINGS_TITLE"
+        app:titleTextColor="?colorPrimary"
         tools:height="56dp" />
 
     <FrameLayout

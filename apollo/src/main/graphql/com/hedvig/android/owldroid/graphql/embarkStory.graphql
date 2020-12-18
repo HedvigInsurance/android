@@ -56,6 +56,19 @@ query EmbarkStory($name: String!) {
             placeholder
           }
         }
+        ... on EmbarkTextActionSet {
+          data {
+            link{
+              ...EmbarkLinkFragment
+            }
+            textActions {
+              data {
+                key
+                placeholder
+              }
+            }
+          }
+        }
       }
       api {
         ...ApiFragment

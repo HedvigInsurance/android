@@ -24,10 +24,14 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
-import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.embark.MoreOptionsRepository
+import com.hedvig.app.feature.embark.MoreOptionsViewModel
+import com.hedvig.app.feature.embark.MoreOptionsViewModelImpl
+import com.hedvig.app.feature.embark.passages.TextActionSetViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -74,6 +78,7 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
@@ -288,6 +293,14 @@ val embarkModule = module {
     viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get()) }
 }
 
+val moreOptionsModule = module {
+    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+}
+
+val textActionSetModule = module {
+    viewModel { TextActionSetViewModel() }
+}
+
 val referralsModule = module {
     viewModel<ReferralsViewModel> {
         ReferralsViewModelImpl(
@@ -343,6 +356,8 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { PaymentRepository(get()) }
+    single { MoreOptionsRepository(get()) }
 }
 
 val trackerModule = module {

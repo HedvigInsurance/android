@@ -144,4 +144,7 @@
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
+    <dimen name="embark_select_action_min_height">80dp</dimen>
+    <dimen name="more_options_list_item_height">48dp</dimen>
+
 </resources>
