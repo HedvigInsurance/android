@@ -7,6 +7,7 @@
     android:layout_height="@dimen/plan_card_height"
     android:layout_marginTop="@dimen/base_margin"
     android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard"
+    app:cardElevation="0dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +19,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorSurface">
+        android:background="?android:colorBackground">
 
         <ImageView
             android:id="@+id/blur"
@@ -92,7 +93,7 @@
 
         <ImageView
             android:id="@+id/shimmer"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:contentDescription="@null"
             app:layout_constraintBottom_toBottomOf="parent"

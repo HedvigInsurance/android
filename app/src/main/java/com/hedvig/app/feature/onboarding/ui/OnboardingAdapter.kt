@@ -17,6 +17,7 @@ import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.COMBO
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.CONTENTS
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.TRAVEL
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.inflate
@@ -70,7 +71,7 @@ class OnboardingAdapter(
 
                 binding.apply {
                     radioButton.isChecked = false
-                    container.setBackgroundResource(R.color.color_card_inactive)
+                    container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
                     discount.remove()
                     blur.remove()
 
@@ -118,7 +119,7 @@ class OnboardingAdapter(
                     val shimmerStartPosition = shimmer.x
                     Handler(Looper.getMainLooper()).postDelayed({
                         ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
-                            duration = 500
+                            duration = 1000
 
                             addUpdateListener { animation ->
                                 shimmer.translationX = animation.animatedValue as Float
