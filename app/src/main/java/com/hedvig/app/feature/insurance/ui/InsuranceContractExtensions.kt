@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
@@ -87,7 +88,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     }
                 }
             } ?: run {
-                container.setBackgroundResource(R.color.color_card_inactive)
+                container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
                 blur.remove()
             }
         }
