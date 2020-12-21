@@ -122,6 +122,88 @@ val STANDARD_FOURTH_PASSAGE_BUILDER = PassageBuilder(
     ).build()
 )
 
+val STORY_WITH_SINGLE_TOOLTIP = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            tooltip = listOf(
+                EmbarkStoryQuery.Tooltip(
+                    title = "Number of co-insured",
+                    description = "E.g. partner, children or roomies that should be covered. Co-insured must live together with you to be covered by your insurance"
+                )
+            )
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
+
+val STORY_WITH_FOUR_TOOLTIP = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            tooltip = listOf(
+                EmbarkStoryQuery.Tooltip(
+                    title = "Apartment",
+                    description = "For those of you who rent or own an apartment"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "House",
+                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Student housing",
+                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Renting a room",
+                    description = "For those of you who rent one or several rooms in an apartment or house"
+                )
+            )
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
+
+val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            tooltip = listOf(
+                EmbarkStoryQuery.Tooltip(
+                    title = "Apartment",
+                    description = "For those of you who rent or own an apartment"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "House",
+                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Student housing",
+                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Renting a room",
+                    description = "For those of you who rent one or several rooms in an apartment or house"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Apartment",
+                    description = "For those of you who rent or own an apartment"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "House",
+                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Student housing",
+                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Renting a room",
+                    description = "For those of you who rent one or several rooms in an apartment or house"
+                ),
+            )
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()
+
 val STANDARD_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
@@ -878,21 +960,6 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
-).build()
-
-val STORY_WITH_TOOLTIP = EmbarkStoryDataBuilder(
-    passages = listOf(
-        STANDARD_FIRST_PASSAGE_BUILDER
-            .copy(
-                tooltip = listOf(
-                    EmbarkStoryQuery.Tooltip(
-                        title = "Tooltip Title",
-                        description = "Tooltip Description"
-                    )
-                )
-            )
             .build()
     )
 ).build()

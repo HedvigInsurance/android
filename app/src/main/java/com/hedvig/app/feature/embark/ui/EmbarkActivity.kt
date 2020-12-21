@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import com.hedvig.app.BaseActivity
@@ -46,6 +47,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             supportActionBar?.title = storyName
 
             model.data.observe(this@EmbarkActivity) { passage ->
+                invalidateOptionsMenu()
                 loadingSpinner.loadingSpinner.remove()
                 actionBar?.title = passage.name
                 passage.action?.asEmbarkSelectAction?.let { options ->
@@ -106,9 +108,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.embark_menu, menu)
-        return true
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (model.data.value?.tooltips?.isNotEmpty() == true) {
+            menuInflater.inflate(R.menu.embark_tooltip_menu, menu)
+        } else {
+            menuInflater.inflate(R.menu.embark_menu, menu)
+        }
+        menu.getItem(0).actionView
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -120,7 +127,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             startActivity(MoreOptionsActivity.newInstance(this))
             true
         }
-
+        R.id.tooltip -> {
+            model.data.value?.tooltips?.let {
+                TooltipBottomSheet.newInstance(it, windowManager).show(
+                    supportFragmentManager, TooltipBottomSheet.TAG
+                )
+            }
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
