@@ -6,7 +6,6 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
@@ -76,28 +75,26 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    topContainer.measure(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT
-                    )
-                    val recyclerHeight = recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + 70.dp
-                    val shouldPeekAtRecyclerHeight = recyclerHeight < windowHeight
+                    val sheetContentHeight =
+                        recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(R.dimen.peril_bottom_sheet_close_icon_size)
+                            .toInt().dp
+                    val shouldPeekAtContentHeight = sheetContentHeight < windowHeight
                     val defaultPeekHeight = 295.dp
-                    if (shouldPeekAtRecyclerHeight) {
-                        behaviour.setPeekHeight(recyclerHeight, true)
+                    if (shouldPeekAtContentHeight) {
+                        behaviour.setPeekHeight(windowHeight, true)
                         chevronContainer.remove()
                     } else {
                         behaviour.setPeekHeight(defaultPeekHeight, true)
                         chevronContainer.show()
                     }
-                    chevronContainer.measure(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT
-                    )
-                    val chevronContainerHeight = chevronContainer.measuredHeight
-                    val startTranslation = (defaultPeekHeight - chevronContainerHeight).toFloat()
-                    chevronContainer.translationY = startTranslation
-                    if (!shouldPeekAtRecyclerHeight) {
+                    if (!shouldPeekAtContentHeight) {
+                        chevronContainer.measure(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        val chevronContainerHeight = chevronContainer.measuredHeight
+                        val startTranslation = (defaultPeekHeight - chevronContainerHeight).toFloat()
+                        chevronContainer.translationY = startTranslation
                         behaviour.addBottomSheetCallback(
                             object : BottomSheetBehavior.BottomSheetCallback() {
 
@@ -151,6 +148,14 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                 this@TooltipBottomSheet.dismiss()
             }
         }
+    }
+
+    private fun getNavBarHeight(): Int {
+        val resources = requireContext().resources
+        val resourceId: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else 0
     }
 
     companion object {

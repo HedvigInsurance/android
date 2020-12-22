@@ -198,6 +198,22 @@ val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
                     title = "Renting a room",
                     description = "For those of you who rent one or several rooms in an apartment or house"
                 ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Apartment",
+                    description = "For those of you who rent or own an apartment"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "House",
+                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Student housing",
+                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                ),
+                EmbarkStoryQuery.Tooltip(
+                    title = "Renting a room",
+                    description = "For those of you who rent one or several rooms in an apartment or house"
+                ),
             )
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.build()
