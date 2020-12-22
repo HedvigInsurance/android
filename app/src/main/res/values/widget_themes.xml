@@ -25,7 +25,9 @@
     </style>
 
     <style name="Hedvig.Theme.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox</item>
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
+        </item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
@@ -94,5 +96,21 @@
 
     <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
         <item name="android:colorBackground">?colorSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.Embark.Chat.Hedvig" parent="">
+        <item name="android:background">@drawable/embark_chat_bubble_hedvig_background</item>
+        <item name="android:paddingStart">@dimen/base_margin_double</item>
+        <item name="android:paddingEnd">@dimen/base_margin_double</item>
+        <item name="android:paddingTop">@dimen/base_margin_and_a_half</item>
+        <item name="android:paddingBottom">@dimen/base_margin_and_a_half</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.Embark.Chat.Self" parent="">
+        <item name="android:background">@drawable/embark_chat_bubble_self_background</item>
+        <item name="android:paddingStart">@dimen/base_margin_double</item>
+        <item name="android:paddingEnd">@dimen/base_margin_double</item>
+        <item name="android:paddingTop">@dimen/base_margin_and_a_half</item>
+        <item name="android:paddingBottom">@dimen/base_margin_and_a_half</item>
     </style>
 </resources>
