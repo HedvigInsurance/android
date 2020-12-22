@@ -46,6 +46,8 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_sextuple"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/base_margin_quintuple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/tooltip_with_title" />
 
