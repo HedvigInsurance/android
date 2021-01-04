@@ -11,6 +11,7 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
@@ -30,7 +31,7 @@ open class HedvigApplication : Application() {
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     override fun attachBaseContext(base: Context?) {
-        Language.DefaultLocale.initialize()
+        base?.getMarket()?.let { Language.DefaultLocale.initialize(it) }
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
 

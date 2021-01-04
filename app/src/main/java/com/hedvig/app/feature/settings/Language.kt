@@ -94,6 +94,13 @@ enum class Language {
         EN_DK -> SETTING_EN_DK
     }
 
+    fun getLanguageAndCountry() =
+        if (this != SYSTEM_DEFAULT) {
+            LanguageAndCountry(this.toString().substringBefore("-"), this.toString().substringAfter("-"))
+        } else {
+            null
+        }
+
     companion object {
         const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
@@ -139,16 +146,45 @@ enum class Language {
     object DefaultLocale {
         private var locale: LocaleWrapper? = null
 
-        internal fun get(): LocaleWrapper {
-            return locale ?: throw RuntimeException("DefaultLocale has not been initialized")
-        }
+        internal fun get() = locale ?: throw RuntimeException("DefaultLocale has not been initialized")
 
-        fun initialize() {
+        fun initialize(market: Market) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                this.locale = LocaleWrapper.MultipleLocales(LocaleList.getDefault())
-                return
+                val list = LocaleWrapper.MultipleLocales(LocaleList.getDefault()).locales
+                var i = 0
+                while (i < list.size()) {
+                    if (getAvailableLanguages(market).map { it.name }.contains(list[i].toString().toUpperCase())) {
+                        locale = LocaleWrapper.MultipleLocales(LocaleList(list[i]))
+                        return
+                    }
+                    i++
+                }
+                val countryAndLanguage = getAvailableLanguages(market).first().getLanguageAndCountry()
+                if (countryAndLanguage != null) {
+                    locale = LocaleWrapper.MultipleLocales(
+                        LocaleList(
+                            Locale(
+                                countryAndLanguage.language,
+                                countryAndLanguage.country
+                            )
+                        )
+                    )
+                }
             } else {
-                this.locale = LocaleWrapper.SingleLocale(Locale.getDefault())
+                val wrapper = LocaleWrapper.SingleLocale(Locale.getDefault())
+                if (getAvailableLanguages(market).map { it.name }.contains(wrapper.locale)) {
+                    locale = wrapper
+                    return
+                }
+                val countryAndLanguage = getAvailableLanguages(market).first().getLanguageAndCountry()
+                if (countryAndLanguage != null) {
+                    locale = LocaleWrapper.SingleLocale(
+                        Locale(
+                            countryAndLanguage.language,
+                            countryAndLanguage.country
+                        )
+                    )
+                }
             }
         }
     }
@@ -157,4 +193,6 @@ enum class Language {
         data class SingleLocale(val locale: Locale) : LocaleWrapper()
         data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
     }
+
+    data class LanguageAndCountry(val language: String, val country: String)
 }
