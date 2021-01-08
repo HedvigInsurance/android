@@ -138,19 +138,21 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
     private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String) =
         when (marketProvider.market) {
-            Market.SE -> {
-                when (data.bankAccount?.directDebitStatus) {
-                    DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
-                    DirectDebitStatus.NEEDS_SETUP,
-                    DirectDebitStatus.PENDING,
-                    DirectDebitStatus.UNKNOWN__,
-                    null,
-                    -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
-                }
+            Market.SE -> when (data.bankAccount?.directDebitStatus) {
+                DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
+                DirectDebitStatus.NEEDS_SETUP,
+                DirectDebitStatus.PENDING,
+                DirectDebitStatus.UNKNOWN__,
+                null,
+                -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
             }
-            Market.NO -> TODO()
-            Market.DK -> TODO()
-            null -> TODO()
+            Market.DK,
+            Market.NO -> if (data.activePaymentMethods == null) {
+                getString(R.string.Card_Not_Connected, monetaryMonthlyNet)
+            } else {
+                getString(R.string.Card_Connected, monetaryMonthlyNet)
+            }
+            null -> ""
         }
 
     companion object {
