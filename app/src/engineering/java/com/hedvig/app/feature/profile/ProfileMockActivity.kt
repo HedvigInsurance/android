@@ -7,6 +7,7 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.profileModule
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
+import com.hedvig.app.testdata.feature.profile.PROFILE_DATA_BANK_ACCOUNT_ACTIVE
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -18,14 +19,22 @@ class ProfileMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Tab")
-        clickableItem("Success") {
+        clickableItem("Bank account not connected") {
             MockProfileViewModel.profileData = PROFILE_DATA
-            startActivity(
-                LoggedInActivity.newInstance(
-                    this@ProfileMockActivity,
-                    initialTab = LoggedInTabs.PROFILE
-                )
-            )
+            startLoggedInActivity()
         }
+        clickableItem("Bank account connected") {
+            MockProfileViewModel.profileData = PROFILE_DATA_BANK_ACCOUNT_ACTIVE
+            startLoggedInActivity()
+        }
+    }
+
+    private fun startLoggedInActivity() {
+        startActivity(
+            LoggedInActivity.newInstance(
+                this@ProfileMockActivity,
+                initialTab = LoggedInTabs.PROFILE
+            )
+        )
     }
 }

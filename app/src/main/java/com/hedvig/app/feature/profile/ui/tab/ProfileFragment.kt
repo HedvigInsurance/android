@@ -140,9 +140,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         when (marketProvider.market) {
             Market.SE -> {
                 when (data.bankAccount?.directDebitStatus) {
-                    DirectDebitStatus.ACTIVE -> {
-                        getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
-                    }
+                    DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
                     DirectDebitStatus.NEEDS_SETUP,
                     DirectDebitStatus.PENDING,
                     DirectDebitStatus.UNKNOWN__,

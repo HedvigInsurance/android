@@ -13,6 +13,7 @@ data class ProfileDataBuilder(
     private val lastName: String? = "Testerson",
     private val email: String? = "test@example.com",
     private val phoneNumber: String? = "07012345678",
+    private val directDebitStatus: DirectDebitStatus = DirectDebitStatus.NEEDS_SETUP,
     private val cost: CostFragment = CostBuilder().build(),
 ) {
     fun build() = ProfileQuery.Data(
@@ -39,7 +40,7 @@ data class ProfileDataBuilder(
             )
         ),
         cashbackOptions = emptyList(),
-        bankAccount = ProfileQuery.BankAccount(directDebitStatus = DirectDebitStatus.NEEDS_SETUP),
+        bankAccount = ProfileQuery.BankAccount(directDebitStatus = directDebitStatus),
         activePaymentMethods = null,
     )
 }
