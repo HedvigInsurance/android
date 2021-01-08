@@ -25,7 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SuccessTest {
+class NetworkErrorTest {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
@@ -33,7 +33,7 @@ class SuccessTest {
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
         HELLO_MUTATION to apolloResponse {
-            success(jsonObjectOf("hello" to "world"))
+            internalServerError()
         }
     )
 
@@ -41,7 +41,7 @@ class SuccessTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRedirectAndSaveResultsWhenLoadingPassageWithGraphQLMutationApiThatIsSuccessful() {
+    fun shouldRedirectWhenLoadingPassageWithGraphQLMutationApiThatIsError() {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 context(),
@@ -55,7 +55,7 @@ class SuccessTest {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("api result: world") }
+                        text { hasText("a fourth message") }
                     }
                 }
             }
