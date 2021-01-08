@@ -1,22 +1,26 @@
 package com.hedvig.app.feature.profile.ui.charity
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
-import com.hedvig.app.ui.fragment.RoundedBottomSheetDialogFragment
+import com.hedvig.app.databinding.BottomSheetCharityExplanationBinding
+import com.hedvig.app.util.extensions.setMarkdownText
+import com.hedvig.app.util.extensions.viewBinding
 
-class CharityExplanationBottomSheet : RoundedBottomSheetDialogFragment() {
+class CharityExplanationBottomSheet : BottomSheetDialogFragment() {
+    private val binding by viewBinding(BottomSheetCharityExplanationBinding::bind)
 
-    override fun getTheme() = R.style.NoTitleBottomSheetDialogTheme
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.bottom_sheet_charity_explanation, container, false)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.bottom_sheet_charity_explanation, null)
-        dialog.setContentView(view)
-
-        return dialog
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.body.setMarkdownText(getString(R.string.PROFILE_MY_CHARITY_INFO_BODY))
     }
 
     companion object {

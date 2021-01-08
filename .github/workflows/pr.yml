@@ -1,0 +1,128 @@
+name: PR
+
+on: pull_request
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create Lokalise secret
+        run: |
+          cat <<EOT > lokalise.properties
+          id=${LOKALISE_ID}
+          token=${LOKALISE_TOKEN}
+          EOT
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Create Adyen secret
+        run: |
+          cat <<EOT > app/src/debug/res/values/adyen.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
+              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+          </resources>
+          EOT
+        env:
+          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
+          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+      - name: Create Mixpanel secret
+        run: |
+          cat <<EOT > app/src/debug/res/values/mixpanel.xml
+          <?xml version="1.0" encoding="utf-8" ?>
+          <resources>
+              <string name="MIXPANEL_PROJECT_TOKEN" translatable="false">${MIXPANEL_PROJECT_TOKEN}</string>
+          </resources>
+          EOT
+        env:
+          MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download Apollo Schema
+        run: ./gradlew apollo:downloadApolloSchema
+      - name: Download Translations
+        run: ./gradlew app:downloadStrings
+      - name: Generate License-report
+        run: ./gradlew licenseReleaseReport
+      - name: Instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          script: ./gradlew connectedDebugAndroidTest
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create Lokalise secret
+        run: |
+          cat <<EOT > lokalise.properties
+          id=${LOKALISE_ID}
+          token=${LOKALISE_TOKEN}
+          EOT
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Create Adyen secret
+        run: |
+          cat <<EOT > app/src/debug/res/values/adyen.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
+              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+          </resources>
+          EOT
+        env:
+          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
+          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+      - name: Create Mixpanel secret
+        run: |
+          cat <<EOT > app/src/debug/res/values/mixpanel.xml
+          <?xml version="1.0" encoding="utf-8" ?>
+          <resources>
+              <string name="MIXPANEL_PROJECT_TOKEN" translatable="false">${MIXPANEL_PROJECT_TOKEN}</string>
+          </resources>
+          EOT
+        env:
+          MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download Apollo Schema
+        run: ./gradlew apollo:downloadApolloSchema
+      - name: Download Translations
+        run: ./gradlew app:downloadStrings
+      - name: Generate License-report
+        run: ./gradlew licenseReleaseReport
+      - run: ./gradlew lintDebug
+      - uses: yutailang0119/action-android-lint@v1.0.2
+        with:
+          xml_path: app/build/reports/lint-results-debug.xml
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Homebrew/actions/setup-homebrew@master
+      - run: brew install ktlint
+      - name: run ktlint
+        continue-on-error: true
+        run: |
+          ktlint --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
+      - uses: yutailang0119/action-ktlint@v1.0.0
+        with:
+          xml_path: build/ktlint-report-in-checkstyle-format.xml

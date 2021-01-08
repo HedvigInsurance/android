@@ -2,7 +2,7 @@ package com.hedvig.app.feature.referrals.data
 
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -20,18 +20,19 @@ class ReferralsRepository(
         .watcher()
         .toFlow()
 
-    fun reloadReferralsAsync() = apolloClientWrapper
+    suspend fun reloadReferrals() = apolloClientWrapper
         .apolloClient
         .query(referralsQuery)
+        .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .toDeferred()
+        .build()
+        .await()
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {
         val response = apolloClientWrapper
             .apolloClient
             .mutate(UpdateReferralCampaignCodeMutation(newCode))
-            .toDeferred()
             .await()
 
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->

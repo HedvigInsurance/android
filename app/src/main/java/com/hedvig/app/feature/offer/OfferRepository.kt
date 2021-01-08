@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer
 
 import android.content.Context
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
@@ -67,10 +67,10 @@ class OfferRepository(
             .execute()
     }
 
-    fun removeDiscountAsync() = apolloClientWrapper
+    suspend fun removeDiscount() = apolloClientWrapper
         .apolloClient
         .mutate(RemoveDiscountCodeMutation())
-        .toDeferred()
+        .await()
 
     fun removeDiscountFromCache() {
         val cachedData = apolloClientWrapper
@@ -125,11 +125,11 @@ class OfferRepository(
             .execute()
     }
 
-    fun triggerOpenChatFromOfferAsync() =
-        apolloClientWrapper.apolloClient.mutate(OfferClosedMutation()).toDeferred()
+    suspend fun triggerOpenChatFromOffer() =
+        apolloClientWrapper.apolloClient.mutate(OfferClosedMutation()).await()
 
-    fun startSignAsync() =
-        apolloClientWrapper.apolloClient.mutate(SignOfferMutation()).toDeferred()
+    suspend fun startSign() =
+        apolloClientWrapper.apolloClient.mutate(SignOfferMutation()).await()
 
     fun subscribeSignStatus() =
         apolloClientWrapper
@@ -137,18 +137,20 @@ class OfferRepository(
             .subscribe(SignStatusSubscription())
             .toFlow()
 
-    fun fetchSignStatusAsync() =
+    suspend fun fetchSignStatus() =
         apolloClientWrapper.apolloClient.query(SignStatusQuery())
+            .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .toDeferred()
+            .build()
+            .await()
 
-    fun chooseStartDateAsync(id: String, date: LocalDate) =
+    suspend fun chooseStartDate(id: String, date: LocalDate) =
         apolloClientWrapper.apolloClient.mutate(
             ChooseStartDateMutation(
                 id,
                 date
             )
-        ).toDeferred()
+        ).await()
 
     fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
         val cachedData = apolloClientWrapper
@@ -184,11 +186,11 @@ class OfferRepository(
         }
     }
 
-    fun removeStartDateAsync(id: String) =
+    suspend fun removeStartDate(id: String) =
         apolloClientWrapper
             .apolloClient
             .mutate(RemoveStartDateMutation(id))
-            .toDeferred()
+            .await()
 
     fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
         val cachedData = apolloClientWrapper

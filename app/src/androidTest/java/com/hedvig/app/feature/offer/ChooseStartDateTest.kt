@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
@@ -12,13 +11,12 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.setDate
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.LocalDate
 
-@RunWith(AndroidJUnit4::class)
-class ChooseStartDateTest {
+class ChooseStartDateTest : TestCase() {
 
     private val tomorrow = LocalDate.now().plusDays(1)
 
@@ -41,7 +39,7 @@ class ChooseStartDateTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldUpdateStartDateWhenChoosingStartDate() {
+    fun shouldUpdateStartDateWhenChoosingStartDate() = run {
         activityRule.launchActivity(null)
 
         val tomorrow = LocalDate.now().plusDays(1)

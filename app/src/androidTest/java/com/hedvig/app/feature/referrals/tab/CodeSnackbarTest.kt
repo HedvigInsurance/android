@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.referrals.tab
 
 import android.content.ClipboardManager
-import android.content.Context
 import androidx.core.content.getSystemService
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -18,13 +15,13 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class CodeSnackbarTest {
+class CodeSnackbarTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
@@ -45,16 +42,16 @@ class CodeSnackbarTest {
     @Before
     fun setup() {
         runCatching {
-            ApplicationProvider.getApplicationContext<Context>()
+            context()
                 .getSystemService<ClipboardManager>()
                 ?.clearPrimaryClip()
         }
     }
 
     @Test
-    fun shouldShowSnackbarWhenClickingCode() {
+    fun shouldShowSnackbarWhenClickingCode() = run {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -79,7 +76,7 @@ class CodeSnackbarTest {
         }
 
         activityRule.runOnUiThread {
-            val clipboardContent = ApplicationProvider.getApplicationContext<Context>()
+            val clipboardContent = context()
                 .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
             assertThat(clipboardContent).isEqualTo("TEST123")
         }

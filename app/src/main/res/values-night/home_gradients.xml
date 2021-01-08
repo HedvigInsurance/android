@@ -7,8 +7,8 @@
     </array>
     <array name="insurance_gradient">
         <item type="color">@color/hedvig_black</item>
-        <item type="color">#0B1619</item>
-        <item type="color">#192E33</item>
+        <item type="color">@color/hedvig_black</item>
+        <item type="color">@color/hedvig_black</item>
     </array>
     <array name="key_gear_gradient">
         <item type="color">@color/hedvig_black</item>

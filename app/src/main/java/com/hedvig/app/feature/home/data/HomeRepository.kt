@@ -2,7 +2,7 @@ package com.hedvig.app.feature.home.data
 
 import android.content.Context
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.HomeQuery
@@ -23,10 +23,12 @@ class HomeRepository(
         .watcher()
         .toFlow()
 
-    fun reloadHomeAsync() = apolloClientWrapper
+    suspend fun reloadHome() = apolloClientWrapper
         .apolloClient
         .query(homeQuery)
+        .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .toDeferred()
+        .build()
+        .await()
 }

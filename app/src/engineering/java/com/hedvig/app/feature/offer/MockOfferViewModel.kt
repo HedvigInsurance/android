@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -11,6 +12,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.ApartmentType
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 
@@ -21,7 +23,7 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        Handler().postDelayed({
+        Handler(getMainLooper()).postDelayed({
             data.postValue(mockData)
         }, 500)
     }
@@ -127,7 +129,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = listOf(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"
@@ -211,7 +213,7 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     ),
-                    perils = listOf(),
+                    perils = PerilBuilder().offerQueryBuild(5),
                     termsAndConditions = OfferQuery.TermsAndConditions(
                         displayName = "TermsAndConditions",
                         url = "https://www.example.com/"

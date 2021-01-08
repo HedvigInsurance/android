@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.referrals.deeplinks
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.screen.Screen
@@ -19,20 +16,22 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
-import org.awaitility.Duration
+import com.hedvig.app.util.seconds
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ForeverDeepLinkTest {
+@Ignore("Causes problems with Espresso")
+class ForeverDeepLinkTest : TestCase() {
 
     private var previousLoginStatus = false
 
@@ -54,28 +53,23 @@ class ForeverDeepLinkTest {
 
     @Before
     fun setup() {
-        previousLoginStatus = ApplicationProvider.getApplicationContext<Context>().isLoggedIn()
+        previousLoginStatus = context().isLoggedIn()
 
-        ApplicationProvider
-            .getApplicationContext<Context>()
-            .setIsLoggedIn(true)
+        context().setIsLoggedIn(true)
     }
 
     @Test
-    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() {
+    fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() = run {
         activityRule.launchActivity(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
-                    "https://${
-                        ApplicationProvider.getApplicationContext<Context>()
-                            .getString(R.string.FIREBASE_LINK_DOMAIN)
-                    }/forever"
+                    "https://${context().getString(R.string.FIREBASE_LINK_DOMAIN)}/forever"
                 )
             }
         )
 
         onScreen<SplashScreen> {
-            await atMost Duration.FIVE_SECONDS untilAsserted {
+            await atMost 5.seconds untilAsserted {
                 animation { doesNotExist() }
             }
         }
@@ -92,6 +86,6 @@ class ForeverDeepLinkTest {
 
     @After
     fun teardown() {
-        ApplicationProvider.getApplicationContext<Context>().setIsLoggedIn(previousLoginStatus)
+        context().setIsLoggedIn(previousLoginStatus)
     }
 }

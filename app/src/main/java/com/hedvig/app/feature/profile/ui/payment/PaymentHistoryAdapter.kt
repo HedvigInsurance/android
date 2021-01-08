@@ -1,27 +1,23 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import kotlinx.android.synthetic.main.payment_history_item.view.*
-import kotlinx.android.synthetic.main.payout_history_header.view.*
-import kotlinx.android.synthetic.main.payout_history_title.view.*
+import com.hedvig.app.databinding.PaymentHistoryItemBinding
+import com.hedvig.app.databinding.PayoutHistoryHeaderBinding
+import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.viewBinding
+import e
 
-class PaymentHistoryAdapter(
-) : RecyclerView.Adapter<PaymentHistoryAdapter.ViewHolder>() {
+class PaymentHistoryAdapter :
+    ListAdapter<ChargeWrapper, PaymentHistoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-    var items: List<ChargeWrapper> = listOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    override fun getItemCount() = items.size
-
-    override fun getItemViewType(position: Int) = when (items[position]) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         is ChargeWrapper.Title -> R.layout.payout_history_title
         is ChargeWrapper.Header -> R.layout.payout_history_header
         is ChargeWrapper.Item -> R.layout.payment_history_item
@@ -40,51 +36,44 @@ class PaymentHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        when (holder) {
-            is ViewHolder.HeaderViewHolder -> {
-                (items[position] as? ChargeWrapper.Header)?.let { holder.bind(it) }
-            }
-            is ViewHolder.ItemViewHolder -> {
-                (items[position] as? ChargeWrapper.Item)?.let { holder.bind(it) }
-            }
-        }
+        holder.bind(getItem(position))
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payout_history_title, parent, false)
-        ) {
-            val title: TextView = itemView.title
+        abstract fun bind(data: ChargeWrapper): Any?
+
+        fun invalid(data: ChargeWrapper) {
+            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payout_history_header, parent, false)
-        ) {
-            val year: TextView = itemView.header
+        class TitleViewHolder(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payout_history_title)) {
+            override fun bind(data: ChargeWrapper) = Unit
+        }
 
-            fun bind(item: ChargeWrapper.Header) {
-                year.text = item.year.toString()
+        class HeaderViewHolder(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payout_history_header)) {
+            private val binding by viewBinding(PayoutHistoryHeaderBinding::bind)
+
+            override fun bind(data: ChargeWrapper) = with(binding) {
+                if (data !is ChargeWrapper.Header) {
+                    return invalid(data)
+                }
+                header.text = data.year.toString()
             }
         }
 
-        class ItemViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.payment_history_item, parent, false)
-        ) {
-            val date: TextView = itemView.date
-            val amount: TextView = itemView.amount
-
-            fun bind(item: ChargeWrapper.Item) {
-                date.text = item.charge.date.format(PaymentActivity.DATE_FORMAT)
-                amount.text = amount.context.getString(
-                    R.string.PAYMENT_HISTORY_AMOUNT,
-                    item.charge.amount.amount.toBigDecimal().toInt()
-                )
+        class ItemViewHolder(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payment_history_item)) {
+            private val binding by viewBinding(PaymentHistoryItemBinding::bind)
+            override fun bind(data: ChargeWrapper) = with(binding) {
+                if (data !is ChargeWrapper.Item) {
+                    return invalid(data)
+                }
+                date.text = data.charge.date.format(PaymentActivity.DATE_FORMAT)
+                amount.text =
+                    data.charge.amount.fragments.monetaryAmountFragment.toMonetaryAmount()
+                        .format(amount.context)
             }
         }
     }

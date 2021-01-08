@@ -90,7 +90,7 @@ class CreateKeyGearItemViewModelImpl(
             val photos = photos.value?.map { it.uri } ?: listOf()
             val uploads = if (photos.isNotEmpty()) {
                 val uploadsResponse = runCatching {
-                    keyGearItemsRepository.uploadPhotosForNewKeyGearItemAsync(photos).await()
+                    keyGearItemsRepository.uploadPhotosForNewKeyGearItem(photos)
                 }
                 if (uploadsResponse.isFailure) {
                     uploadsResponse.exceptionOrNull()?.let { e(it) }

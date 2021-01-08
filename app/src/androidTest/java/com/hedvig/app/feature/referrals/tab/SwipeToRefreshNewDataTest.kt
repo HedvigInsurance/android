@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -14,12 +12,13 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
+import com.hedvig.app.util.swipeDownInCenter
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class SwipeToRefreshNewDataTest {
+class SwipeToRefreshNewDataTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
@@ -47,9 +46,9 @@ class SwipeToRefreshNewDataTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() {
+    fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() = run {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -60,9 +59,11 @@ class SwipeToRefreshNewDataTest {
             recycler {
                 hasSize(3)
             }
-            swipeToRefresh { swipeDown() }
+            swipeToRefresh { swipeDownInCenter() }
             recycler { hasSize(5) }
             swipeToRefresh { isNotRefreshing() }
         }
     }
 }
+
+

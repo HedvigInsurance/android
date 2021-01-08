@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
@@ -12,12 +10,13 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ProfileToolbarMenuTest {
+class ProfileToolbarMenuTest : TestCase() {
     @get:Rule
     val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
 
@@ -37,10 +36,11 @@ class ProfileToolbarMenuTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenChatWhenClickingToolbarActionOnProfileTab() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+    fun shouldOpenChatWhenClickingToolbarActionOnProfileTab() = run {
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         onScreen<LoggedInScreen> {
+            chat { stub() }
             root { isVisible() }
             bottomTabs { setSelectedItem(R.id.profile) }
             openChat {

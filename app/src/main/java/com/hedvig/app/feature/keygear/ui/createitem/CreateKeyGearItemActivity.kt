@@ -26,6 +26,7 @@ import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ActivityCreateKeyGearItemBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.ui.animator.SlideInItemAnimator
@@ -33,7 +34,6 @@ import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.doOnEnd
-import com.hedvig.app.util.extensions.observe
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.centerX
 import com.hedvig.app.util.extensions.view.centerY
@@ -42,11 +42,11 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
-import kotlinx.android.synthetic.main.activity_create_key_gear_item.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.io.File
@@ -55,6 +55,7 @@ import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
     private val model: CreateKeyGearItemViewModel by viewModel()
+    private val binding by viewBinding(ActivityCreateKeyGearItemBinding::bind)
     private val tracker: KeyGearTracker by inject()
 
     private lateinit var tempPhotoPath: String
@@ -66,58 +67,60 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         super.onCreate(savedInstanceState)
 
         supportPostponeEnterTransition()
-        root.setEdgeToEdgeSystemUiFlags(true)
-        topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        val topBarHeight = topBar.measuredHeight
+        binding.apply {
+            root.setEdgeToEdgeSystemUiFlags(true)
+            topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val topBarHeight = topBar.measuredHeight
 
-        scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
-        }
-
-        topBar.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-
-        saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-        }
-
-        photos.adapter =
-            PhotosAdapter(
-                tracker,
-                { takePhoto() },
-                {
-                    askForPermissions(
-                        arrayOf(Manifest.permission.CAMERA),
-                        PHOTO_PERMISSION_REQUEST_CODE
-                    )
-                },
-                model::deletePhoto
-            )
-        photos.addItemDecoration(CenterItemDecoration())
-        photos.itemAnimator = SlideInItemAnimator(Gravity.START)
-        PagerSnapHelper().attachToRecyclerView(photos)
-        photos.doOnNextLayout {
-            supportStartPostponedEnterTransition()
-        }
-
-        categories.adapter = CategoryAdapter(
-            model::setActiveCategory
-        )
-        categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
-
-        close.setHapticClickListener {
-            onBackPressed()
-        }
-
-        save.setHapticClickListener {
-            tracker.saveItem()
-            if (isUploading) {
-                return@setHapticClickListener
+            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
             }
-            isUploading = true
-            transitionToUploading()
-            model.createItem()
+
+            topBar.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
+
+            saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+            }
+
+            photos.adapter =
+                PhotosAdapter(
+                    tracker,
+                    { takePhoto() },
+                    {
+                        askForPermissions(
+                            arrayOf(Manifest.permission.CAMERA),
+                            PHOTO_PERMISSION_REQUEST_CODE
+                        )
+                    },
+                    model::deletePhoto
+                )
+            photos.addItemDecoration(CenterItemDecoration())
+            photos.itemAnimator = SlideInItemAnimator(Gravity.START)
+            PagerSnapHelper().attachToRecyclerView(photos)
+            photos.doOnNextLayout {
+                supportStartPostponedEnterTransition()
+            }
+
+            categories.adapter = CategoryAdapter(
+                model::setActiveCategory
+            )
+            categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
+
+            close.setHapticClickListener {
+                onBackPressed()
+            }
+
+            save.setHapticClickListener {
+                tracker.saveItem()
+                if (isUploading) {
+                    return@setHapticClickListener
+                }
+                isUploading = true
+                transitionToUploading()
+                model.createItem()
+            }
         }
 
         model.photos.observe(this) { photos ->
@@ -138,100 +141,106 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
 
     private fun transitionToUploading() {
-        loadingIndicator.show()
-        ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
-            interpolator = AccelerateDecelerateInterpolator()
-            duration = SAVE_BUTTON_TRANSITION_DURATION
-            addUpdateListener { va ->
-                saveContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                    width = va.animatedValue as Int
+        binding.apply {
+            loadingIndicator.show()
+            ValueAnimator.ofInt(saveContainer.width, saveContainer.height).apply {
+                interpolator = AccelerateDecelerateInterpolator()
+                duration = SAVE_BUTTON_TRANSITION_DURATION
+                addUpdateListener { va ->
+                    saveContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                        width = va.animatedValue as Int
+                    }
+                    save.alpha = 1 - va.animatedFraction
+                    loadingIndicator.alpha = va.animatedFraction
                 }
-                save.alpha = 1 - va.animatedFraction
-                loadingIndicator.alpha = va.animatedFraction
+                start()
             }
-            start()
         }
     }
 
     private fun bind(data: List<Photo>) {
-        (photos.adapter as? PhotosAdapter)?.photos = data
-        photos.scrollToPosition(data.size - 1)
+        (binding.photos.adapter as? PhotosAdapter)?.photos = data
+        binding.photos.scrollToPosition(data.size - 1)
     }
 
     private fun bindCategories(data: List<Category>) {
-        (categories.adapter as? CategoryAdapter)?.categories = data
+       binding.apply {
+        (categories.adapter as? CategoryAdapter)?.submitList(data)
 
         if (data.any { c -> c.selected }) {
             saveContainer.show()
             saveContainer
                 .spring(SpringAnimation.TRANSLATION_Y)
                 .animateToFinalPosition(0f)
+            }
         }
     }
 
     private fun showCreatedAnimation(data: CreateKeyGearItemMutation.Data) {
-        isShowingPostCreateAnimation = true
-        postCreate.show()
+        binding.apply {
+            isShowingPostCreateAnimation = true
+            postCreate.show()
 
-        val finalRadius = max(root.width, root.height).toFloat() * 1.1f
-        ViewAnimationUtils.createCircularReveal(
-            postCreate,
-            saveContainer.centerX,
-            saveContainer.centerY,
-            0f,
-            finalRadius
-        ).apply {
-            duration = POST_CREATE_REVEAL_DURATION
-            interpolator = AccelerateDecelerateInterpolator()
-            doOnEnd {
-                val category = data.createKeyGearItem.fragments.keyGearItemFragment.category
-                scrollView.remove()
+            val finalRadius = max(root.width, root.height).toFloat() * 1.1f
+            ViewAnimationUtils.createCircularReveal(
+                postCreate,
+                saveContainer.centerX,
+                saveContainer.centerY,
+                0f,
+                finalRadius
+            ).apply {
+                duration = POST_CREATE_REVEAL_DURATION
+                interpolator = AccelerateDecelerateInterpolator()
+                doOnEnd {
+                    val category = data.createKeyGearItem.fragments.keyGearItemFragment.category
+                    scrollView.remove()
 
-                createdLabel.show()
-                createdLabel.text =
-                    getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
+                    createdLabel.show()
+                    createdLabel.text =
+                        getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
 
-                createdIllustration.show()
-                createdIllustration.setImageResource(category.illustration)
-                createdIllustration
-                    .animate()
-                    .alpha(1f)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(1000)
-                    .start()
-                createdCheckmark.show()
-                createdCheckmark
-                    .animate()
-                    .alpha(1f)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(1000)
-                    .withEndAction {
-                        finish()
-                        startActivity(
-                            KeyGearItemDetailActivity.newInstance(
-                                this@CreateKeyGearItemActivity,
-                                data.createKeyGearItem.fragments.keyGearItemFragment
-                            ),
-                            ActivityOptionsCompat.makeCustomAnimation(
-                                this@CreateKeyGearItemActivity,
-                                0,
-                                R.anim.fade_out
-                            ).toBundle()
-                        )
-                    }
-                    .start()
-
-                Handler().postDelayed({
-                    createdLabel.spring(SpringAnimation.TRANSLATION_Y)
-                        .addUpdateListener { _, value, _ ->
-                            createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                    createdIllustration.show()
+                    createdIllustration.setImageResource(category.illustration)
+                    createdIllustration
+                        .animate()
+                        .alpha(1f)
+                        .setInterpolator(DecelerateInterpolator())
+                        .setDuration(1000)
+                        .start()
+                    createdCheckmark.show()
+                    createdCheckmark
+                        .animate()
+                        .alpha(1f)
+                        .setInterpolator(DecelerateInterpolator())
+                        .setDuration(1000)
+                        .withEndAction {
+                            finish()
+                            startActivity(
+                                KeyGearItemDetailActivity.newInstance(
+                                    this@CreateKeyGearItemActivity,
+                                    data.createKeyGearItem.fragments.keyGearItemFragment
+                                ),
+                                ActivityOptionsCompat.makeCustomAnimation(
+                                    this@CreateKeyGearItemActivity,
+                                    0,
+                                    R.anim.fade_out
+                                ).toBundle()
+                            )
                         }
-                        .animateToFinalPosition(0f)
+                        .start()
 
-                }, POST_CREATE_LABEL_REVEAL_DELAY)
+                    Handler(mainLooper).postDelayed({
+                        createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                            .addUpdateListener { _, value, _ ->
+                                createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                            }
+                            .animateToFinalPosition(0f)
 
+                    }, POST_CREATE_LABEL_REVEAL_DELAY)
+
+                }
+                start()
             }
-            start()
         }
     }
 

@@ -5,13 +5,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEMPLATE_MESSAGE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -47,7 +47,7 @@ class TemplateValuesTest {
                     click()
                 }
             }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages {
                     firstChild<EmbarkScreen.MessageRow> {
                         text {

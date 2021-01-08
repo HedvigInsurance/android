@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".feature.insurance.ui.detail.coverage.PerilBottomSheet">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+        android:paddingStart="@dimen/base_margin_triple"
+        android:paddingEnd="@dimen/base_margin_triple"
+        android:layout_marginTop="@dimen/base_margin_double">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="@dimen/peril_bottom_sheet_close_icon_size"
+            android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/pill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/bottom_sheet_handle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_sextuple"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/covered_and_exception_item" />
+
+    <FrameLayout
+        android:id="@+id/chevronContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/peril_shadow"
+            android:layout_gravity="bottom" />
+
+        <ImageView
+            android:id="@+id/chevron"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_chevron_up"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
+</FrameLayout>

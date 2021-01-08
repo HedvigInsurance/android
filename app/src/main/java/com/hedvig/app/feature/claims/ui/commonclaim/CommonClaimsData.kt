@@ -19,14 +19,6 @@ data class CommonClaimsData(
 ) : Parcelable {
     companion object {
         fun from(
-            data: CommonClaimQuery.CommonClaim,
-            eligibleToClaim: Boolean
-        ): CommonClaimsData? {
-            val layout = data.layout.asTitleAndBulletPoints ?: return null
-            TODO("Remove")
-        }
-
-        fun from(
             data: HomeQuery.CommonClaim,
             eligibleToClaim: Boolean
         ): CommonClaimsData? {

@@ -2,12 +2,22 @@ package com.hedvig.app.feature.embark.passages
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.InputType
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
+import com.hedvig.app.feature.embark.BIRTH_DATE
+import com.hedvig.app.feature.embark.BIRTH_DATE_REVERSE
+import com.hedvig.app.feature.embark.EMAIL
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
+import com.hedvig.app.feature.embark.PERSONAL_NUMBER
+import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
+import com.hedvig.app.feature.embark.setInputType
+import com.hedvig.app.feature.embark.setValidationFormatter
+import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -29,19 +39,47 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             return
         }
 
+        if (data.mask != null) {
+            if (!(data.mask == PERSONAL_NUMBER ||
+                    data.mask == SWEDISH_POSTAL_CODE ||
+                    data.mask == EMAIL ||
+                    data.mask == BIRTH_DATE ||
+                    data.mask == BIRTH_DATE_REVERSE ||
+                    data.mask == NORWEGIAN_POSTAL_CODE)
+            ) {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                    .commit()
+            }
+        }
+
         binding.apply {
             messages.adapter = MessageAdapter().apply {
-                items = data.messages
+                submitList(data.messages)
             }
 
-            textActionInput.hint = data.hint
-            textActionInput.onChange { text ->
-                textActionSubmit.isEnabled = text.isNotEmpty()
+            filledTextField.hint = data.hint
+            data.mask?.let { mask ->
+                input.apply {
+                    setInputType(mask)
+                    setValidationFormatter(mask)
+                }
+            }
+
+            input.onChange { text ->
+                if (data.mask == null) {
+                    textActionSubmit.isEnabled = text.isNotEmpty()
+                } else {
+                    textActionSubmit.isEnabled =
+                        text.isNotEmpty() && validationCheck(
+                            data.mask, text
+                        )
+                }
             }
 
             textActionSubmit.text = data.submitLabel
             textActionSubmit.setHapticClickListener {
-                val inputText = textActionInput.text.toString()
+                val inputText = input.text.toString()
                 model.putInStore("${data.passageName}Result", inputText)
                 model.putInStore(data.key, inputText)
                 val responseText = model.preProcessResponse(data.passageName) ?: inputText
@@ -69,17 +107,19 @@ data class TextActionData(
     val messages: List<String>,
     val submitLabel: String,
     val key: String,
-    val passageName: String
+    val passageName: String,
+    val mask: String?
 ) : Parcelable {
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =
             TextActionData(
-                data.link.fragments.embarkLinkFragment.name,
-                data.placeholder,
-                messages,
-                data.link.fragments.embarkLinkFragment.label,
-                data.key,
-                passageName
+                link = data.link.fragments.embarkLinkFragment.name,
+                hint = data.placeholder,
+                messages = messages,
+                submitLabel = data.link.fragments.embarkLinkFragment.label,
+                key = data.key,
+                passageName = passageName,
+                mask = data.mask
             )
     }
 }

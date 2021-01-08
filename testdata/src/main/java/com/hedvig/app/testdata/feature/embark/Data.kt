@@ -16,6 +16,9 @@ import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.EMAIL
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.PERSONAL_NUMBER
+import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
     text = "test message"
@@ -64,6 +67,15 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
             listOf(
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_FIRST_LINK
+                ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
                 ).build()
             )
         ).build()
@@ -76,6 +88,9 @@ val STANDARD_SECOND_PASSAGE_BUILDER =
         messages = listOf(STANDARD_SECOND_MESSAGE),
         action = SelectActionBuilder(
             listOf(
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build(),
                 SelectOptionBuilder(
                     link = STANDARD_SECOND_LINK
                 ).build()
@@ -135,13 +150,192 @@ val STORY_WITH_TEXT_ACTION = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "Test hint",
+                mask = TextActionBuilder.EMAIL
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "970407-1234",
+                mask = TextActionBuilder.PERSONAL_NUMBER
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_BIRTH_DATE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "9999-99-99",
+                mask = TextActionBuilder.BIRTH_DATE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "99-99-9999",
+                mask = TextActionBuilder.BIRTH_DATE_REVERSE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "9999",
+                mask = TextActionBuilder.NORWEGIAN_POSTAL_CODE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionBuilder(
+                key = "BAR",
+                link = STANDARD_FIRST_LINK,
+                placeholder = "999 99",
+                mask = TextActionBuilder.SWEDISH_POSTAL_CODE
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionSetBuilder(
+                link = STANDARD_FIRST_LINK,
+                textActions = listOf(
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "First Placeholder",
+                            key = "FOO",
+                            mask = null
+                        )
+                    ),
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "Second Placeholder",
+                            key = "BAR",
+                            mask = null
+                        )
+                    ),
+                )
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{FOO} {BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = TextActionSetBuilder(
+                link = STANDARD_FIRST_LINK,
+                textActions = listOf(
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "901124-1234",
+                            key = "FOO",
+                            mask = PERSONAL_NUMBER
+                        )
+                    ),
+                    EmbarkStoryQuery.TextAction(
+                        data = EmbarkStoryQuery.Data4(
+                            placeholder = "Email",
+                            key = "BAR",
+                            mask = EMAIL
+                        )
+                    ),
+                )
+            ).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{FOO} {BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
 val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
                 action = EmbarkStoryQuery.Action(
                     asEmbarkSelectAction = null,
-                    asEmbarkTextAction = null
+                    asEmbarkTextAction = null,
+                    asEmbarkTextActionSet = null,
                 )
             )
             .build()

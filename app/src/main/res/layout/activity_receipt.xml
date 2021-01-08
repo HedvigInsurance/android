@@ -24,8 +24,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
             android:padding="@dimen/base_margin"
-            android:tint="@color/icon_tint"
-            app:srcCompat="@drawable/ic_close" />
+            app:srcCompat="@drawable/ic_close"
+            app:tint="@color/icon_tint" />
 
         <TextView
             android:id="@+id/receipt_title"
@@ -48,9 +48,9 @@
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_SHARE_BUTTON"
             android:padding="@dimen/base_margin_half"
-            android:tint="@color/icon_tint"
             app:srcCompat="@drawable/ic_share"
-            tools:visibility="gone" />
+            tools:visibility="gone"
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 
@@ -73,7 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/base_margin_quintuple"
             android:contentDescription="@null"
-            android:tint="@color/icon_tint"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/download"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +80,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/ic_choose_file"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            app:tint="@color/icon_tint" />
 
         <Button
             android:id="@+id/download"

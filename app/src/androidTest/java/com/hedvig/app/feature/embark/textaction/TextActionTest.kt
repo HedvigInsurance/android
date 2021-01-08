@@ -5,13 +5,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -43,17 +43,17 @@ class TextActionTest {
 
         onScreen<EmbarkScreen> {
             messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            textActionInput {
+            textActionSingleInput {
                 isVisible()
                 hasHint("Test hint")
             }
             textActionSubmit { isDisabled() }
-            textActionInput { typeText("Test entry") }
+            textActionSingleInput { typeText("Test entry") }
             textActionSubmit {
                 hasText("Another test passage")
                 click()
             }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
             }
         }

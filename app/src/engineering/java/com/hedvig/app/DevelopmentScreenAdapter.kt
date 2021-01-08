@@ -4,11 +4,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.databinding.DevelopmentFooterBinding
 import com.hedvig.app.databinding.DevelopmentHeaderBinding
 import com.hedvig.app.databinding.DevelopmentRowBinding
 import com.hedvig.app.mocks.mockModule
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.makeToast
@@ -18,10 +20,11 @@ import com.hedvig.app.util.extensions.viewBinding
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
-class DevelopmentScreenAdapter(
-    private val items: List<DevelopmentScreenItem>
-) : RecyclerView.Adapter<DevelopmentScreenAdapter.ViewHolder>() {
-    override fun getItemViewType(position: Int) = when (items[position]) {
+class DevelopmentScreenAdapter :
+    ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
+        GenericDiffUtilItemCallback()
+    ) {
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
         DevelopmentScreenItem.Header -> R.layout.development_header
         is DevelopmentScreenItem.Row -> R.layout.development_row
         DevelopmentScreenItem.Footer -> R.layout.development_footer
@@ -34,9 +37,8 @@ class DevelopmentScreenAdapter(
         else -> throw Error("Invalid viewType")
     }
 
-    override fun getItemCount() = items.size
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

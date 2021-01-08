@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
@@ -66,8 +65,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                     viewLifecycleOwner
                 )
             )
-            adapter =
-                InsuranceAdapter(parentFragmentManager, tracker, insuranceViewModel::load)
+            adapter = InsuranceAdapter(tracker, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
             bind(data)
@@ -78,14 +76,24 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         binding.loadSpinner.root.remove()
 
         if (data.isFailure) {
-            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
-                listOf(InsuranceModel.Error)
+            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
+                listOf(
+                    InsuranceModel.Header,
+                    InsuranceModel.Error
+                )
+            )
             return
         }
 
         val successData = data.getOrNull() ?: return
 
-        val contracts = successData.contracts.map { InsuranceModel.Contract(it) }
+        val contracts = successData.contracts.map(InsuranceModel::Contract).let { contractModels ->
+            if (hasNotOnlyTerminatedContracts(successData.contracts)) {
+                contractModels.filter { it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null }
+            } else {
+                contractModels
+            }
+        }
 
         val upsells = mutableListOf<InsuranceModel.Upsell>()
 
@@ -97,8 +105,21 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             }
         }
 
-        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.items =
-            listOf(InsuranceModel.Header) + contracts + upsells
+        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
+            listOf(InsuranceModel.Header) + contracts + terminatedRow(successData.contracts) + upsells
+        )
+    }
+
+    private fun terminatedRow(contracts: List<InsuranceQuery.Contract>): List<InsuranceModel> {
+        val terminatedContracts = amountOfTerminatedContracts(contracts)
+        return if (hasNotOnlyTerminatedContracts(contracts)) {
+            listOf(
+                InsuranceModel.TerminatedContractsHeader,
+                InsuranceModel.TerminatedContracts(terminatedContracts)
+            )
+        } else {
+            emptyList()
+        }
     }
 
     companion object {
@@ -124,5 +145,13 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
         fun doesNotHaveTravelInsurance(contracts: List<InsuranceQuery.Contract>) =
             contracts.none { it.currentAgreement.asNorwegianTravelAgreement != null }
+
+        fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
+            contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
+
+        fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contract>): Boolean {
+            val terminatedContracts = amountOfTerminatedContracts(contracts)
+            return (terminatedContracts > 0 && contracts.size != terminatedContracts)
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -14,13 +12,13 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class EmptyTest {
+class EmptyTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
@@ -39,9 +37,9 @@ class EmptyTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowEmptyStateWhenLoadedWithNoItems() {
+    fun shouldShowEmptyStateWhenLoadedWithNoItems() = run {
         val intent = LoggedInActivity.newInstance(
-            ApplicationProvider.getApplicationContext(),
+            context(),
             initialTab = LoggedInTabs.REFERRALS
         )
 
@@ -56,7 +54,7 @@ class EmptyTest {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(ApplicationProvider.getApplicationContext())
+                                .format(context())
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }

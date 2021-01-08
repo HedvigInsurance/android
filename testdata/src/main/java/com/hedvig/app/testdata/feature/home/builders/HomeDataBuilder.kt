@@ -1,6 +1,5 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.apollographql.apollo.api.internal.ResponseReader
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
@@ -17,7 +16,8 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Trasig telefon").build(),
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
-    private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList()
+    private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
+    private val renewalDate: LocalDate? = null
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
@@ -69,7 +69,15 @@ data class HomeDataBuilder(
                     } else {
                         null
                     }
-                )
+                ),
+                upcomingRenewal = if (renewalDate != null) {
+                    HomeQuery.UpcomingRenewal(
+                        renewalDate = renewalDate,
+                        draftCertificateUrl = "https://www.example.com"
+                    )
+                } else {
+                    null
+                }
             )
         },
         isEligibleToCreateClaim = contracts.any { it == ContractStatus.ACTIVE },
@@ -91,7 +99,7 @@ data class HomeDataBuilder(
                     )
                 ),
                 body = "1"
-            ),HomeQuery.HowClaimsWork(
+            ), HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
                         fragments = HomeQuery.Variants2.Fragments(

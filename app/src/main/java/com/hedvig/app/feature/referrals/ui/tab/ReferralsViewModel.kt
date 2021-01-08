@@ -20,7 +20,7 @@ abstract class ReferralsViewModel : ViewModel() {
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     fun setRefreshing(refreshing: Boolean) {
-        _isRefreshing.postValue(true)
+        _isRefreshing.postValue(refreshing)
     }
 
     abstract fun load()
@@ -53,7 +53,7 @@ class ReferralsViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            runCatching { referralsRepository.reloadReferralsAsync().await() }
+            runCatching { referralsRepository.reloadReferrals() }
             _isRefreshing.postValue(false)
         }
     }

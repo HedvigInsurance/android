@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/base_margin"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            android:tint="?colorPrimary"
-            app:srcCompat="@drawable/ic_hedvig_wordmark" />
+            app:srcCompat="@drawable/ic_hedvig_wordmark"
+            app:tint="?colorPrimary" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
             android:layout_marginTop="@dimen/base_margin"
             android:gravity="center"
             android:textAppearance="?textAppearanceBody1"
-            tools:text="@string/REFERRAL_STARTSCREEN_BODY" />
+            android:text="@string/REFERRAL_STARTSCREEN_BODY" />
 
         <Button
             android:id="@+id/referralReceiverContinueButton"

@@ -11,14 +11,14 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
 import com.hedvig.app.R
+import com.hedvig.app.databinding.AttachPickerDialogBinding
 import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.attach_picker_dialog.*
-import kotlinx.android.synthetic.main.loading_spinner.*
 
 class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
+    private lateinit var binding: AttachPickerDialogBinding
 
     var pickerHeight = 0
 
@@ -44,7 +44,8 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         super.onCreate(savedInstanceState)
 
         window?.setWindowAnimations(R.style.DialogNoAnimation)
-        setContentView(R.layout.attach_picker_dialog)
+        binding = AttachPickerDialogBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupDialogTouchEvents()
         setupWindowsParams()
         setupBottomSheetParams()
@@ -96,7 +97,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
             override fun onAnimationRepeat(animation: Animation?) = Unit
             override fun onAnimationStart(animation: Animation?) = Unit
         })
-        attachPickerBottomSheet.startAnimation(animation)
+        binding.attachPickerBottomSheet.startAnimation(animation)
     }
 
     private fun setupWindowsParams() = window?.let { window ->
@@ -125,9 +126,9 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     }
 
     private fun setupBottomSheetParams() {
-        val params = attachPickerBottomSheet.layoutParams
+        val params = binding.attachPickerBottomSheet.layoutParams
         params.height = pickerHeight
-        attachPickerBottomSheet.layoutParams = params
+        binding.attachPickerBottomSheet.layoutParams = params
     }
 
     fun setImages(images: List<String>) {
@@ -139,30 +140,32 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
             showUploadBottomSheetCallback,
             uploadFileCallback
         )
-        attachFileRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
-        attachFileRecyclerView.adapter = adapter
-        attachFileRecyclerView.fadeIn()
-        loadingSpinner.remove()
+        binding.apply {
+            attachFileRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+            attachFileRecyclerView.adapter = adapter
+            attachFileRecyclerView.fadeIn()
+            loadingSpinner.loadingSpinner.remove()
+        }
     }
 
     fun imageWasUploaded(path: String) {
-        val fileAdapter = attachFileRecyclerView.adapter as AttachFileAdapter?
-            ?: run { return }
+        val fileAdapter = binding.attachFileRecyclerView.adapter as? AttachFileAdapter
+            ?: return
         fileAdapter.imageWasUploaded(path)
     }
 
     private fun setupDialogTouchEvents() {
-        attachPickerRoot.setOnTouchListener { _, event ->
+        binding.attachPickerRoot.setOnTouchListener { _, event ->
             dismissMotionEvent = event
             dismiss()
             false
         }
         //prevent dismiss in this area
-        attachPickerBottomSheet.setOnTouchListener { _, _ -> true }
+        binding.attachPickerBottomSheet.setOnTouchListener { _, _ -> true }
     }
 
     fun uploadingTakenPicture(isUploading: Boolean) {
-        val fileAdapter = attachFileRecyclerView.adapter as AttachFileAdapter?
+        val fileAdapter = binding.attachFileRecyclerView.adapter as AttachFileAdapter?
             ?: run { return }
         fileAdapter.isUploadingTakenPicture = isUploading
     }

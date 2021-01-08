@@ -7,9 +7,11 @@ import androidx.work.WorkerParameters
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.whenApiVersion
 import e
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@OptIn(KoinApiExtension::class)
 class ReplyWorker(
     private val context: Context,
     params: WorkerParameters
@@ -22,8 +24,7 @@ class ReplyWorker(
 
         val idsResponse = runCatching {
             chatRepository
-                .messageIdsAsync()
-                .await()
+                .messageIds()
         }
 
         if (idsResponse.isFailure) {
@@ -35,11 +36,10 @@ class ReplyWorker(
             idsResponse.getOrNull()?.data?.messages?.first() ?: return Result.failure()
         val sendChatMessageResponse = runCatching {
             chatRepository
-                .sendChatMessageAsync(
+                .sendChatMessage(
                     lastChatMessage.globalId,
                     replyText
                 )
-                .await()
         }
 
         if (sendChatMessageResponse.isFailure) {

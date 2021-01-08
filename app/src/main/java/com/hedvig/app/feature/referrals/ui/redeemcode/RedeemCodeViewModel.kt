@@ -17,10 +17,9 @@ class RedeemCodeViewModel(
     fun redeemReferralCode(code: String) {
         viewModelScope.launch {
             val response =
-                runCatching { redeemReferralCodeRepository.redeemReferralCodeAsync(code).await() }
+                runCatching { redeemReferralCodeRepository.redeemReferralCode(code) }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
-                redeemCodeStatus.postValue(null)
                 return@launch
             }
             response.getOrNull()?.let { redeemCodeStatus.postValue(it.data) }

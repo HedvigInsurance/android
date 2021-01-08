@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -10,13 +8,13 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.hedvig.app.util.hasNumberOfMenuItems
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class NavBarReferralsEnabledTest {
+class NavBarReferralsEnabledTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
@@ -33,8 +31,8 @@ class NavBarReferralsEnabledTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldAllIconsExcludingKeyGear() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(ApplicationProvider.getApplicationContext()))
+    fun shouldAllIconsExcludingKeyGear() = run {
+        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
 
         Screen.onScreen<LoggedInScreen> {
             bottomTabs {

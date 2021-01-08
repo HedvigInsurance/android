@@ -13,6 +13,7 @@
         <item name="bottomSheetStyle">@style/Hedvig.Theme.BottomSheet</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">?colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowIsFloating">false</item>
         <item name="materialButtonStyle">@style/Hedvig.Button</item>
     </style>
@@ -24,14 +25,19 @@
     </style>
 
     <style name="Hedvig.Theme.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputEditText</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox</item>
     </style>
 
-    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.FilledBox">
-        <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText</item>
+    <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">?colorSurface</item>
+        <item name="android:textColor">?colorPrimary</item>
     </style>
 
-    <style name="Hedvig.Theme.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">?colorPrimary</item>
+    </style>
+
+    <style name="Hedvig.Theme.TextInputEditText.OutlinedBox" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
@@ -44,7 +50,7 @@
     </style>
 
     <style name="ThemeOverlay.Hedvig.PSA" parent="">
-        <item name="android:textColorPrimary">@color/color_hedvig_black_67</item>
+        <item name="android:textColorSecondary">@color/color_hedvig_black_67</item>
         <item name="colorPrimary">@color/hedvig_black</item>
         <item name="android:colorBackground">?colorWarning</item>
     </style>
@@ -60,8 +66,33 @@
 
     <style name="ThemeOverlay.Hedvig.RenewalCard" parent="">
         <item name="colorSurface">@color/colorInfoCardSurface</item>
-        <item name="colorPrimary">@color/hedvig_black</item>
         <item name="colorOnSurface">?colorPrimary</item>
     </style>
 
+
+    <style name="ThemeOverlay.Hedvig.InsuranceCard" parent="">
+        <item name="colorSurface">@color/hedvig_white</item>
+        <item name="colorOnSurface">?colorPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.InsuranceCard.StatusPill" parent="">
+        <item name="android:textColorTertiary">@color/text_color_primary_light</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">?textAppearanceBody1</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.Toolbar.ErrorAction" parent="">
+        <item name="actionMenuTextColor">?colorError</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.LoggedInCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/logged_in_card_elevation</item>
+        <item name="cardBackgroundColor">?colorSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
+        <item name="android:colorBackground">?colorSurface</item>
+    </style>
 </resources>

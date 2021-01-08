@@ -35,7 +35,7 @@
             tools:text="För att bli en trygg vuxen krävs en trygg barndom. Därför arbetar SOS Barnbyar med långsiktiga insatser för att inte ett enda barn ska behöva växa upp ensamt." />
 
         <View
-            android:id="@id/endSeparator"
+            android:id="@+id/endSeparator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/base_margin_triple"

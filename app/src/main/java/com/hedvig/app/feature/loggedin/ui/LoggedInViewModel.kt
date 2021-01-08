@@ -22,7 +22,7 @@ abstract class LoggedInViewModel : ViewModel() {
     val toolbarInset: LiveData<Int> = _toolbarInset
 
     fun updateBottomTabInset(newInset: Int) {
-        _bottomTabInset.postValue(newInset)
+        _bottomTabInset.value = newInset
     }
 
     fun updateToolbarInset(newInset: Int) {
@@ -42,8 +42,7 @@ class LoggedInViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 loggedInRepository
-                    .loggedInDataAsync()
-                    .await()
+                    .loggedInData()
             }
 
             response.getOrNull()?.data?.let { _data.postValue(it) }
