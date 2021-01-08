@@ -30,7 +30,6 @@ open class HedvigApplication : Application() {
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     override fun attachBaseContext(base: Context?) {
-        Language.DefaultLocale.initialize()
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
 

@@ -121,18 +121,12 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                     }
                     Market.NO -> {
                         lp.entries = resources.getStringArray(R.array.language_settings_no)
-                        lp.entryValues =
-                            resources.getStringArray(R.array.language_settings_values_no)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_no)
                     }
                     Market.DK -> {
                         lp.entries = resources.getStringArray(R.array.language_settings_dk)
-                        lp.entryValues =
-                            resources.getStringArray(R.array.language_settings_values_dk)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
                     }
-                }
-
-                if (lp.value == null) {
-                    lp.value = Language.SYSTEM_DEFAULT.toString()
                 }
                 lp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->
