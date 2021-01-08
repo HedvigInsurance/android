@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
+import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
@@ -22,6 +27,7 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import javax.money.MonetaryAmount
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val binding by viewBinding(ProfileFragmentBinding::bind)
@@ -29,6 +35,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
     private val tracker: ProfileTracker by inject()
+    private val marketProvider: MarketProvider by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,13 +106,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 },
                 ProfileModel.Row(
                     getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
-                    data.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-                        ?.let { monthlyNet ->
-                            getString(
-                                R.string.PROFILE_ROW_PAYMENT_DESCRIPTION,
-                                monthlyNet.format(requireContext())
-                            )
-                        } ?: "",
+                    getPriceCaption(data, data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext())
+                        ?: ""),
                     R.drawable.ic_payment
                 ) {
                     tracker.paymentRow()
@@ -132,6 +134,32 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             )
             )
         }
+    }
+
+    private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String) =
+        when (marketProvider.market) {
+            Market.SE -> {
+                when (data.bankAccount?.directDebitStatus) {
+                    DirectDebitStatus.ACTIVE -> {
+                        getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
+                    }
+                    DirectDebitStatus.NEEDS_SETUP,
+                    DirectDebitStatus.PENDING,
+                    DirectDebitStatus.UNKNOWN__,
+                    null,
+                    -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
+                }
+            }
+            Market.NO -> TODO()
+            Market.DK -> TODO()
+            null -> TODO()
+        }
+
+    companion object {
+        val CostFragment.monetaryMonthlyNet: MonetaryAmount
+            get() {
+                return monthlyNet.fragments.monetaryAmountFragment.toMonetaryAmount()
+            }
     }
 }
 

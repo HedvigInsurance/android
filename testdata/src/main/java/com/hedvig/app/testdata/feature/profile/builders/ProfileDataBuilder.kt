@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.profile.builders
 import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import java.time.LocalDate
 
@@ -38,5 +39,7 @@ data class ProfileDataBuilder(
             )
         ),
         cashbackOptions = emptyList(),
-   )
+        bankAccount = ProfileQuery.BankAccount(directDebitStatus = DirectDebitStatus.NEEDS_SETUP),
+        activePaymentMethods = null,
+    )
 }
