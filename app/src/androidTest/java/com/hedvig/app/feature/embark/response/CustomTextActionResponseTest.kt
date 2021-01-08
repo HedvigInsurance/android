@@ -11,12 +11,12 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_AND_CUSTOM_
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class CustomTextActionResponseTest {
+class CustomTextActionResponseTest: TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
