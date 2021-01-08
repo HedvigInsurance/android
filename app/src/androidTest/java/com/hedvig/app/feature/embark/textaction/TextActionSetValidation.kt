@@ -1,39 +1,41 @@
 package com.hedvig.app.feature.embark.textaction
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.seconds
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.awaitility.Durations
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class TextActionSetTest {
+class TextActionSetValidation : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION_SET) }
+        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
+            success(
+                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+            )
+        }
     )
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun textActionSetTest() {
+    fun textActionSetTest() = run {
         activityRule.launchActivity(
             EmbarkActivity.newInstance(
                 context(),
@@ -47,8 +49,8 @@ class TextActionSetTest {
             textActionSet {
                 childAt<EmbarkScreen.TextAction>(0) {
                     input {
-                        typeText("First Text")
-                        hasHint("First Placeholder")
+                        typeText("9704071234")
+                        hasHint("901124-1234")
                     }
                 }
             }
@@ -56,17 +58,14 @@ class TextActionSetTest {
             textActionSet {
                 childAt<EmbarkScreen.TextAction>(1) {
                     input {
-                        hasHint("Second Placeholder")
-                        typeText("Second Text")
+                        hasHint("Email")
+                        typeText("email@hedvig.com")
                     }
                 }
             }
             textActionSubmit {
                 hasText("Another test passage")
-                click()
-            }
-            await atMost 2.seconds untilAsserted {
-                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("First Text Second Text was entered") } } }
+                isEnabled()
             }
         }
     }

@@ -26,7 +26,14 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEMPLATE_MESSAGE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_SINGLE_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_BIRTH_DATE
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
@@ -80,6 +87,35 @@ class EmbarkMockActivity : MockActivity() {
             }
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
+        clickableItem("Text action set first text personal number validation and second text with email validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Email text validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Personal number text validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Birth date validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_BIRTH_DATE
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Birth date reverse validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Norwegian postal code validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+        clickableItem("Swedish postal validation") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
+
         header("Incompatible Action")
         clickableItem("Open") {
             MockEmbarkViewModel.apply {

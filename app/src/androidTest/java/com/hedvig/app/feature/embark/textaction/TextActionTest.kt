@@ -11,7 +11,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -53,7 +53,7 @@ class TextActionTest {
                 hasText("Another test passage")
                 click()
             }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
             }
         }
