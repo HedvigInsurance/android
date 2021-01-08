@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.api.graphqlmutation
 
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -19,7 +19,7 @@ import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 
-class NetworkErrorTest : TestCase() {
+class GraphQLErrorTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
 
@@ -27,7 +27,7 @@ class NetworkErrorTest : TestCase() {
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
         HELLO_MUTATION to apolloResponse {
-            internalServerError()
+            graphQLError("some error")
         }
     )
 
@@ -43,7 +43,7 @@ class NetworkErrorTest : TestCase() {
             )
         )
 
-        onScreen<EmbarkScreen> {
+        Screen.onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
             await atMost 2.seconds untilAsserted {
                 messages {
