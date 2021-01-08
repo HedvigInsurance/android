@@ -11,7 +11,7 @@ import com.hedvig.app.testdata.feature.embark.STORY_WITH_GREATER_THAN_EXPRESSION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import org.awaitility.Duration.TWO_SECONDS
+import com.hedvig.app.util.seconds
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -47,7 +47,7 @@ class GreaterThanExpressionTest {
             selectActions {
                 firstChild<EmbarkScreen.SelectAction> { click() }
             }
-            await atMost TWO_SECONDS untilAsserted {
+            await atMost 2.seconds untilAsserted {
                 messages {
                     hasSize(1)
                     firstChild<EmbarkScreen.MessageRow> {
