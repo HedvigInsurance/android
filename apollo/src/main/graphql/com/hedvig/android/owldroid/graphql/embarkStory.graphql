@@ -50,10 +50,11 @@ query EmbarkStory($name: String!) {
         ... on EmbarkTextAction {
           data {
             key
+            placeholder
+            mask
             link {
               ...EmbarkLinkFragment
             }
-            placeholder
           }
         }
         ... on EmbarkTextActionSet {
@@ -64,6 +65,7 @@ query EmbarkStory($name: String!) {
             textActions {
               data {
                 key
+                mask
                 placeholder
               }
             }

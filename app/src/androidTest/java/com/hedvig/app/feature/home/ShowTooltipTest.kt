@@ -14,6 +14,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.seconds
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
@@ -73,7 +74,4 @@ class ShowTooltipTest : TestCase() {
             .putLong("shared_preference_last_open", lastOpenPrevValue).commit()
     }
 }
-
-val Int.seconds: Duration
-    get() = Duration.ofSeconds(this.toLong())
 

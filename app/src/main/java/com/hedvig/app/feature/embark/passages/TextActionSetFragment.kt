@@ -37,7 +37,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
                 it.submitList(textFieldData(data))
             }
             textActionSubmit.text = data.submitLabel
-            textActionSetViewModel.hasText.observe(viewLifecycleOwner) { hashMap ->
+            textActionSetViewModel.isValid.observe(viewLifecycleOwner) { hashMap ->
                 if (hashMap.isNotEmpty()) {
                     textActionSubmit.isEnabled = hashMap.all { it.value }
                 }
@@ -62,7 +62,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     private fun textFieldData(data: TextActionSetData): MutableList<TextFieldData> {
         val list = mutableListOf<TextFieldData>()
         for ((index, key) in data.keys.withIndex()) {
-            list.add(TextFieldData(key, data.placeholders[index]))
+            list.add(TextFieldData(key, data.placeholders[index], data.mask[index]))
         }
         return list
     }
@@ -84,7 +84,8 @@ data class TextActionSetData(
     val keys: List<String?>,
     val messages: List<String>,
     val submitLabel: String,
-    val passageName: String
+    val passageName: String,
+    val mask: List<String?>
 ) : Parcelable {
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data3, passageName: String) =
@@ -94,7 +95,8 @@ data class TextActionSetData(
                 keys = data.textActions.map { it.data?.key },
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
-                passageName = passageName
+                passageName = passageName,
+                mask = data.textActions.map { it.data?.mask }
             )
     }
 }

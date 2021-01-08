@@ -5,6 +5,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
+import com.hedvig.app.feature.embark.setInputType
+import com.hedvig.app.feature.embark.setValidationFormatter
+import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.onChange
@@ -24,13 +27,31 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
         private val binding by viewBinding(EmbarkInputItemBinding::bind)
         fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel) {
             binding.apply {
-                model.updateIsEmptyHashMap(position, false)
+                model.updateIsValid(position, false)
                 textField.hint = item.placeholder
+                item.mask?.let { mask ->
+                    input.apply {
+                        setInputType(mask)
+                        setValidationFormatter(item.mask)
+                    }
+                }
+
                 input.onChange { text ->
-                    if (text.isBlank()) {
-                        model.updateIsEmptyHashMap(position, false)
+                    if (item.mask == null) {
+                        if (text.isBlank()) {
+                            model.updateIsValid(position, false)
+                        } else {
+                            model.updateIsValid(position, true)
+                        }
                     } else {
-                        model.updateIsEmptyHashMap(position, true)
+                        if (text.isNotBlank() && validationCheck(
+                                item.mask, text
+                            )
+                        ) {
+                            model.updateIsValid(position, true)
+                        } else {
+                            model.updateIsValid(position, false)
+                        }
                     }
                 }
             }

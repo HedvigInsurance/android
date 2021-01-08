@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class TextActionSetViewModel : ViewModel() {
-    private val _hasText = MutableLiveData<HashMap<Int, Boolean>>(hashMapOf())
-    val hasText: LiveData<HashMap<Int, Boolean>> = _hasText
+    private val _isValid = MutableLiveData<HashMap<Int, Boolean>>(hashMapOf())
+    val isValid: LiveData<HashMap<Int, Boolean>> = _isValid
 
-    fun updateIsEmptyHashMap(position: Int, hasText: Boolean) {
-        val old = _hasText.value
-        old?.put(position, hasText)
-        _hasText.postValue(old)
+    fun updateIsValid(position: Int, isValid: Boolean) {
+        val old = _isValid.value
+        old?.put(position, isValid)
+        _isValid.postValue(old)
     }
 }
