@@ -11,6 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -37,9 +38,21 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     private val binding by viewBinding(ActivitySettingsBinding::bind)
+    private val marketProvider: MarketProvider by inject()
 
+    @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val previousLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(SETTING_LANGUAGE, null)
+        if (previousLanguage == SYSTEM_DEFAULT) {
+            val market = marketProvider.market
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            market?.let {
+                sharedPreferences.edit()
+                    .putString(SETTING_LANGUAGE, Language.getAvailableLanguages(market).first().toString()).commit()
+            }
+        }
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -164,6 +177,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     }
 
     companion object {
+        private const val SYSTEM_DEFAULT = "system_default"
         const val SETTING_THEME = "theme"
         const val SETTING_LANGUAGE = "language"
         const val SETTING_NOTIFICATIONS = "notifications"
