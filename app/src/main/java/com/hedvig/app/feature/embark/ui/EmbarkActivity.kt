@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import com.hedvig.app.BaseActivity
@@ -114,7 +113,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         } else {
             menuInflater.inflate(R.menu.embark_menu, menu)
         }
-        menu.getItem(0).actionView
         return super.onCreateOptionsMenu(menu)
     }
 
