@@ -67,6 +67,12 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.onboarding.ChoosePlanRepository
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -238,6 +244,14 @@ val viewModelModule = module {
     viewModel { SettingsViewModel(get()) }
 }
 
+val choosePlanModule = module {
+    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
+}
+
+val onboardingModule = module {
+    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+}
+
 val marketPickerModule = module {
     viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get()) }
 }
@@ -336,7 +350,9 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
+    single { ChoosePlanRepository(get(), get()) }
 }
 
 val trackerModule = module {

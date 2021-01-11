@@ -14,6 +14,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
@@ -32,6 +33,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val webPath = intent.getStringExtra(WEB_PATH)
 
         binding.apply {
             openSettings.setHapticClickListener {
@@ -86,14 +88,18 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
 
             val localePath = when (defaultLocale(this@WebOnboardingActivity)) {
-                Locale.NB_NO -> "no/"
-                Locale.EN_NO -> "no-en/"
-                Locale.DA_DK -> "dk/"
-                Locale.EN_DK -> "dk-en/"
-                else -> "no/"
+                Locale.NB_NO -> "/no"
+                Locale.EN_NO -> "/no-en"
+                Locale.DA_DK -> "/dk"
+                Locale.EN_DK -> "/dk-en"
+                else -> "/no"
             }
 
-            webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}new-member?variation=android#token=${encodedToken}")
+            when (marketProvider.market) {
+                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${webPath}/start?variation=android#token=${encodedToken}")
+                Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
+                else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
+            }
         }
     }
 
@@ -118,6 +124,12 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     companion object {
         private const val UTF_8 = "UTF-8"
+        private const val WEB_PATH = "WEB_PATH"
+        fun newNoInstance(context: Context, webPath: String?): Intent {
+            val intent = Intent(context, WebOnboardingActivity::class.java)
+            intent.putExtra(WEB_PATH, webPath)
+            return intent
+        }
 
         fun newInstance(context: Context) = Intent(context, WebOnboardingActivity::class.java)
     }

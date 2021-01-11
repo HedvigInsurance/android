@@ -35,6 +35,8 @@
             @style/Hedvig.ShapeAppearance.MediumComponent
         </item>
 
+        <item name="radioButtonStyle">@style/Hedvig.RadioButton</item>
+
         <!-- Default button -->
         <item name="materialButtonStyle">@style/Hedvig.Button</item>
         <item name="textAppearanceButton">@style/Hedvig.TextAppearance.Button</item>

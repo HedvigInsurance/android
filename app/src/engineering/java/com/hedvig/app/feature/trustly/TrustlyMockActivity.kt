@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.trustly
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.home.MockMarketProvider
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.genericDevelopmentAdapter

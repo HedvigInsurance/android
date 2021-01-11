@@ -137,7 +137,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 requireContext().getString(
                                     R.string.REFERRAL_SMS_MESSAGE,
                                     incentive.format(requireContext()),
-                                    "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
+                                    "${BuildConfig.WEB_BASE_URL}/${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
                                         Uri.encode(
                                             code
                                         )

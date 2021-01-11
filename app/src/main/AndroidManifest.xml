@@ -23,6 +23,18 @@
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
         <activity
+            android:name=".feature.onboarding.ui.MoreOptionsActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.onboarding.ui.ChoosePlanActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -271,7 +283,6 @@
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

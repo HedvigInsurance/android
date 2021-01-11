@@ -64,7 +64,7 @@ android {
                 "\"wss://giraffe.hedvig.com/subscriptions\""
             )
             buildConfigField("String", "BASE_URL", "\"https://giraffe.hedvig.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.hedvig.com/\"")
+            buildConfigField("String", "WEB_BASE_URL", "\"https://www.hedvig.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
             resValue("string", "file_provider_authority", "\"com.hedvig.android.file.provider\"")
 
@@ -92,7 +92,7 @@ android {
                 "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             )
             buildConfigField("String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\"")
+            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
             resValue(
                 "string",
@@ -124,7 +124,7 @@ android {
                 "\"wss://graphql.dev.hedvigit.com/subscriptions\""
             )
             buildConfigField("String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com/\"")
+            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
 
             resValue(
