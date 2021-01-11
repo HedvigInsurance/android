@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
@@ -11,11 +12,15 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
+
+    private var job: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,7 +41,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                 }
                 model.putInStore("${data.passageName}Result", selectAction.label)
                 val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
-                animateResponse(response, responseText) {
+                job?.cancel()
+                job = lifecycleScope.launch {
+                    animateResponse(response, responseText)
                     model.navigateToPassage(selectAction.link)
                 }
             }.apply {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
@@ -13,6 +14,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -20,6 +23,8 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val textActionSetViewModel: TextActionSetViewModel by viewModel()
     private val binding by viewBinding(FragmentTextActionSetBinding::bind)
+
+    private var job: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val data = requireArguments().getParcelable<TextActionSetData>(DATA)
@@ -52,7 +57,9 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
                 }
                 val responseText =
                     model.preProcessResponse(data.passageName) ?: allInput
-                animateResponse(response, responseText) {
+                job?.cancel()
+                job = lifecycleScope.launch {
+                    animateResponse(response, responseText)
                     model.navigateToPassage(data.link)
                 }
             }
