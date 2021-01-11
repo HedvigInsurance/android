@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
+import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.util.jsonObjectOf
 import org.json.JSONObject
 
@@ -10,7 +10,7 @@ class MockEmbarkViewModel : EmbarkViewModel() {
             return
         }
         storyData = mockedData
-        displayInitialPassage()
+        setInitialState()
     }
 
     override suspend fun callGraphQL(query: String, variables: JSONObject?) =

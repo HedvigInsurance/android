@@ -14,6 +14,7 @@ import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toJsonObject
@@ -21,8 +22,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.util.Stack
-import java.util.UUID
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.all
+import kotlin.collections.any
+import kotlin.collections.filterIsInstance
+import kotlin.collections.find
+import kotlin.collections.first
+import kotlin.collections.firstOrNull
+import kotlin.collections.forEach
+import kotlin.collections.isNotEmpty
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.reduce
+import kotlin.collections.set
+import kotlin.math.max
 
 sealed class ExpressionResult {
     data class True(
@@ -33,8 +49,8 @@ sealed class ExpressionResult {
 }
 
 abstract class EmbarkViewModel : ViewModel() {
-    private val _data = MutableLiveData<EmbarkStoryQuery.Passage>()
-    val data: LiveData<EmbarkStoryQuery.Passage> = _data
+    private val _data = MutableLiveData<CurrentPassageWithProgress>()
+    val data: LiveData<CurrentPassageWithProgress> = _data
 
     abstract fun load(name: String)
 
@@ -44,10 +60,13 @@ abstract class EmbarkViewModel : ViewModel() {
 
     private val store = HashMap<String, String>()
     private val backStack = Stack<String>()
+    private var totalSteps: Int = 0
 
-    protected fun displayInitialPassage() {
+    protected fun setInitialState() {
         storyData.embarkStory?.let { story ->
-            _data.postValue(preProcessPassage(story.passages.find { it.id == story.startPassage }))
+            val firstPassage = story.passages.first { it.id == story.startPassage }
+            totalSteps = getPassagesLeft(firstPassage)
+            _data.postValue(preProcessPassage(firstPassage))
         }
     }
 
@@ -79,7 +98,7 @@ abstract class EmbarkViewModel : ViewModel() {
                     return
                 }
             }
-            _data.value?.name?.let { backStack.push(it) }
+            _data.value?.passage?.name?.let { backStack.push(it) }
             _data.postValue(preProcessPassage(nextPassage))
         }
     }
@@ -214,11 +233,11 @@ abstract class EmbarkViewModel : ViewModel() {
         return null
     }
 
-    private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): EmbarkStoryQuery.Passage? {
+    private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): CurrentPassageWithProgress? {
         if (passage == null) {
             return null
         }
-        return passage.copy(
+        val passageWithMessage = passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
                     preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
@@ -227,6 +246,29 @@ abstract class EmbarkViewModel : ViewModel() {
                 )
             }
         )
+
+        val passagesLeft = getPassagesLeft(passageWithMessage)
+        val progress = Percent((((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100).toInt())
+        return CurrentPassageWithProgress(passageWithMessage, progress)
+    }
+
+    private fun getPassagesLeft(passage: EmbarkStoryQuery.Passage) = passage.allLinks
+        .map { findMaxDepth(it.fragments.embarkLinkFragment.name) }
+        .reduce { acc, i ->
+            max(acc, i)
+        }
+
+    private fun findMaxDepth(passageName: String, previousDepth: Int = 0): Int {
+        val passage = storyData.embarkStory?.passages?.find { it.name == passageName }
+        val links = passage?.allLinks?.map { it.fragments.embarkLinkFragment.name }
+
+        if (links?.size == 0 || links == null) {
+            return previousDepth
+        }
+
+        return links
+            .map { findMaxDepth(it, previousDepth + 1) }
+            .reduce { acc, i -> max(acc, i) }
     }
 
     private fun preProcessMessage(message: MessageFragment): MessageFragment? {
@@ -440,6 +482,11 @@ abstract class EmbarkViewModel : ViewModel() {
                 return null
             }
     }
+
+    data class CurrentPassageWithProgress(
+        val passage: EmbarkStoryQuery.Passage,
+        val progress: Percent
+    )
 }
 
 class EmbarkViewModelImpl(
@@ -456,7 +503,7 @@ class EmbarkViewModelImpl(
 
             result.getOrNull()?.data?.let { d ->
                 storyData = d
-                displayInitialPassage()
+                setInitialState()
             }
         }
     }

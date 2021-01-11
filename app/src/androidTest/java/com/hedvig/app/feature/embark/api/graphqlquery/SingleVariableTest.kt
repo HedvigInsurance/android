@@ -7,8 +7,8 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE
-import com.hedvig.app.testdata.feature.embark.VARIABLE_QUERY
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE
+import com.hedvig.app.testdata.feature.embark.data.VARIABLE_QUERY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
