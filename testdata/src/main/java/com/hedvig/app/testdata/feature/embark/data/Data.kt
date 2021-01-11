@@ -1,4 +1,4 @@
-package com.hedvig.app.testdata.feature.embark
+package com.hedvig.app.testdata.feature.embark.data
 
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.GraphQLErrorsFragment
@@ -480,19 +480,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.ALWAYS,
-                                text = "Unary true test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.ALWAYS,
+                            text = "Unary true test"
+                        ).build()
+                    )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.NEVER,
-                                text = "Unary false test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.NEVER,
+                            text = "Unary false test"
+                        ).build()
+                    )
                     ).build()
                 )
             )
@@ -1213,7 +1213,6 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
-
                             contains = null,
                             next = GraphQLErrorsFragment.Next(
                                 fragments = GraphQLErrorsFragment.Next.Fragments(
@@ -1245,4 +1244,3 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
-

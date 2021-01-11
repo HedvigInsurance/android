@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
@@ -19,6 +18,7 @@ import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.android.synthetic.main.activity_embark.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
@@ -41,11 +41,12 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         binding.apply {
-            toolbar.apply {
+            progressToolbar.toolbar.apply {
                 title = storyName
                 setNavigationOnClickListener {
                     finish()
                 }
+
                 setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.moreOptions -> {
@@ -53,7 +54,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             true
                         }
                         R.id.tooltip -> {
-                            model.data.value?.tooltips?.let {
+                            model.data.value?.passage?.tooltips?.let {
                                 TooltipBottomSheet.newInstance(it, windowManager).show(
                                     supportFragmentManager, TooltipBottomSheet.TAG
                                 )
@@ -65,16 +66,19 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
             }
 
-            model.data.observe(this@EmbarkActivity) { passage ->
+            model.data.observe(this@EmbarkActivity) { embarkData ->
                 invalidateOptionsMenu()
-                toolbar.menu.clear()
-                if (model.data.value?.tooltips?.isNotEmpty() == true) {
-                    toolbar.inflateMenu(R.menu.embark_tooltip_menu)
+                progressToolbar.toolbar.menu.clear()
+                if (model.data.value?.passage?.tooltips?.isNotEmpty() == true) {
+                    progressToolbar.toolbar.inflateMenu(R.menu.embark_tooltip_menu)
                 } else {
-                    toolbar.inflateMenu(R.menu.embark_menu)
+                    progressToolbar.toolbar.inflateMenu(R.menu.embark_menu)
                 }
 
                 loadingSpinner.loadingSpinner.remove()
+                progressToolbar.setProgress(embarkData.progress)
+
+                val passage = embarkData.passage
                 actionBar?.title = passage.name
                 passage.action?.asEmbarkSelectAction?.let { options ->
                     val selectActionData = SelectActionPassage.from(

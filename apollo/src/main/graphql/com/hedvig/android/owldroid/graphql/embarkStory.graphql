@@ -79,6 +79,9 @@ query EmbarkStory($name: String!) {
         title
         description
       }
+      allLinks {
+        ...EmbarkLinkFragment
+      }
     }
   }
 }

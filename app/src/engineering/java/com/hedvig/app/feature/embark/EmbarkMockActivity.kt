@@ -6,36 +6,37 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.moreOptionsModule
-import com.hedvig.app.testdata.feature.embark.STANDARD_STORY
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_BINARY_REDIRECT
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_EQUALS_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_GRAPHQL_QUERY_API
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_GREATER_THAN_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_INCOMPATIBLE_ACTION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_LESS_THAN_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_MULTIPLE_REDIRECTS
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_FOUR_TOOLTIP
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_MANY_TOOLTIP
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_NOT_EQUALS_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_OR_EXPRESSION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_PASSED_KEY_VALUE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEMPLATE_MESSAGE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_SINGLE_TOOLTIP
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_BIRTH_DATE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_EXPRESSIONS
-import com.hedvig.app.testdata.feature.embark.STORY_WITH_UNARY_REDIRECT
+import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
+import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_FOUR_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_OR_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SINGLE_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEMPLATE_MESSAGE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_BIRTH_DATE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -258,6 +259,14 @@ class EmbarkMockActivity : MockActivity() {
             MockEmbarkViewModel.mockedData = STANDARD_STORY
             MockMoreOptionsViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
+        }
+        header("Progress")
+        clickableItem("Story with progress") {
+            MockEmbarkViewModel.apply {
+                mockedData = PROGRESSABLE_STORY
+                shouldLoad = true
+            }
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
     }
 }
