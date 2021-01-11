@@ -254,9 +254,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
     private fun getPassagesLeft(passage: EmbarkStoryQuery.Passage) = passage.allLinks
         .map { findMaxDepth(it.fragments.embarkLinkFragment.name) }
-        .reduce { acc, i ->
-            max(acc, i)
-        }
+        .fold(0) { acc, i -> max(acc, i) }
 
     private fun findMaxDepth(passageName: String, previousDepth: Int = 0): Int {
         val passage = storyData.embarkStory?.passages?.find { it.name == passageName }
@@ -268,7 +266,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
         return links
             .map { findMaxDepth(it, previousDepth + 1) }
-            .reduce { acc, i -> max(acc, i) }
+            .fold(0) { acc, i -> max(acc, i) }
     }
 
     private fun preProcessMessage(message: MessageFragment): MessageFragment? {
