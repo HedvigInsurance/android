@@ -19,6 +19,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
+import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
@@ -36,6 +37,10 @@ class HomeMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Home Screen")
+        clickableItem("Terminated in feature") {
+            MockHomeViewModel.homeMockData = HOME_DATA_TERMINATED_IN_FUTURE
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
         clickableItem("Upcoming Renewal") {
             MockHomeViewModel.apply {
                 homeMockData = HOME_DATA_UPCOMING_RENEWAL

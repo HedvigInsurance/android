@@ -27,6 +27,9 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
       ... on TerminatedStatus {
         termination
       }
+      ... on TerminatedInFutureStatus {
+        futureTermination
+      }
     }
   }
   isEligibleToCreateClaim

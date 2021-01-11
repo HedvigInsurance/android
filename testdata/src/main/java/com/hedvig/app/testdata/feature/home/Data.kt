@@ -5,6 +5,8 @@ import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 import java.time.LocalDate
 
+val HOME_DATA_TERMINATED_IN_FUTURE = HomeDataBuilder(listOf(ContractStatus.TERMINATED_IN_FUTURE)).build()
+
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
 val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
