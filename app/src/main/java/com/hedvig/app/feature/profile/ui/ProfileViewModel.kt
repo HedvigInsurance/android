@@ -7,10 +7,11 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.util.LiveEvent
 
 abstract class ProfileViewModel : ViewModel() {
-    abstract val data: MutableLiveData<ProfileQuery.Data>
+    abstract val data: MutableLiveData<Result<ProfileQuery.Data>>
     abstract val dirty: MutableLiveData<Boolean>
     abstract val trustlyUrl: LiveEvent<String>
 
+    abstract fun load()
     abstract fun selectCashback(id: String)
     abstract fun triggerFreeTextChat(done: () -> Unit)
     abstract fun saveInputs(emailInput: String, phoneNumberInput: String)

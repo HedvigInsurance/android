@@ -43,16 +43,10 @@ class ProfileMockActivity : MockActivity() {
             MockProfileViewModel.profileData = PROFILE_DATA_ADYEN_NOT_CONNECTED
             startLoggedInActivity()
         }
-
+        clickableItem("Error") {
+            MockProfileViewModel.shouldError = true
+            startLoggedInActivity()
+        }
         marketSpinner { MockMarketManager.mockedMarket = it }
-    }
-
-    private fun startLoggedInActivity() {
-        startActivity(
-            LoggedInActivity.newInstance(
-                this@ProfileMockActivity,
-                initialTab = LoggedInTabs.PROFILE
-            )
-        )
     }
 }

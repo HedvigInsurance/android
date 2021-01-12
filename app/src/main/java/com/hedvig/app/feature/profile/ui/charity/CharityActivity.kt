@@ -43,8 +43,8 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             binding.loadingSpinner.loadingSpinner.remove()
 
             profileData?.let { data ->
-                data.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
-                    ?: showCharityPicker(data.cashbackOptions.filterNotNull())
+                data.getOrNull()?.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
+                    ?: data.getOrNull()?.cashbackOptions?.filterNotNull()?.let { showCharityPicker(it) }
             }
         }
     }

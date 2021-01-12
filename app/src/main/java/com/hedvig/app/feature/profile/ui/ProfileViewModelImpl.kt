@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
@@ -17,15 +16,14 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
-    private val chatRepository: ChatRepository,
-    private val payinStatusRepository: PayinStatusRepository
+    private val chatRepository: ChatRepository
 ) : ProfileViewModel() {
-    override val data: MutableLiveData<ProfileQuery.Data> = MutableLiveData()
+    override val data: MutableLiveData<Result<ProfileQuery.Data>> = MutableLiveData()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
 
     init {
-        loadProfile()
+        load()
     }
 
     override fun refreshProfile() {
@@ -35,8 +33,8 @@ class ProfileViewModelImpl(
     }
 
     override fun saveInputs(emailInput: String, phoneNumberInput: String) {
-        var email = data.value?.member?.email
-        var phoneNumber = data.value?.member?.phoneNumber
+        var email = data.value?.getOrNull()?.member?.email
+        var phoneNumber = data.value?.getOrNull()?.member?.phoneNumber
         viewModelScope.launch {
             if (email != emailInput) {
                 val response =
@@ -67,12 +65,12 @@ class ProfileViewModelImpl(
         }
     }
 
-    private fun loadProfile() {
+    override fun load() {
         viewModelScope.launch {
             profileRepository
                 .profile()
                 .onEach { response ->
-                    response.data?.let { data.postValue(it) }
+                    response.data?.let { data.postValue(Result.success(it)) }
                 }
                 .catch { e(it) }
                 .launchIn(this)
@@ -80,14 +78,14 @@ class ProfileViewModelImpl(
     }
 
     override fun emailChanged(newEmail: String) {
-        val currentEmail = data.value?.member?.email ?: ""
+        val currentEmail = data.value?.getOrNull()?.member?.email ?: ""
         if (currentEmail != newEmail && dirty.value != true) {
             dirty.value = true
         }
     }
 
     override fun phoneNumberChanged(newPhoneNumber: String) {
-        val currentPhoneNumber = data.value?.member?.phoneNumber ?: ""
+        val currentPhoneNumber = data.value?.getOrNull()?.member?.phoneNumber ?: ""
         if (currentPhoneNumber != newPhoneNumber && dirty.value != true) {
             dirty.value = true
         }

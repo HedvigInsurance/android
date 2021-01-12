@@ -335,7 +335,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         profileViewModel.data.observe(this) { data ->
-            data.member.id?.let { id ->
+            data.getOrNull()?.member?.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
         }
