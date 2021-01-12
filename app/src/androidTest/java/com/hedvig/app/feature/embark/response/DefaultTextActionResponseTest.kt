@@ -11,9 +11,11 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore("Causes flakiness")
 class DefaultTextActionResponseTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)

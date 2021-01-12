@@ -285,34 +285,32 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         loggedInViewModel.data.observe(this) { data ->
-            if (binding.bottomNavigation.menu.isEmpty()) {
-                val keyGearEnabled =
-                    if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
-                        true
-                    } else {
-                        data.member.features.contains(Feature.KEYGEAR)
-                    }
-                val referralsEnabled =
-                    if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
-                        true
-                    } else {
-                        data.member.features.contains(Feature.REFERRALS)
-                    }
-
-                val menuId = when {
-                    keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
-                    referralsEnabled -> R.menu.logged_in_menu
-                    !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
-                    else -> R.menu.logged_in_menu
+            val keyGearEnabled =
+                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                    true
+                } else {
+                    data.member.features.contains(Feature.KEYGEAR)
                 }
-                binding.bottomNavigation.inflateMenu(menuId)
-                val initialTab = savedTab
-                    ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-                    ?: LoggedInTabs.HOME
-                binding.bottomNavigation.selectedItemId = initialTab.id()
-                setupToolBar()
-                binding.loggedInRoot.show()
+            val referralsEnabled =
+                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                    true
+                } else {
+                    data.member.features.contains(Feature.REFERRALS)
+                }
+
+            val menuId = when {
+                keyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+                referralsEnabled -> R.menu.logged_in_menu
+                !keyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+                else -> R.menu.logged_in_menu
             }
+            binding.bottomNavigation.inflateMenu(menuId)
+            val initialTab = savedTab
+                ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+                ?: LoggedInTabs.HOME
+            binding.bottomNavigation.selectedItemId = initialTab.id()
+            setupToolBar()
+            binding.loggedInRoot.show()
 
             referralTermsUrl = data.referralTerms.url
             data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()

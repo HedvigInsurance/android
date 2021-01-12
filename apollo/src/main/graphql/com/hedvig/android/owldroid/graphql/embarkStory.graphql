@@ -142,33 +142,62 @@ fragment SubExpressionFragment on EmbarkExpression {
 
 fragment ApiFragment on EmbarkApi {
   ... on EmbarkApiGraphQLQuery {
-    data {
+    queryData: data {
       query
       results {
-        key
-        as
+        ...GraphQLResultsFragment
       }
       errors {
-        contains
-        next {
-          ...EmbarkLinkFragment
-        }
+        ...GraphQLErrorsFragment
       }
       variables {
-        ... on EmbarkAPIGraphQLSingleVariable {
-          key
-          from
-          as
-        }
-        ... on EmbarkAPIGraphQLGeneratedVariable {
-          key
-          storeAs
-          type
-        }
+        ...GraphQLVariablesFragment
       }
       next {
         ...EmbarkLinkFragment
       }
     }
+  }
+  ... on EmbarkApiGraphQLMutation {
+    mutationData: data {
+      mutation
+      results {
+        ...GraphQLResultsFragment
+      }
+      variables {
+        ...GraphQLVariablesFragment
+      }
+      errors {
+        ...GraphQLErrorsFragment
+      }
+      next {
+        ...EmbarkLinkFragment
+      }
+    }
+  }
+}
+
+fragment GraphQLResultsFragment on EmbarkAPIGraphQLResult {
+  key
+  as
+}
+
+fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
+  ... on EmbarkAPIGraphQLSingleVariable {
+    key
+    from
+    as
+  }
+  ... on EmbarkAPIGraphQLGeneratedVariable {
+    key
+    storeAs
+    type
+  }
+}
+
+fragment GraphQLErrorsFragment on EmbarkAPIGraphQLError {
+  contains
+  next {
+    ...EmbarkLinkFragment
   }
 }

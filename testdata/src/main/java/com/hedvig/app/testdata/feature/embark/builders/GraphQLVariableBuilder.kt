@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.ApiFragment
+import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 
@@ -13,9 +13,9 @@ data class GraphQLVariableBuilder(
     private val generatedType: EmbarkAPIGraphQLVariableGeneratedType = EmbarkAPIGraphQLVariableGeneratedType.UUID
 ) {
 
-    fun build() = ApiFragment.Variable(
+    fun build() = GraphQLVariablesFragment(
         asEmbarkAPIGraphQLSingleVariable = if (kind == VariableKind.SINGLE) {
-            ApiFragment.AsEmbarkAPIGraphQLSingleVariable(
+            GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
                 key = key,
                 from = if (from.isEmpty()) {
                     throw Error("Programmer error: attempted to build SingleVariable without providing `from`")
@@ -28,7 +28,7 @@ data class GraphQLVariableBuilder(
             null
         },
         asEmbarkAPIGraphQLGeneratedVariable = if (kind == VariableKind.GENERATED) {
-            ApiFragment.AsEmbarkAPIGraphQLGeneratedVariable(
+            GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable(
                 key = key,
                 storeAs = if (storeAs.isEmpty()) {
                     throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")

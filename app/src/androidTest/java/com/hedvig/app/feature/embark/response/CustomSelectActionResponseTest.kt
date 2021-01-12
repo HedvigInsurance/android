@@ -13,7 +13,9 @@ import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Ignore
 
+@Ignore("Causes flakiness")
 class CustomSelectActionResponseTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)

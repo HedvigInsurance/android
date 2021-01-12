@@ -14,6 +14,7 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_half"
         android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,8 +33,8 @@
                 android:id="@+id/blur"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/card_blur"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/card_blur" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -46,8 +47,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_pill"
                     android:backgroundTint="@color/yellow"
-                    android:visibility="gone"
                     android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard.StatusPill"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="AWAITING START DATE"
@@ -60,8 +61,8 @@
                     android:layout_marginTop="@dimen/base_margin"
                     android:background="@drawable/background_pill"
                     android:backgroundTint="@color/yellow"
-                    android:visibility="gone"
                     android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard.StatusPill"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/firstStatusPill"
                     tools:text="AWAITING START DATE"
