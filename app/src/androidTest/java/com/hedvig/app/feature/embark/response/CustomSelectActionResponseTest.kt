@@ -11,9 +11,9 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Ignore
 
 @Ignore("Causes flakiness")
 class CustomSelectActionResponseTest : TestCase() {

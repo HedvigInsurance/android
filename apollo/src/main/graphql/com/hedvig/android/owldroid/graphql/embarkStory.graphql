@@ -75,6 +75,10 @@ query EmbarkStory($name: String!) {
       api {
         ...ApiFragment
       }
+      tooltips {
+        title
+        description
+      }
     }
   }
 }

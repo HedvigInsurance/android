@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -42,10 +41,39 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         binding.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.title = storyName
+            toolbar.apply {
+                title = storyName
+                setNavigationOnClickListener {
+                    finish()
+                }
+                setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.moreOptions -> {
+                            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
+                            true
+                        }
+                        R.id.tooltip -> {
+                            model.data.value?.tooltips?.let {
+                                TooltipBottomSheet.newInstance(it, windowManager).show(
+                                    supportFragmentManager, TooltipBottomSheet.TAG
+                                )
+                            }
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            }
 
             model.data.observe(this@EmbarkActivity) { passage ->
+                invalidateOptionsMenu()
+                toolbar.menu.clear()
+                if (model.data.value?.tooltips?.isNotEmpty() == true) {
+                    toolbar.inflateMenu(R.menu.embark_tooltip_menu)
+                } else {
+                    toolbar.inflateMenu(R.menu.embark_menu)
+                }
+
                 loadingSpinner.loadingSpinner.remove()
                 actionBar?.title = passage.name
                 passage.action?.asEmbarkSelectAction?.let { options ->
@@ -103,26 +131,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
                     .commit()
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.embark_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            finish()
-            true
-        }
-        R.id.moreOptions -> {
-            startActivity(MoreOptionsActivity.newInstance(this))
-            true
-        }
-
-        else -> {
-            super.onOptionsItemSelected(item)
         }
     }
 
