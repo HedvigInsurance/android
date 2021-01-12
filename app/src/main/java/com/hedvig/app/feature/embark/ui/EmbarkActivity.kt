@@ -79,12 +79,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 progressToolbar.setProgress(embarkData.progress)
 
                 val passage = embarkData.passage
-                actionBar?.title = passage.name
-                passage.action?.asEmbarkSelectAction?.let { options ->
+                actionBar?.title = passage?.name
+                passage?.action?.asEmbarkSelectAction?.let { options ->
                     val selectActionData = SelectActionPassage.from(
                         passage.messages.map { it.fragments.messageFragment.text },
                         options.data,
-                        passage.name
+                        passage.name,
+                        embarkData.navigationDirection,
                     )
 
                     val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
@@ -96,7 +97,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     return@observe
                 }
 
-                passage.action?.asEmbarkTextAction?.let { textAction ->
+                passage?.action?.asEmbarkTextAction?.let { textAction ->
                     val textActionData =
                         TextActionData.from(
                             passage.messages.map { it.fragments.messageFragment.text },
@@ -112,7 +113,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     return@observe
                 }
 
-                passage.action?.asEmbarkTextActionSet?.let { textActionSet ->
+                passage?.action?.asEmbarkTextActionSet?.let { textActionSet ->
                     textActionSet.data?.let { data ->
                         val textActionSetData =
                             TextActionSetData.from(

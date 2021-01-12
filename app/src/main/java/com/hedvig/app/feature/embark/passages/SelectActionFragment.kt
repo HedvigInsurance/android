@@ -10,11 +10,11 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -24,7 +24,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
 
-    private var job: Job? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,10 +78,16 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 data class SelectActionPassage(
     val messages: List<String>,
     val actions: List<SelectAction>,
-    val passageName: String
+    val passageName: String,
+    val direction: NavigationDirection,
 ) : Parcelable {
     companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.Data1, passageName: String) =
+        fun from(
+            messages: List<String>,
+            data: EmbarkStoryQuery.Data1,
+            passageName: String,
+            navigationDirection: NavigationDirection,
+        ) =
             SelectActionPassage(
                 messages,
                 data.options.map {
@@ -90,7 +98,8 @@ data class SelectActionPassage(
                         it.values
                     )
                 },
-                passageName
+                passageName,
+                navigationDirection
             )
     }
 }
@@ -100,5 +109,5 @@ data class SelectAction(
     val link: String,
     val label: String,
     val keys: List<String>,
-    val values: List<String>
+    val values: List<String>,
 ) : Parcelable

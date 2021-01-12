@@ -35,9 +35,20 @@ sealed class ExpressionResult {
     object False : ExpressionResult()
 }
 
+enum class NavigationDirection {
+    FORWARDS,
+    BACKWARDS,
+}
+
+data class EmbarkModel(
+    val passage: EmbarkStoryQuery.Passage?,
+    val navigationDirection: NavigationDirection,
+    val progress: Percent
+)
+
 abstract class EmbarkViewModel : ViewModel() {
-    private val _data = MutableLiveData<CurrentPassageWithProgress>()
-    val data: LiveData<CurrentPassageWithProgress> = _data
+    private val _data = MutableLiveData<EmbarkModel>()
+    val data: LiveData<EmbarkModel> = _data
 
     abstract fun load(name: String)
 
@@ -53,7 +64,7 @@ abstract class EmbarkViewModel : ViewModel() {
         storyData.embarkStory?.let { story ->
             val firstPassage = story.passages.first { it.id == story.startPassage }
             totalSteps = getPassagesLeft(firstPassage)
-            _data.postValue(preProcessPassage(firstPassage))
+            _data.postValue(EmbarkModel(preProcessPassage(firstPassage), NavigationDirection.FORWARDS, currentProgress(firstPassage)))
         }
     }
 
@@ -86,8 +97,12 @@ abstract class EmbarkViewModel : ViewModel() {
                 }
             }
             _data.value?.passage?.name?.let { backStack.push(it) }
-            _data.postValue(preProcessPassage(nextPassage))
+            _data.postValue(EmbarkModel(preProcessPassage(nextPassage), NavigationDirection.FORWARDS, currentProgress(nextPassage)))
         }
+    }
+
+    private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
+        TODO()
     }
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
@@ -200,7 +215,7 @@ abstract class EmbarkViewModel : ViewModel() {
 
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }
-            _data.postValue(preProcessPassage(nextPassage))
+            _data.postValue(EmbarkModel(preProcessPassage(nextPassage), NavigationDirection.BACKWARDS, currentProgress(nextPassage)))
             return true
         }
         return false
@@ -220,7 +235,7 @@ abstract class EmbarkViewModel : ViewModel() {
         return null
     }
 
-    private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): CurrentPassageWithProgress? {
+    private fun preProcessPassage(passage: EmbarkStoryQuery.Passage?): EmbarkStoryQuery.Passage? {
         if (passage == null) {
             return null
         }
@@ -234,9 +249,11 @@ abstract class EmbarkViewModel : ViewModel() {
             }
         )
 
+/*
         val passagesLeft = getPassagesLeft(passageWithMessage)
         val progress = Percent((((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100).toInt())
-        return CurrentPassageWithProgress(passageWithMessage, progress)
+*/
+        return passageWithMessage
     }
 
     private fun getPassagesLeft(passage: EmbarkStoryQuery.Passage) = passage.allLinks
@@ -468,10 +485,6 @@ abstract class EmbarkViewModel : ViewModel() {
             }
     }
 
-    data class CurrentPassageWithProgress(
-        val passage: EmbarkStoryQuery.Passage,
-        val progress: Percent
-    )
 }
 
 class EmbarkViewModelImpl(
