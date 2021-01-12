@@ -8,6 +8,7 @@ import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
 import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.moreOptionsModule
+import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
@@ -51,6 +52,11 @@ class EmbarkMockActivity : MockActivity() {
     })
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Previous Insurer")
+        clickableItem("Previous Insurer") {
+            MockEmbarkViewModel.mockedData = PREVIOUS_INSURER_STORY
+            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+        }
         header("Embark Screen")
         clickableItem("Loading") {
             MockEmbarkViewModel.shouldLoad = false

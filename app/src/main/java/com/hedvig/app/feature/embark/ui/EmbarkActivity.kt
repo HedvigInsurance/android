@@ -13,7 +13,12 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+<<<<<<< HEAD
 import com.hedvig.app.feature.embark.NavigationDirection
+=======
+import com.hedvig.app.feature.embark.passages.PreviousInsurerActionPassage
+import com.hedvig.app.feature.embark.passages.PreviousInsurerFragment
+>>>>>>> d9901190... some progress
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
@@ -144,6 +149,15 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         passage.name
                     )
                 return TextActionSetFragment.newInstance(textActionSetData)
+            }
+        }
+
+        passage?.action?.asEmbarkPreviousInsuranceProviderAction?.let { previousInsuranceAction ->
+            previousInsuranceAction.data?.let { data ->
+                val previousInsurerData =
+                    PreviousInsurerActionPassage.from(
+                        messages = passage.messages.map { it.fragments.messageFragment.text })
+                return PreviousInsurerFragment.newInstance(previousInsurerData)
             }
         }
 

@@ -71,6 +71,11 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkPreviousInsuranceProviderAction {
+          data {
+            providers
+          }
+        }
       }
       api {
         ...ApiFragment
