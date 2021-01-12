@@ -6,10 +6,10 @@ import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
-import com.hedvig.app.feature.home.MockMarketProvider
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.util.extensions.makeToast
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
