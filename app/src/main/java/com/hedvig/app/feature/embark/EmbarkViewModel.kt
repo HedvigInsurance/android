@@ -26,7 +26,7 @@ import java.util.UUID
 
 sealed class ExpressionResult {
     data class True(
-        val resultValue: String?
+        val resultValue: String?,
     ) : ExpressionResult()
 
     object False : ExpressionResult()
@@ -93,28 +93,29 @@ abstract class EmbarkViewModel : ViewModel() {
             }
             val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
 
-            if (result.isFailure) {
-                navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                return@launch
-            }
-
-            if (result.getOrNull()?.has("errors") == true) {
-                if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
-                    TODO("Handle matched error")
+            when {
+                result.isFailure -> {
+                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
                 }
-                navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                return@launch
-            }
+                result.hasErrors() -> {
+                    if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
+                        TODO("Handle matched error")
+                    }
+                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                }
+                result.isSuccess -> {
+                    val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
-            val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
-
-            graphQLQuery.queryData.results.forEach { r ->
-                putInStore(r.fragments.graphQLResultsFragment.as_, response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
-            }
-            graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
-                navigateToPassage(
-                    it
-                )
+                    graphQLQuery.queryData.results.forEach { r ->
+                        putInStore(r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                    }
+                    graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
+                        navigateToPassage(
+                            it
+                        )
+                    }
+                }
             }
         }
     }
@@ -128,29 +129,31 @@ abstract class EmbarkViewModel : ViewModel() {
             }
             val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables) }
 
-            if (result.isFailure) {
-                navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                return@launch
-            }
-
-            if (result.hasErrors()) {
-                if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
-                    TODO("Handle matched error")
+            when {
+                result.isFailure -> {
+                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
                 }
-                navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                return@launch
+                result.hasErrors() -> {
+                    if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
+                        TODO("Handle matched error")
+                    }
+                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                }
+                result.isSuccess -> {
+                    val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
+
+                    graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
+                        putInStore(r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                    }
+                    graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
+                        navigateToPassage(
+                            it
+                        )
+                    }
+                }
             }
 
-            val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
-
-            graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
-                putInStore(r.fragments.graphQLResultsFragment.as_, response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
-            }
-            graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
-                navigateToPassage(
-                    it
-                )
-            }
         }
     }
 
@@ -270,7 +273,8 @@ abstract class EmbarkViewModel : ViewModel() {
                 EmbarkExpressionTypeBinary.MORE_THAN,
                 EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
                 EmbarkExpressionTypeBinary.LESS_THAN,
-                EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS -> {
+                EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
+                -> {
                     val storedAsInt =
                         store[binaryExpression.key]?.toIntOrNull() ?: return ExpressionResult.False
                     val valueAsInt =
@@ -439,7 +443,7 @@ abstract class EmbarkViewModel : ViewModel() {
 }
 
 class EmbarkViewModelImpl(
-    private val embarkRepository: EmbarkRepository
+    private val embarkRepository: EmbarkRepository,
 ) : EmbarkViewModel() {
 
     override fun load(name: String) {
