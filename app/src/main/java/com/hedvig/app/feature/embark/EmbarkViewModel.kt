@@ -133,7 +133,7 @@ abstract class EmbarkViewModel : ViewModel() {
                 return@launch
             }
 
-            if (result.getOrNull()?.has("errors") == true) {
+            if (result.hasErrors()) {
                 if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
                     TODO("Handle matched error")
                 }
@@ -316,6 +316,8 @@ abstract class EmbarkViewModel : ViewModel() {
 
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
+
+        private fun Result<JSONObject?>.hasErrors() = getOrNull()?.has("errors") == true
 
         private fun interpolateMessage(store: Map<String, String>, message: String) =
             REPLACEMENT_FINDER
