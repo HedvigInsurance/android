@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.BankAccountFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -109,9 +110,7 @@ data class PaymentDataBuilder(
         },
         activePayoutMethods = if (payoutConnected) {
             PaymentQuery.ActivePayoutMethods(
-                storedPaymentMethodsDetails = PaymentQuery.StoredPaymentMethodsDetails(
-                    id = "123"
-                )
+                status = PayoutMethodStatus.ACTIVE
             )
         } else {
             null

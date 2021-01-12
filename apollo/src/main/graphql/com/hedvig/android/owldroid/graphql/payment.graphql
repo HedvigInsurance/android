@@ -1,7 +1,7 @@
 query Payment {
   contracts {
     status {
-      ... ContractStatusFragment
+      ...ContractStatusFragment
     }
   }
   balance {
@@ -26,24 +26,22 @@ query Payment {
     date
   }
   insuranceCost {
-    ... CostFragment
+    ...CostFragment
     freeUntil
   }
   redeemedCampaigns {
-    ... IncentiveFragment
+    ...IncentiveFragment
     owner {
       displayName
     }
   }
   bankAccount {
-    ... BankAccountFragment
+    ...BankAccountFragment
   }
   activePaymentMethods {
-    ... ActivePaymentMethodsFragment
+    ...ActivePaymentMethodsFragment
   }
   activePayoutMethods {
-    storedPaymentMethodsDetails {
-      id
-    }
+    status
   }
 }
