@@ -7,4 +7,4 @@
     android:layout_marginTop="@dimen/base_margin"
     android:layout_marginEnd="@dimen/base_margin_double"
     android:textAppearance="?textAppearanceCaption"
-    tools:text="@string/payment_screen.pay_out_footer_not_connected" />
+    android:text="@string/payment_screen.pay_out_footer_not_connected" />

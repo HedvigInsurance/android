@@ -58,7 +58,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                         *paymentHistory(paymentData),
                         redeemCampaign(paymentData),
                         *payinDetails(paymentData, payinStatusData),
-                        *payoutDetails(paymentData),
+                        *payoutDetails(paymentData)
                     )
                 )
             }
@@ -105,7 +105,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun payinDetails(
         paymentData: PaymentQuery.Data,
-        payinStatusData: PayinStatusQuery.Data
+        payinStatusData: PayinStatusQuery.Data,
     ): Array<PaymentModel> {
         paymentData.bankAccount?.let { bankAccount ->
             return arrayOf(
@@ -122,22 +122,23 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         return emptyArray()
     }
 
-    private fun payoutDetails(data: PaymentQuery.Data): Array<PaymentModel> {
-        if (marketProvider.market != Market.NO) {
-            return emptyArray()
-        }
-
-        if (data.activePayoutMethods == null) {
-            return arrayOf(
-                PaymentModel.PayoutDetailsHeader,
-                PaymentModel.Link.AdyenAddPayout,
-                PaymentModel.PayoutDetailsParagraph.Add,
-            )
-        }
-
-        // TODO: In coming PRs, implement support for showing connected payout state
-        return emptyArray()
+    private fun payoutDetails(data: PaymentQuery.Data) = if (marketProvider.market != Market.NO) {
+        emptyArray()
+    } else {
+        data.toPayoutDetails()
     }
+
+    private fun PaymentQuery.Data.toPayoutDetails() = activePayoutMethods?.let { apm ->
+        arrayOf(
+            PaymentModel.PayoutDetailsHeader,
+            PaymentModel.PayoutConnectionStatus(apm.status),
+            PaymentModel.PayoutDetailsParagraph
+        )
+    } ?: arrayOf(
+        PaymentModel.PayoutDetailsHeader,
+        PaymentModel.Link.AdyenAddPayout,
+        PaymentModel.PayoutDetailsParagraph,
+    )
 
     private fun redeemCampaign(data: PaymentQuery.Data) = if (data.redeemedCampaigns.isEmpty()) {
         PaymentModel.Link.RedeemDiscountCode
