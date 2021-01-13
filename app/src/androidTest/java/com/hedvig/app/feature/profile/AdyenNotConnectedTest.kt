@@ -23,7 +23,6 @@ import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
-import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
@@ -72,8 +71,7 @@ class AdyenNotConnectedTest : TestCase() {
             recycler {
                 childAt<ProfileTabScreen.Row>(3) {
                     caption {
-                        hasText(R.string.Card_Not_Connected,
-                            Money.of(349, "SEK").format(context()))
+                        hasText(R.string.Card_Not_Connected, defaultAmount)
                     }
                 }
             }

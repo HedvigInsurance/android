@@ -71,8 +71,7 @@ class DirectDebitConnectedTest : TestCase() {
             recycler {
                 childAt<ProfileTabScreen.Row>(3) {
                     caption {
-                        hasText(R.string.Direct_Debit_Connected,
-                            Money.of(349, "SEK").format(context()))
+                        hasText(R.string.Direct_Debit_Connected, defaultAmount)
                     }
                 }
             }

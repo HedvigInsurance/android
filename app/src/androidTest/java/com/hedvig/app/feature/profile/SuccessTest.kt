@@ -79,10 +79,7 @@ class SuccessTest : TestCase() {
                 }
                 childAt<ProfileTabScreen.Row>(3) {
                     caption {
-                        hasText(
-                            R.string.Direct_Debit_Not_Connected,
-                            Money.of(349, "SEK").format(context())
-                        )
+                        hasText(R.string.Direct_Debit_Not_Connected, defaultAmount)
                     }
                 }
                 childAt<ProfileTabScreen.Subtitle>(4) {
