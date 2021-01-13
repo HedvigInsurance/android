@@ -132,7 +132,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         arrayOf(
             PaymentModel.PayoutDetailsHeader,
             PaymentModel.PayoutConnectionStatus(apm.status),
-            PaymentModel.PayoutDetailsParagraph
+            PaymentModel.PayoutDetailsParagraph,
+            PaymentModel.Link.AdyenChangePayout,
         )
     } ?: arrayOf(
         PaymentModel.PayoutDetailsHeader,

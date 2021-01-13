@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin"
     android:layout_marginEnd="@dimen/base_margin_double"
-    android:textAppearance="?textAppearanceCaption"
-    android:text="@string/payment_screen.pay_out_footer_not_connected" />
+    android:layout_marginBottom="@dimen/base_margin_double"
+    android:text="@string/payment_screen.pay_out_footer_not_connected"
+    android:textAppearance="?textAppearanceCaption" />

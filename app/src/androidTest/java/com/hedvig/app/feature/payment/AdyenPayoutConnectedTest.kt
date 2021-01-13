@@ -60,13 +60,11 @@ class AdyenPayoutConnectedTest : TestCase() {
                         hasText(R.string.payment_screen_pay_connected_label)
                     }
                 }
-/*
-                childAt<PaymentScreen.Link>(4) {
+                childAt<PaymentScreen.Link>(6) {
                     click()
                 }
-*/
             }
-            //adyenConnectPayout { intended() }
+            adyenConnectPayout { intended() }
         }
     }
 }
