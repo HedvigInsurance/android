@@ -33,11 +33,7 @@ class DirectDebitConnectedTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-            )
-        },
+        LoggedInQuery.QUERY_DOCUMENT to apolloResponse { success(LOGGED_IN_DATA_WITH_REFERRALS_ENABLED) },
         ProfileQuery.QUERY_DOCUMENT to apolloResponse { success(PROFILE_DATA_BANK_ACCOUNT_ACTIVE) }
     )
 
@@ -55,7 +51,7 @@ class DirectDebitConnectedTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowDirectDebitNotConnected() = run {
+    fun shouldShowDirectDebitConnected() = run {
         every {
             marketProvider.market
         } returns Market.SE
