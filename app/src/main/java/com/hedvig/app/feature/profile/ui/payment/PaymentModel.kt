@@ -43,5 +43,6 @@ sealed class PaymentModel {
         object TrustlyChangePayin : Link()
         object AdyenChangePayin : Link()
         object AdyenAddPayout : Link()
+        object AdyenChangePayout : Link()
     }
 }

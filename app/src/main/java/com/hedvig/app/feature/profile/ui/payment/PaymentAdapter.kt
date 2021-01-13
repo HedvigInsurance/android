@@ -413,6 +413,7 @@ class PaymentAdapter(
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
                         PaymentModel.Link.AdyenAddPayout -> R.string.payment_screen_connect_pay_out_connect_payout_button
+                        PaymentModel.Link.AdyenChangePayout -> R.string.payment_screen_pay_out_change_payout_button
                     }
                 )
 
@@ -423,6 +424,7 @@ class PaymentAdapter(
                         -> R.drawable.ic_add_circle
                         PaymentModel.Link.TrustlyChangePayin,
                         PaymentModel.Link.AdyenChangePayin,
+                        PaymentModel.Link.AdyenChangePayout,
                         -> R.drawable.ic_edit
                     }
                 )
@@ -443,7 +445,9 @@ class PaymentAdapter(
                                 RefetchingRedeemCodeDialog.TAG
                             )
                     }
-                    PaymentModel.Link.AdyenAddPayout -> { _ ->
+                    PaymentModel.Link.AdyenAddPayout,
+                    PaymentModel.Link.AdyenChangePayout,
+                    -> { _ ->
                         marketProvider.market?.connectPayout(root.context)
                             ?.let { root.context.startActivity(it) }
                     }
