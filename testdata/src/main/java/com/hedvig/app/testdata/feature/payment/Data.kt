@@ -109,6 +109,7 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
 ).build()
 val PAYMENT_DATA_INACTIVE = PaymentDataBuilder(contracts = listOf(ContractStatus.PENDING)).build()
 val PAYMENT_DATA_PAYOUT_NOT_CONNECTED = PaymentDataBuilder(payoutConnected = false).build()
+val PAYMENT_DATA_PAYOUT_CONNECTED = PaymentDataBuilder(payoutConnected = true).build()
 val PAYMENT_DATA_MANY_ITEMS = PaymentDataBuilder(
     failedCharges = 3,
     chargeHistory = listOf(

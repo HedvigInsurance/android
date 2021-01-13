@@ -26,6 +26,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
         itemType(::PaymentHistoryLink)
         itemType(::TrustlyPayinDetails)
         itemType(::AdyenPayinDetails)
+        itemType(::AdyenPayoutDetails)
         itemType(::Link)
     })
 
@@ -65,6 +66,10 @@ class PaymentScreen : Screen<PaymentScreen>() {
     class AdyenPayinDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayinDetails>(parent) {
         val cardType = KTextView(parent) { withId(R.id.cardType) }
         val maskedCardNumber = KTextView(parent) { withId(R.id.maskedCardNumber) }
+    }
+
+    class AdyenPayoutDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayoutDetails>(parent) {
+        val status = KTextView(parent) { withId(R.id.status) }
     }
 
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {

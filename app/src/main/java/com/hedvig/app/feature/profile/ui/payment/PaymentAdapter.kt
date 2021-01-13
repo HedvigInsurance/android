@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AdyenPayinDetailsBinding
 import com.hedvig.app.databinding.CampaignInformationSectionBinding
@@ -17,7 +18,7 @@ import com.hedvig.app.databinding.NextPaymentCardBinding
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentRedeemCodeBinding
-import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
+import com.hedvig.app.databinding.PayoutConnectionStatusBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
@@ -38,7 +39,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class PaymentAdapter(
     private val marketProvider: MarketProvider,
     private val fragmentManager: FragmentManager,
-    private val tracker: PaymentTracker
+    private val tracker: PaymentTracker,
 ) :
     ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -54,6 +55,7 @@ class PaymentAdapter(
         is PaymentModel.TrustlyPayinDetails -> R.layout.trustly_payin_details
         is PaymentModel.AdyenPayinDetails -> R.layout.adyen_payin_details
         PaymentModel.PayoutDetailsHeader -> R.layout.payout_details_header
+        is PaymentModel.PayoutConnectionStatus -> R.layout.payout_connection_status
         is PaymentModel.PayoutDetailsParagraph -> R.layout.payout_details_paragraph
         is PaymentModel.Link -> R.layout.payment_redeem_code
     }
@@ -70,6 +72,7 @@ class PaymentAdapter(
         R.layout.trustly_payin_details -> ViewHolder.TrustlyPayinDetails(parent)
         R.layout.adyen_payin_details -> ViewHolder.AdyenPayinDetails(parent)
         R.layout.payout_details_header -> ViewHolder.PayoutDetailsHeader(parent)
+        R.layout.payout_connection_status -> ViewHolder.PayoutConnectionStatus(parent)
         R.layout.payout_details_paragraph -> ViewHolder.PayoutDetailsParagraph(parent)
         R.layout.payment_redeem_code -> ViewHolder.Link(parent)
         else -> throw Error("Invalid viewType: $viewType")
@@ -84,7 +87,7 @@ class PaymentAdapter(
             data: PaymentModel,
             marketProvider: MarketProvider,
             fragmentManager: FragmentManager,
-            tracker: PaymentTracker
+            tracker: PaymentTracker,
         ): Any?
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_header)) {
@@ -92,7 +95,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -103,7 +106,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.FailedPayments) {
                     return invalid(data)
@@ -133,7 +136,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.NextPayment) {
                     return invalid(data)
@@ -191,7 +194,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 connect.setHapticClickListener {
                     marketProvider.market?.connectPayin(connect.context)
@@ -207,7 +210,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.CampaignInformation) {
                     return invalid(data)
@@ -260,7 +263,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -271,7 +274,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Charge) {
                     return invalid(data)
@@ -291,7 +294,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 root.setHapticClickListener {
                     root.context.startActivity(
@@ -310,7 +313,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.TrustlyPayinDetails) {
                     return invalid(data)
@@ -338,7 +341,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.AdyenPayinDetails) {
                     return invalid(data)
@@ -361,29 +364,35 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = Unit
         }
 
-        class PayoutDetailsParagraph(parent: ViewGroup) :
-            PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
-            private val binding by viewBinding(PayoutDetailsParagraphBinding::bind)
+        class PayoutConnectionStatus(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.payout_connection_status)) {
+            private val binding by viewBinding(PayoutConnectionStatusBinding::bind)
             override fun bind(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
-                if (data !is PaymentModel.PayoutDetailsParagraph) {
+                if (data !is PaymentModel.PayoutConnectionStatus) {
                     return invalid(data)
                 }
 
-                root.setText(
-                    when (data) {
-                        PaymentModel.PayoutDetailsParagraph.Add -> R.string.payment_screen_pay_out_footer_not_connected
-                    }
-                )
+                status.isVisible = data.status == PayoutMethodStatus.ACTIVE
             }
+        }
+
+        class PayoutDetailsParagraph(parent: ViewGroup) :
+            PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
+            override fun bind(
+                data: PaymentModel,
+                marketProvider: MarketProvider,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
+            ) = Unit
         }
 
         class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
@@ -392,7 +401,7 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Link) {
                     return invalid(data)
@@ -410,15 +419,18 @@ class PaymentAdapter(
                 root.putCompoundDrawablesRelativeWithIntrinsicBounds(
                     end = when (data) {
                         PaymentModel.Link.RedeemDiscountCode,
-                        PaymentModel.Link.AdyenAddPayout -> R.drawable.ic_add_circle
+                        PaymentModel.Link.AdyenAddPayout,
+                        -> R.drawable.ic_add_circle
                         PaymentModel.Link.TrustlyChangePayin,
-                        PaymentModel.Link.AdyenChangePayin -> R.drawable.ic_edit
+                        PaymentModel.Link.AdyenChangePayin,
+                        -> R.drawable.ic_edit
                     }
                 )
 
                 root.setHapticClickListener(when (data) {
                     PaymentModel.Link.TrustlyChangePayin,
-                    PaymentModel.Link.AdyenChangePayin -> { _ ->
+                    PaymentModel.Link.AdyenChangePayin,
+                    -> { _ ->
                         marketProvider.market?.connectPayin(
                             root.context
                         )?.let { root.context.startActivity(it) }
