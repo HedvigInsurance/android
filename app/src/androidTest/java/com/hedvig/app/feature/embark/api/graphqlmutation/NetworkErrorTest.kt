@@ -45,12 +45,10 @@ class NetworkErrorTest : TestCase() {
 
         onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-            await atMost 2.seconds untilAsserted {
-                messages {
-                    hasSize(1)
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("a fourth message") }
-                    }
+            messages {
+                hasSize(1)
+                firstChild<EmbarkScreen.MessageRow> {
+                    text { hasText("a fourth message") }
                 }
             }
         }
