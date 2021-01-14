@@ -69,7 +69,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     }
 
     class AdyenPayoutDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayoutDetails>(parent) {
-        val status = KTextView(parent) { withId(R.id.status) }
+        val status = KTextView { withMatcher(parent) }
     }
 
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {

@@ -35,6 +35,7 @@ import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import e
 
 class PaymentAdapter(
     private val marketProvider: MarketProvider,
@@ -381,7 +382,19 @@ class PaymentAdapter(
                     return invalid(data)
                 }
 
-                status.isVisible = data.status == PayoutMethodStatus.ACTIVE
+                when (data.status) {
+                    PayoutMethodStatus.ACTIVE -> {
+                        root.setText(R.string.payment_screen_pay_connected_label)
+                        root.putCompoundDrawablesRelativeWithIntrinsicBounds(
+                            start = R.drawable.ic_checkmark_in_circle
+                        )
+                    }
+                    PayoutMethodStatus.PENDING -> TODO()
+                    else -> {
+                        e { "Invariant detected: Rendered ${this.javaClass.name} when status was ${data.status}" }
+                    }
+                }
+                //root.isVisible = data.status == PayoutMethodStatus.ACTIVE
             }
         }
 
