@@ -3,7 +3,6 @@ package com.hedvig.app.feature.profile.data
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
@@ -19,13 +18,6 @@ class ProfileRepository(
         .query(profileQuery)
         .watcher()
         .toFlow()
-
-    suspend fun refreshProfile() = apolloClient
-        .query(profileQuery)
-        .toBuilder()
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
-        .await()
 
     suspend fun updateEmail(input: String) =
         apolloClient.mutate(UpdateEmailMutation(input)).await()

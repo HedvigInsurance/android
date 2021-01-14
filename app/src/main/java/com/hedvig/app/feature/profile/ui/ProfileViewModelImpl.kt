@@ -9,6 +9,7 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
 import e
+import i
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,18 +19,12 @@ class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
     private val chatRepository: ChatRepository
 ) : ProfileViewModel() {
-    override val data: MutableLiveData<Result<ProfileQuery.Data>> = MutableLiveData()
+    override val data = MutableLiveData<Result<ProfileQuery.Data>>()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
 
     init {
         load()
-    }
-
-    override fun refreshProfile() {
-        viewModelScope.launch {
-            runCatching { profileRepository.refreshProfile() }
-        }
     }
 
     override fun saveInputs(emailInput: String, phoneNumberInput: String) {
@@ -70,9 +65,16 @@ class ProfileViewModelImpl(
             profileRepository
                 .profile()
                 .onEach { response ->
+                    i { "emitting from profile flow, response is: $response" }
+                    response.errors?.let {
+                        data.postValue(Result.failure(Error()))
+                        return@onEach
+                    }
                     response.data?.let { data.postValue(Result.success(it)) }
                 }
-                .catch { e(it) }
+                .catch { e ->
+                    data.postValue(Result.failure(e))
+                }
                 .launchIn(this)
         }
     }

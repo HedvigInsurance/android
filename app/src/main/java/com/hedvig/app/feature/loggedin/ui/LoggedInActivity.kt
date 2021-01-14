@@ -55,6 +55,7 @@ import javax.money.MonetaryAmount
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
+
     private val profileViewModel: ProfileViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()

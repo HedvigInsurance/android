@@ -19,6 +19,7 @@ import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import i
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -103,6 +104,7 @@ class ProfileAdapter(
             private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = with(binding) {
                 this.retry.setHapticClickListener {
+                    i { "Attempting retry" }
                     retry()
                 }
             }
