@@ -10,7 +10,7 @@ import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
-import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PAYOUT_CONNECTED
+import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_PAYOUT_PENDING
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
@@ -24,14 +24,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
 
-class AdyenPayoutConnectedTest : TestCase() {
+class AdyenPayoutPendingTest : TestCase() {
 
     @get:Rule
     val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PAYOUT_CONNECTED) },
+        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PAYOUT_PENDING) },
         PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
     )
 
@@ -47,7 +47,7 @@ class AdyenPayoutConnectedTest : TestCase() {
     )
 
     @Test
-    fun shouldShowConnectPayoutWhenInNorwayAndPayoutIsConnected() = run {
+    fun shouldShowConnectPayoutWhenInNorwayAndPayoutIsPending() = run {
         every { marketProvider.market } returns Market.NO
         activityRule.launchActivity(PaymentActivity.newInstance(context()))
 
@@ -56,7 +56,7 @@ class AdyenPayoutConnectedTest : TestCase() {
             recycler {
                 childAt<PaymentScreen.AdyenPayoutDetails>(4) {
                     status {
-                        hasText(R.string.payment_screen_pay_connected_label)
+                        hasText(R.string.payment_screen_bank_account_processing)
                     }
                 }
                 childAt<PaymentScreen.Link>(6) {
