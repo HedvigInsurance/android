@@ -30,7 +30,7 @@ data class PaymentDataBuilder(
     private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList(),
     private val payinType: PayinType = PayinType.TRUSTLY,
     private val payinConnected: Boolean = false,
-    private val payoutConnected: Boolean = false,
+    private val payoutConnectionStatus: PayoutMethodStatus? = null,
 ) {
     fun build() = PaymentQuery.Data(
         contracts = contracts.map {
@@ -108,13 +108,7 @@ data class PaymentDataBuilder(
         } else {
             null
         },
-        activePayoutMethods = if (payoutConnected) {
-            PaymentQuery.ActivePayoutMethods(
-                status = PayoutMethodStatus.ACTIVE
-            )
-        } else {
-            null
-        }
+        activePayoutMethods = payoutConnectionStatus?.let { PaymentQuery.ActivePayoutMethods(status = it) }
     )
 }
 

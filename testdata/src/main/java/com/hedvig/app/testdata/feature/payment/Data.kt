@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months
@@ -108,8 +109,11 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
     )
 ).build()
 val PAYMENT_DATA_INACTIVE = PaymentDataBuilder(contracts = listOf(ContractStatus.PENDING)).build()
-val PAYMENT_DATA_PAYOUT_NOT_CONNECTED = PaymentDataBuilder(payoutConnected = false).build()
-val PAYMENT_DATA_PAYOUT_CONNECTED = PaymentDataBuilder(payoutConnected = true).build()
+val PAYMENT_DATA_PAYOUT_NOT_CONNECTED =
+    PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.NEEDS_SETUP).build()
+val PAYMENT_DATA_PAYOUT_CONNECTED = PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.ACTIVE).build()
+val PAYMENT_DATA_PAYOUT_PENDING = PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.PENDING).build()
+
 val PAYMENT_DATA_MANY_ITEMS = PaymentDataBuilder(
     failedCharges = 3,
     chargeHistory = listOf(

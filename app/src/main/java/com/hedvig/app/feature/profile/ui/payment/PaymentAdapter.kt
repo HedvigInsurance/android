@@ -389,12 +389,14 @@ class PaymentAdapter(
                             start = R.drawable.ic_checkmark_in_circle
                         )
                     }
-                    PayoutMethodStatus.PENDING -> TODO()
+                    PayoutMethodStatus.PENDING -> {
+                        root.setText(R.string.payment_screen_bank_account_processing)
+                        root.putCompoundDrawablesRelativeWithIntrinsicBounds()
+                    }
                     else -> {
                         e { "Invariant detected: Rendered ${this.javaClass.name} when status was ${data.status}" }
                     }
                 }
-                //root.isVisible = data.status == PayoutMethodStatus.ACTIVE
             }
         }
 
