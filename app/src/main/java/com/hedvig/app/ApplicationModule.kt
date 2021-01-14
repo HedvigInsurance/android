@@ -89,8 +89,8 @@ import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.MemberIdRepository
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -291,6 +291,10 @@ val viewModelModule = module {
 
 val choosePlanModule = module {
     viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
+}
+
+val onboardingModule = module {
+    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
 
 val marketPickerModule = module {
