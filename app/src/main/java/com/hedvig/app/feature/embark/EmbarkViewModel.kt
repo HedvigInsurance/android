@@ -17,26 +17,11 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
-import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.all
-import kotlin.collections.any
-import kotlin.collections.filterIsInstance
-import kotlin.collections.find
-import kotlin.collections.first
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.reduce
+import java.util.Stack
 import kotlin.collections.set
 import kotlin.math.max
 
