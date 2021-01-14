@@ -47,12 +47,10 @@ class SingleVariableTest : TestCase() {
         Screen.onScreen<EmbarkScreen> {
             textActionSingleInput { typeText("world") }
             textActionSubmit { click() }
-            await atMost 2.seconds untilAsserted {
-                messages {
-                    hasSize(1)
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("api result: world") }
-                    }
+            messages {
+                hasSize(1)
+                firstChild<EmbarkScreen.MessageRow> {
+                    text { hasText("api result: world") }
                 }
             }
         }
