@@ -65,7 +65,6 @@ class ProfileViewModelImpl(
             profileRepository
                 .profile()
                 .onEach { response ->
-                    i { "emitting from profile flow, response is: $response" }
                     response.errors?.let {
                         data.postValue(Result.failure(Error()))
                         return@onEach
