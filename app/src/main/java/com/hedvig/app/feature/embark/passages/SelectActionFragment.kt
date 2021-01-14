@@ -3,17 +3,21 @@ package com.hedvig.app.feature.embark.passages
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
@@ -35,22 +39,26 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             messages.adapter = MessageAdapter().apply {
                 submitList(data.messages)
             }
-            actions.adapter = SelectActionAdapter { selectAction ->
-                selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
-                    model.putInStore(key, value)
-                }
-                model.putInStore("${data.passageName}Result", selectAction.label)
-                val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
-                job?.cancel()
-                job = lifecycleScope.launch {
-                    animateResponse(response, responseText)
-                    model.navigateToPassage(selectAction.link)
-                }
+
+            actions.adapter = SelectActionAdapter { selectAction: SelectAction, view: View ->
+                view.hapticClicks()
+                    .mapLatest { onActionSelected(selectAction, data, response) }
+                    .onEach { model.navigateToPassage(selectAction.link) }
+                    .launchIn(lifecycleScope)
             }.apply {
                 submitList(data.actions)
             }
             actions.addItemDecoration(SelectActionDecoration())
         }
+    }
+
+    private suspend fun onActionSelected(selectAction: SelectAction, data: SelectActionPassage, response: TextView) {
+        selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
+            model.putInStore(key, value)
+        }
+        model.putInStore("${data.passageName}Result", selectAction.label)
+        val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
+        animateResponse(response, responseText)
     }
 
     companion object {
