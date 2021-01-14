@@ -17,11 +17,13 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.safeLet
+import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Stack
+import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.max
 
