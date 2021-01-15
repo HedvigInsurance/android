@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.CheckResult
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,12 @@ import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 
 fun View.show(): View {
     if (visibility != View.VISIBLE) {
@@ -287,3 +294,11 @@ val View.centerX: Int
 
 val View.centerY: Int
     get() = (y + height / 2).toInt()
+
+fun View.hapticClicks(): Flow<Unit> = callbackFlow {
+    setOnClickListener {
+        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        runCatching { offer(Unit) }.getOrDefault(false)
+    }
+    awaitClose { setOnClickListener(null) }
+}.conflate()
