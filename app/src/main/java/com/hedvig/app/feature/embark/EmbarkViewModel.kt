@@ -241,10 +241,6 @@ abstract class EmbarkViewModel : ViewModel() {
             }
         )
 
-/*
-        val passagesLeft = getPassagesLeft(passageWithMessage)
-        val progress = Percent((((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100).toInt())
-*/
         return passageWithMessage
     }
 
