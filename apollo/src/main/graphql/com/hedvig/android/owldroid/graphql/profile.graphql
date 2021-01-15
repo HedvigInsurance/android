@@ -7,15 +7,23 @@ query Profile {
     phoneNumber
   }
   insuranceCost {
-    ... CostFragment
+    ...CostFragment
     freeUntil
   }
   cashback {
-    ... CashbackFragment
+    ...CashbackFragment
   }
   cashbackOptions {
     id
     name
     paragraph
+  }
+  bankAccount {
+    directDebitStatus
+  }
+  activePaymentMethods {
+    storedPaymentMethodsDetails {
+      id
+    }
   }
 }

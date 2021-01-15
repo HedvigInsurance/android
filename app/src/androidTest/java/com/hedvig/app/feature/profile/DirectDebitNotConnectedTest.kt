@@ -14,19 +14,17 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
-import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
-import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
 
-class SuccessTest : TestCase() {
+class DirectDebitNotConnectedTest : TestCase() {
     @get:Rule
     val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
 
@@ -50,7 +48,7 @@ class SuccessTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldSuccessfullyLoadProfileTab() = run {
+    fun shouldShowDirectDebitNotConnected() = run {
         every {
             marketProvider.market
         } returns Market.SE
@@ -64,33 +62,13 @@ class SuccessTest : TestCase() {
 
         ProfileTabScreen {
             recycler {
-                childAt<ProfileTabScreen.Title>(0) {
-                    isVisible()
-                }
-                childAt<ProfileTabScreen.Row>(1) {
-                    caption { hasText("Test Testerson") }
-                }
-                childAt<ProfileTabScreen.Row>(2) {
-                    caption { hasText("Example Charity") }
-                }
                 childAt<ProfileTabScreen.Row>(3) {
                     caption {
                         hasText(R.string.Direct_Debit_Not_Connected, defaultAmount)
                     }
                 }
-                childAt<ProfileTabScreen.Subtitle>(4) {
-                    isVisible()
-                }
-                childAt<ProfileTabScreen.Row>(5) {
-                    isVisible()
-                }
-                childAt<ProfileTabScreen.Row>(6) {
-                    isVisible()
-                }
-                childAt<ProfileTabScreen.Logout>(7) {
-                    isVisible()
-                }
             }
         }
     }
 }
+
