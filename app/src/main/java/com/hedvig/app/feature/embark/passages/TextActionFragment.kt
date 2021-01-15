@@ -115,7 +115,7 @@ data class TextActionData(
     val submitLabel: String,
     val key: String,
     val passageName: String,
-    val mask: String?
+    val mask: String?,
 ) : Parcelable {
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =

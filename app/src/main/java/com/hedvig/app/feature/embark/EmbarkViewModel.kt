@@ -43,7 +43,7 @@ enum class NavigationDirection {
 data class EmbarkModel(
     val passage: EmbarkStoryQuery.Passage?,
     val navigationDirection: NavigationDirection,
-    val progress: Percent
+    val progress: Percent,
 )
 
 abstract class EmbarkViewModel : ViewModel() {
@@ -64,7 +64,9 @@ abstract class EmbarkViewModel : ViewModel() {
         storyData.embarkStory?.let { story ->
             val firstPassage = story.passages.first { it.id == story.startPassage }
             totalSteps = getPassagesLeft(firstPassage)
-            _data.postValue(EmbarkModel(preProcessPassage(firstPassage), NavigationDirection.FORWARDS, currentProgress(firstPassage)))
+            _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
+                NavigationDirection.FORWARDS,
+                currentProgress(firstPassage)))
         }
     }
 
@@ -97,12 +99,19 @@ abstract class EmbarkViewModel : ViewModel() {
                 }
             }
             _data.value?.passage?.name?.let { backStack.push(it) }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage), NavigationDirection.FORWARDS, currentProgress(nextPassage)))
+            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
+                NavigationDirection.FORWARDS,
+                currentProgress(nextPassage)))
         }
     }
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
-        TODO()
+        if (passage == null) {
+            return Percent(0)
+        }
+        val passagesLeft = getPassagesLeft(passage)
+        val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100
+        return Percent(progress.toInt())
     }
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
@@ -215,7 +224,9 @@ abstract class EmbarkViewModel : ViewModel() {
 
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage), NavigationDirection.BACKWARDS, currentProgress(nextPassage)))
+            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
+                NavigationDirection.BACKWARDS,
+                currentProgress(nextPassage)))
             return true
         }
         return false
@@ -484,7 +495,6 @@ abstract class EmbarkViewModel : ViewModel() {
                 return null
             }
     }
-
 }
 
 class EmbarkViewModelImpl(
@@ -495,8 +505,7 @@ class EmbarkViewModelImpl(
         viewModelScope.launch {
             val result = runCatching {
                 embarkRepository
-                    .embarkStoryAsync(name)
-                    .await()
+                    .embarkStory(name)
             }
 
             result.getOrNull()?.data?.let { d ->

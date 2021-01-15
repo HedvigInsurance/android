@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.ApolloClientWrapper
@@ -16,10 +17,10 @@ class EmbarkRepository(
     private val okHttpClient: OkHttpClient,
     private val application: HedvigApplication
 ) {
-    fun embarkStoryAsync(name: String) = apolloClientWrapper
+    suspend fun embarkStory(name: String) = apolloClientWrapper
         .apolloClient
         .query(EmbarkStoryQuery(name))
-        .toDeferred()
+        .await()
 
     suspend fun graphQLQuery(query: String, variables: JSONObject? = null) = okHttpClient
         .newCall(

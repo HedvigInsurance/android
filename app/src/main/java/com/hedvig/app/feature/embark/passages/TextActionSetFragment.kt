@@ -14,7 +14,6 @@ import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -93,7 +92,7 @@ data class TextActionSetData(
     val messages: List<String>,
     val submitLabel: String,
     val passageName: String,
-    val mask: List<String?>
+    val mask: List<String?>,
 ) : Parcelable {
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.Data3, passageName: String) =

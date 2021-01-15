@@ -10,7 +10,6 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -23,10 +22,6 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,14 +74,12 @@ data class SelectActionPassage(
     val messages: List<String>,
     val actions: List<SelectAction>,
     val passageName: String,
-    val direction: NavigationDirection,
 ) : Parcelable {
     companion object {
         fun from(
             messages: List<String>,
             data: EmbarkStoryQuery.Data1,
             passageName: String,
-            navigationDirection: NavigationDirection,
         ) =
             SelectActionPassage(
                 messages,
@@ -99,7 +92,6 @@ data class SelectActionPassage(
                     )
                 },
                 passageName,
-                navigationDirection
             )
     }
 }
