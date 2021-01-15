@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.transition.Transition
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
@@ -86,13 +88,22 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 actionBar?.title = passage?.name
 
                 supportFragmentManager.findFragmentById(R.id.passageContainer)?.exitTransition =
-                    MaterialSharedAxis(MaterialSharedAxis.Z,
+                    MaterialSharedAxis(SHARED_AXIS,
                         embarkData.navigationDirection == NavigationDirection.FORWARDS)
 
                 val newFragment = passageFragment(passage)
 
-                newFragment.enterTransition = MaterialSharedAxis(MaterialSharedAxis.X,
-                    embarkData.navigationDirection == NavigationDirection.FORWARDS)
+                val transition: Transition = when (embarkData.navigationDirection) {
+                    NavigationDirection.FORWARDS,
+                    NavigationDirection.BACKWARDS,
+                    -> {
+                        MaterialSharedAxis(SHARED_AXIS,
+                            embarkData.navigationDirection == NavigationDirection.FORWARDS)
+                    }
+                    NavigationDirection.INITIAL -> MaterialFadeThrough()
+                }
+
+                newFragment.enterTransition = transition
 
                 supportFragmentManager
                     .beginTransaction()
@@ -102,7 +113,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
-    fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
+    private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
         passage?.action?.asEmbarkSelectAction?.let { options ->
             val selectActionData = SelectActionPassage.from(
                 passage.messages.map { it.fragments.messageFragment.text },
@@ -147,6 +158,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     companion object {
+        private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
 
         fun newInstance(context: Context, storyName: String) =

@@ -27,25 +27,6 @@ import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.max
 
-sealed class ExpressionResult {
-    data class True(
-        val resultValue: String?,
-    ) : ExpressionResult()
-
-    object False : ExpressionResult()
-}
-
-enum class NavigationDirection {
-    FORWARDS,
-    BACKWARDS,
-}
-
-data class EmbarkModel(
-    val passage: EmbarkStoryQuery.Passage?,
-    val navigationDirection: NavigationDirection,
-    val progress: Percent,
-)
-
 abstract class EmbarkViewModel : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
@@ -65,7 +46,7 @@ abstract class EmbarkViewModel : ViewModel() {
             val firstPassage = story.passages.first { it.id == story.startPassage }
             totalSteps = getPassagesLeft(firstPassage)
             _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
-                NavigationDirection.FORWARDS,
+                NavigationDirection.INITIAL,
                 currentProgress(firstPassage)))
         }
     }
