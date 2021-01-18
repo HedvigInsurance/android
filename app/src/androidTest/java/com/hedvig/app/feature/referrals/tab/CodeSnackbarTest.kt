@@ -75,7 +75,7 @@ class CodeSnackbarTest : TestCase() {
             }
         }
 
-        activityRule.runOnUiThread {
+        activityRule.scenario.onActivity {
             val clipboardContent = context()
                 .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
             assertThat(clipboardContent).isEqualTo("TEST123")

@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.onboarding
 
-import androidx.test.rule.ActivityTestRule
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
-import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.screens.MoreOptionsScreen
+import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -14,7 +14,7 @@ import org.junit.Test
 class MoreOptionsTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(MoreOptionsActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(MoreOptionsActivity::class.java)
 
     var shouldFail = true
 
@@ -32,7 +32,7 @@ class MoreOptionsTest : TestCase() {
 
     @Test
     fun openMoreOptionsActivity() = run {
-        activityRule.launchActivity(null)
+        activityRule.launch()
         MoreOptionsScreen {
             recycler {
                 childAt<MoreOptionsScreen.Row>(1) {
