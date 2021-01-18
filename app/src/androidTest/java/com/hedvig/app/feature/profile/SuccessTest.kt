@@ -1,12 +1,5 @@
 package com.hedvig.app.feature.profile
 
-import androidx.test.rule.ActivityTestRule
-import android.view.View
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
@@ -21,14 +14,12 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
-import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
