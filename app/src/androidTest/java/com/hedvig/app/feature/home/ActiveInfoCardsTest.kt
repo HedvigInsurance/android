@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -17,11 +16,11 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.hedvig.app.util.stub
-import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
@@ -31,7 +30,7 @@ import org.koin.dsl.module
 
 class ActiveInfoCardsTest : TestCase() {
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -61,9 +60,7 @@ class ActiveInfoCardsTest : TestCase() {
 
     @Test
     fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() = run {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
-
-        stubExternalIntents()
+        activityRule.launch(LoggedInActivity.newInstance(context()))
 
         onScreen<HomeTabScreen> {
             recycler {

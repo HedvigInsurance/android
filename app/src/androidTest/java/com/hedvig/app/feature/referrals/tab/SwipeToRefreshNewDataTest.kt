@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -11,6 +10,7 @@ import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.swipeDownInCenter
@@ -21,7 +21,7 @@ import org.junit.Test
 class SwipeToRefreshNewDataTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     var firstLoadFlag = false
 
@@ -52,7 +52,7 @@ class SwipeToRefreshNewDataTest : TestCase() {
             initialTab = LoggedInTabs.REFERRALS
         )
 
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         Screen.onScreen<ReferralTabScreen> {
             share { isVisible() }

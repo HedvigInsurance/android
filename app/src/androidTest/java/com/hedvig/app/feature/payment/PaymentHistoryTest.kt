@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -9,6 +8,7 @@ import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apolloResponse
@@ -21,7 +21,7 @@ import org.junit.Test
 class PaymentHistoryTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -34,7 +34,7 @@ class PaymentHistoryTest : TestCase() {
 
     @Test
     fun shouldShowPaymentHistoryWhenUserHasHistoricPayments() = run {
-        activityRule.launchActivity(PaymentActivity.newInstance(context()))
+        activityRule.launch(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
             paymentHistory { stub() }

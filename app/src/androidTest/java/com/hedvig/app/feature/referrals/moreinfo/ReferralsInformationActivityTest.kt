@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.referrals.moreinfo
 
 import android.content.Intent
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -15,6 +14,7 @@ import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
@@ -27,7 +27,7 @@ import org.junit.Test
 class ReferralsInformationActivityTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -48,7 +48,7 @@ class ReferralsInformationActivityTest : TestCase() {
             initialTab = LoggedInTabs.REFERRALS
         )
 
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         onScreen<ReferralTabScreen> {
             moreInfo { click() }

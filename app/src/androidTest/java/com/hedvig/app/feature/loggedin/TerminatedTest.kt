@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.android.owldroid.graphql.HomeQuery
@@ -14,6 +13,7 @@ import com.hedvig.app.testdata.feature.loggedin.CONTRACT_STATUS_DATA_ONE_TERMINA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
@@ -29,7 +29,7 @@ import org.junit.Test
 @Ignore("Currently malfunctioning.")
 class TerminatedTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(SplashActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(SplashActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -56,7 +56,7 @@ class TerminatedTest : TestCase() {
     }.after {
         context().setIsLoggedIn(wasLoggedIn)
     }.run {
-        activityRule.launchActivity(null)
+        activityRule.launch()
 
         onScreen<ForeverDeepLinkTest.SplashScreen> {
             await atMost 5.seconds untilAsserted {
