@@ -73,7 +73,14 @@ query EmbarkStory($name: String!, $locale: String!) {
         }
         ... on EmbarkPreviousInsuranceProviderAction {
           data {
-            providers
+            insuranceProviders {
+              name
+              logo {
+                variants {
+                  ... IconVariantsFragment
+                }
+              }
+            }
           }
         }
       }

@@ -13,12 +13,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
-<<<<<<< HEAD
 import com.hedvig.app.feature.embark.NavigationDirection
-=======
-import com.hedvig.app.feature.embark.passages.PreviousInsurerActionPassage
-import com.hedvig.app.feature.embark.passages.PreviousInsurerFragment
->>>>>>> d9901190... some progress
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
@@ -26,7 +21,8 @@ import com.hedvig.app.feature.embark.passages.TextActionFragment
 import com.hedvig.app.feature.embark.passages.TextActionSetData
 import com.hedvig.app.feature.embark.passages.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
-import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerData
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.synthetic.main.activity_embark.*
@@ -153,12 +149,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
 
         passage?.action?.asEmbarkPreviousInsuranceProviderAction?.let { previousInsuranceAction ->
-            previousInsuranceAction.data?.let { data ->
-                val previousInsurerData =
-                    PreviousInsurerActionPassage.from(
-                        messages = passage.messages.map { it.fragments.messageFragment.text })
-                return PreviousInsurerFragment.newInstance(previousInsurerData)
-            }
+            return PreviousInsurerData(
+                messages = passage.messages.map { it.fragments.messageFragment.text },
+                previousInsurers = previousInsuranceAction
+                    .data
+                    .insuranceProviders
+                    .map { PreviousInsurerData.PreviousInsurer(it.name, it.logo.variants.fragments.iconVariantsFragment.light.svgUrl) }
+            )
+                .let(PreviousInsurerFragment::newInstance)
         }
 
         return UpgradeAppFragment.newInstance()
