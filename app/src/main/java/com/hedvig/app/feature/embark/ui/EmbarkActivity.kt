@@ -4,10 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.transition.Transition
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.SelectActionPassage
 import com.hedvig.app.feature.embark.passages.TextActionData
@@ -79,63 +85,69 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 progressToolbar.setProgress(embarkData.progress)
 
                 val passage = embarkData.passage
-                actionBar?.title = passage.name
-                passage.action?.asEmbarkSelectAction?.let { options ->
-                    val selectActionData = SelectActionPassage.from(
-                        passage.messages.map { it.fragments.messageFragment.text },
-                        options.data,
-                        passage.name
-                    )
+                actionBar?.title = passage?.name
 
-                    val selectActionFragment = SelectActionFragment.newInstance(selectActionData)
+                supportFragmentManager.findFragmentById(R.id.passageContainer)?.exitTransition =
+                    MaterialSharedAxis(SHARED_AXIS,
+                        embarkData.navigationDirection == NavigationDirection.FORWARDS)
 
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.passageContainer, selectActionFragment)
-                        .commit()
-                    return@observe
-                }
+                val newFragment = passageFragment(passage)
 
-                passage.action?.asEmbarkTextAction?.let { textAction ->
-                    val textActionData =
-                        TextActionData.from(
-                            passage.messages.map { it.fragments.messageFragment.text },
-                            textAction.data,
-                            passage.name
-                        )
-
-                    val textActionFragment = TextActionFragment.newInstance(textActionData)
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.passageContainer, textActionFragment)
-                        .commit()
-                    return@observe
-                }
-
-                passage.action?.asEmbarkTextActionSet?.let { textActionSet ->
-                    textActionSet.data?.let { data ->
-                        val textActionSetData =
-                            TextActionSetData.from(
-                                passage.messages.map { it.fragments.messageFragment.text },
-                                data,
-                                passage.name
-                            )
-                        val textActionSetFragment =
-                            TextActionSetFragment.newInstance(textActionSetData)
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(R.id.passageContainer, textActionSetFragment)
-                            .commit()
+                val transition: Transition = when (embarkData.navigationDirection) {
+                    NavigationDirection.FORWARDS,
+                    NavigationDirection.BACKWARDS,
+                    -> {
+                        MaterialSharedAxis(SHARED_AXIS,
+                            embarkData.navigationDirection == NavigationDirection.FORWARDS)
                     }
-                    return@observe
+                    NavigationDirection.INITIAL -> MaterialFadeThrough()
                 }
+
+                newFragment.enterTransition = transition
 
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
+                    .replace(R.id.passageContainer, newFragment)
                     .commit()
             }
         }
+    }
+
+    private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
+        passage?.action?.asEmbarkSelectAction?.let { options ->
+            val selectActionData = SelectActionPassage.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                options.data,
+                passage.name,
+            )
+
+            return SelectActionFragment.newInstance(selectActionData)
+        }
+
+        passage?.action?.asEmbarkTextAction?.let { textAction ->
+            val textActionData =
+                TextActionData.from(
+                    passage.messages.map { it.fragments.messageFragment.text },
+                    textAction.data,
+                    passage.name
+                )
+
+            return TextActionFragment.newInstance(textActionData)
+        }
+
+        passage?.action?.asEmbarkTextActionSet?.let { textActionSet ->
+            textActionSet.data?.let { data ->
+                val textActionSetData =
+                    TextActionSetData.from(
+                        passage.messages.map { it.fragments.messageFragment.text },
+                        data,
+                        passage.name
+                    )
+                return TextActionSetFragment.newInstance(textActionSetData)
+            }
+        }
+
+        return UpgradeAppFragment.newInstance()
     }
 
     override fun onBackPressed() {
@@ -146,6 +158,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     companion object {
+        private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
 
         fun newInstance(context: Context, storyName: String) =

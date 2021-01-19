@@ -14,7 +14,6 @@ import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -23,8 +22,6 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
-
-    private var job: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,10 +73,14 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 data class SelectActionPassage(
     val messages: List<String>,
     val actions: List<SelectAction>,
-    val passageName: String
+    val passageName: String,
 ) : Parcelable {
     companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.Data1, passageName: String) =
+        fun from(
+            messages: List<String>,
+            data: EmbarkStoryQuery.Data1,
+            passageName: String,
+        ) =
             SelectActionPassage(
                 messages,
                 data.options.map {
@@ -90,7 +91,7 @@ data class SelectActionPassage(
                         it.values
                     )
                 },
-                passageName
+                passageName,
             )
     }
 }
@@ -100,5 +101,5 @@ data class SelectAction(
     val link: String,
     val label: String,
     val keys: List<String>,
-    val values: List<String>
+    val values: List<String>,
 ) : Parcelable
