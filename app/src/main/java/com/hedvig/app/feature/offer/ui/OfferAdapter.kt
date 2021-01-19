@@ -42,7 +42,7 @@ import java.time.LocalDate
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
-    private val removeDiscount: () -> Unit
+    private val removeDiscount: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -75,7 +75,7 @@ class OfferAdapter(
             data: OfferModel,
             fragmentManager: FragmentManager,
             tracker: OfferTracker,
-            removeDiscount: () -> Unit
+            removeDiscount: () -> Unit,
         )
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_header)) {
@@ -85,7 +85,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 if (data is OfferModel.Header) {
                     binding.apply {
@@ -223,7 +223,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) = Unit
         }
 
@@ -238,7 +238,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 if (data is OfferModel.Facts) {
                     binding.apply {
@@ -335,26 +335,22 @@ class OfferAdapter(
 
                     extraBuildings.forEach { eb ->
                         val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
-                        val row = LayoutInflater
-                            .from(additionalBuildingsContainer.context)
-                            .inflate(
-                                R.layout.additional_buildings_row,
+                        val binding =
+                            AdditionalBuildingsRowBinding.inflate(LayoutInflater.from(additionalBuildingsContainer.context),
                                 additionalBuildingsContainer,
-                                false
-                            )
-                        val binding by viewBinding(AdditionalBuildingsRowBinding::bind)
+                                false)
                         binding.title.text = extraBuilding.displayName
 
                         var bodyText =
-                            row.resources.getString(
+                            binding.root.resources.getString(
                                 R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
                                 extraBuilding.area
                             )
                         if (extraBuilding.hasWaterConnected) {
-                            bodyText += ", " + row.resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                            bodyText += ", " + binding.root.resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
                         }
                         binding.body.text = bodyText
-                        additionalBuildingsContainer.addView(row)
+                        additionalBuildingsContainer.addView(binding.root)
                     }
                     additionalBuildingsContainer.show()
                 }
@@ -372,7 +368,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 binding.apply {
                     if (perils.adapter == null) {
@@ -392,14 +388,15 @@ class OfferAdapter(
                             TypeOfContract.SE_APARTMENT_BRF,
                             TypeOfContract.SE_APARTMENT_STUDENT_BRF,
                             TypeOfContract.NO_HOME_CONTENT_OWN,
-                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN
+                            TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                             -> {
                                 perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_BRF)
                             }
                             TypeOfContract.NO_HOME_CONTENT_RENT,
                             TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                             TypeOfContract.SE_APARTMENT_RENT,
-                            TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
+                            TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+                            -> {
                                 perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_RENTAL)
                             }
                             else -> {
@@ -427,7 +424,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 binding.apply {
                     if (termsDocuments.adapter == null) {
@@ -457,7 +454,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName
@@ -478,7 +475,7 @@ class OfferAdapter(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
-                removeDiscount: () -> Unit
+                removeDiscount: () -> Unit,
             ) {
                 itemView.setHapticClickListener {
                     tracker.floatingSign()
@@ -494,25 +491,25 @@ class OfferAdapter(
 
 sealed class OfferModel {
     data class Header(
-        val inner: OfferQuery.Data
+        val inner: OfferQuery.Data,
     ) : OfferModel()
 
     object Info : OfferModel()
 
     data class Facts(
-        val inner: OfferQuery.Data
+        val inner: OfferQuery.Data,
     ) : OfferModel()
 
     data class Perils(
-        val inner: OfferQuery.Data
+        val inner: OfferQuery.Data,
     ) : OfferModel()
 
     data class Terms(
-        val inner: OfferQuery.Data
+        val inner: OfferQuery.Data,
     ) : OfferModel()
 
     data class Switcher(
-        val displayName: String?
+        val displayName: String?,
     ) : OfferModel()
 
     object Footer : OfferModel()
