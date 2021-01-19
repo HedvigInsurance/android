@@ -7,6 +7,7 @@ import com.hedvig.app.offerModule
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -31,6 +32,11 @@ class OfferMockActivity : MockActivity() {
             MockOfferViewModel.mockData =
                 OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
             startActivity(OfferActivity.newInstance(this@OfferMockActivity))
+        }
+        clickableItem("Swedish House") {
+            MockOfferViewModel.mockData =
+                OFFER_DATA_SWEDISH_HOUSE
+            startActivity(OfferActivity.newInstance(context))
         }
     }
 }

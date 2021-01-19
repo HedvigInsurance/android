@@ -17,6 +17,7 @@ class OfferScreen : Screen<OfferScreen>() {
     val scroll = KRecyclerView({ withId(R.id.offerScroll) }, {
         itemType(::HeaderItem)
         itemType(::SwitcherItem)
+        itemType(::Facts)
     })
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
@@ -25,6 +26,11 @@ class OfferScreen : Screen<OfferScreen>() {
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
         val title = KTextView(parent) { withId(R.id.switchTitle) }
+    }
+
+    class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {
+        val expandableContent = KView(parent){withId(R.id.expandableContentView)}
+        val additionalBuildings = KView(parent) { withId(R.id.additionalBuildingsContainer) }
     }
 }
 
