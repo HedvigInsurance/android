@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?textAppearanceSubtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/info"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/embark_onboarding_more_options.user_id_label" />
@@ -21,13 +20,15 @@
         android:id="@+id/info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="viewEnd"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:gravity="end"
         android:textAppearance="?textAppearanceBody1"
         app:drawableTint="?android:textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/label"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_min="80dp"
         tools:text="231491869921" />
 
     <ImageView
