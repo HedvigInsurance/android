@@ -126,7 +126,7 @@ class OnboardingAdapter(
                                 shimmer.translationX = animation.animatedValue as Float
                             }
                             doOnStart {
-                                shimmer.visibility = View.VISIBLE
+                                shimmer.isVisible = true
                             }
                             doOnEnd {
                                 shimmer.translationX = shimmerStartPosition
