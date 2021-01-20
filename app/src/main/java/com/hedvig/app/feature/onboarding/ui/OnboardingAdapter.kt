@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.animation.doOnStart
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -125,8 +126,12 @@ class OnboardingAdapter(
                                 addUpdateListener { animation ->
                                     shimmer.translationX = animation.animatedValue as Float
                                 }
+                                doOnStart {
+                                    shimmer.visibility = View.VISIBLE
+                                }
                                 doOnEnd {
                                     shimmer.translationX = shimmerStartPosition
+                                    shimmer.visibility = View.INVISIBLE
                                 }
                                 start()
                             }
@@ -149,3 +154,4 @@ class OnboardingAdapter(
         }
     }
 }
+
