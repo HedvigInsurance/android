@@ -130,7 +130,7 @@ class OnboardingAdapter(
                             }
                             doOnEnd {
                                 shimmer.translationX = shimmerStartPosition
-                                shimmer.visibility = View.INVISIBLE
+                                shimmer.isVisible = false
                             }
                             start()
                         }
