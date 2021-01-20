@@ -15,13 +15,8 @@
 
         <ImageView
             android:id="@+id/openSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_horizontal"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:clickable="true"
+            style="@style/ToolbarIcon.Start"
             android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-            android:focusable="true"
             app:srcCompat="@drawable/ic_settings" />
 
         <ImageView

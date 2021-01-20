@@ -126,13 +126,9 @@
 
         <ImageView
             android:id="@+id/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/ToolbarIcon.Start"
             android:contentDescription="@string/KEY_GEAR_RECCEIPT_VIEW_CLOSE_BUTTON"
-            android:padding="@dimen/base_margin"
-            app:srcCompat="@drawable/ic_close"
-            app:tint="@color/icon_tint" />
+            app:srcCompat="@drawable/ic_close" />
 
         <TextView
             android:layout_width="wrap_content"
