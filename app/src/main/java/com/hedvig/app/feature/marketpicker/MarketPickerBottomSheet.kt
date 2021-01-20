@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
-import com.hedvig.app.databinding.MarketPickerBottomSheetBinding
+import com.hedvig.app.databinding.ListBottomSheetBinding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerBottomSheet : BottomSheetDialogFragment() {
-    private val binding by viewBinding(MarketPickerBottomSheetBinding::bind)
+    private val binding by viewBinding(ListBottomSheetBinding::bind)
     private val tracker: MarketPickerTracker by inject()
     private val viewModel: MarketPickerViewModel by sharedViewModel()
     private val marketProvider: MarketProvider by inject()
@@ -21,7 +21,7 @@ class MarketPickerBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.market_picker_bottom_sheet, container, false)
+    ): View? = inflater.inflate(R.layout.list_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {

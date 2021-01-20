@@ -19,10 +19,8 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToPadding="false"
         android:layout_weight="1"
-        android:paddingStart="@dimen/base_margin_triple"
-        android:paddingEnd="@dimen/base_margin_triple"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="3"
         tools:listitem="@layout/picker_item_layout" />
