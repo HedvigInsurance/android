@@ -36,7 +36,7 @@ class InactiveTest : TestCase() {
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.NextPayment>(0) {
+                childAt<PaymentScreen.NextPayment>(1) {
                     paymentDate { hasText(R.string.PAYMENTS_CARD_NO_STARTDATE) }
                 }
             }

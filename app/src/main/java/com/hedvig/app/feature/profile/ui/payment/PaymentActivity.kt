@@ -7,6 +7,7 @@ import androidx.core.view.updatePadding
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
@@ -15,6 +16,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import e
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.time.format.DateTimeFormatter
@@ -49,13 +51,15 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
                 (recycler.adapter as? PaymentAdapter)?.submitList(
                     listOfNotNull(
+                        PaymentModel.Header,
                         failedPayments(paymentData),
                         connectPayment(payinStatusData),
                         PaymentModel.NextPayment(paymentData),
                         campaign(paymentData),
                         *paymentHistory(paymentData),
-                        *payinDetails(paymentData, payinStatusData),
                         redeemCampaign(paymentData),
+                        *payinDetails(paymentData, payinStatusData),
+                        *paymentData.toPayoutDetails()
                     )
                 )
             }
@@ -102,7 +106,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun payinDetails(
         paymentData: PaymentQuery.Data,
-        payinStatusData: PayinStatusQuery.Data
+        payinStatusData: PayinStatusQuery.Data,
     ): Array<PaymentModel> {
         paymentData.bankAccount?.let { bankAccount ->
             return arrayOf(
@@ -118,6 +122,28 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
         return emptyArray()
     }
+
+    private fun PaymentQuery.Data.toPayoutDetails() = activePayoutMethods?.let { apm ->
+        when (apm.status) {
+            PayoutMethodStatus.ACTIVE,
+            PayoutMethodStatus.PENDING,
+            -> arrayOf(
+                PaymentModel.PayoutDetailsHeader,
+                PaymentModel.PayoutConnectionStatus(apm.status),
+                PaymentModel.PayoutDetailsParagraph,
+                PaymentModel.Link.AdyenChangePayout,
+            )
+            PayoutMethodStatus.NEEDS_SETUP -> arrayOf(
+                PaymentModel.PayoutDetailsHeader,
+                PaymentModel.Link.AdyenAddPayout,
+                PaymentModel.PayoutDetailsParagraph,
+            )
+            PayoutMethodStatus.UNKNOWN__ -> {
+                e { "Unknown `PayoutMethodStatus`" }
+                emptyArray()
+            }
+        }
+    } ?: emptyArray()
 
     private fun redeemCampaign(data: PaymentQuery.Data) = if (data.redeemedCampaigns.isEmpty()) {
         PaymentModel.Link.RedeemDiscountCode

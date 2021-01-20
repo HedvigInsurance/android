@@ -37,7 +37,7 @@ class ReferralCampaignTest : TestCase() {
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.NextPayment>(0) {
+                childAt<PaymentScreen.NextPayment>(1) {
                     gross {
                         isVisible()
                         hasText(
@@ -52,7 +52,7 @@ class ReferralCampaignTest : TestCase() {
                         )
                     }
                 }
-                childAt<PaymentScreen.Campaign>(1) {
+                childAt<PaymentScreen.Campaign>(2) {
                     isVisible()
                 }
             }
