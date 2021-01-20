@@ -6,7 +6,7 @@
         <item name="android:navigationBarColor">@color/transparent</item>
     </style>
 
-    <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23"/>
+    <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23" />
 
     <style name="Hedvig.Theme.KeyGear">
         <item name="android:navigationBarColor">@color/translucent_background</item>
@@ -40,7 +40,7 @@
         <item name="android:navigationBarColor">@color/hedvig_black</item>
     </style>
 
-    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V23"/>
+    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V23" />
 
     <style name="FullScreenDialog" parent="Hedvig.Theme">
         <item name="windowNoTitle">true</item>
@@ -113,6 +113,27 @@
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="ToolbarIcon">
+        <item name="android:layout_height">@dimen/chat_top_bar_button_size</item>
+        <item name="android:layout_width">@dimen/chat_top_bar_button_size</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:padding">@dimen/base_margin_half</item>
+        <item name="tint">@color/icon_tint</item>
+    </style>
+
+    <style name="ToolbarIcon.Start">
+        <item name="android:layout_gravity">start|center_vertical</item>
+        <item name="android:layout_marginStart">@dimen/base_margin</item>
+    </style>
+
+    <style name="ToolbarIcon.End">
+        <item name="android:layout_gravity">end|center_vertical</item>
+        <item name="android:layout_marginEnd">@dimen/base_margin</item>
     </style>
 
     <!-- Adyen Compatibility fixes -->
