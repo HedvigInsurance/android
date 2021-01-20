@@ -117,25 +117,24 @@ class OnboardingAdapter(
 
             private fun animate(distance: Float) {
                 binding.apply {
-                    val shimmerStartPosition = shimmer.x
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
-                                duration = 1000
+                    val shimmerStartPosition = 0f - shimmer.width
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
+                            duration = 1000
 
-                                addUpdateListener { animation ->
-                                    shimmer.translationX = animation.animatedValue as Float
-                                }
-                                doOnStart {
-                                    shimmer.visibility = View.VISIBLE
-                                }
-                                doOnEnd {
-                                    shimmer.translationX = shimmerStartPosition
-                                    shimmer.visibility = View.INVISIBLE
-                                }
-                                start()
+                            addUpdateListener { animation ->
+                                shimmer.translationX = animation.animatedValue as Float
                             }
-                        },
+                            doOnStart {
+                                shimmer.visibility = View.VISIBLE
+                            }
+                            doOnEnd {
+                                shimmer.translationX = shimmerStartPosition
+                                shimmer.visibility = View.INVISIBLE
+                            }
+                            start()
+                        }
+                    },
                         300
                     )
                 }
