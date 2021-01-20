@@ -28,7 +28,7 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
                 submitList(data.messages)
             }
             currentInsurerContainer.setHapticClickListener {
-                PreviousInsurerBottomSheet.newInstance().show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
+                PreviousInsurerBottomSheet.newInstance(data.previousInsurers).show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
             }
         }
     }

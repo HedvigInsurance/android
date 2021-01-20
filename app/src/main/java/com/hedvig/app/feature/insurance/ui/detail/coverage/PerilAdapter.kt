@@ -20,10 +20,7 @@ import e
 
 class PerilAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>
-) :
-    ListAdapter<PerilModel, PerilAdapter.ViewHolder>(
-        GenericDiffUtilItemCallback()
-    ) {
+) : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.covered_and_exception_item -> ViewHolder.CoveredAndException(parent)

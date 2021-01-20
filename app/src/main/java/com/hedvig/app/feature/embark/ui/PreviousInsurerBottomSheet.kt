@@ -1,26 +1,18 @@
 package com.hedvig.app.feature.embark.ui
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.app.R
-import com.hedvig.app.databinding.PreviousInsurerBottomSheetLayoutBinding
-import com.hedvig.app.util.extensions.viewBinding
+import androidx.core.os.bundleOf
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerData
+import com.hedvig.app.ui.view.ExpandableBottomSheet
 
-class PreviousInsurerBottomSheet : BottomSheetDialogFragment() {
-    private val binding by viewBinding(PreviousInsurerBottomSheetLayoutBinding::bind)
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.previous_insurer_bottom_sheet_layout, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-    }
+class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
     companion object {
-        val TAG = PreviousInsurerBottomSheet::class.java.name
-        fun newInstance() = PreviousInsurerBottomSheet()
+
+        val TAG: String = PreviousInsurerBottomSheet::class.java.name
+        private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
+
+        fun newInstance(previousInsurers: List<PreviousInsurerData.PreviousInsurer>) = PreviousInsurerBottomSheet().apply {
+            arguments = bundleOf(PREVIOUS_INSURERS to previousInsurers)
+        }
     }
 }
