@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FileUploadDialogBinding
 import com.hedvig.app.util.extensions.view.remove
@@ -16,7 +17,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 
-abstract class FileUploadBottomSheet : RoundedBottomSheetDialogFragment() {
+abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
     abstract fun onFileChosen(uri: Uri)
 
     @get:StringRes
