@@ -12,8 +12,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
-        app:title="@string/embark_onboarding_more_options.screen_title"
-        app:titleTextColor="?colorPrimary" />
+        app:title="@string/embark_onboarding_more_options.screen_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
