@@ -37,21 +37,23 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
 
             model.data.observe(viewLifecycleOwner) { d ->
                 d.getOrNull()?.let { data ->
-                    (adapter as? CoverageAdapter)?.submitList(listOf(
-                        CoverageModel.Header.Perils(
-                            data.typeOfContract
-                        )
+                    (adapter as? CoverageAdapter)?.submitList(
+                        listOf(
+                            CoverageModel.Header.Perils(
+                                data.typeOfContract
+                            )
+                        ) +
+                            data.perils.map {
+                                CoverageModel.Peril(
+                                    it.fragments.perilFragment
+                                )
+                            } +
+                            CoverageModel.Header.InsurableLimits + data.insurableLimits.map {
+                            CoverageModel.InsurableLimit(
+                                it.fragments.insurableLimitsFragment
+                            )
+                        }
                     )
-                        + data.perils.map {
-                        CoverageModel.Peril(
-                            it.fragments.perilFragment
-                        )
-                    }
-                        + CoverageModel.Header.InsurableLimits + data.insurableLimits.map {
-                        CoverageModel.InsurableLimit(
-                            it.fragments.insurableLimitsFragment
-                        )
-                    })
                 }
             }
         }

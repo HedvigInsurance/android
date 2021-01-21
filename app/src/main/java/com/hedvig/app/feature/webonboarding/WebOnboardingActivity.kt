@@ -61,7 +61,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 override fun doUpdateVisitedHistory(
                     view: WebView?,
                     url: String?,
-                    isReload: Boolean
+                    isReload: Boolean,
                 ) {
                     if (url?.contains("connect-payment") == true) {
                         view?.stopLoading()
@@ -79,7 +79,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     view: WebView?,
                     handler: HttpAuthHandler?,
                     host: String?,
-                    realm: String?
+                    realm: String?,
                 ) {
                     handler?.proceed("hedvig", "hedvig1234")
                 }
@@ -96,9 +96,15 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
             when (marketProvider.market) {
-                Market.NO -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${webPath}/start?variation=android#token=${encodedToken}")
-                Market.DK -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
-                else -> webOnboarding.loadUrl("${BuildConfig.WEB_BASE_URL}${localePath}/new-member?variation=android#token=${encodedToken}")
+                Market.NO -> webOnboarding.loadUrl(
+                    "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
+                )
+                Market.DK -> webOnboarding.loadUrl(
+                    "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+                )
+                else -> webOnboarding.loadUrl(
+                    "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+                )
             }
         }
     }

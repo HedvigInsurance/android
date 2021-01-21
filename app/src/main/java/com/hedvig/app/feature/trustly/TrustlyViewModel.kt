@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import e
+import kotlinx.coroutines.launch
 
 abstract class TrustlyViewModel : ViewModel() {
     protected val _data = MutableLiveData<String>()
@@ -26,4 +26,3 @@ class TrustlyViewModelImpl(
         }
     }
 }
-

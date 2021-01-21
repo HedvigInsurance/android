@@ -21,13 +21,16 @@ class ReferralTabScreen : Screen<ReferralTabScreen>() {
 
     val swipeToRefresh = KSwipeRefreshLayout { withId(R.id.swipeToRefresh) }
 
-    val recycler = KRecyclerView({ withId(R.id.invites) }, itemTypeBuilder = {
-        itemType(ReferralTabScreen::HeaderItem)
-        itemType(ReferralTabScreen::CodeItem)
-        itemType(ReferralTabScreen::InvitesHeaderItem)
-        itemType(ReferralTabScreen::ReferralItem)
-        itemType(ReferralTabScreen::ErrorItem)
-    })
+    val recycler = KRecyclerView(
+        { withId(R.id.invites) },
+        itemTypeBuilder = {
+            itemType(ReferralTabScreen::HeaderItem)
+            itemType(ReferralTabScreen::CodeItem)
+            itemType(ReferralTabScreen::InvitesHeaderItem)
+            itemType(ReferralTabScreen::ReferralItem)
+            itemType(ReferralTabScreen::ErrorItem)
+        }
+    )
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
         val discountPerMonthPlaceholder =

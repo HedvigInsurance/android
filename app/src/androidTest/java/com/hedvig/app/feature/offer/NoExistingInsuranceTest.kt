@@ -46,4 +46,3 @@ class NoExistingInsuranceTest : TestCase() {
         }
     }
 }
-

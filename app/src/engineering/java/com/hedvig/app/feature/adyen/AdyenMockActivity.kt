@@ -17,11 +17,13 @@ import org.koin.dsl.module
 class AdyenMockActivity : MockActivity() {
     private val marketProvider = MockMarketProvider()
     override val original = listOf(adyenModule, marketProviderModule)
-    override val mocks = listOf(module {
-        viewModel<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
-        viewModel<AdyenConnectPayoutViewModel> { MockAdyenConnectPayoutViewModel() }
-        single<MarketProvider> { marketProvider }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
+            viewModel<AdyenConnectPayoutViewModel> { MockAdyenConnectPayoutViewModel() }
+            single<MarketProvider> { marketProvider }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Adyen Connect Payment Screen")

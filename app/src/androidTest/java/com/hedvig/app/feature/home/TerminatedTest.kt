@@ -59,4 +59,3 @@ class TerminatedTest : TestCase() {
         }
     }
 }
-

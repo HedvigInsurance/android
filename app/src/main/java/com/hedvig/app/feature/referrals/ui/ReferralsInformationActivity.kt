@@ -35,7 +35,11 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
         val incentiveCurrency = intent.getStringExtra(INCENTIVE_CURRENCY)
 
         if (termsUrl == null || incentiveAmount == null || incentiveCurrency == null) {
-            e { "Programmer error: TERMS_URL || INCENTIVE_AMOUNT || INCENTIVE_CURRENCY not provided to ${this.javaClass.name}" }
+            e {
+                "Programmer error: TERMS_URL ||" +
+                    "INCENTIVE_AMOUNT ||" +
+                    "INCENTIVE_CURRENCY not provided to ${this.javaClass.name}"
+            }
             return
         }
 

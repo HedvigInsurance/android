@@ -22,7 +22,7 @@ abstract class ChoosePlanViewModel : ViewModel() {
     }
 
     fun getWebPath() =
-        _selectedQuoteType.value?.embarkStory?.metadata?.find { metadata->
+        _selectedQuoteType.value?.embarkStory?.metadata?.find { metadata ->
             metadata.asEmbarkStoryMetaDataEntryWebUrlPath != null
         }?.asEmbarkStoryMetaDataEntryWebUrlPath?.path
 }

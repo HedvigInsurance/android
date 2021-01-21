@@ -40,12 +40,26 @@ class FreeMonthsCampaignTest : TestCase() {
                 childAt<PaymentScreen.NextPayment>(1) {
                     discount {
                         isVisible()
-                        containsText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asFreeMonths!!.quantity!!.toString())
+                        containsText(
+                            PAYMENT_DATA_FREE_MONTHS
+                                .redeemedCampaigns[0]
+                                .fragments
+                                .incentiveFragment
+                                .incentive!!
+                                .asFreeMonths!!
+                                .quantity!!
+                                .toString()
+                        )
                     }
                     gross {
                         isVisible()
                         hasText(
-                            PAYMENT_DATA_FREE_MONTHS.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_FREE_MONTHS
+                                .chargeEstimation
+                                .subscription
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }

@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.Looper.getMainLooper
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +35,7 @@ class OfferSignDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.dialog_sign, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -110,7 +109,19 @@ class OfferSignDialog : DialogFragment() {
                     SignState.COMPLETED -> {
                         binding.signStatus.setText(R.string.SIGN_SUCCESSFUL)
                         tracker.userDidSign(
-                            model.data.value?.lastQuoteOfMember?.asCompleteQuote?.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.amount?.toBigDecimal()
+                            model
+                                .data
+                                .value
+                                ?.lastQuoteOfMember
+                                ?.asCompleteQuote
+                                ?.insuranceCost
+                                ?.fragments
+                                ?.costFragment
+                                ?.monthlyNet
+                                ?.fragments
+                                ?.monetaryAmountFragment
+                                ?.amount
+                                ?.toBigDecimal()
                                 ?.toDouble()
                                 ?: 0.0
                         )
@@ -134,10 +145,13 @@ class OfferSignDialog : DialogFragment() {
             startActivity(MarketingActivity.newInstance(requireContext()))
         }
 
-        handler.postDelayed({
-            market?.connectPayin(requireContext(), isPostSign = true)
-                ?.let { requireContext().startActivity(it) }
-        }, 1000)
+        handler.postDelayed(
+            {
+                market?.connectPayin(requireContext(), isPostSign = true)
+                    ?.let { requireContext().startActivity(it) }
+            },
+            1000
+        )
     }
 
     override fun onPause() {

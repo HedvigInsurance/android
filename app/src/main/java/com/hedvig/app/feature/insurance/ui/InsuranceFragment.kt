@@ -138,7 +138,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             )
 
         fun isNorway(contracts: List<InsuranceQuery.Contract>) =
-            contracts.any { it.currentAgreement.asNorwegianTravelAgreement != null || it.currentAgreement.asNorwegianHomeContentAgreement != null }
+            contracts.any {
+                it.currentAgreement.asNorwegianTravelAgreement != null ||
+                    it.currentAgreement.asNorwegianHomeContentAgreement != null
+            }
 
         fun doesNotHaveHomeContents(contracts: List<InsuranceQuery.Contract>) =
             contracts.none { it.currentAgreement.asNorwegianHomeContentAgreement != null }

@@ -69,9 +69,11 @@ class RatingsDialog : DialogFragment() {
                     }
                     RatingsChoice.NO -> {
                         tracker.yesToFeedback()
-                        startActivity(Intent(Intent.ACTION_SENDTO).apply {
-                            data = Uri.parse("mailto:android@hedvig.com?subject=Feedback")
-                        })
+                        startActivity(
+                            Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:android@hedvig.com?subject=Feedback")
+                            }
+                        )
                         dismissAndStore()
                     }
                 }

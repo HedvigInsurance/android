@@ -64,7 +64,8 @@ class PerilBuilder {
                 "Exceptions",
                 "Exceptions"
             ).toArrayList(),
-            info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+            info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk " +
+                "maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
 
         )
     }

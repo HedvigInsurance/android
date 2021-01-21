@@ -156,11 +156,11 @@ class PerilBottomSheet : BottomSheetDialogFragment() {
                     title = peril.title,
                     description = peril.description,
                     iconUrl = "${BuildConfig.BASE_URL}${
-                        if (context.isDarkThemeActive) {
-                            peril.icon.variants.dark.svgUrl
-                        } else {
-                            peril.icon.variants.light.svgUrl
-                        }
+                    if (context.isDarkThemeActive) {
+                        peril.icon.variants.dark.svgUrl
+                    } else {
+                        peril.icon.variants.light.svgUrl
+                    }
                     }",
                     exception = peril.exceptions,
                     covered = peril.covered,

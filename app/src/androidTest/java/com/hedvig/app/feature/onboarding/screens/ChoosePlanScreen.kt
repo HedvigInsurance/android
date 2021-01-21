@@ -19,8 +19,10 @@ object ChoosePlanScreen : KScreen<ChoosePlanScreen>() {
     override val layoutId = R.layout.activity_choose_plan
     override val viewClass = ChoosePlanActivity::class.java
 
-    val recycler = KRecyclerView({ withId(R.id.recycler) },
-        { itemType(ChoosePlanScreen::Card) })
+    val recycler = KRecyclerView(
+        { withId(R.id.recycler) },
+        { itemType(ChoosePlanScreen::Card) }
+    )
 
     val continueButton = KButton { withId(R.id.continueButton) }
 

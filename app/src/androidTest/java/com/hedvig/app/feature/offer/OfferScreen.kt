@@ -14,11 +14,14 @@ import org.hamcrest.Matcher
 
 class OfferScreen : Screen<OfferScreen>() {
 
-    val scroll = KRecyclerView({ withId(R.id.offerScroll) }, {
-        itemType(::HeaderItem)
-        itemType(::SwitcherItem)
-        itemType(::Facts)
-    })
+    val scroll = KRecyclerView(
+        { withId(R.id.offerScroll) },
+        {
+            itemType(::HeaderItem)
+            itemType(::SwitcherItem)
+            itemType(::Facts)
+        }
+    )
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
         val startDate = KTextView(parent) { withId(R.id.startDate) }
@@ -29,7 +32,7 @@ class OfferScreen : Screen<OfferScreen>() {
     }
 
     class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {
-        val expandableContent = KView(parent){withId(R.id.expandableContentView)}
+        val expandableContent = KView(parent) { withId(R.id.expandableContentView) }
         val additionalBuildings = KView(parent) { withId(R.id.additionalBuildingsContainer) }
     }
 }

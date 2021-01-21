@@ -39,7 +39,14 @@ class PercentageDiscountTest : TestCase() {
                     discount {
                         isVisible()
                         containsText(
-                            PAYMENT_DATA_PERCENTAGE_CAMPAIGN.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asPercentageDiscountMonths!!.percentageDiscount.toInt()
+                            PAYMENT_DATA_PERCENTAGE_CAMPAIGN
+                                .redeemedCampaigns[0]
+                                .fragments
+                                .incentiveFragment
+                                .incentive!!
+                                .asPercentageDiscountMonths!!
+                                .percentageDiscount
+                                .toInt()
                                 .toString()
                         )
                     }

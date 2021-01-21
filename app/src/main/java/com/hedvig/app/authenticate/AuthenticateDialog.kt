@@ -84,10 +84,12 @@ class AuthenticateDialog : DialogFragment() {
                 runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
             }
             dismiss()
-            startActivity(Intent(this.context, LoggedInActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            })
+            startActivity(
+                Intent(this.context, LoggedInActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+            )
         }
     }
 

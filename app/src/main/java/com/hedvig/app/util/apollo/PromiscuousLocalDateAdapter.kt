@@ -17,4 +17,3 @@ class PromiscuousLocalDateAdapter : CustomTypeAdapter<LocalDate> {
         throw e
     }
 }
-

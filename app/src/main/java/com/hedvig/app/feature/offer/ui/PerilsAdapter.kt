@@ -42,11 +42,11 @@ class PerilsAdapter(
             binding.apply {
                 label.text = peril.title
                 val iconUrl = "${BuildConfig.BASE_URL}${
-                    if (icon.context.isDarkThemeActive) {
-                        peril.icon.variants.dark.svgUrl
-                    } else {
-                        peril.icon.variants.light.svgUrl
-                    }
+                if (icon.context.isDarkThemeActive) {
+                    peril.icon.variants.dark.svgUrl
+                } else {
+                    peril.icon.variants.light.svgUrl
+                }
                 }"
 
                 requestBuilder

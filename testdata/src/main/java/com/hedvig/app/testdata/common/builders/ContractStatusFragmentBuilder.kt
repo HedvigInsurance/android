@@ -5,7 +5,7 @@ import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
 
 data class ContractStatusFragmentBuilder(
-    private val status: ContractStatus
+    private val status: ContractStatus,
 ) {
     fun build() = ContractStatusFragment(
         asPendingStatus = if (status == ContractStatus.PENDING) {
@@ -31,7 +31,9 @@ data class ContractStatusFragmentBuilder(
         } else {
             null
         },
-        asActiveInFutureAndTerminatedInFutureStatus = if (status == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+        asActiveInFutureAndTerminatedInFutureStatus = if (
+            status == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+        ) {
             ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
                 futureInception = LocalDate.of(2024, 1, 1),
                 futureTermination = LocalDate.of(2034, 1, 1)

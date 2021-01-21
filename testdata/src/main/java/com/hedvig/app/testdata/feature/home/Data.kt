@@ -41,14 +41,22 @@ val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
 val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(ContractStatus.TERMINATED_TODAY)).build()
 
 val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE), importantMessages = listOf(
-        ImportantMessageBuilder("COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.").build()
+    listOf(ContractStatus.ACTIVE),
+    importantMessages = listOf(
+        ImportantMessageBuilder(
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+        ).build()
     )
 ).build()
 
 val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE), importantMessages = listOf(
-        ImportantMessageBuilder("COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.").build(),
-        ImportantMessageBuilder("COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.").build()
+    listOf(ContractStatus.ACTIVE),
+    importantMessages = listOf(
+        ImportantMessageBuilder(
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+        ).build(),
+        ImportantMessageBuilder(
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+        ).build()
     )
 ).build()

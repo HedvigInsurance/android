@@ -46,16 +46,22 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
                 gifSearchField.onChange { emitter.onNext(it) }
             }
                 .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
-                .subscribe({ query ->
-                    if (query.isBlank()) {
-                        return@subscribe
-                    }
-                    model.searchGifs(query)
-                }, { e(it) })
-            val adapter = GifAdapter(requireContext(), sendGif = { url ->
-                onSelectGif(url)
-                dismiss()
-            })
+                .subscribe(
+                    { query ->
+                        if (query.isBlank()) {
+                            return@subscribe
+                        }
+                        model.searchGifs(query)
+                    },
+                    { e(it) }
+                )
+            val adapter = GifAdapter(
+                requireContext(),
+                sendGif = { url ->
+                    onSelectGif(url)
+                    dismiss()
+                }
+            )
             gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
             gifRecyclerView.adapter = adapter
 

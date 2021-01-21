@@ -32,4 +32,3 @@ class ConfirmDismissNotDirtyTest : TestCase() {
         assertTrue(activityRule.activity.isFinishing)
     }
 }
-

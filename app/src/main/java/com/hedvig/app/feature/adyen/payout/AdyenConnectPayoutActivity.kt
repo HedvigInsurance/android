@@ -48,10 +48,12 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
                         Environment.EUROPE
                     }
                 )
-                .setAmount(Amount().apply {
-                    currency = adyenCurrency.toString()
-                    value = 0
-                })
+                .setAmount(
+                    Amount().apply {
+                        currency = adyenCurrency.toString()
+                        value = 0
+                    }
+                )
                 .build()
 
             DropIn.startPayment(this, response, dropInConfiguration)
@@ -82,11 +84,14 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Handler(mainLooper).postDelayed({
-            if (!hasConnected && resultCode == Activity.RESULT_CANCELED) {
-                finish()
-            }
-        }, 10) // Needed in order to allow the new intent to arrive in the activity
+        Handler(mainLooper).postDelayed(
+            {
+                if (!hasConnected && resultCode == Activity.RESULT_CANCELED) {
+                    finish()
+                }
+            },
+            10
+        ) // Needed in order to allow the new intent to arrive in the activity
     }
 
     companion object {

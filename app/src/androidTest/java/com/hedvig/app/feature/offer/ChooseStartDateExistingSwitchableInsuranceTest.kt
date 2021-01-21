@@ -75,5 +75,3 @@ class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
         }
     }
 }
-
-

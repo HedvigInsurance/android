@@ -53,4 +53,3 @@ class DanishTravelTest : TestCase() {
         }
     }
 }
-

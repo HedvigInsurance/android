@@ -84,7 +84,6 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                         blur.setColorFilter(blur.context.compatColor(R.color.blur_spring_fog))
                     }
                     TypeOfContract.UNKNOWN__ -> {
-
                     }
                 }
             } ?: run {

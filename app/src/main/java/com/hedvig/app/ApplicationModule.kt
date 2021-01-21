@@ -217,10 +217,22 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
-        getLocale(
-            context
-        ).language
+    "${
+    BuildConfig.APPLICATION_ID
+    } ${
+    BuildConfig.VERSION_NAME
+    } (Android ${
+    Build.VERSION.RELEASE
+    }; ${
+    Build.BRAND
+    } ${
+    Build.MODEL
+    }; ${
+    Build.DEVICE
+    }; ${
+    getLocale(
+        context
+    ).language
     })"
 
 fun makeLocaleString(context: Context): String =

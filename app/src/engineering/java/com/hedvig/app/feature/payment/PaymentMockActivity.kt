@@ -28,10 +28,12 @@ import org.koin.dsl.module
 class PaymentMockActivity : MockActivity() {
     private val marketProvider = MockMarketProvider()
     override val original = listOf(paymentModule, marketProviderModule)
-    override val mocks = listOf(module {
-        viewModel<PaymentViewModel> { MockPaymentViewModel() }
-        single<MarketProvider> { marketProvider }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<PaymentViewModel> { MockPaymentViewModel() }
+            single<MarketProvider> { marketProvider }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Payment Screen")

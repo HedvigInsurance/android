@@ -54,4 +54,3 @@ class SwipeToRefreshSameDataTest : TestCase() {
         }
     }
 }
-

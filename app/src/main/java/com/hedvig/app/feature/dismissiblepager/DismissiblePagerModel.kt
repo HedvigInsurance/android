@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.android.parcel.Parcelize
 
-sealed class DismissiblePagerModel: Parcelable {
+sealed class DismissiblePagerModel : Parcelable {
     @Parcelize
     data class TitlePage(
         val imageUrls: ThemedIconUrls,
@@ -21,6 +21,5 @@ sealed class DismissiblePagerModel: Parcelable {
     ) : DismissiblePagerModel()
 
     @Parcelize
-    object SwipeOffScreen: DismissiblePagerModel()
+    object SwipeOffScreen : DismissiblePagerModel()
 }
-

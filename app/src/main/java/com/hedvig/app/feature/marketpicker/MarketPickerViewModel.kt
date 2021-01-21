@@ -26,7 +26,7 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
     val data: LiveData<PickerState> = _data
     abstract fun uploadLanguage()
 
-    @SuppressLint("ApplySharedPref")// We want to apply this right away. It's important
+    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
     fun save() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         var clean = false
@@ -111,7 +111,6 @@ class MarketPickerViewModelImpl(
                                 )
                             )
                         }
-
                     }
                 }
             } else {
@@ -152,4 +151,3 @@ sealed class Model {
 
     object Button : Model()
 }
-

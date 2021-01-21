@@ -119,9 +119,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                                 referralCode,
                                 "10"
                             )
-                        ) //Fixme "10" should not be hard coded
+                        ) // Fixme "10" should not be hard coded
                     }
-
                 } ?: startDefaultActivity(loginStatus)
             }
             else -> {

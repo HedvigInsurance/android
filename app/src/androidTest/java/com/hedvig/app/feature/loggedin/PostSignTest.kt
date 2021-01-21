@@ -40,7 +40,8 @@ class PostSignTest : TestCase() {
     fun shouldOpenWelcomeWhenNavigatingFromOnboarding() = run {
         activityRule.launch(
             LoggedInActivity.newInstance(context())
-                .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) })
+                .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) }
+        )
 
         onScreen<WelcomeScreen> {
             close {
@@ -57,4 +58,3 @@ class PostSignTest : TestCase() {
         }
     }
 }
-

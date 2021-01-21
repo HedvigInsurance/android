@@ -55,11 +55,22 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
             }
 
             model.data.observe(this@ReferralsActivatedActivity) { data ->
-                data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                data
+                    .referralInformation
+                    .campaign
+                    .incentive
+                    ?.asMonthlyCostDeduction
+                    ?.amount
+                    ?.fragments
+                    ?.monetaryAmountFragment
+                    ?.toMonetaryAmount()
                     ?.let { incentive ->
                         body.show()
                         body.text =
-                            getString(R.string.referrals_intro_screen_body, incentive.format(this@ReferralsActivatedActivity))
+                            getString(
+                                R.string.referrals_intro_screen_body,
+                                incentive.format(this@ReferralsActivatedActivity)
+                            )
                         body
                             .animate()
                             .alpha(1f)

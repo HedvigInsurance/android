@@ -41,4 +41,3 @@ class NavBarKeyGearAndReferralsTest : TestCase() {
         }
     }
 }
-

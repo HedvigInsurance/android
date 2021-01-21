@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
 import androidx.core.view.doOnLayout
-import androidx.core.view.isEmpty
 import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -138,24 +137,29 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
                 welcomeViewModel.fetch()
                 welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
-                    WelcomeDialog.newInstance(data.welcome.mapIndexed { index, page ->
-                        DismissiblePagerModel.TitlePage(
-                            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                            page.title,
-                            page.paragraph,
-                            getString(
-                                if (index == data.welcome.size - 1) {
-                                    R.string.NEWS_DISMISS
-                                } else {
-                                    R.string.NEWS_PROCEED
-                                }
+                    WelcomeDialog.newInstance(
+                        data.welcome.mapIndexed { index, page ->
+                            DismissiblePagerModel.TitlePage(
+                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                                page.title,
+                                page.paragraph,
+                                getString(
+                                    if (index == data.welcome.size - 1) {
+                                        R.string.NEWS_DISMISS
+                                    } else {
+                                        R.string.NEWS_PROCEED
+                                    }
+                                )
                             )
-                        )
-                    })
+                        }
+                    )
                         .show(supportFragmentManager, WelcomeDialog.TAG)
-                    loggedInRoot.postDelayed({
-                        loggedInRoot.show()
-                    }, resources.getInteger(R.integer.slide_in_animation_duration).toLong())
+                    loggedInRoot.postDelayed(
+                        {
+                            loggedInRoot.show()
+                        },
+                        resources.getInteger(R.integer.slide_in_animation_duration).toLong()
+                    )
                 }
                 intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
             }
@@ -183,7 +187,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
             LoggedInTabs.PROFILE,
-            LoggedInTabs.INSURANCE -> {
+            LoggedInTabs.INSURANCE,
+            -> {
                 menuInflater.inflate(R.menu.base_tab_menu, menu)
                 menu.getItem(0).actionView.setOnClickListener {
                     onOptionsItemSelected(menu.getItem(0))
@@ -206,31 +211,34 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         val currentEpochDay = LocalDate.now().toEpochDay()
         if (shouldShowTooltip(getLastOpen(), currentEpochDay)) {
             if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
-                Handler(mainLooper).postDelayed({
-                    binding.toolbar.performOnTapHapticFeedback()
-                    ViewTooltip
-                        .on(binding.toolbar.menu.getItem(0).actionView)
-                        .autoHide(true, 5000)
-                        .clickToHide(true)
-                        .corner(BASE_MARGIN_DOUBLE)
-                        .arrowTargetMargin(-20)
-                        .arrowSourceMargin(-20)
-                        .padding(
-                            12.dp,
-                            12.dp,
-                            12.dp,
-                            15.dp
-                        )
-                        .position(ViewTooltip.Position.BOTTOM)
-                        .color(compatColor(R.color.colorTooltip))
-                        .textColor(colorAttr(R.attr.colorPrimary))
-                        .text(R.string.home_tab_chat_hint_text)
-                        .withShadow(false)
-                        .onDisplay {
-                            setLastOpen(currentEpochDay)
-                        }
-                        .show()
-                }, 2000)
+                Handler(mainLooper).postDelayed(
+                    {
+                        binding.toolbar.performOnTapHapticFeedback()
+                        ViewTooltip
+                            .on(binding.toolbar.menu.getItem(0).actionView)
+                            .autoHide(true, 5000)
+                            .clickToHide(true)
+                            .corner(BASE_MARGIN_DOUBLE)
+                            .arrowTargetMargin(-20)
+                            .arrowSourceMargin(-20)
+                            .padding(
+                                12.dp,
+                                12.dp,
+                                12.dp,
+                                15.dp
+                            )
+                            .position(ViewTooltip.Position.BOTTOM)
+                            .color(compatColor(R.color.colorTooltip))
+                            .textColor(colorAttr(R.attr.colorPrimary))
+                            .text(R.string.home_tab_chat_hint_text)
+                            .withShadow(false)
+                            .onDisplay {
+                                setLastOpen(currentEpochDay)
+                            }
+                            .show()
+                    },
+                    2000
+                )
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -241,7 +249,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             LoggedInTabs.HOME,
             LoggedInTabs.KEY_GEAR,
             LoggedInTabs.PROFILE,
-            LoggedInTabs.INSURANCE -> {
+            LoggedInTabs.INSURANCE,
+            -> {
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
                     startClosableChat()
@@ -313,16 +322,22 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             binding.loggedInRoot.show()
 
             referralTermsUrl = data.referralTerms.url
-            data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+            data
+                .referralInformation
+                .campaign
+                .incentive
+                ?.asMonthlyCostDeduction
+                ?.amount
+                ?.fragments
+                ?.monetaryAmountFragment
+                ?.toMonetaryAmount()
                 ?.let { referralsIncentive = it }
-
         }
 
         profileViewModel.data.observe(this) { data ->
             data.member.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
-
         }
         whatsNewViewModel.fetchNews()
     }
@@ -333,10 +348,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private fun animateGradient(newTab: LoggedInTabs) = with(binding) {
         if (gradient.drawable == null) {
-            gradient.setImageDrawable(GradientDrawableWrapper().apply {
-                mutate()
-                colors = newTab.backgroundGradient(resources)
-            })
+            gradient.setImageDrawable(
+                GradientDrawableWrapper().apply {
+                    mutate()
+                    colors = newTab.backgroundGradient(resources)
+                }
+            )
             if (gradient.context.isDarkThemeActive) {
                 gradient.drawable.alpha = 127
             }
@@ -386,7 +403,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             context: Context,
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
-            isFromOnboarding: Boolean = false
+            isFromOnboarding: Boolean = false,
         ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {

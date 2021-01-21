@@ -64,14 +64,18 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                         is MoreOptionsModel.Row.UserId.Success -> {
                             label.apply {
                                 setText(R.string.embark_onboarding_more_options_user_id_label)
-                                putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
+                                putCompoundDrawablesRelativeWithIntrinsicBounds(
+                                    start = R.drawable.ic_contact_information
+                                )
                             }
                             info.text = item.id
                         }
                         MoreOptionsModel.Row.UserId.Error -> {
                             label.apply {
                                 setText(R.string.embark_onboarding_more_options_user_id_label)
-                                putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
+                                putCompoundDrawablesRelativeWithIntrinsicBounds(
+                                    start = R.drawable.ic_contact_information
+                                )
                             }
                             info.apply {
                                 setText(R.string.embark_onboarding_more_options_loading_error_reload_label)
@@ -111,4 +115,3 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         }
     }
 }
-

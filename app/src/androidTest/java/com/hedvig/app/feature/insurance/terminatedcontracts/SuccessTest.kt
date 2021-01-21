@@ -43,4 +43,3 @@ class SuccessTest : TestCase() {
         }
     }
 }
-

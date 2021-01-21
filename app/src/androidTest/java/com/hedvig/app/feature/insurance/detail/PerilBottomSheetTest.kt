@@ -39,8 +39,10 @@ class PerilBottomSheetTest : TestCase() {
                 childAt<ContractDetailScreen.CoverageTab>(1) {
                     recycler {
                         hasSize(
-                            2
-                                + INSURANCE_DATA_SWEDISH_HOUSE.contracts[0].let { it.perils.size + it.insurableLimits.size }
+                            2 +
+                                INSURANCE_DATA_SWEDISH_HOUSE
+                                    .contracts[0]
+                                    .let { it.perils.size + it.insurableLimits.size }
                         )
                         childAt<ContractDetailScreen.CoverageTab.Peril>(3) {
                             click()

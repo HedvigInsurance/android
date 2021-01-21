@@ -42,7 +42,12 @@ class PaymentHistoryTest : TestCase() {
                 childAt<PaymentScreen.Charge>(3) {
                     amount {
                         hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[0].amount.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_HISTORIC_PAYMENTS
+                                .chargeHistory[0]
+                                .amount
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }
@@ -57,7 +62,12 @@ class PaymentHistoryTest : TestCase() {
                 childAt<PaymentScreen.Charge>(4) {
                     amount {
                         hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[1].amount.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_HISTORIC_PAYMENTS
+                                .chargeHistory[1]
+                                .amount
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }

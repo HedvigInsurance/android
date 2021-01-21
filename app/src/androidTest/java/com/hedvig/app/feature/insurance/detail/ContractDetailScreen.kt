@@ -17,18 +17,24 @@ import org.hamcrest.Matcher
 class ContractDetailScreen : Screen<ContractDetailScreen>() {
     val retry = KButton { withId(R.id.retry) }
 
-    val tabContent = KViewPager2({ withId(R.id.tabContent) }, {
-        itemType(::YourInfoTab)
-        itemType(::CoverageTab)
-        itemType(::DocumentsTab)
-    })
+    val tabContent = KViewPager2(
+        { withId(R.id.tabContent) },
+        {
+            itemType(::YourInfoTab)
+            itemType(::CoverageTab)
+            itemType(::DocumentsTab)
+        }
+    )
 
     class CoverageTab(parent: Matcher<View>) : KViewPagerItem<CoverageTab>(parent) {
-        val recycler = KRecyclerView(parent, { withId(R.id.recycler) }, {
-            itemType(::Header)
-            itemType(::Peril)
-            itemType(::Row)
-        })
+        val recycler = KRecyclerView(
+            parent, { withId(R.id.recycler) },
+            {
+                itemType(::Header)
+                itemType(::Peril)
+                itemType(::Row)
+            }
+        )
 
         class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
             val text = KTextView { withMatcher(parent) }
@@ -42,9 +48,12 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
         }
 
         class PerilBottomSheetScreen : Screen<PerilBottomSheetScreen>() {
-            val sheetRecycler = KRecyclerView({ withId(R.id.recycler) }, {
-                itemType(::Title)
-            })
+            val sheetRecycler = KRecyclerView(
+                { withId(R.id.recycler) },
+                {
+                    itemType(::Title)
+                }
+            )
             val chevron = KImageView { withId(R.id.chevron) }
 
             class Title(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
@@ -54,10 +63,13 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
     }
 
     class YourInfoTab(parent: Matcher<View>) : KViewPagerItem<YourInfoTab>(parent) {
-        val recycler = KRecyclerView(parent, { withId(R.id.recycler) }, {
-            itemType(::Header)
-            itemType(::Row)
-        })
+        val recycler = KRecyclerView(
+            parent, { withId(R.id.recycler) },
+            {
+                itemType(::Header)
+                itemType(::Row)
+            }
+        )
 
         class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
             val text = KTextView { withMatcher(parent) }
@@ -70,9 +82,12 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
     }
 
     class DocumentsTab(parent: Matcher<View>) : KViewPagerItem<DocumentsTab>(parent) {
-        val recycler = KRecyclerView(parent, { withId(R.id.recycler) }, {
-            itemType(::Button)
-        })
+        val recycler = KRecyclerView(
+            parent, { withId(R.id.recycler) },
+            {
+                itemType(::Button)
+            }
+        )
 
         val agreementUrl = KIntent {
             hasAction(Intent.ACTION_VIEW)

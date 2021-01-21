@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
@@ -40,13 +39,18 @@ open class HedvigApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val previousLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsActivity.SETTING_LANGUAGE, null)
+        val previousLanguage = PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .getString(SettingsActivity.SETTING_LANGUAGE, null)
         if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
             val market = getMarket()
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             market?.let {
                 sharedPreferences.edit()
-                    .putString(SettingsActivity.SETTING_LANGUAGE, Language.getAvailableLanguages(market).first().toString()).commit()
+                    .putString(
+                        SettingsActivity.SETTING_LANGUAGE,
+                        Language.getAvailableLanguages(market).first().toString()
+                    ).commit()
             }
         }
 

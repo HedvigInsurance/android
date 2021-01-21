@@ -9,12 +9,15 @@ import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 object ProfileTabScreen : Screen<ProfileTabScreen>() {
-    val recycler = KRecyclerView({ withId(R.id.recycler) }, {
-        itemType(::Title)
-        itemType(::Row)
-        itemType(::Subtitle)
-        itemType(::Logout)
-    })
+    val recycler = KRecyclerView(
+        { withId(R.id.recycler) },
+        {
+            itemType(::Title)
+            itemType(::Row)
+            itemType(::Subtitle)
+            itemType(::Logout)
+        }
+    )
 
     class Title(parent: Matcher<View>) : KRecyclerItem<Title>(parent) {
         val text = KTextView(parent) { withMatcher(parent) }
@@ -28,7 +31,5 @@ object ProfileTabScreen : Screen<ProfileTabScreen>() {
         val text = KTextView(parent) { withMatcher(parent) }
     }
 
-    class Logout(parent: Matcher<View>) : KRecyclerItem<Logout>(parent) {
-
-    }
+    class Logout(parent: Matcher<View>) : KRecyclerItem<Logout>(parent)
 }

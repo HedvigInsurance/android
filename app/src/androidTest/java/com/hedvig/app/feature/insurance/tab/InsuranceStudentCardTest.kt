@@ -67,7 +67,6 @@ class InsuranceStudentCardTest : TestCase() {
                     }
                 }
             }
-
         }
     }
 }
