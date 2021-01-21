@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/label"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_min="80dp"
+        app:layout_constraintWidth_min="@dimen/member_id_min_length"
         tools:text="231491869921" />
 
     <ImageView
