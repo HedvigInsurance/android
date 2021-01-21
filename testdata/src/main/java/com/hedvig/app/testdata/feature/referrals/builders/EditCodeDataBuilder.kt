@@ -7,7 +7,7 @@ data class EditCodeDataBuilder(
     private val variant: ResultVariant = ResultVariant.SUCCESS,
     private val maxCharacters: Int = 24,
     private val minCharacters: Int = 1,
-    private val maximumNumberOfUpdates: Int = 3
+    private val maximumNumberOfUpdates: Int = 3,
 ) {
     fun build() = UpdateReferralCampaignCodeMutation.Data(
         updateReferralCampaignCode = UpdateReferralCampaignCodeMutation.UpdateReferralCampaignCode(
@@ -36,7 +36,9 @@ data class EditCodeDataBuilder(
                 null
             },
             asExceededMaximumUpdates = if (variant == ResultVariant.EXCEEDED_MAX_UPDATES) {
-                UpdateReferralCampaignCodeMutation.AsExceededMaximumUpdates(maximumNumberOfUpdates = maximumNumberOfUpdates)
+                UpdateReferralCampaignCodeMutation.AsExceededMaximumUpdates(
+                    maximumNumberOfUpdates = maximumNumberOfUpdates
+                )
             } else {
                 null
             }
