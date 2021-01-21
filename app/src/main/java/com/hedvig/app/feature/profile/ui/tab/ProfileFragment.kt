@@ -86,52 +86,56 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
 
         model.data.observe(viewLifecycleOwner) { data ->
-            (binding.recycler.adapter as? ProfileAdapter)?.submitList(listOf(
-                ProfileModel.Title,
-                ProfileModel.Row(
-                    getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
-                    "${data.member.firstName} ${data.member.lastName}",
-                    R.drawable.ic_contact_information
-                ) {
-                    tracker.myInfoRow()
-                    startActivity(Intent(requireContext(), MyInfoActivity::class.java))
-                },
-                ProfileModel.Row(
-                    getString(R.string.PROFILE_MY_CHARITY_ROW_TITLE),
-                    data.cashback?.fragments?.cashbackFragment?.name ?: "",
-                    R.drawable.ic_profile_charity
-                ) {
-                    tracker.charityRow()
-                    startActivity(Intent(requireContext(), CharityActivity::class.java))
-                },
-                ProfileModel.Row(
-                    getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
-                    getPriceCaption(data, data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext())
-                        ?: ""),
-                    R.drawable.ic_payment
-                ) {
-                    tracker.paymentRow()
-                    startActivity(Intent(requireContext(), PaymentActivity::class.java))
-                },
-                ProfileModel.Subtitle,
-                ProfileModel.Row(
-                    getString(R.string.profile_appSettingsSection_row_headline),
-                    getString(R.string.profile_appSettingsSection_row_subheadline),
-                    R.drawable.ic_profile_settings
-                ) {
-                    tracker.settings()
-                    startActivity(SettingsActivity.newInstance(requireContext()))
-                },
-                ProfileModel.Row(
-                    getString(R.string.PROFILE_ABOUT_ROW),
-                    getString(R.string.profile_tab_about_row_subtitle),
-                    R.drawable.ic_info_toolbar
-                ) {
-                    tracker.aboutAppRow()
-                    startActivity(Intent(requireContext(), AboutAppActivity::class.java))
-                },
-                ProfileModel.Logout
-            )
+            (binding.recycler.adapter as? ProfileAdapter)?.submitList(
+                listOf(
+                    ProfileModel.Title,
+                    ProfileModel.Row(
+                        getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
+                        "${data.member.firstName} ${data.member.lastName}",
+                        R.drawable.ic_contact_information
+                    ) {
+                        tracker.myInfoRow()
+                        startActivity(Intent(requireContext(), MyInfoActivity::class.java))
+                    },
+                    ProfileModel.Row(
+                        getString(R.string.PROFILE_MY_CHARITY_ROW_TITLE),
+                        data.cashback?.fragments?.cashbackFragment?.name ?: "",
+                        R.drawable.ic_profile_charity
+                    ) {
+                        tracker.charityRow()
+                        startActivity(Intent(requireContext(), CharityActivity::class.java))
+                    },
+                    ProfileModel.Row(
+                        getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
+                        getPriceCaption(
+                            data,
+                            data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext())
+                                ?: ""
+                        ),
+                        R.drawable.ic_payment
+                    ) {
+                        tracker.paymentRow()
+                        startActivity(Intent(requireContext(), PaymentActivity::class.java))
+                    },
+                    ProfileModel.Subtitle,
+                    ProfileModel.Row(
+                        getString(R.string.profile_appSettingsSection_row_headline),
+                        getString(R.string.profile_appSettingsSection_row_subheadline),
+                        R.drawable.ic_profile_settings
+                    ) {
+                        tracker.settings()
+                        startActivity(SettingsActivity.newInstance(requireContext()))
+                    },
+                    ProfileModel.Row(
+                        getString(R.string.PROFILE_ABOUT_ROW),
+                        getString(R.string.profile_tab_about_row_subtitle),
+                        R.drawable.ic_info_toolbar
+                    ) {
+                        tracker.aboutAppRow()
+                        startActivity(Intent(requireContext(), AboutAppActivity::class.java))
+                    },
+                    ProfileModel.Logout
+                )
             )
         }
     }
@@ -162,4 +166,3 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             }
     }
 }
-

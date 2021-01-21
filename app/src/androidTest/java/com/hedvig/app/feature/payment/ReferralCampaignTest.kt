@@ -41,13 +41,25 @@ class ReferralCampaignTest : TestCase() {
                     gross {
                         isVisible()
                         hasText(
-                            PAYMENT_DATA_REFERRAL.insuranceCost!!.fragments.costFragment.monthlyGross.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_REFERRAL
+                                .insuranceCost!!
+                                .fragments
+                                .costFragment
+                                .monthlyGross
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }
                     net {
                         hasText(
-                            PAYMENT_DATA_REFERRAL.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_REFERRAL
+                                .chargeEstimation
+                                .charge
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }

@@ -74,7 +74,6 @@ class ActiveTest : TestCase() {
             }
         }
 
-
         onScreen<CommonClaimScreen> {
             firstMessage { hasText("Försenat bagage") }
             pressBack()
@@ -93,4 +92,3 @@ class ActiveTest : TestCase() {
         }
     }
 }
-

@@ -23,7 +23,6 @@ import com.hedvig.app.R
  * limitations under the License.
  */
 
-
 /**
  * An extension function which creates/retrieves a [SpringAnimation] and stores it in the [View]s
  * tag.

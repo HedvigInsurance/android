@@ -11,4 +11,3 @@ sealed class OnboardingModel {
 
     object Error : OnboardingModel()
 }
-

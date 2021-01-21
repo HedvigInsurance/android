@@ -8,7 +8,7 @@ import org.koin.core.module.Module
 class KoinMockModuleRule(
     private val original: List<Module>,
     private val mocks: List<Module>
-): ExternalResource() {
+) : ExternalResource() {
     override fun before() {
         unloadKoinModules(original)
         loadKoinModules(mocks)

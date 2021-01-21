@@ -51,16 +51,21 @@ class PushNotificationService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         when (remoteMessage.data[NOTIFICATION_TYPE_KEY]) {
-            NOTIFICATION_TYPE_NEW_MESSAGE -> ChatNotificationManager
-                .sendChatNotification(this, remoteMessage)
-            NOTIFICATION_TYPE_REFERRAL_SUCCESS -> ReferralsNotificationManager
-                .sendReferralNotification(this, remoteMessage)
-            NOTIFICATION_TYPE_REFERRALS_ENABLED -> ReferralsNotificationManager
-                .sendReferralsEnabledNotification(this)
-            NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> paymentNotificationManager
-                .sendDirectDebitNotification(this)
-            NOTIFICATION_TYPE_PAYMENT_FAILED -> paymentNotificationManager
-                .sendPaymentFailedNotification(this)
+            NOTIFICATION_TYPE_NEW_MESSAGE ->
+                ChatNotificationManager
+                    .sendChatNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRAL_SUCCESS ->
+                ReferralsNotificationManager
+                    .sendReferralNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRALS_ENABLED ->
+                ReferralsNotificationManager
+                    .sendReferralsEnabledNotification(this)
+            NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT ->
+                paymentNotificationManager
+                    .sendDirectDebitNotification(this)
+            NOTIFICATION_TYPE_PAYMENT_FAILED ->
+                paymentNotificationManager
+                    .sendPaymentFailedNotification(this)
 /*
             NOTIFICATION_TYPE_CLAIM_PAID -> PaymentNotificationManager
                 .sendClaimPaidNotification(this, remoteMessage)
@@ -69,10 +74,12 @@ class PushNotificationService : FirebaseMessagingService() {
             NOTIFICATION_TYPE_INSURANCE_RENEWED -> InsurancePolicyNotificationManager
                 .sendInsuranceRenewedNotification(this)
 */
-            NOTIFICATION_TYPE_GENERIC_COMMUNICATION -> GenericNotificationManager
-                .sendGenericNotification(this, remoteMessage)
-            else -> ChatNotificationManager
-                .sendDefaultNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_GENERIC_COMMUNICATION ->
+                GenericNotificationManager
+                    .sendGenericNotification(this, remoteMessage)
+            else ->
+                ChatNotificationManager
+                    .sendDefaultNotification(this, remoteMessage)
         }
     }
 

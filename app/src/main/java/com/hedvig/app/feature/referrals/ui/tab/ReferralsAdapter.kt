@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
 import android.animation.ValueAnimator
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -28,6 +27,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
+import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -39,7 +39,7 @@ import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit,
-    private val tracker: ReferralsTracker
+    private val tracker: ReferralsTracker,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -68,20 +68,12 @@ class ReferralsAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker)
 
-        class TitleViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_title, parent, false)
-        ) {
+        class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) =
                 Unit
         }
 
-        class HeaderViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_header, parent, false)
-        ) {
+        class HeaderViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_header)) {
             private val binding by viewBinding(ReferralsHeaderBinding::bind)
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.apply {
@@ -106,7 +98,16 @@ class ReferralsAdapter(
                         is ReferralsModel.Header.LoadedEmptyHeader -> {
                             bindPiechart(data.inner)
                             placeholders.remove()
-                            data.inner.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            data
+                                .inner
+                                .referralInformation
+                                .campaign
+                                .incentive
+                                ?.asMonthlyCostDeduction
+                                ?.amount
+                                ?.fragments
+                                ?.monetaryAmountFragment
+                                ?.toMonetaryAmount()
                                 ?.let { incentiveAmount ->
                                     emptyBody.text = emptyBody.context.getString(
                                         R.string.referrals_empty_body,
@@ -126,14 +127,40 @@ class ReferralsAdapter(
                             emptyTexts.remove()
                             nonEmptyTexts.show()
                             loadedData.show()
-                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            data
+                                .inner
+                                .referralInformation
+                                .costReducedIndefiniteDiscount
+                                ?.fragments
+                                ?.costFragment
+                                ?.monthlyDiscount
+                                ?.fragments
+                                ?.monetaryAmountFragment
+                                ?.toMonetaryAmount()
                                 ?.negate()?.format(discountPerMonth.context)
                                 ?.let { discountPerMonth.text = it }
-                            data.inner.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            data
+                                .inner
+                                .referralInformation
+                                .costReducedIndefiniteDiscount
+                                ?.fragments
+                                ?.costFragment
+                                ?.monthlyNet
+                                ?.fragments
+                                ?.monetaryAmountFragment
+                                ?.toMonetaryAmount()
                                 ?.let { referralNet ->
                                     newPrice.text = referralNet.format(newPrice.context)
                                     otherDiscountBox.isVisible =
-                                        data.inner.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount() != referralNet
+                                        data
+                                        .inner
+                                        .insuranceCost
+                                        ?.fragments
+                                        ?.costFragment
+                                        ?.monthlyNet
+                                        ?.fragments
+                                        ?.monetaryAmountFragment
+                                        ?.toMonetaryAmount() != referralNet
                                 }
                         }
                         else -> {
@@ -149,13 +176,36 @@ class ReferralsAdapter(
                     piechartPlaceholder.hideShimmer()
                     grossPrice.show()
                     val grossPriceAmount =
-                        data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                        data
+                            .referralInformation
+                            .costReducedIndefiniteDiscount
+                            ?.fragments
+                            ?.costFragment
+                            ?.monthlyGross
+                            ?.fragments
+                            ?.monetaryAmountFragment
+                            ?.toMonetaryAmount()
                     grossPriceAmount?.let { grossPrice.text = it.format(grossPrice.context) }
                     val potentialDiscountAmount =
-                        data.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                        data
+                            .referralInformation
+                            .campaign
+                            .incentive
+                            ?.asMonthlyCostDeduction
+                            ?.amount
+                            ?.fragments
+                            ?.monetaryAmountFragment
+                            ?.toMonetaryAmount()
                     val currentDiscountAmount =
-                        data.referralInformation.costReducedIndefiniteDiscount?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-
+                        data
+                            .referralInformation
+                            .costReducedIndefiniteDiscount
+                            ?.fragments
+                            ?.costFragment
+                            ?.monthlyDiscount
+                            ?.fragments
+                            ?.monetaryAmountFragment
+                            ?.toMonetaryAmount()
 
                     safeLet(
                         grossPriceAmount,
@@ -234,16 +284,12 @@ class ReferralsAdapter(
             }
         }
 
-        class CodeViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_code, parent, false)
-        ) {
+        class CodeViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_code)) {
             private val binding by viewBinding(ReferralsCodeBinding::bind)
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker
+                tracker: ReferralsTracker,
             ) {
                 binding.apply {
                     when (data) {
@@ -268,7 +314,16 @@ class ReferralsAdapter(
                                     .show()
                                 true
                             }
-                            data.inner.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                            data
+                                .inner
+                                .referralInformation
+                                .campaign
+                                .incentive
+                                ?.asMonthlyCostDeduction
+                                ?.amount
+                                ?.fragments
+                                ?.monetaryAmountFragment
+                                ?.toMonetaryAmount()
                                 ?.let { incentiveAmount ->
                                     codeFootnote.text = codeFootnote.resources.getString(
                                         R.string.referrals_empty_code_footer,
@@ -294,20 +349,13 @@ class ReferralsAdapter(
             }
         }
 
-        class InvitesHeaderViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_invites_header, parent, false)
-        ) {
+        class InvitesHeaderViewHolder(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.referrals_invites_header)) {
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) =
                 Unit
         }
 
-        class ReferralViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_row, parent, false)
-        ) {
+        class ReferralViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
             private val binding by viewBinding(ReferralsRowBinding::bind)
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.apply {
@@ -379,11 +427,7 @@ class ReferralsAdapter(
             }
         }
 
-        class ErrorViewHolder(parent: ViewGroup) : ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.referrals_error, parent, false)
-        ) {
+        class ErrorViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_error)) {
             private val binding by viewBinding(ReferralsErrorBinding::bind)
             override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker) {
                 binding.retry.setHapticClickListener {

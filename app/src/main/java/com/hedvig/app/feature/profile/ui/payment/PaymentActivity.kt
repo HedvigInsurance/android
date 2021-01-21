@@ -68,7 +68,10 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun campaign(data: PaymentQuery.Data) =
         data.redeemedCampaigns.getOrNull(0)?.let { campaign ->
-            if (campaign.fragments.incentiveFragment.incentive?.asFreeMonths != null || campaign.fragments.incentiveFragment.incentive?.asMonthlyCostDeduction != null) {
+            if (
+                campaign.fragments.incentiveFragment.incentive?.asFreeMonths != null ||
+                campaign.fragments.incentiveFragment.incentive?.asMonthlyCostDeduction != null
+            ) {
                 PaymentModel.CampaignInformation(data)
             } else {
                 null
@@ -157,4 +160,3 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         fun newInstance(context: Context) = Intent(context, PaymentActivity::class.java)
     }
 }
-

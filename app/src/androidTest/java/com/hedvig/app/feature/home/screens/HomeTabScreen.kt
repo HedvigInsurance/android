@@ -16,7 +16,8 @@ import org.hamcrest.Matcher
 
 class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
-        KRecyclerView({ withId(R.id.recycler) },
+        KRecyclerView(
+            { withId(R.id.recycler) },
             {
                 itemType(::HomePSAItem)
                 itemType(::HowClaimsWork)
@@ -28,7 +29,8 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimTitleItem)
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
-            })
+            }
+        )
 
     class HomePSAItem(parent: Matcher<View>) : KRecyclerItem<HomePSAItem>(parent) {
         val text = KTextView(parent) { withId(R.id.body) }

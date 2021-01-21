@@ -55,4 +55,3 @@ class TerminatedTodayTest : TestCase() {
             }
         }
 }
-

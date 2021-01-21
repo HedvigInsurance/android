@@ -190,10 +190,12 @@ class AttachFileAdapter(
                     attachFileContainer.setHapticClickListener {
 
                         attachFileSendButton.show()
-                        attachFileSendButton.fadeIn(endAction = {
-                            attachFileContainer.foreground = null
-                            attachFileContainer.setOnClickListener(null)
-                        })
+                        attachFileSendButton.fadeIn(
+                            endAction = {
+                                attachFileContainer.foreground = null
+                                attachFileContainer.setOnClickListener(null)
+                            }
+                        )
                     }
                 }
             }
@@ -217,4 +219,3 @@ class AttachFileAdapter(
         private const val IMAGE_VIEW_TYPE = 1
     }
 }
-

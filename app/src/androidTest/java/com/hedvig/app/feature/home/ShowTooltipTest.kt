@@ -69,4 +69,3 @@ class ShowTooltipTest : TestCase() {
 
 val Int.seconds: Duration
     get() = Duration.ofSeconds(this.toLong())
-

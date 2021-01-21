@@ -11,4 +11,3 @@ class MarketRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         .query(GeoQuery())
         .await()
 }
-

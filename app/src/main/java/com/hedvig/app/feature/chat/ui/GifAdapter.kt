@@ -44,7 +44,6 @@ class GifAdapter(
                 )
         )
 
-
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         holder.bind(getItem(position), sendGif)
     }

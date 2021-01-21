@@ -14,10 +14,12 @@ object MoreOptionsScreen : KScreen<MoreOptionsScreen>() {
     override val layoutId = R.layout.activity_more_options
     override val viewClass = MoreOptionsActivity::class.java
 
-    val recycler = KRecyclerView({ withId(R.id.recycler) },
+    val recycler = KRecyclerView(
+        { withId(R.id.recycler) },
         {
             itemType(MoreOptionsScreen::Row)
-        })
+        }
+    )
 
     class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
         val info = KTextView(parent) { withId(R.id.info) }

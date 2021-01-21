@@ -29,30 +29,33 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
 
         connectPaymentViewModel.navigationState.observe(this) { state ->
             when (state) {
-                ConnectPaymentScreenState.Explainer -> supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        PostSignExplainerFragment.newInstance(ConnectPayinType.TRUSTLY)
-                    )
-                    .commitAllowingStateLoss()
-                is ConnectPaymentScreenState.Connect -> supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType)
-                    )
-                    .commitAllowingStateLoss()
-                is ConnectPaymentScreenState.Result -> supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        ConnectPaymentResultFragment.newInstance(
-                            state.success,
-                            ConnectPayinType.TRUSTLY
+                ConnectPaymentScreenState.Explainer ->
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(
+                            R.id.container,
+                            PostSignExplainerFragment.newInstance(ConnectPayinType.TRUSTLY)
                         )
-                    )
-                    .commitAllowingStateLoss()
+                        .commitAllowingStateLoss()
+                is ConnectPaymentScreenState.Connect ->
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(
+                            R.id.container,
+                            TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType)
+                        )
+                        .commitAllowingStateLoss()
+                is ConnectPaymentScreenState.Result ->
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(
+                            R.id.container,
+                            ConnectPaymentResultFragment.newInstance(
+                                state.success,
+                                ConnectPayinType.TRUSTLY
+                            )
+                        )
+                        .commitAllowingStateLoss()
             }
         }
         connectPaymentViewModel.shouldClose.observe(this) { shouldClose ->

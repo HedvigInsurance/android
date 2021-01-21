@@ -23,9 +23,12 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        Handler(getMainLooper()).postDelayed({
-            data.postValue(mockData)
-        }, 500)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(mockData)
+            },
+            500
+        )
     }
 
     override fun removeDiscount() = Unit

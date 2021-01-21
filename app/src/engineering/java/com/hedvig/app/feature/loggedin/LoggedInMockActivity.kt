@@ -12,9 +12,10 @@ import org.koin.dsl.module
 
 class LoggedInMockActivity : MockActivity() {
     override val original = listOf(whatsNewModule)
-    override val mocks = listOf(module {
-        viewModel<WhatsNewViewModel> { MockWhatsNewViewModel() }
-    }
+    override val mocks = listOf(
+        module {
+            viewModel<WhatsNewViewModel> { MockWhatsNewViewModel() }
+        }
     )
 
     override fun adapter() = genericDevelopmentAdapter {

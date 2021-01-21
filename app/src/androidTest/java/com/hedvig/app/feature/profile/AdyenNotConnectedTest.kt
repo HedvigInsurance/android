@@ -42,9 +42,11 @@ class AdyenNotConnectedTest : TestCase() {
     @get:Rule
     val koinMockModuleRule = KoinMockModuleRule(
         listOf(marketProviderModule),
-        listOf(module {
-            single { marketProvider }
-        })
+        listOf(
+            module {
+                single { marketProvider }
+            }
+        )
     )
 
     @Test
@@ -71,4 +73,3 @@ class AdyenNotConnectedTest : TestCase() {
         }
     }
 }
-

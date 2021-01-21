@@ -53,24 +53,26 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
         connectPaymentViewModel.navigationState.observe(this) { state ->
             when (state) {
-                ConnectPaymentScreenState.Explainer -> supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN)
-                    )
-                    .commitAllowingStateLoss()
-                is ConnectPaymentScreenState.Connect -> startAdyenPayment()
-                is ConnectPaymentScreenState.Result -> supportFragmentManager
-                    .beginTransaction()
-                    .replace(
-                        R.id.container,
-                        ConnectPaymentResultFragment.newInstance(
-                            state.success,
-                            ConnectPayinType.ADYEN
+                ConnectPaymentScreenState.Explainer ->
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(
+                            R.id.container,
+                            PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN)
                         )
-                    )
-                    .commitAllowingStateLoss()
+                        .commitAllowingStateLoss()
+                is ConnectPaymentScreenState.Connect -> startAdyenPayment()
+                is ConnectPaymentScreenState.Result ->
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(
+                            R.id.container,
+                            ConnectPaymentResultFragment.newInstance(
+                                state.success,
+                                ConnectPayinType.ADYEN
+                            )
+                        )
+                        .commitAllowingStateLoss()
             }
         }
 
@@ -131,10 +133,12 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                     Environment.EUROPE
                 }
             )
-            .setAmount(Amount().apply {
-                currency = this@AdyenConnectPayinActivity.currency.toString()
-                value = 0
-            })
+            .setAmount(
+                Amount().apply {
+                    currency = this@AdyenConnectPayinActivity.currency.toString()
+                    value = 0
+                }
+            )
             .build()
 
         DropIn.startPayment(this, paymentMethods, dropInConfiguration)
@@ -152,9 +156,9 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
         super.onActivityResult(requestCode, resultCode, data)
 
         if (
-            !isPostSign()
-            && !hasConnected
-            && resultCode == Activity.RESULT_CANCELED
+            !isPostSign() &&
+            !hasConnected &&
+            resultCode == Activity.RESULT_CANCELED
         ) {
             finish()
         }

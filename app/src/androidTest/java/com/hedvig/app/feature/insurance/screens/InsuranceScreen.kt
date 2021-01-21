@@ -13,20 +13,26 @@ import org.hamcrest.Matcher
 
 class InsuranceScreen : Screen<InsuranceScreen>() {
     val insuranceRecycler =
-        KRecyclerView({ withId(R.id.insuranceRecycler) }, {
-            itemType(::ContractCard)
-            itemType(::Error)
-            itemType(::TerminatedContractsHeader)
-            itemType(::TerminatedContracts)
-        })
+        KRecyclerView(
+            { withId(R.id.insuranceRecycler) },
+            {
+                itemType(::ContractCard)
+                itemType(::Error)
+                itemType(::TerminatedContractsHeader)
+                itemType(::TerminatedContracts)
+            }
+        )
 
     class ContractCard(parent: Matcher<View>) : KRecyclerItem<ContractCard>(parent) {
         val contractName = KTextView(parent) { withId(R.id.contractName) }
         val firstStatusPill = KTextView(parent) { withId(R.id.firstStatusPill) }
         val secondStatusPill = KTextView(parent) { withId(R.id.secondStatusPill) }
-        val contractPills = KRecyclerView(parent, { withId(R.id.contractPills) }, {
-            itemType(::ContractPill)
-        })
+        val contractPills = KRecyclerView(
+            parent, { withId(R.id.contractPills) },
+            {
+                itemType(::ContractPill)
+            }
+        )
 
         class ContractPill(parent: Matcher<View>) : KRecyclerItem<ContractPill>(parent) {
             val text = KTextView { withMatcher(parent) }
@@ -46,5 +52,5 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
         val caption = KTextView(parent) { withId(R.id.caption) }
     }
 
-    val terminatedContractsScreen = KIntent { hasComponent(TerminatedContractsActivity::class.java.name)}
+    val terminatedContractsScreen = KIntent { hasComponent(TerminatedContractsActivity::class.java.name) }
 }

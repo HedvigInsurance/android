@@ -48,4 +48,3 @@ class ConfirmDismissDirtyTest : TestCase() {
         assertTrue(activityRule.activity.isFinishing)
     }
 }
-

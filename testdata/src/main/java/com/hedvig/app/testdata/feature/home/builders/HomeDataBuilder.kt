@@ -43,7 +43,9 @@ data class HomeDataBuilder(
                         )
                         else -> null
                     },
-                    asActiveInFutureAndTerminatedInFutureStatus = if (c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+                    asActiveInFutureAndTerminatedInFutureStatus = if (
+                        c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                    ) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
                             futureInception = LocalDate.of(2024, 1, 1)
                         )
@@ -98,7 +100,8 @@ data class HomeDataBuilder(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
-                                ), light = IconVariantsFragment.Light(
+                                ),
+                                light = IconVariantsFragment.Light(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
                                 )
                             )
@@ -106,14 +109,16 @@ data class HomeDataBuilder(
                     )
                 ),
                 body = "1"
-            ), HomeQuery.HowClaimsWork(
+            ),
+            HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
-                                ), light = IconVariantsFragment.Light(
+                                ),
+                                light = IconVariantsFragment.Light(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
                                 )
                             )
@@ -129,7 +134,8 @@ data class HomeDataBuilder(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
-                                ), light = IconVariantsFragment.Light(
+                                ),
+                                light = IconVariantsFragment.Light(
                                     svgUrl = "/app-content-service/welcome_welcome.svg"
                                 )
                             )

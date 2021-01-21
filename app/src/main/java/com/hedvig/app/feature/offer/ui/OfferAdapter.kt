@@ -93,10 +93,24 @@ class OfferAdapter(
                             title.text =
                                 title.resources.getString(quote.typeOfContract.getStringId())
                             premium.text =
-                                quote.insuranceCost.fragments.costFragment.monthlyNet.fragments.monetaryAmountFragment.toMonetaryAmount()
+                                quote
+                                    .insuranceCost
+                                    .fragments
+                                    .costFragment
+                                    .monthlyNet
+                                    .fragments
+                                    .monetaryAmountFragment
+                                    .toMonetaryAmount()
                                     .format(premium.context)
                             val gross =
-                                quote.insuranceCost.fragments.costFragment.monthlyGross.fragments.monetaryAmountFragment.toMonetaryAmount()
+                                quote
+                                    .insuranceCost
+                                    .fragments
+                                    .costFragment
+                                    .monthlyGross
+                                    .fragments
+                                    .monetaryAmountFragment
+                                    .toMonetaryAmount()
                             if (gross.isZero) {
                                 grossPremium.setStrikethrough(true)
                                 grossPremium.text = gross.format(grossPremium.context)
@@ -132,65 +146,78 @@ class OfferAdapter(
                                 }
                             }
 
-                            data.inner.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.let { incentive ->
-                                discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+                            data
+                                .inner
+                                .redeemedCampaigns
+                                .firstOrNull()
+                                ?.fragments
+                                ?.incentiveFragment
+                                ?.incentive
+                                ?.let { incentive ->
+                                    discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
 
-                                incentive.asFreeMonths?.let { freeMonths ->
-                                    campaign.text = campaign.resources.getString(
-                                        R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
-                                        freeMonths.quantity
-                                    )
-                                    campaign.show()
-                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
-                                }
-
-                                incentive.asMonthlyCostDeduction?.let {
-                                    campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
-                                    campaign.show()
-                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
-                                }
-
-                                incentive.asPercentageDiscountMonths?.let { pdm ->
-                                    campaign.text = if (pdm.pdmQuantity == 1) {
-                                        campaign.resources.getString(
-                                            R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                            pdm.percentageDiscount.toInt()
+                                    incentive.asFreeMonths?.let { freeMonths ->
+                                        campaign.text = campaign.resources.getString(
+                                            R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
+                                            freeMonths.quantity
                                         )
-                                    } else {
-                                        campaign.resources.getString(
-                                            R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                            pdm.percentageDiscount.toInt(),
-                                            pdm.pdmQuantity
+                                        campaign.show()
+                                        premiumContainer.setBackgroundResource(
+                                            R.drawable.background_premium_box_with_campaign
                                         )
                                     }
-                                    campaign.show()
-                                    premiumContainer.setBackgroundResource(R.drawable.background_premium_box_with_campaign)
-                                }
 
-                                discountButton.setHapticClickListener {
-                                    tracker.removeDiscount()
-                                    discountButton.context.showAlert(
-                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
-                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
-                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
-                                        R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
-                                        {
-                                            removeDiscount()
-                                        })
-                                }
+                                    incentive.asMonthlyCostDeduction?.let {
+                                        campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
+                                        campaign.show()
+                                        premiumContainer.setBackgroundResource(
+                                            R.drawable.background_premium_box_with_campaign
+                                        )
+                                    }
 
-                                // Remove campaign views if campaign type is unknown
-                                if (
-                                    incentive.asFreeMonths == null
-                                    && incentive.asMonthlyCostDeduction == null
-                                    && incentive.asNoDiscount == null
-                                    && incentive.asPercentageDiscountMonths == null
-                                ) {
-                                    premiumContainer.background = null
-                                    campaign.remove()
-                                }
+                                    incentive.asPercentageDiscountMonths?.let { pdm ->
+                                        campaign.text = if (pdm.pdmQuantity == 1) {
+                                            campaign.resources.getString(
+                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
+                                                pdm.percentageDiscount.toInt()
+                                            )
+                                        } else {
+                                            campaign.resources.getString(
+                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
+                                                pdm.percentageDiscount.toInt(),
+                                                pdm.pdmQuantity
+                                            )
+                                        }
+                                        campaign.show()
+                                        premiumContainer.setBackgroundResource(
+                                            R.drawable.background_premium_box_with_campaign
+                                        )
+                                    }
 
-                            } ?: run {
+                                    discountButton.setHapticClickListener {
+                                        tracker.removeDiscount()
+                                        discountButton.context.showAlert(
+                                            R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
+                                            R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
+                                            R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
+                                            R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                                            {
+                                                removeDiscount()
+                                            }
+                                        )
+                                    }
+
+                                    // Remove campaign views if campaign type is unknown
+                                    if (
+                                        incentive.asFreeMonths == null &&
+                                        incentive.asMonthlyCostDeduction == null &&
+                                        incentive.asNoDiscount == null &&
+                                        incentive.asPercentageDiscountMonths == null
+                                    ) {
+                                        premiumContainer.background = null
+                                        campaign.remove()
+                                    }
+                                } ?: run {
                                 discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
                                 premiumContainer.background = null
                                 campaign.remove()
@@ -242,70 +269,82 @@ class OfferAdapter(
             ) {
                 if (data is OfferModel.Facts) {
                     binding.apply {
-                        data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishApartmentQuoteDetails?.let { swedishApartmentQuote ->
-                            ancillarySpaceLabel.remove()
-                            ancillarySpace.remove()
-                            yearOfConstructionLabel.remove()
-                            yearOfConstruction.remove()
-                            bathroomsLabel.remove()
-                            bathrooms.remove()
-                            subletedLabel.remove()
-                            subleted.remove()
-                            additionalBuildingsTitle.remove()
-                            additionalBuildingsContainer.remove()
-                            additionalBuildingsSeparator.remove()
+                        data
+                            .inner
+                            .lastQuoteOfMember
+                            .asCompleteQuote
+                            ?.quoteDetails
+                            ?.asSwedishApartmentQuoteDetails
+                            ?.let { swedishApartmentQuote ->
+                                ancillarySpaceLabel.remove()
+                                ancillarySpace.remove()
+                                yearOfConstructionLabel.remove()
+                                yearOfConstruction.remove()
+                                bathroomsLabel.remove()
+                                bathrooms.remove()
+                                subletedLabel.remove()
+                                subleted.remove()
+                                additionalBuildingsTitle.remove()
+                                additionalBuildingsContainer.remove()
+                                additionalBuildingsSeparator.remove()
 
-                            bindCommon(
-                                swedishApartmentQuote.livingSpace,
-                                swedishApartmentQuote.householdSize
-                            )
+                                bindCommon(
+                                    swedishApartmentQuote.livingSpace,
+                                    swedishApartmentQuote.householdSize
+                                )
 
-                            expandableContentView.contentSizeChanged()
-                        }
-
-                        data.inner.lastQuoteOfMember.asCompleteQuote?.quoteDetails?.asSwedishHouseQuoteDetails?.let { swedishHouseQuote ->
-                            bindCommon(
-                                swedishHouseQuote.livingSpace,
-                                swedishHouseQuote.householdSize
-                            )
-                            ancillarySpaceLabel.show()
-                            ancillarySpace.show()
-                            ancillarySpace.text = ancillarySpace.resources.getString(
-                                R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
-                                swedishHouseQuote.ancillarySpace
-                            )
-
-                            yearOfConstructionLabel.show()
-                            yearOfConstruction.show()
-                            yearOfConstruction.text =
-                                swedishHouseQuote.yearOfConstruction.toString()
-
-                            bathroomsLabel.show()
-                            bathrooms.show()
-                            bathrooms.text = swedishHouseQuote.numberOfBathrooms.toString()
-
-                            subletedLabel.show()
-                            subleted.show()
-                            subleted.text = if (swedishHouseQuote.isSubleted) {
-                                subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
-                            } else {
-                                subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
+                                expandableContentView.contentSizeChanged()
                             }
 
-                            swedishHouseQuote.extraBuildings.let { extraBuildings ->
-                                if (extraBuildings.isEmpty()) {
-                                    additionalBuildingsContainer.remove()
-                                    additionalBuildingsTitle.remove()
-                                    additionalBuildingsSeparator.remove()
+                        data
+                            .inner
+                            .lastQuoteOfMember
+                            .asCompleteQuote
+                            ?.quoteDetails
+                            ?.asSwedishHouseQuoteDetails
+                            ?.let { swedishHouseQuote ->
+                                bindCommon(
+                                    swedishHouseQuote.livingSpace,
+                                    swedishHouseQuote.householdSize
+                                )
+                                ancillarySpaceLabel.show()
+                                ancillarySpace.show()
+                                ancillarySpace.text = ancillarySpace.resources.getString(
+                                    R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
+                                    swedishHouseQuote.ancillarySpace
+                                )
+
+                                yearOfConstructionLabel.show()
+                                yearOfConstruction.show()
+                                yearOfConstruction.text =
+                                    swedishHouseQuote.yearOfConstruction.toString()
+
+                                bathroomsLabel.show()
+                                bathrooms.show()
+                                bathrooms.text = swedishHouseQuote.numberOfBathrooms.toString()
+
+                                subletedLabel.show()
+                                subleted.show()
+                                subleted.text = if (swedishHouseQuote.isSubleted) {
+                                    subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
                                 } else {
-                                    additionalBuildingsTitle.show()
-                                    additionalBuildingsContainer.show()
-                                    bindExtraBuildings(extraBuildings)
+                                    subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
                                 }
-                            }
 
-                            expandableContentView.contentSizeChanged()
-                        }
+                                swedishHouseQuote.extraBuildings.let { extraBuildings ->
+                                    if (extraBuildings.isEmpty()) {
+                                        additionalBuildingsContainer.remove()
+                                        additionalBuildingsTitle.remove()
+                                        additionalBuildingsSeparator.remove()
+                                    } else {
+                                        additionalBuildingsTitle.show()
+                                        additionalBuildingsContainer.show()
+                                        bindExtraBuildings(extraBuildings)
+                                    }
+                                }
+
+                                expandableContentView.contentSizeChanged()
+                            }
                         return
                     }
                 }
@@ -336,9 +375,11 @@ class OfferAdapter(
                     extraBuildings.forEach { eb ->
                         val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
                         val binding =
-                            AdditionalBuildingsRowBinding.inflate(LayoutInflater.from(additionalBuildingsContainer.context),
+                            AdditionalBuildingsRowBinding.inflate(
+                                LayoutInflater.from(additionalBuildingsContainer.context),
                                 additionalBuildingsContainer,
-                                false)
+                                false
+                            )
                         binding.title.text = extraBuilding.displayName
 
                         var bodyText =
@@ -431,7 +472,12 @@ class OfferAdapter(
                         termsDocuments.adapter = TermsAdapter(tracker)
                     }
                     if (data is OfferModel.Terms) {
-                        data.inner.lastQuoteOfMember.asCompleteQuote?.insurableLimits?.map { it.fragments.insurableLimitsFragment }
+                        data
+                            .inner
+                            .lastQuoteOfMember
+                            .asCompleteQuote
+                            ?.insurableLimits
+                            ?.map { it.fragments.insurableLimitsFragment }
                             ?.let {
                                 (insurableLimits.adapter as? InsurableLimitsAdapter)?.submitList(
                                     it
@@ -514,4 +560,3 @@ sealed class OfferModel {
 
     object Footer : OfferModel()
 }
-

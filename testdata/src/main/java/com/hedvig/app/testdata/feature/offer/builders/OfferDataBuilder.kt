@@ -91,4 +91,3 @@ data class OfferDataBuilder(
         SWEDISH_HOUSE
     }
 }
-

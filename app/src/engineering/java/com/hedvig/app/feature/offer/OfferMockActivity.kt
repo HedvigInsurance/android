@@ -13,9 +13,11 @@ import org.koin.dsl.module
 
 class OfferMockActivity : MockActivity() {
     override val original = listOf(offerModule)
-    override val mocks = listOf(module {
-        viewModel<OfferViewModel> { MockOfferViewModel() }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<OfferViewModel> { MockOfferViewModel() }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Offer Screen")

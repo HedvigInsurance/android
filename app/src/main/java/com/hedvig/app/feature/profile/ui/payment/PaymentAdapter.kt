@@ -151,7 +151,15 @@ class PaymentAdapter(
                     data.inner.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
                 if (discountAmount.isPositive && data.inner.balance.failedCharges == 0) {
                     gross.show()
-                    data.inner.insuranceCost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                    data
+                        .inner
+                        .insuranceCost
+                        ?.fragments
+                        ?.costFragment
+                        ?.monthlyGross
+                        ?.fragments
+                        ?.monetaryAmountFragment
+                        ?.toMonetaryAmount()
                         ?.format(gross.context)?.let { gross.text = it }
                 }
 
@@ -321,8 +329,9 @@ class PaymentAdapter(
                 }
 
                 when (data.status) {
-                    PayinMethodStatus.ACTIVE -> bank.text =
-                        data.bankAccount.fragments.bankAccountFragment.bankName
+                    PayinMethodStatus.ACTIVE ->
+                        bank.text =
+                            data.bankAccount.fragments.bankAccountFragment.bankName
                     PayinMethodStatus.PENDING -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
                     PayinMethodStatus.NEEDS_SETUP -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
                     else -> {
@@ -427,7 +436,8 @@ class PaymentAdapter(
                         PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
                         PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
                         PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
-                        PaymentModel.Link.AdyenAddPayout -> R.string.payment_screen_connect_pay_out_connect_payout_button
+                        PaymentModel.Link.AdyenAddPayout ->
+                            R.string.payment_screen_connect_pay_out_connect_payout_button
                         PaymentModel.Link.AdyenChangePayout -> R.string.payment_screen_pay_out_change_payout_button
                     }
                 )
@@ -444,44 +454,46 @@ class PaymentAdapter(
                     }
                 )
 
-                root.setHapticClickListener(when (data) {
-                    PaymentModel.Link.TrustlyChangePayin,
-                    PaymentModel.Link.AdyenChangePayin,
-                    -> { _ ->
-                        marketProvider.market?.connectPayin(
-                            root.context
-                        )?.let { root.context.startActivity(it) }
+                root.setHapticClickListener(
+                    when (data) {
+                        PaymentModel.Link.TrustlyChangePayin,
+                        PaymentModel.Link.AdyenChangePayin,
+                        -> { _ ->
+                            marketProvider.market?.connectPayin(
+                                root.context
+                            )?.let { root.context.startActivity(it) }
+                        }
+                        PaymentModel.Link.RedeemDiscountCode -> { _ ->
+                            tracker.clickRedeemCode()
+                            RefetchingRedeemCodeDialog.newInstance()
+                                .show(
+                                    fragmentManager,
+                                    RefetchingRedeemCodeDialog.TAG
+                                )
+                        }
+                        PaymentModel.Link.AdyenAddPayout,
+                        PaymentModel.Link.AdyenChangePayout,
+                        -> { _ ->
+                            marketProvider.market?.connectPayout(root.context)
+                                ?.let { root.context.startActivity(it) }
+                        }
                     }
-                    PaymentModel.Link.RedeemDiscountCode -> { _ ->
-                        tracker.clickRedeemCode()
-                        RefetchingRedeemCodeDialog.newInstance()
-                            .show(
-                                fragmentManager,
-                                RefetchingRedeemCodeDialog.TAG
-                            )
-                    }
-                    PaymentModel.Link.AdyenAddPayout,
-                    PaymentModel.Link.AdyenChangePayout,
-                    -> { _ ->
-                        marketProvider.market?.connectPayout(root.context)
-                            ?.let { root.context.startActivity(it) }
-                    }
-                })
+                )
             }
         }
     }
 
     companion object {
         private fun isActive(contracts: List<PaymentQuery.Contract>) = contracts.any {
-            it.status.fragments.contractStatusFragment.asActiveStatus != null
-                || it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null
-                || it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
+            it.status.fragments.contractStatusFragment.asActiveStatus != null ||
+                it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null ||
+                it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
         }
 
         private fun isPending(contracts: List<PaymentQuery.Contract>) = contracts.all {
-            it.status.fragments.contractStatusFragment.asPendingStatus != null
-                || it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null
-                || it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
+            it.status.fragments.contractStatusFragment.asPendingStatus != null ||
+                it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null ||
+                it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
         }
     }
 }

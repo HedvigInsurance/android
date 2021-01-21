@@ -100,8 +100,10 @@ object BlurHashDecoder {
     private fun signedPow2(value: Float) = value.pow(2f).withSign(value)
 
     private fun composeBitmap(
-        width: Int, height: Int,
-        numCompX: Int, numCompY: Int,
+        width: Int,
+        height: Int,
+        numCompX: Int,
+        numCompY: Int,
         colors: Array<FloatArray>
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

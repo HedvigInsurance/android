@@ -28,12 +28,14 @@ import org.koin.dsl.module
 
 class ReferralsMockActivity : MockActivity() {
     override val original = listOf(loggedInModule, referralsModule)
-    override val mocks = listOf(module {
-        viewModel<ReferralsViewModel> { MockReferralsViewModel() }
-        viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
-        viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
-        viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<ReferralsViewModel> { MockReferralsViewModel() }
+            viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
+            viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
+            viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Referrals Tab")
@@ -216,7 +218,8 @@ class ReferralsMockActivity : MockActivity() {
         }
         clickableItem("Referrals Success") {
             ReferralsNotificationManager.sendReferralNotification(
-                this@ReferralsMockActivity, RemoteMessage(
+                this@ReferralsMockActivity,
+                RemoteMessage(
                     bundleOf(
                         ReferralsNotificationManager.DATA_MESSAGE_REFERRED_SUCCESS_NAME to "William"
                     )
@@ -225,10 +228,12 @@ class ReferralsMockActivity : MockActivity() {
         }
         header("Deep Links")
         clickableItem("`/forever`-Deep Link") {
-            startActivity(Intent(Intent.ACTION_VIEW).apply {
-                data =
-                    Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/forever")
-            })
+            startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    data =
+                        Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/forever")
+                }
+            )
         }
     }
 

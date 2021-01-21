@@ -187,16 +187,20 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun initializeMessages() {
-        val adapter = ChatAdapter(this, onPressEdit = {
-            showAlert(
-                R.string.CHAT_EDIT_MESSAGE_TITLE,
-                positiveLabel = R.string.CHAT_EDIT_MESSAGE_SUBMIT,
-                negativeLabel = R.string.CHAT_EDIT_MESSAGE_CANCEL,
-                positiveAction = {
-                    chatViewModel.editLastResponse()
-                }
-            )
-        }, tracker = tracker)
+        val adapter = ChatAdapter(
+            this,
+            onPressEdit = {
+                showAlert(
+                    R.string.CHAT_EDIT_MESSAGE_TITLE,
+                    positiveLabel = R.string.CHAT_EDIT_MESSAGE_SUBMIT,
+                    negativeLabel = R.string.CHAT_EDIT_MESSAGE_CANCEL,
+                    positiveAction = {
+                        chatViewModel.editLastResponse()
+                    }
+                )
+            },
+            tracker = tracker
+        )
         binding.messages.addOnScrollListener(adapter.recyclerViewPreloader)
         binding.messages.adapter = adapter
     }
@@ -266,7 +270,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             attachPickerDialog?.uploadingTakenPicture(false)
             currentPhotoPath?.let { File(it).delete() }
         }
-
 
         chatViewModel.networkError.observe(this) { networkError ->
             if (networkError == true) {
@@ -388,9 +391,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private fun openGifPicker() {
         val gifPickerBottomSheet =
             GifPickerBottomSheet.newInstance(isKeyboardShown)
-        gifPickerBottomSheet.initialize(onSelectGif = { gifUrl ->
-            chatViewModel.respondToLastMessage(gifUrl)
-        })
+        gifPickerBottomSheet.initialize(
+            onSelectGif = { gifUrl ->
+                chatViewModel.respondToLastMessage(gifUrl)
+            }
+        )
         gifPickerBottomSheet.show(
             supportFragmentManager,
             GifPickerBottomSheet.TAG

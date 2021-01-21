@@ -1,6 +1,5 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
 import com.hedvig.app.ApolloClientWrapper
@@ -33,48 +32,58 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
 
                 return when (val result = dataProvider(variables)) {
                     ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
-                    is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(jsonObjectOf("errors" to result.errors.map {
+                    is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(
                         jsonObjectOf(
-                            "message" to it
-                        )
-                    }.toJsonArray()).toString())
+                            "errors" to result.errors.map {
+                                jsonObjectOf(
+                                    "message" to it
+                                )
+                            }.toJsonArray()
+                        ).toString()
+                    )
                     is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
                 }
             }
         }
     }
 
-inline fun apolloResponse(crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult): (JSONObject) -> ApolloMockServerResult =
+inline fun apolloResponse(
+    crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult,
+): (JSONObject) -> ApolloMockServerResult =
     { vars -> build(ApolloMockServerResponseBuilder(vars)) }
 
 sealed class ApolloMockServerResult {
     object InternalServerError : ApolloMockServerResult()
 
     data class GraphQLError(
-        val errors: List<String>
+        val errors: List<String>,
     ) : ApolloMockServerResult()
 
     data class GraphQLResponse(
-        val body: String
+        val body: String,
     ) : ApolloMockServerResult()
 }
 
 class ApolloMockServerResponseBuilder(
-    val variables: JSONObject
+    val variables: JSONObject,
 ) {
     fun internalServerError() = ApolloMockServerResult.InternalServerError
     fun graphQLError(vararg errors: String) =
         ApolloMockServerResult.GraphQLError(errors.toList())
 
     fun success(data: Operation.Data) =
-        ApolloMockServerResult.GraphQLResponse(data.toJson(scalarTypeAdapters = ApolloClientWrapper.CUSTOM_TYPE_ADAPTERS))
+        ApolloMockServerResult.GraphQLResponse(
+            data.toJson(
+                scalarTypeAdapters = ApolloClientWrapper.CUSTOM_TYPE_ADAPTERS
+            )
+        )
 
     fun success(data: JSONObject) =
         ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
 }
 
 class ApolloMockServerRule(
-    vararg mocks: Pair<String, ApolloResultProvider>
+    vararg mocks: Pair<String, ApolloResultProvider>,
 ) : ExternalResource() {
     val webServer = apolloMockServer(*mocks)
 

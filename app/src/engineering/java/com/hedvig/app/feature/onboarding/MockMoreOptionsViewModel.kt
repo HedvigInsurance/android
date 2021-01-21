@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.onboarding
 
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 
 class MockMoreOptionsViewModel : MoreOptionsViewModel() {

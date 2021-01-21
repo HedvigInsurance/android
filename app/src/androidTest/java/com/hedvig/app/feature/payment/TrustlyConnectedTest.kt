@@ -56,9 +56,19 @@ class TrustlyConnectedTest : TestCase() {
             recycler {
                 childAt<PaymentScreen.TrustlyPayinDetails>(3) {
                     accountNumber {
-                        containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
+                        containsText(
+                            PAYMENT_DATA_TRUSTLY_CONNECTED
+                                .bankAccount!!
+                                .fragments
+                                .bankAccountFragment
+                                .descriptor
+                        )
                     }
-                    bank { hasText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName) }
+                    bank {
+                        hasText(
+                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName
+                        )
+                    }
                     pending { isGone() }
                 }
                 childAt<PaymentScreen.Link>(4) {

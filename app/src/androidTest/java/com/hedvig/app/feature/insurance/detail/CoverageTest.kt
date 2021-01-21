@@ -43,8 +43,10 @@ class CoverageTest : TestCase() {
                 childAt<ContractDetailScreen.CoverageTab>(1) {
                     recycler {
                         hasSize(
-                            2
-                                + INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].let { it.perils.size + it.insurableLimits.size }
+                            2 +
+                                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+                                    .contracts[0]
+                                    .let { it.perils.size + it.insurableLimits.size }
                         )
                         childAt<ContractDetailScreen.CoverageTab.Peril>(3) {
                             click()

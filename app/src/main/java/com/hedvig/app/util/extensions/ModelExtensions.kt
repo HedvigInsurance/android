@@ -3,7 +3,7 @@ package com.hedvig.app.util.extensions
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 
-//TODO fix real translation
+// TODO fix real translation
 fun TypeOfContract.getStringId() = when (this) {
     TypeOfContract.SE_HOUSE -> R.string.SWEDISH_HOUSE_LOB
     TypeOfContract.SE_APARTMENT_BRF -> R.string.SWEDISH_APARTMENT_LOB_BRF

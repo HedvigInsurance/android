@@ -50,4 +50,3 @@ class MockMarketPickerViewModel(
         var AVAILABLE_GEO_MARKET = true
     }
 }
-

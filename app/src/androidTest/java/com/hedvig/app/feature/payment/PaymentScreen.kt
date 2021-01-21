@@ -17,18 +17,21 @@ import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
 class PaymentScreen : Screen<PaymentScreen>() {
-    val recycler = KRecyclerView({ withId(R.id.recycler) }, {
-        itemType(::FailedPayments)
-        itemType(::NextPayment)
-        itemType(::Campaign)
-        itemType(::ConnectPayin)
-        itemType(::Charge)
-        itemType(::PaymentHistoryLink)
-        itemType(::TrustlyPayinDetails)
-        itemType(::AdyenPayinDetails)
-        itemType(::AdyenPayoutDetails)
-        itemType(::Link)
-    })
+    val recycler = KRecyclerView(
+        { withId(R.id.recycler) },
+        {
+            itemType(::FailedPayments)
+            itemType(::NextPayment)
+            itemType(::Campaign)
+            itemType(::ConnectPayin)
+            itemType(::Charge)
+            itemType(::PaymentHistoryLink)
+            itemType(::TrustlyPayinDetails)
+            itemType(::AdyenPayinDetails)
+            itemType(::AdyenPayoutDetails)
+            itemType(::Link)
+        }
+    )
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
         val paragraph = KTextView(parent) { withId(R.id.paragraph) }

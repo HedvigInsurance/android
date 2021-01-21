@@ -46,9 +46,11 @@ class UnknownGeoTest : TestCase() {
     @get:Rule
     val koinMockModuleRule = KoinMockModuleRule(
         listOf(marketPickerTrackerModule),
-        listOf(module {
-            single { tracker }
-        })
+        listOf(
+            module {
+                single { tracker }
+            }
+        )
     )
 
     var originalMarket: String? = null
@@ -106,7 +108,6 @@ class UnknownGeoTest : TestCase() {
                 }
             }
         }
-
 
         verify(exactly = 1) { tracker.selectMarket(Market.SE) }
         verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }

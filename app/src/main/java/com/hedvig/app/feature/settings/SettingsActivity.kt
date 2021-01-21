@@ -11,7 +11,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -149,15 +148,19 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
             notificationsPreference?.let { np ->
                 np.setOnPreferenceClickListener {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
-                        })
+                        startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                            }
+                        )
                     } else {
-                        startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            data = Uri.fromParts("package", requireContext().packageName, null)
-                        })
+                        startActivity(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            }
+                        )
                     }
                     true
                 }
@@ -174,4 +177,3 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
-

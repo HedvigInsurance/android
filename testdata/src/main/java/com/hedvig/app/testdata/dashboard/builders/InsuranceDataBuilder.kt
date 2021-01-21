@@ -19,7 +19,7 @@ class InsuranceDataBuilder(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
         ),
-    private val displayName: String = "Hemförsäkring"
+    private val displayName: String = "Hemförsäkring",
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -40,9 +40,10 @@ class InsuranceDataBuilder(
                                 ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
                                     futureInception = LocalDate.of(2025, 1, 1)
                                 )
-                                ContractStatus.ACTIVE_IN_FUTURE_INVALID -> ContractStatusFragment.AsActiveInFutureStatus(
-                                    futureInception = null
-                                )
+                                ContractStatus.ACTIVE_IN_FUTURE_INVALID ->
+                                    ContractStatusFragment.AsActiveInFutureStatus(
+                                        futureInception = null
+                                    )
                                 else -> null
                             },
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
@@ -52,7 +53,9 @@ class InsuranceDataBuilder(
                             } else {
                                 null
                             },
-                            asActiveInFutureAndTerminatedInFutureStatus = if (c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE) {
+                            asActiveInFutureAndTerminatedInFutureStatus = if (
+                                c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                            ) {
                                 ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
                                     futureInception = LocalDate.of(2024, 1, 1),
                                     futureTermination = LocalDate.of(2034, 1, 1)
@@ -87,7 +90,8 @@ class InsuranceDataBuilder(
                         TypeOfContract.SE_APARTMENT_BRF,
                         TypeOfContract.SE_APARTMENT_RENT,
                         TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                        TypeOfContract.SE_APARTMENT_STUDENT_RENT -> InsuranceQuery.AsSwedishApartmentAgreement(
+                        TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+                        -> InsuranceQuery.AsSwedishApartmentAgreement(
                             address = InsuranceQuery.Address(
                                 fragments = InsuranceQuery.Address.Fragments(
                                     AddressFragment(
@@ -116,7 +120,8 @@ class InsuranceDataBuilder(
                         TypeOfContract.DK_HOME_CONTENT_OWN,
                         TypeOfContract.DK_HOME_CONTENT_RENT,
                         TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                        TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> InsuranceQuery.AsDanishHomeContentAgreement(
+                        TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+                        -> InsuranceQuery.AsDanishHomeContentAgreement(
                             address = InsuranceQuery.Address3(
                                 fragments = InsuranceQuery.Address3.Fragments(
                                     AddressFragment(
@@ -131,8 +136,10 @@ class InsuranceDataBuilder(
                             dhcType = when (typeOfContract) {
                                 TypeOfContract.DK_HOME_CONTENT_OWN -> DanishHomeContentLineOfBusiness.OWN
                                 TypeOfContract.DK_HOME_CONTENT_RENT -> DanishHomeContentLineOfBusiness.RENT
-                                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN -> DanishHomeContentLineOfBusiness.STUDENT_OWN
-                                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> DanishHomeContentLineOfBusiness.STUDENT_RENT
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN ->
+                                    DanishHomeContentLineOfBusiness.STUDENT_OWN
+                                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT ->
+                                    DanishHomeContentLineOfBusiness.STUDENT_RENT
                                 else -> throw Error("Unreachable")
                             }
                         )
@@ -140,14 +147,16 @@ class InsuranceDataBuilder(
                     },
                     asDanishTravelAgreement = when (typeOfContract) {
                         TypeOfContract.DK_TRAVEL,
-                        TypeOfContract.DK_TRAVEL_STUDENT -> InsuranceQuery.AsDanishTravelAgreement(
+                        TypeOfContract.DK_TRAVEL_STUDENT,
+                        -> InsuranceQuery.AsDanishTravelAgreement(
                             numberCoInsured = 2
                         )
                         else -> null
                     },
                     asDanishAccidentAgreement = when (typeOfContract) {
                         TypeOfContract.DK_ACCIDENT,
-                        TypeOfContract.DK_ACCIDENT_STUDENT -> InsuranceQuery.AsDanishAccidentAgreement(
+                        TypeOfContract.DK_ACCIDENT_STUDENT,
+                        -> InsuranceQuery.AsDanishAccidentAgreement(
                             numberCoInsured = 2
                         )
                         else -> null

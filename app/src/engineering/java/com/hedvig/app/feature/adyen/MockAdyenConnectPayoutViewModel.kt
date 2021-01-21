@@ -4,10 +4,12 @@ import com.adyen.checkout.base.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import org.json.JSONObject
 
-class MockAdyenConnectPayoutViewModel:AdyenConnectPayoutViewModel() {
+class MockAdyenConnectPayoutViewModel : AdyenConnectPayoutViewModel() {
     init {
-        _payoutMethods.postValue(PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(
-            """
+        _payoutMethods.postValue(
+            PaymentMethodsApiResponse.SERIALIZER.deserialize(
+                JSONObject(
+                    """
                 {
                   "paymentMethods": [
                     {
@@ -33,7 +35,9 @@ class MockAdyenConnectPayoutViewModel:AdyenConnectPayoutViewModel() {
                     }
                   ]
                 }
-            """.trimIndent()
-        )))
+                    """.trimIndent()
+                )
+            )
+        )
     }
 }

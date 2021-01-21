@@ -117,7 +117,8 @@ class PickerAdapter(
 
             @SuppressLint("ApplySharedPref") // We need to apply this now
             override fun bind(
-                item: Model, parentFragmentManager: FragmentManager,
+                item: Model,
+                parentFragmentManager: FragmentManager,
                 viewModel: MarketPickerViewModel,
                 marketingViewModel: MarketingViewModel,
                 tracker: MarketPickerTracker

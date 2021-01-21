@@ -114,5 +114,3 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             }
     }
 }
-
-

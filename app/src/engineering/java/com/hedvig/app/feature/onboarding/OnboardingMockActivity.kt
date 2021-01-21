@@ -16,11 +16,13 @@ import org.koin.dsl.module
 class OnboardingMockActivity : MockActivity() {
     private val marketProvider = MockMarketProvider()
     override val original = listOf(onboardingModule, choosePlanModule, marketProviderModule)
-    override val mocks = listOf(module {
-        viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
-        viewModel<ChoosePlanViewModel> { MockChoosePlanViewModel() }
-        single<MarketProvider> { marketProvider }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+            viewModel<ChoosePlanViewModel> { MockChoosePlanViewModel() }
+            single<MarketProvider> { marketProvider }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Choose Plan")

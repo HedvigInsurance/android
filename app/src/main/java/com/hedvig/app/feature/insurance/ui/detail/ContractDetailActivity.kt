@@ -125,4 +125,3 @@ class ContractDetailTabAdapter(activity: AppCompatActivity) : FragmentStateAdapt
         else -> Fragment()
     }
 }
-
