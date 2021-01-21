@@ -6,6 +6,7 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
@@ -66,7 +67,7 @@ enum class Market {
     }
 
     fun connectPayout(context: Context) = when (this) {
-        NO -> AdyenConnectPayinActivity.newInstance(context, AdyenCurrency.fromMarket(this))
+        NO -> AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(this))
         else -> null
     }
 

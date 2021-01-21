@@ -80,7 +80,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
     val adyenConnectPayin = KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }
     val adyenConnectPayout =
-        KIntent { hasComponent { AdyenConnectPayoutActivity::class.java.name } }
+        KIntent { hasComponent { hasClassName(AdyenConnectPayoutActivity::class.java.name) } }
 }
 
 object RedeemCode : KScreen<RedeemCode>() {
