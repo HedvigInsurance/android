@@ -33,10 +33,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
         }
 
         binding.apply {
-            messages.adapter = MessageAdapter().apply {
-                submitList(data.messages)
-            }
-
+            messages.adapter = MessageAdapter(data.messages)
             inputRecycler.adapter = TextInputSetAdapter(textActionSetViewModel).also {
                 it.submitList(textFieldData(data))
             }

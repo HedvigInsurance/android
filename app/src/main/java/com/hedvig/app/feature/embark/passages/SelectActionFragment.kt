@@ -33,10 +33,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         }
 
         binding.apply {
-            messages.adapter = MessageAdapter().apply {
-                submitList(data.messages)
-            }
-
+            messages.adapter = MessageAdapter(data.messages)
             actions.adapter = SelectActionAdapter { selectAction: SelectAction, view: View ->
                 view.hapticClicks()
                     .mapLatest { onActionSelected(selectAction, data, response) }
