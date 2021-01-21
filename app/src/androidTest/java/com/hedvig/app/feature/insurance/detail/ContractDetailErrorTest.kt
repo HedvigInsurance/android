@@ -39,7 +39,7 @@ class ContractDetailErrorTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldReload() {
+    fun shouldReload() = run {
         activityRule.launch(
             ContractDetailActivity.newInstance(
                 context(),

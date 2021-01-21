@@ -53,7 +53,7 @@ class ReferralsActivatedActivityTest : TestCase() {
     }
 
     @Test
-    fun shouldShowCorrectDiscountAmount() {
+    fun shouldShowCorrectDiscountAmount() = run {
         activityRule.launchActivity(null)
 
         onScreen<ReferralsActivatedScreen> {
