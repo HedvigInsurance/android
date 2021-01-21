@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery

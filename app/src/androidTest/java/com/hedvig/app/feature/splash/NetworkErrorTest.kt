@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.splash
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -9,6 +8,7 @@ import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
@@ -22,7 +22,7 @@ import org.junit.Test
 
 class NetworkErrorTest : TestCase() {
     @get:Rule
-    val activityRule = IntentsTestRule(SplashActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(SplashActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -42,7 +42,7 @@ class NetworkErrorTest : TestCase() {
 
     @Test
     fun shouldNotCrashOnNetworkError() = run {
-        activityRule.launchActivity(null)
+        activityRule.launch()
         onScreen<SplashScreen> {
             marketing { stub() }
         }
