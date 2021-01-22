@@ -18,7 +18,6 @@ import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.getStoredBoolean
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel(private val context: Context) : ViewModel() {
@@ -26,35 +25,24 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
     val data: LiveData<PickerState> = _data
     abstract fun uploadLanguage()
 
-    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
-    fun save() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        var clean = false
-        data.value?.let { ps ->
-            clean = ps.market == context.getMarket() && ps.language == context.getLanguage()
-        }
+    fun submitLanguageAndReload() {
+        uploadLanguage()
+        persistPickerState()
+        broadcastLocale()
+    }
 
+    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
+    private fun persistPickerState() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         data.value?.let { data ->
             sharedPreferences.edit()
-                .putString(
-                    Market.MARKET_SHARED_PREF,
-                    data.market?.name
-                )
-                .commit()
-
-            sharedPreferences
-                .edit()
+                .putString(Market.MARKET_SHARED_PREF, data.market?.name)
                 .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
                 .commit()
-
-            if (!clean || context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)) {
-                reload()
-            }
-            uploadLanguage()
         }
     }
 
-    private fun reload() {
+    private fun broadcastLocale() {
         LocalBroadcastManager
             .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))

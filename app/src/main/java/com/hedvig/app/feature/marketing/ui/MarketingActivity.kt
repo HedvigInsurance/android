@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.transition.MaterialContainerTransform
@@ -30,30 +31,8 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
 
         model.navigationState.observe(this) { navigationState ->
             when (navigationState.destination) {
-                MARKET_PICKER -> {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    navigationState.sharedElements.forEach { (view, transitionName) ->
-                        transaction.addSharedElement(view, transitionName)
-                    }
-                    transaction.replace(
-                        R.id.container,
-                        MarketPickerFragment().also {
-                            it.sharedElementEnterTransition = MaterialContainerTransform()
-                        }
-                    ).commit()
-                }
-                MARKETING -> {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    navigationState.sharedElements.forEach { (view, transitionName) ->
-                        transaction.addSharedElement(view, transitionName)
-                    }
-                    transaction.replace(
-                        R.id.container,
-                        MarketSelectedFragment().also {
-                            it.sharedElementEnterTransition = MaterialContainerTransform()
-                        }
-                    ).commit()
-                }
+                MARKET_PICKER -> replaceFragment(MarketPickerFragment())
+                MARKETING -> replaceFragment(MarketSelectedFragment(), "market")
             }
         }
 
@@ -84,6 +63,27 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                         }
                     }
                 }
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment, tag: String? = null) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.container,
+                fragment.also {
+                    it.sharedElementEnterTransition = MaterialContainerTransform()
+                },
+                tag
+            )
+            .commit()
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.findFragmentByTag("market")?.isVisible == true) {
+            finish()
+        } else {
+            super.onBackPressed()
         }
     }
 

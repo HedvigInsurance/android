@@ -41,7 +41,6 @@ class LanguageItemAdapter(
                 root.setHapticClickListener {
                     tracker.selectLocale(language)
                     viewModel.updatePickerState(viewModel.data.value?.copy(language = language))
-                    viewModel.save()
                     dialog?.cancel()
                 }
             }

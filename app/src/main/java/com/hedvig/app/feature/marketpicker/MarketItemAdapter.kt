@@ -45,7 +45,6 @@ class MarketItemAdapter(
                             language = Language.getAvailableLanguages(market).first()
                         )
                     )
-                    viewModel.save()
                     dialog?.cancel()
                 }
             }
