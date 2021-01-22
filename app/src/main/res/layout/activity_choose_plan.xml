@@ -13,9 +13,8 @@
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/onboarding_startpage.screen_title"
         app:navigationIcon="@drawable/ic_back"
-        app:titleTextColor="?colorPrimary" />
+        app:title="@string/onboarding_startpage.screen_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"

@@ -5,6 +5,10 @@
         <item name="android:background">?android:colorBackground</item>
     </style>
 
+    <style name="Hedvig.Theme.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">?colorPrimary</item>
+    </style>
+
     <style name="Hedvig.Theme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="textAllCaps">false</item>
     </style>

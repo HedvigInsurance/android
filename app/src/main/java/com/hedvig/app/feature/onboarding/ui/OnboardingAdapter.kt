@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.animation.doOnStart
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -116,21 +117,24 @@ class OnboardingAdapter(
 
             private fun animate(distance: Float) {
                 binding.apply {
-                    val shimmerStartPosition = shimmer.x
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
-                                duration = 1000
+                    val shimmerStartPosition = 0f - shimmer.width
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
+                            duration = 1000
 
-                                addUpdateListener { animation ->
-                                    shimmer.translationX = animation.animatedValue as Float
-                                }
-                                doOnEnd {
-                                    shimmer.translationX = shimmerStartPosition
-                                }
-                                start()
+                            addUpdateListener { animation ->
+                                shimmer.translationX = animation.animatedValue as Float
                             }
-                        },
+                            doOnStart {
+                                shimmer.visibility = View.VISIBLE
+                            }
+                            doOnEnd {
+                                shimmer.translationX = shimmerStartPosition
+                                shimmer.visibility = View.INVISIBLE
+                            }
+                            start()
+                        }
+                    },
                         300
                     )
                 }
@@ -149,3 +153,4 @@ class OnboardingAdapter(
         }
     }
 }
+

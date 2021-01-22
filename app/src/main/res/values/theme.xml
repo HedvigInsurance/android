@@ -63,6 +63,7 @@
 
         <!-- Widget styles -->
         <item name="appBarLayoutStyle">@style/Hedvig.Theme.AppBarLayout</item>
+        <item name="toolbarStyle">@style/Hedvig.Theme.Toolbar</item>
         <item name="bottomSheetDialogTheme">@style/Hedvig.Theme.BottomSheetDialog</item>
         <item name="textInputStyle">@style/Hedvig.Theme.TextInputLayout</item>
 
