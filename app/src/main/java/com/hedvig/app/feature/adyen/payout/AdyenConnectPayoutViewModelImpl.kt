@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.adyen.payout
 
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.adyen.payin.AdyenRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
 import kotlinx.coroutines.launch
 
 class AdyenConnectPayoutViewModelImpl(
