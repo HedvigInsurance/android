@@ -12,7 +12,6 @@ import com.adyen.checkout.dropin.DropInConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.adyen.AdyenDropInService
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
@@ -38,7 +37,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
             val dropInConfiguration = DropInConfiguration
                 .Builder(
                     this,
-                    intent, AdyenDropInService::class.java
+                    intent, AdyenPayoutDropInService::class.java
                 )
                 .setShopperLocale(getLocale(this))
                 .setEnvironment(

@@ -14,7 +14,6 @@ import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.adyen.AdyenDropInService
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
 import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
@@ -121,7 +120,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
         val dropInConfiguration = DropInConfiguration
             .Builder(
                 this,
-                intent, AdyenDropInService::class.java
+                intent, AdyenPayinDropInService::class.java
             )
             .addCardConfiguration(cardConfig)
             .addGooglePayConfiguration(googlePayConfig)
