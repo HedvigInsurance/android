@@ -11,9 +11,7 @@ import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -124,26 +122,10 @@ class PickerAdapter(
                 tracker: MarketPickerTracker
             ) {
                 binding.apply {
-                    val shouldProceed =
-                        continueButton.context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)
                     continueButton.setHapticClickListener {
-                        continueButton.context.storeBoolean(
-                            MarketPickerFragment.SHOULD_PROCEED,
-                            true
-                        )
                         tracker.submit()
-                        viewModel.uploadLanguage()
-                        viewModel.save()
-                    }
-                    if (shouldProceed) {
-                        marketingViewModel.navigateTo(
-                            CurrentFragment.MARKETING,
-                            continueButton to "marketButton"
-                        )
-                        continueButton.context.storeBoolean(
-                            MarketPickerFragment.SHOULD_PROCEED,
-                            false
-                        )
+                        viewModel.submitLanguageAndReload()
+                        marketingViewModel.navigateTo(CurrentFragment.MARKETING)
                     }
                 }
             }

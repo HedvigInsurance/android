@@ -3,6 +3,7 @@ package com.hedvig.app.feature.marketpicker
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.google.android.material.transition.MaterialContainerTransform
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.marketing.service.MarketingTracker
@@ -47,10 +48,18 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                     setImageDrawable(context.compatDrawable(market.flag))
                 }
                 setHapticClickListener {
-                    viewModel.navigateTo(
-                        CurrentFragment.MARKET_PICKER,
-                        signUp to "marketButton"
-                    )
+                    val transaction = parentFragmentManager.beginTransaction()
+                    transaction
+                        .addSharedElement(signUp, "marketButton")
+                        .setReorderingAllowed(true)
+                        .replace(
+                            R.id.container,
+                            MarketPickerFragment().also {
+                                it.sharedElementEnterTransition = MaterialContainerTransform()
+                            },
+                        )
+                        .addToBackStack(null)
+                        .commit()
                 }
             }
 
