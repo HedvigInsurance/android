@@ -10,6 +10,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -17,13 +18,11 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val viewModel: MarketPickerViewModel by sharedViewModel()
     private val marketingViewModel: MarketingViewModel by sharedViewModel()
-    private lateinit var binding: FragmentMarketPickerBinding
+    private val binding by viewBinding(FragmentMarketPickerBinding::bind)
     private val tracker: MarketPickerTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postponeEnterTransition()
-
-        binding = FragmentMarketPickerBinding.bind(view)
 
         requireContext().storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
