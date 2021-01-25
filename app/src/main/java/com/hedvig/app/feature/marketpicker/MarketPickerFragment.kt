@@ -30,7 +30,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
             }
 
             var firstLayout = true
-            viewModel.data.observe(viewLifecycleOwner) { data ->
+            viewModel.pickerState.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
                     submitList(
                         listOf(
@@ -40,7 +40,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                         )
                     )
                 }
-                // Need too do this else the recyclerview might not show until user scrolls
+                // Need to do this else the recyclerview might not show until user scrolls
                 if (firstLayout) {
                     firstLayout = false
                     picker.smoothScrollToPosition(0)

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.edit
@@ -23,20 +22,25 @@ import com.hedvig.app.util.extensions.getMarket
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel(private val context: Context) : ViewModel() {
-    protected val _data = MutableLiveData<PickerState>()
-    val data: LiveData<PickerState> = _data
+    protected val _pickerSate = MutableLiveData<PickerState>()
+    val pickerState: LiveData<PickerState> = _pickerSate
     abstract fun uploadLanguage()
 
+    fun hasSystemLanguageChanged(): Boolean {
+        return pickerState.value?.let { pickerState ->
+            pickerState.market != context.getMarket() || pickerState.language != context.getLanguage()
+        } ?: true
+    }
+
     fun submitLanguageAndReload(market: Market?, language: Language) {
-        _data.value = PickerState(market ?: data.value?.market, language)
+        _pickerSate.value = PickerState(market ?: pickerState.value?.market, language)
         persistPickerState()
         broadcastLocale()
         uploadLanguage()
     }
 
-    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
     private fun persistPickerState() {
-        data.value?.let { data ->
+        pickerState.value?.let { data ->
             PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
                 putString(Market.MARKET_SHARED_PREF, data.market?.name)
                 putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
@@ -64,7 +68,7 @@ class MarketPickerViewModelImpl(
             if (context.getMarket() == null) {
                 val geo = runCatching { marketRepository.geo() }
                 if (geo.isFailure || geo.getOrNull()?.hasErrors() == true) {
-                    _data.postValue(
+                    _pickerSate.postValue(
                         PickerState(
                             Market.SE, Language.EN_SE
                         )
@@ -87,12 +91,12 @@ class MarketPickerViewModelImpl(
                                 }
                             )
                             when (market) {
-                                Market.SE -> _data.postValue(PickerState(market, Language.EN_SE))
-                                Market.NO -> _data.postValue(PickerState(market, Language.EN_NO))
-                                Market.DK -> _data.postValue(PickerState(market, Language.EN_DK))
+                                Market.SE -> _pickerSate.postValue(PickerState(market, Language.EN_SE))
+                                Market.NO -> _pickerSate.postValue(PickerState(market, Language.EN_NO))
+                                Market.DK -> _pickerSate.postValue(PickerState(market, Language.EN_DK))
                             }
                         } catch (e: Exception) {
-                            _data.postValue(
+                            _pickerSate.postValue(
                                 PickerState(
                                     Market.SE, Language.EN_SE
                                 )
@@ -102,7 +106,7 @@ class MarketPickerViewModelImpl(
                 }
             } else {
                 context.getMarket()?.let { market ->
-                    _data.postValue(
+                    _pickerSate.postValue(
                         PickerState(
                             market,
                             context.getLanguage() ?: Language.getAvailableLanguages(market).first()
@@ -114,7 +118,7 @@ class MarketPickerViewModelImpl(
     }
 
     override fun uploadLanguage() {
-        data.value?.let { data ->
+        pickerState.value?.let { data ->
             data.language?.apply(context)?.let { ctx ->
                 languageRepository.setLanguage(makeLocaleString(ctx), defaultLocale(ctx))
             }

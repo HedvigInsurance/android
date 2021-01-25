@@ -11,6 +11,7 @@ import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -126,10 +127,12 @@ class PickerAdapter(
                     continueButton.setHapticClickListener {
                         tracker.submit()
                         marketingViewModel.navigateTo(
-                            fragment = CurrentFragment.MARKETING,
-                            sharedElements = listOf(binding.continueButton to MarketingActivity.SHARED_ELEMENT_NAME),
-                            reorderingAllowed = true,
-                            addToBackStack = true
+                            NavigationState(
+                                destination = CurrentFragment.MARKETING,
+                                sharedElements = listOf(binding.continueButton to MarketingActivity.SHARED_ELEMENT_NAME),
+                                reorderingAllowed = true,
+                                addToBackStack = true
+                            )
                         )
                     }
                 }

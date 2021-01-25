@@ -35,7 +35,7 @@ class MarketItemAdapter(
             dialog: Dialog?
         ) {
             binding.apply {
-                radioButton.isChecked = viewModel.data.value?.market == market
+                radioButton.isChecked = viewModel.pickerState.value?.market == market
                 text.setText(market.label)
                 root.setHapticClickListener {
                     tracker.selectMarket(market)
