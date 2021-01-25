@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
@@ -124,8 +125,12 @@ class PickerAdapter(
                 binding.apply {
                     continueButton.setHapticClickListener {
                         tracker.submit()
-                        viewModel.submitLanguageAndReload()
-                        marketingViewModel.navigateTo(CurrentFragment.MARKETING)
+                        marketingViewModel.navigateTo(
+                            fragment = CurrentFragment.MARKETING,
+                            sharedElements = listOf(binding.continueButton to MarketingActivity.SHARED_ELEMENT_NAME),
+                            reorderingAllowed = true,
+                            addToBackStack = true
+                        )
                     }
                 }
             }

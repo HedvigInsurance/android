@@ -12,6 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.HedvigApplication
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
@@ -26,19 +27,20 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
     val data: LiveData<PickerState> = _data
     abstract fun uploadLanguage()
 
-    fun submitLanguageAndReload() {
-        uploadLanguage()
+    fun submitLanguageAndReload(market: Market?, language: Language) {
+        _data.value = PickerState(market ?: data.value?.market, language)
         persistPickerState()
         broadcastLocale()
+        uploadLanguage()
     }
 
     @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
     private fun persistPickerState() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         data.value?.let { data ->
-            sharedPreferences.edit(commit = true) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
                 putString(Market.MARKET_SHARED_PREF, data.market?.name)
                 putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
+                putBoolean(MarketingActivity.HAS_SELECTED_MARKET, true)
             }
         }
     }
@@ -47,10 +49,6 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
         LocalBroadcastManager
             .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
-    }
-
-    fun updatePickerState(pickerState: PickerState?) {
-        _data.value = pickerState
     }
 }
 

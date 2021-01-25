@@ -93,7 +93,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         positiveAction = {
                             requireContext().setMarket(null)
                             requireContext().storeBoolean(
-                                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                                MarketingActivity.HAS_SELECTED_MARKET,
                                 false
                             )
                             userViewModel.logout {

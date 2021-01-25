@@ -82,16 +82,10 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag(MARKET_FRAGMENT_TAG)?.isVisible == true) {
-            finish()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     companion object {
-        const val SHOULD_OPEN_MARKET_SELECTED = "SHOULD_MARKET_SELECTED"
+        const val HAS_SELECTED_MARKET = "SHOULD_MARKET_SELECTED"
+        const val SHARED_ELEMENT_NAME = "marketButton"
+
         private const val MARKET_FRAGMENT_TAG = "market"
         private const val MARKET_PICKER_FRAGMENT_TAG = "picker"
 
