@@ -192,6 +192,10 @@ dependencies {
 
     implementation("com.github.Zhuinden:livedata-combinetuple-kt:1.0.0")
 
+    // Play core
+    implementation("com.google.android.play:core:1.9.0")
+    implementation("com.google.android.play:core-ktx:1.8.1")
+
     // WorkManager
     val workmanager_version = "2.4.0"
     implementation("androidx.work:work-runtime:$workmanager_version")
