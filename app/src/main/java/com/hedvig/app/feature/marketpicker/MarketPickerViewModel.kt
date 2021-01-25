@@ -3,6 +3,7 @@ package com.hedvig.app.feature.marketpicker
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -35,10 +36,10 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
     private fun persistPickerState() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         data.value?.let { data ->
-            sharedPreferences.edit()
-                .putString(Market.MARKET_SHARED_PREF, data.market?.name)
-                .putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
-                .commit()
+            sharedPreferences.edit(commit = true) {
+                putString(Market.MARKET_SHARED_PREF, data.market?.name)
+                putString(SettingsActivity.SETTING_LANGUAGE, data.language.toString())
+            }
         }
     }
 
