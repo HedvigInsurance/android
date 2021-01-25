@@ -10,7 +10,6 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
@@ -25,8 +24,6 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
     private val marketProvider: MarketProvider by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireContext().storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, true)
-
         binding.apply {
             legal.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
@@ -49,8 +46,8 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                 setHapticClickListener {
                     viewModel.navigateTo(
                         fragment = CurrentFragment.MARKET_PICKER,
-                        sharedElements = listOf(signUp to "marketButton"),
-                        reorderingAllowed = false,
+                        sharedElements = listOf(signUp to MarketingActivity.SHARED_ELEMENT_NAME),
+                        reorderingAllowed = true,
                         addToBackStack = true
                     )
                 }

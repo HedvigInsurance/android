@@ -5,9 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
@@ -23,8 +21,6 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postponeEnterTransition()
-
-        requireContext().storeBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
 
         binding.apply {
 

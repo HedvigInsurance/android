@@ -67,13 +67,13 @@ class UnknownGeoTest : TestCase() {
         originalMarket = pref.getString(Market.MARKET_SHARED_PREF, null)
         originalLanguage = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
         originalShouldOpenMarketSelected =
-            pref.getBoolean(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED, false)
+            pref.getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
 
         pref
             .edit()
             .remove(Market.MARKET_SHARED_PREF)
             .remove(SettingsActivity.SETTING_LANGUAGE)
-            .remove(MarketingActivity.SHOULD_OPEN_MARKET_SELECTED)
+            .remove(MarketingActivity.HAS_SELECTED_MARKET)
             .commit()
     }
 
@@ -129,7 +129,7 @@ class UnknownGeoTest : TestCase() {
             .putString(Market.MARKET_SHARED_PREF, originalMarket)
             .putString(SettingsActivity.SETTING_LANGUAGE, originalLanguage)
             .putBoolean(
-                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                MarketingActivity.HAS_SELECTED_MARKET,
                 originalShouldOpenMarketSelected
             )
             .commit()
