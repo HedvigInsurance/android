@@ -22,11 +22,8 @@ abstract class MarketingViewModel : ViewModel() {
         _navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER)
     }
 
-    fun navigateTo(fragment: CurrentFragment,
-                   sharedElements: List<Pair<View, String>> = emptyList(),
-                   reorderingAllowed: Boolean = false,
-                   addToBackStack: Boolean = false) {
-        _navigationState.postValue(NavigationState(fragment, sharedElements, reorderingAllowed, addToBackStack))
+    fun navigateTo(navigationState: NavigationState) {
+        _navigationState.postValue(navigationState)
     }
 }
 
@@ -62,5 +59,6 @@ data class NavigationState(
     val destination: CurrentFragment,
     val sharedElements: List<Pair<View, String>> = emptyList(),
     val reorderingAllowed: Boolean = false,
-    val addToBackStack: Boolean = false
+    val addToBackStack: Boolean = false,
+    val recreate: Boolean = false
 )

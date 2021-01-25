@@ -24,12 +24,12 @@ class MockMarketPickerViewModel(
                     Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
                 }
                 when (market) {
-                    Market.SE -> _data.postValue(PickerState(market, Language.EN_SE))
-                    Market.NO -> _data.postValue(PickerState(market, Language.EN_NO))
-                    Market.DK -> _data.postValue(PickerState(market, Language.EN_DK))
+                    Market.SE -> _pickerSate.postValue(PickerState(market, Language.EN_SE))
+                    Market.NO -> _pickerSate.postValue(PickerState(market, Language.EN_NO))
+                    Market.DK -> _pickerSate.postValue(PickerState(market, Language.EN_DK))
                 }
             } catch (e: Exception) {
-                _data.postValue(
+                _pickerSate.postValue(
                     PickerState(
                         Market.SE, Language.EN_SE
                     )
@@ -37,7 +37,7 @@ class MockMarketPickerViewModel(
             }
         } else {
             context.getMarket()?.let { market ->
-                _data.postValue(
+                _pickerSate.postValue(
                     PickerState(
                         market, context.getLanguage()
                     )

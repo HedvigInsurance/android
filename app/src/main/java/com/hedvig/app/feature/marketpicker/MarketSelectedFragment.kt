@@ -8,6 +8,7 @@ import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -45,10 +46,12 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
                 }
                 setHapticClickListener {
                     viewModel.navigateTo(
-                        fragment = CurrentFragment.MARKET_PICKER,
-                        sharedElements = listOf(signUp to MarketingActivity.SHARED_ELEMENT_NAME),
-                        reorderingAllowed = true,
-                        addToBackStack = true
+                        NavigationState(
+                            destination = CurrentFragment.MARKET_PICKER,
+                            sharedElements = listOf(signUp to MarketingActivity.SHARED_ELEMENT_NAME),
+                            reorderingAllowed = true,
+                            addToBackStack = true
+                        )
                     )
                 }
             }
