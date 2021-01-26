@@ -84,7 +84,7 @@ query EmbarkStory($name: String!, $locale: String!) {
               name
               logo {
                 variants {
-                  ... IconVariantsFragment
+                  ...IconVariantsFragment
                 }
               }
             }
