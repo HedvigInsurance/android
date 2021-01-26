@@ -21,7 +21,7 @@ import com.hedvig.app.util.extensions.viewBinding
 
 private const val PEEK_HEIGHT = 380
 
-open class ExpandableBottomSheet : BottomSheetDialogFragment() {
+abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
 
     val binding by viewBinding(ExpandableBottomSheetBinding::bind)
 
@@ -54,6 +54,10 @@ open class ExpandableBottomSheet : BottomSheetDialogFragment() {
                         override fun onStateChanged(bottomSheet: View, newState: Int) {
                             when (newState) {
                                 BottomSheetBehavior.STATE_EXPANDED -> {
+                                    if (bottomSheet.height != (bottomSheet.parent as? View)?.height) {
+                                        return
+                                    }
+
                                     dialog?.window?.statusBarColor = requireContext().colorAttr(R.attr.colorSurface)
                                     if (!requireContext().isDarkThemeActive) {
                                         dialog?.window?.decorView?.let {
@@ -84,7 +88,6 @@ open class ExpandableBottomSheet : BottomSheetDialogFragment() {
                                     (binding.root.height - chevronContainer.height).toFloat(),
                                     slideOffset
                                 )
-                            binding.root.height
                             chevronContainer.alpha = 1 - slideOffset
                         }
                     })

@@ -2,14 +2,19 @@ package com.hedvig.app.feature.embark.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerAdapter
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerData
 import com.hedvig.app.ui.view.ExpandableBottomSheet
+import org.koin.android.ext.android.inject
 
 class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
+
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
     private val insurers by lazy {
         requireArguments()
@@ -19,7 +24,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recycler.adapter = PreviousInsurerAdapter(insurers, ::onInsurerSelected)
+        binding.recycler.adapter = PreviousInsurerAdapter(insurers, requestBuilder, ::onInsurerSelected)
     }
 
     private fun onInsurerSelected(id: String) {

@@ -23,9 +23,9 @@ import com.hedvig.app.feature.embark.passages.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerData
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.activity_embark.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
@@ -149,14 +149,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
 
         passage?.action?.asEmbarkPreviousInsuranceProviderAction?.let { previousInsuranceAction ->
-            return PreviousInsurerData(
-                messages = passage.messages.map { it.fragments.messageFragment.text },
-                previousInsurers = previousInsuranceAction
-                    .data
-                    .insuranceProviders
-                    .map { PreviousInsurerData.PreviousInsurer(it.name, it.logo.variants.fragments.iconVariantsFragment.light.svgUrl) }
+            val previosInsurerData = PreviousInsurerData.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                previousInsuranceAction
             )
-                .let(PreviousInsurerFragment::newInstance)
+            return PreviousInsurerFragment.newInstance(previosInsurerData)
         }
 
         return UpgradeAppFragment.newInstance()

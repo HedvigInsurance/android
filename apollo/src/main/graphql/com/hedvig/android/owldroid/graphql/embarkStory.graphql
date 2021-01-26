@@ -73,6 +73,13 @@ query EmbarkStory($name: String!, $locale: String!) {
         }
         ... on EmbarkPreviousInsuranceProviderAction {
           data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+            storeKey
             insuranceProviders {
               name
               logo {

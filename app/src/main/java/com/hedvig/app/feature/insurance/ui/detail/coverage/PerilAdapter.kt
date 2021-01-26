@@ -9,10 +9,10 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CoveredAndExceptionHeaderBinding
 import com.hedvig.app.databinding.CoveredAndExceptionItemBinding
+import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
 import com.hedvig.app.databinding.PerilDescriptionBinding
 import com.hedvig.app.databinding.PerilIconBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
-import com.hedvig.app.databinding.PerilTitleBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
@@ -27,7 +27,7 @@ class PerilAdapter(
         R.layout.covered_and_exception_header -> ViewHolder.Header(parent)
         R.layout.peril_paragraph -> ViewHolder.Paragraph(parent)
         R.layout.peril_icon -> ViewHolder.Icon(parent)
-        R.layout.peril_title -> ViewHolder.Title(parent)
+        R.layout.expandable_bottom_sheet_title -> ViewHolder.Title(parent)
         R.layout.peril_description -> ViewHolder.Description(parent)
         else -> {
             throw Error("Unreachable")
@@ -44,7 +44,7 @@ class PerilAdapter(
         PerilModel.Header.InfoHeader -> R.layout.covered_and_exception_header
         is PerilModel.Paragraph -> R.layout.peril_paragraph
         is PerilModel.Icon -> R.layout.peril_icon
-        is PerilModel.Title -> R.layout.peril_title
+        is PerilModel.Title -> R.layout.expandable_bottom_sheet_title
         is PerilModel.Description -> R.layout.peril_description
         is PerilModel.PerilList.Covered -> R.layout.covered_and_exception_item
         is PerilModel.PerilList.Exception -> R.layout.covered_and_exception_item
@@ -145,8 +145,8 @@ class PerilAdapter(
             }
         }
 
-        class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_title)) {
-            private val binding by viewBinding(PerilTitleBinding::bind)
+        class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.expandable_bottom_sheet_title)) {
+            private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
             override fun bind(
                 item: PerilModel,
                 requestBuilder: RequestBuilder<PictureDrawable>
