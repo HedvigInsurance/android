@@ -17,7 +17,7 @@
         <item name="android:textColor">@color/hedvig_text_button_state</item>
     </style>
 
-    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" >
+    <style name="Hedvig.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="strokeColor">?colorPrimary</item>
     </style>
 
@@ -27,4 +27,7 @@
         <item name="strokeColor">?colorPrimary</item>
     </style>
 
+    <style name="Hedvig.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:buttonTint">@color/picker_radio_button_state</item>
+    </style>
 </resources>

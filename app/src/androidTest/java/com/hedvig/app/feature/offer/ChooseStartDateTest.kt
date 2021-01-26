@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -9,6 +8,7 @@ import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.builders.ChooseStartDateBuilder
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.setDate
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -21,7 +21,7 @@ class ChooseStartDateTest : TestCase() {
     private val tomorrow = LocalDate.now().plusDays(1)
 
     @get:Rule
-    val activityRule = ActivityTestRule(OfferActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(OfferActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -40,7 +40,7 @@ class ChooseStartDateTest : TestCase() {
 
     @Test
     fun shouldUpdateStartDateWhenChoosingStartDate() = run {
-        activityRule.launchActivity(null)
+        activityRule.launch()
 
         val tomorrow = LocalDate.now().plusDays(1)
 
@@ -71,4 +71,3 @@ class ChooseStartDateTest : TestCase() {
         }
     }
 }
-

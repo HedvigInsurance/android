@@ -2,7 +2,6 @@ package com.hedvig.app.feature.referrals.deeplinks
 
 import android.content.Intent
 import android.net.Uri
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -15,6 +14,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
@@ -36,7 +36,7 @@ class ForeverDeepLinkTest : TestCase() {
     private var previousLoginStatus = false
 
     @get:Rule
-    val activityRule = ActivityTestRule(SplashActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(SplashActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -60,7 +60,7 @@ class ForeverDeepLinkTest : TestCase() {
 
     @Test
     fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() = run {
-        activityRule.launchActivity(
+        activityRule.launch(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
                     "https://${context().getString(R.string.FIREBASE_LINK_DOMAIN)}/forever"

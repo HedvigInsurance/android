@@ -14,14 +14,17 @@ class MockReferralsViewModel : ReferralsViewModel() {
 
     override fun load() {
         if (shouldSucceed) {
-            Handler(getMainLooper()).postDelayed({
-                if (!hasLoadedOnce) {
-                    hasLoadedOnce = true
-                    _data.postValue(Result.success(referralsData))
-                } else {
-                    _data.postValue(Result.success(afterRefreshData))
-                }
-            }, 1000)
+            Handler(getMainLooper()).postDelayed(
+                {
+                    if (!hasLoadedOnce) {
+                        hasLoadedOnce = true
+                        _data.postValue(Result.success(referralsData))
+                    } else {
+                        _data.postValue(Result.success(afterRefreshData))
+                    }
+                },
+                1000
+            )
         } else {
             shouldSucceed = true
             _data.postValue(Result.failure(Error("Something went wrong")))

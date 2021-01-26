@@ -34,7 +34,8 @@ class CoverageAdapter(
                         } else {
                             R.drawable.ic_filled_checkmark_small
                         }
-                    ), null, null, null
+                    ),
+                    null, null, null
                 )
             }
         }

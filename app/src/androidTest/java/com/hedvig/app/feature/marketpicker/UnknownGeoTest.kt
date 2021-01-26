@@ -2,7 +2,6 @@ package com.hedvig.app.feature.marketpicker
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import androidx.test.rule.ActivityTestRule
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -16,6 +15,7 @@ import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -31,7 +31,7 @@ import org.koin.dsl.module
 @Ignore("Causes flakiness")
 class UnknownGeoTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(MarketingActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(MarketingActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -46,9 +46,11 @@ class UnknownGeoTest : TestCase() {
     @get:Rule
     val koinMockModuleRule = KoinMockModuleRule(
         listOf(marketPickerTrackerModule),
-        listOf(module {
-            single { tracker }
-        })
+        listOf(
+            module {
+                single { tracker }
+            }
+        )
     )
 
     var originalMarket: String? = null
@@ -77,7 +79,7 @@ class UnknownGeoTest : TestCase() {
 
     @Test
     fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() = run {
-        activityRule.launchActivity(MarketingActivity.newInstance(context()))
+        activityRule.launch(MarketingActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
             picker {
@@ -106,7 +108,6 @@ class UnknownGeoTest : TestCase() {
                 }
             }
         }
-
 
         verify(exactly = 1) { tracker.selectMarket(Market.SE) }
         verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }

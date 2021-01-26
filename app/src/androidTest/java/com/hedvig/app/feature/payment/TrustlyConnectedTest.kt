@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -14,6 +13,7 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
@@ -27,7 +27,7 @@ import org.koin.dsl.module
 class TrustlyConnectedTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(PaymentActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -49,19 +49,29 @@ class TrustlyConnectedTest : TestCase() {
     @Test
     fun shouldShowBankAccountInformationWhenTrustlyIsConnected() = run {
         every { marketProvider.market } returns Market.SE
-        activityRule.launchActivity(PaymentActivity.newInstance(context()))
+        activityRule.launch(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
             trustlyConnectPayin { stub() }
             recycler {
-                childAt<PaymentScreen.TrustlyPayinDetails>(1) {
+                childAt<PaymentScreen.TrustlyPayinDetails>(3) {
                     accountNumber {
-                        containsText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor)
+                        containsText(
+                            PAYMENT_DATA_TRUSTLY_CONNECTED
+                                .bankAccount!!
+                                .fragments
+                                .bankAccountFragment
+                                .descriptor
+                        )
                     }
-                    bank { hasText(PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName) }
+                    bank {
+                        hasText(
+                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName
+                        )
+                    }
                     pending { isGone() }
                 }
-                childAt<PaymentScreen.Link>(2) {
+                childAt<PaymentScreen.Link>(4) {
                     button {
                         hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
                         click()

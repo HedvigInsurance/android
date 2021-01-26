@@ -37,7 +37,7 @@ import java.util.UUID
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val fileService: FileService,
-    private val context: Context
+    private val context: Context,
 ) {
     private lateinit var keyGearItemsQuery: KeyGearItemsQuery
     private lateinit var keyGearItemQuery: KeyGearItemQuery
@@ -65,7 +65,7 @@ class KeyGearItemsRepository(
     suspend fun updatePurchasePriceAndDateAsync(
         id: String,
         date: LocalDate,
-        price: MonetaryAmountV2Input
+        price: MonetaryAmountV2Input,
     ): KeyGearItemQuery.Data? {
         val response = apolloClientWrapper
             .apolloClient
@@ -149,7 +149,7 @@ class KeyGearItemsRepository(
         category: KeyGearItemCategory,
         files: List<S3FileInput>,
         physicalReferenceHash: String? = null,
-        name: String? = null
+        name: String? = null,
     ): Response<CreateKeyGearItemMutation.Data> {
         val mutation = CreateKeyGearItemMutation(
             category = category,
@@ -178,8 +178,10 @@ class KeyGearItemsRepository(
 
         val newKeyGearItems = cachedData.keyGearItems.toMutableList()
         if (
-            !newKeyGearItems.any { it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id }
-            && !data.createKeyGearItem.fragments.keyGearItemFragment.deleted
+            !newKeyGearItems.any {
+                it.fragments.keyGearItemFragment.id == data.createKeyGearItem.fragments.keyGearItemFragment.id
+            } &&
+            !data.createKeyGearItem.fragments.keyGearItemFragment.deleted
         ) {
             newKeyGearItems.add(
                 KeyGearItemsQuery.KeyGearItem(
@@ -258,7 +260,9 @@ class KeyGearItemsRepository(
                 .copy(
                     keyGearItem = keyGearItem
                         .copy(
-                            fragments = KeyGearItemQuery.KeyGearItem.Fragments(addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment)
+                            fragments = KeyGearItemQuery.KeyGearItem.Fragments(
+                                addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment
+                            )
                         )
                 )
 

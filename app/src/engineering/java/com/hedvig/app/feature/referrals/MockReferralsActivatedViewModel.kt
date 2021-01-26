@@ -11,9 +11,12 @@ class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
     override val data = MutableLiveData<LoggedInQuery.Data>()
 
     init {
-        Handler(getMainLooper()).postDelayed({
-            data.postValue(LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED)
-        }, loadDelay)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED)
+            },
+            loadDelay
+        )
     }
 
     companion object {

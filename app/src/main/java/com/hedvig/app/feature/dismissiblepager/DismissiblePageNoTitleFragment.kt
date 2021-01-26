@@ -5,13 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.app.databinding.DismissiblePageNoTitleFragmentBinding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
-import androidx.fragment.app.Fragment
-import com.hedvig.app.databinding.DismissiblePageNoTitleFragmentBinding
 import e
 import org.koin.android.ext.android.bind
 

@@ -18,7 +18,7 @@ import com.hedvig.app.util.safeLet
 
 class ValuationBinder(
     private val binding: KeyGearItemDetailValuationSectionBinding,
-    private val tracker: KeyGearTracker
+    private val tracker: KeyGearTracker,
 ) {
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val valuation =
@@ -86,7 +86,13 @@ class ValuationBinder(
                 if (type != null) {
                     if (type == ValuationType.FIXED) {
                         val valuation =
-                            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                            item
+                                .fragments
+                                .keyGearItemFragment
+                                .fragments
+                                .keyGearItemValuationFragment
+                                .valuation
+                                ?.asKeyGearItemValuationFixed
                                 ?: return@safeLet
                         binding.root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(
@@ -103,7 +109,13 @@ class ValuationBinder(
                         )
                     } else if (type == ValuationType.MARKET_PRICE) {
                         val valuation =
-                            item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue
+                            item
+                                .fragments
+                                .keyGearItemFragment
+                                .fragments
+                                .keyGearItemValuationFragment
+                                .valuation
+                                ?.asKeyGearItemValuationMarketValue
                                 ?: return@safeLet
                         binding.root.context.startActivity(
                             KeyGearValuationInfoActivity.newInstance(

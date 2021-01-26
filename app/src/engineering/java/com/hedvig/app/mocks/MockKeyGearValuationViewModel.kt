@@ -16,13 +16,16 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun loadItem(id: String) {
-        Handler(getMainLooper()).postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(
+                    KeyGearItemQuery.KeyGearItem(
+                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
+                    )
                 )
-            )
-        }, 250)
+            },
+            250
+        )
     }
 
     override fun updatePurchaseDateAndPrice(

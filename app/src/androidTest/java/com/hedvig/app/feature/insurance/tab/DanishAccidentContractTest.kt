@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.tab
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -12,6 +11,7 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_ACCIDENT
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
@@ -22,7 +22,7 @@ import org.junit.Test
 class DanishAccidentContractTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -47,7 +47,7 @@ class DanishAccidentContractTest : TestCase() {
             context(),
             initialTab = LoggedInTabs.INSURANCE
         )
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         onScreen<InsuranceScreen> {
             insuranceRecycler {

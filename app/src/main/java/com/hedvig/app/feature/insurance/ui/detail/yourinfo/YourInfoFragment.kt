@@ -145,7 +145,9 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
         internal fun SwedishApartmentLineOfBusiness.displayName(context: Context) = when (this) {
             SwedishApartmentLineOfBusiness.RENT -> context.getString(R.string.SWEDISH_APARTMENT_LOB_RENT)
             SwedishApartmentLineOfBusiness.BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_BRF)
-            SwedishApartmentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.SWEDISH_APARTMENT_LOB_STUDENT_RENT)
+            SwedishApartmentLineOfBusiness.STUDENT_RENT -> context.getString(
+                R.string.SWEDISH_APARTMENT_LOB_STUDENT_RENT
+            )
             SwedishApartmentLineOfBusiness.STUDENT_BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_STUDENT_BRF)
             SwedishApartmentLineOfBusiness.UNKNOWN__ -> ""
         }
@@ -154,8 +156,12 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             when (this) {
                 NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
                 NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
-                NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT)
-                NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN)
+                NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(
+                    R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT
+                )
+                NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(
+                    R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN
+                )
                 NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
             }
 
@@ -163,8 +169,12 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             when (this) {
                 DanishHomeContentLineOfBusiness.RENT -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_RENT)
                 DanishHomeContentLineOfBusiness.OWN -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_OWN)
-                DanishHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_STUDENT_RENT)
-                DanishHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_STUDENT_OWN)
+                DanishHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(
+                    R.string.DANISH_HOME_CONTENT_LOB_STUDENT_RENT
+                )
+                DanishHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(
+                    R.string.DANISH_HOME_CONTENT_LOB_STUDENT_OWN
+                )
                 DanishHomeContentLineOfBusiness.UNKNOWN__ -> ""
             }
     }

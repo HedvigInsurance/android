@@ -3,14 +3,17 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
@@ -30,12 +33,26 @@ open class HedvigApplication : Application() {
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     override fun attachBaseContext(base: Context?) {
-        Language.DefaultLocale.initialize()
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
 
     override fun onCreate() {
         super.onCreate()
+
+        val previousLanguage = PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .getString(SettingsActivity.SETTING_LANGUAGE, null)
+        if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
+            val market = getMarket()
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            market?.let {
+                sharedPreferences.edit()
+                    .putString(
+                        SettingsActivity.SETTING_LANGUAGE,
+                        Language.getAvailableLanguages(market).first().toString()
+                    ).commit()
+            }
+        }
 
         Language
             .fromSettings(this)
@@ -75,6 +92,7 @@ open class HedvigApplication : Application() {
                     marketPickerModule,
                     moreOptionsModule,
                     textActionSetModule,
+                    choosePlanModule,
                 )
             )
         }

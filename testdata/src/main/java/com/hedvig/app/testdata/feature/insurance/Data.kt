@@ -13,7 +13,13 @@ val INSURANCE_DATA_SWEDISH_HOUSE =
 val INSURANCE_DATA_NORWEGIAN_TRAVEL =
     InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder(type = TypeOfContract.NO_TRAVEL).build()))
 val INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS =
-    InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder(type = TypeOfContract.NO_HOME_CONTENT_RENT).build()))
+    InsuranceQuery.Data(
+        contracts = listOf(
+            InsuranceContractBuilder(
+                type = TypeOfContract.NO_HOME_CONTENT_RENT
+            ).build()
+        )
+    )
 val INSURANCE_DATA_DANISH_TRAVEL =
     InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder(type = TypeOfContract.DK_TRAVEL).build()))
 val INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS = InsuranceQuery.Data(

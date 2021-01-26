@@ -8,7 +8,8 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
@@ -16,17 +17,21 @@ import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
 class PaymentScreen : Screen<PaymentScreen>() {
-    val recycler = KRecyclerView({ withId(R.id.recycler) }, {
-        itemType(::FailedPayments)
-        itemType(::NextPayment)
-        itemType(::Campaign)
-        itemType(::ConnectPayin)
-        itemType(::Charge)
-        itemType(::PaymentHistoryLink)
-        itemType(::TrustlyPayinDetails)
-        itemType(::AdyenPayinDetails)
-        itemType(::Link)
-    })
+    val recycler = KRecyclerView(
+        { withId(R.id.recycler) },
+        {
+            itemType(::FailedPayments)
+            itemType(::NextPayment)
+            itemType(::Campaign)
+            itemType(::ConnectPayin)
+            itemType(::Charge)
+            itemType(::PaymentHistoryLink)
+            itemType(::TrustlyPayinDetails)
+            itemType(::AdyenPayinDetails)
+            itemType(::AdyenPayoutDetails)
+            itemType(::Link)
+        }
+    )
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {
         val paragraph = KTextView(parent) { withId(R.id.paragraph) }
@@ -66,6 +71,10 @@ class PaymentScreen : Screen<PaymentScreen>() {
         val maskedCardNumber = KTextView(parent) { withId(R.id.maskedCardNumber) }
     }
 
+    class AdyenPayoutDetails(parent: Matcher<View>) : KRecyclerItem<AdyenPayoutDetails>(parent) {
+        val status = KTextView { withMatcher(parent) }
+    }
+
     class Link(parent: Matcher<View>) : KRecyclerItem<Link>(parent) {
         val button = KTextView { withMatcher(parent) }
     }
@@ -73,6 +82,8 @@ class PaymentScreen : Screen<PaymentScreen>() {
     val trustlyConnectPayin = KIntent { hasComponent(TrustlyConnectPayinActivity::class.java.name) }
     val adyenConnectPayin = KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     val paymentHistory = KIntent { hasComponent(PaymentHistoryActivity::class.java.name) }
+    val adyenConnectPayout =
+        KIntent { hasComponent(AdyenConnectPayoutActivity::class.java.name) }
 }
 
 object RedeemCode : KScreen<RedeemCode>() {

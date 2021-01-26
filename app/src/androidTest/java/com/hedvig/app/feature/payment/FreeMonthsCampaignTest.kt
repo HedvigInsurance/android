@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -9,6 +8,7 @@ import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FREE_MONTHS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apolloResponse
@@ -20,7 +20,7 @@ import org.junit.Test
 class FreeMonthsCampaignTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(PaymentActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -33,24 +33,38 @@ class FreeMonthsCampaignTest : TestCase() {
 
     @Test
     fun shouldShowFreeMonthsDiscount() = run {
-        activityRule.launchActivity(PaymentActivity.newInstance(context()))
+        activityRule.launch(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.NextPayment>(0) {
+                childAt<PaymentScreen.NextPayment>(1) {
                     discount {
                         isVisible()
-                        containsText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].fragments.incentiveFragment.incentive!!.asFreeMonths!!.quantity!!.toString())
+                        containsText(
+                            PAYMENT_DATA_FREE_MONTHS
+                                .redeemedCampaigns[0]
+                                .fragments
+                                .incentiveFragment
+                                .incentive!!
+                                .asFreeMonths!!
+                                .quantity!!
+                                .toString()
+                        )
                     }
                     gross {
                         isVisible()
                         hasText(
-                            PAYMENT_DATA_FREE_MONTHS.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount()
+                            PAYMENT_DATA_FREE_MONTHS
+                                .chargeEstimation
+                                .subscription
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
                                 .format(context())
                         )
                     }
                 }
-                childAt<PaymentScreen.Campaign>(1) {
+                childAt<PaymentScreen.Campaign>(2) {
                     owner { hasText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].owner!!.displayName) }
                     lastFreeDay {
                         hasText(

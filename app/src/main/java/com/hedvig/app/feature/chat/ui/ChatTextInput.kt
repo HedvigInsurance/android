@@ -121,4 +121,3 @@ class ChatTextInput : EditText {
         private const val DISABLED_ALPHA = 50
     }
 }
-

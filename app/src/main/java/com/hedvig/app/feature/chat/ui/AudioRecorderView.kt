@@ -157,7 +157,6 @@ class AudioRecorderView : FrameLayout {
             startStopwatch(R.string.AUDIO_INPUT_RECORDING)
 
             start()
-
         }
 
         binding.stopRecording.apply {
@@ -210,9 +209,12 @@ class AudioRecorderView : FrameLayout {
     private fun startStopwatch(@StringRes textKey: Int) {
         elapsedTime = Observable.interval(0, 1, TimeUnit.SECONDS, Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ time ->
-                binding.recordingLabel.text = resources.getString(textKey, time)
-            }, { e(it) })
+            .subscribe(
+                { time ->
+                    binding.recordingLabel.text = resources.getString(textKey, time)
+                },
+                { e(it) }
+            )
     }
 
     private fun triggerUpload() {

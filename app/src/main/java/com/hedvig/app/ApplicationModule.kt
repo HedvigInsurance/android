@@ -14,8 +14,10 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
-import com.hedvig.app.feature.adyen.AdyenViewModel
-import com.hedvig.app.feature.adyen.AdyenViewModelImpl
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -28,9 +30,6 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
-import com.hedvig.app.feature.embark.MoreOptionsRepository
-import com.hedvig.app.feature.embark.MoreOptionsViewModel
-import com.hedvig.app.feature.embark.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.embark.passages.TextActionSetViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
@@ -74,6 +73,12 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.onboarding.ChoosePlanRepository
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -216,7 +221,19 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
+    "${
+        BuildConfig.APPLICATION_ID
+    } ${
+        BuildConfig.VERSION_NAME
+    } (Android ${
+        Build.VERSION.RELEASE
+    }; ${
+        Build.BRAND
+    } ${
+        Build.MODEL
+    }; ${
+        Build.DEVICE
+    }; ${
         getLocale(
             context
         ).language
@@ -243,6 +260,10 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
+}
+
+val choosePlanModule = module {
+    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
 }
 
 val marketPickerModule = module {
@@ -286,7 +307,8 @@ val paymentModule = module {
 }
 
 val adyenModule = module {
-    viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
+    viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get()) }
+    viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
 val embarkModule = module {
@@ -356,8 +378,9 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
-    single { MoreOptionsRepository(get()) }
+    single { ChoosePlanRepository(get(), get()) }
 }
 
 val trackerModule = module {

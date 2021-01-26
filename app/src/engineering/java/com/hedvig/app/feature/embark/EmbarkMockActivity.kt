@@ -4,6 +4,8 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.moreOptionsModule
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
@@ -89,7 +91,8 @@ class EmbarkMockActivity : MockActivity() {
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
         clickableItem("Text action set first text personal number validation and second text with email validation") {
-            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+            MockEmbarkViewModel.mockedData =
+                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
         }
         clickableItem("Email text validation") {

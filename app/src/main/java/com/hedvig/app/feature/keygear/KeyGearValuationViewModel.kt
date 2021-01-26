@@ -57,7 +57,6 @@ class KeyGearValuationViewModelImpl(
                 }
                 .catch { e -> e(e) }
                 .collect()
-
         }
     }
 }

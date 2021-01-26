@@ -38,6 +38,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     private val binding by viewBinding(ActivitySettingsBinding::bind)
 
+    @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.toolbar.setNavigationOnClickListener {
@@ -121,18 +122,12 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                     }
                     Market.NO -> {
                         lp.entries = resources.getStringArray(R.array.language_settings_no)
-                        lp.entryValues =
-                            resources.getStringArray(R.array.language_settings_values_no)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_no)
                     }
                     Market.DK -> {
                         lp.entries = resources.getStringArray(R.array.language_settings_dk)
-                        lp.entryValues =
-                            resources.getStringArray(R.array.language_settings_values_dk)
+                        lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
                     }
-                }
-
-                if (lp.value == null) {
-                    lp.value = Language.SYSTEM_DEFAULT.toString()
                 }
                 lp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->
@@ -153,15 +148,19 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
             notificationsPreference?.let { np ->
                 np.setOnPreferenceClickListener {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
-                        })
+                        startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                            }
+                        )
                     } else {
-                        startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            data = Uri.fromParts("package", requireContext().packageName, null)
-                        })
+                        startActivity(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            }
+                        )
                     }
                     true
                 }
@@ -170,6 +169,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     }
 
     companion object {
+        const val SYSTEM_DEFAULT = "system_default"
         const val SETTING_THEME = "theme"
         const val SETTING_LANGUAGE = "language"
         const val SETTING_NOTIFICATIONS = "notifications"
@@ -177,4 +177,3 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
     }
 }
-

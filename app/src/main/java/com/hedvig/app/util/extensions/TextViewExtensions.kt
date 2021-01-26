@@ -19,16 +19,16 @@ fun TextView.setMarkdownText(text: String) {
         .setMarkdown(this, text)
 }
 
-fun TextView.setCompoundDrawable(
-    @DrawableRes start: Int? = null,
-    @DrawableRes top: Int? = null,
-    @DrawableRes bottom: Int? = null,
-    @DrawableRes end: Int? = null,
+fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
+    @DrawableRes start: Int = 0,
+    @DrawableRes top: Int = 0,
+    @DrawableRes end: Int = 0,
+    @DrawableRes bottom: Int = 0,
 ) {
     setCompoundDrawablesRelativeWithIntrinsicBounds(
-        start?.let { context.compatDrawable(it) },
-        top?.let { context.compatDrawable(it) },
-        end?.let { context.compatDrawable(it) },
-        bottom?.let { context.compatDrawable(it) },
+        start,
+        top,
+        end,
+        bottom
     )
 }

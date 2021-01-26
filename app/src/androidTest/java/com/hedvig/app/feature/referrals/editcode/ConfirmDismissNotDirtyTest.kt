@@ -9,6 +9,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+/*
+* This test cannot be practically ported to `ActivityScenario` as it causes the test to take 50 seconds to finish.
+* Related issue: https://github.com/android/android-test/issues/676
+* */
 class ConfirmDismissNotDirtyTest : TestCase() {
 
     @get:Rule
@@ -28,4 +32,3 @@ class ConfirmDismissNotDirtyTest : TestCase() {
         assertTrue(activityRule.activity.isFinishing)
     }
 }
-

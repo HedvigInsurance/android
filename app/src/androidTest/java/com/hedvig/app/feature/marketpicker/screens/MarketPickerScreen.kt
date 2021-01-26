@@ -10,18 +10,27 @@ import com.hedvig.app.R
 import org.hamcrest.Matcher
 
 class MarketPickerScreen : Screen<MarketPickerScreen>() {
-    val picker = KRecyclerView({ withId(R.id.picker) }, {
-        itemType(::ContinueButton)
-        itemType(::Picker)
-    })
+    val picker = KRecyclerView(
+        { withId(R.id.picker) },
+        {
+            itemType(::ContinueButton)
+            itemType(::Picker)
+        }
+    )
 
-    val languagePicker = KRecyclerView({ withId(R.id.recycler) }, {
-        itemType(::Language)
-    })
+    val languagePicker = KRecyclerView(
+        { withId(R.id.recycler) },
+        {
+            itemType(::Language)
+        }
+    )
 
-    val marketPicker = KRecyclerView({ withId(R.id.recycler) }, {
-        itemType(::Market)
-    })
+    val marketPicker = KRecyclerView(
+        { withId(R.id.recycler) },
+        {
+            itemType(::Market)
+        }
+    )
     class ContinueButton(parent: Matcher<View>) : KRecyclerItem<ContinueButton>(parent) {
         val continueButton = KCheckBox(parent) { withId(R.id.continueButton) }
     }

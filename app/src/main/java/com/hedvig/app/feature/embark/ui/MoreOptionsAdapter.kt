@@ -8,13 +8,13 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
 import com.hedvig.app.databinding.SettingsBinding
-import com.hedvig.app.feature.embark.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.setCompoundDrawable
+import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
@@ -63,7 +63,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                     label.apply {
                         setText(R.string.embark_onboarding_more_options_user_id_label)
                         compoundDrawablePadding = 16.dp
-                        setCompoundDrawable(start = R.drawable.ic_contact_information)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
                     }
                     info.text = item.id
                 }
@@ -82,12 +82,12 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                     label.apply {
                         setText(R.string.embark_onboarding_more_options_user_id_label)
                         compoundDrawablePadding = 16.dp
-                        setCompoundDrawable(start = R.drawable.ic_contact_information)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
                     }
                     info.apply {
                         setText(R.string.embark_onboarding_more_options_loading_error_reload_label)
                         compoundDrawablePadding = 8.dp
-                        setCompoundDrawable(end = R.drawable.ic_refresh)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(end = R.drawable.ic_refresh)
                         setHapticClickListener {
                             viewModel.load()
                         }
@@ -103,7 +103,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                     label.apply {
                         setText(R.string.embark_onboarding_more_options_version_label)
                         compoundDrawablePadding = 16.dp
-                        setCompoundDrawable(start = R.drawable.ic_info_more_options)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_info_more_options)
                     }
                     info.text = BuildConfig.VERSION_NAME
                 }

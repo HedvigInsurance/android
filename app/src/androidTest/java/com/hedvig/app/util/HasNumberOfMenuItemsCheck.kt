@@ -5,7 +5,9 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.hamcrest.Description
 
-class HasNumberOfMenuItemsCheck(private val matcherNumber: Int) : BoundedMatcher<View?, BottomNavigationView>(BottomNavigationView::class.java) {
+class HasNumberOfMenuItemsCheck(
+    private val matcherNumber: Int,
+) : BoundedMatcher<View?, BottomNavigationView>(BottomNavigationView::class.java) {
     override fun describeTo(description: Description) {
         description.appendText("with $matcherNumber number of items")
     }

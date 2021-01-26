@@ -92,7 +92,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            })
+                            }
+                        )
                     } else {
                         (offerScroll.adapter as? OfferAdapter)?.submitList(
                             listOfNotNull(

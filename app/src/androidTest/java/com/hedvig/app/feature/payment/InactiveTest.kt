@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
@@ -10,6 +9,7 @@ import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_INACTIVE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -19,7 +19,7 @@ import org.junit.Test
 class InactiveTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(PaymentActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -32,11 +32,11 @@ class InactiveTest : TestCase() {
 
     @Test
     fun shouldShowNoPaymentDate() = run {
-        activityRule.launchActivity(PaymentActivity.newInstance(context()))
+        activityRule.launch(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {
             recycler {
-                childAt<PaymentScreen.NextPayment>(0) {
+                childAt<PaymentScreen.NextPayment>(1) {
                     paymentDate { hasText(R.string.PAYMENTS_CARD_NO_STARTDATE) }
                 }
             }

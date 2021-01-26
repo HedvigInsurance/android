@@ -32,7 +32,6 @@ class NameBinder(
                 binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
                 isEditState = true
             }
-
         }
 
         binding.nameEditText.setOnEditorActionListener { _, _, _ ->

@@ -30,4 +30,3 @@ class ClaimsRepository(
     suspend fun triggerCallMeChat() =
         apolloClientWrapper.apolloClient.mutate(TriggerCallMeChatMutation()).await()
 }
-

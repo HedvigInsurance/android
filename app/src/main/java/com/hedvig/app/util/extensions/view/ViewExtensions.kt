@@ -183,7 +183,6 @@ fun Toolbar.setupToolbar(
                         // scroll down
                         this.elevation = percentage * 10
                     }
-
                 }
             } else if (root is RecyclerView) {
                 val toolbar = this

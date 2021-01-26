@@ -20,6 +20,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+/*
+* This test cannot be practically ported to `ActivityScenario` as it causes the test to take 50 seconds to finish.
+* Related issue: https://github.com/android/android-test/issues/676
+* */
 class ReferralsActivatedActivityTest : TestCase() {
 
     @get:Rule
@@ -49,7 +53,7 @@ class ReferralsActivatedActivityTest : TestCase() {
     }
 
     @Test
-    fun shouldShowCorrectDiscountAmount() {
+    fun shouldShowCorrectDiscountAmount() = run {
         activityRule.launchActivity(null)
 
         onScreen<ReferralsActivatedScreen> {

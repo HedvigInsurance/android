@@ -45,4 +45,3 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
         fun newInstance(context: Context) = Intent(context, ViewGalleryActivity::class.java)
     }
 }
-

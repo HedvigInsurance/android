@@ -7,7 +7,7 @@ import com.hedvig.app.util.LiveEvent
 import e
 import kotlinx.coroutines.launch
 
-abstract class WhatsNewViewModel: ViewModel() {
+abstract class WhatsNewViewModel : ViewModel() {
     val news = LiveEvent<WhatsNewQuery.Data>()
 
     abstract fun fetchNews(sinceVersion: String? = null)

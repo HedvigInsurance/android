@@ -96,9 +96,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             )
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            invites.adapter = ReferralsAdapter({
-                referralsViewModel.load()
-            }, tracker).also {
+            invites.adapter = ReferralsAdapter(
+                {
+                    referralsViewModel.load()
+                },
+                tracker
+            ).also {
                 it.submitList(LOADING_STATE)
             }
 
@@ -124,7 +127,15 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 val successData = data.getOrNull() ?: return@observe
 
                 val incentive =
-                    successData.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+                    successData
+                        .referralInformation
+                        .campaign
+                        .incentive
+                        ?.asMonthlyCostDeduction
+                        ?.amount
+                        ?.fragments
+                        ?.monetaryAmountFragment
+                        ?.toMonetaryAmount()
                 if (incentive == null) {
                     e { "Invariant detected: referralInformation.campaign.incentive is null" }
                 } else {
@@ -137,10 +148,14 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 requireContext().getString(
                                     R.string.REFERRAL_SMS_MESSAGE,
                                     incentive.format(requireContext()),
-                                    "${BuildConfig.WEB_BASE_URL}${defaultLocale(requireContext()).toWebLocaleTag()}/forever/${
-                                        Uri.encode(
-                                            code
-                                        )
+                                    "${
+                                    BuildConfig.WEB_BASE_URL
+                                    }/${
+                                    defaultLocale(requireContext()).toWebLocaleTag()
+                                    }/forever/${
+                                    Uri.encode(
+                                        code
+                                    )
                                     }"
                                 )
                             )
@@ -157,7 +172,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                         .start()
                 }
 
-                if (successData.referralInformation.invitations.isEmpty() && successData.referralInformation.referredBy == null) {
+                if (
+                    successData.referralInformation.invitations.isEmpty() &&
+                    successData.referralInformation.referredBy == null
+                ) {
                     (invites.adapter as? ReferralsAdapter)?.submitList(
                         listOf(
                             ReferralsModel.Title,
@@ -177,9 +195,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
                 items += successData.referralInformation.invitations
                     .filter {
-                        it.fragments.referralFragment.asActiveReferral != null
-                            || it.fragments.referralFragment.asInProgressReferral != null
-                            || it.fragments.referralFragment.asTerminatedReferral != null
+                        it.fragments.referralFragment.asActiveReferral != null ||
+                            it.fragments.referralFragment.asInProgressReferral != null ||
+                            it.fragments.referralFragment.asTerminatedReferral != null
                     }
                     .map {
                         ReferralsModel.Referral.LoadedReferral(
@@ -192,7 +210,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 }
 
                 (invites.adapter as? ReferralsAdapter)?.submitList(items)
-
             }
         }
     }

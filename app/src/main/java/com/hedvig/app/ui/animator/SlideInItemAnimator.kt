@@ -124,14 +124,17 @@ open class SlideInItemAnimator @JvmOverloads constructor(
         val springAlpha = holder.itemView.spring(SpringAnimation.ALPHA)
         val springTranslationX = holder.itemView.spring(SpringAnimation.TRANSLATION_X)
         val springTranslationY = holder.itemView.spring(SpringAnimation.TRANSLATION_Y)
-        listenForAllSpringsEnd({ cancelled ->
-            if (cancelled) {
-                clearAnimatedValues(holder.itemView)
-            }
-            dispatchAddFinished(holder)
-            dispatchFinishedWhenDone()
-            runningAdds -= holder
-        }, springAlpha, springTranslationX, springTranslationY)
+        listenForAllSpringsEnd(
+            { cancelled ->
+                if (cancelled) {
+                    clearAnimatedValues(holder.itemView)
+                }
+                dispatchAddFinished(holder)
+                dispatchFinishedWhenDone()
+                runningAdds -= holder
+            },
+            springAlpha, springTranslationX, springTranslationY
+        )
         springAlpha.animateToFinalPosition(1f)
         springTranslationX.animateToFinalPosition(0f)
         springTranslationY.animateToFinalPosition(0f)
@@ -142,14 +145,17 @@ open class SlideInItemAnimator @JvmOverloads constructor(
     private fun moveItem(holder: RecyclerView.ViewHolder) {
         val springX = holder.itemView.spring(SpringAnimation.TRANSLATION_X)
         val springY = holder.itemView.spring(SpringAnimation.TRANSLATION_Y)
-        listenForAllSpringsEnd({ cancelled ->
-            if (cancelled) {
-                clearAnimatedValues(holder.itemView)
-            }
-            dispatchMoveFinished(holder)
-            dispatchFinishedWhenDone()
-            runningMoves -= holder
-        }, springX, springY)
+        listenForAllSpringsEnd(
+            { cancelled ->
+                if (cancelled) {
+                    clearAnimatedValues(holder.itemView)
+                }
+                dispatchMoveFinished(holder)
+                dispatchFinishedWhenDone()
+                runningMoves -= holder
+            },
+            springX, springY
+        )
         springX.animateToFinalPosition(0f)
         springY.animateToFinalPosition(0f)
         dispatchMoveStarting(holder)

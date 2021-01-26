@@ -22,20 +22,6 @@
         <item name="android:navigationBarColor">?colorSurface</item>
     </style>
 
-    <style name="NoTitleBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
-        <item name="android:windowLightNavigationBar">?isLightTheme</item>
-        <item name="bottomSheetStyle">@style/NoTitleBottomSheet</item>
-    </style>
-
-    <style name="PerilBottomSheetDialogTheme" parent="BaseBottomSheetDialog">
-        <item name="bottomSheetStyle">@style/PerilBottomSheet</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightNavigationBar">?isLightTheme</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
-    </style>
-
     <style name="TransparentDialog" parent="TransparentDialog.V27" />
 
     <style name="TransparentDialog.V27" parent="TransparentDialog.V23">

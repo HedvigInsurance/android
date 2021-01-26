@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
 ) : ViewModel() {
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
@@ -88,16 +88,28 @@ class ChatViewModel(
             disposables += Observable
                 .timer(loadRetries, TimeUnit.SECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    load()
-                }, { e(it) })
+                .subscribe(
+                    {
+                        load()
+                    },
+                    { e(it) }
+                )
         } else {
             networkError.postValue(true)
         }
     }
 
     private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
-        (response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.body?.asMessageBodyCore)?.type == "paragraph"
+        (
+            response
+                .data
+                ?.messages
+                ?.firstOrNull()
+                ?.fragments
+                ?.chatMessageFragment
+                ?.body
+                ?.asMessageBodyCore
+            )?.type == "paragraph"
 
     private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
         response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
@@ -111,10 +123,13 @@ class ChatViewModel(
         disposables += Observable
             .timer(delay, TimeUnit.MILLISECONDS, Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                load()
-                isWaitingForParagraph = false
-            }, {})
+            .subscribe(
+                {
+                    load()
+                    isWaitingForParagraph = false
+                },
+                {}
+            )
     }
 
     fun uploadFile(uri: Uri) {
@@ -279,4 +294,3 @@ class ChatViewModel(
         }
     }
 }
-

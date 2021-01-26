@@ -20,9 +20,11 @@ import org.koin.dsl.module
 
 class MarketPickerMockActivity : MockActivity() {
     override val original = listOf(marketPickerModule)
-    override val mocks = listOf(module {
-        viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(get()) }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(get()) }
+        }
+    )
     private var originalMarket: Market? = null
     private var originalShouldOpenMarketSelected = false
 

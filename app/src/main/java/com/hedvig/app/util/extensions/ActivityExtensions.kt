@@ -36,7 +36,7 @@ fun AppCompatActivity.setupToolbar(
     @DrawableRes icon: Int? = null,
     usingEdgeToEdge: Boolean = false,
     rootLayout: View? = null,
-    backAction: (() -> Unit)?
+    backAction: (() -> Unit)?,
 ) {
 
     this.findViewById<Toolbar>(toolbar).setupToolbar(
@@ -69,7 +69,7 @@ fun Activity.startClosableChat(restartable: Boolean = false) {
 fun Activity.askForPermissions(
     permissions: Array<String>,
     requestCode: Int,
-    shouldNotAskAction: (() -> Unit)? = null
+    shouldNotAskAction: (() -> Unit)? = null,
 ) {
     permissions.forEach {
         if (ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_DENIED) {
@@ -91,7 +91,8 @@ fun Activity.askForPermissions(
 private fun Activity.showPermissionExplanationDialog(permission: String) {
     when (permission) {
         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        android.Manifest.permission.READ_EXTERNAL_STORAGE ->
+        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+        ->
             showAlert(
                 title = R.string.PERMISSION_DIALOG_TITLE,
                 message = R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
@@ -126,16 +127,21 @@ private fun Activity.openAppSettings() {
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {
         storeBoolean(IS_VIEWING_OFFER, true)
-        startActivity(Intent(this, OfferActivity::class.java).also {
-            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
+        startActivity(
+            Intent(this, OfferActivity::class.java).also {
+                it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        )
     }
     "message.bankid.start", "message.bankid.autostart.respond" -> {
         AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
     }
-    "hedvig.com", // bot-service is weird. it sends this when the user gets the option to go to `Hem`. We simply dismiss the activity for now in this case
-    "claim.done", "callme.phone.dashboard" -> {
+    // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
+    // We simply dismiss the activity for now in this case
+    "hedvig.com",
+    "claim.done", "callme.phone.dashboard",
+    -> {
         finish()
     }
     else -> {

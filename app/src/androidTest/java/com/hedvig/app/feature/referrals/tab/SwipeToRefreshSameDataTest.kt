@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -10,6 +9,7 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -19,7 +19,7 @@ import org.junit.Test
 class SwipeToRefreshSameDataTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -41,7 +41,7 @@ class SwipeToRefreshSameDataTest : TestCase() {
             initialTab = LoggedInTabs.REFERRALS
         )
 
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         Screen.onScreen<ReferralTabScreen> {
             share { isVisible() }
@@ -54,4 +54,3 @@ class SwipeToRefreshSameDataTest : TestCase() {
         }
     }
 }
-
