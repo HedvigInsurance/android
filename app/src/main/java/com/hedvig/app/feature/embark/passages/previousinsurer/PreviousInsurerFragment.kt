@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.hedvig.app.R
-import com.hedvig.app.databinding.FragmentPreviousInsurerBinding
+import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.ui.PreviousInsurerBottomSheet
@@ -14,9 +14,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
+class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
-    private val binding by viewBinding(FragmentPreviousInsurerBinding::bind)
+    private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
 
     private val insurerData by lazy {

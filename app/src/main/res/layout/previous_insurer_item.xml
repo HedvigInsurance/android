@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/insurer_logo_width"
+        android:layout_height="@dimen/insurer_logo_width"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/base_margin_double"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@null"
         tools:src="@drawable/ic_claims" />
 
     <TextView

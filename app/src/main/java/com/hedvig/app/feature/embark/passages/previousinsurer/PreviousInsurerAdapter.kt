@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
-import com.hedvig.app.databinding.PreviousInsurerItemLayoutBinding
+import com.hedvig.app.databinding.PreviousInsurerItemBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -27,7 +27,7 @@ class PreviousInsurerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.expandable_bottom_sheet_title -> PreviousInsurerViewHolder.Header(parent)
-        R.layout.previous_insurer_item_layout -> PreviousInsurerViewHolder.InsurerViewHolder(parent)
+        R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(parent)
         else -> throw Error("No view type found for: $viewType")
     }
 
@@ -38,13 +38,13 @@ class PreviousInsurerAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is PreviousInsurerItem.Header -> R.layout.expandable_bottom_sheet_title
-        is PreviousInsurerItem.Insurer -> R.layout.previous_insurer_item_layout
+        is PreviousInsurerItem.Insurer -> R.layout.previous_insurer_item
     }
 
     sealed class PreviousInsurerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class InsurerViewHolder(parent: ViewGroup) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item_layout)) {
-            private val binding by viewBinding(PreviousInsurerItemLayoutBinding::bind)
+        class InsurerViewHolder(parent: ViewGroup) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item)) {
+            private val binding by viewBinding(PreviousInsurerItemBinding::bind)
 
             fun bind(item: PreviousInsurerItem.Insurer,
                      requestBuilder: RequestBuilder<PictureDrawable>,
