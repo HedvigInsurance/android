@@ -47,7 +47,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
     private fun onShowInsurers() {
         val fragment = PreviousInsurerBottomSheet.newInstance(insurerData.previousInsurers)
-        fragment.show(childFragmentManager, PreviousInsurerBottomSheet.TAG)
+        fragment.show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
     }
 
     companion object {
