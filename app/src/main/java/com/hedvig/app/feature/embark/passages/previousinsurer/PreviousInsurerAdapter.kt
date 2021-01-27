@@ -66,7 +66,7 @@ class PreviousInsurerAdapter(
             private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
 
             fun bind() {
-                binding.title.setText(R.string.embark_onboarding_previous_insurer_title)
+                binding.title.setText(R.string.onboarding_norway_current_insurer_bottom_sheet_title)
             }
         }
     }

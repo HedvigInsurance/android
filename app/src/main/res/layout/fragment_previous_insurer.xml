@@ -51,8 +51,8 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_quadruple"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                android:drawableEnd="@drawable/ic_chevron_down"
-                android:text="TODO Current insurer"
+                app:drawableEndCompat="@drawable/ic_chevron_down"
+                android:text="@string/onboarding_norway_current_insurer.bottom_sheet_title"
                 android:textAppearance="?textAppearanceBody1" />
 
             <View
@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double"
-        android:text="TODO Continue"
+        android:text="@string/onboarding_norway_current_insurer.bottom_sheet_continue_button"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

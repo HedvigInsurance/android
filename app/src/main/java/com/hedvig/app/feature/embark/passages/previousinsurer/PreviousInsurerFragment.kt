@@ -31,6 +31,9 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
             currentInsurerContainer.setHapticClickListener {
                 onShowInsurers()
             }
+            continueButton.setHapticClickListener {
+                onShowInsurers()
+            }
         }
 
         setFragmentResultListener(REQUEST_SELECT_INSURER) { requestKey, bundle ->
@@ -44,7 +47,7 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
 
     private fun onShowInsurers() {
         val fragment = PreviousInsurerBottomSheet.newInstance(insurerData.previousInsurers)
-        fragment.show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
+        fragment.show(childFragmentManager, PreviousInsurerBottomSheet.TAG)
     }
 
     companion object {
