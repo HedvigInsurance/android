@@ -10,7 +10,7 @@ object PreviousInsurerAction {
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction(
-            data = EmbarkStoryQuery.Data5(
+            data = EmbarkStoryQuery.Data2(
                 insuranceProviders = listOf(
                     EmbarkStoryQuery.InsuranceProvider(
                         name = "IF",

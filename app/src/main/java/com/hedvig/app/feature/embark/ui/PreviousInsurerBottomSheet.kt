@@ -8,7 +8,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerAdapter
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerData
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
 
@@ -18,7 +18,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
     private val insurers by lazy {
         requireArguments()
-            .getParcelableArrayList<PreviousInsurerData.PreviousInsurer>(PREVIOUS_INSURERS)
+            .getParcelableArrayList<PreviousInsurerParameter.PreviousInsurer>(PREVIOUS_INSURERS)
             ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
     }
 
@@ -39,7 +39,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
         const val EXTRA_INSURER_ID = "INSURER_ID"
         private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
 
-        fun newInstance(previousInsurers: List<PreviousInsurerData.PreviousInsurer>) = PreviousInsurerBottomSheet().apply {
+        fun newInstance(previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>) = PreviousInsurerBottomSheet().apply {
             arguments = bundleOf(PREVIOUS_INSURERS to previousInsurers)
         }
     }

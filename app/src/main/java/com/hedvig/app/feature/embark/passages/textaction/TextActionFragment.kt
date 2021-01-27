@@ -1,12 +1,10 @@
-package com.hedvig.app.feature.embark.passages
+package com.hedvig.app.feature.embark.passages.textaction
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
 import com.hedvig.app.feature.embark.BIRTH_DATE
@@ -16,6 +14,9 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
 import com.hedvig.app.feature.embark.PERSONAL_NUMBER
 import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
+import com.hedvig.app.feature.embark.passages.MessageAdapter
+import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.validationCheck
@@ -23,7 +24,6 @@ import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -36,7 +36,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val data = requireArguments().getParcelable<TextActionData>(DATA)
+        val data = requireArguments().getParcelable<TextActionParameter>(DATA)
 
         if (data == null) {
             e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
@@ -97,34 +97,10 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
     companion object {
         private const val DATA = "DATA"
-        fun newInstance(data: TextActionData) = TextActionFragment().apply {
+        fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(DATA, data)
             }
         }
-    }
-}
-
-@Parcelize
-data class TextActionData(
-    val link: String,
-    val hint: String,
-    val messages: List<String>,
-    val submitLabel: String,
-    val key: String,
-    val passageName: String,
-    val mask: String?,
-) : Parcelable {
-    companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.TextData, passageName: String) =
-            TextActionData(
-                link = data.link.fragments.embarkLinkFragment.name,
-                hint = data.placeholder,
-                messages = messages,
-                submitLabel = data.link.fragments.embarkLinkFragment.label,
-                key = data.key,
-                passageName = passageName,
-                mask = data.mask
-            )
     }
 }

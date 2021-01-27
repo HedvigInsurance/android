@@ -3,10 +3,8 @@ package com.hedvig.app.feature.embark.passages.previousinsurer
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentPreviousInsurerBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -15,7 +13,6 @@ import com.hedvig.app.feature.embark.ui.PreviousInsurerBottomSheet
 import com.hedvig.app.feature.embark.ui.PreviousInsurerBottomSheet.Companion.EXTRA_INSURER_ID
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.android.parcel.Parcelize
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
@@ -25,7 +22,7 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
 
     private val insurerData by lazy {
         requireArguments()
-            .getParcelable<PreviousInsurerData>(DATA)
+            .getParcelable<PreviousInsurerParameter>(DATA)
             ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
     }
 
@@ -60,7 +57,7 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
         private const val DATA = "DATA"
         private const val REQUEST_SELECT_INSURER = 1
 
-        fun newInstance(previousInsurerData: PreviousInsurerData) =
+        fun newInstance(previousInsurerData: PreviousInsurerParameter) =
             PreviousInsurerFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(DATA, previousInsurerData)
@@ -69,37 +66,3 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
     }
 }
 
-@Parcelize
-data class PreviousInsurerData(
-    val messages: List<String>,
-    val next: String,
-    val skip: String,
-    val storeKey: String,
-    val previousInsurers: List<PreviousInsurer>
-) : Parcelable {
-    @Parcelize
-    data class PreviousInsurer(
-        val name: String,
-        val icon: String
-    ) : Parcelable
-
-    companion object {
-        fun from(messages: List<String>,
-                 previousInsuranceAction: EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction) =
-            PreviousInsurerData(
-                messages = messages,
-                next = previousInsuranceAction.data.next.fragments.embarkLinkFragment.name,
-                skip = previousInsuranceAction.data.skip.fragments.embarkLinkFragment.name,
-                previousInsurers = previousInsuranceAction
-                    .data
-                    .insuranceProviders
-                    .map {
-                        PreviousInsurer(
-                            it.name,
-                            it.logo.variants.fragments.iconVariantsFragment.light.svgUrl
-                        )
-                    },
-                storeKey = previousInsuranceAction.data.storeKey,
-            )
-    }
-}
