@@ -27,13 +27,12 @@ class PreviousInsurerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.expandable_bottom_sheet_title -> PreviousInsurerViewHolder.Header(parent)
-        R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(parent)
+        R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(parent, requestBuilder, onInsurerClicked)
         else -> throw Error("No view type found for: $viewType")
     }
 
-    override fun onBindViewHolder(holder: PreviousInsurerViewHolder, position: Int) = when (holder) {
-        is PreviousInsurerViewHolder.InsurerViewHolder -> holder.bind(getItem(position) as PreviousInsurerItem.Insurer, requestBuilder, onInsurerClicked)
-        is PreviousInsurerViewHolder.Header -> holder.bind()
+    override fun onBindViewHolder(holder: PreviousInsurerViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -43,29 +42,35 @@ class PreviousInsurerAdapter(
 
     sealed class PreviousInsurerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class InsurerViewHolder(parent: ViewGroup) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item)) {
+        abstract fun bind(item: PreviousInsurerItem)
+
+        class InsurerViewHolder(
+            parent: ViewGroup,
+            val requestBuilder: RequestBuilder<PictureDrawable>,
+            val onInsurerClicked: (String) -> Unit
+        ) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item)) {
+
             private val binding by viewBinding(PreviousInsurerItemBinding::bind)
 
-            fun bind(item: PreviousInsurerItem.Insurer,
-                     requestBuilder: RequestBuilder<PictureDrawable>,
-                     onInsurerClicked: (String) -> Unit) {
+            override fun bind(item: PreviousInsurerItem) {
+                (item as? PreviousInsurerItem.Insurer)?.let {
+                    requestBuilder
+                        .load(Uri.parse(com.hedvig.app.BuildConfig.BASE_URL + item.icon))
+                        .into(binding.icon)
 
-                requestBuilder
-                    .load(Uri.parse(com.hedvig.app.BuildConfig.BASE_URL + item.icon))
-                    .into(binding.icon)
-
-                binding.text.text = item.name
-                binding.root.setHapticClickListener {
-                    onInsurerClicked(item.name)
-                }
+                    binding.text.text = item.name
+                    binding.root.setHapticClickListener {
+                        onInsurerClicked(item.name)
+                    }
+                } ?: throw IllegalArgumentException("Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}")
             }
-
         }
 
         class Header(parent: ViewGroup) : PreviousInsurerViewHolder(parent.inflate(R.layout.expandable_bottom_sheet_title)) {
+
             private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
 
-            fun bind() {
+            override fun bind(item: PreviousInsurerItem) {
                 binding.title.setText(R.string.onboarding_norway_current_insurer_bottom_sheet_title)
             }
         }
