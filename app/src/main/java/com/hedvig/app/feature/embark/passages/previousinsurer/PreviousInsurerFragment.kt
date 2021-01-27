@@ -1,10 +1,9 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentPreviousInsurerBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -33,29 +32,24 @@ class PreviousInsurerFragment : Fragment(R.layout.fragment_previous_insurer) {
                 onShowInsurers()
             }
         }
-    }
 
-    private fun onShowInsurers() {
-        val fragment = PreviousInsurerBottomSheet.newInstance(insurerData.previousInsurers)
-        fragment.setTargetFragment(this, REQUEST_SELECT_INSURER)
-        fragment.show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_SELECT_INSURER -> {
-                val insurerId = data?.getStringExtra(EXTRA_INSURER_ID)
-                if (resultCode == Activity.RESULT_OK && insurerId != null) {
-                    model.putInStore(insurerData.storeKey, insurerId)
-                    model.navigateToPassage(insurerData.next)
-                }
+        setFragmentResultListener(REQUEST_SELECT_INSURER) { requestKey, bundle ->
+            val insurerId = bundle.getString(EXTRA_INSURER_ID)
+            if (requestKey == REQUEST_SELECT_INSURER && insurerId != null) {
+                model.putInStore(insurerData.storeKey, insurerId)
+                model.navigateToPassage(insurerData.next)
             }
         }
     }
 
+    private fun onShowInsurers() {
+        val fragment = PreviousInsurerBottomSheet.newInstance(insurerData.previousInsurers)
+        fragment.show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
+    }
+
     companion object {
+        const val REQUEST_SELECT_INSURER = "request_insurer"
         private const val DATA = "DATA"
-        private const val REQUEST_SELECT_INSURER = 1
 
         fun newInstance(previousInsurerData: PreviousInsurerParameter) =
             PreviousInsurerFragment().apply {

@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.embark.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerAdapter
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
@@ -28,8 +28,10 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
     }
 
     private fun onInsurerSelected(id: String) {
-        val intent = Intent().putExtra(EXTRA_INSURER_ID, id)
-        targetFragment?.onActivityResult(targetRequestCode, Activity.RESULT_OK, intent)
+        val bundle = Bundle().apply {
+            putString(EXTRA_INSURER_ID, id)
+        }
+        setFragmentResult(PreviousInsurerFragment.REQUEST_SELECT_INSURER, bundle)
         dismiss()
     }
 
