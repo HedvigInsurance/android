@@ -117,7 +117,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         passage?.action?.asEmbarkSelectAction?.let { options ->
             val selectActionData = SelectActionPassage.from(
                 passage.messages.map { it.fragments.messageFragment.text },
-                options.data,
+                options.selectData,
                 passage.name,
             )
 
@@ -128,7 +128,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val textActionData =
                 TextActionData.from(
                     passage.messages.map { it.fragments.messageFragment.text },
-                    textAction.data,
+                    textAction.textData,
                     passage.name
                 )
 
@@ -136,7 +136,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
 
         passage?.action?.asEmbarkTextActionSet?.let { textActionSet ->
-            textActionSet.data?.let { data ->
+            textActionSet.textSetData?.let { data ->
                 val textActionSetData =
                     TextActionSetData.from(
                         passage.messages.map { it.fragments.messageFragment.text },

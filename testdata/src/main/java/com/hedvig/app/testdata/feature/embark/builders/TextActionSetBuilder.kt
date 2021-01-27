@@ -12,7 +12,7 @@ data class TextActionSetBuilder(
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = EmbarkStoryQuery.AsEmbarkTextActionSet(
-            data = EmbarkStoryQuery.Data3(
+            textSetData = EmbarkStoryQuery.TextSetData(
                 link = EmbarkStoryQuery.Link2(fragments = EmbarkStoryQuery.Link2.Fragments(link)),
                 textActions = textActions
             )

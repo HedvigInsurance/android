@@ -78,7 +78,7 @@ data class SelectActionPassage(
     companion object {
         fun from(
             messages: List<String>,
-            data: EmbarkStoryQuery.Data1,
+            data: EmbarkStoryQuery.SelectData,
             passageName: String,
         ) =
             SelectActionPassage(

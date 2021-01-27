@@ -1,5 +1,5 @@
-query EmbarkStory($name: String!) {
-  embarkStory(name: $name) {
+query EmbarkStory($name: String!, $locale: String!) {
+  embarkStory(name: $name, locale: $locale) {
     startPassage
     passages {
       name
@@ -37,7 +37,7 @@ query EmbarkStory($name: String!) {
       }
       action {
         ... on EmbarkSelectAction {
-          data {
+          selectData: data {
             options {
               link {
                 ...EmbarkLinkFragment
@@ -48,7 +48,7 @@ query EmbarkStory($name: String!) {
           }
         }
         ... on EmbarkTextAction {
-          data {
+          textData: data {
             key
             placeholder
             mask
@@ -58,7 +58,7 @@ query EmbarkStory($name: String!) {
           }
         }
         ... on EmbarkTextActionSet {
-          data {
+          textSetData: data {
             link{
               ...EmbarkLinkFragment
             }
