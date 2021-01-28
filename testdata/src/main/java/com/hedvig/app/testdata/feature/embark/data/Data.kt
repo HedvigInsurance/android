@@ -369,14 +369,14 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data4(
+                        data = EmbarkStoryQuery.Data1(
                             placeholder = "First Placeholder",
                             key = "FOO",
                             mask = null
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data4(
+                        data = EmbarkStoryQuery.Data1(
                             placeholder = "Second Placeholder",
                             key = "BAR",
                             mask = null
@@ -401,14 +401,14 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data4(
+                        data = EmbarkStoryQuery.Data1(
                             placeholder = "901124-1234",
                             key = "FOO",
                             mask = PERSONAL_NUMBER
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data4(
+                        data = EmbarkStoryQuery.Data1(
                             placeholder = "Email",
                             key = "BAR",
                             mask = EMAIL
@@ -480,19 +480,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.ALWAYS,
-                            text = "Unary true test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                text = "Unary true test"
+                            ).build()
+                        )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.NEVER,
-                            text = "Unary false test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NEVER,
+                                text = "Unary false test"
+                            ).build()
+                        )
                     ).build()
                 )
             )
@@ -1183,7 +1183,6 @@ val STORY_WITH_GRAPHQL_MUTATION = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
-
 
 val VARIABLE_MUTATION = """
 mutation VariableMutation(${'$'}variable: String!) {

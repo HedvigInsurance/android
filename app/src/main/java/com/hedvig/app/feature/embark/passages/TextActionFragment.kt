@@ -118,7 +118,7 @@ data class TextActionData(
     val mask: String?,
 ) : Parcelable {
     companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.Data2, passageName: String) =
+        fun from(messages: List<String>, data: EmbarkStoryQuery.TextData, passageName: String) =
             TextActionData(
                 link = data.link.fragments.embarkLinkFragment.name,
                 hint = data.placeholder,

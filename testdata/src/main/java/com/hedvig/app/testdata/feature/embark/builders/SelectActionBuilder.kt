@@ -8,7 +8,7 @@ data class SelectActionBuilder(
 ) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
-            data = EmbarkStoryQuery.Data1(
+            selectData = EmbarkStoryQuery.SelectData(
                 options = options
             )
         ),

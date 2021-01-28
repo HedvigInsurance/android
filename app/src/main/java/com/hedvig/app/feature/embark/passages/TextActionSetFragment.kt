@@ -95,7 +95,7 @@ data class TextActionSetData(
     val mask: List<String?>,
 ) : Parcelable {
     companion object {
-        fun from(messages: List<String>, data: EmbarkStoryQuery.Data3, passageName: String) =
+        fun from(messages: List<String>, data: EmbarkStoryQuery.TextSetData, passageName: String) =
             TextActionSetData(
                 link = data.link.fragments.embarkLinkFragment.name,
                 placeholders = data.textActions.map { it.data?.placeholder },

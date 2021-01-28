@@ -12,7 +12,7 @@ data class TextActionBuilder(
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
         asEmbarkTextAction = EmbarkStoryQuery.AsEmbarkTextAction(
-            data = EmbarkStoryQuery.Data2(
+            textData = EmbarkStoryQuery.TextData(
                 key = key,
                 placeholder = placeholder,
                 mask = mask,

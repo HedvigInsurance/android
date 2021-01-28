@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.embark
 
 import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toDeferred
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.HedvigApplication
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,11 +15,11 @@ import ru.gildor.coroutines.okhttp.await
 class EmbarkRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val okHttpClient: OkHttpClient,
-    private val application: HedvigApplication
+    private val application: HedvigApplication,
 ) {
     suspend fun embarkStory(name: String) = apolloClientWrapper
         .apolloClient
-        .query(EmbarkStoryQuery(name))
+        .query(EmbarkStoryQuery(name, defaultLocale(application).rawValue))
         .await()
 
     suspend fun graphQLQuery(query: String, variables: JSONObject? = null) = okHttpClient
