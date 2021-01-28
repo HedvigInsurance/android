@@ -37,17 +37,16 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
 
         binding.apply {
             close.alpha = 0f
-
-            val peekHeight = PEEK_HEIGHT.dp
-            val chevronContainerHeight = chevronContainer.measuredHeight
-            val startTranslation = (peekHeight - chevronContainerHeight).toFloat()
-
             (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-
-                chevronContainer.measure(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-                chevronContainer.translationY = startTranslation
-
+                val peekHeight = PEEK_HEIGHT.dp
                 behaviour.setPeekHeight(peekHeight, true)
+                chevronContainer.measure(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                )
+                val chevronContainerHeight = chevronContainer.measuredHeight
+                val startTranslation = (peekHeight - chevronContainerHeight).toFloat()
+                chevronContainer.translationY = startTranslation
                 behaviour.addBottomSheetCallback(
                     object : BottomSheetBehavior.BottomSheetCallback() {
 
@@ -91,7 +90,6 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
                             chevronContainer.alpha = 1 - slideOffset
                         }
                     })
-
                 chevron.setHapticClickListener {
                     close.show()
                     behaviour.state = BottomSheetBehavior.STATE_EXPANDED
