@@ -59,7 +59,9 @@ class TextActionSetTest : TestCase() {
                 hasText("Another test passage")
                 click()
             }
-            messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("First Text Second Text was entered") } } }
+            messages {
+                firstChild<EmbarkScreen.MessageRow> { text { hasText("First Text Second Text was entered") } }
+            }
         }
     }
 }
