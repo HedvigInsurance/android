@@ -10,11 +10,7 @@ import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.seconds
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.Rule
 import org.junit.Test
 
@@ -41,16 +37,12 @@ class BackNavigationTest : TestCase() {
 
         onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-            await atMost 2.seconds untilAsserted {
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> { text { hasText("another test message") } }
-                }
+            messages {
+                firstChild<EmbarkScreen.MessageRow> { text { hasText("another test message") } }
             }
             pressBack()
-            await atMost 2.seconds untilAsserted {
-                messages {
-                    firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
-                }
+            messages {
+                firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
             }
         }
     }

@@ -1,28 +1,22 @@
 package com.hedvig.app.feature.embark.messages
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_AND_EXPRESSION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.seconds
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
+import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class AndExpressionTest {
+class AndExpressionTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
@@ -33,22 +27,20 @@ class AndExpressionTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowMessageForWhenWithAndExpression() {
-        activityRule.launchActivity(
+    fun shouldShowMessageForWhenWithAndExpression() = run {
+        activityRule.launch(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 this.javaClass.name
             )
         )
 
         onScreen<EmbarkScreen> {
             selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
-            await atMost 2.seconds untilAsserted {
-                messages {
-                    hasSize(1)
-                    firstChild<EmbarkScreen.MessageRow> {
-                        text { hasText("And test message that evaluates to true") }
-                    }
+            messages {
+                hasSize(1)
+                firstChild<EmbarkScreen.MessageRow> {
+                    text { hasText("And test message that evaluates to true") }
                 }
             }
         }

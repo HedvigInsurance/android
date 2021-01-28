@@ -1,28 +1,26 @@
 package com.hedvig.app.feature.embark
 
 import android.app.Activity
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class EmbarkActivityTest {
+class EmbarkActivityTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @Test
-    fun showsSpinnerWhileLoading() {
-        activityRule.launchActivity(
+    fun showsSpinnerWhileLoading() = run {
+        activityRule.launch(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                this.javaClass.name
+                context(),
+                this.javaClass.name,
             )
         )
         onScreen<EmbarkScreen> {
@@ -33,9 +31,8 @@ class EmbarkActivityTest {
     }
 
     @Test
-    fun endsActivityIfNoStoryNameIsProvided() {
-        activityRule.launchActivity(null)
-        assertTrue(activityRule.activity.isFinishing)
-        assertTrue(activityRule.activityResult.resultCode == Activity.RESULT_CANCELED)
+    fun endsActivityIfNoStoryNameIsProvided() = run {
+        activityRule.launch()
+        assertTrue(activityRule.scenario.result.resultCode == Activity.RESULT_CANCELED)
     }
 }
