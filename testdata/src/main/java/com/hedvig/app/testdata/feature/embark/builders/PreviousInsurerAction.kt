@@ -4,7 +4,10 @@ import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
-object PreviousInsurerAction {
+data class PreviousInsurerAction(
+    val storeKey: String = "BAR",
+    val next: EmbarkLinkFragment
+) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
@@ -49,8 +52,8 @@ object PreviousInsurerAction {
                         )
                     )
                 ),
-                storeKey = "123",
-                next = EmbarkStoryQuery.Next(fragments = EmbarkStoryQuery.Next.Fragments(EmbarkLinkFragment(name = "test_next", label = "Next"))),
+                storeKey = storeKey,
+                next = EmbarkStoryQuery.Next(fragments = EmbarkStoryQuery.Next.Fragments(next)),
                 skip = EmbarkStoryQuery.Skip(fragments = EmbarkStoryQuery.Skip.Fragments(EmbarkLinkFragment(name = "test_skip", label = "Skip"))),
             )
         )

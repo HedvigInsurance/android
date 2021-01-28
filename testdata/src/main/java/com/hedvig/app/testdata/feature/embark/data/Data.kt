@@ -366,7 +366,15 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
 val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
-            action = PreviousInsurerAction.build()
+            action = PreviousInsurerAction(
+                storeKey = "BAR",
+                next = STANDARD_FIRST_LINK).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
         ).build()
     )
 ).build()
@@ -490,19 +498,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.ALWAYS,
-                                text = "Unary true test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.ALWAYS,
+                            text = "Unary true test"
+                        ).build()
+                    )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.NEVER,
-                                text = "Unary false test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.NEVER,
+                            text = "Unary false test"
+                        ).build()
+                    )
                     ).build()
                 )
             )
