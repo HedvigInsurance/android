@@ -28,9 +28,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
     }
 
     private fun onInsurerSelected(id: String) {
-        val bundle = Bundle().apply {
-            putString(EXTRA_INSURER_ID, id)
-        }
+        val bundle = bundleOf(EXTRA_INSURER_ID to id)
         setFragmentResult(PreviousInsurerFragment.REQUEST_SELECT_INSURER, bundle)
         dismiss()
     }
