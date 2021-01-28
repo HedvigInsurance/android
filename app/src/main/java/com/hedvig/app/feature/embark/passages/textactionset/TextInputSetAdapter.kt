@@ -28,7 +28,6 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
         private val binding by viewBinding(EmbarkInputItemBinding::bind)
         fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel) {
             binding.apply {
-                model.updateIsValid(position, false)
                 textField.hint = item.placeholder
                 item.mask?.let { mask ->
                     input.apply {
@@ -54,6 +53,7 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
                             model.updateIsValid(position, false)
                         }
                     }
+                    model.setInputValue(position, text)
                 }
             }
         }

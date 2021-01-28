@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -32,6 +33,8 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
             return
         }
 
+        textActionSetViewModel.initializeInputs(data)
+
         binding.apply {
             messages.adapter = MessageAdapter(data.messages)
             inputRecycler.adapter = TextInputSetAdapter(textActionSetViewModel).also {
@@ -46,30 +49,31 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
             textActionSubmit
                 .hapticClicks()
                 .mapLatest { animateSubmission(data) }
-                .onEach { model.navigateToPassage(data.link) }
+                .onEach {
+                    model.navigateToPassage(data.link)
+                }
                 .launchIn(lifecycleScope)
         }
     }
 
     private suspend fun FragmentTextActionSetBinding.animateSubmission(data: TextActionSetParameter) {
-        val allInput = ""
-        for ((index, key) in data.keys.withIndex()) {
-            val input =
-                inputRecycler.getChildAt(index).findViewById<TextInputEditText>(R.id.input)
-            key?.let { model.putInStore(it, input.text.toString()) }
-            allInput.plus("${input.text.toString()} ")
+        textActionSetViewModel.inputs.value?.let { inputs ->
+            data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
+            val allInput = inputs.values.joinToString(" ")
+            model.putInStore("${data.passageName}Result", allInput)
+            val responseText = model.preProcessResponse(data.passageName) ?: allInput
+            animateResponse(response, responseText)
         }
-        val responseText = model.preProcessResponse(data.passageName) ?: allInput
-        animateResponse(response, responseText)
     }
 
-    private fun textFieldData(data: TextActionSetParameter): MutableList<TextFieldData> {
-        val list = mutableListOf<TextFieldData>()
-        for ((index, key) in data.keys.withIndex()) {
-            list.add(TextFieldData(key, data.placeholders[index], data.mask[index]))
+    private fun textFieldData(data: TextActionSetParameter) =
+        data.keys.mapIndexed { index, key ->
+            TextFieldData(
+                key,
+                data.placeholders[index],
+                data.mask[index],
+            )
         }
-        return list
-    }
 
     companion object {
         private const val DATA = "DATA"
