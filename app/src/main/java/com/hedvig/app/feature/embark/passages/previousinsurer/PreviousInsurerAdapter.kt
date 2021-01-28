@@ -62,7 +62,8 @@ class PreviousInsurerAdapter(
                     binding.root.setHapticClickListener {
                         onInsurerClicked(item.name)
                     }
-                } ?: throw IllegalArgumentException("Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}")
+                }
+                    ?: throw IllegalArgumentException("Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}")
             }
         }
 
@@ -70,9 +71,11 @@ class PreviousInsurerAdapter(
 
             private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
 
-            override fun bind(item: PreviousInsurerItem) {
+            init {
                 binding.title.setText(R.string.onboarding_norway_current_insurer_bottom_sheet_title)
             }
+
+            override fun bind(item: PreviousInsurerItem) = Unit
         }
     }
 }
