@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.numberaction
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.screens.NumberActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -31,7 +32,7 @@ class NumberActionTest : TestCase() {
     fun shouldRenderNumberAction() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
-        onScreen<EmbarkScreen> {
+        NumberActionScreen {
             step("Check that labels match data") {
                 submit {
                     isDisabled()
@@ -61,8 +62,10 @@ class NumberActionTest : TestCase() {
                 }
             }
             step("Verify that value has been recorded in store") {
-                messages {
-                    childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
+                onScreen<EmbarkScreen> {
+                    messages {
+                        childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
+                    }
                 }
             }
         }
