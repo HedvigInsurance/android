@@ -16,7 +16,8 @@ data class TextActionSetBuilder(
                 link = EmbarkStoryQuery.Link2(fragments = EmbarkStoryQuery.Link2.Fragments(link)),
                 textActions = textActions
             )
-        )
+        ),
+        asEmbarkPreviousInsuranceProviderAction = null
     )
 }
 

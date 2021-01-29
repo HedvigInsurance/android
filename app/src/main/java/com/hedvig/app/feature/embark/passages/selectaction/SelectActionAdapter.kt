@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages
+package com.hedvig.app.feature.embark.passages.selectaction
 
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +11,8 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class SelectActionAdapter(
-    private val bindClicks: (SelectAction, View) -> Unit
-) : ListAdapter<SelectAction, SelectActionAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+    private val bindClicks: (SelectActionParameter.SelectAction, View) -> Unit
+) : ListAdapter<SelectActionParameter.SelectAction, SelectActionAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
@@ -24,8 +24,8 @@ class SelectActionAdapter(
         RecyclerView.ViewHolder(parent.inflate(R.layout.embark_select_action_item)) {
         private val binding by viewBinding(EmbarkSelectActionItemBinding::bind)
         fun bind(
-            item: SelectAction,
-            onActionSelected: (SelectAction, View) -> Unit
+            item: SelectActionParameter.SelectAction,
+            onActionSelected: (SelectActionParameter.SelectAction, View) -> Unit
         ) {
             binding.apply {
                 text.text = item.label

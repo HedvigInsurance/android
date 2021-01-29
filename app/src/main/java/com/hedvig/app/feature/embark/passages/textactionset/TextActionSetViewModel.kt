@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages
+package com.hedvig.app.feature.embark.passages.textactionset
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

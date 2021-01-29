@@ -14,17 +14,18 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
-import com.hedvig.app.feature.embark.passages.SelectActionFragment
-import com.hedvig.app.feature.embark.passages.SelectActionPassage
-import com.hedvig.app.feature.embark.passages.TextActionData
-import com.hedvig.app.feature.embark.passages.TextActionFragment
-import com.hedvig.app.feature.embark.passages.TextActionSetData
-import com.hedvig.app.feature.embark.passages.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
+import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
+import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
+import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
+import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.activity_embark.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
@@ -115,36 +116,40 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
         passage?.action?.asEmbarkSelectAction?.let { options ->
-            val selectActionData = SelectActionPassage.from(
+            val parameter = SelectActionParameter.from(
                 passage.messages.map { it.fragments.messageFragment.text },
                 options.selectData,
                 passage.name,
             )
-
-            return SelectActionFragment.newInstance(selectActionData)
+            return SelectActionFragment.newInstance(parameter)
         }
 
         passage?.action?.asEmbarkTextAction?.let { textAction ->
-            val textActionData =
-                TextActionData.from(
-                    passage.messages.map { it.fragments.messageFragment.text },
-                    textAction.textData,
-                    passage.name
-                )
-
-            return TextActionFragment.newInstance(textActionData)
+            val parameter = TextActionParameter.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                textAction.textData,
+                passage.name
+            )
+            return TextActionFragment.newInstance(parameter)
         }
 
         passage?.action?.asEmbarkTextActionSet?.let { textActionSet ->
             textActionSet.textSetData?.let { data ->
-                val textActionSetData =
-                    TextActionSetData.from(
-                        passage.messages.map { it.fragments.messageFragment.text },
-                        data,
-                        passage.name
-                    )
-                return TextActionSetFragment.newInstance(textActionSetData)
+                val parameter = TextActionSetParameter.from(
+                    passage.messages.map { it.fragments.messageFragment.text },
+                    data,
+                    passage.name
+                )
+                return TextActionSetFragment.newInstance(parameter)
             }
+        }
+
+        passage?.action?.asEmbarkPreviousInsuranceProviderAction?.let { previousInsuranceAction ->
+            val parameter = PreviousInsurerParameter.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                previousInsuranceAction
+            )
+            return PreviousInsurerFragment.newInstance(parameter)
         }
 
         return UpgradeAppFragment.newInstance()

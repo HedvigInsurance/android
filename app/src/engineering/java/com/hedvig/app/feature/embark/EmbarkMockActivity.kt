@@ -8,6 +8,7 @@ import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
 import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.moreOptionsModule
+import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
@@ -51,10 +52,15 @@ class EmbarkMockActivity : MockActivity() {
     })
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Previous Insurer")
+        clickableItem("Previous Insurer") {
+            MockEmbarkViewModel.mockedData = PREVIOUS_INSURER_STORY
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
+        }
         header("Embark Screen")
         clickableItem("Loading") {
             MockEmbarkViewModel.shouldLoad = false
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         header("Select Action")
         clickableItem("Regular") {
@@ -62,14 +68,14 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STANDARD_STORY
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Custom Response") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         header("Text Action")
         clickableItem("Regular") {
@@ -77,47 +83,46 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_TEXT_ACTION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Text action set") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Custom Response") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Text action set first text personal number validation and second text with email validation") {
-            MockEmbarkViewModel.mockedData =
-                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Email text validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Personal number text validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Birth date validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_BIRTH_DATE
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Birth date reverse validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Norwegian postal code validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Swedish postal validation") {
             MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
 
         header("Incompatible Action")

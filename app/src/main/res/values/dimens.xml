@@ -151,4 +151,6 @@
     <dimen name="plan_card_height">130dp</dimen>
     <dimen name="more_options_list_item_height">48dp</dimen>
     <dimen name="member_id_min_length">80dp</dimen>
+    <dimen name="insurer_logo_width">28dp</dimen>
+    <dimen name="insurer_logo_height">28dp</dimen>
 </resources>

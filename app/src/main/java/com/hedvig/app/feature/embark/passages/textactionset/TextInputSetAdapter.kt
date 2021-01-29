@@ -1,10 +1,11 @@
-package com.hedvig.app.feature.embark.passages
+package com.hedvig.app.feature.embark.passages.textactionset
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
+import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.validationCheck

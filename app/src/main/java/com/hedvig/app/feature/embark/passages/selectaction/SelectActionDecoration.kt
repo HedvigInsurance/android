@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages
+package com.hedvig.app.feature.embark.passages.selectaction
 
 import android.graphics.Rect
 import android.view.View

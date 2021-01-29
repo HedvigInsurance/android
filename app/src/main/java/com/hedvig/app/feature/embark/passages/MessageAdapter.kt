@@ -6,10 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
-import kotlinx.android.synthetic.main.embark_message_item.view.*
+import kotlinx.android.synthetic.main.embark_message_item.view.message
 
-class MessageAdapter :
-    ListAdapter<String, MessageAdapter.MessageViewHolder>(GenericDiffUtilItemCallback()) {
+class MessageAdapter(
+    messages: List<String>
+) : ListAdapter<String, MessageAdapter.MessageViewHolder>(GenericDiffUtilItemCallback()) {
+
+    init {
+        submitList(messages)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = MessageViewHolder(parent)
 
@@ -17,8 +22,7 @@ class MessageAdapter :
         holder.bind(getItem(position))
     }
 
-    class MessageViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.embark_message_item)) {
+    class MessageViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_message_item)) {
         private val messageView = itemView.message
 
         fun bind(message: String) {

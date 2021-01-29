@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
+import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
@@ -362,6 +363,22 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = PreviousInsurerAction(
+                storeKey = "BAR",
+                next = STANDARD_FIRST_LINK).build()
+        ).build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
 val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
@@ -434,6 +451,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkSelectAction = null,
                     asEmbarkTextAction = null,
                     asEmbarkTextActionSet = null,
+                    asEmbarkPreviousInsuranceProviderAction = null
                 )
             )
             .build()
@@ -480,19 +498,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.ALWAYS,
-                                text = "Unary true test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.ALWAYS,
+                            text = "Unary true test"
+                        ).build()
+                    )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.NEVER,
-                                text = "Unary false test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.NEVER,
+                            text = "Unary false test"
+                        ).build()
+                    )
                     ).build()
                 )
             )

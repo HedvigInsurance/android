@@ -4,7 +4,6 @@ import android.content.Intent
 import android.view.View
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.edit.KEditText
-import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
@@ -48,4 +47,9 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     class SelectAction(parent: Matcher<View>) : KRecyclerItem<SelectAction>(parent) {
         val button = KButton { withMatcher(parent) }
     }
+
+    val continueButton = KButton { withId(R.id.continueButton) }
+
+    val previousInsurerButton = KButton { withId(R.id.currentInsurerContainer) }
+    val previousInsurerButtonLabel = KTextView { withId(R.id.currentInsurerLabel) }
 }
