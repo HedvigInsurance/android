@@ -11,6 +11,7 @@ import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.picker.date.KDatePicker
 import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KTextView
+import com.google.android.material.textfield.TextInputLayout
 import java.time.LocalDate
 
 fun KTextInputLayout.hasError(@StringRes resId: Int) =
@@ -38,3 +39,16 @@ fun KIntent.stub() {
 }
 
 fun KSwipeRefreshLayout.swipeDownInCenter() = view.perform(CustomViewActions.swipeDownInCenter())
+
+fun KTextInputLayout.hasPlaceholderText(text: String) {
+    view.check { view, noViewFoundException ->
+        if (view is TextInputLayout) {
+            if (text != view.placeholderText) {
+                throw AssertionError("Expected placeholder text is $text," +
+                    " but actual is ${view.placeholderText}")
+            }
+        } else {
+            noViewFoundException?.let { throw AssertionError(it) }
+        }
+    }
+}

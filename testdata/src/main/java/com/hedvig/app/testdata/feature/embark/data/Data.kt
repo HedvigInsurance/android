@@ -1268,7 +1268,10 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
-                action = NumberActionBuilder(link = STANDARD_FIRST_LINK).build()
+                action = NumberActionBuilder(
+                    link = STANDARD_FIRST_LINK,
+                    placeholder = "1"
+                ).build()
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(

@@ -47,9 +47,12 @@
             android:padding="@dimen/base_margin_double">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputContainer"
                 style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:expandedHintEnabled="false"
+                tools:placeholderText="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input"

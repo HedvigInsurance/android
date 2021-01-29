@@ -6,5 +6,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class NumberActionParams(
     val key: String,
+    val placeholder: String,
     val link: String,
 ) : Parcelable

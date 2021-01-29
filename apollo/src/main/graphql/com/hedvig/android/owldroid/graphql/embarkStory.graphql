@@ -93,6 +93,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         ... on EmbarkNumberAction {
           data {
             key
+            placeholder
             link {
               ...EmbarkLinkFragment
             }

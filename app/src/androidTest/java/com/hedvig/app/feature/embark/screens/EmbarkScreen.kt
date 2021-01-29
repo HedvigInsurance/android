@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.View
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.edit.KEditText
+import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
@@ -27,7 +28,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
 
-    val numberInput = KEditText { withId(R.id.input) }
+    val numberInput = KTextInputLayout { withId(R.id.inputContainer) }
     val submit = KButton { withId(R.id.submit) }
 
     val upgradeApp = KButton { withId(R.id.upgradeApp) }

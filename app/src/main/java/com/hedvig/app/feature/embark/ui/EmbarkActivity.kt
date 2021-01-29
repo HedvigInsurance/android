@@ -158,6 +158,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             return NumberActionFragment.newInstance(
                 NumberActionParams(
                     numberAction.data.key,
+                    numberAction.data.placeholder,
                     numberAction.data.link.fragments.embarkLinkFragment.name
                 )
             )

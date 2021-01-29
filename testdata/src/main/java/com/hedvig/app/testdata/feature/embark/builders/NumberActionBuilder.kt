@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class NumberActionBuilder(
     val key: String = "BAR",
-    val placeholder: Any? = null,
+    val placeholder: String = "",
     val link: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
@@ -15,6 +15,7 @@ data class NumberActionBuilder(
         asEmbarkNumberAction = EmbarkStoryQuery.AsEmbarkNumberAction(
             data = EmbarkStoryQuery.Data2(
                 key = key,
+                placeholder = placeholder,
                 link = EmbarkStoryQuery.Link3(fragments = EmbarkStoryQuery.Link3.Fragments(embarkLinkFragment = link))
             )
         ),
