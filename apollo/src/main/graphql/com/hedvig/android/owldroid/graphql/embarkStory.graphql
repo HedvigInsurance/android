@@ -94,6 +94,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           data {
             key
             placeholder
+            unit
             link {
               ...EmbarkLinkFragment
             }

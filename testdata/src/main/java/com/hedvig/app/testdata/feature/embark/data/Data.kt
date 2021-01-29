@@ -1270,6 +1270,7 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
             .copy(
                 action = NumberActionBuilder(
                     link = STANDARD_FIRST_LINK,
+                    unit = "other people",
                     placeholder = "1"
                 ).build()
             )

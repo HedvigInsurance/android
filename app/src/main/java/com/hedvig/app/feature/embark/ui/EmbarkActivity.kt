@@ -159,6 +159,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 NumberActionParams(
                     numberAction.data.key,
                     numberAction.data.placeholder,
+                    numberAction.data.unit,
                     numberAction.data.link.fragments.embarkLinkFragment.name
                 )
             )

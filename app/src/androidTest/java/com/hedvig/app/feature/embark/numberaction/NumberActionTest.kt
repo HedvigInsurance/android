@@ -32,6 +32,7 @@ class NumberActionTest : TestCase() {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
         onScreen<EmbarkScreen> {
+            unit { hasText("other people") }
             numberInput {
                 hasPlaceholderText("1")
                 edit {
