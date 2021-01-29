@@ -29,6 +29,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
             input.doOnTextChanged { text, _, _, _ ->
                 submit.isEnabled = !text.isNullOrBlank()
             }
+            submit.text = data.submitLabel
             submit.setHapticClickListener {
                 model.putInStore(data.key, input.text.toString())
                 model.navigateToPassage(data.link)

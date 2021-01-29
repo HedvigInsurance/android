@@ -32,6 +32,7 @@ class NumberActionTest : TestCase() {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
         onScreen<EmbarkScreen> {
+            submit { isDisabled() }
             unit { hasText("other people") }
             numberInput {
                 hasPlaceholderText("1")
@@ -39,7 +40,10 @@ class NumberActionTest : TestCase() {
                     typeText("50")
                 }
             }
-            submit { click() }
+            submit {
+                hasText("Another test passage")
+                click()
+            }
             messages {
                 childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
             }

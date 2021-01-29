@@ -9,4 +9,5 @@ data class NumberActionParams(
     val placeholder: String,
     val unit: String?,
     val link: String,
+    val submitLabel: String,
 ) : Parcelable

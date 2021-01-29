@@ -81,11 +81,16 @@
 
     <Button
         android:id="@+id/submit"
-        android:layout_width="wrap_content"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Continue" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
