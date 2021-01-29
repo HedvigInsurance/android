@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.screens
 import android.content.Intent
 import android.view.View
 import com.agoda.kakao.common.views.KView
+import com.agoda.kakao.dialog.KAlertDialog
 import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -49,4 +50,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     }
 
     val continueButton = KButton { withId(R.id.continueButton) }
+
+    val previousInsurerButton = KButton { withId(R.id.currentInsurerContainer) }
+    val previousInsurerButtonLabel = KTextView { withId(R.id.currentInsurerLabel) }
 }

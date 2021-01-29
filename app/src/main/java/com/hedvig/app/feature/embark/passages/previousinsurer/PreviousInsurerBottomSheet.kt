@@ -1,19 +1,17 @@
-package com.hedvig.app.feature.embark.ui
+package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.RequestBuilder
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerAdapter
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
+    private val viewModel: PreviousInsurerViewModel by sharedViewModel()
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
     private val insurers by lazy {
@@ -28,8 +26,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
     }
 
     private fun onInsurerSelected(id: String) {
-        val bundle = bundleOf(EXTRA_INSURER_ID to id)
-        setFragmentResult(PreviousInsurerFragment.REQUEST_SELECT_INSURER, bundle)
+        viewModel.setPreviousInsurer(id)
         dismiss()
     }
 

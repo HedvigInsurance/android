@@ -3,13 +3,10 @@ package com.hedvig.app.feature.embark.passages.previousinsurer
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.ui.PreviousInsurerBottomSheet
-import com.hedvig.app.feature.embark.ui.PreviousInsurerBottomSheet.Companion.EXTRA_INSURER_ID
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -18,6 +15,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
     private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
+    private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
 
     private val insurerData by lazy {
         requireArguments()
@@ -32,16 +30,22 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                onShowInsurers()
+                onContinue()
+            }
+
+            previousInsurerViewModel.previousInsurer.observe(viewLifecycleOwner) { selectedInsurer ->
+                continueButton.isEnabled = selectedInsurer != null
+                if (selectedInsurer?.isNotEmpty() == true) {
+                    currentInsurerLabel.text = selectedInsurer
+                }
             }
         }
+    }
 
-        setFragmentResultListener(REQUEST_SELECT_INSURER) { requestKey, bundle ->
-            val insurerId = bundle.getString(EXTRA_INSURER_ID)
-            if (requestKey == REQUEST_SELECT_INSURER && insurerId != null) {
-                model.putInStore(insurerData.storeKey, insurerId)
-                model.navigateToPassage(insurerData.next)
-            }
+    private fun onContinue() {
+        previousInsurerViewModel.previousInsurer.value?.let { id ->
+            model.putInStore(insurerData.storeKey, id)
+            model.navigateToPassage(insurerData.next)
         }
     }
 
@@ -51,7 +55,6 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     }
 
     companion object {
-        const val REQUEST_SELECT_INSURER = "request_insurer"
         private const val DATA = "DATA"
 
         fun newInstance(previousInsurerData: PreviousInsurerParameter) =

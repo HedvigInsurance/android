@@ -45,6 +45,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/currentInsurerLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/base_margin_quadruple"

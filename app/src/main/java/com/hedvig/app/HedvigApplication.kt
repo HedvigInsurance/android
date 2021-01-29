@@ -83,6 +83,7 @@ open class HedvigApplication : Application() {
                     repositoriesModule,
                     trackerModule,
                     embarkModule,
+                    previousInsViewModel,
                     marketPickerTrackerModule,
                     whatsNewModule,
                     marketProviderModule,

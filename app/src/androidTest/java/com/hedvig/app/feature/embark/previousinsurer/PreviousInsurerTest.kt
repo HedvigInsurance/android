@@ -36,22 +36,46 @@ class PreviousInsurerTest : TestCase() {
         )
 
         onScreen<EmbarkScreen> {
-            continueButton {
-                click()
+            step("Continue button should be disabled if no selection") {
+                continueButton {
+                    isDisabled()
+                }
             }
 
-            PreviousInsurerBottomSheetScreen {
-                recycler {
-                    childAt<PreviousInsurerBottomSheetScreen.PreviousInsurer>(1) {
-                        text { hasText("IF") }
-                        click()
+            step("Open previous insurer bottom sheet") {
+                previousInsurerButton {
+                    click()
+                }
+            }
+
+            step("Select insurer") {
+                PreviousInsurerBottomSheetScreen {
+                    recycler {
+                        childAt<PreviousInsurerBottomSheetScreen.PreviousInsurer>(1) {
+                            text { hasText("IF") }
+                            click()
+                        }
                     }
                 }
             }
 
-            messages {
-                childAt<EmbarkScreen.MessageRow>(0) {
-                    text { hasText("IF was entered") }
+            step("Should show selected insurer in button") {
+                previousInsurerButtonLabel {
+                    hasText("IF")
+                }
+            }
+
+            step("Continue to next view") {
+                continueButton {
+                    click()
+                }
+            }
+
+            step("Check that selected insurer is visible on next view") {
+                messages {
+                    childAt<EmbarkScreen.MessageRow>(0) {
+                        text { hasText("IF was entered") }
+                    }
                 }
             }
         }
