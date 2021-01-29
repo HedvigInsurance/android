@@ -133,13 +133,13 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             -> arrayOf(
                 PaymentModel.PayoutDetailsHeader,
                 PaymentModel.PayoutConnectionStatus(apm.status),
-                PaymentModel.PayoutDetailsParagraph,
+                PaymentModel.PayoutDetailsParagraph(apm.status),
                 PaymentModel.Link.AdyenChangePayout,
             )
             PayoutMethodStatus.NEEDS_SETUP -> arrayOf(
                 PaymentModel.PayoutDetailsHeader,
                 PaymentModel.Link.AdyenAddPayout,
-                PaymentModel.PayoutDetailsParagraph,
+                PaymentModel.PayoutDetailsParagraph(apm.status),
             )
             PayoutMethodStatus.UNKNOWN__ -> {
                 e { "Unknown `PayoutMethodStatus`" }
