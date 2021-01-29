@@ -95,6 +95,8 @@ query EmbarkStory($name: String!, $locale: String!) {
             key
             placeholder
             unit
+            maxValue
+            minValue
             link {
               ...EmbarkLinkFragment
             }

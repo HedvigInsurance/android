@@ -154,14 +154,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             return PreviousInsurerFragment.newInstance(parameter)
         }
 
-        passage?.action?.asEmbarkNumberAction?.let { numberAction ->
+        passage?.action?.asEmbarkNumberAction?.data?.let { numberAction ->
             return NumberActionFragment.newInstance(
                 NumberActionParams(
-                    numberAction.data.key,
-                    numberAction.data.placeholder,
-                    numberAction.data.unit,
-                    numberAction.data.link.fragments.embarkLinkFragment.name,
-                    numberAction.data.link.fragments.embarkLinkFragment.label,
+                    numberAction.key,
+                    numberAction.placeholder,
+                    numberAction.unit,
+                    numberAction.maxValue,
+                    numberAction.minValue,
+                    numberAction.link.fragments.embarkLinkFragment.name,
+                    numberAction.link.fragments.embarkLinkFragment.label,
                 )
             )
         }

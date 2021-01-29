@@ -7,6 +7,8 @@ data class NumberActionBuilder(
     val key: String = "BAR",
     val placeholder: String = "",
     val unit: String? = null,
+    val maxValue: Int? = null,
+    val minValue: Int? = null,
     val link: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
@@ -18,6 +20,8 @@ data class NumberActionBuilder(
                 key = key,
                 placeholder = placeholder,
                 unit = unit,
+                maxValue = maxValue,
+                minValue = minValue,
                 link = EmbarkStoryQuery.Link3(fragments = EmbarkStoryQuery.Link3.Fragments(embarkLinkFragment = link))
             )
         ),

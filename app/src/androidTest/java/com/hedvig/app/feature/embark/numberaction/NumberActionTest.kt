@@ -32,20 +32,38 @@ class NumberActionTest : TestCase() {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
         onScreen<EmbarkScreen> {
-            submit { isDisabled() }
-            unit { hasText("other people") }
-            numberInput {
-                hasPlaceholderText("1")
-                edit {
-                    typeText("50")
+            step("Check that labels match data") {
+                submit {
+                    isDisabled()
+                    hasText("Another test passage")
+                }
+                unit { hasText("other people") }
+                numberInput {
+                    hasPlaceholderText("1")
                 }
             }
-            submit {
-                hasText("Another test passage")
-                click()
+            step("Test that lower bound does not allow submit") {
+                numberInput {
+                    edit {
+                        typeText("0")
+                    }
+                }
+                submit { isDisabled() }
             }
-            messages {
-                childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
+            step("Test that upper bound does not allow submit") {
+                numberInput { edit { replaceText("100") } }
+                submit { isDisabled() }
+            }
+            step("Test that number in range allows submit") {
+                numberInput { edit { replaceText("50") } }
+                submit {
+                    click()
+                }
+            }
+            step("Verify that value has been recorded in store") {
+                messages {
+                    childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
+                }
             }
         }
     }
