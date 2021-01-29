@@ -37,7 +37,7 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
-        app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
+        app:layout_constraintBottom_toTopOf="@id/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -47,7 +47,6 @@
             android:padding="@dimen/base_margin_double">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/filledTextField"
                 style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -58,14 +57,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"
-                    android:inputType="text" />
+                    android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <Button
-        android:id="@+id/textActionSubmit"
+        android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"

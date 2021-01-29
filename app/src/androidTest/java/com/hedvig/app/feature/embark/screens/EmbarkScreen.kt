@@ -25,8 +25,10 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val textActionSingleInput = KEditText { withId(R.id.input) }
 
-    val textActionInput = KEditText { withId(R.id.input) }
     val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
+
+    val numberInput = KEditText { withId(R.id.input) }
+    val submit = KButton { withId(R.id.submit) }
 
     val upgradeApp = KButton { withId(R.id.upgradeApp) }
     val playStoreIntent = KIntent {

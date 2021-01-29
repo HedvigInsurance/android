@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
+import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -451,7 +452,8 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkSelectAction = null,
                     asEmbarkTextAction = null,
                     asEmbarkTextActionSet = null,
-                    asEmbarkPreviousInsuranceProviderAction = null
+                    asEmbarkPreviousInsuranceProviderAction = null,
+                    asEmbarkNumberAction = null,
                 )
             )
             .build()
@@ -1261,3 +1263,20 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = NumberActionBuilder(link = STANDARD_FIRST_LINK).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+

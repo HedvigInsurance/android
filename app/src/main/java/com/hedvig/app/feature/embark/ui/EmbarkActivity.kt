@@ -23,6 +23,8 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -152,6 +154,15 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             return PreviousInsurerFragment.newInstance(parameter)
         }
 
+        passage?.action?.asEmbarkNumberAction?.let { numberAction ->
+            return NumberActionFragment.newInstance(
+                NumberActionParams(
+                    numberAction.data.key,
+                    numberAction.data.link.fragments.embarkLinkFragment.name
+                )
+            )
+        }
+
         return UpgradeAppFragment.newInstance()
     }
 
@@ -172,4 +183,3 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
     }
 }
-

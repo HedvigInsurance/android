@@ -59,7 +59,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         }
         ... on EmbarkTextActionSet {
           textSetData: data {
-            link{
+            link {
               ...EmbarkLinkFragment
             }
             textActions {
@@ -87,6 +87,14 @@ query EmbarkStory($name: String!, $locale: String!) {
                   ...IconVariantsFragment
                 }
               }
+            }
+          }
+        }
+        ... on EmbarkNumberAction {
+          data {
+            key
+            link {
+              ...EmbarkLinkFragment
             }
           }
         }

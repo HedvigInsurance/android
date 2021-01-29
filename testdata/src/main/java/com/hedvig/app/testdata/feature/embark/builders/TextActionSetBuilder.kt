@@ -17,7 +17,8 @@ data class TextActionSetBuilder(
                 textActions = textActions
             )
         ),
-        asEmbarkPreviousInsuranceProviderAction = null
+        asEmbarkPreviousInsuranceProviderAction = null,
+        asEmbarkNumberAction = null,
     )
 }
 
