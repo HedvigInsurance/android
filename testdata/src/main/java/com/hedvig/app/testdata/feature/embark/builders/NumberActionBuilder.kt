@@ -15,8 +15,9 @@ data class NumberActionBuilder(
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
+        asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = EmbarkStoryQuery.AsEmbarkNumberAction(
-            data = EmbarkStoryQuery.Data2(
+            data = EmbarkStoryQuery.Data3(
                 key = key,
                 placeholder = placeholder,
                 unit = unit,
