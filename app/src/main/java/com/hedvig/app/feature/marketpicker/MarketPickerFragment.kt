@@ -24,7 +24,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
 
         binding.apply {
 
-            picker.adapter = PickerAdapter(parentFragmentManager, viewModel, marketingViewModel, tracker)
+            picker.adapter = PickerAdapter(parentFragmentManager, marketingViewModel, tracker)
             picker.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }

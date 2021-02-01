@@ -20,15 +20,14 @@ import e
 
 class PickerAdapter(
     private val parentFragmentManager: FragmentManager,
-    private val viewModel: MarketPickerViewModel,
     private val marketingViewModel: MarketingViewModel,
     private val tracker: MarketPickerTracker
 ) : ListAdapter<Model, PickerAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        MARKET -> ViewHolder.Market(parent)
-        LANGUAGE -> ViewHolder.Language(parent)
-        BUTTON -> ViewHolder.Button(parent)
+        MARKET -> ViewHolder.Market(parent, parentFragmentManager)
+        LANGUAGE -> ViewHolder.Language(parent, parentFragmentManager)
+        BUTTON -> ViewHolder.Button(parent, marketingViewModel, tracker)
         else -> throw Error("Invalid view type")
     }
 
@@ -39,38 +38,25 @@ class PickerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(
-            getItem(position),
-            parentFragmentManager,
-            viewModel,
-            marketingViewModel,
-            tracker
-        )
+        holder.bind(getItem(position))
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        abstract fun bind(
-            item: Model,
-            parentFragmentManager: FragmentManager,
-            viewModel: MarketPickerViewModel,
-            marketingViewModel: MarketingViewModel,
-            tracker: MarketPickerTracker
-        )
+        abstract fun bind(item: Model)
 
         fun invalid(data: Model) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class Market(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+        class Market(
+            parent: ViewGroup,
+            private val parentFragmentManager: FragmentManager
+        ) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+
             val binding by viewBinding(PickerLayoutBinding::bind)
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
+
+            override fun bind(item: Model) {
                 if (item !is Model.MarketModel || item.selection == null) {
                     return invalid(item)
                 }
@@ -86,15 +72,14 @@ class PickerAdapter(
             }
         }
 
-        class Language(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+        class Language(
+            parent: ViewGroup,
+            private val parentFragmentManager: FragmentManager
+        ) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+
             private val binding by viewBinding(PickerLayoutBinding::bind)
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
+
+            override fun bind(item: Model) {
                 if (item !is Model.LanguageModel || item.selection == null) {
                     return invalid(item)
                 }
@@ -112,17 +97,16 @@ class PickerAdapter(
             }
         }
 
-        class Button(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_button)) {
+        class Button(
+            parent: ViewGroup,
+            private val marketingViewModel: MarketingViewModel,
+            private val tracker: MarketPickerTracker
+        ) : ViewHolder(parent.inflate(R.layout.picker_button)) {
+
             val binding by viewBinding(PickerButtonBinding::bind)
 
             @SuppressLint("ApplySharedPref") // We need to apply this now
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
+            override fun bind(item: Model) {
                 binding.apply {
                     continueButton.setHapticClickListener {
                         tracker.submit()
