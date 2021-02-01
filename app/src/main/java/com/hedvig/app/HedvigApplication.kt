@@ -33,7 +33,7 @@ open class HedvigApplication : Application() {
     protected val apolloClient: ApolloClient by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
 
-    override fun attachBaseContext(base: Context?) {
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
 
@@ -83,6 +83,7 @@ open class HedvigApplication : Application() {
                     serviceModule,
                     repositoriesModule,
                     marketingRepositoryModule,
+                    localeBroadcastManagerModule,
                     trackerModule,
                     marketPickerTrackerModule,
                     whatsNewModule,

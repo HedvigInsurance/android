@@ -58,6 +58,8 @@ import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.LanguageRepository
+import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
+import com.hedvig.app.feature.marketpicker.LocaleBroadcastManagerImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
@@ -274,7 +276,7 @@ val onboardingModule = module {
 }
 
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
 }
 
 val loggedInModule = module {
@@ -366,9 +368,9 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get(), get()) }
-    single { LanguageRepository(get()) }
+    single { LanguageRepository(get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get()) }
-    single { MarketRepository(get()) }
+    single { MarketRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -398,6 +400,10 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+}
+
+val localeBroadcastManagerModule = module {
+    single<LocaleBroadcastManager> { LocaleBroadcastManagerImpl(get()) }
 }
 
 val marketPickerTrackerModule = module {
