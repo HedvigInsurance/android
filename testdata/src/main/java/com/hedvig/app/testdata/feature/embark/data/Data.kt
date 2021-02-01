@@ -500,19 +500,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.ALWAYS,
-                            text = "Unary true test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                text = "Unary true test"
+                            ).build()
+                        )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.NEVER,
-                            text = "Unary false test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NEVER,
+                                text = "Unary false test"
+                            ).build()
+                        )
                     ).build()
                 )
             )
@@ -1271,6 +1271,7 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
                 action = NumberActionBuilder(
                     unit = "other people",
                     placeholder = "1",
+                    label = "Co-insured",
                     maxValue = 75,
                     minValue = 1,
                     link = STANDARD_FIRST_LINK,

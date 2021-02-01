@@ -38,8 +38,9 @@ class NumberActionTest : TestCase() {
                     isDisabled()
                     hasText("Another test passage")
                 }
-                unit { hasText("other people") }
+                unit { hasText("other people") } // TODO: Replace with helper text from `TextInputLayout`
                 numberInput {
+                    hasHint("Co-insured")
                     hasPlaceholderText("1")
                 }
             }

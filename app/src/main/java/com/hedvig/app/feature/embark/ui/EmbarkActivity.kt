@@ -160,6 +160,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     numberAction.key,
                     numberAction.placeholder,
                     numberAction.unit,
+                    numberAction.label,
                     numberAction.maxValue,
                     numberAction.minValue,
                     numberAction.link.fragments.embarkLinkFragment.name,

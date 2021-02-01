@@ -54,6 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:expandedHintEnabled="false"
+                tools:hint="Co-insured"
                 tools:placeholderText="1">
 
                 <com.google.android.material.textfield.TextInputEditText
