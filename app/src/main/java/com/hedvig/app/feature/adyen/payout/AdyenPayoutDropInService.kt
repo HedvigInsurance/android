@@ -3,6 +3,7 @@ package com.hedvig.app.feature.adyen.payout
 import com.adyen.checkout.dropin.service.CallResult
 import com.adyen.checkout.dropin.service.DropInService
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,6 +14,7 @@ import kotlin.coroutines.CoroutineContext
 
 class AdyenPayoutDropInService : DropInService(), CoroutineScope {
     private val adyenRepository: AdyenRepository by inject()
+    private val paymentRepository: PaymentRepository by inject()
 
     private val coroutineJob = Job()
     override val coroutineContext: CoroutineContext
@@ -57,8 +59,11 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
                 return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
             }
 
-            result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
-                return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
+            result.asTokenizationResponseFinished?.let { finishedResponse ->
+                finishedResponse.activePayoutMethods?.status?.let { status ->
+                    runCatching { paymentRepository.writeActivePayoutMethodStatus(status) }
+                }
+                return@runBlocking CallResult(CallResult.ResultType.FINISHED, finishedResponse.resultCode)
             }
 
             CallResult(CallResult.ResultType.ERROR, "Unknown error")
