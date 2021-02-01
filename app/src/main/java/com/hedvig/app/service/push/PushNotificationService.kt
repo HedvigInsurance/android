@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 class PushNotificationService : FirebaseMessagingService() {
     private val paymentNotificationManager: PaymentNotificationManager by inject()
 
-    override fun attachBaseContext(base: Context?) {
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(Language.fromSettings(base)?.apply(base))
     }
 

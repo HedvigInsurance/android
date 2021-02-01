@@ -7,11 +7,13 @@ import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
 
-class MockMarketPickerViewModel(
-    private val context: Context
-) : MarketPickerViewModel(context) {
+class MockMarketPickerViewModel(context: Context): MarketPickerViewModel() {
 
     override fun uploadLanguage() {
+    }
+
+    override fun submitLanguageAndReload(market: Market?, language: Language) {
+        _pickerSate.value = PickerState(market ?: pickerState.value?.market, language)
     }
 
     init {

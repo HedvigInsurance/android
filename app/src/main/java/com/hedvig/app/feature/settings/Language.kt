@@ -19,7 +19,7 @@ enum class Language {
     DA_DK,
     EN_DK;
 
-    fun apply(context: Context?): Context? {
+    fun apply(context: Context): Context {
         val locale = into()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             apply(context, locale)
@@ -29,15 +29,12 @@ enum class Language {
     }
 
     @Suppress("DEPRECATION")
-    private fun applySingleLocale(context: Context?, locale: LocaleWrapper): Context? {
+    private fun applySingleLocale(context: Context, locale: LocaleWrapper): Context {
         if (locale !is LocaleWrapper.SingleLocale) {
             throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")
         }
         val unwrappedLocale = locale.locale
         Locale.setDefault(unwrappedLocale)
-        if (context == null) {
-            return null
-        }
 
         val config = Configuration(context.resources.configuration)
         config.setLocale(unwrappedLocale)
@@ -46,20 +43,17 @@ enum class Language {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    private fun apply(context: Context?, locale: LocaleWrapper): Context? {
-        when (locale) {
+    private fun apply(context: Context, locale: LocaleWrapper): Context {
+        return when (locale) {
             is LocaleWrapper.SingleLocale -> {
-                return applySingleLocale(context, locale)
+                applySingleLocale(context, locale)
             }
             is LocaleWrapper.MultipleLocales -> {
                 val locales = locale.locales
                 LocaleList.setDefault(locales)
-                if (context == null) {
-                    return null
-                }
                 val config = Configuration(context.resources.configuration)
                 config.setLocales(locales)
-                return context.createConfigurationContext(config)
+                context.createConfigurationContext(config)
             }
         }
     }

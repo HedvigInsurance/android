@@ -34,7 +34,9 @@ abstract class BaseActivity : AppCompatActivity {
     private var localeListener = LocaleListener()
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(Language.fromSettings(newBase)?.apply(newBase))
+        if (newBase != null) {
+            super.attachBaseContext(Language.fromSettings(newBase)?.apply(newBase))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
