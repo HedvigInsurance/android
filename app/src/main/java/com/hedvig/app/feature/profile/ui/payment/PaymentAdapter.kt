@@ -19,6 +19,7 @@ import com.hedvig.app.databinding.PaymentHistoryItemBinding
 import com.hedvig.app.databinding.PaymentHistoryLinkBinding
 import com.hedvig.app.databinding.PaymentRedeemCodeBinding
 import com.hedvig.app.databinding.PayoutConnectionStatusBinding
+import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
@@ -411,12 +412,26 @@ class PaymentAdapter(
 
         class PayoutDetailsParagraph(parent: ViewGroup) :
             PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
+            private val binding by viewBinding(PayoutDetailsParagraphBinding::bind)
             override fun bind(
                 data: PaymentModel,
                 marketProvider: MarketProvider,
                 fragmentManager: FragmentManager,
                 tracker: PaymentTracker,
-            ) = Unit
+            ) = with(binding) {
+                if (data !is PaymentModel.PayoutDetailsParagraph) {
+                    return invalid(data)
+                }
+
+                when (data.status) {
+                    PayoutMethodStatus.ACTIVE -> root.setText(R.string.payment_screen_pay_out_connected_payout_footer_connected)
+                    PayoutMethodStatus.NEEDS_SETUP -> root.setText(R.string.payment_screen_pay_out_footer_not_connected)
+                    PayoutMethodStatus.PENDING -> root.setText(R.string.payment_screen_pay_out_footer_pending)
+                    else -> {
+                        root.text = ""
+                    }
+                }
+            }
         }
 
         class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {

@@ -3,6 +3,7 @@ package com.hedvig.app.feature.payment
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
@@ -55,6 +56,9 @@ class AdyenPayoutNotConnectedTest : TestCase() {
             recycler {
                 childAt<PaymentScreen.Link>(4) {
                     click()
+                }
+                childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
+                    text { hasText(R.string.payment_screen_pay_out_footer_not_connected) }
                 }
             }
             adyenConnectPayout { intended() }

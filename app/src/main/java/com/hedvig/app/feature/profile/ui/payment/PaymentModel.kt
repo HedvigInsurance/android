@@ -36,7 +36,7 @@ sealed class PaymentModel {
         val status: PayoutMethodStatus,
     ) : PaymentModel()
 
-    object PayoutDetailsParagraph : PaymentModel()
+    data class PayoutDetailsParagraph(val status: PayoutMethodStatus) : PaymentModel()
 
     sealed class Link : PaymentModel() {
         object RedeemDiscountCode : Link()

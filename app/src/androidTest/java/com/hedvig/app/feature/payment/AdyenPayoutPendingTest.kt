@@ -59,6 +59,9 @@ class AdyenPayoutPendingTest : TestCase() {
                         hasText(R.string.payment_screen_bank_account_processing)
                     }
                 }
+                childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
+                    text { hasText(R.string.payment_screen_pay_out_footer_pending) }
+                }
                 childAt<PaymentScreen.Link>(6) {
                     click()
                 }
