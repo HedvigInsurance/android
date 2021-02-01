@@ -48,13 +48,12 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/filledTextField"
-                style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
+                style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input"
-                    style="@style/ThemeOverlay.Hedvig.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"

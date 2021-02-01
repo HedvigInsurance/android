@@ -50,31 +50,22 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputContainer"
-                style="@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox"
+                style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:expandedHintEnabled="false"
+                tools:helperText="other people"
                 tools:hint="Co-insured"
                 tools:placeholderText="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input"
-                    style="@style/ThemeOverlay.Hedvig.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/unit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_half"
-                android:textAppearance="?textAppearanceCaption"
-                tools:text="Other people" />
 
         </LinearLayout>
 
