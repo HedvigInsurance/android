@@ -83,17 +83,17 @@ class UnknownGeoTest : TestCase() {
 
         onScreen<MarketPickerScreen> {
             picker {
-                childAt<MarketPickerScreen.Picker>(2) {
+                childAt<MarketPickerScreen.MarketButton>(2) {
                     click()
                 }
             }
             marketPicker {
-                childAt<MarketPickerScreen.Market>(0) {
+                childAt<MarketPickerScreen.MarketButton>(0) {
                     click()
                 }
             }
             picker {
-                childAt<MarketPickerScreen.Picker>(1) {
+                childAt<MarketPickerScreen.MarketButton>(1) {
                     click()
                 }
             }

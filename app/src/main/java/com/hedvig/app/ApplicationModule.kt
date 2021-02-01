@@ -13,9 +13,9 @@ import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
-import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -284,7 +284,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
 }
 
 val offerModule = module {
@@ -340,12 +340,15 @@ val serviceModule = module {
     single { DeviceInformationService(get()) }
 }
 
+val marketingRepositoryModule = module {
+    single { MarketingRepository(get(), get()) }
+}
+
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
     single { InsuranceRepository(get(), get()) }
-    single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single {
         RedeemReferralCodeRepository(
