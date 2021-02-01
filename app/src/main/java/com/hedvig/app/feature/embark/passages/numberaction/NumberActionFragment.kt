@@ -26,8 +26,8 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
         }
         with(binding) {
             inputContainer.placeholderText = data.placeholder
-            inputContainer.hint = data.label
-            data.unit?.let { unit.text = it }
+            data.label?.let { inputContainer.hint = it }
+            data.unit?.let { inputContainer.helperText = it }
             input.doOnTextChanged { text, _, _, _ ->
                 submit.isEnabled = isValid(text, data.maxValue, data.minValue)
             }

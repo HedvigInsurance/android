@@ -11,6 +11,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.hasHelperText
 import com.hedvig.app.util.hasPlaceholderText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -38,10 +39,10 @@ class NumberActionTest : TestCase() {
                     isDisabled()
                     hasText("Another test passage")
                 }
-                unit { hasText("other people") } // TODO: Replace with helper text from `TextInputLayout`
                 numberInput {
                     hasHint("Co-insured")
                     hasPlaceholderText("1")
+                    hasHelperText("other people")
                 }
             }
             step("Test that lower bound does not allow submit") {
