@@ -1,24 +1,22 @@
 package com.hedvig.app.feature.embark.messages
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class UnaryExpressionTest {
+class UnaryExpressionTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
@@ -29,10 +27,10 @@ class UnaryExpressionTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldFilterOutMessagesWithExpressionTypeNever() {
-        activityRule.launchActivity(
+    fun shouldFilterOutMessagesWithExpressionTypeNever() = run {
+        activityRule.launch(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
+                context(),
                 this.javaClass.name
             )
         )
