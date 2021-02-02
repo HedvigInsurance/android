@@ -175,7 +175,7 @@ dependencies {
     implementation("androidx.media:media:1.2.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("com.google.android.material:material:1.2.1")
+    implementation("com.google.android.material:material:1.3.0-rc01")
     implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
     implementation("androidx.preference:preference-ktx:1.1.1")
     implementation("androidx.core:core-ktx:1.3.2")

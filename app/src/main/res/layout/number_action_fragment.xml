@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".feature.embark.passages.numberaction.NumberActionFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"
@@ -37,39 +38,51 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
-        app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
+        app:layout_constraintBottom_toTopOf="@id/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="@dimen/base_margin_double">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/filledTextField"
+                android:id="@+id/inputContainer"
                 style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:expandedHintEnabled="false"
+                tools:helperText="other people"
+                tools:hint="Co-insured"
+                tools:placeholderText="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"
-                    android:inputType="text" />
+                    android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
-        </FrameLayout>
+
+        </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
     <Button
-        android:id="@+id/textActionSubmit"
-        android:layout_width="wrap_content"
+        android:id="@+id/submit"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Continue" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

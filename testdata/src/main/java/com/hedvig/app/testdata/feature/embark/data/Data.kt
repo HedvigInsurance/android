@@ -11,6 +11,7 @@ import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
+import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -451,7 +452,8 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkSelectAction = null,
                     asEmbarkTextAction = null,
                     asEmbarkTextActionSet = null,
-                    asEmbarkPreviousInsuranceProviderAction = null
+                    asEmbarkPreviousInsuranceProviderAction = null,
+                    asEmbarkNumberAction = null,
                 )
             )
             .build()
@@ -498,19 +500,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.ALWAYS,
-                            text = "Unary true test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                text = "Unary true test"
+                            ).build()
+                        )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.NEVER,
-                            text = "Unary false test"
-                        ).build()
-                    )
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NEVER,
+                                text = "Unary false test"
+                            ).build()
+                        )
                     ).build()
                 )
             )
@@ -1261,3 +1263,27 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = NumberActionBuilder(
+                    unit = "other people",
+                    placeholder = "1",
+                    label = "Co-insured",
+                    maxValue = 75,
+                    minValue = 1,
+                    link = STANDARD_FIRST_LINK,
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+

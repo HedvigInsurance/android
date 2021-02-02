@@ -22,7 +22,8 @@ data class TextActionBuilder(
             )
         ),
         asEmbarkTextActionSet = null,
-        asEmbarkPreviousInsuranceProviderAction = null
+        asEmbarkPreviousInsuranceProviderAction = null,
+        asEmbarkNumberAction = null,
     )
 
     companion object {

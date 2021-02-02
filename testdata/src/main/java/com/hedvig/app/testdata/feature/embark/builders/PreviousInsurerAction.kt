@@ -6,7 +6,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class PreviousInsurerAction(
     val storeKey: String = "BAR",
-    val next: EmbarkLinkFragment
+    val next: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
@@ -54,8 +54,10 @@ data class PreviousInsurerAction(
                 ),
                 storeKey = storeKey,
                 next = EmbarkStoryQuery.Next(fragments = EmbarkStoryQuery.Next.Fragments(next)),
-                skip = EmbarkStoryQuery.Skip(fragments = EmbarkStoryQuery.Skip.Fragments(EmbarkLinkFragment(name = "test_skip", label = "Skip"))),
+                skip = EmbarkStoryQuery.Skip(fragments = EmbarkStoryQuery.Skip.Fragments(EmbarkLinkFragment(name = "test_skip",
+                    label = "Skip"))),
             )
-        )
+        ),
+        asEmbarkNumberAction = null,
     )
 }

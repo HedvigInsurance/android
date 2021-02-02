@@ -29,17 +29,30 @@
     </style>
 
     <style name="Hedvig.Theme.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">
-            @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
         </item>
     </style>
 
-    <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="boxBackgroundColor">?colorSurface</item>
-        <item name="android:textColor">?colorPrimary</item>
+    <style name="Hedvig.Theme.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
+        </item>
+        <item name="boxBackgroundColor">@null</item>
+        <item name="android:textColorHint">?android:textColorPrimary</item>
+        <item name="hintTextColor">?android:textColorPrimary</item>
+        <item name="helperTextTextColor">?android:textColorPrimary</item>
+        <item name="boxStrokeColor">?colorPrimary</item>
     </style>
 
-    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="Widget.AppCompat.EditText">
+    <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="">
+        <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText.FilledBox</item>
+    </style>
+
+    <style name="Hedvig.Theme.TextInputEditText.FilledBox" parent="Widget.MaterialComponents.TextInputEditText.FilledBox">
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="">
         <item name="android:textColor">?colorPrimary</item>
     </style>
 

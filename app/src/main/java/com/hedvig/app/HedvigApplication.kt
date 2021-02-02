@@ -93,6 +93,7 @@ open class HedvigApplication : Application() {
                     marketPickerModule,
                     moreOptionsModule,
                     textActionSetModule,
+                    numberActionModule,
                     choosePlanModule,
                 )
             )

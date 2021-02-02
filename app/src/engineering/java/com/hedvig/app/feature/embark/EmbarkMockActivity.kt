@@ -23,6 +23,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUAL
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_OR_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
@@ -74,6 +75,14 @@ class EmbarkMockActivity : MockActivity() {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
+            }
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
+        }
+        header("Number Action")
+        clickableItem("Regular") {
+            MockEmbarkViewModel.apply {
+                shouldLoad = true
+                mockedData = STORY_WITH_NUMBER_ACTION
             }
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
