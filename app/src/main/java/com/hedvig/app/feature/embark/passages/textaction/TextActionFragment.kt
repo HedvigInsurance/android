@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
 import com.hedvig.app.feature.embark.BIRTH_DATE
@@ -23,6 +22,7 @@ import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -91,7 +91,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                     animateResponse(response, responseText)
                 }
                 .onEach { model.navigateToPassage(data.link) }
-                .launchIn(lifecycleScope)
+                .launchIn(viewLifecycleScope)
         }
     }
 

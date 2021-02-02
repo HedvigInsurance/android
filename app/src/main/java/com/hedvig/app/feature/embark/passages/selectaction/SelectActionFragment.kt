@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -12,6 +11,7 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -37,7 +37,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                 view.hapticClicks()
                     .mapLatest { onActionSelected(selectAction, data, response) }
                     .onEach { model.navigateToPassage(selectAction.link) }
-                    .launchIn(lifecycleScope)
+                    .launchIn(viewLifecycleScope)
             }.apply {
                 submitList(data.actions)
             }
@@ -45,7 +45,11 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         }
     }
 
-    private suspend fun onActionSelected(selectAction: SelectActionParameter.SelectAction, data: SelectActionParameter, response: TextView) {
+    private suspend fun onActionSelected(
+        selectAction: SelectActionParameter.SelectAction,
+        data: SelectActionParameter,
+        response: TextView,
+    ) {
         selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
             model.putInStore(key, value)
         }

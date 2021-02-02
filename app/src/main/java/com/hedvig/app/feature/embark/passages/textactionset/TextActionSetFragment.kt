@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.passages.textactionset
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -12,6 +11,7 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +42,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
                 .onEach {
                     model.navigateToPassage(data.link)
                 }
-                .launchIn(lifecycleScope)
+                .launchIn(viewLifecycleScope)
         }
     }
 
