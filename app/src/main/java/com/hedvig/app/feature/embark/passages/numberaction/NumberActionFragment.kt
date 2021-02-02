@@ -30,7 +30,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
             data.label?.let { inputContainer.hint = it }
             data.unit?.let { inputContainer.helperText = it }
             input.doOnTextChanged { text, _, _, _ ->
-                text?.toString()?.toIntOrNull()?.let { numberActionViewModel.validate(it) }
+                numberActionViewModel.validate(text)
             }
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
             submit.text = data.submitLabel
