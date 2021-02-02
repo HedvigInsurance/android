@@ -37,11 +37,10 @@
         <item name="materialThemeOverlay">
             @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
         </item>
-        <item name="boxBackgroundColor">@null</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
         <item name="android:textColorHint">?android:textColorPrimary</item>
         <item name="hintTextColor">?android:textColorPrimary</item>
         <item name="helperTextTextColor">?android:textColorPrimary</item>
-        <item name="boxStrokeColor">?colorPrimary</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="">
@@ -50,6 +49,7 @@
 
     <style name="Hedvig.Theme.TextInputEditText.FilledBox" parent="Widget.MaterialComponents.TextInputEditText.FilledBox">
         <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="">
