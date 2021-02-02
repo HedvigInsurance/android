@@ -3,19 +3,16 @@ package com.hedvig.app.feature.embark.passages.textactionset
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 
-class TextActionSetViewModel : ViewModel() {
-    private val _isValid = MutableLiveData<HashMap<Int, Boolean>>(hashMapOf())
-    val isValid: LiveData<HashMap<Int, Boolean>> = _isValid
-
-    private val _inputs = MutableLiveData<Map<Int, String>>()
-    val inputs: LiveData<Map<Int, String>> = _inputs
-
-    fun initializeInputs(data: TextActionSetData) {
-        if (_inputs.value == null) {
-            _inputs.value = (0..data.keys.size).map { Pair(it, "") }.toMap()
-        }
+class TextActionSetViewModel(data: TextActionSetParameter) : ViewModel() {
+    private val _isValid = MutableLiveData((data.keys.indices).map { Pair(it, false) }.toMap())
+    val isValid = _isValid.map { iv ->
+        iv.values.all { it }
     }
+
+    private val _inputs = MutableLiveData(data.keys.indices.map { Pair(it, "") }.toMap())
+    val inputs: LiveData<Map<Int, String>> = _inputs
 
     fun setInputValue(index: Int, value: String) {
         _inputs.value?.let { ipts ->
@@ -24,12 +21,8 @@ class TextActionSetViewModel : ViewModel() {
     }
 
     fun updateIsValid(position: Int, isValid: Boolean) {
-        val old = _isValid.value
-        old?.put(position, isValid)
-        _isValid.postValue(old)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
+        val new = _isValid.value?.toMutableMap()
+        new?.put(position, isValid)
+        _isValid.postValue(new)
     }
 }
