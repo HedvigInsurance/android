@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -24,6 +25,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
+            messages.adapter = MessageAdapter(data.messages)
             inputContainer.placeholderText = data.placeholder
             data.label?.let { inputContainer.hint = it }
             data.unit?.let { inputContainer.helperText = it }
