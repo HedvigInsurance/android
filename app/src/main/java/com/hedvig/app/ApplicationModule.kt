@@ -30,6 +30,8 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetViewModel
@@ -327,6 +329,10 @@ val moreOptionsModule = module {
 
 val textActionSetModule = module {
     viewModel { TextActionSetViewModel() }
+}
+
+val numberActionModule = module {
+    viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
 val referralsModule = module {
