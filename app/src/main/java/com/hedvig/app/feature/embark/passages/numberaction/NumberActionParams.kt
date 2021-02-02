@@ -6,6 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class NumberActionParams(
     val messages: List<String>,
+    val passageName: String,
     val key: String,
     val placeholder: String,
     val unit: String?,
