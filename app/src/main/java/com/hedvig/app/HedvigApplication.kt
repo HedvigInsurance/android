@@ -95,6 +95,7 @@ open class HedvigApplication : Application() {
                     textActionSetModule,
                     numberActionModule,
                     choosePlanModule,
+                    clockModule,
                 )
             )
         }
