@@ -26,6 +26,7 @@ class EmbarkRepository(
         .newCall(
             Request.Builder()
                 .url(application.graphqlUrl)
+                .header("Content-Type", "application/json")
                 .post(jsonObjectOfNotNull(
                     "query" to query,
                     variables?.let { "variables" to variables }

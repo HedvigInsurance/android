@@ -8,8 +8,14 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.feature.embark.passages.MessageAdapter
+import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewLifecycleScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -24,18 +30,28 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
+            messages.adapter = MessageAdapter(data.messages)
             inputContainer.placeholderText = data.placeholder
             data.label?.let { inputContainer.hint = it }
             data.unit?.let { inputContainer.helperText = it }
             input.doOnTextChanged { text, _, _, _ ->
-                text?.toString()?.toIntOrNull()?.let { numberActionViewModel.validate(it) }
+                numberActionViewModel.validate(text)
             }
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
             submit.text = data.submitLabel
-            submit.setHapticClickListener {
-                model.putInStore(data.key, input.text.toString())
-                model.navigateToPassage(data.link)
-            }
+            submit
+                .hapticClicks()
+                .mapLatest {
+                    val inputText = input.text.toString()
+                    model.putInStore("${data.passageName}Result", inputText)
+                    model.putInStore(data.key, inputText)
+                    val responseText = model.preProcessResponse(data.passageName) ?: inputText
+                    animateResponse(response, responseText)
+                }
+                .onEach {
+                    model.navigateToPassage(data.link)
+                }
+                .launchIn(viewLifecycleScope)
         }
     }
 

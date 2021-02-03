@@ -15,6 +15,8 @@ import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
@@ -23,8 +25,6 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -157,6 +157,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         passage?.action?.asEmbarkNumberAction?.data?.let { numberAction ->
             return NumberActionFragment.newInstance(
                 NumberActionParams(
+                    passage.messages.map { it.fragments.messageFragment.text },
+                    passage.name,
                     numberAction.key,
                     numberAction.placeholder,
                     numberAction.unit,

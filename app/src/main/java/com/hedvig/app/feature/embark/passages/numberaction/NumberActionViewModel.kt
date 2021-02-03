@@ -10,19 +10,24 @@ class NumberActionViewModel(
     private val _valid = MutableLiveData(false)
     val valid: LiveData<Boolean> = _valid
 
-    fun validate(number: Int) {
-        _valid.value = isValid(number)
+    fun validate(input: CharSequence?) {
+        _valid.value = when {
+            input?.toString()?.toIntOrNull() != null -> {
+                isValid(input.toString().toInt())
+            }
+            else -> false
+        }
     }
 
     private fun isValid(number: Int) = when {
         data.minValue != null && data.maxValue != null -> {
-            number in data.minValue until data.maxValue
+            number in data.minValue..data.maxValue
         }
         data.maxValue != null -> {
-            number < data.maxValue
+            number <= data.maxValue
         }
         data.minValue != null -> {
-            number > data.minValue
+            number >= data.minValue
         }
         else -> true
     }

@@ -57,6 +57,12 @@ class NumberActionTest : TestCase() {
                 numberInput { edit { replaceText("100") } }
                 submit { isDisabled() }
             }
+            step("Moving from valid to empty does not allow submit") {
+                numberInput { edit { replaceText("50") } }
+                submit { isEnabled() }
+                numberInput { edit { replaceText("") } }
+                submit { isDisabled() }
+            }
             step("Test that number in range allows submit") {
                 numberInput { edit { replaceText("50") } }
                 submit {

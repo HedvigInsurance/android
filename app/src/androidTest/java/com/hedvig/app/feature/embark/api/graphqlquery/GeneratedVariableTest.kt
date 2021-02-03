@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.api.graphqlquery
 
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
@@ -10,6 +9,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_
 import com.hedvig.app.testdata.feature.embark.data.VARIABLE_QUERY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.StringContainsUUIDMatcher.Companion.containsUUID
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.jsonObjectOf
@@ -19,7 +19,7 @@ import org.junit.Test
 
 class GeneratedVariableTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(EmbarkActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
@@ -36,7 +36,7 @@ class GeneratedVariableTest : TestCase() {
 
     @Test
     fun shouldCallGraphQLApiWithVariable() = run {
-        activityRule.launchActivity(
+        activityRule.launch(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),
                 this.javaClass.name
