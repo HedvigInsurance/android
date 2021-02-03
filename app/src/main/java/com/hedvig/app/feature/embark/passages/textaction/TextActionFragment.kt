@@ -13,6 +13,8 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
 import com.hedvig.app.feature.embark.PERSONAL_NUMBER
 import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
+import com.hedvig.app.feature.embark.masking.derivedValues
+import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
@@ -27,11 +29,15 @@ import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import java.time.Clock
 
 class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     private val model: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentEmbarkTextActionBinding::bind)
+
+    private val clock: Clock by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,17 +49,21 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
             return
         }
 
-        if (data.mask != null) {
-            if (!(data.mask == PERSONAL_NUMBER ||
-                    data.mask == SWEDISH_POSTAL_CODE ||
-                    data.mask == EMAIL ||
-                    data.mask == BIRTH_DATE ||
-                    data.mask == BIRTH_DATE_REVERSE ||
-                    data.mask == NORWEGIAN_POSTAL_CODE)
-            ) {
+        when (data.mask) {
+            PERSONAL_NUMBER,
+            SWEDISH_POSTAL_CODE,
+            EMAIL,
+            BIRTH_DATE,
+            BIRTH_DATE_REVERSE,
+            NORWEGIAN_POSTAL_CODE,
+            null,
+            -> {
+            }
+            else -> {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
                     .commit()
+                return
             }
         }
 
@@ -85,8 +95,12 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                 .mapLatest {
                     textActionSubmit.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     val inputText = input.text.toString()
-                    model.putInStore("${data.passageName}Result", inputText)
-                    model.putInStore(data.key, inputText)
+                    val unmasked = unmask(inputText, data.mask)
+                    model.putInStore("${data.passageName}Result", unmasked)
+                    model.putInStore(data.key, unmasked)
+                    derivedValues(unmasked, data.key, data.mask, clock).forEach { (key, value) ->
+                        model.putInStore(key, value)
+                    }
                     val responseText = model.preProcessResponse(data.passageName) ?: inputText
                     animateResponse(response, responseText)
                 }

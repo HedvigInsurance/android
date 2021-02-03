@@ -319,8 +319,8 @@ val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
-                MessageBuilder("{BAR} was entered")
-                    .build()
+                MessageBuilder("{BAR} was entered. {BAR.Age} was derived.")
+                    .build(),
             )
         ).build()
     )
