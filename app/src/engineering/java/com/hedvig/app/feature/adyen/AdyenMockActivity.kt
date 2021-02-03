@@ -6,22 +6,22 @@ import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketProviderModule
-import com.hedvig.app.mocks.MockMarketProvider
+import com.hedvig.app.marketManagerModule
+import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.util.extensions.makeToast
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class AdyenMockActivity : MockActivity() {
-    private val marketProvider = MockMarketProvider()
-    override val original = listOf(adyenModule, marketProviderModule)
+    private val marketManager = MockMarketManager()
+    override val original = listOf(adyenModule, marketManagerModule)
     override val mocks = listOf(
         module {
             viewModel<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
             viewModel<AdyenConnectPayoutViewModel> { MockAdyenConnectPayoutViewModel() }
-            single<MarketProvider> { marketProvider }
+            single<MarketManager> { marketManager }
         }
     )
 
@@ -29,7 +29,7 @@ class AdyenMockActivity : MockActivity() {
         header("Adyen Connect Payment Screen")
         clickableItem("Not Post-Sign") {
             val currency = runCatching {
-                AdyenCurrency.fromMarket(marketProvider.market!!)
+                AdyenCurrency.fromMarket(marketManager.market!!)
             }
 
             if (currency.isFailure) {
@@ -45,7 +45,7 @@ class AdyenMockActivity : MockActivity() {
         }
         clickableItem("Post-Sign") {
             val currency = runCatching {
-                AdyenCurrency.fromMarket(marketProvider.market!!)
+                AdyenCurrency.fromMarket(marketManager.market!!)
             }
 
             if (currency.isFailure) {
@@ -63,7 +63,7 @@ class AdyenMockActivity : MockActivity() {
         header("Adyen Connect Payout Screen")
         clickableItem("Open") {
             val currency = runCatching {
-                AdyenCurrency.fromMarket(marketProvider.market!!)
+                AdyenCurrency.fromMarket(marketManager.market!!)
             }
 
             if (currency.isFailure) {
@@ -78,6 +78,6 @@ class AdyenMockActivity : MockActivity() {
             )
         }
         header("Market")
-        marketSpinner { MockMarketProvider.mockedMarket = it }
+        marketSpinner { MockMarketManager.mockedMarket = it }
     }
 }

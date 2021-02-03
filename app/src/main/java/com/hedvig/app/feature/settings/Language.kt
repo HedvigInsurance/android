@@ -7,8 +7,6 @@ import android.os.Build
 import android.os.LocaleList
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.util.extensions.getMarket
 import java.util.Locale
 
 enum class Language {
@@ -86,7 +84,7 @@ enum class Language {
     }
 
     companion object {
-        private const val SETTING_SYSTEM_DEFAULT = "system_default"
+        const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
         const val SETTING_EN_SE = "en-SE"
         const val SETTING_NB_NO = "nb-NO"
@@ -104,23 +102,21 @@ enum class Language {
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
-        fun fromSettings(context: Context?): Language? {
-            if (context == null) {
-                return null
-            }
+        fun fromSettings(context: Context, market: Market?): Language = when (market) {
+            null -> from(SETTING_EN_SE)
+            else -> getLanguageFromSharedPreferences(context, market)
+        }
+
+        private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val market = context.getMarket()
-            if (market != null) {
-                val selectedLanguage = sharedPref
-                    .getString("language", getAvailableLanguages(market).first().toString())
-                    ?: getAvailableLanguages(market).first().toString()
-                return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
-                    from(getAvailableLanguages(market).first().toString())
-                } else {
-                    from(selectedLanguage)
-                }
+            val firstAvailableLanguage = getAvailableLanguages(market).first().toString()
+            val selectedLanguage = sharedPref.getString("language", firstAvailableLanguage) ?: firstAvailableLanguage
+
+            return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
+                from(firstAvailableLanguage)
+            } else {
+                from(selectedLanguage)
             }
-            return from(SETTING_EN_SE)
         }
 
         fun getAvailableLanguages(market: Market): List<Language> {

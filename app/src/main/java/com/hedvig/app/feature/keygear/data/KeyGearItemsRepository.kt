@@ -19,6 +19,7 @@ import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.ApolloClientWrapper
@@ -37,13 +38,14 @@ import java.util.UUID
 class KeyGearItemsRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
     private val fileService: FileService,
-    private val context: Context,
+    private val defaultLocale: Locale,
+    private val context: Context
 ) {
     private lateinit var keyGearItemsQuery: KeyGearItemsQuery
     private lateinit var keyGearItemQuery: KeyGearItemQuery
 
     fun keyGearItems(): Flow<Response<KeyGearItemsQuery.Data>> {
-        keyGearItemsQuery = KeyGearItemsQuery(defaultLocale(context).toLocaleString())
+        keyGearItemsQuery = KeyGearItemsQuery(defaultLocale.toLocaleString())
 
         return apolloClientWrapper
             .apolloClient
@@ -53,7 +55,7 @@ class KeyGearItemsRepository(
     }
 
     fun keyGearItem(id: String): Flow<Response<KeyGearItemQuery.Data>> {
-        keyGearItemQuery = KeyGearItemQuery(id, defaultLocale(context).toLocaleString())
+        keyGearItemQuery = KeyGearItemQuery(id, defaultLocale.toLocaleString())
 
         return apolloClientWrapper
             .apolloClient
@@ -154,7 +156,7 @@ class KeyGearItemsRepository(
         val mutation = CreateKeyGearItemMutation(
             category = category,
             photos = files,
-            languageCode = defaultLocale(context).toLocaleString(),
+            languageCode = defaultLocale.toLocaleString(),
             physicalReferenceHash = Input.fromNullable(physicalReferenceHash),
             name = Input.fromNullable(name)
         )
@@ -238,7 +240,7 @@ class KeyGearItemsRepository(
                         itemId = itemId,
                         file = s3file
                     ),
-                    defaultLocale(context).toLocaleString()
+                    defaultLocale.toLocaleString()
                 )
             )
             .await()

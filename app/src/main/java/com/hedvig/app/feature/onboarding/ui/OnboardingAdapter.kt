@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.PlanCardBinding
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingDiffUtilCallback
 import com.hedvig.app.feature.onboarding.OnboardingModel
@@ -30,7 +30,7 @@ import com.hedvig.app.util.invalidData
 
 class OnboardingAdapter(
     val viewModel: ChoosePlanViewModel,
-    val marketProvider: MarketProvider
+    val marketProvider: MarketManager
 ) :
     ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(OnboardingDiffUtilCallback()) {
 
@@ -53,17 +53,17 @@ class OnboardingAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
-            item: OnboardingModel,
-            viewModel: ChoosePlanViewModel,
-            marketProvider: MarketProvider,
+                item: OnboardingModel,
+                viewModel: ChoosePlanViewModel,
+                marketProvider: MarketManager,
         )
 
         class QuoteType(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.plan_card)) {
             private val binding by viewBinding(PlanCardBinding::bind)
             override fun bind(
-                item: OnboardingModel,
-                viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider,
+                    item: OnboardingModel,
+                    viewModel: ChoosePlanViewModel,
+                    marketProvider: MarketManager,
             ) {
                 if (item !is OnboardingModel.Bundle) {
                     invalidData(item)
@@ -146,7 +146,7 @@ class OnboardingAdapter(
             override fun bind(
                 item: OnboardingModel,
                 viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider
+                marketProvider: MarketManager
             ) {
                 binding.retry.setHapticClickListener { viewModel.load() }
             }

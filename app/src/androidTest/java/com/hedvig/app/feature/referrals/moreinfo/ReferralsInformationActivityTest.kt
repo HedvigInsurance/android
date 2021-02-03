@@ -11,6 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -59,7 +60,7 @@ class ReferralsInformationActivityTest : TestCase() {
         onScreen<ReferralsInformationScreen> {
             body {
                 containsText(
-                    Money.of(10, "SEK").format(context())
+                    Money.of(10, "SEK").format(context(), Market.SE)
                 )
             }
             termsAndConditions { click() }

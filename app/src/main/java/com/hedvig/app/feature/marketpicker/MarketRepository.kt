@@ -1,21 +1,22 @@
 package com.hedvig.app.feature.marketpicker
 
-import android.content.Context
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.shouldOverrideFeatureFlags
-import com.hedvig.app.util.extensions.getMarket
 
 class MarketRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
-    private val context: Context
+    private val marketManager: MarketManager,
+    private val application: HedvigApplication
 ) {
 
     suspend fun getMarket(): Market? {
-        return context.getMarket() ?: getRemoteMarket()
+        return marketManager.market ?: getRemoteMarket()
     }
 
     private suspend fun getRemoteMarket(): Market? {
@@ -27,17 +28,23 @@ class MarketRepository(
         .query(GeoQuery())
         .await()
 
-    private fun GeoQuery.Data.toMarket() = Market.valueOf(
-        if (geo.countryISOCode == "DK") {
-            if (shouldOverrideFeatureFlags(context.applicationContext as HedvigApplication)) {
-                geo.countryISOCode
-            } else {
-                Market.SE.name
-            }
-        } else {
-            geo.countryISOCode
+    private fun GeoQuery.Data.toMarket(): Market? {
+        return try {
+            Market.valueOf(
+                if (geo.countryISOCode == "DK") {
+                    if (shouldOverrideFeatureFlags(application)) {
+                        geo.countryISOCode
+                    } else {
+                        Market.SE.name
+                    }
+                } else {
+                    geo.countryISOCode
+                }
+            )
+        } catch (e: IllegalArgumentException) {
+            return null
         }
-    )
+    }
 }
 
 fun Market?.toLanguage() = when (this) {

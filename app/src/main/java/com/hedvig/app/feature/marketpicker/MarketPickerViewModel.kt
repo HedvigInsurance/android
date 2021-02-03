@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {

@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -58,7 +59,7 @@ class MultipleReferralsTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context())
+                                .format(context(), Market.SE)
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -67,14 +68,14 @@ class MultipleReferralsTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context())
+                                .format(context(), Market.SE)
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context())
+                                .format(context(), Market.SE)
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -102,7 +103,7 @@ class MultipleReferralsTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context())
+                                .format(context(), Market.SE)
                         )
                     }
                 }

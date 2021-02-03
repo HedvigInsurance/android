@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerItemLayoutBinding
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener

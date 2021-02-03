@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.type.AuthState
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class ZignSecAuthViewModel(
     private val repository: ZignSecAuthRepository,
-    private val marketProvider: MarketProvider
+    private val marketManager: MarketManager
 ) : ViewModel() {
     private val _redirectUrl = MutableLiveData<String>()
     private val _authStatus = MutableLiveData<AuthState>()
@@ -30,7 +30,7 @@ class ZignSecAuthViewModel(
                 .catch { e(it) }
                 .launchIn(this)
 
-            marketProvider.market?.let { market ->
+            marketManager.market?.let { market ->
                 when (market) {
                     Market.NO -> {
                         val response = runCatching {

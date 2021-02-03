@@ -4,10 +4,10 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.R
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.marketProviderModule
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.marketManagerModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_PENDING
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -38,17 +38,17 @@ class TrustlyPendingTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-    private val marketProvider = mockk<MarketProvider>(relaxed = true)
+    private val marketManager = mockk<MarketManager>(relaxed = true)
 
     @get:Rule
     val mockModuleRule = KoinMockModuleRule(
-        listOf(marketProviderModule),
-        listOf(module { single { marketProvider } })
+        listOf(marketManagerModule),
+        listOf(module { single { marketManager } })
     )
 
     @Test
     fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() = run {
-        every { marketProvider.market } returns Market.SE
+        every { marketManager.market } returns Market.SE
         activityRule.launch(PaymentActivity.newInstance(context()))
 
         onScreen<PaymentScreen> {

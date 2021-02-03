@@ -5,9 +5,9 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.marketProviderModule
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.marketManagerModule
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA_BANK_ACCOUNT_ACTIVE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -34,14 +34,14 @@ class DirectDebitConnectedTest : TestCase() {
         ProfileQuery.QUERY_DOCUMENT to apolloResponse { success(PROFILE_DATA_BANK_ACCOUNT_ACTIVE) }
     )
 
-    private val marketProvider = mockk<MarketProvider>(relaxed = true)
+    private val marketManager = mockk<MarketManager>(relaxed = true)
 
     @get:Rule
     val koinMockModuleRule = KoinMockModuleRule(
-        listOf(marketProviderModule),
+        listOf(marketManagerModule),
         listOf(
             module {
-                single { marketProvider }
+                single { marketManager }
             }
         )
     )
@@ -52,7 +52,7 @@ class DirectDebitConnectedTest : TestCase() {
     @Test
     fun shouldShowDirectDebitConnected() = run {
         every {
-            marketProvider.market
+            marketManager.market
         } returns Market.SE
 
         activityRule.launch(

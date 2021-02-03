@@ -10,6 +10,7 @@ import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
@@ -20,6 +21,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val tracker: InsuranceTracker by inject()
+    private val marketManager: MarketManager by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
@@ -65,7 +67,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                     viewLifecycleOwner
                 )
             )
-            adapter = InsuranceAdapter(tracker, insuranceViewModel::load)
+            adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
         insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
             bind(data)

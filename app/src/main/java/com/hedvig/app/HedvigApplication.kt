@@ -1,19 +1,18 @@
 package com.hedvig.app
 
 import android.app.Application
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
@@ -31,32 +30,10 @@ import timber.log.Timber
 open class HedvigApplication : Application() {
     val apolloClientWrapper: ApolloClientWrapper by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(Language.fromSettings(base)?.apply(base))
-    }
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate() {
         super.onCreate()
-
-        val previousLanguage = PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .getString(SettingsActivity.SETTING_LANGUAGE, null)
-        if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
-            val market = getMarket()
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-            market?.let {
-                sharedPreferences.edit()
-                    .putString(
-                        SettingsActivity.SETTING_LANGUAGE,
-                        Language.getAvailableLanguages(market).first().toString()
-                    ).commit()
-            }
-        }
-
-        Language
-            .fromSettings(this)
-            ?.apply(this)
 
         Theme
             .fromSettings(this)
@@ -81,21 +58,38 @@ open class HedvigApplication : Application() {
                     homeModule,
                     serviceModule,
                     repositoriesModule,
-                    marketingRepositoryModule,
                     localeBroadcastManagerModule,
                     trackerModule,
                     marketPickerTrackerModule,
                     whatsNewModule,
-                    marketProviderModule,
+                    marketManagerModule,
                     connectPaymentModule,
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
                     onboardingModule,
                     choosePlanModule,
+                    defaultLocaleModule
                 )
             )
         }
+
+        val previousLanguage = PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .getString(SettingsActivity.SETTING_LANGUAGE, null)
+        if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
+            val market = marketManager.market
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            market?.let {
+                sharedPreferences.edit()
+                    .putString(
+                        SettingsActivity.SETTING_LANGUAGE,
+                        Language.getAvailableLanguages(market).first().toString()
+                    ).commit()
+            }
+        }
+
+        Language.fromSettings(this, marketManager.market).apply(this)
 
         if (getAuthenticationToken() == null && !getStoredBoolean(
                 SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN

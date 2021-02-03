@@ -11,7 +11,7 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -28,7 +28,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
-    private val marketProvider: MarketProvider by inject()
+    private val marketProvider: MarketManager by inject()
     private val viewModel: ChoosePlanViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

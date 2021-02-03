@@ -64,8 +64,6 @@ import com.hedvig.app.feature.marketpicker.LocaleBroadcastManagerImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
-import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
@@ -97,6 +95,9 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
@@ -115,6 +116,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -168,6 +170,8 @@ val applicationModule = module {
         )
     }
     single {
+        val marketManager = get<MarketManager>()
+        val context = get<Context>()
         val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val original = chain.request()
@@ -184,7 +188,7 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", makeUserAgent(get()))
+                        .header("User-Agent", makeUserAgent(context, marketManager.market))
                         .build()
                 )
             }
@@ -193,16 +197,12 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("Accept-Language", makeLocaleString(get()))
+                        .header("Accept-Language", makeLocaleString(context, marketManager.market))
                         .build()
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    Timber.tag("OkHttp").i(message)
-                }
-            })
+            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
@@ -218,35 +218,38 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent(context: Context) =
+fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(
-        context
-    ).language
+    getLocale(context, market).language
     })"
 
-fun makeLocaleString(context: Context): String =
-    getLocale(context).toLanguageTag()
+fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
 
-fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locales.get(
-        0
-    )
-} else {
-    @Suppress("DEPRECATION")
-    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locale
+fun getLocale(context: Context, market: Market?): Locale {
+    val locale = if (market == null) {
+        Language.from(Language.SETTING_EN_SE)
+    } else {
+        Language.fromSettings(context, market)
+    }
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        locale.apply(context).resources.configuration.locales.get(0)
+    } else {
+        @Suppress("DEPRECATION")
+        locale.apply(context).resources.configuration.locale
+    }
 }
 
 val viewModelModule = module {
@@ -286,7 +289,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
 }
 
 val offerModule = module {
@@ -342,10 +345,6 @@ val serviceModule = module {
     single { DeviceInformationService(get()) }
 }
 
-val marketingRepositoryModule = module {
-    single { MarketingRepository(get(), get()) }
-}
-
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
@@ -358,12 +357,13 @@ val repositoriesModule = module {
         )
     }
     single { UserRepository(get()) }
-    single { WhatsNewRepository(get(), get()) }
+    single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get(), get()) }
-    single { LanguageRepository(get(), get()) }
-    single { KeyGearItemsRepository(get(), get(), get()) }
-    single { MarketRepository(get(), get()) }
+    single { LanguageRepository(get(), get(), get(), get()) }
+    single { KeyGearItemsRepository(get(), get(), get(), get()) }
+    single { MarketRepository(get(), get(), get()) }
+    single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -403,10 +403,14 @@ val marketPickerTrackerModule = module {
     single { MarketPickerTracker(get()) }
 }
 
-val marketProviderModule = module {
-    single<MarketProvider> { MarketProviderImpl(get(), get()) }
+val marketManagerModule = module {
+    single<MarketManager> { MarketManagerImpl(get(), get()) }
 }
 
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
+}
+
+val defaultLocaleModule = module {
+    single { defaultLocale(get(), get()) }
 }

@@ -2,11 +2,12 @@ package com.hedvig.app.feature.marketpicker
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
-import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.marketpicker.screens.MarketSelectedScreen
-import com.hedvig.app.marketingRepositoryModule
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.marketManagerModule
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -32,18 +33,18 @@ class NavigationTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-    private val mockRepository = mockk<MarketingRepository>(relaxed = true)
+    private val mockMarketManager = mockk<MarketManager>(relaxed = true)
 
     @get:Rule
     val mock = KoinMockModuleRule(
-        listOf(marketingRepositoryModule),
-        listOf(module { single { mockRepository } })
+        listOf(marketManagerModule),
+        listOf(module { single { mockMarketManager } })
     )
 
     @Test
     fun shouldShowPickerIfNoMarketIsSelected() = run {
         every {
-            mockRepository.hasSelectedMarket()
+            mockMarketManager.hasSelectedMarket()
         }.returns(false)
 
         activityRule.launch()
@@ -56,8 +57,12 @@ class NavigationTest : TestCase() {
     @Test
     fun shouldShowMarketSelectedIfMarketSelected() = run {
         every {
-            mockRepository.hasSelectedMarket()
+            mockMarketManager.hasSelectedMarket()
         }.returns(true)
+
+        every {
+            mockMarketManager.market
+        }.returns(Market.SE)
 
         activityRule.launch()
 

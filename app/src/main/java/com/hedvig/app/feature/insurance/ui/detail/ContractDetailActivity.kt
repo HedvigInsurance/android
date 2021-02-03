@@ -19,6 +19,7 @@ import com.hedvig.app.feature.insurance.ui.bindTo
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -27,11 +28,13 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
     private val binding by viewBinding(ContractDetailActivityBinding::bind)
     private val model: ContractDetailViewModel by viewModel()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         postponeEnterTransition()
@@ -94,7 +97,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                 } else {
                     content.show()
                     error.root.remove()
-                    result.getOrNull()?.bindTo(binding.cardContainer)
+                    result.getOrNull()?.bindTo(binding.cardContainer, marketManager)
                 }
                 startPostponedEnterTransition()
             }

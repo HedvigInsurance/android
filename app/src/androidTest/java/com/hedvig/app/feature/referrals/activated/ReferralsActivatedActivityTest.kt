@@ -8,6 +8,7 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -60,7 +61,7 @@ class ReferralsActivatedActivityTest : TestCase() {
             body {
                 isVisible()
                 containsText(
-                    Money.of(10, "SEK").format(context())
+                    Money.of(10, "SEK").format(context(), Market.SE)
                 )
             }
         }

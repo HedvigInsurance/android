@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import android.content.Context
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
@@ -14,16 +13,16 @@ import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.defaultLocale
 import e
 import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClientWrapper: ApolloClientWrapper,
-    context: Context
+    defaultLocale: Locale
 ) {
-    private val offerQuery = OfferQuery(defaultLocale(context))
+    private val offerQuery = OfferQuery(defaultLocale)
 
     fun offer() = apolloClientWrapper
         .apolloClient

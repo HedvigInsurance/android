@@ -1,15 +1,12 @@
 package com.hedvig.app.feature.marketpicker
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceManager
-import assertk.assertThat
-import assertk.assertions.isEqualTo
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.marketManagerModule
 import com.hedvig.app.marketPickerTrackerModule
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -19,16 +16,12 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.After
-import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
 
-@Ignore("Causes flakiness")
 class UnknownGeoTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(MarketingActivity::class.java)
@@ -53,85 +46,45 @@ class UnknownGeoTest : TestCase() {
         )
     )
 
-    var originalMarket: String? = null
-    var originalLanguage: String? = null
-    var originalShouldOpenMarketSelected = false
+    private val mockMarketManager = mockk<MarketManager>(relaxed = true)
 
-    @Before
-    fun setup() {
-        val pref = context().applicationContext.getSharedPreferences(
-            "hedvig_shared_preference",
-            AppCompatActivity.MODE_PRIVATE
-        )
-
-        originalMarket = pref.getString(Market.MARKET_SHARED_PREF, null)
-        originalLanguage = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
-        originalShouldOpenMarketSelected =
-            pref.getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
-
-        pref
-            .edit()
-            .remove(Market.MARKET_SHARED_PREF)
-            .remove(SettingsActivity.SETTING_LANGUAGE)
-            .remove(MarketingActivity.HAS_SELECTED_MARKET)
-            .commit()
-    }
+    @get:Rule
+    val mockMarketManagerRule = KoinMockModuleRule(
+        listOf(marketManagerModule),
+        listOf(module { single { mockMarketManager } })
+    )
 
     @Test
     fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() = run {
+        every {
+            mockMarketManager.hasSelectedMarket()
+        }.returns(false)
+
+        every {
+            mockMarketManager.market
+        }.returns(null)
+
+        every {
+            mockMarketManager.enabledMarkets
+        }.returns(
+            listOf(
+                Market.SE,
+                Market.NO
+            )
+        )
+
         activityRule.launch(MarketingActivity.newInstance(context()))
 
         onScreen<MarketPickerScreen> {
             picker {
                 childAt<MarketPickerScreen.MarketButton>(2) {
-                    click()
+                    selectedMarket.hasText("Select market")
                 }
-            }
-            marketPicker {
-                childAt<MarketPickerScreen.MarketButton>(0) {
-                    click()
-                }
-            }
-            picker {
-                childAt<MarketPickerScreen.MarketButton>(1) {
-                    click()
-                }
-            }
-            languagePicker {
-                childAt<MarketPickerScreen.Language>(0) {
-                    click()
-                }
-            }
-            picker {
+
                 childAt<MarketPickerScreen.ContinueButton>(0) {
-                    click()
+                    isDisabled()
                 }
             }
         }
-
-        verify(exactly = 1) { tracker.selectMarket(Market.SE) }
-        verify(exactly = 1) { tracker.selectLocale(Language.SV_SE) }
-        verify(exactly = 1) { tracker.submit() }
-
-        val pref = PreferenceManager.getDefaultSharedPreferences(context())
-
-        val market = pref.getString(Market.MARKET_SHARED_PREF, null)
-        val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
-
-        assertThat(market).isEqualTo("SE")
-        assertThat(language).isEqualTo(Language.SETTING_SV_SE)
-    }
-
-    @After
-    fun teardown() {
-        PreferenceManager.getDefaultSharedPreferences(context())
-            .edit()
-            .putString(Market.MARKET_SHARED_PREF, originalMarket)
-            .putString(SettingsActivity.SETTING_LANGUAGE, originalLanguage)
-            .putBoolean(
-                MarketingActivity.HAS_SELECTED_MARKET,
-                originalShouldOpenMarketSelected
-            )
-            .commit()
     }
 }

@@ -7,16 +7,19 @@ import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
     private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
     private val model: PaymentViewModel by viewModel()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,7 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
             }
             paymentHistory.setupToolbarScrollListener(toolbar)
 
-            paymentHistory.adapter = PaymentHistoryAdapter()
+            paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
 
             model.data.observe(this@PaymentHistoryActivity) { (data, _) ->
                 data?.chargeHistory?.let { chargeHistory ->
