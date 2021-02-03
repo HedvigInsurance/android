@@ -133,6 +133,7 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
+import java.time.Clock
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
@@ -427,3 +428,5 @@ val marketProviderModule = module {
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
 }
+
+val clockModule = module { single { Clock.systemDefaultZone() } }
