@@ -250,9 +250,6 @@ dependencies {
     // Tooltip
     implementation("com.github.florent37:viewtooltip:1.2.2")
 
-    // facebook
-    implementation("com.facebook.android:facebook-android-sdk:5.15.3")
-
     // ZXing
     implementation("com.google.zxing:core:3.4.0")
 

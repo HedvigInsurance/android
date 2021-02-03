@@ -8,7 +8,6 @@ import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.bumptech.glide.RequestBuilder
-import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
@@ -150,7 +149,6 @@ val applicationModule = module {
             get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
         )
     }
-    single { AppEventsLogger.newLogger(get()) }
     single {
         SimpleCache(
             File(get<Context>().cacheDir, "hedvig_story_video_cache"),
@@ -377,7 +375,7 @@ val trackerModule = module {
     single { ReferralsTracker(get()) }
     single { TerminatedTracker(get()) }
     single { WelcomeTracker(get()) }
-    single { OfferTracker(get(), get()) }
+    single { OfferTracker(get()) }
     single { ChatTracker(get()) }
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
