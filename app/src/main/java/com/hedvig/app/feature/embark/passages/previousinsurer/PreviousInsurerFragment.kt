@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
@@ -24,6 +25,9 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+
         binding.apply {
             messages.adapter = MessageAdapter(insurerData.messages)
             currentInsurerContainer.setHapticClickListener {
@@ -38,6 +42,10 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 if (selectedInsurer?.isNotEmpty() == true) {
                     currentInsurerLabel.text = selectedInsurer
                 }
+            }
+
+            messages.doOnNextLayout {
+                startPostponedEnterTransition()
             }
         }
     }

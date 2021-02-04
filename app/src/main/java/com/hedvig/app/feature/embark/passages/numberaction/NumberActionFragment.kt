@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.passages.numberaction
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
@@ -29,6 +30,8 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
     private val numberActionViewModel: NumberActionViewModel by viewModel { parametersOf(data) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         with(binding) {
             messages.adapter = MessageAdapter(data.messages)
             inputContainer.placeholderText = data.placeholder
@@ -53,6 +56,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
                     model.navigateToPassage(data.link)
                 }
                 .launchIn(viewLifecycleScope)
+
+            messages.doOnNextLayout {
+                startPostponedEnterTransition()
+            }
         }
     }
 
