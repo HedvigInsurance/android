@@ -11,9 +11,7 @@ mutation TokenizePayoutDetails(
   ) {
     ... on TokenizationResponseFinished {
       resultCode
-      activePayoutMethods {
-        status
-      }
+      tokenizationResult
     }
     ... on TokenizationResponseAction {
       action
