@@ -53,11 +53,13 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
             )
         )
 
-        onScreen<EmbarkScreen> {
+        TextActionScreen {
             step("Enter reverse birth date") {
-                textActionSingleInput { replaceText("13-10-1931") }
-                textActionSubmit { click() }
+                input { edit { replaceText("13-10-1931") } }
+                submit { click() }
             }
+        }
+        onScreen<EmbarkScreen> {
             step("Verify that data has been stored in reverse, and that values have been derived") {
                 messages {
                     firstChild<EmbarkScreen.MessageRow> {
