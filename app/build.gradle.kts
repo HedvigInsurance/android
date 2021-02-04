@@ -183,6 +183,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("androidx.browser:browser:1.3.0")
 
     // Android lifecycle
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
@@ -249,9 +250,6 @@ dependencies {
 
     // Tooltip
     implementation("com.github.florent37:viewtooltip:1.2.2")
-
-    // facebook
-    implementation("com.facebook.android:facebook-android-sdk:5.15.3")
 
     // ZXing
     implementation("com.google.zxing:core:3.4.0")
