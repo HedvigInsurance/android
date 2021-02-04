@@ -78,4 +78,27 @@ class NumberActionTest : TestCase() {
             }
         }
     }
+
+    @Test
+    fun shouldPrefillNumberActionWhenUserReturnsToPassage() = run {
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+
+        NumberActionScreen {
+            step("Fill out passage and submit") {
+                numberInput { edit { typeText("50") } }
+                submit { click() }
+            }
+            step("Verify that the previous passage is no longer shown") {
+                onScreen<EmbarkScreen> {
+                    messages {
+                        childAt<EmbarkScreen.MessageRow>(0) { text { hasText("50 was entered") } }
+                    }
+                }
+            }
+            step("Go back and verify that the previous answer is prefilled") {
+                pressBack()
+                numberInput { edit { hasText("50") } }
+            }
+        }
+    }
 }

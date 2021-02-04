@@ -31,6 +31,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
             messages.adapter = MessageAdapter(data.messages)
+            model.getFromStore(data.key)?.let { input.setText(it) }
             inputContainer.placeholderText = data.placeholder
             data.label?.let { inputContainer.hint = it }
             data.unit?.let { inputContainer.helperText = it }
