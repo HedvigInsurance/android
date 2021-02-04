@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.transition.Transition
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
@@ -25,6 +27,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -50,70 +53,78 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         binding.apply {
-            progressToolbar.toolbar.apply {
-                title = storyName
-                setNavigationOnClickListener {
-                    finish()
-                }
-
-                setOnMenuItemClickListener { menuItem ->
-                    when (menuItem.itemId) {
-                        R.id.moreOptions -> {
-                            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
-                            true
-                        }
-                        R.id.tooltip -> {
-                            model.data.value?.passage?.tooltips?.let {
-                                TooltipBottomSheet.newInstance(it, windowManager).show(
-                                    supportFragmentManager, TooltipBottomSheet.TAG
-                                )
-                            }
-                            true
-                        }
-                        else -> false
-                    }
-                }
-            }
-
+            title = storyName
             model.data.observe(this@EmbarkActivity) { embarkData ->
-                invalidateOptionsMenu()
-                progressToolbar.toolbar.menu.clear()
-                if (model.data.value?.passage?.tooltips?.isNotEmpty() == true) {
-                    progressToolbar.toolbar.inflateMenu(R.menu.embark_tooltip_menu)
-                } else {
-                    progressToolbar.toolbar.inflateMenu(R.menu.embark_menu)
-                }
-
                 loadingSpinner.loadingSpinner.remove()
+                setupToolbarMenu(progressToolbar)
                 progressToolbar.setProgress(embarkData.progress)
 
                 val passage = embarkData.passage
                 actionBar?.title = passage?.name
 
-                supportFragmentManager.findFragmentById(R.id.passageContainer)?.exitTransition =
-                    MaterialSharedAxis(SHARED_AXIS,
-                        embarkData.navigationDirection == NavigationDirection.FORWARDS)
-
-                val newFragment = passageFragment(passage)
-
-                val transition: Transition = when (embarkData.navigationDirection) {
-                    NavigationDirection.FORWARDS,
-                    NavigationDirection.BACKWARDS,
-                    -> {
-                        MaterialSharedAxis(SHARED_AXIS,
-                            embarkData.navigationDirection == NavigationDirection.FORWARDS)
-                    }
-                    NavigationDirection.INITIAL -> MaterialFadeThrough()
+                if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
+                    showWebOffer()
+                } else {
+                    transitionToNextPassage(embarkData.navigationDirection, passage)
                 }
+            }
 
-                newFragment.enterTransition = transition
-
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.passageContainer, newFragment)
-                    .commit()
+            progressToolbar.toolbar.apply {
+                setOnMenuItemClickListener(::handleMenuItem)
+                setNavigationOnClickListener { finish() }
             }
         }
+    }
+
+    private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.moreOptions -> {
+            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
+            true
+        }
+        R.id.tooltip -> {
+            model.data.value?.passage?.tooltips?.let {
+                TooltipBottomSheet.newInstance(it, windowManager).show(
+                    supportFragmentManager, TooltipBottomSheet.TAG
+                )
+            }
+            true
+        }
+        else -> false
+    }
+
+    private fun setupToolbarMenu(progressToolbar: MaterialProgressToolbar) {
+        invalidateOptionsMenu()
+        progressToolbar.toolbar.menu.clear()
+
+        if (model.data.value?.passage?.tooltips?.isNotEmpty() == true) {
+            progressToolbar.toolbar.inflateMenu(R.menu.embark_tooltip_menu)
+        } else {
+            progressToolbar.toolbar.inflateMenu(R.menu.embark_menu)
+        }
+    }
+
+    private fun transitionToNextPassage(navigationDirection: NavigationDirection, passage: EmbarkStoryQuery.Passage?) {
+        supportFragmentManager
+            .findFragmentByTag("passageFragment")
+            ?.exitTransition = MaterialSharedAxis(SHARED_AXIS, navigationDirection == NavigationDirection.FORWARDS)
+
+        val newFragment = passageFragment(passage)
+
+        val transition: Transition = when (navigationDirection) {
+            NavigationDirection.FORWARDS,
+            NavigationDirection.BACKWARDS,
+            -> {
+                MaterialSharedAxis(SHARED_AXIS, navigationDirection == NavigationDirection.FORWARDS)
+            }
+            NavigationDirection.INITIAL -> MaterialFadeThrough()
+        }
+
+        newFragment.enterTransition = transition
+
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.passageContainer, newFragment, "passageFragment")
+            .commit()
     }
 
     private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
@@ -174,6 +185,26 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         return UpgradeAppFragment.newInstance()
     }
 
+    private fun showWebOffer() {
+        startActivityForResult(
+            WebOnboardingActivity.newNoInstance(
+                this@EmbarkActivity,
+                "",
+                true,
+                model.getFromStore("quoteId")
+            ),
+            REQUEST_OFFER
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_OFFER && resultCode == Activity.RESULT_CANCELED) {
+            onBackPressed()
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     override fun onBackPressed() {
         val couldNavigateBack = model.navigateBack()
         if (!couldNavigateBack) {
@@ -182,6 +213,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     companion object {
+        private const val REQUEST_OFFER = 1
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
 

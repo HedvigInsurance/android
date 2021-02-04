@@ -387,14 +387,14 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data1(
+                        data = EmbarkStoryQuery.Data2(
                             placeholder = "First Placeholder",
                             key = "FOO",
                             mask = null
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data1(
+                        data = EmbarkStoryQuery.Data2(
                             placeholder = "Second Placeholder",
                             key = "BAR",
                             mask = null
@@ -419,14 +419,14 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data1(
+                        data = EmbarkStoryQuery.Data2(
                             placeholder = "901124-1234",
                             key = "FOO",
                             mask = PERSONAL_NUMBER
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data1(
+                        data = EmbarkStoryQuery.Data2(
                             placeholder = "Email",
                             key = "BAR",
                             mask = EMAIL
