@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.embark.builders
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 
 data class PassageBuilder(
     private val name: String,
@@ -37,5 +38,6 @@ data class PassageBuilder(
         api = api,
         allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) },
         tracks = tracks,
+        externalRedirect = EmbarkStoryQuery.ExternalRedirect(data = EmbarkStoryQuery.Data1(location = EmbarkExternalRedirectLocation.OFFER))
     )
 }

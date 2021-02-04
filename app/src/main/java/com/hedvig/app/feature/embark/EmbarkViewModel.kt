@@ -256,7 +256,8 @@ abstract class EmbarkViewModel(
         if (passage == null) {
             return null
         }
-        val passageWithMessage = passage.copy(
+
+        return passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
                     preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
@@ -265,8 +266,6 @@ abstract class EmbarkViewModel(
                 )
             }
         )
-
-        return passageWithMessage
     }
 
     private fun getPassagesLeft(passage: EmbarkStoryQuery.Passage) = passage.allLinks
