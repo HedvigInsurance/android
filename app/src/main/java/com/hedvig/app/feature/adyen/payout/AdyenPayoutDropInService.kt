@@ -73,7 +73,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
 
             CallResult(CallResult.ResultType.ERROR, "Unknown error")
         }
-   
+
     private fun TokenizationResultType.toPayoutMethodStatusOrNull() = when (this) {
         TokenizationResultType.COMPLETED -> PayoutMethodStatus.ACTIVE
         TokenizationResultType.PENDING -> PayoutMethodStatus.PENDING
