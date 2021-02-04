@@ -39,14 +39,14 @@ class NumberActionTest : TestCase() {
                     isDisabled()
                     hasText("Another test passage")
                 }
-                numberInput {
+                input {
                     hasHint("Co-insured")
                     hasPlaceholderText("1")
                     hasHelperText("other people")
                 }
             }
             step("Test that lower bound does not allow submit") {
-                numberInput {
+                input {
                     edit {
                         typeText("0")
                     }
@@ -54,17 +54,17 @@ class NumberActionTest : TestCase() {
                 submit { isDisabled() }
             }
             step("Test that upper bound does not allow submit") {
-                numberInput { edit { replaceText("100") } }
+                input { edit { replaceText("100") } }
                 submit { isDisabled() }
             }
             step("Moving from valid to empty does not allow submit") {
-                numberInput { edit { replaceText("50") } }
+                input { edit { replaceText("50") } }
                 submit { isEnabled() }
-                numberInput { edit { replaceText("") } }
+                input { edit { replaceText("") } }
                 submit { isDisabled() }
             }
             step("Test that number in range allows submit") {
-                numberInput { edit { replaceText("50") } }
+                input { edit { replaceText("50") } }
                 submit {
                     click()
                 }
@@ -85,7 +85,7 @@ class NumberActionTest : TestCase() {
 
         NumberActionScreen {
             step("Fill out passage and submit") {
-                numberInput { edit { typeText("50") } }
+                input { edit { typeText("50") } }
                 submit { click() }
             }
             step("Verify that the previous passage is no longer shown") {
@@ -97,7 +97,7 @@ class NumberActionTest : TestCase() {
             }
             step("Go back and verify that the previous answer is prefilled") {
                 pressBack()
-                numberInput { edit { hasText("50") } }
+                input { edit { hasText("50") } }
             }
             step("Check that validation passes on prefilled input") {
                 submit { isEnabled() }
