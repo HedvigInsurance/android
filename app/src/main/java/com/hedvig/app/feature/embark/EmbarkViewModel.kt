@@ -55,6 +55,8 @@ abstract class EmbarkViewModel : ViewModel() {
         store[key] = value
     }
 
+    fun getFromStore(key: String) = store[key]
+
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }

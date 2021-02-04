@@ -50,4 +50,28 @@ class TextActionTest : TestCase() {
             messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
         }
     }
+
+    @Test
+    fun shouldPrefillTextActionWhenUserReturnsToPassage() = run {
+        activityRule.launch(
+            EmbarkActivity.newInstance(
+                context(),
+                this.javaClass.name
+            )
+        )
+
+        onScreen<EmbarkScreen> {
+            step("Fill out passage and submit") {
+                textActionSingleInput { typeText("Foo") }
+                textActionSubmit { click() }
+            }
+            step("Verify that the previous passage no longer is shown") {
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Foo was entered") } } }
+            }
+            step("Go back and verify that previous answer is prefilled") {
+                pressBack()
+                textActionSingleInput { hasText("Foo") }
+            }
+        }
+    }
 }
