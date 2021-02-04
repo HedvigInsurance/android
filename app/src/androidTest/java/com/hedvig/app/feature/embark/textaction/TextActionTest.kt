@@ -72,6 +72,9 @@ class TextActionTest : TestCase() {
                 pressBack()
                 textActionSingleInput { hasText("Foo") }
             }
+            step("Check that validation passes on prefilled input") {
+                textActionSubmit { isEnabled() }
+            }
         }
     }
 }

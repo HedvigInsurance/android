@@ -70,7 +70,6 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         binding.apply {
             messages.adapter = MessageAdapter(data.messages)
 
-            model.getFromStore(data.key)?.let { input.setText(it) }
             filledTextField.hint = data.hint
             data.mask?.let { mask ->
                 input.apply {
@@ -89,6 +88,8 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                         )
                 }
             }
+           
+            model.getFromStore(data.key)?.let { input.setText(it) }
 
             textActionSubmit.text = data.submitLabel
             textActionSubmit
