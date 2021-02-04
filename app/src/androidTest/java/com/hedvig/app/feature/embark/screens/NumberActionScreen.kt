@@ -11,6 +11,6 @@ object NumberActionScreen : KScreen<NumberActionScreen>() {
     override val layoutId = R.layout.number_action_fragment
     override val viewClass = NumberActionFragment::class.java
 
-    val numberInput = KTextInputLayout { withId(R.id.inputContainer) }
+    val input = KTextInputLayout { withId(R.id.inputContainer) }
     val submit = KButton { withId(R.id.submit) }
 }

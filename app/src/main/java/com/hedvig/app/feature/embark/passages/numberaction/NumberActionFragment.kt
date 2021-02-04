@@ -38,6 +38,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
                 numberActionViewModel.validate(text)
             }
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
+            model.getFromStore(data.key)?.let { input.setText(it) }
             submit.text = data.submitLabel
             submit
                 .hapticClicks()

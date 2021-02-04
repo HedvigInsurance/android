@@ -88,6 +88,8 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                         )
                 }
             }
+           
+            model.getFromStore(data.key)?.let { input.setText(it) }
 
             textActionSubmit.text = data.submitLabel
             textActionSubmit

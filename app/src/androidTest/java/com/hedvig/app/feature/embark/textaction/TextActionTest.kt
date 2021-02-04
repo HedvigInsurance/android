@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.textaction
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.screens.TextActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -35,19 +36,49 @@ class TextActionTest : TestCase() {
             )
         )
 
-        onScreen<EmbarkScreen> {
-            messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            textActionSingleInput {
-                isVisible()
-                hasHint("Test hint")
+        TextActionScreen {
+            onScreen<EmbarkScreen> {
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
             }
-            textActionSubmit { isDisabled() }
-            textActionSingleInput { typeText("Test entry") }
-            textActionSubmit {
+            input { hasHint("Test hint") }
+            submit {
                 hasText("Another test passage")
-                click()
+                isDisabled()
             }
-            messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
+            input { edit { typeText("Test entry") } }
+            submit { click() }
+            onScreen<EmbarkScreen> {
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
+            }
+        }
+    }
+
+    @Test
+    fun shouldPrefillTextActionWhenUserReturnsToPassage() = run {
+        activityRule.launch(
+            EmbarkActivity.newInstance(
+                context(),
+                this.javaClass.name
+            )
+        )
+
+        TextActionScreen {
+            step("Fill out passage and submit") {
+                input { edit { typeText("Foo") } }
+                submit { click() }
+            }
+            step("Verify that the previous passage no longer is shown") {
+                onScreen<EmbarkScreen> {
+                    messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Foo was entered") } } }
+                }
+            }
+            step("Go back and verify that previous answer is prefilled") {
+                pressBack()
+                input { edit { hasText("Foo") } }
+            }
+            step("Check that validation passes on prefilled input") {
+                submit { isEnabled() }
+            }
         }
     }
 }
