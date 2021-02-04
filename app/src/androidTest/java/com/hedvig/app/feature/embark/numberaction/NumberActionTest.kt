@@ -99,6 +99,9 @@ class NumberActionTest : TestCase() {
                 pressBack()
                 numberInput { edit { hasText("50") } }
             }
+            step("Check that validation passes on prefilled input") {
+                submit { isEnabled() }
+            }
         }
     }
 }
