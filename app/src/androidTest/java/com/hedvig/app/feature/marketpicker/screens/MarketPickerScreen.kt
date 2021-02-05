@@ -23,13 +23,6 @@ class MarketPickerScreen : KScreen<MarketPickerScreen>() {
         }
     )
 
-    val languagePicker = KRecyclerView(
-        { withId(R.id.recycler) },
-        {
-            itemType(::Language)
-        }
-    )
-
     val marketPicker = KRecyclerView(
         { withId(R.id.recycler) },
         {

@@ -272,7 +272,7 @@ val onboardingModule = module {
 }
 
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {

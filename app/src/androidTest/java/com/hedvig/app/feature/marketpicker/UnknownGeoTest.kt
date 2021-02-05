@@ -45,7 +45,7 @@ class UnknownGeoTest : MarketTest(Market.SE) {
     )
 
     @Test
-    fun shouldNotPreselectMarketWhenUserIsInUnknownGeo() = run {
+    fun shouldPreselectMarketWhenUserIsInUnknownGeo() = run {
         every {
             marketManager.hasSelectedMarket()
         }.returns(false)
@@ -68,11 +68,11 @@ class UnknownGeoTest : MarketTest(Market.SE) {
         onScreen<MarketPickerScreen> {
             picker {
                 childAt<MarketPickerScreen.MarketButton>(2) {
-                    selectedMarket.hasText("Select market")
+                    selectedMarket.hasText(com.hedvig.app.R.string.market_sweden)
                 }
 
                 childAt<MarketPickerScreen.ContinueButton>(0) {
-                    isDisabled()
+                    isEnabled()
                 }
             }
         }

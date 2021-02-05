@@ -15,8 +15,8 @@ class MarketRepository(
     private val application: HedvigApplication
 ) {
 
-    suspend fun getMarket(): Market? {
-        return marketManager.market ?: getRemoteMarket()
+    suspend fun getMarket(): Market {
+        return marketManager.market ?: getRemoteMarket() ?: Market.SE
     }
 
     private suspend fun getRemoteMarket(): Market? {
@@ -28,7 +28,7 @@ class MarketRepository(
         .query(GeoQuery())
         .await()
 
-    private fun GeoQuery.Data.toMarket(): Market? {
+    private fun GeoQuery.Data.toMarket(): Market {
         return try {
             Market.valueOf(
                 if (geo.countryISOCode == "DK") {
@@ -42,7 +42,7 @@ class MarketRepository(
                 }
             )
         } catch (e: IllegalArgumentException) {
-            return null
+            return Market.SE
         }
     }
 }

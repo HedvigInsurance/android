@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
 import java.util.Locale
@@ -100,6 +101,12 @@ enum class Language {
             SETTING_DA_DK -> DA_DK
             SETTING_EN_DK -> EN_DK
             else -> throw RuntimeException("Invalid language value: $value")
+        }
+
+        fun persist(context: Context, language: Language) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
+                putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
+            }
         }
 
         fun fromSettings(context: Context, market: Market?): Language = when (market) {

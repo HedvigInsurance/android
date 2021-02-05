@@ -40,7 +40,7 @@ class LanguageItemAdapter(
 
                 root.setHapticClickListener {
                     tracker.selectLocale(language)
-                    viewModel.submitLanguageAndReload(market = null, language = language)
+                    viewModel.submitLanguageAndReload(language)
                     dialog?.cancel()
                 }
             }

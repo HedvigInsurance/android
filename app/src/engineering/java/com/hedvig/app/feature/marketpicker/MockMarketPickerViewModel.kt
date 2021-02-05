@@ -10,11 +10,16 @@ import com.hedvig.app.util.extensions.getLanguage
 
 class MockMarketPickerViewModel(context: Context, marketManager: MarketManager): MarketPickerViewModel() {
 
-    override fun uploadLanguage() {
+    override fun submitMarketAndReload(market: Market) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(market, it.language)
+        }
     }
 
-    override fun submitLanguageAndReload(market: Market?, language: Language) {
-        _pickerSate.value = PickerState(market ?: pickerState.value?.market, language)
+    override fun submitLanguageAndReload(language: Language) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(it.market, language)
+        }
     }
 
     init {
@@ -42,7 +47,7 @@ class MockMarketPickerViewModel(context: Context, marketManager: MarketManager):
             marketManager.market?.let { market ->
                 _pickerSate.postValue(
                     PickerState(
-                        market, context.getLanguage()
+                        market, context.getLanguage() ?: market.toLanguage()
                     )
                 )
             }
