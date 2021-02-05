@@ -36,32 +36,41 @@ class TextActionSetTest : TestCase() {
             )
         )
 
-        onScreen<EmbarkScreen> {
-            messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            textActionSubmit { isDisabled() }
-            textActionSet {
-                childAt<EmbarkScreen.TextAction>(0) {
-                    input {
-                        typeText("First Text")
-                        hasHint("First Placeholder")
-                    }
-                }
+        TextActionSetScreen {
+            onScreen<EmbarkScreen> {
+                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
             }
-            textActionSubmit { isDisabled() }
-            textActionSet {
-                childAt<EmbarkScreen.TextAction>(1) {
-                    input {
-                        hasHint("Second Placeholder")
-                        typeText("Second Text")
-                    }
-                }
-            }
-            textActionSubmit {
+            submit {
                 hasText("Another test passage")
-                click()
+                isDisabled()
             }
-            messages {
-                firstChild<EmbarkScreen.MessageRow> { text { hasText("First Text Second Text was entered") } }
+            inputs {
+                childAt<TextActionSetScreen.Input>(0) {
+                    input {
+                        edit {
+
+                            typeText("First Text")
+                            hasHint("First Placeholder")
+                        }
+                    }
+                }
+            }
+            submit { isDisabled() }
+            inputs {
+                childAt<TextActionSetScreen.Input>(1) {
+                    input {
+                        edit {
+                            hasHint("Second Placeholder")
+                            typeText("Second Text")
+                        }
+                    }
+                }
+            }
+            submit { click() }
+            onScreen<EmbarkScreen> {
+                messages {
+                    firstChild<EmbarkScreen.MessageRow> { text { hasText("First Text Second Text was entered") } }
+                }
             }
         }
     }
@@ -89,7 +98,11 @@ class TextActionSetTest : TestCase() {
             }
             step("Verify that previous passage is no longer shown") {
                 onScreen<EmbarkScreen> {
-                    messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test Testerson was entered") } } }
+                    messages {
+                        firstChild<EmbarkScreen.MessageRow> {
+                            text { hasText("Test Testerson was entered") }
+                        }
+                    }
                 }
             }
             step("Go back and verify that the previous answers are prefilled") {
