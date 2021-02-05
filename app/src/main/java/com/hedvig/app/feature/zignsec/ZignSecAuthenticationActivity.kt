@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.webkit.HttpAuthHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -39,7 +40,7 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(
                         view: WebView?,
-                        request: WebResourceRequest?
+                        request: WebResourceRequest?,
                     ): Boolean {
                         if (request?.url?.toString()?.contains("success") == true) {
                             return true
@@ -51,6 +52,15 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
                         }
                         request?.url?.toString()?.let { view?.loadUrl(it) }
                         return true
+                    }
+
+                    override fun onReceivedHttpAuthRequest(
+                        view: WebView?,
+                        handler: HttpAuthHandler?,
+                        host: String?,
+                        realm: String?,
+                    ) {
+                        handler?.proceed("hedvig", "hedvig1234")
                     }
                 }
             }
