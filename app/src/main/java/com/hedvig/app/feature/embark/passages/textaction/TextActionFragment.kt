@@ -14,6 +14,7 @@ import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
 import com.hedvig.app.feature.embark.PERSONAL_NUMBER
 import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
 import com.hedvig.app.feature.embark.masking.derivedValues
+import com.hedvig.app.feature.embark.masking.remask
 import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -88,8 +89,8 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                         )
                 }
             }
-           
-            model.getFromStore(data.key)?.let { input.setText(it) }
+
+            model.getFromStore(data.key)?.let { input.setText(remask(it, data.mask)) }
 
             textActionSubmit.text = data.submitLabel
             textActionSubmit

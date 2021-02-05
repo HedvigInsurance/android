@@ -9,6 +9,3 @@ fun unmask(text: String, mask: String?): String = when (mask) {
         REVERSE_DATE).format(ISO_8601_DATE)
     else -> text
 }
-
-private val ISO_8601_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-private val REVERSE_DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy")
