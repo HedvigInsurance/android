@@ -66,7 +66,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                 .into(selectedCharityBanner)
 
             selectedCharityCardTitle.text = cashback.name
-            selectedCharityCardParagraph.text = cashback.paragraph
+            selectedCharityCardParagraph.text = cashback.description
             charitySelectedHowDoesItWorkButton.setHapticClickListener {
                 tracker.howDoesItWorkClick()
                 CharityExplanationBottomSheet.newInstance()

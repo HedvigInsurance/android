@@ -1,5 +1,5 @@
 fragment CashbackFragment on Cashback {
   name
   imageUrl
-  paragraph
+  description
 }
