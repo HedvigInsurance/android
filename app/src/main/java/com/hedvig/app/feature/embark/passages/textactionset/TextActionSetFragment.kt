@@ -62,6 +62,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
                 key,
                 data.placeholders[index],
                 data.mask[index],
+                key?.let { model.getFromStore(it) },
             )
         }
 

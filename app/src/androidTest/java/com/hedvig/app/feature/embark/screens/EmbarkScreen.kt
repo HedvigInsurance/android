@@ -16,8 +16,6 @@ import org.hamcrest.Matcher
 class EmbarkScreen : Screen<EmbarkScreen>() {
     val spinner = KView { withId(R.id.loadingSpinner) }
     val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
-    val textActionSet = KRecyclerView({ withId(R.id.inputRecycler) },
-        { itemType(::TextAction) })
 
     val response = KTextView { withId(R.id.response) }
 
@@ -37,10 +35,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }
-    }
-
-    class TextAction(parent: Matcher<View>) : KRecyclerItem<TextAction>(parent) {
-        val input = KEditText(parent) { withId(R.id.input) }
     }
 
     class SelectAction(parent: Matcher<View>) : KRecyclerItem<SelectAction>(parent) {

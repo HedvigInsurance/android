@@ -23,6 +23,6 @@ class TextActionSetViewModel(data: TextActionSetParameter) : ViewModel() {
     fun updateIsValid(position: Int, isValid: Boolean) {
         val new = _isValid.value?.toMutableMap()
         new?.put(position, isValid)
-        _isValid.postValue(new)
+        _isValid.value = new
     }
 }

@@ -55,6 +55,7 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
                     }
                     model.setInputValue(position, text)
                 }
+                item.prefill?.let { input.setText(it) }
             }
         }
     }

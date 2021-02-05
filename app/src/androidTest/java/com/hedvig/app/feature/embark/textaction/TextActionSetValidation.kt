@@ -1,8 +1,7 @@
 package com.hedvig.app.feature.embark.textaction
 
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.screens.EmbarkScreen
+import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -39,30 +38,30 @@ class TextActionSetValidation : TestCase() {
             )
         )
 
-        Screen.onScreen<EmbarkScreen> {
-            messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            textActionSubmit { isDisabled() }
-            textActionSet {
-                childAt<EmbarkScreen.TextAction>(0) {
+        TextActionSetScreen {
+            submit { isDisabled() }
+            inputs {
+                childAt<TextActionSetScreen.Input>(0) {
                     input {
-                        typeText("9704071234")
-                        hasHint("901124-1234")
+                        edit {
+                            hasHint("901124-1234")
+                            typeText("9704071234")
+                        }
                     }
                 }
             }
-            textActionSubmit { isDisabled() }
-            textActionSet {
-                childAt<EmbarkScreen.TextAction>(1) {
+            submit { isDisabled() }
+            inputs {
+                childAt<TextActionSetScreen.Input>(1) {
                     input {
-                        hasHint("Email")
-                        typeText("email@hedvig.com")
+                        edit {
+                            hasHint("Email")
+                            typeText("email@hedvig.com")
+                        }
                     }
                 }
             }
-            textActionSubmit {
-                hasText("Another test passage")
-                isEnabled()
-            }
+            submit { isEnabled() }
         }
     }
 }
