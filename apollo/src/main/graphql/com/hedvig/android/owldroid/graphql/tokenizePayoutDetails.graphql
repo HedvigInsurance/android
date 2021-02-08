@@ -11,6 +11,7 @@ mutation TokenizePayoutDetails(
   ) {
     ... on TokenizationResponseFinished {
       resultCode
+      tokenizationResult
     }
     ... on TokenizationResponseAction {
       action

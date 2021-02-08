@@ -35,7 +35,7 @@ data class ProfileDataBuilder(
                 CashbackFragment(
                     name = "Example Charity",
                     imageUrl = null,
-                    paragraph = null
+                    description = null
                 )
             )
         ),
