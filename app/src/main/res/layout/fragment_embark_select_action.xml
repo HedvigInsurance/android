@@ -23,6 +23,8 @@
         android:id="@+id/response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:alpha="0"
         android:textAppearance="?textAppearanceSubtitle1"
         android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Self"
