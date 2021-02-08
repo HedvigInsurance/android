@@ -13,7 +13,8 @@ data class PassageBuilder(
     private val action: EmbarkStoryQuery.Action,
     private val api: EmbarkStoryQuery.Api? = null,
     private val tooltip: List<EmbarkStoryQuery.Tooltip> = emptyList(),
-    private val links: List<EmbarkLinkFragment> = emptyList()
+    private val links: List<EmbarkLinkFragment> = emptyList(),
+    private val tracks: List<EmbarkStoryQuery.Track> = emptyList(),
 ) {
     fun build() = EmbarkStoryQuery.Passage(
         name = name,
@@ -34,6 +35,7 @@ data class PassageBuilder(
         redirects = redirects,
         action = action,
         api = api,
-        allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) }
+        allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) },
+        tracks = tracks,
     )
 }

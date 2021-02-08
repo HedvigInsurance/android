@@ -21,6 +21,7 @@ import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.EMAIL
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
+import com.hedvig.app.testdata.feature.embark.builders.TrackBuilder
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
     text = "test message"
@@ -1284,6 +1285,18 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
                     .build()
             )
         ).build()
+    )
+).build()
+
+val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                tracks = listOf(
+                    TrackBuilder("Enter Passage").build()
+                )
+            )
+            .build()
     )
 ).build()
 
