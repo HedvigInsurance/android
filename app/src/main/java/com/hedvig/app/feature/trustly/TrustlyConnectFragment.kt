@@ -27,10 +27,13 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
-    private val binding by viewBinding(TrustlyConnectFragmentBinding::bind, cleanup = {
-        root.removeView(trustly)
-        trustly.destroy()
-    })
+    private val binding by viewBinding(
+        TrustlyConnectFragmentBinding::bind,
+        cleanup = {
+            root.removeView(trustly)
+            trustly.destroy()
+        }
+    )
     private val trustlyViewModel: TrustlyViewModel by viewModel()
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
 

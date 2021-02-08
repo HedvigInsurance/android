@@ -108,22 +108,28 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
         findViewById<ActionMenuItemView>(R.id.save)?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
     private fun loadData() {
-        profileViewModel.data.observe(this, Observer { profileData ->
-            binding.apply {
-                spinner.loadingSpinner.remove()
+        profileViewModel.data.observe(
+            this,
+            Observer { profileData ->
+                binding.apply {
+                    spinner.loadingSpinner.remove()
 
-                contactDetailsContainer.show()
+                    contactDetailsContainer.show()
 
-                profileData?.let { data ->
-                    setupEmailInput(data.member.email ?: "")
-                    setupPhoneNumberInput(data.member.phoneNumber ?: "")
+                    profileData?.let { data ->
+                        setupEmailInput(data.member.email ?: "")
+                        setupPhoneNumberInput(data.member.phoneNumber ?: "")
+                    }
                 }
-            }
 
-            profileViewModel.dirty.observe(this, Observer {
-                invalidateOptionsMenu()
-            })
-        })
+                profileViewModel.dirty.observe(
+                    this,
+                    Observer {
+                        invalidateOptionsMenu()
+                    }
+                )
+            }
+        )
     }
 
     private fun setupEmailInput(prefilledEmail: String) {

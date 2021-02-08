@@ -2,6 +2,7 @@ package com.hedvig.app.mocks
 
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
@@ -18,56 +19,69 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
 
     override fun updateItemName(newName: String) {
         val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
-        Handler().postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    "KeyGearItem",
-                    KeyGearItemQuery.KeyGearItem.Fragments(
-                        items[id]!!.copy(name = newName)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(
+                    KeyGearItemQuery.KeyGearItem(
+                        "KeyGearItem",
+                        KeyGearItemQuery.KeyGearItem.Fragments(
+                            items[id]!!.copy(name = newName)
+                        )
                     )
                 )
-            )
-        }, 250)
+            },
+            250
+        )
     }
 
     override fun deleteItem() {
-        Handler().postDelayed({
-            isDeleted.postValue(true)
-        }, 250)
+        Handler(getMainLooper()).postDelayed(
+            {
+                isDeleted.postValue(true)
+            },
+            250
+        )
     }
 
     override fun loadItem(id: String) {
-        Handler().postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    "KeyGearItem",
-                    KeyGearItemQuery.KeyGearItem.Fragments(items[id]!!)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(
+                    KeyGearItemQuery.KeyGearItem(
+                        "KeyGearItem",
+                        KeyGearItemQuery.KeyGearItem.Fragments(items[id]!!)
+                    )
                 )
-            )
-        }, 250)
+            },
+            250
+        )
     }
 
     override fun uploadReceipt(uri: Uri) {
         val id = data.value?.fragments?.keyGearItemFragment?.id ?: return
         isUploading.value = true
-        Handler().postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    fragments = KeyGearItemQuery.KeyGearItem.Fragments(
-                        items[id]!!.copy(
-                            receipts = listOf(
-                                KeyGearItemFragment.Receipt(
-                                    file = KeyGearItemFragment.File1(
-                                        preSignedUrl = "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(
+                    KeyGearItemQuery.KeyGearItem(
+                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(
+                            items[id]!!.copy(
+                                receipts = listOf(
+                                    KeyGearItemFragment.Receipt(
+                                        file = KeyGearItemFragment.File1(
+                                            preSignedUrl =
+                                            "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
+                                        )
                                     )
                                 )
                             )
                         )
                     )
                 )
-            )
-            isUploading.postValue(false)
-        }, 2000)
+                isUploading.postValue(false)
+            },
+            2000
+        )
     }
 
     companion object {

@@ -10,7 +10,7 @@ import kotlinx.android.parcel.Parcelize
 data class ThemedIconUrls(
     val darkUrl: String,
     val lightUrl: String
-): Parcelable {
+) : Parcelable {
 
     fun iconByTheme(context: Context) = if (context.isDarkThemeActive) {
         darkUrl

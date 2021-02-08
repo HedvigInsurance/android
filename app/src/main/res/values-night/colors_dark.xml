@@ -34,10 +34,9 @@
 
     <item name="colorTooltip" type="color">@color/hedvig_dark_gray</item>
 
-    <item name="color_card_blur_apartment" type="color">#cbb583</item>
-    <item name="color_card_blur_house" type="color">#ec955f</item>
-    <item name="color_card_blur_travel" type="color">#c6ad8a</item>
-    <item name="color_card_inactive" type="color">#252525</item>
+    <item name="blur_summer_sky" type="color">#cbb583</item>
+    <item name="blur_fall_sunset" type="color">#c6ad8a</item>
+    <item name="blur_spring_fog" type="color">#ec955f</item>
 
     <!-- Compatibility with Adyen -->
     <item name="primaryColor" type="color">@color/colorPrimary</item>

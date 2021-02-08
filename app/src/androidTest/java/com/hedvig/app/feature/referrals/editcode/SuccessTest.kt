@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -15,17 +12,17 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class SuccessTest {
+class SuccessTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -46,8 +43,8 @@ class SuccessTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldUpdateCodeWhenCodeIsAccepted() {
-        activityRule.launchActivity(
+    fun shouldUpdateCodeWhenCodeIsAccepted() = run {
+        activityRule.launch(
             LoggedInActivity.newInstance(
                 context(),
                 initialTab = LoggedInTabs.REFERRALS

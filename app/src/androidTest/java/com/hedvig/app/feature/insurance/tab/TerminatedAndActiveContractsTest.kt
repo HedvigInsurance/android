@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.insurance.tab
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -13,18 +11,19 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasPluralText
+import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class TerminatedAndActiveContractsTest {
+class TerminatedAndActiveContractsTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -42,19 +41,22 @@ class TerminatedAndActiveContractsTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() {
+    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
             initialTab = LoggedInTabs.INSURANCE
         )
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         onScreen<InsuranceScreen> {
+            terminatedContractsScreen { stub() }
             insuranceRecycler {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     firstStatusPill { isGone() }
                 }
-                childAt<InsuranceScreen.TerminatedContractsHeader>(2) { text { hasText(R.string.insurances_tab_more_title) } }
+                childAt<InsuranceScreen.TerminatedContractsHeader>(2) {
+                    text { hasText(R.string.insurances_tab_more_title) }
+                }
                 childAt<InsuranceScreen.TerminatedContracts>(3) {
                     caption {
                         hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)

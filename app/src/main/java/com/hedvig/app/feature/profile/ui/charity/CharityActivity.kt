@@ -66,7 +66,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                 .into(selectedCharityBanner)
 
             selectedCharityCardTitle.text = cashback.name
-            selectedCharityCardParagraph.text = cashback.paragraph
+            selectedCharityCardParagraph.text = cashback.description
             charitySelectedHowDoesItWorkButton.setHapticClickListener {
                 tracker.howDoesItWorkClick()
                 CharityExplanationBottomSheet.newInstance()
@@ -77,11 +77,11 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
 
     private fun showCharityPicker(options: List<ProfileQuery.CashbackOption>) {
         binding.apply {
-        selectCharityContainer.show()
-        cashbackOptions.adapter =
-            CharityAdapter(this@CharityActivity) { id -> profileViewModel.selectCashback(id) }.also {
-                it.submitList(options)
-            }
+            selectCharityContainer.show()
+            cashbackOptions.adapter =
+                CharityAdapter(this@CharityActivity) { id -> profileViewModel.selectCashback(id) }.also {
+                    it.submitList(options)
+                }
             selectCharityHowDoesItWorkButton.setHapticClickListener {
                 tracker.howDoesItWorkClick()
                 CharityExplanationBottomSheet.newInstance()

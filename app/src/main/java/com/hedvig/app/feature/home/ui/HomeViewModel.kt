@@ -56,9 +56,8 @@ class HomeViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            runCatching { homeRepository.reloadHomeAsync().await() }
+            runCatching { homeRepository.reloadHome() }
             runCatching { payinStatusRepository.refreshPayinStatus() }
         }
     }
 }
-

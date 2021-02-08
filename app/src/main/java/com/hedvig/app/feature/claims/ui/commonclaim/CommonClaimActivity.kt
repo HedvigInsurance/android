@@ -56,7 +56,6 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
                 .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrls.iconByTheme(this@CommonClaimActivity)))
                 .into(firstMessage.commonClaimFirstMessageIcon)
 
-
             firstMessage.commonClaimFirstMessage.text = data.layoutTitle
             firstMessage.commonClaimCreateClaimButton.text = data.buttonText
             if (data.eligibleToClaim) {

@@ -1,16 +1,10 @@
 package com.hedvig.app.feature.referrals.tab
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
 import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -21,21 +15,21 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_COMPLEX_CODE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stubExternalIntents
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
-import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ShareTest {
+class ShareTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -51,19 +45,14 @@ class ShareTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenShareWhenClickingShare() {
+    fun shouldOpenShareWhenClickingShare() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
             initialTab = LoggedInTabs.REFERRALS
         )
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
-        intending(not(isInternal())).respondWith(
-            Instrumentation.ActivityResult(
-                Activity.RESULT_OK,
-                null
-            )
-        )
+        stubExternalIntents()
 
         Screen.onScreen<ReferralTabScreen> {
             share {

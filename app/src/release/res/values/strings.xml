@@ -9,6 +9,5 @@
     <string name="alert_title" translatable="false">Title</string>
     <string name="alert_message" translatable="false">Message</string>
 
-    <string name="facebook_app_id" translatable="false">170982226921693</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb170982226921693</string>
 </resources>

@@ -87,9 +87,9 @@ class ChatInputView : FrameLayout {
                     return@setOnEditorActionListener true
                 }
                 if (
-                    actionId == EditorInfo.IME_NULL
-                    && event.action == KeyEvent.ACTION_UP
-                    && event.keyCode == KeyEvent.KEYCODE_ENTER
+                    actionId == EditorInfo.IME_NULL &&
+                    event.action == KeyEvent.ACTION_UP &&
+                    event.keyCode == KeyEvent.KEYCODE_ENTER
                 ) {
                     performTextMessageSend()
                     return@setOnEditorActionListener true
@@ -145,7 +145,7 @@ class ChatInputView : FrameLayout {
         tracker: ChatTracker,
         openSendGif: () -> Unit,
         chatRecyclerView: RecyclerView,
-        chatRecyclerViewInitialPadding: Int
+        chatRecyclerViewInitialPadding: Int,
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -173,10 +173,12 @@ class ChatInputView : FrameLayout {
                     chatRecyclerView.updatePadding(bottom = singleSelectContainer.measuredHeight)
                 }
                 is ParagraphInput -> {
-                    paragraphView.fadeOut(endAction = {
-                        paragraphView.avdStop()
-                        fadeIn()
-                    })
+                    paragraphView.fadeOut(
+                        endAction = {
+                            paragraphView.avdStop()
+                            fadeIn()
+                        }
+                    )
                 }
                 is Audio -> audioRecorder.fadeOut(fadeIn)
                 is NullInput -> fadeIn()
@@ -249,7 +251,7 @@ class ChatInputView : FrameLayout {
     private fun inflateSingleSelectButton(
         label: String,
         value: String,
-        type: SingleSelectChoiceType
+        type: SingleSelectChoiceType,
     ) {
         val singleSelectButton =
             layoutInflater.inflate(
@@ -265,7 +267,8 @@ class ChatInputView : FrameLayout {
             disableSingleButtons()
             when (type) {
                 SingleSelectChoiceType.UNDEFINED, // TODO: Let's talk about this one
-                SingleSelectChoiceType.SELECTION -> sendSingleSelect(value)
+                SingleSelectChoiceType.SELECTION,
+                -> sendSingleSelect(value)
                 SingleSelectChoiceType.LINK -> singleSelectLink(value)
             }
         }
@@ -273,7 +276,9 @@ class ChatInputView : FrameLayout {
         binding.singleSelectContainer.addView(singleSelectButton)
 
         binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + binding.singleSelectContainer.measuredHeight)
+        chatRecyclerView.updatePadding(
+            bottom = chatRecyclerViewInitialPadding + binding.singleSelectContainer.measuredHeight
+        )
     }
 
     private fun disableSingleButtons() {
@@ -299,4 +304,3 @@ class ChatInputView : FrameLayout {
         dismissKeyboard()
     }
 }
-

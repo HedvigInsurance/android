@@ -24,7 +24,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 photos = listOf(
                                     KeyGearItemFragment.Photo(
                                         file = KeyGearItemFragment.File(
-                                            preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
+                                            preSignedUrl =
+                                            "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
                                         )
                                     )
                                 ),
@@ -44,7 +45,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 fragments = KeyGearItemFragment.Fragments(
                                     KeyGearItemValuationFragment(
                                         valuation = KeyGearItemValuationFragment.Valuation1(
-                                            asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            asKeyGearItemValuationFixed =
+                                            KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
                                                 ratio = 31,
                                                 valuation = KeyGearItemValuationFragment.Valuation(
                                                     amount = "1234.00"
@@ -66,7 +68,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 photos = listOf(
                                     KeyGearItemFragment.Photo(
                                         file = KeyGearItemFragment.File(
-                                            preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
+                                            preSignedUrl =
+                                            "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
                                         )
                                     )
                                 ),
@@ -86,7 +89,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 fragments = KeyGearItemFragment.Fragments(
                                     KeyGearItemValuationFragment(
                                         valuation = KeyGearItemValuationFragment.Valuation1(
-                                            asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            asKeyGearItemValuationFixed =
+                                            KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
                                                 ratio = 31,
                                                 valuation = KeyGearItemValuationFragment.Valuation(
                                                     amount = "1234.00"
@@ -123,7 +127,8 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                 fragments = KeyGearItemFragment.Fragments(
                                     KeyGearItemValuationFragment(
                                         valuation = KeyGearItemValuationFragment.Valuation1(
-                                            asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                            asKeyGearItemValuationFixed =
+                                            KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
                                                 ratio = 31,
                                                 valuation = KeyGearItemValuationFragment.Valuation(
                                                     amount = "1234.00"

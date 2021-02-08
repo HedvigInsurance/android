@@ -55,7 +55,8 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             }
 
             chooseDateButton.setOnClickListener {
-                requireContext().showAlert(R.string.ALERT_TITLE_STARTDATE,
+                requireContext().showAlert(
+                    R.string.ALERT_TITLE_STARTDATE,
                     R.string.ALERT_DESCRIPTION_STARTDATE,
                     R.string.ALERT_CONTINUE,
                     R.string.ALERT_CANCEL,
@@ -63,7 +64,8 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                         tracker.changeDateContinue()
                         offerViewModel.chooseStartDate(data.id, localDate)
                         dismiss()
-                    })
+                    }
+                )
             }
             if (data.hasSwitchableInsurer) {
                 autoSetDateText.text = getString(R.string.ACTIVATE_INSURANCE_END_BTN)

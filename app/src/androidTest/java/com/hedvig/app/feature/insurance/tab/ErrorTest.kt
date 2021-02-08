@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.insurance.tab
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -13,17 +10,17 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ErrorTest {
+class ErrorTest : TestCase() {
 
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     var shouldFail = true
 
@@ -48,12 +45,12 @@ class ErrorTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowErrorOnGraphQLError() {
+    fun shouldShowErrorOnGraphQLError() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
             initialTab = LoggedInTabs.INSURANCE
         )
-        activityRule.launchActivity(intent)
+        activityRule.launch(intent)
 
         onScreen<InsuranceScreen> {
             insuranceRecycler {

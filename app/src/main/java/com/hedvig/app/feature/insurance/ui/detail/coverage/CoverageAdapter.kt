@@ -22,7 +22,7 @@ import e
 
 class CoverageAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>,
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
 ) :
     ListAdapter<CoverageModel, CoverageAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -47,7 +47,7 @@ class CoverageAdapter(
         abstract fun bind(
             data: CoverageModel,
             requestBuilder: RequestBuilder<PictureDrawable>,
-            fragmentManager: FragmentManager
+            fragmentManager: FragmentManager,
         ): Any?
 
         fun invalid(data: CoverageModel) {
@@ -60,7 +60,7 @@ class CoverageAdapter(
             override fun bind(
                 data: CoverageModel,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                fragmentManager: FragmentManager
+                fragmentManager: FragmentManager,
             ) = with(binding) {
                 if (data !is CoverageModel.Header) {
                     return invalid(data)
@@ -68,11 +68,12 @@ class CoverageAdapter(
 
                 with(binding.root) {
                     when (data) {
-                        is CoverageModel.Header.Perils -> text =
-                            context.getString(
-                                R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
-                                data.typeOfContract.displayNameDefinite(context)
-                            )
+                        is CoverageModel.Header.Perils ->
+                            text =
+                                context.getString(
+                                    R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+                                    data.typeOfContract.displayNameDefinite(context)
+                                )
                         CoverageModel.Header.InsurableLimits -> setText(
                             R.string.CONTRACT_COVERAGE_MORE_INFO
                         )
@@ -97,7 +98,15 @@ class CoverageAdapter(
                     TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
                     -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH -> context.getString(R.string.INSURANCE_TYPE_TRAVEL_DEFINITE)
+                    TypeOfContract.NO_TRAVEL_YOUTH,
+                    TypeOfContract.DK_TRAVEL,
+                    TypeOfContract.DK_TRAVEL_STUDENT,
+                    -> context.getString(
+                        R.string.INSURANCE_TYPE_TRAVEL_DEFINITE
+                    )
+                    TypeOfContract.DK_ACCIDENT,
+                    TypeOfContract.DK_ACCIDENT_STUDENT,
+                    -> context.getString(R.string.PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS)
                     TypeOfContract.UNKNOWN__ -> ""
                 }
             }
@@ -108,20 +117,19 @@ class CoverageAdapter(
             override fun bind(
                 data: CoverageModel,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                fragmentManager: FragmentManager
-            ): Any? = with(binding) {
+                fragmentManager: FragmentManager,
+            ) = with(binding) {
                 if (data !is CoverageModel.Peril) {
                     return invalid(data)
                 }
 
-
                 label.text = data.inner.title
                 val iconUrl = "${com.hedvig.app.BuildConfig.BASE_URL}${
-                    if (icon.context.isDarkThemeActive) {
-                        data.inner.icon.variants.dark.svgUrl
-                    } else {
-                        data.inner.icon.variants.light.svgUrl
-                    }
+                if (icon.context.isDarkThemeActive) {
+                    data.inner.icon.variants.dark.svgUrl
+                } else {
+                    data.inner.icon.variants.light.svgUrl
+                }
                 }"
                 requestBuilder
                     .load(iconUrl)
@@ -146,7 +154,7 @@ class CoverageAdapter(
             override fun bind(
                 data: CoverageModel,
                 requestBuilder: RequestBuilder<PictureDrawable>,
-                fragmentManager: FragmentManager
+                fragmentManager: FragmentManager,
             ) = with(binding) {
                 if (data !is CoverageModel.InsurableLimit) {
                     return invalid(data)

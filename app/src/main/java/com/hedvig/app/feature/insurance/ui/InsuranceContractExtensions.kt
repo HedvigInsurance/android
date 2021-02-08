@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
@@ -57,33 +58,36 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     TypeOfContract.SE_APARTMENT_RENT,
                     TypeOfContract.SE_APARTMENT_STUDENT_BRF,
                     TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                    -> {
-                        container.setBackgroundResource(R.drawable.card_apartment_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_apartment))
-                    }
-                    TypeOfContract.SE_HOUSE,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
                     TypeOfContract.NO_HOME_CONTENT_OWN,
                     TypeOfContract.NO_HOME_CONTENT_RENT,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                     TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                     TypeOfContract.DK_HOME_CONTENT_OWN,
                     TypeOfContract.DK_HOME_CONTENT_RENT,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT -> {
-                        container.setBackgroundResource(R.drawable.card_house_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_house))
+                    -> {
+                        container.setBackgroundResource(R.drawable.gradient_summer_sky)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_summer_sky))
                     }
                     TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH -> {
-                        container.setBackgroundResource(R.drawable.card_travel_background)
-                        blur.setColorFilter(blur.context.compatColor(R.color.color_card_blur_travel))
+                    TypeOfContract.NO_TRAVEL_YOUTH,
+                    TypeOfContract.DK_TRAVEL,
+                    TypeOfContract.DK_TRAVEL_STUDENT -> {
+                        container.setBackgroundResource(R.drawable.gradient_fall_sunset)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_fall_sunset))
+                    }
+                    TypeOfContract.SE_HOUSE,
+                    TypeOfContract.DK_ACCIDENT,
+                    TypeOfContract.DK_ACCIDENT_STUDENT -> {
+                        container.setBackgroundResource(R.drawable.gradient_spring_fog)
+                        blur.setColorFilter(blur.context.compatColor(R.color.blur_spring_fog))
                     }
                     TypeOfContract.UNKNOWN__ -> {
-
                     }
                 }
             } ?: run {
-                container.setBackgroundResource(R.color.color_card_inactive)
+                container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
                 blur.remove()
             }
         }
@@ -112,7 +116,11 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
                     )
                 }
                 TypeOfContract.NO_TRAVEL,
-                TypeOfContract.NO_TRAVEL_YOUTH -> {
+                TypeOfContract.NO_TRAVEL_YOUTH,
+                TypeOfContract.DK_TRAVEL,
+                TypeOfContract.DK_TRAVEL_STUDENT,
+                TypeOfContract.DK_ACCIDENT,
+                TypeOfContract.DK_ACCIDENT_STUDENT -> {
                     adapter.submitList(listOf(ContractModel.NoOfCoInsured(currentAgreement.numberCoInsured)))
                 }
                 TypeOfContract.UNKNOWN__ -> {
@@ -133,6 +141,8 @@ private val InsuranceQuery.CurrentAgreement.numberCoInsured: Int
         asSwedishApartmentAgreement?.numberCoInsured?.let { return it }
         asNorwegianHomeContentAgreement?.numberCoInsured?.let { return it }
         asDanishHomeContentAgreement?.numberCoInsured?.let { return it }
+        asDanishTravelAgreement?.numberCoInsured?.let { return it }
+        asDanishAccidentAgreement?.numberCoInsured?.let { return it }
         e { "Unable to infer amount coinsured for agreement: $this" }
         return 0
     }

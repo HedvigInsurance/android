@@ -1,25 +1,22 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.hasError
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class GenericErrorTest {
+class GenericErrorTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -32,8 +29,8 @@ class GenericErrorTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowErrorWhenNetworkErrorOccurs() {
-        activityRule.launchActivity(
+    fun shouldShowErrorWhenNetworkErrorOccurs() = run {
+        activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
                 "TEST123"

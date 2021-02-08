@@ -61,7 +61,8 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 View.MeasureSpec.makeMeasureSpec(
                     root.width,
                     View.MeasureSpec.EXACTLY
-                ), View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.AT_MOST)
+                ),
+                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.AT_MOST)
             )
 
             scrollView.updatePadding(
@@ -94,11 +95,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     noCoverage.text = getString(R.string.KEY_GEAR_NOT_COVERED, category)
                     body.text =
                         getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)
-
                 }
             }
             model.loadItem(id)
-
 
             dateInput.setHapticClickListener {
                 val calendar = Calendar.getInstance()
@@ -168,7 +167,13 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 val type = valuationType(item)
                 if (type == ValuationType.FIXED) {
                     val valuation =
-                        item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationFixed
+                        item
+                            .fragments
+                            .keyGearItemFragment
+                            .fragments
+                            .keyGearItemValuationFragment
+                            .valuation
+                            ?.asKeyGearItemValuationFixed
                             ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(
@@ -185,7 +190,14 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     finish()
                 } else if (type == ValuationType.MARKET_PRICE) {
                     val ratio =
-                        item.fragments.keyGearItemFragment.fragments.keyGearItemValuationFragment.valuation?.asKeyGearItemValuationMarketValue?.ratio
+                        item
+                            .fragments
+                            .keyGearItemFragment
+                            .fragments
+                            .keyGearItemValuationFragment
+                            .valuation
+                            ?.asKeyGearItemValuationMarketValue
+                            ?.ratio
                             ?: return@safeLet
                     startActivity(
                         KeyGearValuationInfoActivity.newInstance(

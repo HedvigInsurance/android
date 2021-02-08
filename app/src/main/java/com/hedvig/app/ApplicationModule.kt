@@ -8,14 +8,15 @@ import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.bumptech.glide.RequestBuilder
-import com.facebook.appevents.AppEventsLogger
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
 import com.hedvig.app.feature.adyen.AdyenRepository
-import com.hedvig.app.feature.adyen.AdyenViewModel
-import com.hedvig.app.feature.adyen.AdyenViewModelImpl
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -67,10 +68,17 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.onboarding.ChoosePlanRepository
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
+import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
@@ -141,7 +149,6 @@ val applicationModule = module {
             get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
         )
     }
-    single { AppEventsLogger.newLogger(get()) }
     single {
         SimpleCache(
             File(get<Context>().cacheDir, "hedvig_story_video_cache"),
@@ -208,10 +215,22 @@ val applicationModule = module {
 }
 
 fun makeUserAgent(context: Context) =
-    "${BuildConfig.APPLICATION_ID} ${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.BRAND} ${Build.MODEL}; ${Build.DEVICE}; ${
-        getLocale(
-            context
-        ).language
+    "${
+    BuildConfig.APPLICATION_ID
+    } ${
+    BuildConfig.VERSION_NAME
+    } (Android ${
+    Build.VERSION.RELEASE
+    }; ${
+    Build.BRAND
+    } ${
+    Build.MODEL
+    }; ${
+    Build.DEVICE
+    }; ${
+    getLocale(
+        context
+    ).language
     })"
 
 fun makeLocaleString(context: Context): String =
@@ -237,8 +256,16 @@ val viewModelModule = module {
     viewModel { SettingsViewModel(get()) }
 }
 
+val choosePlanModule = module {
+    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
+}
+
+val onboardingModule = module {
+    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+}
+
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {
@@ -278,7 +305,8 @@ val paymentModule = module {
 }
 
 val adyenModule = module {
-    viewModel<AdyenViewModel> { AdyenViewModelImpl(get()) }
+    viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get()) }
+    viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
 val referralsModule = module {
@@ -335,6 +363,9 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
+    single { MemberIdRepository(get()) }
+    single { PaymentRepository(get()) }
+    single { ChoosePlanRepository(get(), get()) }
 }
 
 val trackerModule = module {
@@ -344,7 +375,7 @@ val trackerModule = module {
     single { ReferralsTracker(get()) }
     single { TerminatedTracker(get()) }
     single { WelcomeTracker(get()) }
-    single { OfferTracker(get(), get()) }
+    single { OfferTracker(get()) }
     single { ChatTracker(get()) }
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }

@@ -47,7 +47,6 @@ enum class Theme {
                 return null
             }
 
-
             return from(
                 PreferenceManager
                     .getDefaultSharedPreferences(context)

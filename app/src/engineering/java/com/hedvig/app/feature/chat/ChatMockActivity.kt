@@ -17,7 +17,8 @@ class ChatMockActivity : MockActivity() {
         clickableItem("Send chat message received-notification") {
             ChatNotificationManager
                 .sendChatNotification(
-                    this@ChatMockActivity, RemoteMessage(
+                    this@ChatMockActivity,
+                    RemoteMessage(
                         bundleOf(
                             DATA_NEW_MESSAGE_BODY to "Hello, world!"
                         )

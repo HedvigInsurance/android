@@ -48,13 +48,18 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                     return@observe
                 }
 
-                data.getOrNull()?.contracts?.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
+                data
+                    .getOrNull()
+                    ?.contracts
+                    ?.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
                     ?.let { terminatedContracts ->
-                        (recycler.adapter as? InsuranceAdapter)?.submitList(terminatedContracts.map {
-                            InsuranceModel.Contract(
-                                it
-                            )
-                        })
+                        (recycler.adapter as? InsuranceAdapter)?.submitList(
+                            terminatedContracts.map {
+                                InsuranceModel.Contract(
+                                    it
+                                )
+                            }
+                        )
                         recycler.post {
                             startPostponedEnterTransition()
                         }

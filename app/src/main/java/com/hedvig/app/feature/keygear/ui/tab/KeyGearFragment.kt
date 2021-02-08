@@ -84,7 +84,8 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                                 transitionPair(v)
                             ).toBundle()
                         )
-                    }, { root, item ->
+                    },
+                    { root, item ->
                         startActivity(
                             KeyGearItemDetailActivity.newInstance(
                                 requireContext(),
@@ -95,7 +96,8 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                                 Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
                             ).toBundle()
                         )
-                    })
+                    }
+                )
             items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
             items.itemAnimator = SlideInItemAnimator()
 
@@ -114,7 +116,10 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
         (items.adapter as? KeyGearItemsAdapter)?.submitList(data.keyGearItems)
         items.show()
 
-        if (data.keyGearItems.isEmpty() || !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }) {
+        if (
+            data.keyGearItems.isEmpty() ||
+            !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }
+        ) {
             illustration.show()
             title.show()
             description.show()

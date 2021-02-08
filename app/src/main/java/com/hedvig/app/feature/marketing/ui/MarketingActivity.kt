@@ -35,18 +35,24 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
                     navigationState.sharedElements.forEach { (view, transitionName) ->
                         transaction.addSharedElement(view, transitionName)
                     }
-                    transaction.replace(R.id.container, MarketPickerFragment().also {
-                        it.sharedElementEnterTransition = MaterialContainerTransform()
-                    }).commit()
+                    transaction.replace(
+                        R.id.container,
+                        MarketPickerFragment().also {
+                            it.sharedElementEnterTransition = MaterialContainerTransform()
+                        }
+                    ).commit()
                 }
                 MARKETING -> {
                     val transaction = supportFragmentManager.beginTransaction()
                     navigationState.sharedElements.forEach { (view, transitionName) ->
                         transaction.addSharedElement(view, transitionName)
                     }
-                    transaction.replace(R.id.container, MarketSelectedFragment().also {
-                        it.sharedElementEnterTransition = MaterialContainerTransform()
-                    }).commit()
+                    transaction.replace(
+                        R.id.container,
+                        MarketSelectedFragment().also {
+                            it.sharedElementEnterTransition = MaterialContainerTransform()
+                        }
+                    ).commit()
                 }
             }
         }

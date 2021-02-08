@@ -28,23 +28,23 @@ class UserViewModel(
             userRepository
                 .subscribeAuthStatus()
                 .onEach { response ->
-                    authStatus.postValue(response.data)
+                    response.data?.let { authStatus.postValue(it) }
                 }
                 .catch { e(it) }
                 .launchIn(this)
 
-            val response = runCatching { userRepository.fetchAutoStartTokenAsync().await() }
+            val response = runCatching { userRepository.fetchAutoStartToken() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            autoStartToken.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
         }
     }
 
     fun logout(callback: () -> Unit) {
         CoroutineScope(IO).launch {
-            val response = runCatching { userRepository.logoutAsync().await() }
+            val response = runCatching { userRepository.logout() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
                 return@launch

@@ -35,6 +35,8 @@
             @style/Hedvig.ShapeAppearance.MediumComponent
         </item>
 
+        <item name="radioButtonStyle">@style/Hedvig.RadioButton</item>
+
         <!-- Default button -->
         <item name="materialButtonStyle">@style/Hedvig.Button</item>
         <item name="textAppearanceButton">@style/Hedvig.TextAppearance.Button</item>
@@ -61,6 +63,7 @@
 
         <!-- Widget styles -->
         <item name="appBarLayoutStyle">@style/Hedvig.Theme.AppBarLayout</item>
+        <item name="toolbarStyle">@style/Hedvig.Theme.Toolbar</item>
         <item name="bottomSheetDialogTheme">@style/Hedvig.Theme.BottomSheetDialog</item>
         <item name="textInputStyle">@style/Hedvig.Theme.TextInputLayout</item>
 
@@ -94,6 +97,11 @@
 
     <style name="Hedvig.Theme.Widgets.Chat.Input" parent="Hedvig.Theme">
         <item name="colorSurface">@color/colorChatInputButton</item>
+    </style>
+
+    <style name="Hedvig.Theme.Settings" parent="Hedvig.Theme">
+        <item name="android:textColorSecondary">@color/colorPrimaryVariant</item>
+        <item name="android:textColor">?colorPrimary</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.MarketingActivity" parent="">

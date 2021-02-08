@@ -16,10 +16,10 @@ package com.hedvig.app.util
  * limitations under the License.
  */
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
-import androidx.annotation.MainThread
 
 class LiveEvent<T> : MediatorLiveData<T>() {
 

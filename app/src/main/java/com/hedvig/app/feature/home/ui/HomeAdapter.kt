@@ -427,4 +427,3 @@ class HomeAdapter(
             ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
     }
 }
-

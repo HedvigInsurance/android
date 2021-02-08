@@ -1,0 +1,20 @@
+mutation TokenizePayoutDetails(
+  $paymentMethodDetails: PaymentMethodDetails!
+  $returnUrl: String!
+) {
+  tokenizePayoutDetails(
+    req: {
+      paymentMethodDetails: $paymentMethodDetails
+      channel: ANDROID
+      returnUrl: $returnUrl
+    }
+  ) {
+    ... on TokenizationResponseFinished {
+      resultCode
+      tokenizationResult
+    }
+    ... on TokenizationResponseAction {
+      action
+    }
+  }
+}

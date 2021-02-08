@@ -1,6 +1,7 @@
 package com.hedvig.app.mocks
 
 import android.os.Handler
+import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
@@ -15,13 +16,16 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
     override fun loadItem(id: String) {
-        Handler().postDelayed({
-            data.postValue(
-                KeyGearItemQuery.KeyGearItem(
-                    fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
+        Handler(getMainLooper()).postDelayed(
+            {
+                data.postValue(
+                    KeyGearItemQuery.KeyGearItem(
+                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
+                    )
                 )
-            )
-        }, 250)
+            },
+            250
+        )
     }
 
     override fun updatePurchaseDateAndPrice(
@@ -40,9 +44,6 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 )
             )
         )
-        Handler().postDelayed({
-            // uploadResult.postValue()
-        }, 500L)
     }
 
     companion object {

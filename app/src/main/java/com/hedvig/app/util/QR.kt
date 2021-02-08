@@ -20,7 +20,8 @@ class QR private constructor(
         for (x in 0 until width) {
             for (y in 0 until height) {
                 bitmap.setPixel(
-                    x, y, if (matrix.get(x, y)) {
+                    x, y,
+                    if (matrix.get(x, y)) {
                         Color.BLACK
                     } else {
                         Color.WHITE

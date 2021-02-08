@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_quadruple"
+    android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginBottom="@dimen/base_margin_double"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/PAYMENTS_SUBTITLE_PAYMENT_METHOD"
+        android:textAppearance="?textAppearanceHeadline6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:textAppearance="?textAppearanceSubtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="Testbanken" />
+
+    <TextView
+        android:id="@+id/accountNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceBody1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/bank"
+        tools:text="@string/payment_screen.bank_account_masking"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/pending"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_sesqui"
+        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:text="@string/PROFILE_PAYMENT_BANK_ACCOUNT_CHANGED_DESCRIPTION"
+        android:textAppearance="?textAppearanceCaption"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bank"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

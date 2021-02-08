@@ -10,6 +10,7 @@
     <dimen name="base_margin_septuple">56dp</dimen>
     <dimen name="base_margin_octuple">64dp</dimen>
     <dimen name="base_margin_dectuple">80dp</dimen>
+    <dimen name="base_margin_undecuple">88dp</dimen>
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
@@ -144,4 +145,7 @@
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
+    <dimen name="plan_card_height">130dp</dimen>
+    <dimen name="more_options_list_item_height">48dp</dimen>
+    <dimen name="member_id_min_length">80dp</dimen>
 </resources>

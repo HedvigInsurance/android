@@ -64,4 +64,3 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
         }
     }
 }
-

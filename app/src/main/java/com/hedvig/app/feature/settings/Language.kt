@@ -8,10 +8,10 @@ import android.os.LocaleList
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.util.extensions.getMarket
 import java.util.Locale
 
 enum class Language {
-    SYSTEM_DEFAULT,
     SV_SE,
     EN_SE,
     NB_NO,
@@ -71,11 +71,9 @@ enum class Language {
         EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
         DA_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_DA_DK))
         EN_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_DK))
-        SYSTEM_DEFAULT -> DefaultLocale.get()
     }
 
     fun getLabel() = when (this) {
-        SYSTEM_DEFAULT -> R.string.system_default
         SV_SE -> R.string.swedish
         EN_SE -> R.string.english_swedish
         NB_NO -> R.string.norwegian
@@ -85,7 +83,6 @@ enum class Language {
     }
 
     override fun toString() = when (this) {
-        SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
         SV_SE -> SETTING_SV_SE
         EN_SE -> SETTING_EN_SE
         NB_NO -> SETTING_NB_NO
@@ -95,7 +92,7 @@ enum class Language {
     }
 
     companion object {
-        const val SETTING_SYSTEM_DEFAULT = "system_default"
+        private const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
         const val SETTING_EN_SE = "en-SE"
         const val SETTING_NB_NO = "nb-NO"
@@ -104,7 +101,6 @@ enum class Language {
         const val SETTING_EN_DK = "en-DK"
 
         fun from(value: String) = when (value) {
-            SETTING_SYSTEM_DEFAULT -> SYSTEM_DEFAULT
             SETTING_SV_SE -> SV_SE
             SETTING_EN_SE -> EN_SE
             SETTING_NB_NO -> NB_NO
@@ -118,13 +114,19 @@ enum class Language {
             if (context == null) {
                 return null
             }
-
-            return from(
-                PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getString("language", SETTING_SYSTEM_DEFAULT)
-                    ?: SETTING_SYSTEM_DEFAULT
-            )
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+            val market = context.getMarket()
+            if (market != null) {
+                val selectedLanguage = sharedPref
+                    .getString("language", getAvailableLanguages(market).first().toString())
+                    ?: getAvailableLanguages(market).first().toString()
+                return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
+                    from(getAvailableLanguages(market).first().toString())
+                } else {
+                    from(selectedLanguage)
+                }
+            }
+            return from(SETTING_EN_SE)
         }
 
         fun getAvailableLanguages(market: Market): List<Language> {
@@ -132,23 +134,6 @@ enum class Language {
                 Market.SE -> listOf(SV_SE, EN_SE)
                 Market.NO -> listOf(NB_NO, EN_NO)
                 Market.DK -> listOf(DA_DK, EN_DK)
-            }
-        }
-    }
-
-    object DefaultLocale {
-        private var locale: LocaleWrapper? = null
-
-        internal fun get(): LocaleWrapper {
-            return locale ?: throw RuntimeException("DefaultLocale has not been initialized")
-        }
-
-        fun initialize() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                this.locale = LocaleWrapper.MultipleLocales(LocaleList.getDefault())
-                return
-            } else {
-                this.locale = LocaleWrapper.SingleLocale(Locale.getDefault())
             }
         }
     }

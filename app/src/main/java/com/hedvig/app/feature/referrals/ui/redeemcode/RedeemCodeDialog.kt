@@ -32,7 +32,7 @@ abstract class RedeemCodeDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.promotion_code_dialog, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,7 +59,6 @@ abstract class RedeemCodeDialog : DialogFragment() {
                     onRedeemSuccess(it)
                 } ?: wrongPromotionCode()
             }
-
         }
     }
 
@@ -88,7 +87,9 @@ abstract class RedeemCodeDialog : DialogFragment() {
 
     private fun wrongPromotionCode() {
         binding.apply {
-            bottomSheetAddPromotionCodeEditText.setBackgroundResource(R.drawable.background_edit_text_rounded_corners_failed)
+            bottomSheetAddPromotionCodeEditText.setBackgroundResource(
+                R.drawable.background_edit_text_rounded_corners_failed
+            )
             bottomSheetPromotionCodeMissingCode.show()
         }
     }

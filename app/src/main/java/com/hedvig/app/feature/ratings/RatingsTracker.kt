@@ -7,25 +7,29 @@ class RatingsTracker(
     private val mixpanel: MixpanelAPI
 ) {
     fun doNotLikeApp() = mixpanel.track(
-        "RATINGS_DIALOG_NO", jsonObjectOf(
+        "RATINGS_DIALOG_NO",
+        jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY"
         )
     )
 
     fun likeApp() = mixpanel.track(
-        "RATINGS_DIALOG_YES", jsonObjectOf(
+        "RATINGS_DIALOG_YES",
+        jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY"
         )
     )
 
     fun noToFeedback() = mixpanel.track(
-        "RATINGS_DIALOG_NO", jsonObjectOf(
+        "RATINGS_DIALOG_NO",
+        jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY_FEEDBACK"
         )
     )
 
     fun yesToFeedback() = mixpanel.track(
-        "RATINGS_DIALOG_YES", jsonObjectOf(
+        "RATINGS_DIALOG_YES",
+        jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY_FEEDBACK"
         )
     )

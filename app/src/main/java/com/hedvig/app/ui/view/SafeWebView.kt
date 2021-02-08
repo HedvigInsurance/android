@@ -16,7 +16,8 @@ class SafeWebView : WebView {
     constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
         safeContext(
             context
-        ), attributeSet, defStyle
+        ),
+        attributeSet, defStyle
     )
 
     companion object {

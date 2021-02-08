@@ -23,6 +23,18 @@
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
         <activity
+            android:name=".feature.onboarding.ui.MoreOptionsActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.onboarding.ui.ChoosePlanActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -118,13 +130,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.profile.ui.charity.CharityActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.feedback.FeedbackActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -260,7 +265,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.adyen.AdyenConnectPayinActivity"
+            android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
@@ -271,19 +276,18 @@
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
+            android:launchMode="singleTask" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="${firebaseCrashlyticsCollectionEnabled}" />
@@ -310,8 +314,22 @@
         <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
 
         <service
-            android:name=".feature.adyen.AdyenDropInService"
+            android:name=".feature.adyen.payin.AdyenPayinDropInService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".feature.adyen.payout.AdyenPayoutDropInService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="bankid" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 
 </manifest>

@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -11,27 +9,27 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.util.concurrent.Semaphore
 
-@RunWith(AndroidJUnit4::class)
-class ErrorTest {
+class ErrorTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowErrorWhenAnErrorOccurs() {
+    fun shouldShowErrorWhenAnErrorOccurs() = run {
         MockWebServer().use { webServer ->
             webServer.dispatcher = object : Dispatcher() {
                 var shouldFailureSemaphore = true
@@ -72,7 +70,7 @@ class ErrorTest {
                 initialTab = LoggedInTabs.REFERRALS
             )
 
-            activityRule.launchActivity(intent)
+            activityRule.launch(intent)
 
             onScreen<ReferralTabScreen> {
                 share { isGone() }

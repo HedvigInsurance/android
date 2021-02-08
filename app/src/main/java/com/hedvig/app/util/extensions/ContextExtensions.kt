@@ -51,7 +51,7 @@ fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, col
 fun Context.colorAttr(
     @AttrRes color: Int,
     typedValue: TypedValue = TypedValue(),
-    resolveRefs: Boolean = true
+    resolveRefs: Boolean = true,
 ): Int {
     theme.resolveAttribute(color, typedValue, resolveRefs)
     return typedValue.data
@@ -62,7 +62,7 @@ fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 fun Context.fontAttr(
     @AttrRes font: Int,
     typedValue: TypedValue = TypedValue(),
-    resolveRefs: Boolean = true
+    resolveRefs: Boolean = true,
 ): Typeface? {
     theme.resolveAttribute(font, typedValue, resolveRefs)
     return ResourcesCompat.getFont(this, typedValue.resourceId)
@@ -79,7 +79,10 @@ fun Context.hideKeyboard(view: View) {
 fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {
     val startActivity = Intent(this, activity)
     startActivity.flags =
-        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        Intent.FLAG_ACTIVITY_NEW_TASK or
+        Intent.FLAG_ACTIVITY_CLEAR_TASK or
+        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+        Intent.FLAG_ACTIVITY_SINGLE_TOP
     val pendingIntentId = 56665 // Randomly chosen identifier, this number has no significance.
     val pendingIntent =
         PendingIntent.getActivity(
@@ -159,7 +162,7 @@ fun Context.showAlert(
     @StringRes positiveLabel: Int = android.R.string.ok,
     @StringRes negativeLabel: Int = android.R.string.cancel,
     positiveAction: () -> Unit,
-    negativeAction: (() -> Unit)? = null
+    negativeAction: (() -> Unit)? = null,
 ): androidx.appcompat.app.AlertDialog? =
     MaterialAlertDialogBuilder(this)
         .apply {
@@ -175,19 +178,19 @@ fun Context.showAlert(
         .show()
 
 fun Context.copyToClipboard(
-    text: String
+    text: String,
 ) {
     getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
 fun Context.makeToast(
     @StringRes text: Int,
-    length: Int = Toast.LENGTH_LONG
+    length: Int = Toast.LENGTH_LONG,
 ) = makeToast(resources.getString(text), length)
 
 fun Context.makeToast(
     text: String,
-    length: Int = Toast.LENGTH_LONG
+    length: Int = Toast.LENGTH_LONG,
 ) = Toast.makeText(this, text, length).show()
 
 fun Context.openUri(uri: Uri) = startActivity(Intent(Intent.ACTION_VIEW, uri))

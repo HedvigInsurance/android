@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.insurance.terminatedcontracts
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
@@ -10,17 +8,17 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ErrorTest {
+class ErrorTest : TestCase() {
 
     @get:Rule
-    val activityRule = ActivityTestRule(TerminatedContractsActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(TerminatedContractsActivity::class.java)
 
     var shouldFail = true
 
@@ -40,8 +38,8 @@ class ErrorTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowErrorOnGraphQLError() {
-        activityRule.launchActivity(TerminatedContractsActivity.newInstance(context()))
+    fun shouldShowErrorOnGraphQLError() = run {
+        activityRule.launch(TerminatedContractsActivity.newInstance(context()))
 
         onScreen<TerminatedContractsScreen> {
             recycler {
@@ -55,4 +53,3 @@ class ErrorTest {
         }
     }
 }
-

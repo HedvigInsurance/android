@@ -10,13 +10,14 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.AdyenConnectPayinActivity
+import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import org.hamcrest.Matcher
 
 class HomeTabScreen : Screen<HomeTabScreen>() {
     val recycler =
-        KRecyclerView({ withId(R.id.recycler) },
+        KRecyclerView(
+            { withId(R.id.recycler) },
             {
                 itemType(::HomePSAItem)
                 itemType(::HowClaimsWork)
@@ -28,7 +29,8 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimTitleItem)
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
-            })
+            }
+        )
 
     class HomePSAItem(parent: Matcher<View>) : KRecyclerItem<HomePSAItem>(parent) {
         val text = KTextView(parent) { withId(R.id.body) }

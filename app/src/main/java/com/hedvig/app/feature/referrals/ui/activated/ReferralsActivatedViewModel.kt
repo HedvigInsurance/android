@@ -22,8 +22,7 @@ class ReferralsActivatedViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 loggedInRepository
-                    .loggedInDataAsync()
-                    .await()
+                    .loggedInData()
             }
 
             if (response.isFailure) {

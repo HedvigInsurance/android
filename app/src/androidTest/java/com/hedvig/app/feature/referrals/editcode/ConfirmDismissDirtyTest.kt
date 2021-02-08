@@ -1,23 +1,25 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class ConfirmDismissDirtyTest {
+/*
+* This test cannot be practically ported to `ActivityScenario` as it causes the test to take 50 seconds to finish.
+* Related issue: https://github.com/android/android-test/issues/676
+* */
+class ConfirmDismissDirtyTest : TestCase() {
 
     @get:Rule
     val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)
 
     @Test
-    fun shouldShowConfirmDismissWhenFormIsDirty() {
+    fun shouldShowConfirmDismissWhenFormIsDirty() = run {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
                 context(),
@@ -46,4 +48,3 @@ class ConfirmDismissDirtyTest {
         assertTrue(activityRule.activity.isFinishing)
     }
 }
-

@@ -9,11 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.HedvigApplication
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getLanguage
 import com.hedvig.app.util.extensions.getMarket
@@ -25,7 +26,7 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
     val data: LiveData<PickerState> = _data
     abstract fun uploadLanguage()
 
-    @SuppressLint("ApplySharedPref")// We want to apply this right away. It's important
+    @SuppressLint("ApplySharedPref") // We want to apply this right away. It's important
     fun save() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         var clean = false
@@ -67,13 +68,14 @@ abstract class MarketPickerViewModel(private val context: Context) : ViewModel()
 class MarketPickerViewModelImpl(
     private val marketRepository: MarketRepository,
     private val languageRepository: LanguageRepository,
-    private val context: Context
+    private val context: Context,
+    private val app: HedvigApplication
 ) : MarketPickerViewModel(context) {
 
     init {
         viewModelScope.launch {
             if (context.getMarket() == null) {
-                val geo = runCatching { marketRepository.geoAsync().await() }
+                val geo = runCatching { marketRepository.geo() }
                 if (geo.isFailure || geo.getOrNull()?.hasErrors() == true) {
                     _data.postValue(
                         PickerState(
@@ -86,7 +88,17 @@ class MarketPickerViewModelImpl(
                     runCatching {
                         val market: Market
                         try {
-                            market = Market.valueOf(it.geo.countryISOCode)
+                            market = Market.valueOf(
+                                if (it.geo.countryISOCode == "DK") {
+                                    if (shouldOverrideFeatureFlags(app)) {
+                                        it.geo.countryISOCode
+                                    } else {
+                                        Market.SE.name
+                                    }
+                                } else {
+                                    it.geo.countryISOCode
+                                }
+                            )
                             when (market) {
                                 Market.SE -> _data.postValue(PickerState(market, Language.EN_SE))
                                 Market.NO -> _data.postValue(PickerState(market, Language.EN_NO))
@@ -99,7 +111,6 @@ class MarketPickerViewModelImpl(
                                 )
                             )
                         }
-
                     }
                 }
             } else {
@@ -140,4 +151,3 @@ sealed class Model {
 
     object Button : Model()
 }
-

@@ -41,4 +41,3 @@ class ChatMessageNotificationReceiver : BroadcastReceiver() {
         const val NOTIFICATION_ID = "NOTIFICATION_ID"
     }
 }
-

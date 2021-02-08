@@ -82,7 +82,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     }
 
     private fun animatePickerSheet(show: Boolean) {
-        //maybe we should create a better animation but this is something
+        // maybe we should create a better animation but this is something
         val animation =
             loadAnimation(context, if (show) R.anim.slide_in_up else R.anim.slide_out_down)
         animation.setAnimationListener(object : Animation.AnimationListener {
@@ -160,7 +160,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
             dismiss()
             false
         }
-        //prevent dismiss in this area
+        // prevent dismiss in this area
         binding.attachPickerBottomSheet.setOnTouchListener { _, _ -> true }
     }
 

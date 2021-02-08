@@ -7,5 +7,6 @@ enum class ContractStatus {
     ACTIVE_IN_FUTURE_INVALID,
     ACTIVE,
     TERMINATED_TODAY,
-    TERMINATED
+    TERMINATED,
+    TERMINATED_IN_FUTURE
 }

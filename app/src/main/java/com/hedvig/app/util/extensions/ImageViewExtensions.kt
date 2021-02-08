@@ -12,22 +12,22 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 fun ImageView.avdSetLooping() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(object :
-            Animatable2.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                this@avdSetLooping.post {
-                    avdStart()
+                Animatable2.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    this@avdSetLooping.post {
+                        avdStart()
+                    }
                 }
-            }
-        })
+            })
     } else {
         (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(object :
-            Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                this@avdSetLooping.post {
-                    avdStart()
+                Animatable2Compat.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    this@avdSetLooping.post {
+                        avdStart()
+                    }
                 }
-            }
-        })
+            })
     }
 }
 
@@ -47,10 +47,11 @@ inline fun ImageView.avdDoOnEnd(crossinline action: () -> Unit) {
             }
         })
     } else {
-        (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                action()
-            }
-        })
+        (drawable as? AnimatedVectorDrawableCompat)
+            ?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    action()
+                }
+            })
     }
 }

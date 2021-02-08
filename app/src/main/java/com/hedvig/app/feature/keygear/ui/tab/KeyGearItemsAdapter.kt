@@ -20,7 +20,6 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -29,7 +28,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class KeyGearItemsAdapter(
     private val tracker: KeyGearTracker,
     private val createItem: (view: View) -> Unit,
-    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit
+    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
 ) : ListAdapter<KeyGearItemsQuery.KeyGearItem, KeyGearItemsAdapter.ViewHolder>(
     GenericDiffUtilItemCallback()
 ) {
@@ -92,7 +91,7 @@ class KeyGearItemsAdapter(
             val binding by viewBinding(KeyGearItemBinding::bind)
             fun bind(
                 item: KeyGearItemsQuery.KeyGearItem,
-                openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit
+                openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
             ) {
                 binding.apply {
                     keyGearItemRoot.setHapticClickListener {
@@ -121,7 +120,7 @@ class KeyGearItemsAdapter(
                             width = ViewGroup.LayoutParams.WRAP_CONTENT
                             height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
-                        itemPhoto.setImageDrawable(itemPhoto.context.compatDrawable(item.fragments.keyGearItemFragment.category.illustration))
+                        itemPhoto.setImageResource(item.fragments.keyGearItemFragment.category.illustration)
                     }
 
                     name.text = item.fragments.keyGearItemFragment.name

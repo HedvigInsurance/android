@@ -70,4 +70,3 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
             }
     }
 }
-

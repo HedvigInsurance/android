@@ -5,6 +5,10 @@
         <item name="android:background">?android:colorBackground</item>
     </style>
 
+    <style name="Hedvig.Theme.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">?colorPrimary</item>
+    </style>
+
     <style name="Hedvig.Theme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="textAllCaps">false</item>
     </style>
@@ -72,6 +76,10 @@
 
     <style name="ThemeOverlay.Hedvig.InsuranceCard.StatusPill" parent="">
         <item name="android:textColorTertiary">@color/text_color_primary_light</item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.InsuranceCard.Discount" parent="">
+        <item name="android:textColor">?colorOnPrimary</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

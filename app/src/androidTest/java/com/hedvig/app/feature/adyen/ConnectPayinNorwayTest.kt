@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.adyen
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -18,19 +15,20 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.dsl.module
 
-@RunWith(AndroidJUnit4::class)
-class ConnectPayinNorwayTest {
+class ConnectPayinNorwayTest : TestCase() {
     @get:Rule
-    val activityRule = IntentsTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -59,11 +57,12 @@ class ConnectPayinNorwayTest {
     )
 
     @Test
-    fun shouldOpenConnectPayinAdyen() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
+    fun shouldOpenConnectPayinAdyen() = run {
+        activityRule.launch(LoggedInActivity.newInstance(context()))
         Screen.onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.InfoCardItem>(3) {
+                    connectPayinAdyen { stub() }
                     action {
                         click()
                     }

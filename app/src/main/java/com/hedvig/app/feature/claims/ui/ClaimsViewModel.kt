@@ -22,7 +22,7 @@ class ClaimsViewModel(
 
     fun fetchCommonClaims() {
         viewModelScope.launch {
-            val response = runCatching { claimsRepository.fetchCommonClaimsAsync().await() }
+            val response = runCatching { claimsRepository.fetchCommonClaims() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
                 return@launch
@@ -33,7 +33,7 @@ class ClaimsViewModel(
 
     suspend fun triggerClaimsChat(claimTypeId: String? = null) {
         val response =
-            runCatching { claimsRepository.triggerClaimsChatAsync(claimTypeId).await() }
+            runCatching { claimsRepository.triggerClaimsChat(claimTypeId) }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e(it) }
             return
@@ -43,7 +43,7 @@ class ClaimsViewModel(
     suspend fun triggerFreeTextChat() {
         val response = runCatching {
             chatRepository
-                .triggerFreeTextChatAsync().await()
+                .triggerFreeTextChat()
         }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e(it) }
@@ -53,7 +53,7 @@ class ClaimsViewModel(
 
     fun triggerCallMeChat(done: () -> Unit) {
         viewModelScope.launch {
-            val response = runCatching { claimsRepository.triggerCallMeChatAsync().await() }
+            val response = runCatching { claimsRepository.triggerCallMeChat() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch

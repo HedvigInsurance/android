@@ -1,7 +1,7 @@
 package com.hedvig.app.service
 
 import android.content.Context
-import com.apollographql.apollo.coroutines.toDeferred
+import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.extensions.getAuthenticationToken
@@ -26,7 +26,7 @@ class LoginStatusService(
         context.getAuthenticationToken() ?: return LoginStatus.ONBOARDING
 
         val response = runCatching {
-            apolloClientWrapper.apolloClient.query(ContractStatusQuery()).toDeferred().await()
+            apolloClientWrapper.apolloClient.query(ContractStatusQuery()).await()
         }
 
         if (response.isFailure || response.getOrNull()?.data?.contracts.orEmpty().isEmpty()) {

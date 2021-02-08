@@ -164,14 +164,14 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
 
     private fun bindCategories(data: List<Category>) {
-       binding.apply {
-        (categories.adapter as? CategoryAdapter)?.submitList(data)
+        binding.apply {
+            (categories.adapter as? CategoryAdapter)?.submitList(data)
 
-        if (data.any { c -> c.selected }) {
-            saveContainer.show()
-            saveContainer
-                .spring(SpringAnimation.TRANSLATION_Y)
-                .animateToFinalPosition(0f)
+            if (data.any { c -> c.selected }) {
+                saveContainer.show()
+                saveContainer
+                    .spring(SpringAnimation.TRANSLATION_Y)
+                    .animateToFinalPosition(0f)
             }
         }
     }
@@ -229,15 +229,16 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                         }
                         .start()
 
-                    Handler().postDelayed({
-                        createdLabel.spring(SpringAnimation.TRANSLATION_Y)
-                            .addUpdateListener { _, value, _ ->
-                                createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
-                            }
-                            .animateToFinalPosition(0f)
-
-                    }, POST_CREATE_LABEL_REVEAL_DELAY)
-
+                    Handler(mainLooper).postDelayed(
+                        {
+                            createdLabel.spring(SpringAnimation.TRANSLATION_Y)
+                                .addUpdateListener { _, value, _ ->
+                                    createdLabel.alpha = 1 - (value / BASE_MARGIN_TRIPLE)
+                                }
+                                .animateToFinalPosition(0f)
+                        },
+                        POST_CREATE_LABEL_REVEAL_DELAY
+                    )
                 }
                 start()
             }

@@ -1,0 +1,47 @@
+query Payment {
+  contracts {
+    status {
+      ...ContractStatusFragment
+    }
+  }
+  balance {
+    failedCharges
+  }
+  chargeEstimation {
+    charge {
+      ...MonetaryAmountFragment
+    }
+    discount {
+      ...MonetaryAmountFragment
+    }
+    subscription {
+      ...MonetaryAmountFragment
+    }
+  }
+  nextChargeDate
+  chargeHistory {
+    amount {
+      ...MonetaryAmountFragment
+    }
+    date
+  }
+  insuranceCost {
+    ...CostFragment
+    freeUntil
+  }
+  redeemedCampaigns {
+    ...IncentiveFragment
+    owner {
+      displayName
+    }
+  }
+  bankAccount {
+    ...BankAccountFragment
+  }
+  activePaymentMethods {
+    ...ActivePaymentMethodsFragment
+  }
+  activePayoutMethods {
+    status
+  }
+}

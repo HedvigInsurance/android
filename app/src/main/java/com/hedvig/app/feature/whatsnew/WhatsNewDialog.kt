@@ -1,12 +1,10 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.os.Bundle
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.util.apollo.ThemedIconUrls
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 

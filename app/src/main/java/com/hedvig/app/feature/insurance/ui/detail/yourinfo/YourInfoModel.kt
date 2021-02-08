@@ -14,7 +14,7 @@ sealed class YourInfoModel {
 
     data class Paragraph(val text: String) : YourInfoModel()
 
-    object ChangeParagraph: YourInfoModel()
+    object ChangeParagraph : YourInfoModel()
 
     object OpenChatButton : YourInfoModel()
 }

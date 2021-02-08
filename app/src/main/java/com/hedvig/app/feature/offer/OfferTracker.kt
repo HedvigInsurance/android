@@ -1,13 +1,9 @@
 package com.hedvig.app.feature.offer
 
-import com.facebook.appevents.AppEventsLogger
 import com.hedvig.app.util.jsonObjectOf
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import java.math.BigDecimal
-import java.util.Currency
 
 class OfferTracker(
-    private val facebookAnalytics: AppEventsLogger,
     private val mixpanel: MixpanelAPI
 ) {
 
@@ -26,10 +22,6 @@ class OfferTracker(
     fun userDidSign(price: Double) {
         if (!hasSigned) {
             hasSigned = true
-            facebookAnalytics.logPurchase(
-                BigDecimal(price),
-                Currency.getInstance("SEK")
-            )
         }
     }
 

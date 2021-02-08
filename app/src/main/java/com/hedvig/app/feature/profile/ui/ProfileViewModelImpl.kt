@@ -10,12 +10,10 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
 import e
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
@@ -32,21 +30,7 @@ class ProfileViewModelImpl(
 
     override fun refreshProfile() {
         viewModelScope.launch {
-            runCatching { profileRepository.refreshProfileAsync().await() }
-        }
-    }
-
-    override fun startTrustlySession() {
-        viewModelScope.launch {
-            val response =
-                runCatching { profileRepository.startTrustlySessionAsync().await().data }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.let { data ->
-                trustlyUrl.postValue(data.startDirectDebitRegistration)
-            }
+            runCatching { profileRepository.refreshProfile() }
         }
     }
 
@@ -56,7 +40,7 @@ class ProfileViewModelImpl(
         viewModelScope.launch {
             if (email != emailInput) {
                 val response =
-                    runCatching { profileRepository.updateEmailAsync(emailInput).await() }
+                    runCatching { profileRepository.updateEmail(emailInput) }
                 if (response.isFailure) {
                     response.exceptionOrNull()?.let { e { "$it error updating email" } }
                     return@launch
@@ -68,7 +52,7 @@ class ProfileViewModelImpl(
 
             if (phoneNumber != phoneNumberInput) {
                 val response = runCatching {
-                    profileRepository.updatePhoneNumberAsync(phoneNumberInput).await()
+                    profileRepository.updatePhoneNumber(phoneNumberInput)
                 }
                 if (response.isFailure) {
                     response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
@@ -111,31 +95,9 @@ class ProfileViewModelImpl(
 
     override fun selectCashback(id: String) {
         viewModelScope.launch {
-            profileRepository.selectCashback(id)
-                .onEach { response ->
-                    response.data?.selectCashbackOption?.let { cashback ->
-                        profileRepository.writeCashbackToCache(cashback)
-                    }
-                }
-                .catch { e { "$it Failed to select cashback" } }
-                .launchIn(this)
-        }
-    }
-
-    override fun refreshBankAccountInfo() {
-        viewModelScope.launch {
-            withContext(NonCancellable) {
-                val result = runCatching {
-                    payinStatusRepository.refreshPayinStatus()
-                }
-
-                result.exceptionOrNull()?.let { e(it) }
-
-                val payinMethodResult = runCatching {
-                    profileRepository.refreshPayinMethod()
-                }
-
-                payinMethodResult.exceptionOrNull()?.let { e(it) }
+            val response = runCatching { profileRepository.selectCashback(id) }
+            response.getOrNull()?.data?.selectCashbackOption?.let { cashback ->
+                profileRepository.writeCashbackToCache(cashback)
             }
         }
     }
@@ -144,8 +106,7 @@ class ProfileViewModelImpl(
         viewModelScope.launch {
             val response = runCatching {
                 chatRepository
-                    .triggerFreeTextChatAsync()
-                    .await()
+                    .triggerFreeTextChat()
             }
 
             if (response.isFailure) {

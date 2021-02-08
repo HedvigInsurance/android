@@ -5,13 +5,13 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketProviderModule
+import com.hedvig.app.mocks.MockMarketProvider
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
@@ -19,6 +19,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_WITH_PSA
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
+import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
@@ -28,14 +29,20 @@ import org.koin.dsl.module
 
 class HomeMockActivity : MockActivity() {
     override val original = listOf(loggedInModule, homeModule, marketProviderModule)
-    override val mocks = listOf(module {
-        viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
-        viewModel<HomeViewModel> { MockHomeViewModel() }
-        single<MarketProvider> { MockMarketProvider() }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
+            viewModel<HomeViewModel> { MockHomeViewModel() }
+            single<MarketProvider> { MockMarketProvider() }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Home Screen")
+        clickableItem("Terminated in feature") {
+            MockHomeViewModel.homeMockData = HOME_DATA_TERMINATED_IN_FUTURE
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
         clickableItem("Upcoming Renewal") {
             MockHomeViewModel.apply {
                 homeMockData = HOME_DATA_UPCOMING_RENEWAL
@@ -122,18 +129,5 @@ class HomeMockActivity : MockActivity() {
         }
         header("Market")
         marketSpinner { MockMarketProvider.mockedMarket = it }
-    }
-}
-
-class MockMarketProvider : MarketProvider() {
-    override val market
-        get() = mockedMarket
-
-    override val enabledMarkets
-        get() = mockedEnabledMarkets
-
-    companion object {
-        var mockedMarket: Market? = null
-        var mockedEnabledMarkets = Market.values().toList()
     }
 }

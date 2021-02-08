@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.home
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
@@ -13,20 +10,20 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@RunWith(AndroidJUnit4::class)
-class ActiveInFutureTest {
+class ActiveInFutureTest : TestCase() {
     @get:Rule
-    val activityRule = ActivityTestRule(LoggedInActivity::class.java, false, false)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -42,8 +39,8 @@ class ActiveInFutureTest {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowMessageWhenUserHasAllContractsInActiveInFutureState() {
-        activityRule.launchActivity(LoggedInActivity.newInstance(context()))
+    fun shouldShowMessageWhenUserHasAllContractsInActiveInFutureState() = run {
+        activityRule.launch(LoggedInActivity.newInstance(context()))
         val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
         onScreen<HomeTabScreen> {
@@ -64,4 +61,3 @@ class ActiveInFutureTest {
         }
     }
 }
-
