@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.ui
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -27,25 +26,19 @@ import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragmen
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val model: EmbarkViewModel by viewModel()
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
 
+    private val storyName: String by lazy {
+        // TODO: Implement error UI that design must provide
+        intent.getStringExtra(STORY_NAME) ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val storyName = intent.getStringExtra(STORY_NAME)
-
-        if (storyName == null) {
-            // TODO: Implement error UI that design must provide
-            e { "Programmer error: STORY_NAME not provided to ${this.javaClass.name}" }
-            setResult(Activity.RESULT_CANCELED)
-            finish()
-            return
-        }
 
         model.load(storyName)
 
@@ -59,7 +52,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.moreOptions -> {
-                            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
+                            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
                             true
                         }
                         R.id.tooltip -> {
@@ -181,9 +174,18 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_MORE_OPTIONS && resultCode == RESULT_CANCELED) {
+            model.load(storyName)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     companion object {
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
+        internal const val REQUEST_MORE_OPTIONS = 1
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {
