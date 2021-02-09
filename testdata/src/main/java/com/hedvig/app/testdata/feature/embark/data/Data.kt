@@ -1310,8 +1310,18 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(
+                action = SelectActionBuilder(options = listOf(SelectOptionBuilder(
+                    link = LINK_TO_THIRD_PASSAGE,
+                ).build())).build(),
                 tracks = listOf(
                     TrackBuilder("Enter second passage", includeAllKeys = true).build()
+                )
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                tracks = listOf(
+                    TrackBuilder("Enter third passage", keys = listOf("FOO")).build()
                 )
             )
             .build()

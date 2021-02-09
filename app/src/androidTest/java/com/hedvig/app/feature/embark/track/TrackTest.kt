@@ -75,6 +75,24 @@ class TrackTest : TestCase() {
                     )
                 }
             }
+            step("Navigate to next passage") {
+                selectActions {
+                    childAt<EmbarkScreen.SelectAction>(0) { click() }
+                }
+            }
+            step("Verify that next passage is showing") {
+                messages {
+                    childAt<EmbarkScreen.MessageRow>(0) {
+                        text { hasText("a third message") }
+                    }
+                }
+            }
+            step("Check that track is called with specific keys") {
+                verify(exactly = 1) {
+                    tracker.track("Enter third passage",
+                        jsonEq(jsonObjectOf("FOO" to "BAR")))
+                }
+            }
         }
     }
 }

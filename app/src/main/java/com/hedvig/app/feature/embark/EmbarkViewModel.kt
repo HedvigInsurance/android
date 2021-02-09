@@ -98,6 +98,8 @@ abstract class EmbarkViewModel(
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
         track.includeAllKeys -> JSONObject(store.toMap())
+        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
+            .map { it to store[it] }.toMap())
         else -> null
     }
 
