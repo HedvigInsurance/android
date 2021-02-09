@@ -87,10 +87,10 @@ class TrackTest : TestCase() {
                     }
                 }
             }
-            step("Check that track is called with specific keys") {
+            step("Check that track is called with specific keys, and that customData is merged in") {
                 verify(exactly = 1) {
                     tracker.track("Enter third passage",
-                        jsonEq(jsonObjectOf("FOO" to "BAR")))
+                        jsonEq(jsonObjectOf("FOO" to "BAR", "CUSTOM" to "DATA")))
                 }
             }
         }

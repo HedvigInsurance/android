@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
+import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
@@ -101,6 +102,8 @@ abstract class EmbarkViewModel(
         track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
             .map { it to store[it] }.toMap())
         else -> null
+    }?.let { data ->
+        track.customData?.let { data + it } ?: data
     }
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
@@ -111,6 +114,7 @@ abstract class EmbarkViewModel(
         val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100
         return Percent(progress.toInt())
     }
+
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {

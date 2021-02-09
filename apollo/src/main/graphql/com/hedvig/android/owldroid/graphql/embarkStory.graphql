@@ -118,7 +118,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         eventName
         eventKeys
         includeAllKeys
-        # customData # TODO: Add this when schema works out
+        customData
       }
     }
   }

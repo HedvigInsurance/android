@@ -22,6 +22,7 @@ import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Compani
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TrackBuilder
+import org.json.JSONObject
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
     text = "test message"
@@ -1321,7 +1322,9 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 tracks = listOf(
-                    TrackBuilder("Enter third passage", keys = listOf("FOO")).build()
+                    TrackBuilder("Enter third passage",
+                        keys = listOf("FOO"),
+                        customData = JSONObject("{\"CUSTOM\": \"DATA\"}")).build()
                 )
             )
             .build()
