@@ -115,7 +115,6 @@ abstract class EmbarkViewModel(
         return Percent(progress.toInt())
     }
 
-
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
             val variables = if (graphQLQuery.queryData.variables.isNotEmpty()) {
@@ -225,10 +224,14 @@ abstract class EmbarkViewModel(
         val passageName = backStack.pop()
 
         storyData.embarkStory?.let { story ->
+            _data.value?.passage?.name?.let { currentPassageName ->
+                tracker.track("Passage Go Back - $currentPassageName")
+            }
             val nextPassage = story.passages.find { it.name == passageName }
             _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
                 NavigationDirection.BACKWARDS,
                 currentProgress(nextPassage)))
+
             return true
         }
         return false

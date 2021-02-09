@@ -93,6 +93,14 @@ class TrackTest : TestCase() {
                         jsonEq(jsonObjectOf("FOO" to "BAR", "CUSTOM" to "DATA")))
                 }
             }
+            step("Go back") {
+                pressBack()
+            }
+            step("Check that track is called for back navigation") {
+                verify(exactly = 1) {
+                    tracker.track("Passage Go Back - TestPassage3")
+                }
+            }
         }
     }
 }
