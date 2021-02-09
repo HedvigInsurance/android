@@ -48,7 +48,7 @@ import org.koin.dsl.module
 class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, moreOptionsModule)
     override val mocks = listOf(module {
-        viewModel<EmbarkViewModel> { MockEmbarkViewModel() }
+        viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
         viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
     })
 
@@ -106,7 +106,8 @@ class EmbarkMockActivity : MockActivity() {
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Text action set first text personal number validation and second text with email validation") {
-            MockEmbarkViewModel.mockedData = STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+            MockEmbarkViewModel.mockedData =
+                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         clickableItem("Email text validation") {

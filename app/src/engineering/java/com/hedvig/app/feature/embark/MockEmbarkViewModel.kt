@@ -4,7 +4,7 @@ import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.util.jsonObjectOf
 import org.json.JSONObject
 
-class MockEmbarkViewModel : EmbarkViewModel() {
+class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker) {
     override fun load(name: String) {
         if (!shouldLoad) {
             return

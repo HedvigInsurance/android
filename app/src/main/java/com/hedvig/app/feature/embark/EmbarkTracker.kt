@@ -1,9 +1,18 @@
 package com.hedvig.app.feature.embark
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONObject
 
-class EmbarkTracker(
+abstract class EmbarkTracker {
+    abstract fun track(eventName: String, properties: JSONObject? = null)
+}
+
+class EmbarkTrackerImpl(
     private val mixpanel: MixpanelAPI,
-) {
-    fun track(eventName: String) = mixpanel.track(eventName)
+) : EmbarkTracker() {
+    override fun track(eventName: String, properties: JSONObject?) = if (properties != null) {
+        mixpanel.track(eventName, properties)
+    } else {
+        mixpanel.track(eventName)
+    }
 }

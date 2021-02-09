@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.embark.track
 
+import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.feature.embark.EmbarkTracker
+import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TRACK
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -11,6 +13,8 @@ import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.json.jsonEq
+import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.mockk
 import io.mockk.verify
@@ -42,6 +46,35 @@ class TrackTest : TestCase() {
     fun shouldTrackWhenEnteringPassage() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
-        verify(exactly = 1) { tracker.track("Enter Passage") }
+        onScreen<EmbarkScreen> {
+            step("Check that initial passage-track is tracked") {
+                verify(exactly = 1) { tracker.track("Enter Passage") }
+            }
+            step("Navigate to next passage, populating store with data") {
+                selectActions {
+                    childAt<EmbarkScreen.SelectAction>(0) { click() }
+                }
+            }
+            step("Verify that next passage is showing") {
+                messages {
+                    childAt<EmbarkScreen.MessageRow>(0) {
+                        text { hasText("another test message") }
+                    }
+                }
+            }
+            step("Check that track is called with all store data") {
+                verify(exactly = 1) {
+                    tracker.track("Enter second passage",
+                        jsonEq(
+                            jsonObjectOf(
+                                "FOO" to "BAR",
+                                "BAZ" to "BAT",
+                                "TestPassageResult" to "Another test passage",
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 }

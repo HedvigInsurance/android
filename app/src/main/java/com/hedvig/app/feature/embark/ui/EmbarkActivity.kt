@@ -12,7 +12,6 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
-import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -29,14 +28,11 @@ import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParamet
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val model: EmbarkViewModel by viewModel()
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
-
-    private val tracker: EmbarkTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,10 +112,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     .beginTransaction()
                     .replace(R.id.passageContainer, newFragment)
                     .commit()
-
-                passage?.tracks?.forEach { track ->
-                    tracker.track(track.eventName)
-                }
             }
         }
     }

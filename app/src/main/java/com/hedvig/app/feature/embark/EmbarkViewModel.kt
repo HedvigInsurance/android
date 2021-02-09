@@ -27,7 +27,9 @@ import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.max
 
-abstract class EmbarkViewModel : ViewModel() {
+abstract class EmbarkViewModel(
+    private val tracker: EmbarkTracker,
+) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
 
@@ -48,6 +50,9 @@ abstract class EmbarkViewModel : ViewModel() {
             _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
                 NavigationDirection.INITIAL,
                 currentProgress(firstPassage)))
+            firstPassage.tracks.forEach { track ->
+                tracker.track(track.eventName, trackingData(track))
+            }
         }
     }
 
@@ -85,7 +90,15 @@ abstract class EmbarkViewModel : ViewModel() {
             _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
                 NavigationDirection.FORWARDS,
                 currentProgress(nextPassage)))
+            nextPassage?.tracks?.forEach { track ->
+                tracker.track(track.eventName, trackingData(track))
+            }
         }
+    }
+
+    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+        track.includeAllKeys -> JSONObject(store.toMap())
+        else -> null
     }
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
@@ -478,7 +491,8 @@ abstract class EmbarkViewModel : ViewModel() {
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-) : EmbarkViewModel() {
+    tracker: EmbarkTracker,
+) : EmbarkViewModel(tracker) {
 
     override fun load(name: String) {
         viewModelScope.launch {
