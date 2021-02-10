@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
+import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,9 @@ import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.max
 
-abstract class EmbarkViewModel : ViewModel() {
+abstract class EmbarkViewModel(
+    private val tracker: EmbarkTracker,
+) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
 
@@ -48,6 +51,9 @@ abstract class EmbarkViewModel : ViewModel() {
             _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
                 NavigationDirection.INITIAL,
                 currentProgress(firstPassage)))
+            firstPassage.tracks.forEach { track ->
+                tracker.track(track.eventName, trackingData(track))
+            }
         }
     }
 
@@ -85,7 +91,19 @@ abstract class EmbarkViewModel : ViewModel() {
             _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
                 NavigationDirection.FORWARDS,
                 currentProgress(nextPassage)))
+            nextPassage?.tracks?.forEach { track ->
+                tracker.track(track.eventName, trackingData(track))
+            }
         }
+    }
+
+    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+        track.includeAllKeys -> JSONObject(store.toMap())
+        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
+            .map { it to store[it] }.toMap())
+        else -> null
+    }?.let { data ->
+        track.customData?.let { data + it } ?: data
     }
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
@@ -206,10 +224,14 @@ abstract class EmbarkViewModel : ViewModel() {
         val passageName = backStack.pop()
 
         storyData.embarkStory?.let { story ->
+            _data.value?.passage?.name?.let { currentPassageName ->
+                tracker.track("Passage Go Back - $currentPassageName")
+            }
             val nextPassage = story.passages.find { it.name == passageName }
             _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
                 NavigationDirection.BACKWARDS,
                 currentProgress(nextPassage)))
+
             return true
         }
         return false
@@ -478,7 +500,8 @@ abstract class EmbarkViewModel : ViewModel() {
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-) : EmbarkViewModel() {
+    tracker: EmbarkTracker,
+) : EmbarkViewModel(tracker) {
 
     override fun load(name: String) {
         viewModelScope.launch {

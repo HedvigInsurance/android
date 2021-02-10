@@ -9,6 +9,7 @@ import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.JSONStringAdapter
 import com.hedvig.app.util.apollo.PaymentMethodsApiResponseAdapter
 import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
 import com.hedvig.app.util.extensions.getAuthenticationToken
@@ -18,7 +19,7 @@ class ApolloClientWrapper(
     private val okHttpClient: OkHttpClient,
     private val context: Context,
     private val application: HedvigApplication,
-    private val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
+    private val normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>,
 ) {
 
     val apolloClient: ApolloClient
@@ -41,7 +42,7 @@ class ApolloClientWrapper(
     private fun createNewApolloClientInstance(
         okHttpClient: OkHttpClient,
         authToken: String?,
-        normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>
+        normalizedCacheFactory: NormalizedCacheFactory<LruNormalizedCache>,
     ): ApolloClient {
         val builder = ApolloClient
             .builder()
@@ -71,7 +72,8 @@ class ApolloClientWrapper(
         val CUSTOM_TYPE_ADAPTERS = ScalarTypeAdapters(
             mapOf(
                 CustomType.LOCALDATE to PromiscuousLocalDateAdapter(),
-                CustomType.PAYMENTMETHODSRESPONSE to PaymentMethodsApiResponseAdapter()
+                CustomType.PAYMENTMETHODSRESPONSE to PaymentMethodsApiResponseAdapter(),
+                CustomType.JSONSTRING to JSONStringAdapter(),
             )
         )
     }

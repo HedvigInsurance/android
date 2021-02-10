@@ -27,6 +27,8 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
+import com.hedvig.app.feature.embark.EmbarkTracker
+import com.hedvig.app.feature.embark.EmbarkTrackerImpl
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
@@ -316,7 +318,7 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get()) }
+    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
 }
 
 val previousInsViewModel = module {
@@ -428,3 +430,5 @@ val notificationModule = module {
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
+
+val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }

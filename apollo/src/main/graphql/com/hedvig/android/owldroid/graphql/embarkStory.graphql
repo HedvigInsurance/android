@@ -114,6 +114,12 @@ query EmbarkStory($name: String!, $locale: String!) {
       allLinks {
         ...EmbarkLinkFragment
       }
+      tracks {
+        eventName
+        eventKeys
+        includeAllKeys
+        customData
+      }
     }
   }
 }

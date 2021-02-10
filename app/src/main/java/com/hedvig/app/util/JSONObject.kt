@@ -26,3 +26,25 @@ fun JSONObject.getWithDotNotation(accessor: String): Any {
 }
 
 fun Collection<Any>.toJsonArray() = JSONArray(this)
+
+fun JSONObject.entries() = JSONObjectEntryIterator(this)
+
+class JSONObjectEntryIterator(
+    private val jsonObject: JSONObject,
+) : Iterator<Pair<String, Any?>> {
+    private val innerIter = jsonObject.keys()
+
+    override fun hasNext() = innerIter.hasNext()
+    override fun next(): Pair<String, Any?> {
+        val key = innerIter.next()
+        return Pair(key, jsonObject.get(key))
+    }
+}
+
+operator fun JSONObject.plus(other: JSONObject): JSONObject {
+    val clone = JSONObject(toString())
+    other.entries().forEach { (key, value) ->
+        clone.put(key, value)
+    }
+    return clone
+}
