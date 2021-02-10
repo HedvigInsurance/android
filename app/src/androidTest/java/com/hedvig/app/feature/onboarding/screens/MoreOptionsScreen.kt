@@ -5,7 +5,6 @@ import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 

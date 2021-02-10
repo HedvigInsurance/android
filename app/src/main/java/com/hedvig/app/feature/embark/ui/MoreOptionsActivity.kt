@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -22,6 +23,10 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
     private val viewModel: MoreOptionsViewModel by viewModel()
     private val marketProvider: MarketProvider by inject()
 
+    private val showRestart: Boolean by lazy {
+        intent.getBooleanExtra(EXTRA_SHOW_RESTART, false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,9 +35,17 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
             toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
             }
-            restart.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+
+            if (showRestart) {
+                restart.doOnApplyWindowInsets { view, insets, initialState ->
+                    view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+                }
+            } else {
+                logIn.doOnApplyWindowInsets { view, insets, initialState ->
+                    view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
+                }
             }
+
             setSupportActionBar(toolbar)
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -44,6 +57,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 showLogin()
             }
 
+            restart.isVisible = showRestart
             restart.setHapticClickListener {
                 restartOffer()
             }
@@ -85,7 +99,11 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
     companion object {
         const val RESULT_RESTART = 10
+        private const val EXTRA_SHOW_RESTART = "show_restart"
 
         fun newInstance(context: Context) = Intent(context, MoreOptionsActivity::class.java)
+        fun newInstanceWithRestart(context: Context) = Intent(context, MoreOptionsActivity::class.java).apply {
+            putExtra(EXTRA_SHOW_RESTART, true)
+        }
     }
 }

@@ -2,10 +2,10 @@ package com.hedvig.app.feature.onboarding
 
 import com.hedvig.app.MockActivity
 import com.hedvig.app.choosePlanModule
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketProviderModule
 import com.hedvig.app.mocks.MockMarketProvider
