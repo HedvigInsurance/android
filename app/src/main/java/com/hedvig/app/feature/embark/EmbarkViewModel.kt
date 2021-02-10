@@ -42,6 +42,7 @@ abstract class EmbarkViewModel : ViewModel() {
     private var totalSteps: Int = 0
 
     protected fun setInitialState() {
+        store.clear()
         storyData.embarkStory?.let { story ->
             val firstPassage = story.passages.first { it.id == story.startPassage }
             totalSteps = getPassagesLeft(firstPassage)
