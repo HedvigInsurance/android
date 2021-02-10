@@ -45,7 +45,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 showLogin()
             }
 
-            restart.setOnClickListener {
+            restart.setHapticClickListener {
                 restartOffer()
             }
 
