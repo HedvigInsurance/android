@@ -1,9 +1,7 @@
 package com.hedvig.app.feature.embark
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import com.hedvig.app.feature.embark.screens.MoreOptionsScreen
-import com.hedvig.app.feature.embark.screens.ZignSecScreen
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.marketpicker.MarketProvider
@@ -11,9 +9,10 @@ import com.hedvig.app.marketProviderModule
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
-import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
@@ -24,11 +23,11 @@ import org.koin.dsl.module
 class MoreOptionsTest : TestCase() {
 
     @get:Rule
-    val activityRule = LazyActivityScenarioRule(MoreOptionsActivity::class.java)
+    val activityRule = LazyIntentsActivityScenarioRule(MoreOptionsActivity::class.java)
 
     var shouldFail = true
 
-    val mockMarketProvider = mockk<MarketProvider>(relaxed = true)
+    private val mockMarketProvider = mockk<MarketProvider>(relaxed = true)
 
     init {
         every { mockMarketProvider.market } returns Market.NO
@@ -55,7 +54,7 @@ class MoreOptionsTest : TestCase() {
     @Test
     fun openMoreOptionsActivity() = run {
         activityRule.launch(MoreOptionsActivity.newInstance(context()))
-        onScreen<MoreOptionsScreen> {
+        MoreOptionsScreen {
             recycler {
                 childAt<MoreOptionsScreen.Row>(1) {
                     info {
@@ -72,16 +71,12 @@ class MoreOptionsTest : TestCase() {
         val newInstance = MoreOptionsActivity.newInstance(context())
         activityRule.launch(newInstance)
 
-        onScreen<MoreOptionsScreen> {
-            loginButton {
-                click()
-            }
-        }
+        MoreOptionsScreen {
+            authIntent { stub() }
 
-        onScreen<ZignSecScreen> {
-            webView {
-                isVisible()
-            }
+            loginButton { click() }
+
+            authIntent { intended() }
         }
     }
 }

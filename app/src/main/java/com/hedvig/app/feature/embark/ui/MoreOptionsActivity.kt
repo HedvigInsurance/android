@@ -9,6 +9,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -39,7 +40,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
             recycler.adapter = MoreOptionsAdapter(viewModel)
 
-            logIn.setOnClickListener {
+            logIn.setHapticClickListener {
                 showLogin()
             }
 
