@@ -70,7 +70,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     }
                 }
             }
-            
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
                 val bundles = response.getOrNull()
                 if (response.isFailure || bundles == null) {
