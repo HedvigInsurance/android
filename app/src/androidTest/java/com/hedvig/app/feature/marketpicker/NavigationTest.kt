@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketpicker
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -48,7 +47,7 @@ class NavigationTest : TestCase() {
 
         activityRule.launch()
 
-        onScreen<MarketPickerScreen> {
+        MarketPickerScreen {
             picker.isVisible()
         }
     }
@@ -61,7 +60,7 @@ class NavigationTest : TestCase() {
 
         activityRule.launch()
 
-        onScreen<MarketSelectedScreen> {
+        MarketSelectedScreen {
             loginButton.isVisible()
         }
     }

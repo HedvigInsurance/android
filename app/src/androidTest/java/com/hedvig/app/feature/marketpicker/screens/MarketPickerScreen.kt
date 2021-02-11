@@ -10,7 +10,7 @@ import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
-class MarketPickerScreen : KScreen<MarketPickerScreen>() {
+object MarketPickerScreen : KScreen<MarketPickerScreen>() {
 
     override val layoutId = R.layout.fragment_market_picker
     override val viewClass = MarketPickerFragment::class.java

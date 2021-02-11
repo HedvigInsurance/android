@@ -5,7 +5,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.kaspersky.kaspresso.screens.KScreen
 
-class MarketSelectedScreen : KScreen<MarketSelectedScreen>() {
+object MarketSelectedScreen : KScreen<MarketSelectedScreen>() {
 
     override val layoutId = R.layout.fragment_market_selected
     override val viewClass = MarketSelectedFragment::class.java
