@@ -24,6 +24,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity.Companion.RESULT_RESTART
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -174,7 +175,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_MORE_OPTIONS && resultCode == RESULT_CANCELED) {
+        if (requestCode == REQUEST_MORE_OPTIONS && resultCode == RESULT_RESTART) {
             model.load(storyName)
         } else {
             super.onActivityResult(requestCode, resultCode, data)

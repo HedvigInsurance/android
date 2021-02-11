@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.ui
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -80,11 +79,13 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
     }
 
     private fun restartOffer() {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_RESTART)
         finish()
     }
 
     companion object {
+        const val RESULT_RESTART = 10
+
         fun newInstance(context: Context) = Intent(context, MoreOptionsActivity::class.java)
     }
 }
