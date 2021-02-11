@@ -26,6 +26,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
@@ -56,8 +57,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     "Web Onboarding NO - English Travel", "Web Onboarding NO - Norwegian Travel" -> {
                         startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName))
                     }
-                    null -> {
-                    }
+                    null -> Timber.e("Could not start embark activity - null story name")
                     else -> {
                         startActivity(
                             WebOnboardingActivity.newNoInstance(
