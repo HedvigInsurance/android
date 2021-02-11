@@ -197,8 +197,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_OFFER && resultCode == RESULT_CANCELED)
-            finish()
         if (requestCode == REQUEST_MORE_OPTIONS && resultCode == RESULT_CANCELED) {
             model.load(storyName)
         } else {
