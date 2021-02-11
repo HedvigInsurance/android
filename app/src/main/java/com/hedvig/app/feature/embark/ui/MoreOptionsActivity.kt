@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.ui
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -44,6 +45,10 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 showLogin()
             }
 
+            restart.setHapticClickListener {
+                restartOffer()
+            }
+
             viewModel.data.observe(this@MoreOptionsActivity) { result ->
                 if (result.isFailure) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
@@ -72,6 +77,11 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
     private fun showLogin() {
         marketProvider.market?.openAuth(this, supportFragmentManager)
+    }
+
+    private fun restartOffer() {
+        setResult(Activity.RESULT_CANCELED)
+        finish()
     }
 
     companion object {
