@@ -33,7 +33,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
 
     private val storyName: String by lazy {
-        // TODO: Implement error UI that design must provide
         intent.getStringExtra(STORY_NAME) ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
