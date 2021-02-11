@@ -70,7 +70,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.moreOptions -> {
-            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
+            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
             true
         }
         R.id.tooltip -> {
@@ -208,9 +208,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     companion object {
         private const val REQUEST_OFFER = 1
+        private const val REQUEST_MORE_OPTIONS = 2
+
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
-        internal const val REQUEST_MORE_OPTIONS = 1
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {
