@@ -3,18 +3,21 @@ package com.hedvig.app
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.apollographql.apollo.subscription.SubscriptionConnectionParams
+import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
-import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -112,6 +115,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
+import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -194,18 +198,34 @@ val applicationModule = module {
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    Timber.tag("OkHttp").i(message)
-                }
-            })
+            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
         builder.build()
     }
     single {
-        ApolloClientWrapper(get(), get(), get(), get())
+        val builder = ApolloClient
+            .builder()
+            .serverUrl(get<HedvigApplication>().graphqlUrl)
+            .okHttpClient(get())
+            .subscriptionConnectionParams(
+                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+            )
+            .subscriptionTransportFactory(
+                WebSocketSubscriptionTransport.Factory(
+                    BuildConfig.WS_GRAPHQL_URL,
+                    get()
+                )
+            )
+            .normalizedCache(get())
+
+        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
+        if (isDebug()) {
+            builder.logger(ApolloTimberLogger())
+        }
+        builder.build()
     }
     single<RequestBuilder<PictureDrawable>> {
         GlideApp.with(get<Context>())
@@ -216,21 +236,21 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(
-        context
-    ).language
+        getLocale(
+            context
+        ).language
     })"
 
 fun makeLocaleString(context: Context): String =
