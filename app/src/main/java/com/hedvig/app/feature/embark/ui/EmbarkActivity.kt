@@ -86,7 +86,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.moreOptions -> {
-            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
+            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity, true), REQUEST_MORE_OPTIONS)
             true
         }
         R.id.tooltip -> {

@@ -6,6 +6,7 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
