@@ -1,6 +1,13 @@
 package com.hedvig.app.feature.embark.computedvalues
 
-class TemplateExpressionCalculator {
+object TemplateExpressionCalculator {
+
+    private val VOID_EXPR = Regex("^\\s+")
+    private val BIN_OPERATOR_EXPR = Regex("^(-|\\+\\+|\\+)")
+    private val STORE_KEY_EXPR = Regex("^([a-zA-Z][\\w\\d]*)")
+    private val NUMBER_CONSTANT_EXPR = Regex("^(\\d+(\\.\\d+)?)")
+    private val DOUBLE_QUOTE_STRING_CONSTANT_EXPR = Regex("^\"([^\"]*)\"")
+    private val SINGLE_QUOTE_STRING_CONSTANT_EXPR = Regex("^'([^']*)'")
 
     private val tokenCheckers: List<Pair<TokenType, Regex>> = listOf(
         TokenType.BINARY_OPERATOR to BIN_OPERATOR_EXPR,
@@ -140,15 +147,6 @@ class TemplateExpressionCalculator {
                 }
             }
         }
-    }
-
-    companion object {
-        private val VOID_EXPR = Regex("^\\s+")
-        private val BIN_OPERATOR_EXPR = Regex("^(-|\\+\\+|\\+)")
-        private val STORE_KEY_EXPR = Regex("^([a-zA-Z][\\w\\d]*)")
-        private val NUMBER_CONSTANT_EXPR = Regex("^(\\d+(\\.\\d+)?)")
-        private val DOUBLE_QUOTE_STRING_CONSTANT_EXPR = Regex("^\"([^\"]*)\"")
-        private val SINGLE_QUOTE_STRING_CONSTANT_EXPR = Regex("^'([^']*)'")
     }
 
     enum class TokenType {

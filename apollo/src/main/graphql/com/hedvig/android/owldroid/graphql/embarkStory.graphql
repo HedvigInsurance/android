@@ -1,6 +1,10 @@
 query EmbarkStory($name: String!, $locale: String!) {
   embarkStory(name: $name, locale: $locale) {
     startPassage
+    computedStoreValues {
+      key
+      value
+    }
     passages {
       name
       id

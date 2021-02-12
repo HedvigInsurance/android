@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.embark.data
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.GraphQLErrorsFragment
 import com.hedvig.android.owldroid.fragment.GraphQLResultsFragment
+import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
@@ -502,19 +503,19 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                 messages = listOf(
                     MessageBuilder(
                         text = "Unary true test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.ALWAYS,
-                                text = "Unary true test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.ALWAYS,
+                            text = "Unary true test"
+                        ).build()
+                    )
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test", expressions = listOf(
-                            ExpressionBuilder(
-                                type = ExpressionBuilder.ExpressionType.NEVER,
-                                text = "Unary false test"
-                            ).build()
-                        )
+                        ExpressionBuilder(
+                            type = ExpressionBuilder.ExpressionType.NEVER,
+                            text = "Unary false test"
+                        ).build()
+                    )
                     ).build()
                 )
             )
@@ -1328,6 +1329,45 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
                 )
             )
             .build()
+    )
+).build()
+
+val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
+    computedStoreValues = listOf(
+        EmbarkStoryQuery.ComputedStoreValue(key = "BAR", value = "FOO + 3")
+    ),
+    passages = listOf(
+        PassageBuilder(
+            name = "TestPassage",
+            id = "1",
+            response = MessageBuilder(
+                text = "{TestPassageResult}"
+            ).build(),
+            messages = listOf(
+                MessageFragment(
+                    text = "Text on input in next passage will have added 3 to your input",
+                    expressions = emptyList()
+                )
+            ),
+            action = NumberActionBuilder(
+                "FOO",
+                link = STANDARD_FIRST_LINK
+            ).build()
+        ).build(),
+        PassageBuilder(
+            name = "TestPassage2",
+            id = "2",
+            response = MessageBuilder(
+                text = "{TestPassageResult}"
+            ).build(),
+            messages = listOf(
+                STANDARD_FIRST_MESSAGE
+            ),
+            action = TextActionBuilder(
+                link = STANDARD_SECOND_LINK,
+                key = "BAR"
+            ).build()
+        ).build(),
     )
 ).build()
 

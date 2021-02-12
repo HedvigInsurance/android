@@ -13,7 +13,7 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import org.hamcrest.Matcher
 
-class EmbarkScreen : Screen<EmbarkScreen>() {
+object EmbarkScreen : Screen<EmbarkScreen>() {
     val spinner = KView { withId(R.id.loadingSpinner) }
     val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
 

@@ -14,6 +14,7 @@ import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
@@ -41,6 +42,7 @@ abstract class EmbarkViewModel(
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
     private val store = HashMap<String, String>()
+    private lateinit var computedValues: Map<String, String>
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
@@ -48,10 +50,17 @@ abstract class EmbarkViewModel(
         store.clear()
         storyData.embarkStory?.let { story ->
             val firstPassage = story.passages.first { it.id == story.startPassage }
+
             totalSteps = getPassagesLeft(firstPassage)
-            _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
-                NavigationDirection.INITIAL,
-                currentProgress(firstPassage)))
+            computedValues = story.computedStoreValues?.associateBy({ it.key }, { it.value }) ?: emptyMap()
+
+            val model = EmbarkModel(
+                passage = preProcessPassage(firstPassage),
+                navigationDirection = NavigationDirection.INITIAL,
+                progress = currentProgress(firstPassage)
+            )
+            _data.postValue(model)
+
             firstPassage.tracks.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
             }
@@ -62,7 +71,14 @@ abstract class EmbarkViewModel(
         store[key] = value
     }
 
-    fun getFromStore(key: String) = store[key]
+    fun getFromStore(key: String): String? {
+        val computedValue = computedValues[key]
+        return if (computedValue != null) {
+            TemplateExpressionCalculator.evaluateTemplateExpression(computedValue, store)
+        } else {
+            store[key]
+        }
+    }
 
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
@@ -89,9 +105,12 @@ abstract class EmbarkViewModel(
                 }
             }
             _data.value?.passage?.name?.let { backStack.push(it) }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
-                NavigationDirection.FORWARDS,
-                currentProgress(nextPassage)))
+            val model = EmbarkModel(
+                passage = preProcessPassage(nextPassage),
+                navigationDirection = NavigationDirection.FORWARDS,
+                progress = currentProgress(nextPassage)
+            )
+            _data.postValue(model)
             nextPassage?.tracks?.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
             }
@@ -229,9 +248,12 @@ abstract class EmbarkViewModel(
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
-                NavigationDirection.BACKWARDS,
-                currentProgress(nextPassage)))
+            val model = EmbarkModel(
+                passage = preProcessPassage(nextPassage),
+                navigationDirection = NavigationDirection.BACKWARDS,
+                progress = currentProgress(nextPassage)
+            )
+            _data.postValue(model)
 
             return true
         }
@@ -501,7 +523,7 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-    tracker: EmbarkTracker,
+    tracker: EmbarkTracker
 ) : EmbarkViewModel(tracker) {
 
     override fun load(name: String) {

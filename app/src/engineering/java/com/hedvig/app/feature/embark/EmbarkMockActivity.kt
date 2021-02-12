@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_FOUR_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API
@@ -53,6 +54,11 @@ class EmbarkMockActivity : MockActivity() {
     })
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Computed Value")
+        clickableItem("Computed Value") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_COMPUTED_VALUE
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
+        }
         header("Previous Insurer")
         clickableItem("Previous Insurer") {
             MockEmbarkViewModel.mockedData = PREVIOUS_INSURER_STORY
