@@ -12,6 +12,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
@@ -32,6 +33,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
     private val viewModel: ChoosePlanViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,7 +70,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     }
                 }
             }
-
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
                 val bundles = response.getOrNull()
                 if (response.isFailure || bundles == null) {
