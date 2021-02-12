@@ -273,6 +273,8 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     // test
+    testImplementation("junit:junit:4.13")
+    testImplementation("com.google.truth:truth:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test:rules:1.3.0")
