@@ -1,14 +1,13 @@
 package com.hedvig.app.feature.trustly
 
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
-import com.hedvig.app.ApolloClientWrapper
 
 class TrustlyRepository(
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClient: ApolloClient,
 ) {
-    suspend fun startTrustlySession() = apolloClientWrapper
-        .apolloClient
+    suspend fun startTrustlySession() = apolloClient
         .mutate(StartDirectDebitRegistrationMutation())
         .await()
 }

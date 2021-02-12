@@ -30,7 +30,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 open class HedvigApplication : Application() {
-    private val apolloClient: ApolloClient by inject()
+    protected val apolloClient: ApolloClient by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     override fun attachBaseContext(base: Context?) {

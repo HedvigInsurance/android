@@ -11,7 +11,7 @@ class TestApplication : HedvigApplication() {
         super.onCreate()
 
         val idlingResource =
-            ApolloIdlingResource.create("ApolloIdlingResource", apolloClientWrapper.apolloClient)
+            ApolloIdlingResource.create("ApolloIdlingResource", apolloClient)
         IdlingRegistry
             .getInstance()
             .register(idlingResource)

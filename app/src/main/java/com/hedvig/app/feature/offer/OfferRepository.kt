@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import android.content.Context
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
@@ -14,25 +15,23 @@ import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.util.apollo.defaultLocale
 import e
 import java.time.LocalDate
 
 class OfferRepository(
-    private val apolloClientWrapper: ApolloClientWrapper,
-    context: Context
+    private val apolloClient: ApolloClient,
+    context: Context,
 ) {
     private val offerQuery = OfferQuery(defaultLocale(context))
 
-    fun offer() = apolloClientWrapper
-        .apolloClient
+    fun offer() = apolloClient
         .query(offerQuery)
         .watcher()
         .toFlow()
 
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
-        val cachedData = apolloClientWrapper.apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(offerQuery)
             .execute()
@@ -60,21 +59,18 @@ class OfferRepository(
                 )
             )
 
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(offerQuery, newData)
             .execute()
     }
 
-    suspend fun removeDiscount() = apolloClientWrapper
-        .apolloClient
+    suspend fun removeDiscount() = apolloClient
         .mutate(RemoveDiscountCodeMutation())
         .await()
 
     fun removeDiscountFromCache() {
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(offerQuery)
             .execute()
@@ -118,34 +114,32 @@ class OfferRepository(
                 redeemedCampaigns = emptyList()
             )
 
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(offerQuery, newData)
             .execute()
     }
 
     suspend fun triggerOpenChatFromOffer() =
-        apolloClientWrapper.apolloClient.mutate(OfferClosedMutation()).await()
+        apolloClient.mutate(OfferClosedMutation()).await()
 
     suspend fun startSign() =
-        apolloClientWrapper.apolloClient.mutate(SignOfferMutation()).await()
+        apolloClient.mutate(SignOfferMutation()).await()
 
     fun subscribeSignStatus() =
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .subscribe(SignStatusSubscription())
             .toFlow()
 
     suspend fun fetchSignStatus() =
-        apolloClientWrapper.apolloClient.query(SignStatusQuery())
+        apolloClient.query(SignStatusQuery())
             .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .build()
             .await()
 
     suspend fun chooseStartDate(id: String, date: LocalDate) =
-        apolloClientWrapper.apolloClient.mutate(
+        apolloClient.mutate(
             ChooseStartDateMutation(
                 id,
                 date
@@ -153,8 +147,7 @@ class OfferRepository(
         ).await()
 
     fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(offerQuery)
             .execute()
@@ -178,8 +171,7 @@ class OfferRepository(
                     )
                 )
 
-            apolloClientWrapper
-                .apolloClient
+            apolloClient
                 .apolloStore
                 .writeAndPublish(offerQuery, newData)
                 .execute()
@@ -187,14 +179,12 @@ class OfferRepository(
     }
 
     suspend fun removeStartDate(id: String) =
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .mutate(RemoveStartDateMutation(id))
             .await()
 
     fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(offerQuery)
             .execute()
@@ -218,8 +208,7 @@ class OfferRepository(
                     )
                 )
 
-            apolloClientWrapper
-                .apolloClient
+            apolloClient
                 .apolloStore
                 .writeAndPublish(offerQuery, newData)
                 .execute()

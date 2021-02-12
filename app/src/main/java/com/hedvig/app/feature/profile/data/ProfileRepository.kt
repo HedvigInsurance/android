@@ -1,28 +1,26 @@
 package com.hedvig.app.feature.profile.data
 
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toDeferred
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
-import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
-import com.hedvig.app.ApolloClientWrapper
 
-class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
+class ProfileRepository(
+    private val apolloClient: ApolloClient,
+) {
     private val profileQuery = ProfileQuery()
 
-    fun profile() = apolloClientWrapper
-        .apolloClient
+    fun profile() = apolloClient
         .query(profileQuery)
         .watcher()
         .toFlow()
 
-    suspend fun refreshProfile() = apolloClientWrapper
-        .apolloClient
+    suspend fun refreshProfile() = apolloClient
         .query(profileQuery)
         .toBuilder()
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
@@ -30,13 +28,13 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         .await()
 
     suspend fun updateEmail(input: String) =
-        apolloClientWrapper.apolloClient.mutate(UpdateEmailMutation(input)).await()
+        apolloClient.mutate(UpdateEmailMutation(input)).await()
 
     suspend fun updatePhoneNumber(input: String) =
-        apolloClientWrapper.apolloClient.mutate(UpdatePhoneNumberMutation(input)).await()
+        apolloClient.mutate(UpdatePhoneNumberMutation(input)).await()
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
-        val cachedData = apolloClientWrapper.apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(profileQuery)
             .execute()
@@ -50,17 +48,17 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
         val newData = cachedData
             .copy(member = newMember)
 
-        apolloClientWrapper.apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
 
     suspend fun selectCashback(id: String) =
-        apolloClientWrapper.apolloClient.mutate(SelectCashbackMutation(id)).await()
+        apolloClient.mutate(SelectCashbackMutation(id)).await()
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
-        val cachedData = apolloClientWrapper.apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(profileQuery)
             .execute()
@@ -72,14 +70,14 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
                 )
             )
 
-        apolloClientWrapper.apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
 
     fun writeRedeemedCostToCache(data: RedeemReferralCodeMutation.Data) {
-        val cachedData = apolloClientWrapper.apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(profileQuery)
             .execute()
@@ -95,12 +93,9 @@ class ProfileRepository(private val apolloClientWrapper: ApolloClientWrapper) {
                 insuranceCost = newCost
             )
 
-        apolloClientWrapper.apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(profileQuery, newData)
             .execute()
     }
-
-    fun logoutAsync() =
-        apolloClientWrapper.apolloClient.mutate(LogoutMutation()).toDeferred()
 }

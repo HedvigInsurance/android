@@ -2,6 +2,7 @@ package com.hedvig.app.feature.chat.data
 
 import android.content.Context
 import android.net.Uri
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -26,7 +27,6 @@ import com.hedvig.android.owldroid.type.ChatResponseBodyTextInput
 import com.hedvig.android.owldroid.type.ChatResponseFileInput
 import com.hedvig.android.owldroid.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.type.ChatResponseTextInput
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import kotlinx.coroutines.Dispatchers
@@ -36,15 +36,15 @@ import java.io.File
 import java.util.UUID
 
 class ChatRepository(
-    private val apolloClientWrapper: ApolloClientWrapper,
+    private val apolloClient: ApolloClient,
     private val fileService: FileService,
-    private val context: Context
+    private val context: Context,
 ) {
     private lateinit var messagesQuery: ChatMessagesQuery
 
     fun fetchChatMessages(): Flow<Response<ChatMessagesQuery.Data>> {
         messagesQuery = ChatMessagesQuery()
-        return apolloClientWrapper.apolloClient
+        return apolloClient
             .query(messagesQuery)
             .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
@@ -54,22 +54,22 @@ class ChatRepository(
             .toFlow()
     }
 
-    suspend fun messageIds() = apolloClientWrapper
-        .apolloClient
-        .query(ChatMessageIdQuery())
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
-        .await()
+    suspend fun messageIds() =
+        apolloClient
+            .query(ChatMessageIdQuery())
+            .toBuilder()
+            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
+            .await()
 
     fun subscribeToChatMessages() =
-        apolloClientWrapper.apolloClient.subscribe(ChatMessageSubscription()).toFlow()
+        apolloClient.subscribe(ChatMessageSubscription()).toFlow()
 
     suspend fun sendChatMessage(
         id: String,
-        message: String
-    ) = apolloClientWrapper.apolloClient.mutate(
+        message: String,
+    ) = apolloClient.mutate(
         SendChatTextResponseMutation(
             ChatResponseTextInput(
                 id,
@@ -80,8 +80,8 @@ class ChatRepository(
 
     suspend fun sendSingleSelect(
         id: String,
-        value: String
-    ) = apolloClientWrapper.apolloClient.mutate(
+        value: String,
+    ) = apolloClient.mutate(
         SendChatSingleSelectResponseMutation(
             ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
         )
@@ -93,11 +93,11 @@ class ChatRepository(
             claim = FileUpload(fileService.getMimeType(path), path)
         )
 
-        return apolloClientWrapper.apolloClient.mutate(mutation).await()
+        return apolloClient.mutate(mutation).await()
     }
 
     fun writeNewMessage(message: ChatMessageFragment) {
-        val cachedData = apolloClientWrapper.apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(messagesQuery)
             .execute()
@@ -119,7 +119,7 @@ class ChatRepository(
         val newData = cachedData
             .copy(messages = newMessages)
 
-        apolloClientWrapper.apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(messagesQuery, newData)
             .execute()
@@ -143,19 +143,19 @@ class ChatRepository(
 
     private suspend fun uploadFile(
         path: String,
-        mimeType: String
+        mimeType: String,
     ): Response<UploadFileMutation.Data> {
         val uploadFileMutation = UploadFileMutation(
             file = FileUpload(mimeType, path)
         )
 
-        return apolloClientWrapper.apolloClient.mutate(uploadFileMutation).await()
+        return apolloClient.mutate(uploadFileMutation).await()
     }
 
     suspend fun sendFileResponse(
         id: String,
         key: String,
-        uri: Uri
+        uri: Uri,
     ): Response<SendChatFileResponseMutation.Data> {
         val mimeType = fileService.getMimeType(uri)
 
@@ -169,15 +169,15 @@ class ChatRepository(
 
         val chatFileResponse = SendChatFileResponseMutation(input)
 
-        return apolloClientWrapper.apolloClient.mutate(chatFileResponse).await()
+        return apolloClient.mutate(chatFileResponse).await()
     }
 
     suspend fun editLastResponse() =
-        apolloClientWrapper.apolloClient.mutate(EditLastResponseMutation()).await()
+        apolloClient.mutate(EditLastResponseMutation()).await()
 
     suspend fun triggerFreeTextChat() =
-        apolloClientWrapper.apolloClient.mutate(TriggerFreeTextChatMutation()).await()
+        apolloClient.mutate(TriggerFreeTextChatMutation()).await()
 
     suspend fun searchGifs(query: String) =
-        apolloClientWrapper.apolloClient.query(GifQuery(query)).await()
+        apolloClient.query(GifQuery(query)).await()
 }
