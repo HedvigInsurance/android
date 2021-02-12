@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.embark.passages.textactionset
 
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView.OnEditorActionListener
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -14,21 +16,31 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.viewBinding
 
-class TextInputSetAdapter(val model: TextActionSetViewModel) :
+
+class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone: () -> Unit) :
     ListAdapter<TextFieldData, TextInputSetAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), position, model)
+        holder.bind(getItem(position), position, model, onDone)
     }
 
-    class ViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.embark_input_item)) {
+    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_input_item)) {
         private val binding by viewBinding(EmbarkInputItemBinding::bind)
-        fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel) {
+        fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel, onDone: () -> Unit) {
             binding.apply {
                 textField.hint = item.placeholder
+                input.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        if (model.isValid.value == true) {
+                            onDone()
+                        }
+                        return@OnEditorActionListener true
+                    }
+                    false
+                })
+
                 item.mask?.let { mask ->
                     input.apply {
                         setInputType(mask)
@@ -44,10 +56,7 @@ class TextInputSetAdapter(val model: TextActionSetViewModel) :
                             model.updateIsValid(position, true)
                         }
                     } else {
-                        if (text.isNotBlank() && validationCheck(
-                                item.mask, text
-                            )
-                        ) {
+                        if (text.isNotBlank() && validationCheck(item.mask, text)) {
                             model.updateIsValid(position, true)
                         } else {
                             model.updateIsValid(position, false)
