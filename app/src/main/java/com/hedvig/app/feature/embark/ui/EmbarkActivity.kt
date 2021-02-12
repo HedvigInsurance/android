@@ -52,7 +52,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.moreOptions -> {
-                            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
+                            startActivityForResult(MoreOptionsActivity.newInstanceWithRestart(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
                             true
                         }
                         R.id.tooltip -> {
