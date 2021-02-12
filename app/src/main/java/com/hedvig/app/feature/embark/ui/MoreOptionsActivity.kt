@@ -102,6 +102,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
         private const val EXTRA_SHOW_RESTART = "show_restart"
 
         fun newInstance(context: Context, showRestart: Boolean = false) = Intent(context, MoreOptionsActivity::class.java).apply {
-        putExtra(EXTRA_SHOW_RESTART, showRestart)
+            putExtra(EXTRA_SHOW_RESTART, showRestart)
+        }
     }
 }
