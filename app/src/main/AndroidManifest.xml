@@ -271,7 +271,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="http://instant-app-hackathon-bucket.s3-website.eu-central-1.amazonaws.com/"
+                    android:host="d25wl0whw4c7m1.cloudfront.net"
                     android:path="/onboarding" />
                 <data android:scheme="https" />
                 <data android:scheme="http" />
