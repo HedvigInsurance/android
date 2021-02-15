@@ -2,18 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.hedvig.app">
+    package="com.hedvig.app"
+    xmlns:dist="http://schemas.android.com/apk/distribution">
+
+    <dist:module dist:instant="true" />
 
     <dist:module dist:instant="true" dist:onDemand="false" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Not available for instant app -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -89,6 +93,7 @@
 
                 <data android:scheme="@string/APP_SCHEME" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
@@ -250,6 +255,30 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.embark.ui.EmbarkActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter
+                android:label="Embark instant test"
+                android:autoVerify="true">
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="http://instant-app-hackathon-bucket.s3-website.eu-central-1.amazonaws.com/"
+                    android:path="/onboarding" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+            </intent-filter>
+
+        </activity>
+
         <activity
             android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
             android:launchMode="singleTask" />
