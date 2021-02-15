@@ -26,18 +26,7 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
-import com.hedvig.app.feature.embark.EmbarkRepository
-import com.hedvig.app.feature.embark.EmbarkTracker
-import com.hedvig.app.feature.embark.EmbarkTrackerImpl
-import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -84,8 +73,6 @@ import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.MemberIdRepository
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -331,26 +318,6 @@ val adyenModule = module {
     viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
-val embarkModule = module {
-    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
-}
-
-val previousInsViewModel = module {
-    viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
-}
-
-val moreOptionsModule = module {
-    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
-}
-
-val textActionSetModule = module {
-    viewModel { (data: TextActionSetParameter) -> TextActionSetViewModel(data) }
-}
-
-val numberActionModule = module {
-    viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
-}
-
 val referralsModule = module {
     viewModel<ReferralsViewModel> {
         ReferralsViewModelImpl(
@@ -400,7 +367,6 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
@@ -449,7 +415,6 @@ val notificationModule = module {
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
-val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
 val defaultLocaleModule = module {
     single { defaultLocale(get(), get()) }
 }

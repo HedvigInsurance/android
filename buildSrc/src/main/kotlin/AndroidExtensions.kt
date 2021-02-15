@@ -1,5 +1,6 @@
+
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.JavaVersion
 
 fun LibraryExtension.commonConfig() {
@@ -27,7 +28,7 @@ fun LibraryExtension.commonConfig() {
     }
 }
 
-fun BaseAppModuleExtension.commonConfig() {
+fun AppExtension.commonConfig() {
     compileSdkVersion(AndroidVersions.compileSdkVersion)
 
     defaultConfig {

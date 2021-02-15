@@ -11,8 +11,6 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
@@ -112,7 +110,8 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.moreOptions -> {
-            startActivity(MoreOptionsActivity.newInstance(this))
+            // TODO
+            // startActivity(MoreOptionsActivity.newInstance(this))
             true
         }
         else -> {

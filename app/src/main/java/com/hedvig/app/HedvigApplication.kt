@@ -61,8 +61,6 @@ open class HedvigApplication : Application() {
                     repositoriesModule,
                     localeBroadcastManagerModule,
                     trackerModule,
-                    embarkModule,
-                    previousInsViewModel,
                     marketPickerTrackerModule,
                     whatsNewModule,
                     marketManagerModule,
@@ -70,13 +68,8 @@ open class HedvigApplication : Application() {
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
-                    moreOptionsModule,
-                    textActionSetModule,
-                    numberActionModule,
                     choosePlanModule,
                     clockModule,
-                    embarkTrackerModule,
-                    defaultLocaleModule,
                 )
             )
         }

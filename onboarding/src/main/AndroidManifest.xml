@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    package="com.hedvig.onboarding">
+
+    <dist:module
+        dist:instant="true"
+        dist:title="@string/title_onboarding">
+        <dist:delivery>
+            <dist:install-time />
+        </dist:delivery>
+        <dist:fusing dist:include="false" />
+    </dist:module>
+    <application>
+
+        <activity
+            android:name=".embark.ui.EmbarkActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter
+                android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:host="instantapptest.dev.hedvigit.com" />
+                <data android:path="/onboarding" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+            </intent-filter>
+
+        </activity>
+    </application>
+</manifest>

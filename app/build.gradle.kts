@@ -149,6 +149,7 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
     }
+    dynamicFeatures = mutableSetOf(":onboarding")
 
     configurations.all {
         resolutionStrategy.force(

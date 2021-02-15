@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
-import com.hedvig.app.feature.embark.EmbarkMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
@@ -35,9 +34,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                         startActivity(
                             LoggedInActivity.newInstance(this)
                         )
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark") {
-                        startActivity(Intent(this, EmbarkMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Onboarding") {
                         startActivity(Intent(this, OnboardingMockActivity::class.java))
