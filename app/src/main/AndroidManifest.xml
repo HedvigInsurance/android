@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.hedvig.app"
-    xmlns:dist="http://schemas.android.com/apk/distribution">
+    package="com.hedvig.app">
 
     <dist:module dist:instant="true" />
 
@@ -42,6 +41,31 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
+        
+        <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
+        <activity
+            android:name=".feature.onboarding.ui.ChoosePlanActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Hedvig.Theme"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter
+                android:autoVerify="true"
+                android:label="Get Hedvig">
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="instantapptest.dev.hedvigit.com"
+                    android:path="/new-member" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
@@ -263,19 +287,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize">
 
-            <intent-filter
-                android:label="Embark instant test"
-                android:autoVerify="true">
-
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="instantapptest.dev.hedvigit.com"
-                    android:path="/onboarding" />
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-            </intent-filter>
 
         </activity>
 

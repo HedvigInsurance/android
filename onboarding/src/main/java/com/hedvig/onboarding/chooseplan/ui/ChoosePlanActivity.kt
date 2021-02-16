@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.core.view.updatePaddingRelative
+import com.google.android.gms.instantapps.InstantApps
+import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
@@ -57,8 +57,36 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             recycler.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
-            setSupportActionBar(toolbar)
-            toolbar.setNavigationOnClickListener { onBackPressed() }
+
+            toolbar.apply {
+                inflateMenu(if (getPackageManagerCompat(this@ChoosePlanActivity).isInstantApp) {
+                    R.menu.choose_plan_instant
+                } else {
+                    R.menu.choose_plan_menu
+                })
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.install -> {
+                            InstantApps.showInstallPrompt(
+                                this@ChoosePlanActivity,
+                                Intent(Intent.ACTION_MAIN).apply {
+
+                                },
+                                123,
+                                null,
+                            )
+                            true
+                        }
+                        R.id.moreOptions -> {
+                            startActivity(MoreOptionsActivity.newInstance(this@ChoosePlanActivity))
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                setNavigationOnClickListener { onBackPressed() }
+            }
+
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
@@ -117,22 +145,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.choose_plan_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.moreOptions -> {
-            startActivity(MoreOptionsActivity.newInstance(this))
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
-    }
 
     companion object {
+        private val INSTANT_INSTALL_REQUEST_CODE = 1234
 
         const val COMBO = "Combo"
         const val CONTENTS = "Contents"

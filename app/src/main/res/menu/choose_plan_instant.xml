@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/install"
+        android:title="Install"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/moreOptions"
+        android:icon="@drawable/ic_more"
+        android:title="@string/embark_onboarding_more_options.screen_title"
+        app:showAsAction="ifRoom" />
+</menu>
