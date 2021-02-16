@@ -304,3 +304,69 @@ lokalise {
 
     downloadConfig = com.likandr.gradle.config.DownloadConfig()
 }
+
+project.afterEvaluate {
+    the<com.android.build.gradle.AppExtension>().applicationVariants.all {
+        val variantName = name
+        val splitsPath = "${project.buildDir}/outputs/splits/${variantName}"
+        task<Exec>("assembleSplits${name.capitalize()}") {
+            setDependsOn(listOf("bundle${variantName.capitalize()}"))
+            group = "build"
+
+            workingDir = project.rootDir
+
+            commandLine = listOf(
+                "java",
+                "-jar",
+                "bundletool/bundletool-all-1.4.0.jar",
+                "build-apks",
+                "--bundle=${project.buildDir}/outputs/bundle/${variantName}/app-${variantName}.aab",
+                "--output=${splitsPath}/app-${variantName}.apks"
+            )
+
+            doFirst {
+                mkdir(splitsPath)
+                println("Running `bundletool`")
+            }
+            doFirst {
+                delete(splitsPath)
+            }
+        }
+
+        task<ExecuteInstantApp>("runInstant${name.capitalize()}") {
+            setDependsOn(listOf("assembleSplits${variantName.capitalize()}"))
+            group = "build"
+            workingDir = project.rootDir
+            androidSdkPath = android.sdkDirectory.path
+            apksPath = "${splitsPath}/app-${variantName}.apks"
+        }
+    }
+}
+
+open class ExecuteInstantApp : Exec() {
+    @Input
+    @Option(option = "androidSdk", description = "Path to Android SDK")
+    lateinit var androidSdkPath: String
+
+    @Input
+    @Option(option = "apksPath", description = "Path to APKS")
+    lateinit var apksPath: String
+
+    @Input
+    @Optional
+    @Option(option = "url", description = "URL to launch Instant App with")
+    var url: String? = null
+
+    override fun exec() {
+        commandLine = listOfNotNull(
+            "${androidSdkPath}/extras/google/instantapps/ia",
+            "--debug",
+            "run",
+            apksPath,
+            url?.let { "-u" },
+            url
+        )
+        println("Running `${commandLine.joinToString(separator = " ")}}`")
+        super.exec()
+    }
+}

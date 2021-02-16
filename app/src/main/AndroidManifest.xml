@@ -271,7 +271,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="d25wl0whw4c7m1.cloudfront.net"
+                    android:host="instantapptest.dev.hedvigit.com"
                     android:path="/onboarding" />
                 <data android:scheme="https" />
                 <data android:scheme="http" />
