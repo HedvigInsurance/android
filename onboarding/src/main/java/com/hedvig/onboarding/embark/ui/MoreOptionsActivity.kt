@@ -6,13 +6,13 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.databinding.ActivityMoreOptionsBinding
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.onboarding.R
+import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
+import com.hedvig.onboarding.databinding.ActivityMoreOptionsBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject

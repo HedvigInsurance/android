@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hedvig.app">
 
-    <dist:module dist:instant="true" />
+    <dist:module dist:instant="true" dist:onDemand="false" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -39,18 +39,6 @@
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
 
-        <activity
-            android:name=".feature.onboarding.ui.MoreOptionsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.onboarding.ui.ChoosePlanActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.zignsec.ZignSecAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -100,42 +88,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="@string/APP_SCHEME" />
-            </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="hedvig.app.link"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="app.hedvig.com"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="@string/FIREBASE_LINK_DOMAIN"
-                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity

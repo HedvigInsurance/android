@@ -10,15 +10,19 @@ import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+<<<<<<< HEAD
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
+=======
+import com.hedvig.chooseplan.ChoosePlanActivity
+>>>>>>> 18f41ddc... Create onboarding module, move choose plan and embark logic
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
 object ChoosePlanScreen : KScreen<ChoosePlanScreen>() {
 
     override val layoutId = R.layout.activity_choose_plan
-    override val viewClass = ChoosePlanActivity::class.java
+    override val viewClass = com.hedvig.chooseplan.ChoosePlanActivity::class.java
 
     val recycler = KRecyclerView(
         { withId(R.id.recycler) },

@@ -6,8 +6,8 @@ import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
-import com.hedvig.app.R
 import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
+import com.hedvig.onboarding.R
 import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher

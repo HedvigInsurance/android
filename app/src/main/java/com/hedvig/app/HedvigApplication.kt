@@ -68,8 +68,8 @@ open class HedvigApplication : Application() {
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
-                    choosePlanModule,
                     clockModule,
+                    defaultLocaleModule
                 )
             )
         }

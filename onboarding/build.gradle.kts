@@ -14,6 +14,14 @@ android {
     }
 
     buildFeatures.viewBinding = true
+
+    sourceSets {
+        named("debug") {
+            java.srcDir("src/engineering/java")
+            res.srcDir("src/engineering/res")
+            manifest.srcFile("src/debug/AndroidManifest.xml")
+        }
+    }
 }
 
 dependencies {

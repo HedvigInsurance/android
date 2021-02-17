@@ -1,17 +1,13 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.onboarding.mocks
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.choosePlanModule
-import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketManagerModule
-import com.hedvig.app.mocks.MockMarketManager
-import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import com.hedvig.onboarding.chooseplan.ui.ChoosePlanActivity
+import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
+import org.koin.core.module.Module
 
-class OnboardingMockActivity : MockActivity() {
+class MockOnboardingActivity : MockActivity() {
+
     private val marketManager = MockMarketManager()
     override val original = listOf(choosePlanModule, marketManagerModule)
 
@@ -26,15 +22,12 @@ class OnboardingMockActivity : MockActivity() {
     override fun adapter() = genericDevelopmentAdapter {
         header("Choose Plan")
         clickableItem("Choose plan, Market: Norway") {
-            MockMarketManager.mockedMarket = Market.NO
-            startActivity(ChoosePlanActivity.newInstance(this@OnboardingMockActivity))
+            startActivity(ChoosePlanActivity.newInstance(this@MockOnboardingActivity))
         }
         header("More Options")
         clickableItem("ID error") {
-            MockMarketManager.mockedMarket = Market.NO
             MockMoreOptionsViewModel.shouldLoad = false
-            // TODO
-            // startActivity(MoreOptionsActivity.newInstance(this@OnboardingMockActivity))
+            startActivity(MoreOptionsActivity.newInstance(this@MockOnboardingActivity))
         }
     }
 }

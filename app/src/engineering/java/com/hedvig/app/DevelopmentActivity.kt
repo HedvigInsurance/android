@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
@@ -12,7 +13,6 @@ import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
-import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
@@ -35,8 +35,17 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                             LoggedInActivity.newInstance(this)
                         )
                     },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark") {
+                        val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/embarkmock")
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                        startActivity(intent)
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Onboarding") {
-                        startActivity(Intent(this, OnboardingMockActivity::class.java))
+                        val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/onboardingmock")
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                        startActivity(intent)
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
                         startActivity(Intent(this, ReferralsMockActivity::class.java))

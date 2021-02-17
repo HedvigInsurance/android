@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.settings
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.fragment.app.FragmentManager
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
@@ -8,7 +10,6 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
@@ -59,7 +60,10 @@ enum class Market {
         SE -> ChatActivity.newInstance(context)
             .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) }
         NO -> {
-            ChoosePlanActivity.newInstance(context)
+            val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/chooseplan")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent
         }
         DK -> {
             WebOnboardingActivity.newInstance(context)

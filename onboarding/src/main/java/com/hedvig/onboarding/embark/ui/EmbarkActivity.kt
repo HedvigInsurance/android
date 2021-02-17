@@ -20,9 +20,9 @@ import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import com.hedvig.onboarding.R
 import com.hedvig.onboarding.databinding.ActivityEmbarkBinding
+import com.hedvig.onboarding.embark.EmbarkModule
 import com.hedvig.onboarding.embark.EmbarkViewModel
 import com.hedvig.onboarding.embark.NavigationDirection
-import com.hedvig.onboarding.embark.OnboardingModule
 import com.hedvig.onboarding.embark.passages.UpgradeAppFragment
 import com.hedvig.onboarding.embark.passages.numberaction.NumberActionFragment
 import com.hedvig.onboarding.embark.passages.numberaction.NumberActionParams
@@ -38,17 +38,25 @@ import com.hedvig.onboarding.embark.ui.MoreOptionsActivity.Companion.RESULT_REST
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
+
+    private val initModules by lazy {
+        EmbarkModule.init()
+    }
+
+    private fun injectModules() = initModules
+
     private val model: EmbarkViewModel by viewModel()
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
 
     private val storyName: String by lazy {
         intent.getStringExtra(STORY_NAME)
+            ?: intent.data?.getQueryParameter(QUERY_PARAMETER_STORY_NAME)
             ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        OnboardingModule.init()
+        injectModules()
 
         model.load(storyName)
 
@@ -239,6 +247,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
         internal const val PASSAGE_ANIMATION_DELAY_MILLIS = 150L
+        internal const val QUERY_PARAMETER_STORY_NAME = "storyName"
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {

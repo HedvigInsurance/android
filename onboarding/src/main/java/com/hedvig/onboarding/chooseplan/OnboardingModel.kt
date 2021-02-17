@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.onboarding.chooseplan
 
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 

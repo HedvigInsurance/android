@@ -1,8 +1,6 @@
-package com.hedvig.onboarding.embark
+package com.hedvig.onboarding.mocks
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
@@ -40,19 +38,13 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDIS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
-import com.hedvig.onboarding.embark.OnboardingModule.embarkModule
-import com.hedvig.onboarding.embark.OnboardingModule.moreOptionsModule
 import com.hedvig.onboarding.embark.ui.EmbarkActivity
 import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
-import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
-class EmbarkMockActivity : MockActivity() {
-    override val original = listOf(embarkModule, moreOptionsModule)
-    override val mocks = listOf(module {
-        viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
-        viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
-    })
+class MockEmbarkActivity : MockActivity() {
+    override val original = listOf<Module>()
+    override val mocks = listOf<Module>()
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Date Picker Action")
@@ -152,7 +144,7 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_INCOMPATIBLE_ACTION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("Template Values")
         clickableItem("Open") {
@@ -160,26 +152,26 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_TEMPLATE_MESSAGE
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("Toolbar")
         clickableItem("Single Tooltip") {
             MockEmbarkViewModel.apply {
                 mockedData = STORY_WITH_SINGLE_TOOLTIP
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("4 Tooltips") {
             MockEmbarkViewModel.apply {
                 mockedData = STORY_WITH_FOUR_TOOLTIP
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Lots of Tooltips") {
             MockEmbarkViewModel.apply {
                 mockedData = STORY_WITH_MANY_TOOLTIP
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("Message Expressions")
         clickableItem("Unary (true/false)") {
@@ -187,63 +179,63 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_UNARY_EXPRESSIONS
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Equals (==)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Not Equals (!=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_NOT_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Greater Than (>)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_GREATER_THAN_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Greater Than or Equals (>=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Less Than (<)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_LESS_THAN_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Less Than or Equals (<=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Or (||)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_OR_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("And (&&)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_OR_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("Redirects")
         clickableItem("Unary") {
@@ -251,28 +243,28 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_UNARY_REDIRECT
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Binary") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_BINARY_REDIRECT
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Multiple") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_MULTIPLE_REDIRECTS
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         clickableItem("Passed Expression (store a value in a key when a redirect triggers)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_PASSED_KEY_VALUE
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("Api")
         clickableItem("GraphQL Query") {
@@ -281,13 +273,13 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = STORY_WITH_GRAPHQL_QUERY_API
                 graphQLQueryResponse = jsonObjectOf("hello" to "world")
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
         header("More Options")
         clickableItem("More Options Error") {
             MockEmbarkViewModel.mockedData = STANDARD_STORY
             MockMoreOptionsViewModel.shouldLoad = false
-            startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
+            startActivity(MoreOptionsActivity.newInstance(this@MockEmbarkActivity))
         }
         header("Progress")
         clickableItem("Story with progress") {
@@ -295,7 +287,7 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = PROGRESSABLE_STORY
                 shouldLoad = true
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(this@MockEmbarkActivity, this.javaClass.name))
         }
     }
 }

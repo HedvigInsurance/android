@@ -8,7 +8,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
 import com.hedvig.app.databinding.SettingsBinding
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
@@ -17,6 +16,7 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
 
 class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
     ListAdapter<MoreOptionsModel, MoreOptionsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {

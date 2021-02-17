@@ -1,6 +1,7 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.onboarding.mocks
 
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
+import com.hedvig.onboarding.chooseplan.ChoosePlanViewModel
 
 class MockChoosePlanViewModel : ChoosePlanViewModel() {
     init {
