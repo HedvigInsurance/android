@@ -240,6 +240,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        EmbarkModule.unload()
+    }
+
     companion object {
         private const val REQUEST_OFFER = 1
         private const val REQUEST_MORE_OPTIONS = 2

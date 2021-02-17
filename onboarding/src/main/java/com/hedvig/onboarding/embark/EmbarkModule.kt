@@ -10,15 +10,14 @@ import com.hedvig.onboarding.embark.passages.previousinsurer.PreviousInsurerView
 import com.hedvig.onboarding.embark.passages.textactionset.TextActionSetParameter
 import com.hedvig.onboarding.embark.passages.textactionset.TextActionSetViewModel
 import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 object EmbarkModule {
 
-    fun init() = loadKoinModulesIfNotDefined(
-        viewModelsModule
-            + embarkModule
-            + moreOptionsModule
-    )
+    fun init() = loadKoinModulesIfNotDefined(viewModelsModule + embarkModule + moreOptionsModule)
+
+    fun unload() = unloadKoinModules(viewModelsModule + embarkModule + moreOptionsModule)
 
     val embarkModule = module {
         single { EmbarkRepository(get(), get(), get(), get()) }

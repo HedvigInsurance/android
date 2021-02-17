@@ -87,7 +87,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 setNavigationOnClickListener { onBackPressed() }
             }
 
-
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
@@ -145,6 +144,10 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        ChoosePlanModule.unload()
+    }
 
     companion object {
         private val INSTANT_INSTALL_REQUEST_CODE = 1234
