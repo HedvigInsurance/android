@@ -18,8 +18,11 @@ object EmbarkModule {
     fun unload() = unloadKoinModules(modules)
 
     val embarkModule = module {
-        single { EmbarkRepository(get(), get(), get(), get()) }
         viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
+    }
+
+    private val embarkRepository = module {
+        single { EmbarkRepository(get(), get(), get(), get()) }
     }
 
     private val trackerModule = module {
@@ -32,5 +35,5 @@ object EmbarkModule {
         viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
     }
 
-    private val modules = viewModelsModule + trackerModule + embarkModule
+    private val modules = embarkRepository + viewModelsModule + trackerModule + embarkModule
 }

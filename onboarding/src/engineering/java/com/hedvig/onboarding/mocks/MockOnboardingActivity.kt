@@ -11,13 +11,15 @@ import com.hedvig.onboarding.chooseplan.ChoosePlanViewModel
 import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
 import com.hedvig.onboarding.chooseplan.ui.ChoosePlanActivity
 import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
+import com.hedvig.onboarding.embark.ui.MoreOptionsModule.moreOptionsModule
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class MockOnboardingActivity : MockActivity() {
 
     private val marketManager = MockMarketManager()
-    override val original = listOf(choosePlanModule, marketManagerModule)
+
+    override val original = listOf(moreOptionsModule, choosePlanModule, marketManagerModule)
 
     override val mocks = listOf(
         module {

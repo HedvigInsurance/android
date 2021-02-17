@@ -6,10 +6,7 @@
     <dist:module
         dist:instant="true"
         dist:onDemand="false"
-        dist:title="Onboarding">
-        <dist:delivery>
-            <dist:install-time />
-        </dist:delivery>
+        dist:title="@string/title_onboarding">
         <dist:fusing dist:include="false" />
     </dist:module>
 
