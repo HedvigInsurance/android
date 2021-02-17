@@ -19,6 +19,13 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
+
+    private val initModules by lazy {
+        MoreOptionsModule.init()
+    }
+
+    private fun injectModules() = initModules
+
     private val binding by viewBinding(ActivityMoreOptionsBinding::bind)
     private val viewModel: MoreOptionsViewModel by viewModel()
     private val marketManager: MarketManager by inject()
@@ -29,6 +36,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        injectModules()
 
         binding.apply {
             root.setEdgeToEdgeSystemUiFlags(true)
@@ -95,6 +103,11 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
     private fun restartOffer() {
         setResult(RESULT_RESTART)
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MoreOptionsModule.unload()
     }
 
     companion object {

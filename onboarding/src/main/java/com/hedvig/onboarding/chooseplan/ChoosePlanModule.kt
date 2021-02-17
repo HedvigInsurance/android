@@ -7,26 +7,12 @@ import org.koin.dsl.module
 
 object ChoosePlanModule {
 
-    fun init() = loadKoinModulesIfNotDefined(
-        memberIdRepository
-            + moreOptionsModule
-            + choosePlanModule
-            + choosePlanRepository
-    )
+    fun init() = loadKoinModulesIfNotDefined(modules)
 
-    fun unload() = unloadKoinModules(
-        memberIdRepository
-            + moreOptionsModule
-            + choosePlanModule
-            + choosePlanRepository
-    )
+    fun unload() = unloadKoinModules(modules)
 
     val choosePlanModule = module {
         viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
-    }
-
-    private val moreOptionsModule = module {
-        viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
     }
 
     private val choosePlanRepository = module {
@@ -36,4 +22,6 @@ object ChoosePlanModule {
     private val memberIdRepository = module {
         single { MemberIdRepository(get()) }
     }
+
+    private val modules = memberIdRepository + choosePlanModule + choosePlanRepository
 }

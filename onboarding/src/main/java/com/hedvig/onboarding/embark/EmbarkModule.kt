@@ -1,8 +1,6 @@
 package com.hedvig.onboarding.embark
 
 import com.hedvig.app.util.loadKoinModulesIfNotDefined
-import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
-import com.hedvig.onboarding.chooseplan.MoreOptionsViewModelImpl
 import com.hedvig.onboarding.embark.passages.numberaction.NumberActionParams
 import com.hedvig.onboarding.embark.passages.numberaction.NumberActionViewModel
 import com.hedvig.onboarding.embark.passages.previousinsurer.PreviousInsurerViewModel
@@ -15,18 +13,17 @@ import org.koin.dsl.module
 
 object EmbarkModule {
 
-    fun init() = loadKoinModulesIfNotDefined(viewModelsModule + embarkModule + moreOptionsModule)
+    fun init() = loadKoinModulesIfNotDefined(modules)
 
-    fun unload() = unloadKoinModules(viewModelsModule + embarkModule + moreOptionsModule)
+    fun unload() = unloadKoinModules(modules)
 
     val embarkModule = module {
         single { EmbarkRepository(get(), get(), get(), get()) }
-        single<EmbarkTracker> { EmbarkTrackerImpl(get()) }
         viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
     }
 
-    val moreOptionsModule = module {
-        viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+    private val trackerModule = module {
+        single<EmbarkTracker> { EmbarkTrackerImpl(get()) }
     }
 
     private val viewModelsModule = module {
@@ -34,4 +31,6 @@ object EmbarkModule {
         viewModel { (data: TextActionSetParameter) -> TextActionSetViewModel(data) }
         viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
     }
+
+    private val modules = viewModelsModule + trackerModule + embarkModule
 }
