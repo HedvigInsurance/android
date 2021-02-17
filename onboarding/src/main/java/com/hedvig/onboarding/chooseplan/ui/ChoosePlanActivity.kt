@@ -33,11 +33,7 @@ import timber.log.Timber
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
     private val initModules by lazy {
-        if (intent.getBooleanExtra("isMock", false)) {
-            ChoosePlanModule.initMocks()
-        } else {
-            ChoosePlanModule.init()
-        }
+        ChoosePlanModule.init()
     }
 
     private fun injectModules() = initModules

@@ -1,37 +1,31 @@
 package com.hedvig.onboarding.chooseplan
 
-import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.settings.MarketManagerImpl
-import com.hedvig.onboarding.mocks.MockChoosePlanViewModel
-import com.hedvig.onboarding.mocks.MockMoreOptionsViewModel
+import com.hedvig.app.util.loadKoinModulesIfNotDefined
 import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
 object ChoosePlanModule {
 
-    fun init() = loadKoinModules(memberIdRepository + modules)
-    fun initMocks() = loadKoinModules(memberIdRepository + modules + mocks)
-
-    private val mocks = listOf(
-        module(override = true) {
-            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
-            viewModel<ChoosePlanViewModel> { MockChoosePlanViewModel() }
-            single<MarketManager>(override = true) { MarketManagerImpl(get(), get()) }
-        }
+    fun init() = loadKoinModulesIfNotDefined(
+        memberIdRepository
+            + moreOptionsModule
+            + choosePlanModule
+            + choosePlanRepository
     )
 
-    private val modules = listOf(
-        module {
-            viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
-            viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
-            single { ChoosePlanRepository(get(), get()) }
-        }
-    )
+    val choosePlanModule = module {
+        viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
+    }
+
+    private val moreOptionsModule = module {
+        viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+    }
+
+    private val choosePlanRepository = module {
+        single { ChoosePlanRepository(get(), get()) }
+    }
 
     private val memberIdRepository = module {
-        single {
-            MemberIdRepository(get())
-        }
+        single { MemberIdRepository(get()) }
     }
 }

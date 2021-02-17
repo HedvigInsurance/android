@@ -38,13 +38,23 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDIS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
+import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
+import com.hedvig.onboarding.embark.EmbarkModule.embarkModule
+import com.hedvig.onboarding.embark.EmbarkModule.moreOptionsModule
+import com.hedvig.onboarding.embark.EmbarkViewModel
 import com.hedvig.onboarding.embark.ui.EmbarkActivity
 import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
-import org.koin.core.module.Module
+import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 
 class MockEmbarkActivity : MockActivity() {
-    override val original = listOf<Module>()
-    override val mocks = listOf<Module>()
+
+    override val original = listOf(embarkModule, moreOptionsModule)
+
+    override val mocks = listOf(module {
+        viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
+        viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+    })
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Date Picker Action")
