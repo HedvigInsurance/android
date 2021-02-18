@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.core.view.updatePaddingRelative
 import com.google.android.gms.instantapps.InstantApps
 import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
@@ -67,14 +68,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.install -> {
-                            InstantApps.showInstallPrompt(
-                                this@ChoosePlanActivity,
-                                Intent(Intent.ACTION_MAIN).apply {
-
-                                },
-                                123,
-                                null,
-                            )
+                            showInstallPrompt()
                             true
                         }
                         R.id.moreOptions -> {
@@ -144,13 +138,26 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         }
     }
 
+    private fun showInstallPrompt() {
+        val postInstall = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_DEFAULT)
+            .setPackage(packageName)
+        Log.d("ChoosePlan","packageName: $packageName")
+        InstantApps.showInstallPrompt(this, postInstall, INSTANT_INSTALL_REQUEST_CODE, null)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("ChoosePlan", "onActivityResult: requestCode: $requestCode resultCode: $resultCode")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         ChoosePlanModule.unload()
     }
 
     companion object {
-        private val INSTANT_INSTALL_REQUEST_CODE = 1234
+        private const val INSTANT_INSTALL_REQUEST_CODE = 1234
 
         const val COMBO = "Combo"
         const val CONTENTS = "Contents"
