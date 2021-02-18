@@ -31,7 +31,11 @@
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:theme="@style/Hedvig.Theme">
-        
+
+        <meta-data
+            android:name="default-url"
+            android:value="https://instantapptest.dev.hedvigit.com" />
+
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
             android:name=".feature.onboarding.ui.ChoosePlanActivity"
