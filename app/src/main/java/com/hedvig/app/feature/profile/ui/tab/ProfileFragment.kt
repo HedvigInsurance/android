@@ -21,6 +21,7 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.util.apollo.AuthenticationTokenHandler
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -36,6 +37,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private var scroll = 0
     private val tracker: ProfileTracker by inject()
     private val marketManager: MarketManager by inject()
+    private val authenticationTokenRequestHandler: AuthenticationTokenHandler by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +84,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
-            adapter = ProfileAdapter(viewLifecycleOwner)
+            adapter = ProfileAdapter(viewLifecycleOwner, authenticationTokenRequestHandler)
         }
 
         model.data.observe(viewLifecycleOwner) { data ->

@@ -16,7 +16,7 @@ object ChoosePlanModule {
     }
 
     private val choosePlanRepository = module {
-        single { ChoosePlanRepository(get(), get()) }
+        single { ChoosePlanRepository(get(), get(), get()) }
     }
 
     private val memberIdRepository = module {

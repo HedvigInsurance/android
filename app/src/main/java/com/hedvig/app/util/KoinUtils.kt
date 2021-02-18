@@ -1,6 +1,6 @@
 package com.hedvig.app.util
 
-import org.koin.core.context.GlobalContext.loadKoinModules
+import org.koin.core.context.loadKoinModules
 import org.koin.core.error.DefinitionOverrideException
 import org.koin.core.module.Module
 import timber.log.Timber

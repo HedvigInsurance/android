@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.util.Log
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import com.google.android.gms.instantapps.InstantApps
 import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
@@ -104,6 +106,10 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 }
             }
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
+                TransitionManager.beginDelayedTransition(root)
+                progress.isVisible = false
+                recycler.isVisible = true
+
                 val bundles = response.getOrNull()
                 if (response.isFailure || bundles == null) {
                     (recycler.adapter as OnboardingAdapter).submitList(listOf(OnboardingModel.Error))
@@ -120,7 +126,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     )
                 )
             }
-            viewModel.load()
             viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
                 val data = viewModel.data.value?.getOrNull()
                 val bundles = data?.map {

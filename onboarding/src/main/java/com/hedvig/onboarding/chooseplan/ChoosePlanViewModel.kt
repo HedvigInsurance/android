@@ -43,6 +43,7 @@ class ChoosePlanViewModelImpl(
                 }
                 return@launch
             }
+
             if (response.getOrNull()?.hasErrors() == true) {
                 _data.postValue(Result.failure(Error()))
                 return@launch

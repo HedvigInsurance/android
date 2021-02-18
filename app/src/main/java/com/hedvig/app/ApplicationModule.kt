@@ -111,7 +111,9 @@ import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.AuthenticationTokenHandler
 import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.app.util.extensions.SHARED_PREFERENCE_NAME
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -334,7 +336,7 @@ val trustlyModule = module {
 
 val serviceModule = module {
     single { FileService(get()) }
-    single { LoginStatusService(get(), get()) }
+    single { LoginStatusService(get(), get(), get()) }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
@@ -408,3 +410,13 @@ val clockModule = module { single { Clock.systemDefaultZone() } }
 val defaultLocaleModule = module {
     single { defaultLocale(get(), get()) }
 }
+
+val sessionTokenModule = module {
+    single {
+        AuthenticationTokenHandler(
+            get(),
+            get<Context>().getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+        )
+    }
+}
+

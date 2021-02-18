@@ -16,6 +16,16 @@
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/onboarding_startpage.screen_title" />
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
@@ -25,12 +35,14 @@
         android:paddingTop="@dimen/base_margin_quintuple"
         android:paddingEnd="@dimen/base_margin_double"
         android:paddingBottom="@dimen/base_margin_undecuple"
+        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tools:itemCount="3"
-        tools:listitem="@layout/plan_card" />
+        tools:listitem="@layout/plan_card"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/continueButton"

@@ -4,7 +4,7 @@ import android.content.Context
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
-import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.util.apollo.AuthenticationTokenHandler
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -12,6 +12,7 @@ import com.hedvig.app.util.extensions.setIsLoggedIn
 class LoginStatusService(
     private val apolloClient: ApolloClient,
     private val context: Context,
+    private val authenticationTokenRequestHandler: AuthenticationTokenHandler
 ) {
     suspend fun getLoginStatus(): LoginStatus {
         if (context.isLoggedIn()) {
@@ -23,7 +24,9 @@ class LoginStatusService(
             return LoginStatus.IN_OFFER
         }
 
-        context.getAuthenticationToken() ?: return LoginStatus.ONBOARDING
+        if (!authenticationTokenRequestHandler.hasAuthenticationToken()) {
+            return LoginStatus.ONBOARDING
+        }
 
         val response = runCatching {
             apolloClient.query(ContractStatusQuery()).await()

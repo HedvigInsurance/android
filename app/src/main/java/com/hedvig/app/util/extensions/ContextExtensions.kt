@@ -36,12 +36,12 @@ import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import kotlinx.coroutines.delay
+import com.hedvig.app.util.apollo.SHARED_PREFERENCE_AUTHENTICATION_TOKEN
 import kotlin.system.exitProcess
 
-private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
+const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
 
-private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
 const val SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN = "shared_preference_tried_migration_of_token"
 const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
     "shared_preference_asked_for_permission_prefix"
@@ -106,9 +106,11 @@ fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.ja
     exitProcess(0)
 }
 
+@Deprecated("Use AuthenticationTokenHandler.removeAuthenticationToken() instead")
 fun Context.setAuthenticationToken(token: String?) =
     getSharedPreferences().edit().putString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, token).commit()
 
+@Deprecated("Use AuthenticationTokenHandler.getStoredAuthenticationToken() instead")
 fun Context.getAuthenticationToken(): String? =
     getSharedPreferences().getString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, null)
 

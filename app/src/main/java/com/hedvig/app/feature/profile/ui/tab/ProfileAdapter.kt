@@ -11,8 +11,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.apollo.AuthenticationTokenHandler
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -23,14 +23,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProfileAdapter(
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleOwner: LifecycleOwner,
+    private val authenticationTokenRequestHandler: AuthenticationTokenHandler
 ) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.profile_title -> ViewHolder.Title(parent)
         R.layout.profile_row -> ViewHolder.Row(parent)
         R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
-        R.layout.profile_logout -> ViewHolder.Logout(parent)
+        R.layout.profile_logout -> ViewHolder.Logout(parent, authenticationTokenRequestHandler)
         else -> throw Error("Invalid viewType")
     }
 
@@ -75,15 +76,18 @@ class ProfileAdapter(
             override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = Unit
         }
 
-        class Logout(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
+        class Logout(
+            parent: ViewGroup,
+            private val authenticationTokenRequestHandler: AuthenticationTokenHandler
+        ) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
             private val binding by viewBinding(ProfileLogoutBinding::bind)
             override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
                 root.setHapticClickListener {
                     root.context.apply {
-                        setAuthenticationToken(null)
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
+                                authenticationTokenRequestHandler.removeAuthenticationToken()
                                 runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
