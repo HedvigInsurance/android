@@ -40,6 +40,10 @@
 
             </intent-filter>
 
+            <meta-data
+                android:name="default-url"
+                android:value="https://instantapptest.dev.hedvigit.com/chooseplan" />
+
         </activity>
 
         <activity
