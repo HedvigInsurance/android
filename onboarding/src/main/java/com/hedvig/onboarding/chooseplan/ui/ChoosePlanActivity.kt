@@ -2,10 +2,8 @@ package com.hedvig.onboarding.chooseplan.ui
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionManager
-import android.util.Log
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import com.google.android.gms.instantapps.InstantApps
@@ -13,8 +11,14 @@ import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
+<<<<<<< HEAD
 import com.hedvig.app.feature.settings.MarketManager
+=======
+import com.hedvig.app.Onboarding
+import com.hedvig.app.feature.marketpicker.MarketProvider
+>>>>>>> 11bd60b8... Create abstraction for navigation with app links
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.app.startActivityWithAppLink
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -89,10 +93,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             continueButton.setHapticClickListener {
                 when (val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name) {
                     NO_ENGLISH_TRAVEL_STORY_NAME, NO_NORWEGIAN_TRAVEL_STORY_NAME -> {
-                        val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/onboarding?storyName=$storyName")
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                        startActivity(intent)
+                        startActivityWithAppLink(Onboarding(storyName))
                     }
                     null -> Timber.e("Could not start embark activity - null story name")
                     else -> {
@@ -147,13 +148,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         val postInstall = Intent(Intent.ACTION_MAIN)
             .addCategory(Intent.CATEGORY_DEFAULT)
             .setPackage(packageName)
-        Log.d("ChoosePlan","packageName: $packageName")
         InstantApps.showInstallPrompt(this, postInstall, INSTANT_INSTALL_REQUEST_CODE, null)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d("ChoosePlan", "onActivityResult: requestCode: $requestCode resultCode: $resultCode")
     }
 
     override fun onDestroy() {

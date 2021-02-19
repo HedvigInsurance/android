@@ -1,7 +1,6 @@
 package com.hedvig.app
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
@@ -36,16 +35,10 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                         )
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark") {
-                        val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/embarkmock")
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                        startActivity(intent)
+                        startActivityWithAppLink(MockOnboarding)
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Onboarding") {
-                        val uri = Uri.parse("https://instantapptest.dev.hedvigit.com/onboardingmock")
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                        startActivity(intent)
+                        startActivityWithAppLink(MockEmbark)
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Referrals") {
                         startActivity(Intent(this, ReferralsMockActivity::class.java))
