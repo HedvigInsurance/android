@@ -1,8 +1,9 @@
 package com.hedvig.onboarding.mocks
 
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
+import com.hedvig.onboarding.moreoptions.MoreOptionsViewModel
 
-class MockMoreOptionsViewModel : com.hedvig.onboarding.chooseplan.MoreOptionsViewModel() {
+class MockMoreOptionsViewModel : MoreOptionsViewModel() {
     init {
         load()
     }

@@ -14,7 +14,7 @@ import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
-import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
+import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
 import com.hedvig.onboarding.screens.MoreOptionsScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule

@@ -2,8 +2,8 @@ package com.hedvig.onboarding.mocks
 
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.util.jsonObjectOf
-import com.hedvig.onboarding.embark.EmbarkTracker
-import com.hedvig.onboarding.embark.EmbarkViewModel
+import com.hedvig.onboarding.createoffer.EmbarkTracker
+import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import org.json.JSONObject
 
 class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker) {

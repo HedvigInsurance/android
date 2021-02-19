@@ -1,7 +1,7 @@
 package com.hedvig.onboarding.textaction
 
 import com.agoda.kakao.screen.Screen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION

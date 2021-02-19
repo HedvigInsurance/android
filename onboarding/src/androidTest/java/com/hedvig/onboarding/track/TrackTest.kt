@@ -3,9 +3,9 @@ package com.hedvig.onboarding.track
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.embarkTrackerModule
-import com.hedvig.onboarding.embark.EmbarkTracker
+import com.hedvig.onboarding.createoffer.EmbarkTracker
 import com.hedvig.onboarding.screens.EmbarkScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TRACK
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

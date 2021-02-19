@@ -3,7 +3,7 @@ package com.hedvig.onboarding.messages
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.onboarding.screens.EmbarkScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

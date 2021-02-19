@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.clockModule
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.screens.TextActionScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

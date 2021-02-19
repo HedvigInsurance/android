@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.hedvig.onboarding.embark.passages.numberaction.NumberActionFragment">
+    tools:context="com.hedvig.onboarding.createoffer.passages.numberaction.NumberActionFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"

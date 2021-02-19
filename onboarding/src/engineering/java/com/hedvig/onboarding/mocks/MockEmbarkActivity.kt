@@ -38,12 +38,12 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDIS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
-import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
-import com.hedvig.onboarding.embark.EmbarkModule.embarkModule
-import com.hedvig.onboarding.embark.EmbarkViewModel
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
-import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
-import com.hedvig.onboarding.embark.ui.MoreOptionsModule.moreOptionsModule
+import com.hedvig.onboarding.moreoptions.MoreOptionsViewModel
+import com.hedvig.onboarding.createoffer.EmbarkModule.embarkModule
+import com.hedvig.onboarding.createoffer.EmbarkViewModel
+import com.hedvig.onboarding.createoffer.EmbarkActivity
+import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
+import com.hedvig.onboarding.moreoptions.MoreOptionsModule.moreOptionsModule
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

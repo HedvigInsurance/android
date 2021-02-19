@@ -13,14 +13,14 @@
     <application>
 
         <activity
-            android:name=".embark.ui.MoreOptionsActivity"
+            android:name=".moreoptions.MoreOptionsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.hedvig.onboarding.chooseplan.ui.ChoosePlanActivity"
+            android:name="com.hedvig.onboarding.chooseplan.ChoosePlanActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"
@@ -47,7 +47,7 @@
         </activity>
 
         <activity
-            android:name=".embark.ui.EmbarkActivity"
+            android:name=".createoffer.EmbarkActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

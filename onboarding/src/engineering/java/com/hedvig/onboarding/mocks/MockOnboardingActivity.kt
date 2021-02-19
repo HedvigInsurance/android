@@ -8,10 +8,10 @@ import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.onboarding.chooseplan.ChoosePlanModule.choosePlanModule
 import com.hedvig.onboarding.chooseplan.ChoosePlanViewModel
-import com.hedvig.onboarding.chooseplan.MoreOptionsViewModel
-import com.hedvig.onboarding.chooseplan.ui.ChoosePlanActivity
-import com.hedvig.onboarding.embark.ui.MoreOptionsActivity
-import com.hedvig.onboarding.embark.ui.MoreOptionsModule.moreOptionsModule
+import com.hedvig.onboarding.moreoptions.MoreOptionsViewModel
+import com.hedvig.onboarding.chooseplan.ChoosePlanActivity
+import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
+import com.hedvig.onboarding.moreoptions.MoreOptionsModule.moreOptionsModule
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

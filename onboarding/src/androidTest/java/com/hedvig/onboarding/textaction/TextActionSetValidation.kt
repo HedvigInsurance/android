@@ -2,7 +2,7 @@ package com.hedvig.onboarding.textaction
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.onboarding.screens.TextActionSetScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

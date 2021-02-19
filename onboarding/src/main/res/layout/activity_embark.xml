@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.hedvig.onboarding.embark.ui.MaterialProgressToolbar
+    <com.hedvig.onboarding.createoffer.ui.MaterialProgressToolbar
         android:id="@+id/progressToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

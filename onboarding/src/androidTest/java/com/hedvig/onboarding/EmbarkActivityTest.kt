@@ -2,7 +2,7 @@ package com.hedvig.onboarding
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.onboarding.screens.EmbarkScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context

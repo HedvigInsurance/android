@@ -3,7 +3,7 @@ package com.hedvig.onboarding.api.graphqlquery
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.onboarding.screens.EmbarkScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE
 import com.hedvig.app.testdata.feature.embark.data.VARIABLE_QUERY
 import com.hedvig.app.util.ApolloCacheClearRule

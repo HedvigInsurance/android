@@ -1,6 +1,7 @@
 package com.hedvig.onboarding.chooseplan
 
 import com.hedvig.app.util.loadKoinModulesIfNotDefined
+import com.hedvig.onboarding.moreoptions.MemberIdRepository
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module

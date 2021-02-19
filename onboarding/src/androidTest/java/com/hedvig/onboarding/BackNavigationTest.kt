@@ -2,7 +2,7 @@ package com.hedvig.onboarding
 
 import androidx.test.core.app.ApplicationProvider
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.hedvig.onboarding.embark.ui.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
