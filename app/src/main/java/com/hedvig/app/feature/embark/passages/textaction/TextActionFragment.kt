@@ -3,8 +3,6 @@ package com.hedvig.app.feature.embark.passages.textaction
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
@@ -26,6 +24,7 @@ import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
+import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import e
@@ -93,18 +92,14 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                 }
             }
 
-            input.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (textActionSubmit.isEnabled) {
-                        viewLifecycleScope.launch {
-                            saveAndAnimate(data)
-                            model.navigateToPassage(data.link)
-                        }
+            input.onImeAction {
+                if (textActionSubmit.isEnabled) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate(data)
+                        model.navigateToPassage(data.link)
                     }
-                    return@OnEditorActionListener true
                 }
-                false
-            })
+            }
 
             model.getFromStore(data.key)?.let { input.setText(remask(it, data.mask)) }
 

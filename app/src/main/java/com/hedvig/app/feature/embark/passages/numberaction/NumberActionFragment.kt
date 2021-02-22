@@ -2,8 +2,6 @@ package com.hedvig.app.feature.embark.passages.numberaction
 
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -13,6 +11,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.util.extensions.view.hapticClicks
+import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.flow.launchIn
@@ -40,18 +39,14 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
             input.doOnTextChanged { text, _, _, _ ->
                 numberActionViewModel.validate(text)
             }
-            input.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (numberActionViewModel.valid.value == true) {
-                        viewLifecycleScope.launch {
-                            saveAndAnimate()
-                            model.navigateToPassage(data.link)
-                        }
+            input.onImeAction {
+                if (numberActionViewModel.valid.value == true) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate()
+                        model.navigateToPassage(data.link)
                     }
-                    return@OnEditorActionListener true
                 }
-                false
-            })
+            }
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
             model.getFromStore(data.key)?.let { input.setText(it) }
             submit.text = data.submitLabel

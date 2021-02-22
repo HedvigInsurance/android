@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.embark.passages.textactionset
 
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView.OnEditorActionListener
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -14,6 +12,7 @@ import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 
 
@@ -31,15 +30,11 @@ class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone:
         fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel, onDone: () -> Unit) {
             binding.apply {
                 textField.hint = item.placeholder
-                input.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        if (model.isValid.value == true) {
-                            onDone()
-                        }
-                        return@OnEditorActionListener true
+                input.onImeAction {
+                    if (model.isValid.value == true) {
+                        onDone()
                     }
-                    false
-                })
+                }
 
                 item.mask?.let { mask ->
                     input.apply {
