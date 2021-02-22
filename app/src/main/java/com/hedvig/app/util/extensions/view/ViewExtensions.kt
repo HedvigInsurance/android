@@ -7,7 +7,9 @@ import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.annotation.CheckResult
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
@@ -95,7 +97,7 @@ fun View.updatePadding(
     @Dimension start: Int? = null,
     @Dimension top: Int? = null,
     @Dimension end: Int? = null,
-    @Dimension bottom: Int? = null
+    @Dimension bottom: Int? = null,
 ) = setPaddingRelative(
     start ?: paddingStart,
     top ?: paddingTop,
@@ -107,7 +109,7 @@ fun View.updateMargin(
     start: Int? = null,
     top: Int? = null,
     end: Int? = null,
-    bottom: Int? = null
+    bottom: Int? = null,
 ) {
     val lp = layoutParams as? ViewGroup.MarginLayoutParams
         ?: return
@@ -124,7 +126,7 @@ fun View.updateMargin(
 
 inline fun <reified T : ViewGroup.LayoutParams> View.setSize(
     @Dimension width: Int? = null,
-    @Dimension height: Int? = null
+    @Dimension height: Int? = null,
 ) {
     layoutParams = T::class.java
         .getConstructor(Int::class.java, Int::class.java)
@@ -144,7 +146,7 @@ fun Toolbar.setupToolbar(
     usingEdgeToEdge: Boolean = false,
     @DrawableRes icon: Int? = null,
     rootLayout: View?,
-    backAction: (() -> Unit)? = null
+    backAction: (() -> Unit)? = null,
 ) {
     activity.setSupportActionBar(this)
     activity.supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -211,7 +213,7 @@ fun Toolbar.setupToolbar(
 }
 
 fun NestedScrollView.setupToolbarScrollListener(
-    toolbar: Toolbar
+    toolbar: Toolbar,
 ) {
     setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
         val maxElevationScroll = 200
@@ -301,3 +303,11 @@ fun View.hapticClicks(): Flow<Unit> = callbackFlow {
     }
     awaitClose { setOnClickListener(null) }
 }.conflate()
+
+fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) = setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+    if (actionId == imeActionId) {
+        action()
+        return@OnEditorActionListener true
+    }
+    false
+})
