@@ -15,6 +15,7 @@ import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -30,29 +31,33 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             messages.adapter = MessageAdapter(data.messages)
-            inputRecycler.adapter = TextInputSetAdapter(textActionSetViewModel).also {
-                it.submitList(textFieldData(data))
+
+            val adapter = TextInputSetAdapter(textActionSetViewModel) {
+                viewLifecycleScope.launch {
+                    saveAndAnimate(data)
+                    model.navigateToPassage(data.link)
+                }
             }
+            adapter.submitList(textFieldData(data))
+            inputRecycler.adapter = adapter
             textActionSubmit.text = data.submitLabel
             textActionSetViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
 
             textActionSubmit
                 .hapticClicks()
-                .mapLatest { animateSubmission(data) }
-                .onEach {
-                    model.navigateToPassage(data.link)
-                }
+                .mapLatest { saveAndAnimate(data) }
+                .onEach { model.navigateToPassage(data.link) }
                 .launchIn(viewLifecycleScope)
         }
     }
 
-    private suspend fun FragmentTextActionSetBinding.animateSubmission(data: TextActionSetParameter) {
+    private suspend fun saveAndAnimate(data: TextActionSetParameter) {
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
             val allInput = inputs.values.joinToString(" ")
             model.putInStore("${data.passageName}Result", allInput)
             val responseText = model.preProcessResponse(data.passageName) ?: allInput
-            animateResponse(response, responseText)
+            animateResponse(binding.response, responseText)
         }
     }
 
