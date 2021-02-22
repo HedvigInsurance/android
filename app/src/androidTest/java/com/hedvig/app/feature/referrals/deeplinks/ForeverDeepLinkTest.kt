@@ -9,7 +9,6 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
-import com.hedvig.app.feature.home.seconds
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
@@ -21,9 +20,6 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
@@ -69,9 +65,7 @@ class ForeverDeepLinkTest : TestCase() {
         )
 
         onScreen<SplashScreen> {
-            await atMost 5.seconds untilAsserted {
-                animation { doesNotExist() }
-            }
+            animation { doesNotExist() }
         }
         onScreen<ReferralTabScreen> {
             recycler {
