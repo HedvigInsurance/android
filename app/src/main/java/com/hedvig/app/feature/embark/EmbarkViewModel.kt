@@ -110,8 +110,10 @@ abstract class EmbarkViewModel(
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
         track.includeAllKeys -> JSONObject(valueStore.toMap())
-        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
-            .map { it to valueStore.get(it) }.toMap())
+        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(
+            track.eventKeys.filterNotNull()
+                .map { it to valueStore.get(it) }.toMap()
+        )
         else -> null
     }?.let { data ->
         track.customData?.let { data + it } ?: data
@@ -135,22 +137,27 @@ abstract class EmbarkViewModel(
             }
             val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
 
+            val passageName = graphQLQuery.queryData.errors
+                .first().fragments.graphQLErrorsFragment
+                .next.fragments
+                .embarkLinkFragment.name
+
             when {
-                result.isFailure -> {
-                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                }
+                result.isFailure -> navigateToPassage(passageName)
                 result.hasErrors() -> {
                     if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
                         TODO("Handle matched error")
                     }
-                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                    navigateToPassage(passageName)
                 }
                 result.isSuccess -> {
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLQuery.queryData.results.forEach { r ->
-                        putInStore(r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                        putInStore(
+                            r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
+                        )
                     }
                     graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
                         navigateToPassage(
@@ -171,22 +178,29 @@ abstract class EmbarkViewModel(
             }
             val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables) }
 
+            val passageName = graphQLMutation.mutationData.errors
+                .first().fragments.graphQLErrorsFragment
+                .next.fragments.embarkLinkFragment.name
+
             when {
-                result.isFailure -> {
-                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                }
+                result.isFailure -> navigateToPassage(passageName)
                 result.hasErrors() -> {
-                    if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
+                    val containsErrors = graphQLMutation
+                        .mutationData
+                        .errors.any { it.fragments.graphQLErrorsFragment.contains != null }
+                    if (containsErrors) {
                         TODO("Handle matched error")
                     }
-                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                    navigateToPassage(passageName)
                 }
                 result.isSuccess -> {
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
-                        putInStore(r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                        putInStore(
+                            r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
+                        )
                     }
                     graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
                         navigateToPassage(
@@ -195,7 +209,6 @@ abstract class EmbarkViewModel(
                     }
                 }
             }
-
         }
     }
 
@@ -208,7 +221,8 @@ abstract class EmbarkViewModel(
                     EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
                     EmbarkAPIGraphQLSingleVariableCasting.INT -> inStore.toInt()
                     EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> inStore.toBoolean()
-                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null // Unsupported type casts are ignored for now.
+                    // Unsupported type casts are ignored for now.
+                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
                 } ?: return@mapNotNull null
 
                 return@mapNotNull Pair(singleVariable.key, casted)
@@ -220,7 +234,8 @@ abstract class EmbarkViewModel(
                         putInStore(generatedVariable.storeAs, generated.toString())
                         return@mapNotNull Pair(generatedVariable.key, generated.toString())
                     }
-                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null // Unsupported generated types are ignored for now.
+                    // Unsupported generated types are ignored for now.
+                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null
                 }
             }
 
@@ -335,7 +350,8 @@ abstract class EmbarkViewModel(
                     }
                 }
                 EmbarkExpressionTypeBinary.NOT_EQUALS -> {
-                    val stored = valueStore.get(binaryExpression.key) ?: return ExpressionResult.False
+                    val stored = valueStore.get(binaryExpression.key)
+                        ?: return ExpressionResult.False
                     if (stored != binaryExpression.value) {
                         return ExpressionResult.True(binaryExpression.text)
                     }
@@ -345,7 +361,8 @@ abstract class EmbarkViewModel(
                 EmbarkExpressionTypeBinary.LESS_THAN,
                 EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
                 -> {
-                    val storedAsInt = valueStore.get(binaryExpression.key)?.toIntOrNull() ?: return ExpressionResult.False
+                    val storedAsInt = valueStore.get(binaryExpression.key)?.toIntOrNull()
+                        ?: return ExpressionResult.False
                     val valueAsInt =
                         binaryExpression.value.toIntOrNull() ?: return ExpressionResult.False
 
@@ -514,7 +531,7 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-    tracker: EmbarkTracker
+    tracker: EmbarkTracker,
 ) : EmbarkViewModel(tracker) {
 
     override fun load(name: String) {
