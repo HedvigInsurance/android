@@ -274,7 +274,6 @@ dependencies {
 
     // test
     testImplementation("junit:junit:4.13")
-    testImplementation("com.google.truth:truth:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test:rules:1.3.0")
@@ -285,6 +284,7 @@ dependencies {
     androidTestImplementation(
         "com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}"
     )
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("org.koin:koin-test:$koin_version")
     androidTestImplementation("org.awaitility:awaitility:4.0.2")

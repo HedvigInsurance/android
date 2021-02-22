@@ -1,6 +1,7 @@
 package com.hedvig.app
 
-import com.google.common.truth.Truth.assertThat
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
 import org.junit.Test
 
@@ -78,14 +79,20 @@ class ComputedValuesTest {
     @Test
     fun testReferenceStoreKey() {
         val expression = "myKey"
-        val result = TemplateExpressionCalculator.evaluateTemplateExpression(expression, hashMapOf("myKey" to "my value"))
+        val result = TemplateExpressionCalculator.evaluateTemplateExpression(
+            expression,
+            hashMapOf("myKey" to "my value")
+        )
         assertThat(result).isEqualTo("my value")
     }
 
     @Test
     fun testCalculateWithStoreReference() {
         val expression = "myKey + 1"
-        val result = TemplateExpressionCalculator.evaluateTemplateExpression(expression, hashMapOf("myKey" to "41"))
+        val result = TemplateExpressionCalculator.evaluateTemplateExpression(
+            expression,
+            hashMapOf("myKey" to "41")
+        )
         assertThat(result).isEqualTo("42")
     }
 
