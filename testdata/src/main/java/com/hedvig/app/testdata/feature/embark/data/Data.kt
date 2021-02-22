@@ -1361,7 +1361,9 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
                 text = "{TestPassageResult}"
             ).build(),
             messages = listOf(
-                STANDARD_FIRST_MESSAGE
+                MessageBuilder(
+                    text = "Computed value is previous input + 3 = {BAR}"
+                ).build()
             ),
             action = TextActionBuilder(
                 link = STANDARD_SECOND_LINK,

@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.embark.computedvalues
 
+import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.NumberActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
@@ -29,8 +31,8 @@ class ComputedValuesTest : TestCase() {
     fun shouldCorrectlyDisplayComputedValues() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
-        NumberActionScreen {
-            step("Enter value in first passage and submit") {
+        step("Enter value in first passage and submit") {
+            NumberActionScreen {
                 input {
                     edit {
                         typeText("1334")
@@ -38,11 +40,13 @@ class ComputedValuesTest : TestCase() {
                 }
                 submit { click() }
             }
+        }
 
-            step("Verify that computed value has been correctly parsed") {
-                input {
-                    edit {
-                        hasText("1337")
+        step("Verify that computed value has been correctly parsed") {
+            Screen.onScreen<EmbarkScreen> {
+                messages {
+                    firstChild<EmbarkScreen.MessageRow> {
+                        text { hasText("Computed value is previous input + 3 = 1337") }
                     }
                 }
             }

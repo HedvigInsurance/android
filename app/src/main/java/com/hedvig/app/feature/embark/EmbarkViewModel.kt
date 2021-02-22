@@ -14,7 +14,6 @@ import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
-import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
@@ -26,7 +25,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Stack
 import java.util.UUID
-import kotlin.collections.set
 import kotlin.math.max
 
 abstract class EmbarkViewModel(
@@ -41,18 +39,18 @@ abstract class EmbarkViewModel(
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
-    private val store = HashMap<String, String>()
-    private lateinit var computedValues: Map<String, String>
+    private lateinit var valueStore: ValueStore
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
     protected fun setInitialState() {
-        store.clear()
         storyData.embarkStory?.let { story ->
+            val computedValues = story.getComputedValues()
+            valueStore = ValueStore(computedValues)
+
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
-            computedValues = story.computedStoreValues?.associateBy({ it.key }, { it.value }) ?: emptyMap()
 
             val model = EmbarkModel(
                 passage = preProcessPassage(firstPassage),
@@ -68,17 +66,10 @@ abstract class EmbarkViewModel(
     }
 
     fun putInStore(key: String, value: String) {
-        store[key] = value
+        valueStore.put(key, value)
     }
 
-    fun getFromStore(key: String): String? {
-        val computedValue = computedValues[key]
-        return if (computedValue != null) {
-            TemplateExpressionCalculator.evaluateTemplateExpression(computedValue, store)
-        } else {
-            store[key]
-        }
-    }
+    fun getFromStore(key: String) = valueStore.get(key)
 
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
@@ -118,9 +109,9 @@ abstract class EmbarkViewModel(
     }
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
-        track.includeAllKeys -> JSONObject(store.toMap())
+        track.includeAllKeys -> JSONObject(valueStore.toMap())
         track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
-            .map { it to store[it] }.toMap())
+            .map { it to valueStore.get(it) }.toMap())
         else -> null
     }?.let { data ->
         track.customData?.let { data + it } ?: data
@@ -211,7 +202,7 @@ abstract class EmbarkViewModel(
     private fun extractVariables(variables: List<GraphQLVariablesFragment>) =
         variables.mapNotNull { v ->
             v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
-                val inStore = store[singleVariable.from]
+                val inStore = valueStore.get(singleVariable.from)
                     ?: return@mapNotNull null // TODO: What do we do if the variable is not set? Show an error, right?
                 val casted = when (singleVariable.as_) {
                     EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
@@ -311,7 +302,7 @@ abstract class EmbarkViewModel(
     private fun preProcessMessage(message: MessageFragment): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
-                text = interpolateMessage(store, message.text)
+                text = interpolateMessage(message.text)
             )
         }
 
@@ -324,7 +315,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         return message.copy(
-            text = interpolateMessage(store, expressionText)
+            text = interpolateMessage(expressionText)
         )
     }
 
@@ -339,12 +330,12 @@ abstract class EmbarkViewModel(
         expression.asEmbarkExpressionBinary?.let { binaryExpression ->
             when (binaryExpression.binaryType) {
                 EmbarkExpressionTypeBinary.EQUALS -> {
-                    if (store[binaryExpression.key] == binaryExpression.value) {
+                    if (valueStore.get(binaryExpression.key) == binaryExpression.value) {
                         return ExpressionResult.True(binaryExpression.text)
                     }
                 }
                 EmbarkExpressionTypeBinary.NOT_EQUALS -> {
-                    val stored = store[binaryExpression.key] ?: return ExpressionResult.False
+                    val stored = valueStore.get(binaryExpression.key) ?: return ExpressionResult.False
                     if (stored != binaryExpression.value) {
                         return ExpressionResult.True(binaryExpression.text)
                     }
@@ -354,8 +345,7 @@ abstract class EmbarkViewModel(
                 EmbarkExpressionTypeBinary.LESS_THAN,
                 EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
                 -> {
-                    val storedAsInt =
-                        store[binaryExpression.key]?.toIntOrNull() ?: return ExpressionResult.False
+                    val storedAsInt = valueStore.get(binaryExpression.key)?.toIntOrNull() ?: return ExpressionResult.False
                     val valueAsInt =
                         binaryExpression.value.toIntOrNull() ?: return ExpressionResult.False
 
@@ -397,18 +387,19 @@ abstract class EmbarkViewModel(
         return ExpressionResult.False
     }
 
+    private fun interpolateMessage(message: String) =
+        REPLACEMENT_FINDER
+            .findAll(message)
+            .fold(message) { acc, curr ->
+                val key = curr.value.removeSurrounding("{", "}")
+                val fromStore = valueStore.get(key) ?: return acc
+                acc.replace(curr.value, fromStore)
+            }
+
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
 
         private fun Result<JSONObject?>.hasErrors() = getOrNull()?.has("errors") == true
-
-        private fun interpolateMessage(store: Map<String, String>, message: String) =
-            REPLACEMENT_FINDER
-                .findAll(message)
-                .fold(message) { acc, curr ->
-                    val fromStore = store[curr.value.removeSurrounding("{", "}")] ?: return acc
-                    acc.replace(curr.value, fromStore)
-                }
 
         private fun SubExpressionFragment.into(): MessageFragment.Expression =
             MessageFragment.Expression(
