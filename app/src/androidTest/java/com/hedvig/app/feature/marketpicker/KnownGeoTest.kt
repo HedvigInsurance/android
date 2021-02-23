@@ -84,7 +84,7 @@ class KnownGeoTest : TestCase() {
 
         onScreen<MarketPickerScreen> {
             picker {
-                childAt<MarketPickerScreen.Picker>(2) {
+                childAt<MarketPickerScreen.MarketButton>(2) {
                     selectedMarket.hasText(R.string.sweden)
                 }
                 childAt<MarketPickerScreen.ContinueButton>(0) {

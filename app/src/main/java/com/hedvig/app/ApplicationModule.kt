@@ -291,7 +291,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get()) }
 }
 
 val offerModule = module {
@@ -347,12 +347,15 @@ val serviceModule = module {
     single { DeviceInformationService(get()) }
 }
 
+val marketingRepositoryModule = module {
+    single { MarketingRepository(get(), get()) }
+}
+
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
     single { InsuranceRepository(get(), get()) }
-    single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single {
         RedeemReferralCodeRepository(
