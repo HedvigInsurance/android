@@ -11,9 +11,6 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
-import com.google.android.exoplayer2.database.ExoDatabaseProvider
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -126,7 +123,6 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
-import java.io.File
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
@@ -151,13 +147,6 @@ val applicationModule = module {
         MixpanelAPI.getInstance(
             get(),
             get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
-        )
-    }
-    single {
-        SimpleCache(
-            File(get<Context>().cacheDir, "hedvig_story_video_cache"),
-            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong()),
-            ExoDatabaseProvider(get())
         )
     }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
