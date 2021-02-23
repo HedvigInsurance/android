@@ -3,9 +3,9 @@ package com.hedvig.app.feature.chat.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.feature.chat.data.UserRepository
 import e
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class UserViewModel(
     private val userRepository: UserRepository,
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClient: ApolloClient,
 ) : ViewModel() {
 
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
@@ -49,7 +49,7 @@ class UserViewModel(
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
                 return@launch
             }
-            apolloClientWrapper.invalidateApolloClient()
+            apolloClient.subscriptionManager.reconnect()
             callback()
         }
     }

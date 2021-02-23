@@ -1,15 +1,14 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.ApolloClientWrapper
+import com.apollographql.apollo.ApolloClient
 import org.junit.rules.ExternalResource
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
 class ApolloCacheClearRule : ExternalResource(), KoinTest {
-    private val apolloClientWrapper: ApolloClientWrapper by inject()
+    private val apolloClient: ApolloClient by inject()
     override fun before() {
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .clearNormalizedCache()
     }
 }

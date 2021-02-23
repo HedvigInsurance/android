@@ -2,6 +2,7 @@ package com.hedvig.app.feature.keygear.data
 
 import android.content.Context
 import android.net.Uri
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Input
 import com.apollographql.apollo.api.Response
@@ -21,7 +22,6 @@ import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
-import com.hedvig.app.ApolloClientWrapper
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.toLocaleString
@@ -35,7 +35,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 class KeyGearItemsRepository(
-    private val apolloClientWrapper: ApolloClientWrapper,
+    private val apolloClient: ApolloClient,
     private val fileService: FileService,
     private val context: Context,
 ) {
@@ -45,8 +45,7 @@ class KeyGearItemsRepository(
     fun keyGearItems(): Flow<Response<KeyGearItemsQuery.Data>> {
         keyGearItemsQuery = KeyGearItemsQuery(defaultLocale(context).toLocaleString())
 
-        return apolloClientWrapper
-            .apolloClient
+        return apolloClient
             .query(keyGearItemsQuery)
             .watcher()
             .toFlow()
@@ -55,8 +54,7 @@ class KeyGearItemsRepository(
     fun keyGearItem(id: String): Flow<Response<KeyGearItemQuery.Data>> {
         keyGearItemQuery = KeyGearItemQuery(id, defaultLocale(context).toLocaleString())
 
-        return apolloClientWrapper
-            .apolloClient
+        return apolloClient
             .query(keyGearItemQuery)
             .watcher()
             .toFlow()
@@ -67,8 +65,7 @@ class KeyGearItemsRepository(
         date: LocalDate,
         price: MonetaryAmountV2Input,
     ): KeyGearItemQuery.Data? {
-        val response = apolloClientWrapper
-            .apolloClient
+        val response = apolloClient
             .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
             .await()
 
@@ -83,12 +80,10 @@ class KeyGearItemsRepository(
                 ?: response.data?.updatePurchasePriceForKeyGearItem?.fragments?.keyGearItemValuationFragment?.valuation
                 ?: return null
 
-        val cachedData =
-            apolloClientWrapper
-                .apolloClient
-                .apolloStore
-                .read(keyGearItemQuery)
-                .execute()
+        val cachedData = apolloClient
+            .apolloStore
+            .read(keyGearItemQuery)
+            .execute()
 
         cachedData.keyGearItem?.let { keyGearItem ->
             val newData = cachedData
@@ -118,8 +113,7 @@ class KeyGearItemsRepository(
                         )
                 )
 
-            apolloClientWrapper
-                .apolloClient
+            apolloClient
                 .apolloStore
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
@@ -141,7 +135,7 @@ class KeyGearItemsRepository(
             FileUpload(mimeType, file.path)
         }
 
-        return@withContext apolloClientWrapper.apolloClient.mutate(UploadFilesMutation(files))
+        return@withContext apolloClient.mutate(UploadFilesMutation(files))
             .await()
     }
 
@@ -159,8 +153,7 @@ class KeyGearItemsRepository(
             name = Input.fromNullable(name)
         )
 
-        val result = apolloClientWrapper
-            .apolloClient
+        val result = apolloClient
             .mutate(mutation)
             .await()
 
@@ -170,8 +163,7 @@ class KeyGearItemsRepository(
             return result
         }
 
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(keyGearItemsQuery)
             .execute()
@@ -195,8 +187,7 @@ class KeyGearItemsRepository(
                 keyGearItems = newKeyGearItems
             )
 
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(keyGearItemsQuery, newData)
             .execute()
@@ -214,8 +205,7 @@ class KeyGearItemsRepository(
         withContext(Dispatchers.IO) {
             context.contentResolver.openInputStream(file)?.into(uploadFile)
         }
-        val uploadResult = apolloClientWrapper
-            .apolloClient
+        val uploadResult = apolloClient
             .mutate(UploadFileMutation(FileUpload(mimeType, uploadFile.path)))
             .await()
 
@@ -230,8 +220,7 @@ class KeyGearItemsRepository(
             key = uploadData.uploadFile.key
         )
 
-        val addReceiptResult = apolloClientWrapper
-            .apolloClient
+        val addReceiptResult = apolloClient
             .mutate(
                 AddReceiptToKeyGearItemMutation(
                     AddReceiptToKeyGearItemInput(
@@ -249,8 +238,7 @@ class KeyGearItemsRepository(
             return
         }
 
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(keyGearItemQuery)
             .execute()
@@ -266,8 +254,7 @@ class KeyGearItemsRepository(
                         )
                 )
 
-            apolloClientWrapper
-                .apolloClient
+            apolloClient
                 .apolloStore
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
@@ -280,12 +267,11 @@ class KeyGearItemsRepository(
                 id = itemId,
                 updatedName = Input.fromNullable(name)
             )
-        val response = apolloClientWrapper.apolloClient.mutate(mutation).await()
+        val response = apolloClient.mutate(mutation).await()
 
         val newName = response.data?.updateKeyGearItemName?.name
 
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(keyGearItemQuery)
             .execute()
@@ -303,14 +289,12 @@ class KeyGearItemsRepository(
                         )
                 )
 
-            apolloClientWrapper
-                .apolloClient
+            apolloClient
                 .apolloStore
                 .writeAndPublish(keyGearItemQuery, newData)
                 .execute()
 
-            val itemsCachedData = apolloClientWrapper
-                .apolloClient
+            val itemsCachedData = apolloClient
                 .apolloStore
                 .read(keyGearItemsQuery)
                 .execute()
@@ -330,8 +314,8 @@ class KeyGearItemsRepository(
                     }
                 }
             )
-            apolloClientWrapper
-                .apolloClient
+
+            apolloClient
                 .apolloStore
                 .writeAndPublish(keyGearItemsQuery, newItemsData)
                 .execute()
@@ -339,8 +323,7 @@ class KeyGearItemsRepository(
     }
 
     suspend fun deleteItem(id: String) {
-        val response = apolloClientWrapper
-            .apolloClient
+        val response = apolloClient
             .mutate(DeleteKeyGearItemMutation(id))
             .await()
 
@@ -349,8 +332,7 @@ class KeyGearItemsRepository(
             return
         }
 
-        val cachedData = apolloClientWrapper
-            .apolloClient
+        val cachedData = apolloClient
             .apolloStore
             .read(keyGearItemsQuery)
             .execute()
@@ -361,8 +343,7 @@ class KeyGearItemsRepository(
         val newData = cachedData
             .copy(keyGearItems = newKeyGearItems)
 
-        apolloClientWrapper
-            .apolloClient
+        apolloClient
             .apolloStore
             .writeAndPublish(keyGearItemsQuery, newData)
             .execute()

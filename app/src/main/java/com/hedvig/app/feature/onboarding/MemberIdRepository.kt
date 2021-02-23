@@ -1,12 +1,13 @@
 package com.hedvig.app.feature.onboarding
 
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
-import com.hedvig.app.ApolloClientWrapper
 
 class MemberIdRepository(
-    val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClient: ApolloClient,
 ) {
-    suspend fun memberId() = apolloClientWrapper.apolloClient.query(MemberIdQuery())
+    suspend fun memberId() = apolloClient
+        .query(MemberIdQuery())
         .await()
 }
