@@ -3,7 +3,6 @@ package com.hedvig.app.feature.payment
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.app.MarketTest
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.Market
@@ -12,12 +11,14 @@ import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class NoCampaignTest : MarketTest(Market.SE) {
+class NoCampaignTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
@@ -30,6 +31,9 @@ class NoCampaignTest : MarketTest(Market.SE) {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val marketRule = MarketRule(Market.SE)
 
     @Test
     fun shouldShowRedeemCodeWhenUserHasNoActiveCampaign() = run {

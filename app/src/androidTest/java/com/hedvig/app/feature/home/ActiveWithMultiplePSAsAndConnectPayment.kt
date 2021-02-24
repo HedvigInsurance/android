@@ -5,7 +5,6 @@ import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.app.MarketTest
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -16,14 +15,16 @@ import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_E
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
+import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
 import com.hedvig.app.util.stubExternalIntents
+import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class ActiveWithMultiplePSAsAndConnectPayment : MarketTest(Market.NO) {
+class ActiveWithMultiplePSAsAndConnectPayment : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
@@ -40,6 +41,9 @@ class ActiveWithMultiplePSAsAndConnectPayment : MarketTest(Market.NO) {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val marketRule = MarketRule(Market.NO)
 
     @Test
     fun shouldOpenPSALinksAndConnectPayment() = run {
