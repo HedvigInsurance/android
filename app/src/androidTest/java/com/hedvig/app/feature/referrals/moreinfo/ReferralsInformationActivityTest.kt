@@ -11,7 +11,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -19,6 +18,7 @@ import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.market
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
@@ -60,7 +60,7 @@ class ReferralsInformationActivityTest : TestCase() {
         onScreen<ReferralsInformationScreen> {
             body {
                 containsText(
-                    Money.of(10, "SEK").format(context(), Market.SE)
+                    Money.of(10, "SEK").format(context(), market())
                 )
             }
             termsAndConditions { click() }

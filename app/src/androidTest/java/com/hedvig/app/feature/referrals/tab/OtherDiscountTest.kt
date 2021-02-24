@@ -5,7 +5,6 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -14,6 +13,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
 import org.junit.Rule
@@ -59,7 +59,7 @@ class OtherDiscountTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context(), Market.SE)
+                                .format(context(), market())
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -68,14 +68,14 @@ class OtherDiscountTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), Market.SE)
+                                .format(context(), market())
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context(), Market.SE)
+                                .format(context(), market())
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -109,7 +109,7 @@ class OtherDiscountTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), Market.SE)
+                                .format(context(), market())
                         )
                     }
                 }
