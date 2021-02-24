@@ -25,7 +25,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Stack
 import java.util.UUID
-import kotlin.collections.set
 import kotlin.math.max
 
 abstract class EmbarkViewModel(
@@ -40,18 +39,26 @@ abstract class EmbarkViewModel(
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
-    private val store = HashMap<String, String>()
+    private lateinit var valueStore: ValueStore
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
     protected fun setInitialState() {
-        store.clear()
         storyData.embarkStory?.let { story ->
+            val computedValues = story.getComputedValues()
+            valueStore = ValueStore(computedValues)
+
             val firstPassage = story.passages.first { it.id == story.startPassage }
+
             totalSteps = getPassagesLeft(firstPassage)
-            _data.postValue(EmbarkModel(preProcessPassage(firstPassage),
-                NavigationDirection.INITIAL,
-                currentProgress(firstPassage)))
+
+            val model = EmbarkModel(
+                passage = preProcessPassage(firstPassage),
+                navigationDirection = NavigationDirection.INITIAL,
+                progress = currentProgress(firstPassage)
+            )
+            _data.postValue(model)
+
             firstPassage.tracks.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
             }
@@ -59,10 +66,10 @@ abstract class EmbarkViewModel(
     }
 
     fun putInStore(key: String, value: String) {
-        store[key] = value
+        valueStore.put(key, value)
     }
 
-    fun getFromStore(key: String) = store[key]
+    fun getFromStore(key: String) = valueStore.get(key)
 
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
@@ -89,9 +96,12 @@ abstract class EmbarkViewModel(
                 }
             }
             _data.value?.passage?.name?.let { backStack.push(it) }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
-                NavigationDirection.FORWARDS,
-                currentProgress(nextPassage)))
+            val model = EmbarkModel(
+                passage = preProcessPassage(nextPassage),
+                navigationDirection = NavigationDirection.FORWARDS,
+                progress = currentProgress(nextPassage)
+            )
+            _data.postValue(model)
             nextPassage?.tracks?.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
             }
@@ -99,9 +109,11 @@ abstract class EmbarkViewModel(
     }
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
-        track.includeAllKeys -> JSONObject(store.toMap())
-        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(track.eventKeys.filterNotNull()
-            .map { it to store[it] }.toMap())
+        track.includeAllKeys -> JSONObject(valueStore.toMap())
+        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(
+            track.eventKeys.filterNotNull()
+                .map { it to valueStore.get(it) }.toMap()
+        )
         else -> null
     }?.let { data ->
         track.customData?.let { data + it } ?: data
@@ -125,22 +137,27 @@ abstract class EmbarkViewModel(
             }
             val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
 
+            val passageName = graphQLQuery.queryData.errors
+                .first().fragments.graphQLErrorsFragment
+                .next.fragments
+                .embarkLinkFragment.name
+
             when {
-                result.isFailure -> {
-                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                }
+                result.isFailure -> navigateToPassage(passageName)
                 result.hasErrors() -> {
                     if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
                         TODO("Handle matched error")
                     }
-                    navigateToPassage(graphQLQuery.queryData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                    navigateToPassage(passageName)
                 }
                 result.isSuccess -> {
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLQuery.queryData.results.forEach { r ->
-                        putInStore(r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                        putInStore(
+                            r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
+                        )
                     }
                     graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
                         navigateToPassage(
@@ -161,22 +178,29 @@ abstract class EmbarkViewModel(
             }
             val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables) }
 
+            val passageName = graphQLMutation.mutationData.errors
+                .first().fragments.graphQLErrorsFragment
+                .next.fragments.embarkLinkFragment.name
+
             when {
-                result.isFailure -> {
-                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
-                }
+                result.isFailure -> navigateToPassage(passageName)
                 result.hasErrors() -> {
-                    if (graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
+                    val containsErrors = graphQLMutation
+                        .mutationData
+                        .errors.any { it.fragments.graphQLErrorsFragment.contains != null }
+                    if (containsErrors) {
                         TODO("Handle matched error")
                     }
-                    navigateToPassage(graphQLMutation.mutationData.errors.first().fragments.graphQLErrorsFragment.next.fragments.embarkLinkFragment.name)
+                    navigateToPassage(passageName)
                 }
                 result.isSuccess -> {
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
-                        putInStore(r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString())
+                        putInStore(
+                            r.fragments.graphQLResultsFragment.as_,
+                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
+                        )
                     }
                     graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
                         navigateToPassage(
@@ -185,20 +209,20 @@ abstract class EmbarkViewModel(
                     }
                 }
             }
-
         }
     }
 
     private fun extractVariables(variables: List<GraphQLVariablesFragment>) =
         variables.mapNotNull { v ->
             v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
-                val inStore = store[singleVariable.from]
+                val inStore = valueStore.get(singleVariable.from)
                     ?: return@mapNotNull null // TODO: What do we do if the variable is not set? Show an error, right?
                 val casted = when (singleVariable.as_) {
                     EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
                     EmbarkAPIGraphQLSingleVariableCasting.INT -> inStore.toInt()
                     EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> inStore.toBoolean()
-                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null // Unsupported type casts are ignored for now.
+                    // Unsupported type casts are ignored for now.
+                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
                 } ?: return@mapNotNull null
 
                 return@mapNotNull Pair(singleVariable.key, casted)
@@ -210,7 +234,8 @@ abstract class EmbarkViewModel(
                         putInStore(generatedVariable.storeAs, generated.toString())
                         return@mapNotNull Pair(generatedVariable.key, generated.toString())
                     }
-                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null // Unsupported generated types are ignored for now.
+                    // Unsupported generated types are ignored for now.
+                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null
                 }
             }
 
@@ -229,9 +254,12 @@ abstract class EmbarkViewModel(
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
-            _data.postValue(EmbarkModel(preProcessPassage(nextPassage),
-                NavigationDirection.BACKWARDS,
-                currentProgress(nextPassage)))
+            val model = EmbarkModel(
+                passage = preProcessPassage(nextPassage),
+                navigationDirection = NavigationDirection.BACKWARDS,
+                progress = currentProgress(nextPassage)
+            )
+            _data.postValue(model)
 
             return true
         }
@@ -288,7 +316,7 @@ abstract class EmbarkViewModel(
     private fun preProcessMessage(message: MessageFragment): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
-                text = interpolateMessage(store, message.text)
+                text = interpolateMessage(message.text)
             )
         }
 
@@ -301,7 +329,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         return message.copy(
-            text = interpolateMessage(store, expressionText)
+            text = interpolateMessage(expressionText)
         )
     }
 
@@ -316,12 +344,13 @@ abstract class EmbarkViewModel(
         expression.asEmbarkExpressionBinary?.let { binaryExpression ->
             when (binaryExpression.binaryType) {
                 EmbarkExpressionTypeBinary.EQUALS -> {
-                    if (store[binaryExpression.key] == binaryExpression.value) {
+                    if (valueStore.get(binaryExpression.key) == binaryExpression.value) {
                         return ExpressionResult.True(binaryExpression.text)
                     }
                 }
                 EmbarkExpressionTypeBinary.NOT_EQUALS -> {
-                    val stored = store[binaryExpression.key] ?: return ExpressionResult.False
+                    val stored = valueStore.get(binaryExpression.key)
+                        ?: return ExpressionResult.False
                     if (stored != binaryExpression.value) {
                         return ExpressionResult.True(binaryExpression.text)
                     }
@@ -331,8 +360,8 @@ abstract class EmbarkViewModel(
                 EmbarkExpressionTypeBinary.LESS_THAN,
                 EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
                 -> {
-                    val storedAsInt =
-                        store[binaryExpression.key]?.toIntOrNull() ?: return ExpressionResult.False
+                    val storedAsInt = valueStore.get(binaryExpression.key)?.toIntOrNull()
+                        ?: return ExpressionResult.False
                     val valueAsInt =
                         binaryExpression.value.toIntOrNull() ?: return ExpressionResult.False
 
@@ -374,18 +403,19 @@ abstract class EmbarkViewModel(
         return ExpressionResult.False
     }
 
+    private fun interpolateMessage(message: String) =
+        REPLACEMENT_FINDER
+            .findAll(message)
+            .fold(message) { acc, curr ->
+                val key = curr.value.removeSurrounding("{", "}")
+                val fromStore = valueStore.get(key) ?: return acc
+                acc.replace(curr.value, fromStore)
+            }
+
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
 
         private fun Result<JSONObject?>.hasErrors() = getOrNull()?.has("errors") == true
-
-        private fun interpolateMessage(store: Map<String, String>, message: String) =
-            REPLACEMENT_FINDER
-                .findAll(message)
-                .fold(message) { acc, curr ->
-                    val fromStore = store[curr.value.removeSurrounding("{", "}")] ?: return acc
-                    acc.replace(curr.value, fromStore)
-                }
 
         private fun SubExpressionFragment.into(): MessageFragment.Expression =
             MessageFragment.Expression(
