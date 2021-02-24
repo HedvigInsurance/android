@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.feature.settings.Language
@@ -29,7 +30,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 open class HedvigApplication : Application() {
-    val apolloClientWrapper: ApolloClientWrapper by inject()
+    protected val apolloClient: ApolloClient by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
 
     override fun attachBaseContext(base: Context?) {
@@ -126,7 +127,7 @@ open class HedvigApplication : Application() {
 
     private suspend fun acquireHedvigToken() {
         val response = runCatching {
-            apolloClientWrapper.apolloClient.mutate(NewSessionMutation()).await()
+            apolloClient.mutate(NewSessionMutation()).await()
         }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }
@@ -134,7 +135,7 @@ open class HedvigApplication : Application() {
         }
         response.getOrNull()?.data?.createSessionV2?.token?.let { hedvigToken ->
             setAuthenticationToken(hedvigToken)
-            apolloClientWrapper.invalidateApolloClient()
+            apolloClient.subscriptionManager.reconnect()
             i { "Successfully saved hedvig token" }
         } ?: e { "createSession returned no token" }
     }
@@ -143,7 +144,7 @@ open class HedvigApplication : Application() {
         val instance = LegacyReactDatabaseSupplier.getInstance(this)
         instance.getTokenIfExists()?.let { token ->
             setAuthenticationToken(token)
-            apolloClientWrapper.invalidateApolloClient()
+            apolloClient.subscriptionManager.reconnect()
         }
         instance.clearAndCloseDatabase()
         // Let's only try this once

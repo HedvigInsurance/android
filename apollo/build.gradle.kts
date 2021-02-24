@@ -38,5 +38,5 @@ dependencies {
     api("com.apollographql.apollo:apollo-coroutines-support:${Dependencies.Versions.apollo}")
 
     // adyen
-    implementation("com.adyen.checkout:drop-in:3.6.4")
+    implementation("com.adyen.checkout:drop-in:3.8.2")
 }

@@ -21,9 +21,6 @@ import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.seconds
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.awaitility.kotlin.atMost
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.untilAsserted
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
@@ -69,9 +66,7 @@ class ForeverDeepLinkTest : TestCase() {
         )
 
         onScreen<SplashScreen> {
-            await atMost 5.seconds untilAsserted {
-                animation { doesNotExist() }
-            }
+            animation { doesNotExist() }
         }
         onScreen<ReferralTabScreen> {
             recycler {
