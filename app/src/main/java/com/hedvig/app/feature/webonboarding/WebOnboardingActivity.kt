@@ -101,7 +101,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     val isOffer = intent.getBooleanExtra(OFFER, false)
                     if (isOffer) {
                         webOnboarding.loadUrl(
-                            "${BuildConfig.WEB_BASE_URL}/no/new-member/offer?variation=android&quoteId=$encodedQuoteID#token=$encodedToken"
+                            "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=%5B$encodedQuoteID%5D#token=$encodedToken"
                         )
                     } else {
                         val webPath = intent.getStringExtra(WEB_PATH)
