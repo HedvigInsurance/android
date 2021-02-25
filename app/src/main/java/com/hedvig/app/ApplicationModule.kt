@@ -174,15 +174,9 @@ val applicationModule = module {
                         .request()
                         .newBuilder()
                         .header("User-Agent", makeUserAgent(get()))
-                        .build()
-                )
-            }
-            .addInterceptor { chain ->
-                chain.proceed(
-                    chain
-                        .request()
-                        .newBuilder()
                         .header("Accept-Language", makeLocaleString(get()))
+                        .header("apollographql-client-name", BuildConfig.APP_ID)
+                        .header("apollographql-client-version", BuildConfig.VERSION_NAME)
                         .build()
                 )
             }
