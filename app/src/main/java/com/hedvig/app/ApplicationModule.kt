@@ -175,7 +175,7 @@ val applicationModule = module {
                         .newBuilder()
                         .header("User-Agent", makeUserAgent(get()))
                         .header("Accept-Language", makeLocaleString(get()))
-                        .header("apollographql-client-name", BuildConfig.APP_ID)
+                        .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
                         .header("apollographql-client-version", BuildConfig.VERSION_NAME)
                         .build()
                 )
