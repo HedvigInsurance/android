@@ -11,15 +11,14 @@ import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
-import com.hedvig.app.util.extensions.getMarket
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +28,7 @@ import org.koin.android.ext.android.inject
 
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
-    private val marketProvider: MarketProvider by inject()
+    private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +87,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         }
 
         runSplashAnimation {
-            marketProvider.market?.connectPayin(this)?.let { connectPayinIntent ->
+            marketManager.market?.connectPayin(this)?.let { connectPayinIntent ->
                 startActivities(
                     arrayOf(
                         Intent(this, LoggedInActivity::class.java),
@@ -104,7 +103,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
             startDefaultActivity(loginStatus)
             return
         }
-        when (getMarket()) {
+        when (marketManager.market) {
             null -> {
                 runSplashAnimation {
                     startActivity(MarketingActivity.newInstance(this))

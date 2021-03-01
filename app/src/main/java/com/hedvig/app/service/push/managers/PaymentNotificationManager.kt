@@ -8,15 +8,15 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.push.setupNotificationChannel
 
 class PaymentNotificationManager(
-    private val marketProvider: MarketProvider
+    private val marketManager: MarketManager
 ) {
     fun sendDirectDebitNotification(context: Context) {
-        val market = marketProvider.market ?: return
+        val market = marketManager.market ?: return
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {

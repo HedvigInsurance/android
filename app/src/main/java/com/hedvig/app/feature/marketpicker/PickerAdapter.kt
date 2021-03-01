@@ -9,26 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerButtonBinding
 import com.hedvig.app.databinding.PickerLayoutBinding
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.inflate
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
 class PickerAdapter(
     private val parentFragmentManager: FragmentManager,
-    private val viewModel: MarketPickerViewModel,
     private val marketingViewModel: MarketingViewModel,
     private val tracker: MarketPickerTracker
 ) : ListAdapter<Model, PickerAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        MARKET -> ViewHolder.Market(parent)
-        LANGUAGE -> ViewHolder.Language(parent)
-        BUTTON -> ViewHolder.Button(parent)
+        MARKET -> ViewHolder.Market(parent, parentFragmentManager)
+        LANGUAGE -> ViewHolder.Language(parent, parentFragmentManager)
+        BUTTON -> ViewHolder.Button(parent, marketingViewModel, tracker)
         else -> throw Error("Invalid view type")
     }
 
@@ -39,39 +38,26 @@ class PickerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(
-            getItem(position),
-            parentFragmentManager,
-            viewModel,
-            marketingViewModel,
-            tracker
-        )
+        holder.bind(getItem(position))
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        abstract fun bind(
-            item: Model,
-            parentFragmentManager: FragmentManager,
-            viewModel: MarketPickerViewModel,
-            marketingViewModel: MarketingViewModel,
-            tracker: MarketPickerTracker
-        )
+        abstract fun bind(item: Model)
 
         fun invalid(data: Model) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class Market(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+        class Market(
+            parent: ViewGroup,
+            private val parentFragmentManager: FragmentManager
+        ) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+
             val binding by viewBinding(PickerLayoutBinding::bind)
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
-                if (item !is Model.MarketModel || item.selection == null) {
+
+            override fun bind(item: Model) {
+                if (item !is Model.MarketModel) {
                     return invalid(item)
                 }
                 binding.apply {
@@ -86,16 +72,15 @@ class PickerAdapter(
             }
         }
 
-        class Language(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+        class Language(
+            parent: ViewGroup,
+            private val parentFragmentManager: FragmentManager
+        ) : ViewHolder(parent.inflate(R.layout.picker_layout)) {
+
             private val binding by viewBinding(PickerLayoutBinding::bind)
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
-                if (item !is Model.LanguageModel || item.selection == null) {
+
+            override fun bind(item: Model) {
+                if (item !is Model.LanguageModel) {
                     return invalid(item)
                 }
                 binding.apply {
@@ -112,37 +97,26 @@ class PickerAdapter(
             }
         }
 
-        class Button(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.picker_button)) {
+        class Button(
+            parent: ViewGroup,
+            private val marketingViewModel: MarketingViewModel,
+            private val tracker: MarketPickerTracker
+        ) : ViewHolder(parent.inflate(R.layout.picker_button)) {
+
             val binding by viewBinding(PickerButtonBinding::bind)
 
             @SuppressLint("ApplySharedPref") // We need to apply this now
-            override fun bind(
-                item: Model,
-                parentFragmentManager: FragmentManager,
-                viewModel: MarketPickerViewModel,
-                marketingViewModel: MarketingViewModel,
-                tracker: MarketPickerTracker
-            ) {
+            override fun bind(item: Model) {
                 binding.apply {
-                    val shouldProceed =
-                        continueButton.context.getStoredBoolean(MarketPickerFragment.SHOULD_PROCEED)
                     continueButton.setHapticClickListener {
-                        continueButton.context.storeBoolean(
-                            MarketPickerFragment.SHOULD_PROCEED,
-                            true
-                        )
                         tracker.submit()
-                        viewModel.uploadLanguage()
-                        viewModel.save()
-                    }
-                    if (shouldProceed) {
                         marketingViewModel.navigateTo(
-                            CurrentFragment.MARKETING,
-                            continueButton to "marketButton"
-                        )
-                        continueButton.context.storeBoolean(
-                            MarketPickerFragment.SHOULD_PROCEED,
-                            false
+                            NavigationState(
+                                destination = CurrentFragment.MARKETING,
+                                sharedElements = listOf(binding.continueButton to MarketingActivity.SHARED_ELEMENT_NAME),
+                                reorderingAllowed = true,
+                                addToBackStack = true
+                            )
                         )
                     }
                 }

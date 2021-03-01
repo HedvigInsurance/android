@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.marketpicker
+package com.hedvig.app.feature.settings
 
 import android.content.Context
 import androidx.fragment.app.FragmentManager

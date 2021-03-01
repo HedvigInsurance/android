@@ -1,16 +1,15 @@
 package com.hedvig.app.feature.marketing.data
 
-import android.content.Context
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
-import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.android.owldroid.type.Locale
 
 class MarketingRepository(
     private val apolloClient: ApolloClient,
-    private val context: Context,
+    private val defaultLocale: Locale
 ) {
     suspend fun marketingBackground() = apolloClient
-        .query(MarketingBackgroundQuery(defaultLocale(context).rawValue))
+        .query(MarketingBackgroundQuery(defaultLocale.rawValue))
         .await()
 }

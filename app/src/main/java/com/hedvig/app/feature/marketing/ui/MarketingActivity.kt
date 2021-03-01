@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.transition.MaterialContainerTransform
@@ -30,30 +32,8 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
 
         model.navigationState.observe(this) { navigationState ->
             when (navigationState.destination) {
-                MARKET_PICKER -> {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    navigationState.sharedElements.forEach { (view, transitionName) ->
-                        transaction.addSharedElement(view, transitionName)
-                    }
-                    transaction.replace(
-                        R.id.container,
-                        MarketPickerFragment().also {
-                            it.sharedElementEnterTransition = MaterialContainerTransform()
-                        }
-                    ).commit()
-                }
-                MARKETING -> {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    navigationState.sharedElements.forEach { (view, transitionName) ->
-                        transaction.addSharedElement(view, transitionName)
-                    }
-                    transaction.replace(
-                        R.id.container,
-                        MarketSelectedFragment().also {
-                            it.sharedElementEnterTransition = MaterialContainerTransform()
-                        }
-                    ).commit()
-                }
+                MARKET_PICKER -> replaceFragment(MarketPickerFragment(), navigationState, MARKET_PICKER_FRAGMENT_TAG)
+                MARKETING -> replaceFragment(MarketSelectedFragment(), navigationState, MARKET_FRAGMENT_TAG)
             }
         }
 
@@ -87,8 +67,27 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
     }
 
+    private fun replaceFragment(fragment: Fragment, navigationState: NavigationState, tag: String) {
+        supportFragmentManager.commit {
+            replace(R.id.container, fragment.also { it.sharedElementEnterTransition = MaterialContainerTransform() }, tag)
+
+            if (navigationState.addToBackStack) {
+                addToBackStack(null)
+            }
+
+            setReorderingAllowed(navigationState.reorderingAllowed)
+            navigationState.sharedElements.map {
+                addSharedElement(it.first, it.second)
+            }
+        }
+    }
+
     companion object {
-        const val SHOULD_OPEN_MARKET_SELECTED = "SHOULD_MARKET_SELECTED"
+        const val HAS_SELECTED_MARKET = "SHOULD_MARKET_SELECTED"
+        const val SHARED_ELEMENT_NAME = "marketButton"
+
+        private const val MARKET_FRAGMENT_TAG = "market"
+        private const val MARKET_PICKER_FRAGMENT_TAG = "picker"
 
         fun newInstance(context: Context, withoutHistory: Boolean = false) =
             Intent(context, MarketingActivity::class.java).apply {

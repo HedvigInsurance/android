@@ -11,7 +11,7 @@ import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -26,7 +26,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val model: PaymentViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
-    private val marketProvider: MarketProvider by inject()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             recycler.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
-            recycler.adapter = PaymentAdapter(marketProvider, supportFragmentManager, tracker)
+            recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, tracker)
 
             model.data.observe(this@PaymentActivity) { (paymentData, payinStatusData) ->
                 if (paymentData == null || payinStatusData == null) {

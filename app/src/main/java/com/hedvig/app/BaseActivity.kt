@@ -9,6 +9,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.MarketManager
 import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : AppCompatActivity {
@@ -18,6 +19,7 @@ abstract class BaseActivity : AppCompatActivity {
     open val preventRecreation = false
 
     private val tracker: ScreenTracker by inject()
+    private val marketManager: MarketManager by inject()
 
     override fun onResume() {
         tracker.screenView(javaClass.simpleName)
@@ -34,7 +36,9 @@ abstract class BaseActivity : AppCompatActivity {
     private var localeListener = LocaleListener()
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(Language.fromSettings(newBase)?.apply(newBase))
+        if (newBase != null) {
+            super.attachBaseContext(Language.fromSettings(newBase, marketManager.market).apply(newBase))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +46,7 @@ abstract class BaseActivity : AppCompatActivity {
         LocalBroadcastManager
             .getInstance(this)
             .registerReceiver(localeListener, IntentFilter().apply { addAction(LOCALE_BROADCAST) })
-        Language.fromSettings(this)?.apply(this)
+        Language.fromSettings(this, marketManager.market).apply(this)
     }
 
     companion object {

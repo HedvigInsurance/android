@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.remove
@@ -11,7 +12,7 @@ import com.hedvig.app.util.extensions.view.show
 import e
 import java.time.format.DateTimeFormatter
 
-fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
+fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, marketManager: MarketManager) =
     binding.apply {
         status.fragments.contractStatusFragment.let { contractStatus ->
             contractStatus.asPendingStatus?.let {
@@ -93,7 +94,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding) =
         }
 
         contractName.text = displayName
-        contractPills.adapter = ContractPillAdapter().also { adapter ->
+        contractPills.adapter = ContractPillAdapter(marketManager).also { adapter ->
             when (typeOfContract) {
                 TypeOfContract.SE_HOUSE,
                 TypeOfContract.SE_APARTMENT_BRF,
