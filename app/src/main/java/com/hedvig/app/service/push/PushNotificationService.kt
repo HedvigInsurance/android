@@ -9,6 +9,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.feature.chat.service.ChatNotificationManager
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.push.managers.GenericNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
@@ -18,9 +19,10 @@ import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
     private val paymentNotificationManager: PaymentNotificationManager by inject()
+    private val marketManager: MarketManager by inject()
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(Language.fromSettings(base)?.apply(base))
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(Language.fromSettings(base, marketManager.market)?.apply(base))
     }
 
     override fun onCreate() {

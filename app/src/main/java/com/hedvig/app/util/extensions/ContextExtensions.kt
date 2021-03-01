@@ -1,6 +1,5 @@
 package com.hedvig.app.util.extensions
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -31,7 +30,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
-import com.hedvig.app.feature.marketpicker.Market
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import kotlin.system.exitProcess
@@ -113,22 +111,6 @@ fun Context.setLastOpen(date: Long) =
 
 fun Context.getLastOpen() =
     getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
-
-@SuppressLint("ApplySharedPref") // We need to do this right away
-fun Context.setMarket(market: Market?) {
-    val pref = PreferenceManager.getDefaultSharedPreferences(this)
-    if (market != null) {
-        pref.edit().putString(Market.MARKET_SHARED_PREF, market.name).commit()
-    } else {
-        pref.edit().remove(Market.MARKET_SHARED_PREF).commit()
-    }
-}
-
-fun Context.getMarket(): Market? {
-    val pref = PreferenceManager.getDefaultSharedPreferences(this)
-    val marketName = pref.getString(Market.MARKET_SHARED_PREF, null)
-    return marketName?.let { Market.valueOf(it) }
-}
 
 fun Context.getLanguage(): Language? {
     val pref = PreferenceManager.getDefaultSharedPreferences(this)

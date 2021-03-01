@@ -13,6 +13,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
 import org.junit.Rule
@@ -54,7 +55,7 @@ class OneRefereeTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -63,14 +64,14 @@ class OneRefereeTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -104,7 +105,7 @@ class OneRefereeTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                 }

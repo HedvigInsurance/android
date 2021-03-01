@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PickerItemLayoutBinding
-import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -35,17 +35,11 @@ class MarketItemAdapter(
             dialog: Dialog?
         ) {
             binding.apply {
-                radioButton.isChecked = viewModel.data.value?.market == market
+                radioButton.isChecked = viewModel.pickerState.value?.market == market
                 text.setText(market.label)
                 root.setHapticClickListener {
                     tracker.selectMarket(market)
-                    viewModel.updatePickerState(
-                        PickerState(
-                            market = market,
-                            language = Language.getAvailableLanguages(market).first()
-                        )
-                    )
-                    viewModel.save()
+                    viewModel.submitMarketAndReload(market)
                     dialog?.cancel()
                 }
             }

@@ -12,14 +12,14 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -35,7 +35,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
     private val tracker: ProfileTracker by inject()
-    private val marketProvider: MarketProvider by inject()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +109,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                         getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
                         getPriceCaption(
                             data,
-                            data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext())
+                            data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext(), marketManager.market)
                                 ?: ""
                         ),
                         R.drawable.ic_payment
@@ -141,7 +141,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     }
 
     private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String) =
-        when (marketProvider.market) {
+        when (marketManager.market) {
             Market.SE -> when (data.bankAccount?.directDebitStatus) {
                 DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
                 DirectDebitStatus.NEEDS_SETUP,

@@ -8,6 +8,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
@@ -26,6 +27,7 @@ import javax.money.MonetaryAmount
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
     private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
     private val tracker: ReferralsTracker by inject()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +63,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
             val incentive = Money.of(incentiveAmount, incentiveCurrency)
             body.text = getString(
                 R.string.referrals_info_sheet_body,
-                incentive.format(this@ReferralsInformationActivity)
+                incentive.format(this@ReferralsInformationActivity, marketManager.market)
             )
 
             val termsAsUri = Uri.parse(termsUrl)

@@ -14,6 +14,7 @@ import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
@@ -31,6 +32,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val model: OfferViewModel by viewModel()
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val tracker: OfferTracker by inject()
+    private val marketManager: MarketManager by inject()
 
     private var scrollInitialPaddingTop = 0
 
@@ -71,7 +73,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
             offerScroll.adapter = OfferAdapter(
                 supportFragmentManager,
-                tracker
+                tracker,
+                marketManager
             ) {
                 model.removeDiscount()
             }
