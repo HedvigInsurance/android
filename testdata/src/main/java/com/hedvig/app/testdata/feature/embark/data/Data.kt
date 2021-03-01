@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.fragment.GraphQLResultsFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
+import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
@@ -1327,6 +1328,15 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
                         customData = JSONObject("{\"CUSTOM\": \"DATA\"}")).build()
                 )
             )
+            .build()
+    )
+).build()
+
+val STORY_WITH_EXTERNAL_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(externalRedirect = EmbarkExternalRedirectLocation.OFFER)
             .build()
     )
 ).build()

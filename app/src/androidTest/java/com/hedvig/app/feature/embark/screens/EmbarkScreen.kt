@@ -11,6 +11,7 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {
@@ -31,6 +32,9 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
         hasData {
             hasScheme("market")
         }
+    }
+    val offer = KIntent {
+        hasComponent(WebOnboardingActivity::class.java.name)
     }
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {

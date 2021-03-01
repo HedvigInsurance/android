@@ -142,7 +142,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     companion object {
         private const val UTF_8 = "UTF-8"
         private const val WEB_PATH = "WEB_PATH"
-        private const val OFFER = "OFFER"
+        internal const val OFFER = "OFFER"
         private const val QUOTE_ID = "QUOTE_ID"
 
         fun newNoInstance(context: Context, webPath: String?, offer: Boolean = false, quoteId: String? = null): Intent {
