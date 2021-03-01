@@ -33,7 +33,6 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val webPath = intent.getStringExtra(WEB_PATH)
 
         binding.apply {
             openSettings.setHapticClickListener {
@@ -85,7 +84,6 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 }
             }
 
-            val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
 
             val localePath = when (defaultLocale(this@WebOnboardingActivity)) {
                 Locale.NB_NO -> "/no"
@@ -95,10 +93,23 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 else -> "/no"
             }
 
+            val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
+            val encodedQuoteID = URLEncoder.encode(intent.getStringExtra(QUOTE_ID), UTF_8)
+
             when (marketProvider.market) {
-                Market.NO -> webOnboarding.loadUrl(
-                    "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
-                )
+                Market.NO -> {
+                    val isOffer = intent.getBooleanExtra(OFFER, false)
+                    if (isOffer) {
+                        webOnboarding.loadUrl(
+                            "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=%5B$encodedQuoteID%5D#token=$encodedToken"
+                        )
+                    } else {
+                        val webPath = intent.getStringExtra(WEB_PATH)
+                        webOnboarding.loadUrl(
+                            "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
+                        )
+                    }
+                }
                 Market.DK -> webOnboarding.loadUrl(
                     "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
                 )
@@ -131,9 +142,14 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     companion object {
         private const val UTF_8 = "UTF-8"
         private const val WEB_PATH = "WEB_PATH"
-        fun newNoInstance(context: Context, webPath: String?): Intent {
+        private const val OFFER = "OFFER"
+        private const val QUOTE_ID = "QUOTE_ID"
+
+        fun newNoInstance(context: Context, webPath: String?, offer: Boolean = false, quoteId: String? = null): Intent {
             val intent = Intent(context, WebOnboardingActivity::class.java)
             intent.putExtra(WEB_PATH, webPath)
+            intent.putExtra(OFFER, offer)
+            intent.putExtra(QUOTE_ID, quoteId)
             return intent
         }
 

@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
@@ -25,6 +26,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
@@ -51,12 +53,20 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
             continueButton.setHapticClickListener {
-                startActivity(
-                    WebOnboardingActivity.newNoInstance(
-                        this@ChoosePlanActivity,
-                        viewModel.getWebPath()
-                    )
-                )
+                when (val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name) {
+                    "Web Onboarding NO - English Travel", "Web Onboarding NO - Norwegian Travel" -> {
+                        startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName))
+                    }
+                    null -> Timber.e("Could not start embark activity - null story name")
+                    else -> {
+                        startActivity(
+                            WebOnboardingActivity.newNoInstance(
+                                this@ChoosePlanActivity,
+                                viewModel.getWebPath()
+                            )
+                        )
+                    }
+                }
             }
 
             viewModel.data.observe(this@ChoosePlanActivity) { response ->

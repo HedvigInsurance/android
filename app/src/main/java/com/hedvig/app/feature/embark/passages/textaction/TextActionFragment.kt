@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.passages.textaction
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
@@ -42,6 +43,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         val data = requireArguments().getParcelable<TextActionParameter>(DATA)
 
@@ -78,7 +80,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                     setValidationFormatter(mask)
                 }
             }
-
+    
             input.onChange { text ->
                 if (data.mask == null) {
                     textActionSubmit.isEnabled = text.isNotEmpty()
@@ -109,6 +111,10 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                 }
                 .onEach { model.navigateToPassage(data.link) }
                 .launchIn(viewLifecycleScope)
+
+            messages.doOnNextLayout {
+                startPostponedEnterTransition()
+            }
         }
     }
 

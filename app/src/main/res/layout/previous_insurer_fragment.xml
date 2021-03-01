@@ -9,6 +9,7 @@
         android:id="@+id/messages"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/base_margin"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -22,6 +23,8 @@
         android:id="@+id/response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
         android:alpha="0"
         android:textAppearance="?textAppearanceSubtitle1"
         android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Self"
@@ -52,9 +55,9 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_quadruple"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                app:drawableEndCompat="@drawable/ic_chevron_down"
                 android:text="@string/onboarding_norway_current_insurer.bottom_sheet_title"
-                android:textAppearance="?textAppearanceBody1" />
+                android:textAppearance="?textAppearanceBody1"
+                app:drawableEndCompat="@drawable/ic_chevron_down" />
 
             <View
                 android:layout_width="match_parent"

@@ -13,7 +13,7 @@ data class PreviousInsurerAction(
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction(
-            data = EmbarkStoryQuery.Data2(
+            data = EmbarkStoryQuery.Data3(
                 insuranceProviders = listOf(
                     EmbarkStoryQuery.InsuranceProvider(
                         name = "IF",

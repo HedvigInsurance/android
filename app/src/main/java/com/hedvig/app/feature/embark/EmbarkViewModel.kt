@@ -45,6 +45,7 @@ abstract class EmbarkViewModel(
     private var totalSteps: Int = 0
 
     protected fun setInitialState() {
+        store.clear()
         storyData.embarkStory?.let { story ->
             val firstPassage = story.passages.first { it.id == story.startPassage }
             totalSteps = getPassagesLeft(firstPassage)
@@ -255,7 +256,8 @@ abstract class EmbarkViewModel(
         if (passage == null) {
             return null
         }
-        val passageWithMessage = passage.copy(
+
+        return passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
                     preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
@@ -264,8 +266,6 @@ abstract class EmbarkViewModel(
                 )
             }
         )
-
-        return passageWithMessage
     }
 
     private fun getPassagesLeft(passage: EmbarkStoryQuery.Passage) = passage.allLinks
