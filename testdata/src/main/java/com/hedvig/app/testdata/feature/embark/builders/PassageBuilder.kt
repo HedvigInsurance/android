@@ -16,6 +16,7 @@ data class PassageBuilder(
     private val tooltip: List<EmbarkStoryQuery.Tooltip> = emptyList(),
     private val links: List<EmbarkLinkFragment> = emptyList(),
     private val tracks: List<EmbarkStoryQuery.Track> = emptyList(),
+    private val externalRedirect: EmbarkExternalRedirectLocation? = null,
 ) {
     fun build() = EmbarkStoryQuery.Passage(
         name = name,
@@ -38,6 +39,8 @@ data class PassageBuilder(
         api = api,
         allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) },
         tracks = tracks,
-        externalRedirect = EmbarkStoryQuery.ExternalRedirect(data = EmbarkStoryQuery.Data1(location = EmbarkExternalRedirectLocation.OFFER))
+        externalRedirect = externalRedirect?.let {
+            EmbarkStoryQuery.ExternalRedirect(data = EmbarkStoryQuery.Data1(location = it))
+        }
     )
 }

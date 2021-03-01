@@ -13,13 +13,11 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.seconds
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.Duration
 
 class ShowTooltipTest : TestCase() {
 
@@ -68,5 +66,3 @@ class ShowTooltipTest : TestCase() {
     }
 }
 
-val Int.seconds: Duration
-    get() = Duration.ofSeconds(this.toLong())
