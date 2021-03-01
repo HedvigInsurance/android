@@ -45,7 +45,6 @@ class UnknownGeoTest : TestCase() {
         )
     )
 
-
     @get:Rule
     val marketRule = MarketRule(Market.SE)
 

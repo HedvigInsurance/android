@@ -3,8 +3,8 @@ package com.hedvig.app.feature.profile
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager

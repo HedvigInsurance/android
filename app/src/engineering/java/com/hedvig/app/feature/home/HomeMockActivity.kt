@@ -5,8 +5,8 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule

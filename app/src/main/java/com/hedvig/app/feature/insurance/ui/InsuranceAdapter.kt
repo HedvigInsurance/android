@@ -62,7 +62,12 @@ class InsuranceAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: InsuranceModel, retry: () -> Unit, tracker: InsuranceTracker, marketManager: MarketManager): Any?
+        abstract fun bind(
+            data: InsuranceModel,
+            retry: () -> Unit,
+            tracker: InsuranceTracker,
+            marketManager: MarketManager
+        ): Any?
 
         fun invalid(data: InsuranceModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -89,7 +94,12 @@ class InsuranceAdapter(
                 }
             }
 
-            override fun bind(data: InsuranceModel, retry: () -> Unit, tracker: InsuranceTracker, marketManager: MarketManager) =
+            override fun bind(
+                data: InsuranceModel,
+                retry: () -> Unit,
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
+            ) =
                 with(binding) {
                     if (data !is InsuranceModel.Upsell) {
                         return invalid(data)

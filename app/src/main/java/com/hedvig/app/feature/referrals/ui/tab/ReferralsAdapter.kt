@@ -69,16 +69,31 @@ class ReferralsAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager)
+        abstract fun bind(
+            data: ReferralsModel,
+            reload: () -> Unit,
+            tracker: ReferralsTracker,
+            marketManager: MarketManager
+        )
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager) =
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) =
                 Unit
         }
 
         class HeaderViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_header)) {
             private val binding by viewBinding(ReferralsHeaderBinding::bind)
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager) {
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) {
                 binding.apply {
                     when (data) {
                         ReferralsModel.Header.LoadingHeader -> {
@@ -355,13 +370,23 @@ class ReferralsAdapter(
 
         class InvitesHeaderViewHolder(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.referrals_invites_header)) {
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager) =
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) =
                 Unit
         }
 
         class ReferralViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
             private val binding by viewBinding(ReferralsRowBinding::bind)
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager) {
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) {
                 binding.apply {
                     when (data) {
                         ReferralsModel.Referral.LoadingReferral -> {
@@ -433,7 +458,12 @@ class ReferralsAdapter(
 
         class ErrorViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_error)) {
             private val binding by viewBinding(ReferralsErrorBinding::bind)
-            override fun bind(data: ReferralsModel, reload: () -> Unit, tracker: ReferralsTracker, marketManager: MarketManager) {
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) {
                 binding.retry.setHapticClickListener {
                     tracker.reload()
                     reload()

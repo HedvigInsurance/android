@@ -11,9 +11,9 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.remove

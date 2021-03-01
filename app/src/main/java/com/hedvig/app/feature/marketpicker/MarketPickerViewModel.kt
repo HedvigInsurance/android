@@ -61,7 +61,6 @@ class MarketPickerViewModelImpl(
             marketManager.market = market
         }
     }
-
 }
 
 data class PickerState(

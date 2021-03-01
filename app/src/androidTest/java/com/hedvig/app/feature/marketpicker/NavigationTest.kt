@@ -29,7 +29,6 @@ class NavigationTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-
     @get:Rule
     val marketRule = MarketRule(Market.SE)
 

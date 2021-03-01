@@ -11,5 +11,4 @@ class MarketSelectedScreen : KScreen<MarketSelectedScreen>() {
     override val viewClass = MarketSelectedFragment::class.java
 
     val loginButton = KButton { withId(R.id.logIn) }
-
 }

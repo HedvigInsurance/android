@@ -8,7 +8,7 @@ import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.extensions.getLanguage
 
-class MockMarketPickerViewModel(context: Context, marketManager: MarketManager): MarketPickerViewModel() {
+class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) : MarketPickerViewModel() {
 
     override fun submitMarketAndReload(market: Market) {
         _pickerSate.value = _pickerSate.value?.let {

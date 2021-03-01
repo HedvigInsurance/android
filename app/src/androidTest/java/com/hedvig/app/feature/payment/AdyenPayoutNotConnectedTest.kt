@@ -33,7 +33,6 @@ class AdyenPayoutNotConnectedTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-
     @get:Rule
     val marketRule = MarketRule(Market.NO)
 

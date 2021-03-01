@@ -10,7 +10,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
-class MarketRule(val market: Market): ExternalResource()  {
+class MarketRule(val market: Market) : ExternalResource() {
 
     val marketManager = mockk<MarketManager>(relaxed = true)
 

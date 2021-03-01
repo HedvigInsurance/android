@@ -85,18 +85,18 @@ class PaymentAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
-                data: PaymentModel,
-                marketManager: MarketManager,
-                fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
+            data: PaymentModel,
+            marketManager: MarketManager,
+            fragmentManager: FragmentManager,
+            tracker: PaymentTracker,
         ): Any?
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_header)) {
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -104,10 +104,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.failed_payments_card)) {
             private val binding by viewBinding(FailedPaymentsCardBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.FailedPayments) {
                     return invalid(data)
@@ -134,10 +134,10 @@ class PaymentAdapter(
             }
 
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.NextPayment) {
                     return invalid(data)
@@ -200,10 +200,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.connect_payin_card)) {
             private val binding by viewBinding(ConnectPayinCardBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 connect.setHapticClickListener {
                     marketManager.market?.connectPayin(connect.context)
@@ -216,10 +216,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.campaign_information_section)) {
             private val binding by viewBinding(CampaignInformationSectionBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.CampaignInformation) {
                     return invalid(data)
@@ -269,10 +269,10 @@ class PaymentAdapter(
         class PaymentHistoryHeader(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.payment_history_header)) {
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -280,10 +280,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.payment_history_item)) {
             private val binding by viewBinding(PaymentHistoryItemBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Charge) {
                     return invalid(data)
@@ -300,10 +300,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.payment_history_link)) {
             private val binding by viewBinding(PaymentHistoryLinkBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 root.setHapticClickListener {
                     root.context.startActivity(
@@ -319,10 +319,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.trustly_payin_details)) {
             private val binding by viewBinding(TrustlyPayinDetailsBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.TrustlyPayinDetails) {
                     return invalid(data)
@@ -348,10 +348,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.adyen_payin_details)) {
             private val binding by viewBinding(AdyenPayinDetailsBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.AdyenPayinDetails) {
                     return invalid(data)
@@ -371,10 +371,10 @@ class PaymentAdapter(
         class PayoutDetailsHeader(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.payout_details_header)) {
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -382,10 +382,10 @@ class PaymentAdapter(
             ViewHolder(parent.inflate(R.layout.payout_connection_status)) {
             private val binding by viewBinding(PayoutConnectionStatusBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.PayoutConnectionStatus) {
                     return invalid(data)
@@ -412,20 +412,20 @@ class PaymentAdapter(
         class PayoutDetailsParagraph(parent: ViewGroup) :
             PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = Unit
         }
 
         class Link(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_redeem_code)) {
             private val binding by viewBinding(PaymentRedeemCodeBinding::bind)
             override fun bind(
-                    data: PaymentModel,
-                    marketManager: MarketManager,
-                    fragmentManager: FragmentManager,
-                    tracker: PaymentTracker,
+                data: PaymentModel,
+                marketManager: MarketManager,
+                fragmentManager: FragmentManager,
+                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Link) {
                     return invalid(data)
