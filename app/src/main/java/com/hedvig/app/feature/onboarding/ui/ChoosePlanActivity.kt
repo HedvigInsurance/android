@@ -54,7 +54,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
             continueButton.setHapticClickListener {
                 when (val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name) {
-                    "Web Onboarding NO - English Travel", "Web Onboarding NO - Norwegian Travel" -> {
+                    NO_ENGLISH_TRAVEL_STORY_NAME, NO_NORWEGIAN_TRAVEL_STORY_NAME -> {
                         startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName))
                     }
                     null -> Timber.e("Could not start embark activity - null story name")
@@ -124,6 +124,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         const val COMBO = "Combo"
         const val CONTENTS = "Contents"
         const val TRAVEL = "Travel"
+
+        internal const val NO_ENGLISH_TRAVEL_STORY_NAME = "Web Onboarding NO - English Travel"
+        internal const val NO_NORWEGIAN_TRAVEL_STORY_NAME = "Web Onboarding NO - Norwegian Travel"
 
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
 

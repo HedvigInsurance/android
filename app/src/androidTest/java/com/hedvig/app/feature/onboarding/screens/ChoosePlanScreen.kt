@@ -10,6 +10,7 @@ import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
@@ -26,17 +27,20 @@ object ChoosePlanScreen : KScreen<ChoosePlanScreen>() {
 
     val continueButton = KButton { withId(R.id.continueButton) }
 
-    val intent = KIntent {
+    val contents = KIntent {
         IntentMatchers.hasAction(Intent.ACTION_VIEW)
         hasExtras {
-            hasEntry("WEB_PATH", "/no-en/new-member/travel")
+            hasEntry("WEB_PATH", "/no-en/new-member/contents")
         }
+    }
+
+    val travel = KIntent {
+        hasComponent(EmbarkActivity::class.java.name)
+        hasExtra(EmbarkActivity.STORY_NAME, ChoosePlanActivity.NO_ENGLISH_TRAVEL_STORY_NAME)
     }
 
     class Card(parent: Matcher<View>) : KRecyclerItem<Card>(parent) {
         val radioButton = KCheckBox(parent) { withId(R.id.radioButton) }
         val title = KTextView(parent) { withId(R.id.name) }
-        val discount = KTextView(parent) { withId(R.id.discount) }
-        val description = KTextView(parent) { withId(R.id.description) }
     }
 }
