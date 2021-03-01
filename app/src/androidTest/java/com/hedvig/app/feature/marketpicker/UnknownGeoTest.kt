@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketpicker
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
@@ -69,7 +68,7 @@ class UnknownGeoTest : TestCase() {
 
         activityRule.launch(MarketingActivity.newInstance(context()))
 
-        onScreen<MarketPickerScreen> {
+        MarketPickerScreen {
             picker {
                 childAt<MarketPickerScreen.MarketButton>(2) {
                     selectedMarket.hasText(com.hedvig.app.R.string.market_sweden)
