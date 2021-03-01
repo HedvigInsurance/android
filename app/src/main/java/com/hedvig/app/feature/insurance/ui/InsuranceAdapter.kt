@@ -19,6 +19,7 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
@@ -28,6 +29,7 @@ import e
 
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
+    private val marketManager: MarketManager,
     private val retry: () -> Unit
 ) :
     ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
@@ -47,7 +49,7 @@ class InsuranceAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), retry, tracker)
+        holder.bind(getItem(position), retry, tracker, marketManager)
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -60,7 +62,12 @@ class InsuranceAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: InsuranceModel, retry: () -> Unit, tracker: InsuranceTracker): Any?
+        abstract fun bind(
+            data: InsuranceModel,
+            retry: () -> Unit,
+            tracker: InsuranceTracker,
+            marketManager: MarketManager
+        ): Any?
 
         fun invalid(data: InsuranceModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -87,7 +94,12 @@ class InsuranceAdapter(
                 }
             }
 
-            override fun bind(data: InsuranceModel, retry: () -> Unit, tracker: InsuranceTracker) =
+            override fun bind(
+                data: InsuranceModel,
+                retry: () -> Unit,
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
+            ) =
                 with(binding) {
                     if (data !is InsuranceModel.Upsell) {
                         return invalid(data)
@@ -106,12 +118,13 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
             ) = with(binding) {
                 if (data !is InsuranceModel.Contract) {
                     return invalid(data)
                 }
-                data.inner.bindTo(binding)
+                data.inner.bindTo(binding, marketManager)
                 card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
@@ -140,7 +153,8 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
             ) = Unit
         }
 
@@ -149,7 +163,8 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
@@ -163,7 +178,8 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
             ) = Unit
         }
 
@@ -173,7 +189,8 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
             ) = with(binding) {
                 if (data !is InsuranceModel.TerminatedContracts) {
                     return invalid(data)

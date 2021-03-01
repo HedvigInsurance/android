@@ -35,13 +35,12 @@ class LanguageItemAdapter(
             dialog: Dialog?
         ) {
             binding.apply {
-                radioButton.isChecked = viewModel.data.value?.language == language
+                radioButton.isChecked = viewModel.pickerState.value?.language == language
                 text.text = text.context.getString(language.getLabel())
 
                 root.setHapticClickListener {
                     tracker.selectLocale(language)
-                    viewModel.updatePickerState(viewModel.data.value?.copy(language = language))
-                    viewModel.save()
+                    viewModel.submitLanguageAndReload(language)
                     dialog?.cancel()
                 }
             }

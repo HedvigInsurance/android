@@ -1,20 +1,20 @@
 package com.hedvig.app.feature.trustly
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketProviderModule
-import com.hedvig.app.mocks.MockMarketProvider
+import com.hedvig.app.marketManagerModule
+import com.hedvig.app.mocks.MockMarketManager
 import org.koin.dsl.module
 
 class TrustlyMockActivity : MockActivity() {
-    private val marketProvider = MockMarketProvider()
-    override val original = listOf(marketProviderModule)
-    override val mocks = listOf(module { single<MarketProvider> { marketProvider } })
+    private val marketManager = MockMarketManager()
+    override val original = listOf(marketManagerModule)
+    override val mocks = listOf(module { single<MarketManager> { marketManager } })
 
     init {
-        MockMarketProvider.mockedMarket = Market.SE
+        MockMarketManager.mockedMarket = Market.SE
     }
 
     override fun adapter() = genericDevelopmentAdapter {

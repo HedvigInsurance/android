@@ -13,6 +13,7 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.market
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -48,7 +49,7 @@ class PaymentHistoryTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                     date {
@@ -68,7 +69,7 @@ class PaymentHistoryTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context())
+                                .format(context(), market())
                         )
                     }
                     date {

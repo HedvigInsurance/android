@@ -5,10 +5,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.util.extensions.getMarket
 import java.util.Locale
 
 enum class Language {
@@ -19,7 +18,7 @@ enum class Language {
     DA_DK,
     EN_DK;
 
-    fun apply(context: Context?): Context? {
+    fun apply(context: Context): Context {
         val locale = into()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             apply(context, locale)
@@ -29,15 +28,12 @@ enum class Language {
     }
 
     @Suppress("DEPRECATION")
-    private fun applySingleLocale(context: Context?, locale: LocaleWrapper): Context? {
+    private fun applySingleLocale(context: Context, locale: LocaleWrapper): Context {
         if (locale !is LocaleWrapper.SingleLocale) {
             throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")
         }
         val unwrappedLocale = locale.locale
         Locale.setDefault(unwrappedLocale)
-        if (context == null) {
-            return null
-        }
 
         val config = Configuration(context.resources.configuration)
         config.setLocale(unwrappedLocale)
@@ -46,20 +42,17 @@ enum class Language {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    private fun apply(context: Context?, locale: LocaleWrapper): Context? {
-        when (locale) {
+    private fun apply(context: Context, locale: LocaleWrapper): Context {
+        return when (locale) {
             is LocaleWrapper.SingleLocale -> {
-                return applySingleLocale(context, locale)
+                applySingleLocale(context, locale)
             }
             is LocaleWrapper.MultipleLocales -> {
                 val locales = locale.locales
                 LocaleList.setDefault(locales)
-                if (context == null) {
-                    return null
-                }
                 val config = Configuration(context.resources.configuration)
                 config.setLocales(locales)
-                return context.createConfigurationContext(config)
+                context.createConfigurationContext(config)
             }
         }
     }
@@ -92,7 +85,7 @@ enum class Language {
     }
 
     companion object {
-        private const val SETTING_SYSTEM_DEFAULT = "system_default"
+        const val SETTING_SYSTEM_DEFAULT = "system_default"
         const val SETTING_SV_SE = "sv-SE"
         const val SETTING_EN_SE = "en-SE"
         const val SETTING_NB_NO = "nb-NO"
@@ -110,23 +103,27 @@ enum class Language {
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
-        fun fromSettings(context: Context?): Language? {
-            if (context == null) {
-                return null
+        fun persist(context: Context, language: Language) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
+                putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
             }
+        }
+
+        fun fromSettings(context: Context, market: Market?): Language = when (market) {
+            null -> from(SETTING_EN_SE)
+            else -> getLanguageFromSharedPreferences(context, market)
+        }
+
+        private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val market = context.getMarket()
-            if (market != null) {
-                val selectedLanguage = sharedPref
-                    .getString("language", getAvailableLanguages(market).first().toString())
-                    ?: getAvailableLanguages(market).first().toString()
-                return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
-                    from(getAvailableLanguages(market).first().toString())
-                } else {
-                    from(selectedLanguage)
-                }
+            val firstAvailableLanguage = getAvailableLanguages(market).first().toString()
+            val selectedLanguage = sharedPref.getString("language", firstAvailableLanguage) ?: firstAvailableLanguage
+
+            return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
+                from(firstAvailableLanguage)
+            } else {
+                from(selectedLanguage)
             }
-            return from(SETTING_EN_SE)
         }
 
         fun getAvailableLanguages(market: Market): List<Language> {

@@ -14,11 +14,10 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
-import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -28,7 +27,8 @@ import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val binding by viewBinding(ActivityWebOnboardingBinding::bind)
-    private val marketProvider: MarketProvider by inject()
+    private val marketManager: MarketManager by inject()
+    private val defaultLocale: Locale by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 loadWithOverviewMode = true
                 useWideViewPort = true
                 domStorageEnabled = true
-                userAgentString = makeUserAgent(this@WebOnboardingActivity)
+                userAgentString = makeUserAgent(this@WebOnboardingActivity, marketManager.market)
             }
 
             webOnboarding.webViewClient = object : WebViewClient() {
@@ -65,7 +65,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     if (url?.contains("connect-payment") == true) {
                         view?.stopLoading()
                         setIsLoggedIn(true)
-                        marketProvider.market?.connectPayin(
+                        marketManager.market?.connectPayin(
                             this@WebOnboardingActivity,
                             isPostSign = true
                         )?.let { startActivity(it) }
@@ -85,7 +85,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
 
-            val localePath = when (defaultLocale(this@WebOnboardingActivity)) {
+            val localePath = when (defaultLocale) {
                 Locale.NB_NO -> "/no"
                 Locale.EN_NO -> "/no-en"
                 Locale.DA_DK -> "/dk"
@@ -96,7 +96,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
             val encodedQuoteID = URLEncoder.encode(intent.getStringExtra(QUOTE_ID), UTF_8)
 
-            when (marketProvider.market) {
+            when (marketManager.market) {
                 Market.NO -> {
                     val isOffer = intent.getBooleanExtra(OFFER, false)
                     if (isOffer) {

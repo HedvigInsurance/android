@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.PlanCardBinding
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingDiffUtilCallback
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.COMBO
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.CONTENTS
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity.Companion.TRAVEL
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.doOnEnd
@@ -30,7 +30,7 @@ import com.hedvig.app.util.invalidData
 
 class OnboardingAdapter(
     val viewModel: ChoosePlanViewModel,
-    val marketProvider: MarketProvider
+    val marketProvider: MarketManager
 ) :
     ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(OnboardingDiffUtilCallback()) {
 
@@ -55,7 +55,7 @@ class OnboardingAdapter(
         abstract fun bind(
             item: OnboardingModel,
             viewModel: ChoosePlanViewModel,
-            marketProvider: MarketProvider,
+            marketProvider: MarketManager,
         )
 
         class QuoteType(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.plan_card)) {
@@ -63,7 +63,7 @@ class OnboardingAdapter(
             override fun bind(
                 item: OnboardingModel,
                 viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider,
+                marketProvider: MarketManager,
             ) {
                 if (item !is OnboardingModel.Bundle) {
                     invalidData(item)
@@ -118,23 +118,24 @@ class OnboardingAdapter(
             private fun animate(distance: Float) {
                 binding.apply {
                     val shimmerStartPosition = 0f - shimmer.width
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
-                            duration = 1000
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            ValueAnimator.ofFloat(shimmerStartPosition, distance).apply {
+                                duration = 1000
 
-                            addUpdateListener { animation ->
-                                shimmer.translationX = animation.animatedValue as Float
+                                addUpdateListener { animation ->
+                                    shimmer.translationX = animation.animatedValue as Float
+                                }
+                                doOnStart {
+                                    shimmer.visibility = View.VISIBLE
+                                }
+                                doOnEnd {
+                                    shimmer.translationX = shimmerStartPosition
+                                    shimmer.visibility = View.INVISIBLE
+                                }
+                                start()
                             }
-                            doOnStart {
-                                shimmer.visibility = View.VISIBLE
-                            }
-                            doOnEnd {
-                                shimmer.translationX = shimmerStartPosition
-                                shimmer.visibility = View.INVISIBLE
-                            }
-                            start()
-                        }
-                    },
+                        },
                         300
                     )
                 }
@@ -146,11 +147,10 @@ class OnboardingAdapter(
             override fun bind(
                 item: OnboardingModel,
                 viewModel: ChoosePlanViewModel,
-                marketProvider: MarketProvider
+                marketProvider: MarketManager
             ) {
                 binding.retry.setHapticClickListener { viewModel.load() }
             }
         }
     }
 }
-

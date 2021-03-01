@@ -8,5 +8,5 @@ class SettingsViewModel(
     private val repository: LanguageRepository
 ) : ViewModel() {
     fun save(acceptLanguage: String, locale: Locale) =
-        repository.setLanguage(acceptLanguage, locale)
+        repository.uploadLanguage(acceptLanguage, locale)
 }
