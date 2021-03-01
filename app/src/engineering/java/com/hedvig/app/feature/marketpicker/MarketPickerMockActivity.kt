@@ -9,12 +9,13 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketPickerModule
-import com.hedvig.app.util.extensions.getMarket
-import com.hedvig.app.util.extensions.setMarket
 import com.hedvig.app.util.extensions.storeBoolean
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -22,16 +23,18 @@ class MarketPickerMockActivity : MockActivity() {
     override val original = listOf(marketPickerModule)
     override val mocks = listOf(
         module {
-            viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(get()) }
+            viewModel<MarketPickerViewModel> { MockMarketPickerViewModel(get(), get()) }
         }
     )
     private var originalMarket: Market? = null
     private var originalShouldOpenMarketSelected = false
 
+    private val marketManager by inject<MarketManager>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        originalMarket = getMarket()
+        originalMarket = marketManager.market
         originalShouldOpenMarketSelected =
             pref.getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
     }
@@ -41,7 +44,7 @@ class MarketPickerMockActivity : MockActivity() {
         val pref = this@MarketPickerMockActivity.getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE)
         header("Market Picker")
         clickableItem("Market: SE /w Swedish") {
-            setMarket(Market.SE)
+            marketManager.market = Market.SE
             setLanguage(Language.SV_SE)
             storeBoolean(MarketingActivity.HAS_SELECTED_MARKET, true)
             startActivity(
@@ -49,7 +52,7 @@ class MarketPickerMockActivity : MockActivity() {
             )
         }
         clickableItem("Market: NO /w Norwegian") {
-            setMarket(Market.NO)
+            marketManager.market = Market.NO
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
             storeBoolean(MarketingActivity.HAS_SELECTED_MARKET, true)
             setLanguage(Language.NB_NO)
@@ -58,7 +61,7 @@ class MarketPickerMockActivity : MockActivity() {
             )
         }
         clickableItem("Market: not selected. SE IP Address") {
-            setMarket(null)
+            marketManager.market = null
             removeLanguage()
             pref.edit().remove(MarketingActivity.HAS_SELECTED_MARKET).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
@@ -67,7 +70,7 @@ class MarketPickerMockActivity : MockActivity() {
             )
         }
         clickableItem("Preselected geo market not avalible") {
-            setMarket(null)
+            marketManager.market = null
             removeLanguage()
             pref.edit().remove(MarketingActivity.HAS_SELECTED_MARKET).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = false
@@ -105,7 +108,9 @@ class MarketPickerMockActivity : MockActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        setMarket(originalMarket)
+        originalMarket?.let {
+            marketManager.market = it
+        }
         storeBoolean(
             MarketingActivity.HAS_SELECTED_MARKET,
             originalShouldOpenMarketSelected

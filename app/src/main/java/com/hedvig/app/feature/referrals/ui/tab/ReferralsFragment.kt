@@ -8,6 +8,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
@@ -15,8 +16,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
-import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
@@ -35,6 +36,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val referralsViewModel: ReferralsViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
+    private val marketManager: MarketManager by inject()
+    private val defaultLocale: Locale by inject()
 
     private val binding by viewBinding(FragmentReferralsBinding::bind)
 
@@ -100,7 +103,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 {
                     referralsViewModel.load()
                 },
-                tracker
+                tracker,
+                marketManager
             ).also {
                 it.submitList(LOADING_STATE)
             }
@@ -147,11 +151,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 Intent.EXTRA_TEXT,
                                 requireContext().getString(
                                     R.string.REFERRAL_SMS_MESSAGE,
-                                    incentive.format(requireContext()),
+                                    incentive.format(requireContext(), marketManager.market),
                                     "${
                                     BuildConfig.WEB_BASE_URL
                                     }/${
-                                    defaultLocale(requireContext()).toWebLocaleTag()
+                                    defaultLocale.toWebLocaleTag()
                                     }/forever/${
                                     Uri.encode(
                                         code

@@ -7,20 +7,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractPillBinding
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
-class ContractPillAdapter :
-    ListAdapter<ContractModel, ContractPillAdapter.ViewHolder>(DiffCallback()) {
+class ContractPillAdapter(
+    private val marketManager: MarketManager
+) : ListAdapter<ContractModel, ContractPillAdapter.ViewHolder>(DiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent, marketManager)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(parent: ViewGroup) :
+    class ViewHolder(parent: ViewGroup, val marketManager: MarketManager) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.contract_pill)) {
         private val binding by viewBinding(ContractPillBinding::bind)
         fun bind(item: ContractModel) {
@@ -29,27 +31,27 @@ class ContractPillAdapter :
                     is ContractModel.Address -> {
                         item.currentAgreement.asDanishHomeContentAgreement?.let {
                             text.text = it.address.fragments.addressFragment.street.toUpperCase(
-                                getLocale(text.context)
+                                getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asNorwegianHomeContentAgreement?.let {
                             text.text = it.address.fragments.addressFragment.street.toUpperCase(
-                                getLocale(text.context)
+                                getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asSwedishApartmentAgreement?.let {
                             text.text = it.address.fragments.addressFragment.street.toUpperCase(
-                                getLocale(text.context)
+                                getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asSwedishHouseAgreement?.let {
                             text.text = it.address.fragments.addressFragment.street.toUpperCase(
-                                getLocale(text.context)
+                                getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asDanishHomeContentAgreement?.let {
                             text.text = it.address.fragments.addressFragment.street.toUpperCase(
-                                getLocale(text.context)
+                                getLocale(text.context, marketManager.market)
                             )
                         }
                     }

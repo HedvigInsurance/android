@@ -2,11 +2,11 @@ package com.hedvig.app.feature.marketpicker
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.util.extensions.view.doOnLayout
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -46,7 +46,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                     picker.smoothScrollToPosition(0)
                 }
 
-                picker.doOnLayout {
+                picker.doOnNextLayout {
                     startPostponedEnterTransition()
                 }
             }

@@ -2,22 +2,28 @@ package com.hedvig.app.feature.marketpicker
 
 import android.content.Context
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.extensions.getLanguage
-import com.hedvig.app.util.extensions.getMarket
 
-class MockMarketPickerViewModel(context: Context): MarketPickerViewModel() {
+class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) : MarketPickerViewModel() {
 
-    override fun uploadLanguage() {
+    override fun submitMarketAndReload(market: Market) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(market, it.language)
+        }
     }
 
-    override fun submitLanguageAndReload(market: Market?, language: Language) {
-        _pickerSate.value = PickerState(market ?: pickerState.value?.market, language)
+    override fun submitLanguageAndReload(language: Language) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(it.market, language)
+        }
     }
 
     init {
-        if (context.getMarket() == null) {
+        if (marketManager.market == null) {
             val market: Market
             try {
                 market = if (AVAILABLE_GEO_MARKET) {
@@ -38,10 +44,10 @@ class MockMarketPickerViewModel(context: Context): MarketPickerViewModel() {
                 )
             }
         } else {
-            context.getMarket()?.let { market ->
+            marketManager.market?.let { market ->
                 _pickerSate.postValue(
                     PickerState(
-                        market, context.getLanguage()
+                        market, context.getLanguage() ?: market.toLanguage()
                     )
                 )
             }

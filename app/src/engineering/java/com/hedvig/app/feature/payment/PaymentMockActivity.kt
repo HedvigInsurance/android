@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.payment
 
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketProviderModule
-import com.hedvig.app.mocks.MockMarketProvider
+import com.hedvig.app.marketManagerModule
+import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.paymentModule
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
@@ -26,12 +26,12 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class PaymentMockActivity : MockActivity() {
-    private val marketProvider = MockMarketProvider()
-    override val original = listOf(paymentModule, marketProviderModule)
+    private val marketManager = MockMarketManager()
+    override val original = listOf(paymentModule, marketManagerModule)
     override val mocks = listOf(
         module {
             viewModel<PaymentViewModel> { MockPaymentViewModel() }
-            single<MarketProvider> { marketProvider }
+            single<MarketManager> { marketManager }
         }
     )
 
@@ -130,6 +130,6 @@ class PaymentMockActivity : MockActivity() {
             }
             startActivity(PaymentActivity.newInstance(context))
         }
-        marketSpinner { MockMarketProvider.mockedMarket = it }
+        marketSpinner { MockMarketManager.mockedMarket = it }
     }
 }

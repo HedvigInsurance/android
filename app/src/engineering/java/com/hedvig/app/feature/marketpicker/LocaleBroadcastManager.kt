@@ -9,11 +9,10 @@ interface LocaleBroadcastManager {
     fun sendBroadcast()
 }
 
-class LocaleBroadcastManagerImpl(private val context: Context): LocaleBroadcastManager {
+class LocaleBroadcastManagerImpl(private val context: Context) : LocaleBroadcastManager {
     override fun sendBroadcast() {
         LocalBroadcastManager
             .getInstance(context)
             .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST))
     }
-
 }

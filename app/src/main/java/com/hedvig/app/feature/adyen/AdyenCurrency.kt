@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.adyen
 
-import com.hedvig.app.feature.marketpicker.Market
+import com.hedvig.app.feature.settings.Market
 
 enum class AdyenCurrency {
     NOK,

@@ -1,39 +1,53 @@
 package com.hedvig.app.feature.marketpicker
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {
     protected val _pickerSate = MutableLiveData<PickerState>()
     val pickerState: LiveData<PickerState> = _pickerSate
-    abstract fun uploadLanguage()
-    abstract fun submitLanguageAndReload(market: Market?, language: Language)
+    abstract fun submitMarketAndReload(market: Market)
+    abstract fun submitLanguageAndReload(language: Language)
 }
 
 class MarketPickerViewModelImpl(
     private val marketRepository: MarketRepository,
     private val languageRepository: LanguageRepository,
-    private val localeBroadcastManager: LocaleBroadcastManager
+    private val localeBroadcastManager: LocaleBroadcastManager,
+    private val marketManager: MarketManager,
+    private val context: Context
 ) : MarketPickerViewModel() {
 
-    override fun submitLanguageAndReload(market: Market?, language: Language) {
-        _pickerSate.value = PickerState(market ?: pickerState.value?.market, language)
-        persistPickerState()
-        broadcastLocale()
-        uploadLanguage()
+    override fun submitMarketAndReload(market: Market) {
+        _pickerSate.value = _pickerSate.value?.let {
+            updateState(market, market.toLanguage())
+            PickerState(market, market.toLanguage())
+        }
     }
 
-    private fun persistPickerState() {
-        pickerState.value?.let { data ->
-            languageRepository.persistLanguageAndMarket(
-                data.language?.toString(),
-                data.market?.name
-            )
+    override fun submitLanguageAndReload(language: Language) {
+        _pickerSate.value = _pickerSate.value?.let {
+            updateState(it.market, language)
+            PickerState(it.market, language)
         }
+    }
+
+    private fun updateState(market: Market, language: Language) {
+        persistMarketAndLanguage(market, language)
+        broadcastLocale()
+        languageRepository.uploadLanguage(language)
+    }
+
+    private fun persistMarketAndLanguage(market: Market, language: Language) {
+        Language.persist(context, language)
+        marketManager.market = market
     }
 
     private fun broadcastLocale() {
@@ -44,29 +58,23 @@ class MarketPickerViewModelImpl(
         viewModelScope.launch {
             val market = marketRepository.getMarket()
             _pickerSate.value = PickerState(market, market.toLanguage())
-        }
-    }
-
-    override fun uploadLanguage() {
-        val state = pickerState.value
-        state?.let {
-            it.language?.let(languageRepository::uploadLanguage)
+            marketManager.market = market
         }
     }
 }
 
 data class PickerState(
-    val market: Market?,
-    val language: Language?
+    val market: Market,
+    val language: Language
 )
 
 sealed class Model {
     data class MarketModel(
-        val selection: Market?
+        val selection: Market
     ) : Model()
 
     data class LanguageModel(
-        val selection: Language?
+        val selection: Language
     ) : Model()
 
     object Button : Model()

@@ -57,7 +57,7 @@ class PickerAdapter(
             val binding by viewBinding(PickerLayoutBinding::bind)
 
             override fun bind(item: Model) {
-                if (item !is Model.MarketModel || item.selection == null) {
+                if (item !is Model.MarketModel) {
                     return invalid(item)
                 }
                 binding.apply {
@@ -80,7 +80,7 @@ class PickerAdapter(
             private val binding by viewBinding(PickerLayoutBinding::bind)
 
             override fun bind(item: Model) {
-                if (item !is Model.LanguageModel || item.selection == null) {
+                if (item !is Model.LanguageModel) {
                     return invalid(item)
                 }
                 binding.apply {

@@ -23,6 +23,7 @@ import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
@@ -42,7 +43,8 @@ import java.time.LocalDate
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
-    private val removeDiscount: () -> Unit,
+    private val marketManager: MarketManager,
+    private val removeDiscount: () -> Unit
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -67,7 +69,7 @@ class OfferAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), fragmentManager, tracker, removeDiscount)
+        holder.bind(getItem(position), fragmentManager, tracker, removeDiscount, marketManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -76,6 +78,7 @@ class OfferAdapter(
             fragmentManager: FragmentManager,
             tracker: OfferTracker,
             removeDiscount: () -> Unit,
+            marketManager: MarketManager
         )
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_header)) {
@@ -86,6 +89,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 if (data is OfferModel.Header) {
                     binding.apply {
@@ -101,7 +105,7 @@ class OfferAdapter(
                                     .fragments
                                     .monetaryAmountFragment
                                     .toMonetaryAmount()
-                                    .format(premium.context)
+                                    .format(premium.context, marketManager.market)
                             val gross =
                                 quote
                                     .insuranceCost
@@ -113,7 +117,7 @@ class OfferAdapter(
                                     .toMonetaryAmount()
                             if (gross.isZero) {
                                 grossPremium.setStrikethrough(true)
-                                grossPremium.text = gross.format(grossPremium.context)
+                                grossPremium.text = gross.format(grossPremium.context, marketManager.market)
                             }
 
                             startDateContainer.setHapticClickListener {
@@ -251,6 +255,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) = Unit
         }
 
@@ -266,6 +271,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 if (data is OfferModel.Facts) {
                     binding.apply {
@@ -410,6 +416,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     if (perils.adapter == null) {
@@ -466,6 +473,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     if (termsDocuments.adapter == null) {
@@ -501,6 +509,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName
@@ -522,6 +531,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                marketManager: MarketManager
             ) {
                 itemView.setHapticClickListener {
                     tracker.floatingSign()
