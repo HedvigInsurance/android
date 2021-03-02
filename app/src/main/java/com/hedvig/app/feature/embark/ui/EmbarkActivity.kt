@@ -26,8 +26,8 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity.Companion.RESULT_RESTART
+import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -46,7 +46,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         binding.apply {
-            title = storyName
+            progressToolbar.toolbar.title = storyName
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinner.loadingSpinner.remove()
                 setupToolbarMenu(progressToolbar)
