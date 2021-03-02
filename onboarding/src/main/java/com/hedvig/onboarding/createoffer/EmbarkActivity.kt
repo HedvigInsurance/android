@@ -31,6 +31,7 @@ import com.hedvig.onboarding.createoffer.passages.textaction.TextActionParameter
 import com.hedvig.onboarding.createoffer.passages.textactionset.TextActionSetFragment
 import com.hedvig.onboarding.createoffer.passages.textactionset.TextActionSetParameter
 import com.hedvig.onboarding.createoffer.tooltip.TooltipBottomSheet
+import com.hedvig.onboarding.createoffer.ui.MaterialProgressToolbar
 import com.hedvig.onboarding.databinding.ActivityEmbarkBinding
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity.Companion.RESULT_RESTART
