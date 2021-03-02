@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.apollographql.apollo.ApolloClient
+import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
@@ -14,6 +15,7 @@ import com.hedvig.app.util.extensions.storeBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -68,6 +70,9 @@ open class HedvigApplication : Application() {
         }
 
         if (!sessionTokenRequestHandler.hasAuthenticationToken() && !getStoredBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN)) {
+            getPackageManagerCompat(this).instantAppCookie?.let { cookie ->
+                setAuthenticationToken(JSONObject(cookie.toString(Charsets.UTF_8)).getString("TOKEN"))
+            }
             tryToMigrateTokenFromReactDB()
         }
 

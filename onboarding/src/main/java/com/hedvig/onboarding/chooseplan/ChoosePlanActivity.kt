@@ -11,20 +11,18 @@ import com.google.android.gms.instantapps.InstantApps.getPackageManagerCompat
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
-<<<<<<< HEAD
-import com.hedvig.app.feature.settings.MarketManager
-=======
 import com.hedvig.app.Onboarding
-import com.hedvig.app.feature.marketpicker.MarketProvider
->>>>>>> 11bd60b8... Create abstraction for navigation with app links
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.startActivityWithAppLink
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.onboarding.R
 import com.hedvig.onboarding.databinding.ActivityChoosePlanBinding
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
@@ -142,6 +140,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     }
 
     private fun showInstallPrompt() {
+        val packageManager = getPackageManagerCompat(this)
+        packageManager.instantAppCookie =
+            jsonObjectOf("TOKEN" to getAuthenticationToken()).toString().toByteArray(Charsets.UTF_8)
         val postInstall = Intent(Intent.ACTION_MAIN)
             .addCategory(Intent.CATEGORY_DEFAULT)
             .setPackage(packageName)
