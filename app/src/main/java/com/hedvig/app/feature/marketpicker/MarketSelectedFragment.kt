@@ -26,7 +26,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            legal.doOnApplyWindowInsets { view, insets, initialState ->
+            logIn.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
 
