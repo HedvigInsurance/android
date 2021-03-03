@@ -7,6 +7,7 @@ import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -30,6 +31,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             it.submitList(
                 listOf(
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
+                        startActivity(Intent(this, ChangeAddressActivity::class.java))
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {
                         startActivity(
                             LoggedInActivity.newInstance(this)
