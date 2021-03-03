@@ -29,6 +29,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimTitleItem)
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
+                itemType(::ChangeAddressItem)
             }
         )
 
@@ -89,5 +90,9 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
         val retry = KButton(parent) { withId(R.id.retry) }
+    }
+
+    class ChangeAddressItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
+        val changeAddressButton = KButton(parent) { withId(R.id.change_address_button) }
     }
 }

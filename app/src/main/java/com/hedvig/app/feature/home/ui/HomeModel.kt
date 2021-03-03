@@ -56,4 +56,6 @@ sealed class HomeModel {
             val inner: CommonClaimsData
         ) : CommonClaim()
     }
+
+    object ChangeAddress : HomeModel()
 }

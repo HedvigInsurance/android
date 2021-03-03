@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
+import com.hedvig.app.databinding.HomeChangeAddressBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
@@ -45,7 +46,7 @@ class HomeAdapter(
     private val retry: () -> Unit,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val tracker: HomeTracker,
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -60,6 +61,7 @@ class HomeAdapter(
         R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
+        R.layout.home_change_address -> ViewHolder.ChangeAddress(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -75,6 +77,7 @@ class HomeAdapter(
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
         is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
+        is HomeModel.ChangeAddress -> R.layout.home_change_address
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -95,7 +98,7 @@ class HomeAdapter(
             retry: () -> Unit,
             requestBuilder: RequestBuilder<PictureDrawable>,
             tracker: HomeTracker,
-            marketManager: MarketManager
+            marketManager: MarketManager,
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -115,7 +118,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -159,7 +162,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -188,7 +191,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
@@ -210,7 +213,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
@@ -232,7 +235,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data !is HomeModel.UpcomingRenewal) {
                     return invalid(data)
@@ -265,7 +268,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
@@ -291,7 +294,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.PSA) {
                     return invalid(data)
@@ -314,7 +317,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = Unit
         }
 
@@ -327,7 +330,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
@@ -379,7 +382,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 if (data !is HowClaimsWork) {
                     return invalid(data)
@@ -412,11 +415,27 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ): Any? = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
                     retry()
+                }
+            }
+        }
+
+        class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address)) {
+            private val binding by viewBinding(HomeChangeAddressBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker,
+                marketManager: MarketManager,
+            ): Any? = with(binding) {
+                changeAddressButton.setHapticClickListener {
+
                 }
             }
         }

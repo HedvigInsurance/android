@@ -17,6 +17,7 @@ import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -148,36 +149,38 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             }
 
             if (isTerminated(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
-                    listOf(
-                        HomeModel.BigText.Terminated(firstName),
-                        HomeModel.BodyText.Terminated,
-                        HomeModel.StartClaimOutlined,
-                        HomeModel.HowClaimsWork(successData.howClaimsWork)
-                    )
-                )
+                val items = mutableListOf<HomeModel>().apply {
+                    add(HomeModel.BigText.Terminated(firstName))
+                    add(HomeModel.BodyText.Terminated)
+                    add(HomeModel.StartClaimOutlined)
+                    add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    if (FeatureFlag.MOVING_FLOW.enabled) {
+                        add(HomeModel.ChangeAddress)
+                    }
+                }
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
             }
 
             if (isActive(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
-                    listOfNotNull(
-                        *psaItems(successData.importantMessages).toTypedArray(),
-                        HomeModel.BigText.Active(firstName),
-                        HomeModel.StartClaimContained,
-                        HomeModel.HowClaimsWork(successData.howClaimsWork),
-                        *upcomingRenewals(successData.contracts).toTypedArray(),
-                        if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-                            HomeModel.ConnectPayin
-                        } else {
-                            null
-                        },
-                        HomeModel.CommonClaimTitle,
-                        *commonClaimsItems(
-                            successData.commonClaims,
-                            successData.isEligibleToCreateClaim
-                        ).toTypedArray()
-                    )
-                )
+                val items = mutableListOf<HomeModel>().apply {
+                    addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
+                    add(HomeModel.BigText.Active(firstName))
+                    add(HomeModel.StartClaimContained)
+                    add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    addAll(listOfNotNull(*upcomingRenewals(successData.contracts).toTypedArray()))
+                    if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+                        add(HomeModel.ConnectPayin)
+                    }
+                    add(HomeModel.CommonClaimTitle)
+                    addAll(listOfNotNull(*commonClaimsItems(
+                        successData.commonClaims,
+                        successData.isEligibleToCreateClaim
+                    ).toTypedArray()))
+                    if (FeatureFlag.MOVING_FLOW.enabled) {
+                        add(HomeModel.ChangeAddress)
+                    }
+                }
+                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
             }
         }
     }

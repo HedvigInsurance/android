@@ -8,6 +8,7 @@ import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
 
+val LOGGED_IN_DATA = LoggedInDataBuilder().build()
 val LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED = LoggedInDataBuilder(
     features = listOf(Feature.REFERRALS, Feature.KEYGEAR)
 ).build()
