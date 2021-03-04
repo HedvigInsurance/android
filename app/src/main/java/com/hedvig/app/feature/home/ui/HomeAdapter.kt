@@ -309,7 +309,7 @@ class HomeAdapter(
                 }
             }
         }
-        
+
         class CommonClaim(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.home_common_claim)) {
             private val binding by viewBinding(HomeCommonClaimBinding::bind)

@@ -31,7 +31,7 @@ class ChangeAddressButton : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowChangeAddressButton() {
+    fun shouldShowChangeAddressButton() = run {
         activityRule.launch(LoggedInActivity.newInstance(context()))
 
         Screen.onScreen<HomeTabScreen> {
