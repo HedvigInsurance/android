@@ -172,10 +172,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         add(HomeModel.ConnectPayin)
                     }
                     add(HomeModel.CommonClaimTitle)
-                    addAll(listOfNotNull(*commonClaimsItems(
-                        successData.commonClaims,
-                        successData.isEligibleToCreateClaim
-                    ).toTypedArray()))
+                    addAll(
+                        listOfNotNull(
+                            *commonClaimsItems(
+                                successData.commonClaims,
+                                successData.isEligibleToCreateClaim
+                            ).toTypedArray()
+                        )
+                    )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.ChangeAddress)
                     }

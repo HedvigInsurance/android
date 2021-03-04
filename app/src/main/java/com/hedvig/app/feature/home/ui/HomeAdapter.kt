@@ -435,7 +435,6 @@ class HomeAdapter(
                 marketManager: MarketManager,
             ): Any? = with(binding) {
                 changeAddressButton.setHapticClickListener {
-
                 }
             }
         }
