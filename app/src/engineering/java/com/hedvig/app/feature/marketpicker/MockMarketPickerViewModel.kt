@@ -2,20 +2,28 @@ package com.hedvig.app.feature.marketpicker
 
 import android.content.Context
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.extensions.getLanguage
-import com.hedvig.app.util.extensions.getMarket
 
-class MockMarketPickerViewModel(
-    private val context: Context
-) : MarketPickerViewModel(context) {
+class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) : MarketPickerViewModel() {
 
-    override fun uploadLanguage() {
+    override fun submitMarketAndReload(market: Market) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(market, it.language)
+        }
+    }
+
+    override fun submitLanguageAndReload(language: Language) {
+        _pickerSate.value = _pickerSate.value?.let {
+            PickerState(it.market, language)
+        }
     }
 
     init {
-        if (context.getMarket() == null) {
+        if (marketManager.market == null) {
             val market: Market
             try {
                 market = if (AVAILABLE_GEO_MARKET) {
@@ -24,22 +32,22 @@ class MockMarketPickerViewModel(
                     Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
                 }
                 when (market) {
-                    Market.SE -> _data.postValue(PickerState(market, Language.EN_SE))
-                    Market.NO -> _data.postValue(PickerState(market, Language.EN_NO))
-                    Market.DK -> _data.postValue(PickerState(market, Language.EN_DK))
+                    Market.SE -> _pickerSate.postValue(PickerState(market, Language.EN_SE))
+                    Market.NO -> _pickerSate.postValue(PickerState(market, Language.EN_NO))
+                    Market.DK -> _pickerSate.postValue(PickerState(market, Language.EN_DK))
                 }
             } catch (e: Exception) {
-                _data.postValue(
+                _pickerSate.postValue(
                     PickerState(
                         Market.SE, Language.EN_SE
                     )
                 )
             }
         } else {
-            context.getMarket()?.let { market ->
-                _data.postValue(
+            marketManager.market?.let { market ->
+                _pickerSate.postValue(
                     PickerState(
-                        market, context.getLanguage()
+                        market, context.getLanguage() ?: market.toLanguage()
                     )
                 )
             }

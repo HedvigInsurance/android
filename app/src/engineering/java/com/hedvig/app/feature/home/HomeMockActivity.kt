@@ -5,13 +5,13 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
-import com.hedvig.app.marketProviderModule
-import com.hedvig.app.mocks.MockMarketProvider
+import com.hedvig.app.marketManagerModule
+import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
@@ -28,12 +28,12 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class HomeMockActivity : MockActivity() {
-    override val original = listOf(loggedInModule, homeModule, marketProviderModule)
+    override val original = listOf(loggedInModule, homeModule, marketManagerModule)
     override val mocks = listOf(
         module {
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<HomeViewModel> { MockHomeViewModel() }
-            single<MarketProvider> { MockMarketProvider() }
+            single<MarketManager> { MockMarketManager() }
         }
     )
 
@@ -128,6 +128,6 @@ class HomeMockActivity : MockActivity() {
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         header("Market")
-        marketSpinner { MockMarketProvider.mockedMarket = it }
+        marketSpinner { MockMarketManager.mockedMarket = it }
     }
 }

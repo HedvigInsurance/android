@@ -12,20 +12,17 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.firebase.iid.FirebaseInstanceId
+import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
-import com.hedvig.app.feature.marketpicker.Market
-import com.hedvig.app.feature.marketpicker.MarketProvider
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
-import com.hedvig.app.util.extensions.setMarket
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -53,14 +50,15 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val mixpanel: MixpanelAPI by inject()
-        private val marketProvider: MarketProvider by inject()
+        private val marketManager: MarketManager by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
         private val model: SettingsViewModel by viewModel()
+        private val defaultLocale: Locale by inject()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
-            val market = marketProvider.market
+            val market = marketManager.market
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
             themePreference?.let { tp ->
@@ -91,9 +89,9 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                         positiveAction = {
-                            requireContext().setMarket(null)
+                            marketManager.market = null
                             requireContext().storeBoolean(
-                                MarketingActivity.SHOULD_OPEN_MARKET_SELECTED,
+                                MarketingActivity.HAS_SELECTED_MARKET,
                                 false
                             )
                             userViewModel.logout {
@@ -133,8 +131,8 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                     (newValue as? String)?.let { v ->
                         Language
                             .from(v)
-                            .apply(requireContext())?.let { ctx ->
-                                model.save(makeLocaleString(ctx), defaultLocale(ctx))
+                            .apply(requireContext()).let { ctx ->
+                                model.save(makeLocaleString(ctx, marketManager.market), defaultLocale)
                             }
                         LocalBroadcastManager
                             .getInstance(requireContext())

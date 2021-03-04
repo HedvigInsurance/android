@@ -26,7 +26,7 @@ import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
-import com.hedvig.app.feature.marketpicker.MarketProvider
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
@@ -45,7 +45,7 @@ class HomeAdapter(
     private val retry: () -> Unit,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val tracker: HomeTracker,
-    private val marketProvider: MarketProvider
+    private val marketManager: MarketManager
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -84,7 +84,7 @@ class HomeAdapter(
             retry,
             requestBuilder,
             tracker,
-            marketProvider
+            marketManager
         )
     }
 
@@ -95,7 +95,7 @@ class HomeAdapter(
             retry: () -> Unit,
             requestBuilder: RequestBuilder<PictureDrawable>,
             tracker: HomeTracker,
-            marketProvider: MarketProvider
+            marketManager: MarketManager
         ): Any?
 
         fun invalid(data: HomeModel) {
@@ -115,7 +115,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
@@ -159,7 +159,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
@@ -188,7 +188,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
@@ -210,7 +210,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
@@ -232,7 +232,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data !is HomeModel.UpcomingRenewal) {
                     return invalid(data)
@@ -265,7 +265,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ) = with(binding) {
                 if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
@@ -276,7 +276,7 @@ class HomeAdapter(
                 action.setText(R.string.info_card_missing_payment_button_text)
                 action.setHapticClickListener {
                     tracker.addPaymentMethod()
-                    marketProvider.market?.connectPayin(action.context)
+                    marketManager.market?.connectPayin(action.context)
                         ?.let { action.context.startActivity(it) }
                 }
             }
@@ -291,7 +291,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ) = with(binding) {
                 if (data !is HomeModel.PSA) {
                     return invalid(data)
@@ -314,7 +314,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = Unit
         }
 
@@ -327,7 +327,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
@@ -379,7 +379,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 if (data !is HowClaimsWork) {
                     return invalid(data)
@@ -412,7 +412,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
-                marketProvider: MarketProvider
+                marketManager: MarketManager
             ): Any? = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()

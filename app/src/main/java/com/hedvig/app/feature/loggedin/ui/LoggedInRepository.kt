@@ -1,17 +1,15 @@
 package com.hedvig.app.feature.loggedin.ui
 
-import android.content.Context
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.app.ApolloClientWrapper
-import com.hedvig.app.util.apollo.defaultLocale
+import com.hedvig.android.owldroid.type.Locale
 
 class LoggedInRepository(
-    private val apolloClientWrapper: ApolloClientWrapper,
-    private val context: Context
+    private val apolloClient: ApolloClient,
+    private val defaultLocale: Locale
 ) {
-    suspend fun loggedInData() = apolloClientWrapper
-        .apolloClient
-        .query(LoggedInQuery(defaultLocale(context)))
+    suspend fun loggedInData() = apolloClient
+        .query(LoggedInQuery(defaultLocale))
         .await()
 }

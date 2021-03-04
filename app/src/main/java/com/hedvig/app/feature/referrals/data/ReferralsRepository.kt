@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.referrals.data
 
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
@@ -7,21 +8,18 @@ import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.app.ApolloClientWrapper
 
 class ReferralsRepository(
-    private val apolloClientWrapper: ApolloClientWrapper
+    private val apolloClient: ApolloClient,
 ) {
     private val referralsQuery = ReferralsQuery()
 
-    fun referrals() = apolloClientWrapper
-        .apolloClient
+    fun referrals() = apolloClient
         .query(referralsQuery)
         .watcher()
         .toFlow()
 
-    suspend fun reloadReferrals() = apolloClientWrapper
-        .apolloClient
+    suspend fun reloadReferrals() = apolloClient
         .query(referralsQuery)
         .toBuilder()
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
@@ -30,14 +28,12 @@ class ReferralsRepository(
         .await()
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {
-        val response = apolloClientWrapper
-            .apolloClient
+        val response = apolloClient
             .mutate(UpdateReferralCampaignCodeMutation(newCode))
             .await()
 
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
-            val oldData = apolloClientWrapper
-                .apolloClient
+            val oldData = apolloClient
                 .apolloStore
                 .read(referralsQuery)
                 .execute()
@@ -50,8 +46,8 @@ class ReferralsRepository(
                 )
             )
 
-            apolloClientWrapper
-                .apolloClient
+
+            apolloClient
                 .apolloStore
                 .writeAndPublish(referralsQuery, newData)
                 .execute()

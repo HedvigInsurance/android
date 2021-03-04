@@ -52,19 +52,6 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin"
         android:text="@string/MARKETING_SCREEN_LOGIN"
-        app:layout_constraintBottom_toTopOf="@id/legal" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <TextView
-        android:id="@+id/legal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:text="@string/MARKETING_LEGAL"
-        android:textAlignment="center"
-        android:textAppearance="?textAppearanceCaption"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

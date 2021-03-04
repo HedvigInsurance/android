@@ -3,18 +3,18 @@ package com.hedvig.app
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.apollographql.apollo.subscription.SubscriptionConnectionParams
+import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
-import com.google.android.exoplayer2.database.ExoDatabaseProvider
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
-import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -58,11 +58,11 @@ import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketpicker.LanguageRepository
+import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
+import com.hedvig.app.feature.marketpicker.LocaleBroadcastManagerImpl
 import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
-import com.hedvig.app.feature.marketpicker.MarketProvider
-import com.hedvig.app.feature.marketpicker.MarketProviderImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
@@ -94,6 +94,9 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
@@ -112,6 +115,8 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
+import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -122,7 +127,6 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
-import java.io.File
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
@@ -149,13 +153,6 @@ val applicationModule = module {
             get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
         )
     }
-    single {
-        SimpleCache(
-            File(get<Context>().cacheDir, "hedvig_story_video_cache"),
-            LeastRecentlyUsedCacheEvictor((10 * 1024 * 1024).toLong()),
-            ExoDatabaseProvider(get())
-        )
-    }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
         LruNormalizedCacheFactory(
             EvictionPolicy.builder().maxSizeBytes(
@@ -164,6 +161,8 @@ val applicationModule = module {
         )
     }
     single {
+        val marketManager = get<MarketManager>()
+        val context = get<Context>()
         val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val original = chain.request()
@@ -180,32 +179,42 @@ val applicationModule = module {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", makeUserAgent(get()))
-                        .build()
-                )
-            }
-            .addInterceptor { chain ->
-                chain.proceed(
-                    chain
-                        .request()
-                        .newBuilder()
-                        .header("Accept-Language", makeLocaleString(get()))
+                        .header("User-Agent", makeUserAgent(context, marketManager.market))
+                        .header("Accept-Language", makeLocaleString(context, marketManager.market))
+                        .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
+                        .header("apollographql-client-version", BuildConfig.VERSION_NAME)
                         .build()
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    Timber.tag("OkHttp").i(message)
-                }
-            })
+            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
         builder.build()
     }
     single {
-        ApolloClientWrapper(get(), get(), get(), get())
+        val builder = ApolloClient
+            .builder()
+            .serverUrl(get<HedvigApplication>().graphqlUrl)
+            .okHttpClient(get())
+            .subscriptionConnectionParams(
+                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+            )
+            .subscriptionTransportFactory(
+                WebSocketSubscriptionTransport.Factory(
+                    BuildConfig.WS_GRAPHQL_URL,
+                    get<OkHttpClient>()
+                )
+            )
+            .normalizedCache(get())
+
+        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
+        if (isDebug()) {
+            builder.logger(ApolloTimberLogger())
+        }
+        builder.build()
     }
     single<RequestBuilder<PictureDrawable>> {
         GlideApp.with(get<Context>())
@@ -214,35 +223,38 @@ val applicationModule = module {
     }
 }
 
-fun makeUserAgent(context: Context) =
+fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(
-        context
-    ).language
+        getLocale(context, market).language
     })"
 
-fun makeLocaleString(context: Context): String =
-    getLocale(context).toLanguageTag()
+fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
 
-fun getLocale(context: Context): Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locales.get(
-        0
-    )
-} else {
-    @Suppress("DEPRECATION")
-    (Language.fromSettings(context)?.apply(context) ?: context).resources.configuration.locale
+fun getLocale(context: Context, market: Market?): Locale {
+    val locale = if (market == null) {
+        Language.from(Language.SETTING_EN_SE)
+    } else {
+        Language.fromSettings(context, market)
+    }
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        locale.apply(context).resources.configuration.locales.get(0)
+    } else {
+        @Suppress("DEPRECATION")
+        locale.apply(context).resources.configuration.locale
+    }
 }
 
 val viewModelModule = module {
@@ -265,7 +277,7 @@ val onboardingModule = module {
 }
 
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {
@@ -343,7 +355,6 @@ val repositoriesModule = module {
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
     single { InsuranceRepository(get(), get()) }
-    single { MarketingRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single {
         RedeemReferralCodeRepository(
@@ -351,12 +362,13 @@ val repositoriesModule = module {
         )
     }
     single { UserRepository(get()) }
-    single { WhatsNewRepository(get(), get()) }
+    single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get(), get()) }
-    single { LanguageRepository(get()) }
-    single { KeyGearItemsRepository(get(), get(), get()) }
-    single { MarketRepository(get()) }
+    single { LanguageRepository(get(), get(), get(), get()) }
+    single { KeyGearItemsRepository(get(), get(), get(), get()) }
+    single { MarketRepository(get(), get(), get()) }
+    single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -388,14 +400,22 @@ val trackerModule = module {
     single { ScreenTracker(get()) }
 }
 
+val localeBroadcastManagerModule = module {
+    single<LocaleBroadcastManager> { LocaleBroadcastManagerImpl(get()) }
+}
+
 val marketPickerTrackerModule = module {
     single { MarketPickerTracker(get()) }
 }
 
-val marketProviderModule = module {
-    single<MarketProvider> { MarketProviderImpl(get(), get()) }
+val marketManagerModule = module {
+    single<MarketManager> { MarketManagerImpl(get(), get()) }
 }
 
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
+}
+
+val defaultLocaleModule = module {
+    single { defaultLocale(get(), get()) }
 }

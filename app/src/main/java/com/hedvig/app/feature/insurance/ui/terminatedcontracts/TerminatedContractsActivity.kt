@@ -13,6 +13,7 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -23,6 +24,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
     private val model: InsuranceViewModel by viewModel()
     private val tracker: InsuranceTracker by inject()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
@@ -41,7 +43,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            recycler.adapter = InsuranceAdapter(tracker, model::load)
+            recycler.adapter = InsuranceAdapter(tracker, marketManager, model::load)
             model.data.observe(this@TerminatedContractsActivity) { data ->
                 if (data.isFailure) {
                     (recycler.adapter as? InsuranceAdapter)?.submitList(listOf(InsuranceModel.Error))

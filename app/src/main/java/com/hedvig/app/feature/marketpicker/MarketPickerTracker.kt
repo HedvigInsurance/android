@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketpicker
 
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.util.jsonObjectOf
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 
