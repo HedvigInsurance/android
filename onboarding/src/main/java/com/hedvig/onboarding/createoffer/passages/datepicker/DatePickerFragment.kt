@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.datepicker
+package com.hedvig.onboarding.createoffer.passages.datepicker
 
 import android.os.Bundle
 import android.view.View
@@ -6,13 +6,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkDatePickerBinding
-import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.feature.embark.masking.SHORT_DATE
-import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.hedvig.onboarding.createoffer.EmbarkViewModel
+import com.hedvig.onboarding.createoffer.masking.SHORT_DATE
+import com.hedvig.onboarding.createoffer.passages.MessageAdapter
+import com.hedvig.onboarding.createoffer.passages.animateResponse
 import kotlinx.android.synthetic.main.picker_button.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest

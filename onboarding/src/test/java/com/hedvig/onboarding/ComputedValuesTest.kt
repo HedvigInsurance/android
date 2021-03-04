@@ -1,8 +1,8 @@
-package com.hedvig.app
+package com.hedvig.onboarding
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
+import com.hedvig.onboarding.createoffer.computedvalues.TemplateExpressionCalculator
 import org.junit.Test
 
 class ComputedValuesTest {

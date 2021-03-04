@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark
+package com.hedvig.onboarding.createoffer
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 

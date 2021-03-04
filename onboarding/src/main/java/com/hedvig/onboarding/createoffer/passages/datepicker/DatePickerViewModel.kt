@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.datepicker
+package com.hedvig.onboarding.createoffer.passages.datepicker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

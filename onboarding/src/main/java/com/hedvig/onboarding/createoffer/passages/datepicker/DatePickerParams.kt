@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.datepicker
+package com.hedvig.onboarding.createoffer.passages.datepicker
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

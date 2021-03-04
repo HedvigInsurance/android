@@ -1,6 +1,6 @@
-package com.hedvig.app.feature.embark
+package com.hedvig.onboarding.createoffer
 
-import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
+import com.hedvig.onboarding.createoffer.computedvalues.TemplateExpressionCalculator
 
 class ValueStore(
     private val computedValues: Map<String, String>

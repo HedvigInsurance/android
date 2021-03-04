@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.computedvalues
+package com.hedvig.onboarding.createoffer.computedvalues
 
 object TemplateExpressionCalculator {
 

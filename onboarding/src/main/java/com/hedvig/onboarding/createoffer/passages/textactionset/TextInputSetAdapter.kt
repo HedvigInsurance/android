@@ -15,13 +15,10 @@ import com.hedvig.onboarding.createoffer.setInputType
 import com.hedvig.onboarding.createoffer.setValidationFormatter
 import com.hedvig.onboarding.createoffer.validationCheck
 
-<<<<<<< HEAD:app/src/main/java/com/hedvig/app/feature/embark/passages/textactionset/TextInputSetAdapter.kt
-
-class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone: () -> Unit) :
-=======
-class TextInputSetAdapter(private val model: TextActionSetViewModel) :
->>>>>>> ea5cda8b... Add onboarding module with embark:onboarding/src/main/java/com/hedvig/onboarding/embark/passages/textactionset/TextInputSetAdapter.kt
-    ListAdapter<TextFieldData, TextInputSetAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+class TextInputSetAdapter(
+    private val model: TextActionSetViewModel,
+    private val onDone: () -> Unit,
+) : ListAdapter<TextFieldData, TextInputSetAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
