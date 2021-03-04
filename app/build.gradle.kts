@@ -308,11 +308,11 @@ lokalise {
 project.afterEvaluate {
     the<com.android.build.gradle.AppExtension>().applicationVariants.all {
         val variantName = name
-        val apks = "${project.buildDir}/outputs/splits/${variantName}/app-${variantName}.apks"
+        val apks = "${project.buildDir}/outputs/splits/$variantName/app-$variantName.apks"
         task<Exec>("assembleSplits${name.capitalize()}") {
             setDependsOn(listOf("bundle${variantName.capitalize()}"))
             group = "build"
-            val bundle = "${project.buildDir}/outputs/bundle/${variantName}/app-${variantName}.aab"
+            val bundle = "${project.buildDir}/outputs/bundle/$variantName/app-$variantName.aab"
 
             inputs.file(bundle)
             outputs.file(apks)
@@ -323,8 +323,8 @@ project.afterEvaluate {
                 "-jar",
                 "bundletool/bundletool-all-1.4.0.jar",
                 "build-apks",
-                "--bundle=${bundle}",
-                "--output=${apks}"
+                "--bundle=$bundle",
+                "--output=$apks"
             )
 
             doFirst {
@@ -359,7 +359,7 @@ open class ExecuteInstantApp : Exec() {
 
     override fun exec() {
         commandLine = listOfNotNull(
-            "${androidSdkPath}/extras/google/instantapps/ia",
+            "$androidSdkPath/extras/google/instantapps/ia",
             "--debug",
             "run",
             apksPath,
