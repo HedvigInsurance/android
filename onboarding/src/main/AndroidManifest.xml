@@ -4,7 +4,7 @@
     package="com.hedvig.onboarding">
 
     <dist:module
-        dist:instant="true"
+        dist:instant="false"
         dist:onDemand="false"
         dist:title="@string/title_onboarding">
         <dist:fusing dist:include="false" />
