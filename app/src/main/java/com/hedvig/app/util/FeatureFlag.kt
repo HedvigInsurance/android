@@ -1,6 +1,6 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.BuildConfig
+import com.hedvig.app.isDebug
 
 enum class FeatureFlag(
     val key: String,
@@ -12,6 +12,6 @@ enum class FeatureFlag(
         "moving_flow",
         "Moving Flow",
         "Lets a user change their address and get a new offer",
-        BuildConfig.BUILD_TYPE == "debug"
+        isDebug()
     )
 }

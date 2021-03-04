@@ -155,6 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (FeatureFlag.MOVING_FLOW.enabled) {
+                        add(HomeModel.Header("Change address"))
                         add(HomeModel.ChangeAddress)
                     }
                 }
@@ -171,7 +172,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         add(HomeModel.ConnectPayin)
                     }
-                    add(HomeModel.CommonClaimTitle)
+                    add(HomeModel.Header(getString(R.string.home_tab_common_claims_title)))
                     addAll(
                         listOfNotNull(
                             *commonClaimsItems(
@@ -181,6 +182,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         )
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
+                        add(HomeModel.Header("Change address"))
                         add(HomeModel.ChangeAddress)
                     }
                 }

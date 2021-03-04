@@ -11,6 +11,7 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
+import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeChangeAddressBinding
@@ -56,12 +57,12 @@ class HomeAdapter(
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
-        R.layout.home_common_claim_title -> ViewHolder.CommonClaimTitle(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
         R.layout.home_change_address -> ViewHolder.ChangeAddress(parent)
+        R.layout.header_item_layout -> ViewHolder.Header(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -71,12 +72,12 @@ class HomeAdapter(
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> R.layout.home_info_card
-        HomeModel.CommonClaimTitle -> R.layout.home_common_claim_title
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
         is HowClaimsWork -> R.layout.how_claims_work_button
         is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
+        is HomeModel.Header -> R.layout.header_item_layout
         is HomeModel.ChangeAddress -> R.layout.home_change_address
     }
 
@@ -308,19 +309,7 @@ class HomeAdapter(
                 }
             }
         }
-
-        class CommonClaimTitle(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.home_common_claim_title)) {
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-                tracker: HomeTracker,
-                marketManager: MarketManager,
-            ): Any? = Unit
-        }
-
+        
         class CommonClaim(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.home_common_claim)) {
             private val binding by viewBinding(HomeCommonClaimBinding::bind)
@@ -436,6 +425,24 @@ class HomeAdapter(
             ): Any? = with(binding) {
                 changeAddressButton.setHapticClickListener {
                 }
+            }
+        }
+
+        class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.header_item_layout)) {
+            private val binding by viewBinding(HeaderItemLayoutBinding::bind)
+
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker,
+                marketManager: MarketManager,
+            ): Any? = with(binding) {
+                if (data !is HomeModel.Header) {
+                    return invalid(data)
+                }
+                binding.headerItem.text = data.text
             }
         }
     }
