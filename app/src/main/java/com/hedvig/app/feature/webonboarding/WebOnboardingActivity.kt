@@ -94,12 +94,13 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
             val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
-            val encodedQuoteID = URLEncoder.encode(intent.getStringExtra(QUOTE_ID), UTF_8)
 
             when (marketManager.market) {
                 Market.NO -> {
                     val isOffer = intent.getBooleanExtra(OFFER, false)
                     if (isOffer) {
+                        val encodedQuoteID = URLEncoder.encode(intent.getStringExtra(QUOTE_ID), UTF_8)
+
                         webOnboarding.loadUrl(
                             "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=%5B$encodedQuoteID%5D#token=$encodedToken"
                         )
