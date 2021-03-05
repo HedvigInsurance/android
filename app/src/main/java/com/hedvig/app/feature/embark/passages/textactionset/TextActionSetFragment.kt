@@ -75,11 +75,13 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     }
 
     private suspend fun saveAndAnimate(data: TextActionSetParameter) {
-        context?.hideKeyboardIfVisible(
-            view = binding.root,
-            inputView = binding.inputRecycler,
-            delayMillis = 450
-        )
+        whenApiVersion(Build.VERSION_CODES.R) {
+            context?.hideKeyboardIfVisible(
+                view = binding.root,
+                inputView = binding.inputRecycler,
+                delayMillis = 450
+            )
+        }
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
             val allInput = inputs.values.joinToString(" ")

@@ -135,11 +135,13 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     }
 
     private suspend fun saveAndAnimate(data: TextActionParameter) {
-        context?.hideKeyboardIfVisible(
-            view = binding.root,
-            inputView = binding.input,
-            delayMillis = 450
-        )
+        whenApiVersion(Build.VERSION_CODES.R) {
+            context?.hideKeyboardIfVisible(
+                view = binding.root,
+                inputView = binding.input,
+                delayMillis = 450
+            )
+        }
         binding.textActionSubmit.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         val inputText = binding.input.text.toString()
         val unmasked = unmask(inputText, data.mask)

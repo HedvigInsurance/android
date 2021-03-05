@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -34,7 +35,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 
@@ -78,12 +78,11 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 suspend fun Context.hideKeyboardIfVisible(view: View, inputView: View, delayMillis: Long = 0) {
-    whenApiVersion(Build.VERSION_CODES.R) {
-        if (view.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
-            hideKeyboard(inputView)
-            delay(delayMillis)
-        }
+    if (view.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
+        hideKeyboard(inputView)
+        delay(delayMillis)
     }
 }
 

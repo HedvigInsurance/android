@@ -81,11 +81,13 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
     }
 
     private suspend fun saveAndAnimate() {
-        context?.hideKeyboardIfVisible(
-            view = binding.root,
-            inputView = binding.input,
-            delayMillis = 450
-        )
+        whenApiVersion(Build.VERSION_CODES.R) {
+            context?.hideKeyboardIfVisible(
+                view = binding.root,
+                inputView = binding.input,
+                delayMillis = 450
+            )
+        }
 
         val inputText = binding.input.text.toString()
         model.putInStore("${data.passageName}Result", inputText)
