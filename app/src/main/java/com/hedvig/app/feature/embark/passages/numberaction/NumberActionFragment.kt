@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.numberaction
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
@@ -11,10 +12,12 @@ import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -35,6 +38,15 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
         postponeEnterTransition()
 
         with(binding) {
+            whenApiVersion(Build.VERSION_CODES.R) {
+                EmbarkInsetHandler.setupInsetsForIme(
+                    root = root,
+                    focusableView = input,
+                    inputLayout,
+                    submit,
+                )
+            }
+
             messages.adapter = MessageAdapter(data.messages)
             inputContainer.placeholderText = data.placeholder
             data.label?.let { inputContainer.hint = it }

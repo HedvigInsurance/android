@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.textaction
 
+import android.os.Build
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -22,12 +23,14 @@ import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
+import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.hedvig.app.util.whenApiVersion
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -73,6 +76,16 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         }
 
         binding.apply {
+
+            whenApiVersion(Build.VERSION_CODES.R) {
+                EmbarkInsetHandler.setupInsetsForIme(
+                    root = root,
+                    focusableView = input,
+                    textActionSubmit,
+                    inputLayout
+                )
+            }
+
             messages.adapter = MessageAdapter(data.messages)
 
             filledTextField.hint = data.hint

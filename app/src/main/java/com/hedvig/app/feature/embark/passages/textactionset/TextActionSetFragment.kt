@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.textactionset
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
@@ -10,9 +11,11 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
+import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -34,6 +37,15 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
         postponeEnterTransition()
 
         binding.apply {
+            whenApiVersion(Build.VERSION_CODES.R) {
+                EmbarkInsetHandler.setupInsetsForIme(
+                    root = root,
+                    focusableView = inputRecycler,
+                    textActionSubmit,
+                    inputLayout
+                )
+            }
+
             messages.adapter = MessageAdapter(data.messages)
 
             val adapter = TextInputSetAdapter(textActionSetViewModel) {
