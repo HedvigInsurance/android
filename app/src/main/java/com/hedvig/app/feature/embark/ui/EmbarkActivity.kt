@@ -222,6 +222,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
+        internal const val PASSAGE_ANIMATION_DELAY_MILLIS = 150L
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {

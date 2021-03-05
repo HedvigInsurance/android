@@ -11,12 +11,14 @@ import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import e
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -73,6 +75,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         model.putInStore("${data.passageName}Result", selectAction.label)
         val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
         animateResponse(response, responseText)
+        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
     companion object {

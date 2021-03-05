@@ -12,12 +12,15 @@ import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
+import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -78,11 +81,18 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
     }
 
     private suspend fun saveAndAnimate() {
+        context?.hideKeyboardIfVisible(
+            view = binding.root,
+            inputView = binding.input,
+            delayMillis = 450
+        )
+
         val inputText = binding.input.text.toString()
         model.putInStore("${data.passageName}Result", inputText)
         model.putInStore(data.key, inputText)
         val responseText = model.preProcessResponse(data.passageName) ?: inputText
         animateResponse(binding.response, responseText)
+        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
     companion object {
