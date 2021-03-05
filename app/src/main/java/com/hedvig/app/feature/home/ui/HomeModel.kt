@@ -43,8 +43,6 @@ sealed class HomeModel {
 
     data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
 
-    object CommonClaimTitle : HomeModel()
-
     object Error : HomeModel()
 
     sealed class CommonClaim : HomeModel() {
@@ -56,4 +54,8 @@ sealed class HomeModel {
             val inner: CommonClaimsData
         ) : CommonClaim()
     }
+
+    data class Header(val text: String) : HomeModel()
+
+    object ChangeAddress : HomeModel()
 }

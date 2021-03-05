@@ -80,4 +80,3 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
         else -> null
     }
 }
-

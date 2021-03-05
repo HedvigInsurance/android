@@ -46,7 +46,6 @@ class ReferralsRepository(
                 )
             )
 
-
             apolloClient
                 .apolloStore
                 .writeAndPublish(referralsQuery, newData)
