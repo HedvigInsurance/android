@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Are you moving? We'll join"
             android:layout_marginTop="@dimen/base_margin_quintuple"
-            android:textAppearance="@style/Hedvig.TextAppearance.Headline5"
+            android:textAppearance="?textAppearanceHeadline5"
             app:layout_constraintTop_toBottomOf="@id/image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
