@@ -15,7 +15,7 @@ import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {
-    val spinner = KView { withId(R.id.loadingSpinner) }
+    val spinner = KView { withId(R.id.loadingSpinnerLayout) }
     val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
 
     val response = KTextView { withId(R.id.response) }
