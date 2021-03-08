@@ -7,8 +7,24 @@
         android:title="@string/onboarding_embark_flow.information_modal_title"
         app:showAsAction="always" />
     <item
-        android:id="@+id/moreOptions"
-        android:icon="@drawable/ic_more"
-        android:title="@string/embark_onboarding_more_options.screen_title"
-        app:showAsAction="always" />
+        android:id="@+id/app_settings"
+        android:icon="@drawable/ic_settings_marketing"
+        android:title="App settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/app_info"
+        android:icon="@drawable/ic_info_more_options"
+        android:title="App information"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/login"
+        android:icon="@drawable/ic_profile"
+        android:title="Log in"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/restart"
+        android:icon="@drawable/ic_restart_chat"
+        android:title="Restart questions"
+        app:showAsAction="never" />
 </menu>

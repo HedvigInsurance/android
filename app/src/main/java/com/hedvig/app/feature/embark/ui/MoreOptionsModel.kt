@@ -8,6 +8,5 @@ sealed class MoreOptionsModel {
     }
 
     object Version : MoreOptionsModel()
-    object Settings : MoreOptionsModel()
     object Copyright : MoreOptionsModel()
 }

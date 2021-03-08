@@ -1,14 +1,12 @@
 package com.hedvig.app.feature.embark.screens
 
 import android.view.View
-import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
-import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
@@ -27,8 +25,4 @@ object MoreOptionsScreen : KScreen<MoreOptionsScreen>() {
     }
 
     val loginButton = KButton { withId(R.id.logIn) }
-
-    val authIntent = KIntent {
-        hasComponent(ZignSecAuthenticationActivity::class.java.name)
-    }
 }

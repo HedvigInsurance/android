@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.transition.Transition
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -29,18 +30,21 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
 import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
-import com.hedvig.app.feature.embark.ui.MoreOptionsActivity.Companion.RESULT_RESTART
+import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val model: EmbarkViewModel by viewModel()
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
+    private val marketManager: MarketManager by inject()
 
     private val storyName: String by lazy {
         intent.getStringExtra(STORY_NAME)
@@ -85,8 +89,20 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.moreOptions -> {
-            startActivityForResult(MoreOptionsActivity.newInstance(this@EmbarkActivity), REQUEST_MORE_OPTIONS)
+        R.id.app_settings -> {
+            startActivity(SettingsActivity.newInstance(this@EmbarkActivity))
+            true
+        }
+        R.id.app_info -> {
+            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
+            true
+        }
+        R.id.login -> {
+            marketManager.market?.openAuth(this, supportFragmentManager)
+            true
+        }
+        R.id.restart -> {
+            showRestartDialog()
             true
         }
         R.id.tooltip -> {
@@ -98,6 +114,15 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             true
         }
         else -> false
+    }
+
+    private fun showRestartDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Do you want to start over?")
+            .setMessage("All the information you've entered will be lost")
+            .setPositiveButton("OK") { _, _ -> model.load(storyName) }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun setupToolbarMenu(progressToolbar: MaterialProgressToolbar) {
@@ -224,17 +249,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_MORE_OPTIONS && resultCode == RESULT_RESTART) {
-            model.load(storyName)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
     companion object {
         private const val REQUEST_OFFER = 1
-        private const val REQUEST_MORE_OPTIONS = 2
 
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"

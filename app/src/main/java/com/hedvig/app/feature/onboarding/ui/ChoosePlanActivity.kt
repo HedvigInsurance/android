@@ -16,6 +16,7 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.remove
@@ -33,6 +34,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
     private val viewModel: ChoosePlanViewModel by viewModel()
+    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,14 +112,20 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.moreOptions -> {
+    override fun onOptionsItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.app_settings -> {
+            startActivity(SettingsActivity.newInstance(this))
+            true
+        }
+        R.id.app_info -> {
             startActivity(MoreOptionsActivity.newInstance(this))
             true
         }
-        else -> {
-            super.onOptionsItemSelected(item)
+        R.id.login -> {
+            marketManager.market?.openAuth(this, supportFragmentManager)
+            true
         }
+        else -> false
     }
 
     companion object {

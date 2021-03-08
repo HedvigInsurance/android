@@ -10,7 +10,6 @@ import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -49,20 +48,6 @@ class MoreOptionsTest : TestCase() {
                     }
                 }
             }
-        }
-    }
-
-    @Test
-    fun loginButtonShouldOpenLoginMethod() {
-        val newInstance = MoreOptionsActivity.newInstance(context())
-        activityRule.launch(newInstance)
-
-        MoreOptionsScreen {
-            authIntent { stub() }
-
-            loginButton { click() }
-
-            authIntent { intended() }
         }
     }
 }
