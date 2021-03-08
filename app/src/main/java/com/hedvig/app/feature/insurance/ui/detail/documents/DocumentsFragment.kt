@@ -3,6 +3,7 @@ package com.hedvig.app.feature.insurance.ui.detail.documents
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
@@ -23,23 +24,25 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
             adapter = DocumentsAdapter()
             model.data.observe(viewLifecycleOwner) { d ->
                 d.getOrNull()?.let { data ->
-                    (adapter as? DocumentsAdapter)?.submitList(
-                        listOfNotNull(
-                            data.currentAgreement.asAgreementCore?.certificateUrl?.let {
+                    // Do not show anything if status is pending
+                    if (data.currentAgreement.asAgreementCore?.status != AgreementStatus.PENDING) {
+                        (adapter as? DocumentsAdapter)?.submitList(
+                            listOfNotNull(
+                                data.currentAgreement.asAgreementCore?.certificateUrl?.let {
+                                    DocumentsModel(
+                                        getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+                                        getString(R.string.insurance_details_view_documents_full_terms_subtitle),
+                                        it
+                                    )
+                                },
                                 DocumentsModel(
-                                    getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
-                                    getString(R.string.insurance_details_view_documents_full_terms_subtitle),
-                                    it
+                                    getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+                                    getString(R.string.insurance_details_view_documents_insurance_letter_subtitle),
+                                    data.termsAndConditions.url
                                 )
-                            },
-                            DocumentsModel(
-                                getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
-                                getString(R.string.insurance_details_view_documents_insurance_letter_subtitle),
-                                data.termsAndConditions.url
                             )
-
                         )
-                    )
+                    }
                 }
             }
         }
