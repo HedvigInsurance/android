@@ -3,12 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/base_margin"
     android:minHeight="@dimen/embark_select_action_min_height"
-    android:paddingStart="@dimen/base_margin"
-    android:paddingTop="@dimen/base_margin_double"
-    android:paddingEnd="@dimen/base_margin"
-    android:paddingBottom="@dimen/base_margin_double">
+    android:layout_marginBottom="@dimen/base_margin">
 
     <TextView
         android:id="@+id/text"
@@ -18,4 +14,5 @@
         android:textAlignment="center"
         android:textAppearance="?textAppearanceSubtitle1"
         tools:text="Yes, I want youth insurance" />
+
 </com.google.android.material.card.MaterialCardView>

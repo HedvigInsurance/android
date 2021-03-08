@@ -17,7 +17,7 @@
         <View
             android:id="@+id/progress"
             android:layout_width="0dp"
-            android:layout_height="2dp"
+            android:layout_height="4dp"
             android:background="?colorPrimary" />
 
         <View

@@ -9,15 +9,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        style="@style/Hedvig.Theme.EmbarkList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:itemCount="1"
+        tools:itemCount="3"
         tools:listitem="@layout/embark_message_item" />
 
     <TextView
@@ -40,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin_double"
         app:layout_constraintBottom_toTopOf="@id/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -65,8 +61,8 @@
                     android:id="@+id/input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:importantForAutofill="no"
                     android:imeOptions="actionDone"
+                    android:importantForAutofill="no"
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
