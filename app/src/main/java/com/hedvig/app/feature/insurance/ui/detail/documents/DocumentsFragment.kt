@@ -21,12 +21,15 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
             doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
-            adapter = DocumentsAdapter()
+            val documentsAdapter = DocumentsAdapter()
+            adapter = documentsAdapter
             model.data.observe(viewLifecycleOwner) { d ->
                 d.getOrNull()?.let { data ->
-                    // Do not show anything if status is pending
-                    if (data.currentAgreement.asAgreementCore?.status != AgreementStatus.PENDING) {
-                        (adapter as? DocumentsAdapter)?.submitList(
+                    if (data.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
+                        // Do not show anything if status is pending
+                        // TODO: Show error state
+                    } else {
+                        documentsAdapter.submitList(
                             listOfNotNull(
                                 data.currentAgreement.asAgreementCore?.certificateUrl?.let {
                                     DocumentsModel(
