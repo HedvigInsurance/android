@@ -27,6 +27,7 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_DANISH_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_PENDING_CONTRACT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
@@ -269,6 +270,13 @@ class InsuranceMockActivity : MockActivity() {
         clickableItem("Danish Accident") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_DANISH_ACCIDENT
+                shouldError = false
+            }
+            startActivity(ContractDetailActivity.newInstance(context, ""))
+        }
+        clickableItem("Pending contract") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_PENDING_CONTRACT
                 shouldError = false
             }
             startActivity(ContractDetailActivity.newInstance(context, ""))
