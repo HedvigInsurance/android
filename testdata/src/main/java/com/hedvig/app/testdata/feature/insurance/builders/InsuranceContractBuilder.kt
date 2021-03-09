@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
@@ -42,7 +43,8 @@ class InsuranceContractBuilder(
         upcomingRenewal = renewal,
         currentAgreement = InsuranceQuery.CurrentAgreement(
             asAgreementCore = InsuranceQuery.AsAgreementCore(
-                certificateUrl = "https://www.example.com"
+                certificateUrl = "https://www.example.com",
+                status = AgreementStatus.ACTIVE,
             ),
             asSwedishApartmentAgreement = if (type == TypeOfContract.SE_APARTMENT_RENT) {
                 InsuranceQuery.AsSwedishApartmentAgreement(
