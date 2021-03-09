@@ -59,5 +59,6 @@ data class PreviousInsurerAction(
             )
         ),
         asEmbarkNumberAction = null,
+        asEmbarkDatePickerAction = null,
     )
 }

@@ -11,6 +11,7 @@ import com.hedvig.app.moreOptionsModule
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITCH_DATE_PICKER
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_EQUALS_EXPRESSION
@@ -54,10 +55,14 @@ class EmbarkMockActivity : MockActivity() {
     })
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Date Picker Action")
+        clickableItem("Regular") {
+            MockEmbarkViewModel.mockedData = STORY_WITCH_DATE_PICKER
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
+        }
         header("Computed Value")
         clickableItem("Computed Value") {
             MockEmbarkViewModel.mockedData = STORY_WITH_COMPUTED_VALUE
-            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
         }
         header("Previous Insurer")
         clickableItem("Previous Insurer") {

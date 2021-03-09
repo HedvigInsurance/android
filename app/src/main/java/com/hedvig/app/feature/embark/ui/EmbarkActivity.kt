@@ -16,6 +16,8 @@ import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
+import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
@@ -37,7 +39,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
 
     private val storyName: String by lazy {
-        intent.getStringExtra(STORY_NAME) ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
+        intent.getStringExtra(STORY_NAME)
+            ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,6 +176,18 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     numberAction.link.fragments.embarkLinkFragment.label,
                 )
             )
+        }
+
+        passage?.action?.asEmbarkDatePickerAction?.let { datePickerAction ->
+            val params = DatePickerParams(
+                passage.messages.map { it.fragments.messageFragment.text },
+                passage.name,
+                datePickerAction.storeKey,
+                datePickerAction.label,
+                datePickerAction.label,
+                datePickerAction.next.fragments.embarkLinkFragment.name
+            )
+            return DatePickerFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()
