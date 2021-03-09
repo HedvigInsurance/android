@@ -13,6 +13,7 @@ query InsuranceQuery($locale: Locale!) {
     currentAgreement {
       ... on AgreementCore {
         certificateUrl
+        status
       }
       ... on SwedishApartmentAgreement {
         address {

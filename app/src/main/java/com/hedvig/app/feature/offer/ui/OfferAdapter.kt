@@ -477,7 +477,7 @@ class OfferAdapter(
             ) {
                 binding.apply {
                     if (termsDocuments.adapter == null) {
-                        termsDocuments.adapter = TermsAdapter(tracker)
+                        termsDocuments.adapter = TermsAdapter(tracker, marketManager)
                     }
                     if (data is OfferModel.Terms) {
                         data
