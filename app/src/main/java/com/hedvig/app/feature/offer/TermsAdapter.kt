@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferTermsAreaButtonBinding
 import com.hedvig.app.feature.settings.Market
@@ -31,11 +32,12 @@ class TermsAdapter(
             button.text = terms.displayName + " ↗"
             button.setHapticClickListener {
                 tracker.openOfferLink(terms.displayName)
-                val uri = if (marketManager.market == Market.SE) {
-                    Uri.parse("https://www.hedvig.com/se/villkor")
+                // TODO Quick fix for getting new terms and conditions
+                val uri = Uri.parse(if (marketManager.market == Market.SE && terms.type == InsuranceTermType.TERMS_AND_CONDITIONS) {
+                    "https://www.hedvig.com/se/villkor"
                 } else {
-                    Uri.parse(terms.url)
-                }
+                    terms.url
+                })
                 it.context.openUri(uri)
             }
         }
