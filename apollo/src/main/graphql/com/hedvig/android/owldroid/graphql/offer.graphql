@@ -54,6 +54,7 @@ query Offer($locale: Locale!) {
         ... InsurableLimitsFragment
       }
       insuranceTerms(locale: $locale) {
+        type
         displayName
         url
       }
