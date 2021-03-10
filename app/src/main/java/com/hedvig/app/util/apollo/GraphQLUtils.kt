@@ -13,17 +13,6 @@ import java.text.NumberFormat
 import java.util.Currency
 import javax.money.MonetaryAmount
 
-fun defaultLocale(context: Context, marketManager: MarketManager) =
-    when (getLocale(Language.fromSettings(context, marketManager.market).apply(context), marketManager.market).toString()) {
-        "en_NO" -> Locale.EN_NO
-        "nb_NO" -> Locale.NB_NO
-        "sv_SE" -> Locale.SV_SE
-        "en_SE" -> Locale.EN_SE
-        "da_DK" -> Locale.DA_DK
-        "en_DK" -> Locale.EN_DK
-        else -> Locale.EN_SE
-    }
-
 fun Locale.toLocaleString() = when (this) {
     Locale.EN_SE -> "en_SE"
     Locale.SV_SE -> "sv_SE"

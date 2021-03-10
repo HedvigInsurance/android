@@ -20,12 +20,10 @@ import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.S3FileInput
 import com.hedvig.app.service.FileService
-import com.hedvig.app.util.apollo.defaultLocale
-import com.hedvig.app.util.apollo.toLocaleString
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.into
 import e
 import kotlinx.coroutines.Dispatchers
@@ -38,14 +36,16 @@ import java.util.UUID
 class KeyGearItemsRepository(
     private val apolloClient: ApolloClient,
     private val fileService: FileService,
-    private val defaultLocale: Locale,
+    localeManager: LocaleManager,
     private val context: Context
 ) {
     private lateinit var keyGearItemsQuery: KeyGearItemsQuery
     private lateinit var keyGearItemQuery: KeyGearItemQuery
 
+    private val locale = localeManager.defaultLocale().rawValue
+
     fun keyGearItems(): Flow<Response<KeyGearItemsQuery.Data>> {
-        keyGearItemsQuery = KeyGearItemsQuery(defaultLocale.toLocaleString())
+        keyGearItemsQuery = KeyGearItemsQuery(locale)
 
         return apolloClient
             .query(keyGearItemsQuery)
@@ -54,7 +54,7 @@ class KeyGearItemsRepository(
     }
 
     fun keyGearItem(id: String): Flow<Response<KeyGearItemQuery.Data>> {
-        keyGearItemQuery = KeyGearItemQuery(id, defaultLocale.toLocaleString())
+        keyGearItemQuery = KeyGearItemQuery(id, locale)
 
         return apolloClient
             .query(keyGearItemQuery)
@@ -150,7 +150,7 @@ class KeyGearItemsRepository(
         val mutation = CreateKeyGearItemMutation(
             category = category,
             photos = files,
-            languageCode = defaultLocale.toLocaleString(),
+            languageCode = locale,
             physicalReferenceHash = Input.fromNullable(physicalReferenceHash),
             name = Input.fromNullable(name)
         )
@@ -229,7 +229,7 @@ class KeyGearItemsRepository(
                         itemId = itemId,
                         file = s3file
                     ),
-                    defaultLocale.toLocaleString()
+                    locale
                 )
             )
             .await()

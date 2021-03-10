@@ -70,7 +70,7 @@ open class HedvigApplication : Application() {
                     marketPickerModule,
                     onboardingModule,
                     choosePlanModule,
-                    defaultLocaleModule
+                    localeManagerModule
                 )
             )
         }

@@ -12,7 +12,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.firebase.iid.FirebaseInstanceId
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivitySettingsBinding
@@ -20,6 +19,7 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -53,7 +53,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         private val marketManager: MarketManager by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
         private val model: SettingsViewModel by viewModel()
-        private val defaultLocale: Locale by inject()
+        private val localeManager: LocaleManager by inject()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -132,7 +132,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         Language
                             .from(v)
                             .apply(requireContext()).let { ctx ->
-                                model.save(makeLocaleString(ctx, marketManager.market), defaultLocale)
+                                model.save(makeLocaleString(ctx, marketManager.market), localeManager.defaultLocale())
                             }
                         LocalBroadcastManager
                             .getInstance(requireContext())

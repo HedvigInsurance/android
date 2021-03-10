@@ -115,8 +115,8 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
-import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -416,6 +416,6 @@ val notificationModule = module {
     single { PaymentNotificationManager(get()) }
 }
 
-val defaultLocaleModule = module {
-    single { defaultLocale(get(), get()) }
+val localeManagerModule = module {
+    single { LocaleManager(get(), get()) }
 }
