@@ -28,6 +28,7 @@ import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -424,6 +425,7 @@ class HomeAdapter(
                 marketManager: MarketManager,
             ): Any? = with(binding) {
                 changeAddressButton.setHapticClickListener {
+                    root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
                 }
             }
         }

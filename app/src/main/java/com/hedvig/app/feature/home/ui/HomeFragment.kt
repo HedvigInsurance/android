@@ -182,7 +182,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         )
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
-                        add(HomeModel.Header("Change address"))
+                        add(HomeModel.Header("Make changes"))
                         add(HomeModel.ChangeAddress)
                     }
                 }
