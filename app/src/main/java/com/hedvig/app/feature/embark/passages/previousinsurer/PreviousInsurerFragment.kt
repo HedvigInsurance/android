@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
@@ -8,8 +9,10 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
+import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.whenApiVersion
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
@@ -29,6 +32,14 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
         postponeEnterTransition()
 
         binding.apply {
+            whenApiVersion(Build.VERSION_CODES.R) {
+                EmbarkInsetHandler.setupInsetsForIme(
+                    root = root,
+                    focusableView = currentInsurerContainer,
+                    currentInsurerContainer,
+                )
+            }
+
             messages.adapter = MessageAdapter(insurerData.messages)
             currentInsurerContainer.setHapticClickListener {
                 onShowInsurers()

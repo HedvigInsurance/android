@@ -137,18 +137,13 @@ abstract class EmbarkViewModel(
             }
             val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
 
-            val passageName = graphQLQuery.queryData.errors
-                .first().fragments.graphQLErrorsFragment
-                .next.fragments
-                .embarkLinkFragment.name
-
             when {
-                result.isFailure -> navigateToPassage(passageName)
+                result.isFailure -> navigateToPassage(graphQLQuery.getPassageNameFromError())
                 result.hasErrors() -> {
                     if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
                         TODO("Handle matched error")
                     }
-                    navigateToPassage(passageName)
+                    navigateToPassage(graphQLQuery.getPassageNameFromError())
                 }
                 result.isSuccess -> {
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch

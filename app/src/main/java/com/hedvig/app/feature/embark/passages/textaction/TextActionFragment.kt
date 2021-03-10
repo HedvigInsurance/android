@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.textaction
 
+import android.os.Build
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -22,13 +23,18 @@ import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.feature.embark.validationCheck
+import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.hedvig.app.util.whenApiVersion
 import e
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -73,6 +79,16 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         }
 
         binding.apply {
+
+            whenApiVersion(Build.VERSION_CODES.R) {
+                EmbarkInsetHandler.setupInsetsForIme(
+                    root = root,
+                    focusableView = input,
+                    textActionSubmit,
+                    inputLayout
+                )
+            }
+
             messages.adapter = MessageAdapter(data.messages)
 
             filledTextField.hint = data.hint
@@ -119,6 +135,13 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     }
 
     private suspend fun saveAndAnimate(data: TextActionParameter) {
+        whenApiVersion(Build.VERSION_CODES.R) {
+            context?.hideKeyboardIfVisible(
+                view = binding.root,
+                inputView = binding.input,
+                delayMillis = 450
+            )
+        }
         binding.textActionSubmit.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         val inputText = binding.input.text.toString()
         val unmasked = unmask(inputText, data.mask)
@@ -129,6 +152,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         }
         val responseText = model.preProcessResponse(data.passageName) ?: inputText
         animateResponse(binding.response, responseText)
+        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
     companion object {

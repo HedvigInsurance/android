@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
@@ -29,7 +30,9 @@ import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParamet
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity.Companion.RESULT_RESTART
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
@@ -46,9 +49,17 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         model.load(storyName)
 
         binding.apply {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+                progressToolbar.toolbar.doOnApplyWindowInsets { view, insets, initialState ->
+                    view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+                }
+            }
+
             progressToolbar.toolbar.title = storyName
             model.data.observe(this@EmbarkActivity) { embarkData ->
-                loadingSpinner.loadingSpinner.remove()
+                loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(progressToolbar)
                 progressToolbar.setProgress(embarkData.progress)
 
@@ -211,6 +222,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
+        internal const val PASSAGE_ANIMATION_DELAY_MILLIS = 150L
 
         fun newInstance(context: Context, storyName: String) =
             Intent(context, EmbarkActivity::class.java).apply {
