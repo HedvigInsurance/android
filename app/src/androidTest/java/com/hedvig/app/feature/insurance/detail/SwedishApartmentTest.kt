@@ -5,11 +5,11 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
-import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment.Companion.displayName
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.app.util.apollo.stringRes
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
@@ -57,9 +57,7 @@ class SwedishApartmentTest : TestCase() {
                             label { hasText(R.string.CONTRACT_DETAIL_HOME_TYPE) }
                             content {
                                 hasText(
-                                    SwedishApartmentLineOfBusiness.RENT.displayName(
-                                        context()
-                                    )
+                                    SwedishApartmentLineOfBusiness.RENT.stringRes()?.let(context()::getString) ?: ""
                                 )
                             }
                         }

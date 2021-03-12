@@ -42,6 +42,9 @@ import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
+import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -280,6 +283,7 @@ val viewModelModule = module {
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
+    viewModel { ChangeAddressViewModel(get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -453,4 +457,9 @@ val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get
 
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }
+}
+
+val useCaseModule = module {
+    single { GetUpcomingAgreementUseCase(get()) }
+    single { GetSelfChangeEligibilityUseCase(get()) }
 }
