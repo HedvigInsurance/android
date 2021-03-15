@@ -146,7 +146,7 @@
     </style>
 
     <style name="Hedvig.CalendarHeader" parent="Widget.MaterialComponents.MaterialCalendar.HeaderLayout">
-        <item name="android:background">@color/colorOnPrimary</item>
+        <item name="android:background">?colorOnPrimary</item>
     </style>
 
     <style name="Hedvig.HeaderSelection" parent="Widget.MaterialComponents.MaterialCalendar.HeaderSelection">
