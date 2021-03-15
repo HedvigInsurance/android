@@ -118,10 +118,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private fun showRestartDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Do you want to start over?")
-            .setMessage("All the information you've entered will be lost")
-            .setPositiveButton("OK") { _, _ -> model.load(storyName) }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .setTitle(R.string.settings_alert_restart_onboarding_title)
+            .setMessage(R.string.settings_alert_restart_onboarding_description)
+            .setPositiveButton(R.string.ALERT_OK) { _, _ -> model.load(storyName) }
+            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 

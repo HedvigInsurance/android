@@ -58,7 +58,7 @@ class EmbarkMenuTest : TestCase() {
         TextActionScreen {
             authIntent { stub() }
 
-            openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+            openActionBarOverflowOrOptionsMenu(context())
 
             onView(withText("Log in"))
                 .perform(click())
@@ -80,7 +80,7 @@ class EmbarkMenuTest : TestCase() {
             }
 
             step("Open overflow menu, press restart and accept the dialog") {
-                openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+                openActionBarOverflowOrOptionsMenu(context())
                 onView(withText("Restart questions"))
                     .perform(click())
                 onView(withText("OK"))
@@ -103,7 +103,7 @@ class EmbarkMenuTest : TestCase() {
         TextActionScreen {
             appInfoIntent { stub() }
 
-            openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+            openActionBarOverflowOrOptionsMenu(context())
             onView(withText("App information"))
                 .perform(click())
 
@@ -119,7 +119,7 @@ class EmbarkMenuTest : TestCase() {
         TextActionScreen {
             settingsIntent { stub() }
 
-            openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+            openActionBarOverflowOrOptionsMenu(context())
             onView(withText("App settings"))
                 .perform(click())
 
