@@ -21,8 +21,7 @@ class DatePickerViewModel : ViewModel() {
         showDatePicker.value = selectedEpochMillis
     }
 
-    private fun epochMillisToLocalDate(epochMillis: Long): LocalDateTime {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault())
-    }
+    private fun epochMillisToLocalDate(epochMillis: Long) =
+        LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault())
 
 }
