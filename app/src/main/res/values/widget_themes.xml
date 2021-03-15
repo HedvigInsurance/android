@@ -150,7 +150,7 @@
     </style>
 
     <style name="Hedvig.HeaderSelection" parent="Widget.MaterialComponents.MaterialCalendar.HeaderSelection">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?colorPrimary</item>
     </style>
 
 </resources>
