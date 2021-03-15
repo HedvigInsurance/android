@@ -9,15 +9,15 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState.ChangeAddressInProgress
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState.Loading
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState.ManualChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState.SelfChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel.ViewState.UpcomingAgreementError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -93,7 +93,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             buttonText = "Try again",
             onContinue = { viewModel.reload() }
         )
-        is ViewState.SelfChangeError -> setContent(
+        is SelfChangeError -> setContent(
             titleText = getString(R.string.error_dialog_title),
             subtitleText = viewState.error.message ?: "Could not continue, please try again later",
             buttonText = "Try again",

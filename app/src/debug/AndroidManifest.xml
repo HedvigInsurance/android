@@ -88,6 +88,11 @@
 
         <activity android:name=".feature.payment.PaymentMockActivity" />
 
+        <activity
+            android:name=".feature.changeaddress.ChangeAddressMockActivity"
+            android:label="Change Address Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
     </application>
 
 </manifest>

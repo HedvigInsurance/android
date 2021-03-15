@@ -43,6 +43,7 @@ import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
@@ -283,7 +284,6 @@ val viewModelModule = module {
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
-    viewModel { ChangeAddressViewModel(get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -375,6 +375,10 @@ val connectPaymentModule = module {
 
 val trustlyModule = module {
     viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get()) }
+}
+
+val changeAddressModule = module {
+    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
 }
 
 val serviceModule = module {

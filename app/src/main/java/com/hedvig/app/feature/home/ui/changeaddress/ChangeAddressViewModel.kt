@@ -6,14 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import kotlinx.coroutines.launch
 
-class ChangeAddressViewModel(
+abstract class ChangeAddressViewModel: ViewModel() {
+    abstract val viewState: LiveData<ViewState>
+    abstract fun reload()
+}
+
+class ChangeAddressViewModelImpl(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
     private val getSelfChangeEligibility: GetSelfChangeEligibilityUseCase,
-) : ViewModel() {
+) : ChangeAddressViewModel() {
 
-    val viewState: LiveData<ViewState>
+    override val viewState: LiveData<ViewState>
         get() = _viewState
 
     private val _viewState = MutableLiveData<ViewState>()
@@ -24,7 +35,7 @@ class ChangeAddressViewModel(
 
     private fun fetchDataAndCreateState() {
         viewModelScope.launch {
-            _viewState.value = ViewState.Loading
+            _viewState.value = Loading
             _viewState.value = createViewState()
         }
     }
@@ -37,28 +48,28 @@ class ChangeAddressViewModel(
 
     private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState) = when (val upcomingAgreement = getUpcomingAgreement()) {
         is UpcomingAgreementResult.NoUpcomingAgreementChange -> onNoUpcomingChange()
-        is UpcomingAgreementResult.UpcomingAgreement -> ViewState.ChangeAddressInProgress(upcomingAgreement)
-        is UpcomingAgreementResult.Error -> ViewState.UpcomingAgreementError(upcomingAgreement)
+        is UpcomingAgreementResult.UpcomingAgreement -> ChangeAddressInProgress(upcomingAgreement)
+        is UpcomingAgreementResult.Error -> UpcomingAgreementError(upcomingAgreement)
     }
 
     private suspend fun getSelfChangeState() = when (val selfChangeEligibility = getSelfChangeEligibility()) {
-        SelfChangeEligibilityResult.Eligible -> ViewState.SelfChangeAddress
-        is SelfChangeEligibilityResult.Blocked -> ViewState.ManualChangeAddress
-        is SelfChangeEligibilityResult.Error -> ViewState.SelfChangeError(selfChangeEligibility)
+        SelfChangeEligibilityResult.Eligible -> SelfChangeAddress
+        is SelfChangeEligibilityResult.Blocked -> ManualChangeAddress
+        is SelfChangeEligibilityResult.Error -> SelfChangeError(selfChangeEligibility)
     }
 
-    fun reload() {
+    override fun reload() {
         fetchDataAndCreateState()
     }
+}
 
-    sealed class ViewState {
-        object Loading : ViewState()
-        object SelfChangeAddress : ViewState()
-        object ManualChangeAddress : ViewState()
-        data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
-        data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
-        data class ChangeAddressInProgress(
-            val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
-        ) : ViewState()
-    }
+sealed class ViewState {
+    object Loading : ViewState()
+    object SelfChangeAddress : ViewState()
+    object ManualChangeAddress : ViewState()
+    data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
+    data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
+    data class ChangeAddressInProgress(
+        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
+    ) : ViewState()
 }
