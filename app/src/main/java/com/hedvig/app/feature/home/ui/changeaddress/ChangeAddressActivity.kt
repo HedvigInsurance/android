@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -20,7 +19,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddres
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -128,8 +129,8 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         subtitle.text = subtitleText
         subtitle.show()
         continueButton.text = buttonText
-        continueButton.setOnClickListener { onContinue() }
-        continueButton.icon = buttonIcon?.let { ContextCompat.getDrawable(this@ChangeAddressActivity, it) }
+        continueButton.setHapticClickListener { onContinue() }
+        continueButton.icon = buttonIcon?.let { compatDrawable(it) }
         continueButton.isVisible = buttonText != null
     }
 
@@ -151,9 +152,9 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         subtitle.show()
 
         continueButton.text = buttonText
-        continueButton.setOnClickListener { onContinue() }
+        continueButton.setHapticClickListener { onContinue() }
         continueButton.isVisible = buttonText != null
-        continueButton.icon = buttonIcon?.let { ContextCompat.getDrawable(this@ChangeAddressActivity, it) }
+        continueButton.icon = buttonIcon?.let { compatDrawable(it) }
 
         upcomingAddressLayout.upcomingAddressLayoutRoot.show()
         upcomingAddressLayout.addressLabel.text = upcomingAgreementResult.address.street

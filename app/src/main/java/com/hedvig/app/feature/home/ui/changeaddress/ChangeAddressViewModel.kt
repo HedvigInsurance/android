@@ -15,6 +15,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementE
 import kotlinx.coroutines.launch
 
 abstract class ChangeAddressViewModel: ViewModel() {
+    protected val _viewState = MutableLiveData<ViewState>()
     abstract val viewState: LiveData<ViewState>
     abstract fun reload()
 }
@@ -26,8 +27,6 @@ class ChangeAddressViewModelImpl(
 
     override val viewState: LiveData<ViewState>
         get() = _viewState
-
-    private val _viewState = MutableLiveData<ViewState>()
 
     init {
         fetchDataAndCreateState()
