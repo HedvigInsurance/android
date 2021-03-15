@@ -34,6 +34,7 @@ import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -53,7 +54,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         binding.apply {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            whenApiVersion(Build.VERSION_CODES.R) {
                 window.setDecorFitsSystemWindows(false)
                 progressToolbar.toolbar.doOnApplyWindowInsets { view, insets, initialState ->
                     view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
