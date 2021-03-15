@@ -8,5 +8,5 @@
     android:foreground="?selectableItemBackground"
     android:padding="@dimen/base_margin_double"
     android:text="@string/home_tab.editing_section_change_address_label"
-    android:textAppearance="@style/Hedvig.TextAppearance.Subtitle1"
+    android:textAppearance="?textAppearanceSubtitle1"
     app:drawableStartCompat="@drawable/ic_apartment" />
