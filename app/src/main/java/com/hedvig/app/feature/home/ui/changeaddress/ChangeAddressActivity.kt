@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -63,11 +65,15 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
     }
 
     private fun setViewState(viewState: ViewState): Any = when (viewState) {
-        Loading -> binding.spinner.loadingSpinner.show()
+        Loading -> {
+            binding.spinner.loadingSpinner.show()
+            binding.contentScrollView.remove()
+        }
         SelfChangeAddress -> setContent(
             titleText = getString(R.string.moving_intro_title),
             subtitleText = getString(R.string.moving_intro_description),
             buttonText = getString(R.string.moving_intro_open_flow_button_text),
+            buttonIcon = null,
             // TODO: Start Embark
             onContinue = { }
         )
@@ -75,12 +81,14 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             titleText = getString(R.string.moving_intro_title),
             subtitleText = getString(R.string.moving_intro_manual_handling_description),
             buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+            buttonIcon = R.drawable.ic_chat_white,
             onContinue = { openChat() }
         )
         is ChangeAddressInProgress -> setUpcomingChangeContent(
             titleText = getString(R.string.moving_intro_existing_move_title),
             subtitleText = getString(R.string.moving_intro_existing_move_description),
             buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+            buttonIcon = R.drawable.ic_chat_white,
             onContinue = { openChat() },
             viewState.upcomingAgreementResult
         )
@@ -91,12 +99,14 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 is GeneralError -> viewState.error.message ?: "Could not continue, please try again later"
             },
             buttonText = "Try again",
+            buttonIcon = null,
             onContinue = { viewModel.reload() }
         )
         is SelfChangeError -> setContent(
             titleText = getString(R.string.error_dialog_title),
             subtitleText = viewState.error.message ?: "Could not continue, please try again later",
             buttonText = "Try again",
+            buttonIcon = null,
             onContinue = { viewModel.reload() }
         )
     }
@@ -107,9 +117,11 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         titleText: String,
         subtitleText: String,
         buttonText: String?,
+        @DrawableRes buttonIcon: Int?,
         onContinue: () -> Unit
     ) = with(binding) {
         spinner.loadingSpinner.remove()
+        contentScrollView.show()
         image.show()
         title.text = titleText
         title.show()
@@ -117,6 +129,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         subtitle.show()
         continueButton.text = buttonText
         continueButton.setOnClickListener { onContinue() }
+        continueButton.icon = buttonIcon?.let { ContextCompat.getDrawable(this@ChangeAddressActivity, it) }
         continueButton.isVisible = buttonText != null
     }
 
@@ -124,10 +137,12 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         titleText: String,
         subtitleText: String,
         buttonText: String?,
+        @DrawableRes buttonIcon: Int?,
         onContinue: () -> Unit,
         upcomingAgreementResult: UpcomingAgreement
     ) = with(binding) {
         spinner.loadingSpinner.remove()
+        contentScrollView.show()
         image.remove()
 
         title.text = titleText
@@ -138,6 +153,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         continueButton.text = buttonText
         continueButton.setOnClickListener { onContinue() }
         continueButton.isVisible = buttonText != null
+        continueButton.icon = buttonIcon?.let { ContextCompat.getDrawable(this@ChangeAddressActivity, it) }
 
         upcomingAddressLayout.upcomingAddressLayoutRoot.show()
         upcomingAddressLayout.addressLabel.text = upcomingAgreementResult.address.street

@@ -15,6 +15,7 @@
         app:navigationIcon="@drawable/ic_close" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/content_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +86,7 @@
         android:id="@+id/spinner"
         layout="@layout/loading_spinner" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/continueButton"
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
@@ -93,6 +94,7 @@
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:visibility="gone"
+        app:iconGravity="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
