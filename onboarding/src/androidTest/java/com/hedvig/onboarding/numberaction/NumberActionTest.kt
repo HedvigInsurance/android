@@ -2,14 +2,17 @@ package com.hedvig.onboarding.numberaction
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.onboarding.screens.NumberActionScreen
-import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.hasHelperText
+import com.hedvig.app.util.hasPlaceholderText
+import com.hedvig.onboarding.createoffer.EmbarkActivity
+import com.hedvig.onboarding.screens.EmbarkScreen
+import com.hedvig.onboarding.screens.NumberActionScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

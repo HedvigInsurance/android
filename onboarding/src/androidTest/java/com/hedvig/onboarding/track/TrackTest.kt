@@ -2,10 +2,6 @@ package com.hedvig.onboarding.track
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.embarkTrackerModule
-import com.hedvig.onboarding.createoffer.EmbarkTracker
-import com.hedvig.onboarding.screens.EmbarkScreen
-import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TRACK
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -15,6 +11,10 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.json.jsonEq
 import com.hedvig.app.util.jsonObjectOf
+import com.hedvig.onboarding.createoffer.EmbarkActivity
+import com.hedvig.onboarding.createoffer.EmbarkModule
+import com.hedvig.onboarding.createoffer.EmbarkTracker
+import com.hedvig.onboarding.screens.EmbarkScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.mockk
 import io.mockk.verify
@@ -38,7 +38,7 @@ class TrackTest : TestCase() {
 
     @get:Rule
     val mockModuleRule = KoinMockModuleRule(
-        listOf(embarkTrackerModule),
+        listOf(EmbarkModule.trackerModule),
         listOf(module { single { tracker } })
     )
 

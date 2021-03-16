@@ -26,7 +26,7 @@ object EmbarkModule {
         single { EmbarkRepository(get(), get(), get(), get()) }
     }
 
-    private val trackerModule = module {
+    val trackerModule = module {
         single<EmbarkTracker> { EmbarkTrackerImpl(get()) }
     }
 

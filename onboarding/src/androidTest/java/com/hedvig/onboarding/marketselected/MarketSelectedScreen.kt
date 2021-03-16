@@ -1,9 +1,9 @@
 package com.hedvig.onboarding.marketselected
 
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
+import com.kaspersky.kaspresso.screens.KScreen
 
 object MarketSelectedScreen : KScreen<MarketSelectedScreen>() {
 

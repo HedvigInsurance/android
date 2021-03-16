@@ -10,8 +10,8 @@ import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
-import com.hedvig.app.R
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import com.hedvig.onboarding.R
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {

@@ -2,7 +2,7 @@ package com.hedvig.onboarding.screens
 
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.text.KButton
-import com.hedvig.app.R
+import com.hedvig.onboarding.R
 import com.hedvig.onboarding.createoffer.passages.textaction.TextActionFragment
 import com.kaspersky.kaspresso.screens.KScreen
 

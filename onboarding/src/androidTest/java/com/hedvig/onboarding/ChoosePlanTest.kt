@@ -1,13 +1,12 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.onboarding
 
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.app.feature.onboarding.screens.ChoosePlanScreen
-import com.hedvig.chooseplan.ChoosePlanActivity
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.stub
+import com.hedvig.onboarding.chooseplan.ChoosePlanActivity
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -15,7 +14,7 @@ import org.junit.Test
 class ChoosePlanTest : TestCase() {
 
     @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(com.hedvig.chooseplan.ChoosePlanActivity::class.java)
+    val activityRule = LazyIntentsActivityScenarioRule(ChoosePlanActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -25,10 +24,10 @@ class ChoosePlanTest : TestCase() {
     @Test
     fun chooseContentsPlan() = run {
         activityRule.launch()
-        ChoosePlanScreen {
+        com.hedvig.onboarding.screens.ChoosePlanScreen {
             contents { stub() }
             recycler {
-                childAt<ChoosePlanScreen.Card>(1) {
+                childAt<com.hedvig.onboarding.screens.ChoosePlanScreen.Card>(1) {
                     radioButton {
                         isNotChecked()
                         click()
@@ -44,10 +43,10 @@ class ChoosePlanTest : TestCase() {
     @Test
     fun chooseTravelPlan() = run {
         activityRule.launch()
-        ChoosePlanScreen {
+        com.hedvig.onboarding.screens.ChoosePlanScreen {
             travel { stub() }
             recycler {
-                childAt<ChoosePlanScreen.Card>(2) {
+                childAt<com.hedvig.onboarding.screens.ChoosePlanScreen.Card>(2) {
                     radioButton {
                         isNotChecked()
                         click()

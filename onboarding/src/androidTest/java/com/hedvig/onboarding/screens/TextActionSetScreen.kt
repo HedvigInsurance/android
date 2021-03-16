@@ -5,7 +5,7 @@ import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
-import com.hedvig.app.R
+import com.hedvig.onboarding.R
 import com.hedvig.onboarding.createoffer.passages.textactionset.TextActionSetFragment
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher

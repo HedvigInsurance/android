@@ -1,16 +1,16 @@
-package com.hedvig.app.feature.embark.computedvalues
+package com.hedvig.onboarding.computedvalues
 
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.screens.EmbarkScreen
-import com.hedvig.app.feature.embark.screens.NumberActionScreen
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.onboarding.createoffer.EmbarkActivity
+import com.hedvig.onboarding.screens.EmbarkScreen
+import com.hedvig.onboarding.screens.NumberActionScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

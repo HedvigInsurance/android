@@ -2,14 +2,15 @@ package com.hedvig.onboarding.textaction
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.onboarding.screens.TextActionSetScreen
-import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.onboarding.createoffer.EmbarkActivity
+import com.hedvig.onboarding.screens.EmbarkScreen
+import com.hedvig.onboarding.screens.TextActionSetScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onboarding.screens
+package com.hedvig.onboarding.screens
 
 import com.agoda.kakao.web.KWebView
 import com.hedvig.app.R
