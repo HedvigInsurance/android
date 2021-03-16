@@ -8,7 +8,6 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
@@ -18,6 +17,7 @@ import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
@@ -37,7 +37,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val referralsViewModel: ReferralsViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
     private val marketManager: MarketManager by inject()
-    private val defaultLocale: Locale by inject()
+    private val localeManager: LocaleManager by inject()
 
     private val binding by viewBinding(FragmentReferralsBinding::bind)
 
@@ -155,7 +155,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                     "${
                                     BuildConfig.WEB_BASE_URL
                                     }/${
-                                    defaultLocale.toWebLocaleTag()
+                                    localeManager.defaultLocale().toWebLocaleTag()
                                     }/forever/${
                                     Uri.encode(
                                         code

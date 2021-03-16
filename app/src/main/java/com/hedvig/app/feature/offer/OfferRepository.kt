@@ -14,15 +14,15 @@ import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
-import com.hedvig.android.owldroid.type.Locale
+import com.hedvig.app.util.LocaleManager
 import e
 import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
-    defaultLocale: Locale
+    localeManager: LocaleManager
 ) {
-    private val offerQuery = OfferQuery(defaultLocale)
+    private val offerQuery = OfferQuery(localeManager.defaultLocale())
 
     fun offer() = apolloClient
         .query(offerQuery)

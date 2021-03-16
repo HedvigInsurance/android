@@ -6,16 +6,16 @@ import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.graphql.TriggerCallMeChatMutation
 import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
-import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.android.owldroid.type.TriggerClaimChatInput
+import com.hedvig.app.util.LocaleManager
 
 class ClaimsRepository(
     private val apolloClient: ApolloClient,
-    private val defaultLocale: Locale,
+    private val localeManager: LocaleManager,
 ) {
 
     suspend fun fetchCommonClaims() = apolloClient
-        .query(CommonClaimQuery(defaultLocale)).await()
+        .query(CommonClaimQuery(localeManager.defaultLocale())).await()
 
     suspend fun triggerClaimsChat(claimTypeId: String?) = apolloClient
         .mutate(
