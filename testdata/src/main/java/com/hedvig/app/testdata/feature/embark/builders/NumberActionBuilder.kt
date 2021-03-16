@@ -28,5 +28,6 @@ data class NumberActionBuilder(
                 link = EmbarkStoryQuery.Link3(fragments = EmbarkStoryQuery.Link3.Fragments(embarkLinkFragment = link))
             )
         ),
+        asEmbarkDatePickerAction = null,
     )
 }

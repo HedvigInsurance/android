@@ -134,4 +134,23 @@
         <item name="android:paddingTop">@dimen/base_margin_and_a_half</item>
         <item name="android:paddingBottom">@dimen/base_margin_and_a_half</item>
     </style>
+
+    <style name="Hedvig.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="materialCalendarHeaderLayout">@style/Hedvig.CalendarHeader</item>
+        <item name="materialCalendarHeaderSelection">@style/Hedvig.HeaderSelection</item>
+        <item name="materialCalendarHeaderToggleButton">@style/HeaderToggleButton1</item>
+    </style>
+
+    <style name="HeaderToggleButton1" parent="@style/Widget.MaterialComponents.MaterialCalendar.HeaderToggleButton">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Hedvig.CalendarHeader" parent="Widget.MaterialComponents.MaterialCalendar.HeaderLayout">
+        <item name="android:background">?colorOnPrimary</item>
+    </style>
+
+    <style name="Hedvig.HeaderSelection" parent="Widget.MaterialComponents.MaterialCalendar.HeaderSelection">
+        <item name="android:textColor">?colorPrimary</item>
+    </style>
+
 </resources>

@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
+import com.hedvig.app.testdata.feature.embark.builders.DatePickerActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
@@ -458,6 +459,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkTextActionSet = null,
                     asEmbarkPreviousInsuranceProviderAction = null,
                     asEmbarkNumberAction = null,
+                    asEmbarkDatePickerAction = null,
                 )
             )
             .build()
@@ -1287,6 +1289,18 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
                 MessageBuilder("{BAR} was entered")
                     .build()
             )
+        ).build()
+    )
+).build()
+
+val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.copy(
+            action = DatePickerActionBuilder(
+                label = "Move in date",
+                key = "BAR",
+                link = STANDARD_FIRST_LINK
+            ).build()
         ).build()
     )
 ).build()

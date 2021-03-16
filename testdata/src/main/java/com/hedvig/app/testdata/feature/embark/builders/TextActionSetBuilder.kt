@@ -19,6 +19,7 @@ data class TextActionSetBuilder(
         ),
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,
+        asEmbarkDatePickerAction = null,
     )
 }
 
