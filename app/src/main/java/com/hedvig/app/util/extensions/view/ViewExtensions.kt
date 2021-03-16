@@ -2,21 +2,28 @@ package com.hedvig.app.util.extensions.view
 
 import android.app.Activity
 import android.graphics.Rect
+import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowInsets
+import android.view.WindowInsetsAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.CheckResult
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.util.ControlFocusInsetsAnimationCallback
+import com.hedvig.app.util.RootViewDeferringInsetsCallback
+import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -311,3 +318,31 @@ fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: 
     }
     false
 })
+
+@RequiresApi(Build.VERSION_CODES.R)
+fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
+    val deferringListener = RootViewDeferringInsetsCallback(
+        persistentInsetTypes = WindowInsets.Type.systemBars(),
+        deferredInsetTypes = WindowInsets.Type.ime(),
+        setPaddingTop = false
+    )
+
+    root.setWindowInsetsAnimationCallback(deferringListener)
+    root.setOnApplyWindowInsetsListener(deferringListener)
+
+    translatableViews.forEach {
+        it.setWindowInsetsAnimationCallback(
+            TranslateDeferringInsetsAnimationCallback(
+                view = it,
+                persistentInsetTypes = WindowInsets.Type.systemBars(),
+                deferredInsetTypes = WindowInsets.Type.ime(),
+                dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+            )
+        )
+    }
+
+    setWindowInsetsAnimationCallback(
+        ControlFocusInsetsAnimationCallback(this)
+    )
+}
+

@@ -24,12 +24,12 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
+import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
@@ -81,9 +81,8 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         binding.apply {
 
             whenApiVersion(Build.VERSION_CODES.R) {
-                EmbarkInsetHandler.setupInsetsForIme(
+                input.setupInsetsForIme(
                     root = root,
-                    focusableView = input,
                     textActionSubmit,
                     inputLayout
                 )

@@ -9,8 +9,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.ui.EmbarkInsetHandler
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -33,9 +33,8 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                EmbarkInsetHandler.setupInsetsForIme(
+                currentInsurerContainer.setupInsetsForIme(
                     root = root,
-                    focusableView = currentInsurerContainer,
                     currentInsurerContainer,
                 )
             }
