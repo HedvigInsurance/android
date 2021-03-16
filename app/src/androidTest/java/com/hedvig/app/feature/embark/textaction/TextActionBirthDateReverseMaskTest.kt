@@ -56,7 +56,7 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
         TextActionScreen {
             step("Enter reverse birth date") {
                 input { edit { replaceText("13-10-1931") } }
-                submit { click() }
+                submitButton { click() }
             }
         }
         onScreen<EmbarkScreen> {
@@ -82,7 +82,7 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
         TextActionScreen {
             step("Enter information and submit") {
                 input { edit { replaceText("13-10-1931") } }
-                submit { click() }
+                submitButton { click() }
             }
             step("Ensure that new passage is showing") {
                 onScreen<EmbarkScreen> {
@@ -98,7 +98,7 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
                 input { edit { hasText("13-10-1931") } }
             }
             step("Verify that reloaded data passes validation") {
-                submit { isEnabled() }
+                submitButton { isEnabled() }
             }
         }
     }

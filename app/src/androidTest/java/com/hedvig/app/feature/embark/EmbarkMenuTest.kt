@@ -1,10 +1,6 @@
 package com.hedvig.app.feature.embark
 
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -60,8 +56,9 @@ class EmbarkMenuTest : TestCase() {
 
             openActionBarOverflowOrOptionsMenu(context())
 
-            onView(withText("Log in"))
-                .perform(click())
+            loginButton {
+                click()
+            }
 
             authIntent { intended() }
         }
@@ -76,15 +73,17 @@ class EmbarkMenuTest : TestCase() {
 
             step("Enter text for first passage and continue") {
                 input { edit { typeText("Test entry") } }
-                submit { click() }
+                submitButton { click() }
             }
 
             step("Open overflow menu, press restart and accept the dialog") {
                 openActionBarOverflowOrOptionsMenu(context())
-                onView(withText("Restart questions"))
-                    .perform(click())
-                onView(withText("OK"))
-                    .perform(click())
+                restartButton {
+                    click()
+                }
+                okButton {
+                    click()
+                }
             }
 
             step("Check that the first message (from first passage) is displayed") {
@@ -104,8 +103,10 @@ class EmbarkMenuTest : TestCase() {
             appInfoIntent { stub() }
 
             openActionBarOverflowOrOptionsMenu(context())
-            onView(withText("App information"))
-                .perform(click())
+
+            appInfoButton {
+                click()
+            }
 
             appInfoIntent { intended() }
         }
@@ -120,8 +121,10 @@ class EmbarkMenuTest : TestCase() {
             settingsIntent { stub() }
 
             openActionBarOverflowOrOptionsMenu(context())
-            onView(withText("App settings"))
-                .perform(click())
+
+            settingsButton {
+                click()
+            }
 
             settingsIntent { intended() }
         }

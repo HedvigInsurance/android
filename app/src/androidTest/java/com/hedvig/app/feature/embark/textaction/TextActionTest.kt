@@ -41,12 +41,12 @@ class TextActionTest : TestCase() {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
             }
             input { hasHint("Test hint") }
-            submit {
+            submitButton {
                 hasText("Another test passage")
                 isDisabled()
             }
             input { edit { typeText("Test entry") } }
-            submit { click() }
+            submitButton { click() }
             onScreen<EmbarkScreen> {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
             }
@@ -65,7 +65,7 @@ class TextActionTest : TestCase() {
         TextActionScreen {
             step("Fill out passage and submit") {
                 input { edit { typeText("Foo") } }
-                submit { click() }
+                submitButton { click() }
             }
             step("Verify that the previous passage no longer is shown") {
                 onScreen<EmbarkScreen> {
@@ -77,7 +77,7 @@ class TextActionTest : TestCase() {
                 input { edit { hasText("Foo") } }
             }
             step("Check that validation passes on prefilled input") {
-                submit { isEnabled() }
+                submitButton { isEnabled() }
             }
         }
     }
