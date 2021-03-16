@@ -1,6 +1,7 @@
 package com.hedvig.onboarding.createoffer
 
 import com.hedvig.app.util.loadKoinModulesIfNotDefined
+import com.hedvig.onboarding.createoffer.passages.datepicker.DatePickerViewModel
 import com.hedvig.onboarding.createoffer.passages.numberaction.NumberActionParams
 import com.hedvig.onboarding.createoffer.passages.numberaction.NumberActionViewModel
 import com.hedvig.onboarding.createoffer.passages.previousinsurer.PreviousInsurerViewModel
@@ -33,6 +34,7 @@ object EmbarkModule {
         viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
         viewModel { (data: TextActionSetParameter) -> TextActionSetViewModel(data) }
         viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
+        viewModel { DatePickerViewModel() }
     }
 
     private val modules = embarkRepository + viewModelsModule + trackerModule + embarkModule

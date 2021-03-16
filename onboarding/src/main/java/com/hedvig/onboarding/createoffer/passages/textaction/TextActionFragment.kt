@@ -6,7 +6,6 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
-import com.hedvig.app.R
 import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
@@ -15,10 +14,11 @@ import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
-import com.hedvig.onboarding.databinding.FragmentEmbarkTextActionBinding
+import com.hedvig.onboarding.R
 import com.hedvig.onboarding.createoffer.BIRTH_DATE
 import com.hedvig.onboarding.createoffer.BIRTH_DATE_REVERSE
 import com.hedvig.onboarding.createoffer.EMAIL
+import com.hedvig.onboarding.createoffer.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import com.hedvig.onboarding.createoffer.NORWEGIAN_POSTAL_CODE
 import com.hedvig.onboarding.createoffer.PERSONAL_NUMBER
@@ -32,6 +32,7 @@ import com.hedvig.onboarding.createoffer.passages.animateResponse
 import com.hedvig.onboarding.createoffer.setInputType
 import com.hedvig.onboarding.createoffer.setValidationFormatter
 import com.hedvig.onboarding.createoffer.validationCheck
+import com.hedvig.onboarding.databinding.FragmentEmbarkTextActionBinding
 import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -96,7 +97,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                     setValidationFormatter(mask)
                 }
             }
-    
+
             input.onChange { text ->
                 if (data.mask == null) {
                     textActionSubmit.isEnabled = text.isNotEmpty()

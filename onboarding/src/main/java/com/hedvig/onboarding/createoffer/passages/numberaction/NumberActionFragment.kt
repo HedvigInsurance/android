@@ -9,27 +9,18 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.NumberActionFragmentBinding
-import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
-<<<<<<< HEAD:onboarding/src/main/java/com/hedvig/onboarding/embark/passages/numberaction/NumberActionFragment.kt
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.coroutines.delay
-import com.hedvig.onboarding.embark.EmbarkViewModel
-import com.hedvig.onboarding.embark.passages.MessageAdapter
-import com.hedvig.onboarding.embark.passages.animateResponse
-=======
+import com.hedvig.onboarding.createoffer.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import com.hedvig.onboarding.createoffer.passages.MessageAdapter
 import com.hedvig.onboarding.createoffer.passages.animateResponse
->>>>>>> 121444a6... Refactor, rename and add new packages in onboarding module:onboarding/src/main/java/com/hedvig/onboarding/createoffer/passages/numberaction/NumberActionFragment.kt
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach

@@ -13,11 +13,12 @@ import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.coroutines.delay
+import com.hedvig.onboarding.createoffer.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import com.hedvig.onboarding.createoffer.passages.MessageAdapter
 import com.hedvig.onboarding.createoffer.passages.animateResponse
 import com.hedvig.onboarding.createoffer.passages.textaction.TextFieldData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach

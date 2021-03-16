@@ -17,9 +17,10 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import com.hedvig.onboarding.R
 import com.hedvig.onboarding.createoffer.passages.UpgradeAppFragment
+import com.hedvig.onboarding.createoffer.passages.datepicker.DatePickerFragment
+import com.hedvig.onboarding.createoffer.passages.datepicker.DatePickerParams
 import com.hedvig.onboarding.createoffer.passages.numberaction.NumberActionFragment
 import com.hedvig.onboarding.createoffer.passages.numberaction.NumberActionParams
 import com.hedvig.onboarding.createoffer.passages.previousinsurer.PreviousInsurerFragment
@@ -35,6 +36,7 @@ import com.hedvig.onboarding.createoffer.ui.MaterialProgressToolbar
 import com.hedvig.onboarding.databinding.ActivityEmbarkBinding
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity.Companion.RESULT_RESTART
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
