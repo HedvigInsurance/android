@@ -3,9 +3,8 @@ package com.hedvig.onboarding
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.context
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -15,7 +14,7 @@ class EmbarkActivityTest : TestCase() {
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun showsSpinnerWhileLoading() = run {

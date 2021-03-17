@@ -9,11 +9,11 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
@@ -31,6 +31,9 @@ class ReferralsActivatedActivityTest : TestCase() {
     val activityRule = ActivityTestRule(ReferralsActivatedActivity::class.java, false, false)
 
     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
+
+    @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
@@ -40,7 +43,7 @@ class ReferralsActivatedActivityTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldCloseWhenPressingButton() = run {

@@ -11,6 +11,7 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
+import com.example.network.CUSTOM_TYPE_ADAPTERS
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -109,7 +110,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
-import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.example.network.ApolloTimberLogger
 import com.hedvig.app.util.apollo.AuthenticationTokenHandler
 import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_NAME
@@ -128,10 +129,7 @@ import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
-fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
-    if (app.isTestBuild) {
-        return false
-    }
+fun shouldOverrideFeatureFlags(): Boolean {
     if (BuildConfig.DEBUG) {
         return true
     }
@@ -140,6 +138,32 @@ fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
     }
 
     return false
+}
+
+val apolloModule = module {
+    single {
+        val builder = ApolloClient
+            .builder()
+            .serverUrl(BuildConfig.GRAPHQL_URL)
+            .okHttpClient(get())
+            .subscriptionConnectionParams(
+                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+            )
+            .subscriptionTransportFactory(
+                WebSocketSubscriptionTransport.Factory(
+                    BuildConfig.WS_GRAPHQL_URL,
+                    get<OkHttpClient>()
+                )
+            )
+            .normalizedCache(get())
+
+        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
+        if (isDebug()) {
+            builder.logger(ApolloTimberLogger())
+        }
+        builder.build()
+    }
 }
 
 val applicationModule = module {
@@ -187,29 +211,6 @@ val applicationModule = module {
             val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
-        }
-        builder.build()
-    }
-    single {
-        val builder = ApolloClient
-            .builder()
-            .serverUrl(get<HedvigApplication>().graphqlUrl)
-            .okHttpClient(get())
-            .subscriptionConnectionParams(
-                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
-            )
-            .subscriptionTransportFactory(
-                WebSocketSubscriptionTransport.Factory(
-                    BuildConfig.WS_GRAPHQL_URL,
-                    get<OkHttpClient>()
-                )
-            )
-            .normalizedCache(get())
-
-        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
-
-        if (isDebug()) {
-            builder.logger(ApolloTimberLogger())
         }
         builder.build()
     }

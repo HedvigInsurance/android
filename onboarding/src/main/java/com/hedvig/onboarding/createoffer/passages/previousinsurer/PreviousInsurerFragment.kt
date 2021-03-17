@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
-import com.hedvig.app.R
-import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
+import com.hedvig.onboarding.R
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import com.hedvig.onboarding.createoffer.passages.MessageAdapter
+import com.hedvig.onboarding.databinding.PreviousInsurerFragmentBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {

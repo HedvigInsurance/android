@@ -1,15 +1,14 @@
 package com.hedvig.app.feature.referrals.editcode
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.apollographql.apollo.api.Error
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -20,6 +19,9 @@ class GenericErrorTest : TestCase() {
     val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
+
+    @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
             graphQLError("example message")
@@ -27,7 +29,7 @@ class GenericErrorTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldShowErrorWhenNetworkErrorOccurs() = run {

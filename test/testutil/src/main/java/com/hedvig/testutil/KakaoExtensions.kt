@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import android.app.Activity
 import android.app.Instrumentation
@@ -35,7 +35,7 @@ fun KIntent.stub() {
     intending(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
 }
 
-fun KSwipeRefreshLayout.swipeDownInCenter() = view.perform(CustomViewActions.swipeDownInCenter())
+fun KSwipeRefreshLayout.swipeDownInCenter() = view.perform(com.hedvig.testutil.CustomViewActions.swipeDownInCenter())
 
 fun KTextInputLayout.hasPlaceholderText(text: String) {
     view.check { view, noViewFoundException ->

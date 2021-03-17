@@ -23,7 +23,7 @@ class MarketManagerImpl(
     override val enabledMarkets = listOfNotNull(
         Market.SE,
         Market.NO,
-        if (shouldOverrideFeatureFlags(app)) {
+        if (shouldOverrideFeatureFlags()) {
             Market.DK
         } else {
             null

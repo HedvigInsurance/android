@@ -2,8 +2,8 @@ package com.hedvig.app.feature.referrals.editcode
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.context
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

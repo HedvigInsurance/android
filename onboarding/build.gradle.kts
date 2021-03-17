@@ -15,6 +15,10 @@ android {
 
     buildFeatures.viewBinding = true
 
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
     sourceSets {
         named("debug") {
             java.srcDir("src/engineering/java")
@@ -28,10 +32,12 @@ dependencies {
     implementation(project(":app"))
     implementation(project(":apollo"))
 
-    androidTestImplementation(project(":testdata"))
-    debugImplementation(project(":testdata"))
     testImplementation(project(":app"))
-    androidTestImplementation(project(":app"))
+
+    androidTestImplementation(project(":test:testutil"))
+    androidTestImplementation(project(":testdata"))
+
+    debugImplementation(project(":testdata"))
 
     coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
     implementation(kotlin("stdlib", Dependencies.Versions.kotlin))

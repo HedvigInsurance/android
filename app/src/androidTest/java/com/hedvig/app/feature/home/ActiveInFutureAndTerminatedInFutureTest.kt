@@ -8,12 +8,12 @@ import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.hasText
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
+import com.hedvig.testutil.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +24,9 @@ import java.time.format.FormatStyle
 class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -40,7 +43,7 @@ class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldShowMessageWhenUserHasAllContractsInActiveInFutureStateOrActiveInFutureAndTerminatedInFutureState() =

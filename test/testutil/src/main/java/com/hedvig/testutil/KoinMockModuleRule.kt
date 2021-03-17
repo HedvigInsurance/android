@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import org.junit.rules.ExternalResource
 import org.koin.core.context.loadKoinModules

@@ -6,13 +6,12 @@ import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.marketPickerTrackerModule
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.KoinMockModuleRule
-import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
 import com.hedvig.app.util.MarketRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
@@ -26,17 +25,20 @@ class KnownGeoTest : TestCase() {
     val activityRule = LazyActivityScenarioRule(MarketingActivity::class.java)
 
     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
+
+    @get:Rule
     val mockServerRule = ApolloMockServerRule(
         GeoQuery.QUERY_DOCUMENT to apolloResponse { success(GEO_DATA_SE) }
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     private val tracker = mockk<MarketPickerTracker>(relaxed = true)
 
     @get:Rule
-    val koinMockModuleRule = KoinMockModuleRule(
+    val koinMockModuleRule = com.hedvig.testutil.KoinMockModuleRule(
         listOf(marketPickerTrackerModule),
         listOf(module { single { tracker } })
     )

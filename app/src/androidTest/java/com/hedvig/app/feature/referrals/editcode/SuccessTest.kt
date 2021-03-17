@@ -10,11 +10,11 @@ import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_SUCCESS
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -23,6 +23,9 @@ class SuccessTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -40,7 +43,7 @@ class SuccessTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldUpdateCodeWhenCodeIsAccepted() = run {

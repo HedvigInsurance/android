@@ -1,10 +1,7 @@
-package com.hedvig.app
+package com.example.network
 
 import com.apollographql.apollo.api.ScalarTypeAdapters
 import com.hedvig.android.owldroid.type.CustomType
-import com.hedvig.app.util.apollo.JSONStringAdapter
-import com.hedvig.app.util.apollo.PaymentMethodsApiResponseAdapter
-import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
 
 val CUSTOM_TYPE_ADAPTERS = ScalarTypeAdapters(
     mapOf(

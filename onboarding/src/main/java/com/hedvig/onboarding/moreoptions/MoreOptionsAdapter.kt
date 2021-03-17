@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.R
-import com.hedvig.app.databinding.MoreOptionsRowBinding
-import com.hedvig.app.databinding.SettingsBinding
+import com.hedvig.onboarding.R
+import com.hedvig.onboarding.databinding.MoreOptionsRowBinding
+import com.hedvig.onboarding.databinding.SettingsBinding
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
@@ -60,17 +60,16 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                 }
                 binding.apply {
                     label.apply {
-                        setText(R.string.embark_onboarding_more_options_user_id_label)
+                        setText(com.hedvig.app.R.string.embark_onboarding_more_options_user_id_label)
                         compoundDrawablePadding = 16.dp
-                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = com.hedvig.app.R.drawable.ic_contact_information)
                     }
                     info.text = item.id
                 }
             }
         }
 
-        class UserIdError(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.more_options_row)) {
+        class UserIdError(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.more_options_row)) {
             private val binding by viewBinding(MoreOptionsRowBinding::bind)
             override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
                 if (item !is MoreOptionsModel.UserId.Error) {
@@ -79,14 +78,14 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
                 }
                 binding.apply {
                     label.apply {
-                        setText(R.string.embark_onboarding_more_options_user_id_label)
+                        setText(com.hedvig.app.R.string.embark_onboarding_more_options_user_id_label)
                         compoundDrawablePadding = 16.dp
-                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = com.hedvig.app.R.drawable.ic_contact_information)
                     }
                     info.apply {
-                        setText(R.string.embark_onboarding_more_options_loading_error_reload_label)
+                        setText(com.hedvig.app.R.string.embark_onboarding_more_options_loading_error_reload_label)
                         compoundDrawablePadding = 8.dp
-                        putCompoundDrawablesRelativeWithIntrinsicBounds(end = R.drawable.ic_refresh)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(end = com.hedvig.app.R.drawable.ic_refresh)
                         setHapticClickListener {
                             viewModel.load()
                         }
@@ -100,9 +99,9 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
             override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
                 binding.apply {
                     label.apply {
-                        setText(R.string.embark_onboarding_more_options_version_label)
+                        setText(com.hedvig.app.R.string.embark_onboarding_more_options_version_label)
                         compoundDrawablePadding = 16.dp
-                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_info_more_options)
+                        putCompoundDrawablesRelativeWithIntrinsicBounds(start = com.hedvig.app.R.drawable.ic_info_more_options)
                     }
                     info.text = BuildConfig.VERSION_NAME
                 }

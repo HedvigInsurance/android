@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
-import com.hedvig.app.R
-import com.hedvig.app.databinding.FragmentTextActionSetBinding
+import com.hedvig.onboarding.R
+import com.hedvig.onboarding.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme

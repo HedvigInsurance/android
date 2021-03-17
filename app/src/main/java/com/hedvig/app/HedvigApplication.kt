@@ -22,8 +22,8 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
-open class HedvigApplication : Application() {
-    protected val apolloClient: ApolloClient by inject()
+class HedvigApplication : Application() {
+    private val apolloClient: ApolloClient by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
     private val sessionTokenRequestHandler: AuthenticationTokenHandler by inject()
 
@@ -40,6 +40,7 @@ open class HedvigApplication : Application() {
             modules(
                 listOf(
                     applicationModule,
+                    apolloModule,
                     viewModelModule,
                     loggedInModule,
                     insuranceModule,
@@ -102,7 +103,4 @@ open class HedvigApplication : Application() {
         // Let's only try this once
         storeBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN, true)
     }
-
-    open val graphqlUrl = BuildConfig.GRAPHQL_URL
-    open val isTestBuild = false
 }

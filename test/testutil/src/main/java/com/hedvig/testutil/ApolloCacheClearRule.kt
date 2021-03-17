@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import com.apollographql.apollo.ApolloClient
 import org.junit.rules.ExternalResource

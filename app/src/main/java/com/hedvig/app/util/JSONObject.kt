@@ -1,6 +1,5 @@
 package com.hedvig.app.util
 
-import org.json.JSONArray
 import org.json.JSONObject
 
 fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
@@ -24,8 +23,6 @@ fun JSONObject.getWithDotNotation(accessor: String): Any {
 
     return get(accessor)
 }
-
-fun Collection<Any>.toJsonArray() = JSONArray(this)
 
 fun JSONObject.entries() = JSONObjectEntryIterator(this)
 

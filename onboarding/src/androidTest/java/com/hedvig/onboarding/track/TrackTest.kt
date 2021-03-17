@@ -3,18 +3,17 @@ package com.hedvig.onboarding.track
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TRACK
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.KoinMockModuleRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.json.jsonEq
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.KoinMockModuleRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.createoffer.EmbarkModule
 import com.hedvig.onboarding.createoffer.EmbarkTracker
 import com.hedvig.onboarding.screens.EmbarkScreen
+import com.hedvig.testutil.jsonEq
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.mockk
 import io.mockk.verify
@@ -32,7 +31,7 @@ class TrackTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     private val tracker = mockk<EmbarkTracker>(relaxed = true)
 

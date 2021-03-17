@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import android.app.Activity
 import android.content.Intent

@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.GeneralLocation

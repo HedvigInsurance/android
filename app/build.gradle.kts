@@ -35,7 +35,7 @@ android {
 
         resConfigs("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK")
 
-        testInstrumentationRunner = "com.hedvig.app.TestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     kotlinOptions {
@@ -162,8 +162,10 @@ android {
 
 dependencies {
     implementation(project(":apollo"))
+    implementation(project(":library:network"))
 
     androidTestImplementation(project(":testdata"))
+    androidTestImplementation(project(":test:testutil"))
     debugImplementation(project(":testdata"))
 
     "stagingImplementation"(project(":testdata"))

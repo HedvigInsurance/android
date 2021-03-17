@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import android.view.View
 import androidx.test.espresso.matcher.BoundedMatcher

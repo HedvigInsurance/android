@@ -4,12 +4,12 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.stubExternalIntents
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyIntentsActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
+import com.hedvig.testutil.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -17,6 +17,9 @@ import org.junit.Test
 class DocumentsTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(ContractDetailActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -28,7 +31,7 @@ class DocumentsTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldShowDocuments() = run {

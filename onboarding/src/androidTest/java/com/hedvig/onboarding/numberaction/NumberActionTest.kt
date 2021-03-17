@@ -3,13 +3,12 @@ package com.hedvig.onboarding.numberaction
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.hasHelperText
-import com.hedvig.app.util.hasPlaceholderText
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
+import com.hedvig.testutil.hasHelperText
+import com.hedvig.testutil.hasPlaceholderText
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.screens.NumberActionScreen
@@ -27,7 +26,7 @@ class NumberActionTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldRenderNumberAction() = run {

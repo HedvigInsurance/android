@@ -5,14 +5,18 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.apolloModule
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.ApolloCacheClearRule
+import com.hedvig.testutil.apolloTestModule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
 
 class BackNavigationTest : TestCase() {
     @get:Rule

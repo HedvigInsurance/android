@@ -10,13 +10,13 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyIntentsActivityScenarioRule
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.MarketRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.stub
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
+import com.hedvig.testutil.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +24,9 @@ import org.junit.Test
 class ConnectPayinNorwayTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -37,7 +40,7 @@ class ConnectPayinNorwayTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @get:Rule
     val marketRule = MarketRule(Market.NO)

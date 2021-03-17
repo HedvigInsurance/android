@@ -18,7 +18,6 @@ import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.HedvigApplication
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -295,13 +294,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         loggedInViewModel.data.observe(this) { data ->
             val keyGearEnabled =
-                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                if (shouldOverrideFeatureFlags()) {
                     true
                 } else {
                     data.member.features.contains(Feature.KEYGEAR)
                 }
             val referralsEnabled =
-                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                if (shouldOverrideFeatureFlags()) {
                     true
                 } else {
                     data.member.features.contains(Feature.REFERRALS)

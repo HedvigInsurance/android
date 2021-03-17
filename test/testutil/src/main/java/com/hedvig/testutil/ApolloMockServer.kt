@@ -1,13 +1,13 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
-import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
-import com.hedvig.app.TestApplication
+import com.example.network.CUSTOM_TYPE_ADAPTERS
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.rules.ExternalResource
 
@@ -88,10 +88,16 @@ class ApolloMockServerRule(
     val webServer = apolloMockServer(*mocks)
 
     override fun before() {
-        webServer.start(TestApplication.PORT)
+        webServer.start(8080)
     }
 
     override fun after() {
         webServer.close()
     }
 }
+
+fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
+    properties.forEach { put(it.first, it.second) }
+}
+
+fun Collection<Any>.toJsonArray() = JSONArray(this)

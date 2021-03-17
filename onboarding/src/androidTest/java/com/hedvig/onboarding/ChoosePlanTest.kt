@@ -2,11 +2,12 @@ package com.hedvig.onboarding
 
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.stub
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyIntentsActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.stub
 import com.hedvig.onboarding.chooseplan.ChoosePlanActivity
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -15,6 +16,9 @@ class ChoosePlanTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(ChoosePlanActivity::class.java)
+
+     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(

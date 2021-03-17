@@ -7,8 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import com.hedvig.app.R
-import com.hedvig.app.databinding.NumberActionFragmentBinding
+import com.hedvig.onboarding.R
 import com.hedvig.app.util.extensions.hideKeyboardIfVisible
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
@@ -20,6 +19,7 @@ import com.hedvig.onboarding.createoffer.EmbarkActivity.Companion.PASSAGE_ANIMAT
 import com.hedvig.onboarding.createoffer.EmbarkViewModel
 import com.hedvig.onboarding.createoffer.passages.MessageAdapter
 import com.hedvig.onboarding.createoffer.passages.animateResponse
+import com.hedvig.onboarding.databinding.NumberActionFragmentBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest

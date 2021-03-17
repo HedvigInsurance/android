@@ -1,3 +1,5 @@
+include ':library:network'
+include ':test:testutil'
 include ':onboarding'
 include ':testdata'
 include ':apollo'

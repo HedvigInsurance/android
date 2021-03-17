@@ -3,11 +3,10 @@ package com.hedvig.onboarding.computedvalues
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.screens.NumberActionScreen
@@ -25,7 +24,7 @@ class ComputedValuesTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     @Test
     fun shouldCorrectlyDisplayComputedValues() = run {

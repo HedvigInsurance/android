@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.testutil
 
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher

@@ -3,14 +3,14 @@ package com.hedvig.onboarding
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.util.MarketRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
-import com.hedvig.app.util.stub
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyIntentsActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.stub
 import com.hedvig.onboarding.moreoptions.MoreOptionsActivity
 import com.hedvig.onboarding.screens.MoreOptionsScreen
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +24,9 @@ class MoreOptionsTest : TestCase() {
 
     @get:Rule
     val marketRule = MarketRule(Market.NO)
+
+     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(

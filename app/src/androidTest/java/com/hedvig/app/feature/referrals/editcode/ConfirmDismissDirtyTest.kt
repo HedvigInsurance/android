@@ -3,7 +3,7 @@ package com.hedvig.app.feature.referrals.editcode
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
-import com.hedvig.app.util.context
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Assert.assertTrue
 import org.junit.Rule

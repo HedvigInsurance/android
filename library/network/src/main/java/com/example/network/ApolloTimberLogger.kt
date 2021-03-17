@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.example.network
 
 import com.apollographql.apollo.Logger
 import d

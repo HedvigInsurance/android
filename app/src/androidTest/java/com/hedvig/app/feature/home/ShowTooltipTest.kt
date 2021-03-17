@@ -8,11 +8,11 @@ import com.hedvig.app.feature.home.screens.LoggedInScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.context
+import com.hedvig.testutil.ApolloLocalServerRule
+import com.hedvig.testutil.ApolloMockServerRule
+import com.hedvig.testutil.LazyActivityScenarioRule
+import com.hedvig.testutil.apolloResponse
+import com.hedvig.testutil.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.After
 import org.junit.Before
@@ -25,6 +25,9 @@ class ShowTooltipTest : TestCase() {
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
+
+    @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(
@@ -35,7 +38,7 @@ class ShowTooltipTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    val apolloCacheClearRule = com.hedvig.testutil.ApolloCacheClearRule()
 
     var lastOpenPrevValue: Long = 0
 
