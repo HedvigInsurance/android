@@ -12,6 +12,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
+
     implementation(project(":apollo"))
     implementation(project(":library:network"))
 
