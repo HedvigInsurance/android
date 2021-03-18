@@ -11,6 +11,7 @@ import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.testutil.LazyActivityScenarioRule
 import com.hedvig.testutil.apolloResponse
 import com.hedvig.testutil.ApolloCacheClearRule
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.apolloTestModule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -21,6 +22,9 @@ import org.koin.core.context.unloadKoinModules
 class BackNavigationTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

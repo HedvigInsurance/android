@@ -13,6 +13,7 @@ import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.createoffer.EmbarkModule
 import com.hedvig.onboarding.createoffer.EmbarkTracker
 import com.hedvig.onboarding.screens.EmbarkScreen
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.jsonEq
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.mockk
@@ -24,6 +25,9 @@ import org.koin.dsl.module
 class TrackTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

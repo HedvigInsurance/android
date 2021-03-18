@@ -32,10 +32,10 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("com.google.android.material:material:1.3.0")
     implementation("junit:junit:4.+")
-
-
+    
     implementation("androidx.test.ext:junit:1.1.2")
     implementation("androidx.test.espresso:espresso-core:3.3.0")
     implementation("androidx.test.espresso:espresso-intents:3.3.0")
     implementation("com.agoda.kakao:kakao:2.4.0")
+    implementation("com.kaspersky.android-components:kaspresso:1.2.0")
 }

@@ -7,6 +7,7 @@ import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.screens.TextActionScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.testutil.KoinMockModuleRule
 import com.hedvig.testutil.LazyActivityScenarioRule
@@ -23,6 +24,9 @@ import java.time.ZoneId
 class TextActionBirthDateReverseMaskTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

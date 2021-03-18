@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.testutil.LazyActivityScenarioRule
 import com.hedvig.testutil.apolloResponse
@@ -18,6 +19,9 @@ import org.junit.Test
 class DefaultSelectActionResponseTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

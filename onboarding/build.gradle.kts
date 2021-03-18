@@ -29,14 +29,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":app"))
     implementation(project(":apollo"))
 
+    implementation(project(":app"))
     testImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
 
     androidTestImplementation(project(":test:testutil"))
     androidTestImplementation(project(":testdata"))
-
     debugImplementation(project(":testdata"))
 
     coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)

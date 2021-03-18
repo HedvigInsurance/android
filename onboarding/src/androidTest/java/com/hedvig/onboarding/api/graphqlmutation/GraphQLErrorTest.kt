@@ -6,6 +6,7 @@ import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.HELLO_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.testutil.LazyActivityScenarioRule
 import com.hedvig.testutil.apolloResponse
@@ -17,6 +18,9 @@ import org.junit.Test
 class GraphQLErrorTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

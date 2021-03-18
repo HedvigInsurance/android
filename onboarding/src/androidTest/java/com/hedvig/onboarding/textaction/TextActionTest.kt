@@ -10,6 +10,7 @@ import com.hedvig.testutil.context
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.screens.TextActionScreen
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -17,6 +18,9 @@ import org.junit.Test
 class TextActionTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

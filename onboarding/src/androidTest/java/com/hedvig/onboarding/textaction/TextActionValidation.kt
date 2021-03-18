@@ -18,7 +18,7 @@ class TextActionValidation : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-     @get:Rule
+    @get:Rule
     val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule

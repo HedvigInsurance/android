@@ -25,7 +25,7 @@ class MoreOptionsTest : TestCase() {
     @get:Rule
     val marketRule = MarketRule(Market.NO)
 
-     @get:Rule
+    @get:Rule
     val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule

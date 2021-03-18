@@ -11,6 +11,7 @@ import com.hedvig.testutil.LazyActivityScenarioRule
 import com.hedvig.testutil.apolloResponse
 import com.hedvig.testutil.context
 import com.hedvig.app.util.jsonObjectOf
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +19,9 @@ import org.junit.Test
 class SuccessTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

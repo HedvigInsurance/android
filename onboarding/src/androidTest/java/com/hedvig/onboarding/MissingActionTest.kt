@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.onboarding.screens.EmbarkScreen
 import com.hedvig.onboarding.createoffer.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTION
+import com.hedvig.testutil.ApolloLocalServerRule
 import com.hedvig.testutil.ApolloMockServerRule
 import com.hedvig.testutil.LazyIntentsActivityScenarioRule
 import com.hedvig.testutil.apolloResponse
@@ -17,6 +18,9 @@ import org.junit.Test
 class MissingActionTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(

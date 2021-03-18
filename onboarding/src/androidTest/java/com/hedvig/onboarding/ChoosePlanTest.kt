@@ -17,7 +17,7 @@ class ChoosePlanTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(ChoosePlanActivity::class.java)
 
-     @get:Rule
+    @get:Rule
     val apolloLocalServerRule = ApolloLocalServerRule()
 
     @get:Rule
