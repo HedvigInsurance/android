@@ -88,6 +88,8 @@
 
         <activity android:name=".feature.payment.PaymentMockActivity" />
 
+        <activity android:name=".feature.changeaddress.ChangeAddressMockActivity"  />
+
     </application>
 
 </manifest>

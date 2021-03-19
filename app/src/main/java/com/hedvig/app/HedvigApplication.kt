@@ -76,7 +76,9 @@ open class HedvigApplication : Application() {
                     choosePlanModule,
                     clockModule,
                     embarkTrackerModule,
-                    localeManagerModule
+                    localeManagerModule,
+                    changeAddressModule,
+                    useCaseModule,
                 )
             )
         }
