@@ -11,7 +11,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
-import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 
 enum class Market {
     SE,
@@ -50,7 +50,7 @@ enum class Market {
                 AuthenticateDialog().show(fragmentManager, AuthenticateDialog.TAG)
             }
             NO, DK -> {
-                context.startActivity(ZignSecAuthenticationActivity.newInstance(context))
+                context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
             }
         }
     }

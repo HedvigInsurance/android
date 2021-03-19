@@ -1,6 +1,7 @@
 package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import io.noties.markwon.Markwon
@@ -32,3 +33,12 @@ fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
         bottom
     )
 }
+
+fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) =
+    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+        if (actionId == imeActionId) {
+            action()
+            return@OnEditorActionListener true
+        }
+        false
+    })

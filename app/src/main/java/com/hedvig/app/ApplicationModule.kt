@@ -125,6 +125,10 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
+import com.hedvig.app.feature.zignsec.StartDanishAuthUseCase
+import com.hedvig.app.feature.zignsec.StartNorwegianAuthUseCase
+import com.hedvig.app.feature.zignsec.SubscribeToAuthStatusUseCase
 import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
 import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
 import com.hedvig.app.service.FileService
@@ -242,19 +246,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(context, market).language
+        getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -284,6 +288,7 @@ val viewModelModule = module {
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -466,4 +471,7 @@ val localeManagerModule = module {
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get()) }
     single { GetSelfChangeEligibilityUseCase(get()) }
+    single { StartDanishAuthUseCase(get()) }
+    single { StartNorwegianAuthUseCase(get()) }
+    single { SubscribeToAuthStatusUseCase(get()) }
 }

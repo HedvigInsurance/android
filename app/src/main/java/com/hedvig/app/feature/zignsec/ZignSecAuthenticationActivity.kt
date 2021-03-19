@@ -27,9 +27,9 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
+            //toolbar.setNavigationOnClickListener {
+            //    onBackPressed()
+            //}
 
             danishBankIdContainer.apply {
                 settings.apply {

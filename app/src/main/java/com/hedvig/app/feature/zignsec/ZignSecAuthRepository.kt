@@ -10,12 +10,13 @@ import com.hedvig.android.owldroid.graphql.NorwegianBankIdAuthMutation
 class ZignSecAuthRepository(
     private val apolloClient: ApolloClient,
 ) {
+    // TODO: Delete this entire file
     suspend fun startDanishAuth() = apolloClient
-        .mutate(DanishAuthMutation())
+        .mutate(DanishAuthMutation("asd"))
         .await()
 
     suspend fun startNorwegianAuth() = apolloClient
-        .mutate(NorwegianBankIdAuthMutation())
+        .mutate(NorwegianBankIdAuthMutation("asd"))
         .await()
 
     fun authStatus() = apolloClient
