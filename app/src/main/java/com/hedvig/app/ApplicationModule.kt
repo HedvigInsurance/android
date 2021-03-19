@@ -127,8 +127,8 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
-import com.hedvig.app.util.apollo.defaultLocale
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -238,19 +238,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-        BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
     } ${
-        BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
     } (Android ${
-        Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
     }; ${
-        Build.BRAND
+    Build.BRAND
     } ${
-        Build.MODEL
+    Build.MODEL
     }; ${
-        Build.DEVICE
+    Build.DEVICE
     }; ${
-        getLocale(context, market).language
+    getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -450,6 +450,7 @@ val notificationModule = module {
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
-val defaultLocaleModule = module {
-    single { defaultLocale(get(), get()) }
+
+val localeManagerModule = module {
+    single { LocaleManager(get(), get()) }
 }

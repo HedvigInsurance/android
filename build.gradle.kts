@@ -64,8 +64,8 @@ buildtimetracker {
 tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java)
     .configure {
         rejectVersionIf {
-            candidate.version.contains("alpha", true)
-                || candidate.version.contains("rc", true)
-                || candidate.version.contains("beta", true)
+            candidate.version.contains("alpha", true) ||
+                candidate.version.contains("rc", true) ||
+                candidate.version.contains("beta", true)
         }
     }

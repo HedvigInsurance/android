@@ -25,3 +25,6 @@
 -keepclassmembers public class * implements com.adyen.checkout.base.PaymentComponent {
    public <init>(...);
 }
+-keepclassmembers public class * implements com.adyen.checkout.base.ActionComponent {
+   public <init>(...);
+}
