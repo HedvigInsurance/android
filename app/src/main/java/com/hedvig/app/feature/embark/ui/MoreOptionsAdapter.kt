@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
-import com.hedvig.app.databinding.SettingsBinding
 import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
@@ -26,7 +24,6 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         MEMBER_ID_SUCCESS -> ViewHolder.UserIdSuccess(parent)
         MEMBER_ID_ERROR -> ViewHolder.UserIdError(parent)
         VERSION -> ViewHolder.Version(parent)
-        SETTINGS -> ViewHolder.Settings(parent)
         COPYRIGHT -> ViewHolder.Copyright(parent)
         else -> throw Error("Unreachable")
     }
@@ -40,7 +37,6 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         is MoreOptionsModel.UserId.Success -> MEMBER_ID_SUCCESS
         MoreOptionsModel.UserId.Error -> MEMBER_ID_ERROR
         MoreOptionsModel.Version -> VERSION
-        MoreOptionsModel.Settings -> SETTINGS
         MoreOptionsModel.Copyright -> COPYRIGHT
     }
 
@@ -110,15 +106,6 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
             }
         }
 
-        class Settings(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.settings)) {
-            private val binding by viewBinding(SettingsBinding::bind)
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
-                binding.root.setHapticClickListener { view ->
-                    view.context.startActivity(SettingsActivity.newInstance(view.context))
-                }
-            }
-        }
-
         class Copyright(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.copyright)) {
             override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) = Unit
         }
@@ -129,8 +116,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         private const val MEMBER_ID_SUCCESS = 2
         private const val MEMBER_ID_ERROR = 3
         private const val VERSION = 4
-        private const val SETTINGS = 5
-        private const val COPYRIGHT = 6
+        private const val COPYRIGHT = 5
     }
 }
 
