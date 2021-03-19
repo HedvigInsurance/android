@@ -76,6 +76,7 @@
         <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="materialCalendarTheme">@style/Hedvig.DatePicker</item>
     </style>
 
     <attr name="materialButtonContainedLargeStyle" format="reference" />

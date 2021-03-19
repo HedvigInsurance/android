@@ -26,6 +26,18 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.embark.EmbarkRepository
+import com.hedvig.app.feature.embark.EmbarkTracker
+import com.hedvig.app.feature.embark.EmbarkTrackerImpl
+import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
+import com.hedvig.app.feature.embark.passages.numberaction.NumberActionViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -127,6 +139,7 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
+import java.time.Clock
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
@@ -266,14 +279,11 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { DatePickerViewModel() }
 }
 
 val choosePlanModule = module {
     viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
-}
-
-val onboardingModule = module {
-    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
 }
 
 val marketPickerModule = module {
@@ -319,6 +329,26 @@ val paymentModule = module {
 val adyenModule = module {
     viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get()) }
     viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
+}
+
+val embarkModule = module {
+    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
+}
+
+val previousInsViewModel = module {
+    viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
+}
+
+val moreOptionsModule = module {
+    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+}
+
+val textActionSetModule = module {
+    viewModel { (data: TextActionSetParameter) -> TextActionSetViewModel(data) }
+}
+
+val numberActionModule = module {
+    viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
 val referralsModule = module {
@@ -370,6 +400,7 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
+    single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
@@ -415,6 +446,10 @@ val marketManagerModule = module {
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
 }
+
+val clockModule = module { single { Clock.systemDefaultZone() } }
+
+val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
 
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }

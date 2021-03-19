@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/base_margin_half"
+    android:maxWidth="@dimen/embark_chat_bubble_max_width"
+    android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Hedvig"
+    android:textAppearance="?textAppearanceSubtitle1"
+    tools:text="Hejsan" />

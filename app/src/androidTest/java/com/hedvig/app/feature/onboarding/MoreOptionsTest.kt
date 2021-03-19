@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.onboarding
 
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.screens.MoreOptionsScreen
-import com.hedvig.app.feature.onboarding.ui.MoreOptionsActivity
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule

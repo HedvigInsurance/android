@@ -23,7 +23,7 @@ class SwipeToRefreshNewDataTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var firstLoadFlag = false
+    private var firstLoadFlag = false
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(

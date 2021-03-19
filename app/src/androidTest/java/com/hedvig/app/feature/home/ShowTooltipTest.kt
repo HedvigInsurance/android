@@ -18,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.Duration
 
 class ShowTooltipTest : TestCase() {
 
@@ -67,5 +66,3 @@ class ShowTooltipTest : TestCase() {
     }
 }
 
-val Int.seconds: Duration
-    get() = Duration.ofSeconds(this.toLong())

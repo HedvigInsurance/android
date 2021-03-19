@@ -11,9 +11,12 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.remove
@@ -25,11 +28,14 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
     private val viewModel: ChoosePlanViewModel by viewModel()
+    private val marketManager: MarketManager by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,14 +57,21 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
             continueButton.setHapticClickListener {
-                startActivity(
-                    WebOnboardingActivity.newNoInstance(
-                        this@ChoosePlanActivity,
-                        viewModel.getWebPath()
-                    )
-                )
+                when (val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name) {
+                    NO_ENGLISH_TRAVEL_STORY_NAME, NO_NORWEGIAN_TRAVEL_STORY_NAME -> {
+                        startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName))
+                    }
+                    null -> Timber.e("Could not start embark activity - null story name")
+                    else -> {
+                        startActivity(
+                            WebOnboardingActivity.newNoInstance(
+                                this@ChoosePlanActivity,
+                                viewModel.getWebPath()
+                            )
+                        )
+                    }
+                }
             }
-
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
                 val bundles = response.getOrNull()
                 if (response.isFailure || bundles == null) {
@@ -99,14 +112,20 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.moreOptions -> {
+    override fun onOptionsItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.app_settings -> {
+            startActivity(SettingsActivity.newInstance(this))
+            true
+        }
+        R.id.app_info -> {
             startActivity(MoreOptionsActivity.newInstance(this))
             true
         }
-        else -> {
-            super.onOptionsItemSelected(item)
+        R.id.login -> {
+            marketManager.market?.openAuth(this, supportFragmentManager)
+            true
         }
+        else -> false
     }
 
     companion object {
@@ -114,6 +133,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         const val COMBO = "Combo"
         const val CONTENTS = "Contents"
         const val TRAVEL = "Travel"
+
+        internal const val NO_ENGLISH_TRAVEL_STORY_NAME = "Web Onboarding NO - English Travel"
+        internal const val NO_NORWEGIAN_TRAVEL_STORY_NAME = "Web Onboarding NO - Norwegian Travel"
 
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
 

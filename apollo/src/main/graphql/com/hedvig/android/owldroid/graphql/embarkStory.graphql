@@ -1,0 +1,260 @@
+query EmbarkStory($name: String!, $locale: String!) {
+  embarkStory(name: $name, locale: $locale) {
+    startPassage
+    computedStoreValues {
+      key
+      value
+    }
+    passages {
+      name
+      id
+      externalRedirect {
+        data {
+          location
+        }
+      }
+      messages {
+        ...MessageFragment
+      }
+      response {
+        ...MessageFragment
+      }
+      redirects {
+        ... on EmbarkRedirectUnaryExpression {
+          unaryType: type
+          to
+          passedExpressionKey
+          passedExpressionValue
+        }
+        ... on EmbarkRedirectBinaryExpression {
+          binaryType: type
+          to
+          key
+          value
+          passedExpressionKey
+          passedExpressionValue
+        }
+        ... on EmbarkRedirectMultipleExpressions {
+          multipleExpressionType: type
+          to
+          passedExpressionKey
+          passedExpressionValue
+          subExpressions {
+            ...SubExpressionFragment
+          }
+        }
+      }
+      action {
+        ... on EmbarkSelectAction {
+          selectData: data {
+            options {
+              link {
+                ...EmbarkLinkFragment
+              }
+              keys
+              values
+            }
+          }
+        }
+        ... on EmbarkTextAction {
+          textData: data {
+            key
+            placeholder
+            mask
+            link {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkTextActionSet {
+          textSetData: data {
+            link {
+              ...EmbarkLinkFragment
+            }
+            textActions {
+              data {
+                key
+                mask
+                placeholder
+              }
+            }
+          }
+        }
+        ... on EmbarkPreviousInsuranceProviderAction {
+          data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+            storeKey
+            insuranceProviders {
+              name
+              logo {
+                variants {
+                  ...IconVariantsFragment
+                }
+              }
+            }
+          }
+        }
+        ... on EmbarkNumberAction {
+          data {
+            key
+            placeholder
+            unit
+            label
+            maxValue
+            minValue
+            link {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkDatePickerAction {
+          storeKey
+          label
+          next {
+            ...EmbarkLinkFragment
+          }
+        }
+      }
+      api {
+        ...ApiFragment
+      }
+      tooltips {
+        title
+        description
+      }
+      allLinks {
+        ...EmbarkLinkFragment
+      }
+      tracks {
+        eventName
+        eventKeys
+        includeAllKeys
+        customData
+      }
+    }
+  }
+}
+
+fragment EmbarkLinkFragment on EmbarkLink {
+  name
+  label
+}
+
+fragment MessageFragment on EmbarkMessage {
+  expressions {
+    ... on EmbarkExpressionUnary {
+      unaryType: type
+      text
+    }
+    ... on EmbarkExpressionBinary {
+      binaryType: type
+      key
+      value
+      text
+    }
+    ... on EmbarkExpressionMultiple {
+      multipleType: type
+      text
+      subExpressions {
+        ...SubExpressionFragment
+      }
+    }
+  }
+  text
+}
+
+fragment SubExpressionFragment on EmbarkExpression {
+  ... on EmbarkExpressionUnary {
+    unaryType: type
+    text
+  }
+  ... on EmbarkExpressionBinary {
+    binaryType: type
+    key
+    value
+    text
+  }
+  ... on EmbarkExpressionMultiple {
+    multipleType: type
+    text
+    subExpressions {
+      ... on EmbarkExpressionUnary {
+        unaryType: type
+        text
+      }
+      ... on EmbarkExpressionBinary {
+        binaryType: type
+        key
+        value
+        text
+      }
+    }
+  }
+}
+
+fragment ApiFragment on EmbarkApi {
+  ... on EmbarkApiGraphQLQuery {
+    queryData: data {
+      query
+      results {
+        ...GraphQLResultsFragment
+      }
+      errors {
+        ...GraphQLErrorsFragment
+      }
+      variables {
+        ...GraphQLVariablesFragment
+      }
+      next {
+        ...EmbarkLinkFragment
+      }
+    }
+  }
+  ... on EmbarkApiGraphQLMutation {
+    mutationData: data {
+      mutation
+      results {
+        ...GraphQLResultsFragment
+      }
+      variables {
+        ...GraphQLVariablesFragment
+      }
+      errors {
+        ...GraphQLErrorsFragment
+      }
+      next {
+        ...EmbarkLinkFragment
+      }
+    }
+  }
+}
+
+fragment GraphQLResultsFragment on EmbarkAPIGraphQLResult {
+  key
+  as
+}
+
+fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
+  ... on EmbarkAPIGraphQLSingleVariable {
+    key
+    from
+    as
+  }
+  ... on EmbarkAPIGraphQLGeneratedVariable {
+    key
+    storeAs
+    type
+  }
+}
+
+fragment GraphQLErrorsFragment on EmbarkAPIGraphQLError {
+  contains
+  next {
+    ...EmbarkLinkFragment
+  }
+}

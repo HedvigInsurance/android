@@ -42,6 +42,11 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity
+            android:name=".feature.embark.EmbarkMockActivity"
+            android:label="Embark Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
             android:name=".feature.offer.OfferMockActivity"
             android:label="Offer Mock Screen"
             android:theme="@style/Hedvig.Theme" />

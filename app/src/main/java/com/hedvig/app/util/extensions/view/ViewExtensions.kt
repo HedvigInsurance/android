@@ -2,20 +2,36 @@ package com.hedvig.app.util.extensions.view
 
 import android.app.Activity
 import android.graphics.Rect
+import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowInsets
+import android.view.WindowInsetsAnimation
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
+import androidx.annotation.CheckResult
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.util.ControlFocusInsetsAnimationCallback
+import com.hedvig.app.util.RootViewDeferringInsetsCallback
+import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 
 fun View.show(): View {
     if (visibility != View.VISIBLE) {
@@ -88,7 +104,7 @@ fun View.updatePadding(
     @Dimension start: Int? = null,
     @Dimension top: Int? = null,
     @Dimension end: Int? = null,
-    @Dimension bottom: Int? = null
+    @Dimension bottom: Int? = null,
 ) = setPaddingRelative(
     start ?: paddingStart,
     top ?: paddingTop,
@@ -100,7 +116,7 @@ fun View.updateMargin(
     start: Int? = null,
     top: Int? = null,
     end: Int? = null,
-    bottom: Int? = null
+    bottom: Int? = null,
 ) {
     val lp = layoutParams as? ViewGroup.MarginLayoutParams
         ?: return
@@ -117,7 +133,7 @@ fun View.updateMargin(
 
 inline fun <reified T : ViewGroup.LayoutParams> View.setSize(
     @Dimension width: Int? = null,
-    @Dimension height: Int? = null
+    @Dimension height: Int? = null,
 ) {
     layoutParams = T::class.java
         .getConstructor(Int::class.java, Int::class.java)
@@ -137,7 +153,7 @@ fun Toolbar.setupToolbar(
     usingEdgeToEdge: Boolean = false,
     @DrawableRes icon: Int? = null,
     rootLayout: View?,
-    backAction: (() -> Unit)? = null
+    backAction: (() -> Unit)? = null,
 ) {
     activity.setSupportActionBar(this)
     activity.supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -204,7 +220,7 @@ fun Toolbar.setupToolbar(
 }
 
 fun NestedScrollView.setupToolbarScrollListener(
-    toolbar: Toolbar
+    toolbar: Toolbar,
 ) {
     setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
         val maxElevationScroll = 200
@@ -286,3 +302,47 @@ val View.centerX: Int
 
 val View.centerY: Int
     get() = (y + height / 2).toInt()
+
+fun View.hapticClicks(): Flow<Unit> = callbackFlow {
+    setOnClickListener {
+        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        runCatching { offer(Unit) }.getOrDefault(false)
+    }
+    awaitClose { setOnClickListener(null) }
+}.conflate()
+
+fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) = setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+    if (actionId == imeActionId) {
+        action()
+        return@OnEditorActionListener true
+    }
+    false
+})
+
+@RequiresApi(Build.VERSION_CODES.R)
+fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
+    val deferringListener = RootViewDeferringInsetsCallback(
+        persistentInsetTypes = WindowInsets.Type.systemBars(),
+        deferredInsetTypes = WindowInsets.Type.ime(),
+        setPaddingTop = false
+    )
+
+    root.setWindowInsetsAnimationCallback(deferringListener)
+    root.setOnApplyWindowInsetsListener(deferringListener)
+
+    translatableViews.forEach {
+        it.setWindowInsetsAnimationCallback(
+            TranslateDeferringInsetsAnimationCallback(
+                view = it,
+                persistentInsetTypes = WindowInsets.Type.systemBars(),
+                deferredInsetTypes = WindowInsets.Type.ime(),
+                dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+            )
+        )
+    }
+
+    setWindowInsetsAnimationCallback(
+        ControlFocusInsetsAnimationCallback(this)
+    )
+}
+
