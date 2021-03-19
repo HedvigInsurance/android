@@ -9,4 +9,4 @@
         app:drawableStartCompat="@drawable/ic_apartment"
         android:drawablePadding="@dimen/base_margin_double"
         android:textAppearance="@style/Hedvig.TextAppearance.Subtitle1"
-        android:text="Change your address" />
+        android:text="@string/home_tab.editing_section_change_address_label" />

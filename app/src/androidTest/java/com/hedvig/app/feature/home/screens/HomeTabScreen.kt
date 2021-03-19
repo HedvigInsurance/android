@@ -92,7 +92,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         val retry = KButton(parent) { withId(R.id.retry) }
     }
 
-    class ChangeAddressItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
-        val changeAddressButton = KButton(parent) { withId(R.id.change_address_button) }
+    class ChangeAddressItem(parent: Matcher<View>) : KRecyclerItem<ChangeAddressItem>(parent) {
+        val changeAddressButton = KTextView(parent) { withMatcher(parent) }
     }
 }
