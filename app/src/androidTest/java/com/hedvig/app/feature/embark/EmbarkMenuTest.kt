@@ -8,12 +8,14 @@ import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.TextActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
+import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
@@ -33,6 +35,9 @@ class EmbarkMenuTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val marketRule = MarketRule(Market.NO)
 
     val authIntent = KIntent {
         hasComponent(ZignSecAuthenticationActivity::class.java.name)
