@@ -12,10 +12,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.util.TypedValue
 import android.view.View
-import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AttrRes
@@ -23,7 +21,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -80,7 +77,8 @@ fun Context.hideKeyboard(view: View) {
 }
 
 suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
-    if (inputView.rootView.rootWindowInsets?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
+    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
+    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
         hideKeyboard(inputView)
         delay(delayMillis)
     }
