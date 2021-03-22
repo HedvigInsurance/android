@@ -215,9 +215,9 @@ val applicationModule = module {
             .builder()
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
-            .subscriptionConnectionParams(
+            .subscriptionConnectionParams {
                 SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
-            )
+            }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
                     BuildConfig.WS_GRAPHQL_URL,
