@@ -78,21 +78,18 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-@RequiresApi(Build.VERSION_CODES.R)
-suspend fun Context.hideKeyboardIfVisible(view: View, inputView: View, delayMillis: Long = 0) {
-    if (view.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
-        hideKeyboard(inputView)
-        delay(delayMillis)
-    }
+suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+    hideKeyboard(inputView)
+    delay(delayMillis)
 }
 
 fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {
     val startActivity = Intent(this, activity)
     startActivity.flags =
         Intent.FLAG_ACTIVITY_NEW_TASK or
-        Intent.FLAG_ACTIVITY_CLEAR_TASK or
-        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-        Intent.FLAG_ACTIVITY_SINGLE_TOP
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
     val pendingIntentId = 56665 // Randomly chosen identifier, this number has no significance.
     val pendingIntent =
         PendingIntent.getActivity(

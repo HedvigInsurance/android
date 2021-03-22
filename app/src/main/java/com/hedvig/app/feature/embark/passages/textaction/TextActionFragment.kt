@@ -23,9 +23,12 @@ import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.feature.embark.validationCheck
-import com.hedvig.app.util.extensions.hideKeyboardIfVisible
+import com.hedvig.app.util.extensions.hideKeyboard
+import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
@@ -79,12 +82,11 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
         }
 
         binding.apply {
-
             whenApiVersion(Build.VERSION_CODES.R) {
                 input.setupInsetsForIme(
                     root = root,
                     textActionSubmit,
-                    inputLayout
+                    input
                 )
             }
 
@@ -97,7 +99,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                     setValidationFormatter(mask)
                 }
             }
-    
+
             input.onChange { text ->
                 if (data.mask == null) {
                     textActionSubmit.isEnabled = text.isNotEmpty()
@@ -134,13 +136,10 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
     }
 
     private suspend fun saveAndAnimate(data: TextActionParameter) {
-        whenApiVersion(Build.VERSION_CODES.R) {
-            context?.hideKeyboardIfVisible(
-                view = binding.root,
-                inputView = binding.input,
-                delayMillis = 450
-            )
-        }
+        context?.hideKeyboardWithDelay(
+            inputView = binding.input,
+            delayMillis = KEY_BOARD_DELAY_MILLIS
+        )
         binding.textActionSubmit.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         val inputText = binding.input.text.toString()
         val unmasked = unmask(inputText, data.mask)
