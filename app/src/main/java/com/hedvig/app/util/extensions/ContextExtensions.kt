@@ -12,10 +12,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.util.TypedValue
 import android.view.View
-import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AttrRes
@@ -23,13 +21,13 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
@@ -78,9 +76,9 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-@RequiresApi(Build.VERSION_CODES.R)
-suspend fun Context.hideKeyboardIfVisible(view: View, inputView: View, delayMillis: Long = 0) {
-    if (view.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
+suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
+    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
         hideKeyboard(inputView)
         delay(delayMillis)
     }
@@ -90,9 +88,9 @@ fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.ja
     val startActivity = Intent(this, activity)
     startActivity.flags =
         Intent.FLAG_ACTIVITY_NEW_TASK or
-        Intent.FLAG_ACTIVITY_CLEAR_TASK or
-        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-        Intent.FLAG_ACTIVITY_SINGLE_TOP
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
     val pendingIntentId = 56665 // Randomly chosen identifier, this number has no significance.
     val pendingIntent =
         PendingIntent.getActivity(

@@ -11,8 +11,10 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.util.extensions.hideKeyboardIfVisible
+import com.hedvig.app.util.extensions.hideKeyboard
+import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
@@ -74,13 +76,10 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     }
 
     private suspend fun saveAndAnimate(data: TextActionSetParameter) {
-        whenApiVersion(Build.VERSION_CODES.R) {
-            context?.hideKeyboardIfVisible(
-                view = binding.root,
-                inputView = binding.inputRecycler,
-                delayMillis = 450
-            )
-        }
+        context?.hideKeyboardWithDelay(
+            inputView = binding.inputRecycler,
+            delayMillis = KEY_BOARD_DELAY_MILLIS
+        )
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
             val allInput = inputs.values.joinToString(" ")

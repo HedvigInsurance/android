@@ -12,8 +12,11 @@ import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.util.extensions.hideKeyboardIfVisible
+import com.hedvig.app.util.extensions.hideKeyboard
+import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
@@ -80,13 +83,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
     }
 
     private suspend fun saveAndAnimate() {
-        whenApiVersion(Build.VERSION_CODES.R) {
-            context?.hideKeyboardIfVisible(
-                view = binding.root,
-                inputView = binding.input,
-                delayMillis = 450
-            )
-        }
+        context?.hideKeyboardWithDelay(
+            inputView = binding.input,
+            delayMillis = KEY_BOARD_DELAY_MILLIS
+        )
 
         val inputText = binding.input.text.toString()
         model.putInStore("${data.passageName}Result", inputText)
