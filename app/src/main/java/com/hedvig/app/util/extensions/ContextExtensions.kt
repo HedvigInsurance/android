@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
@@ -79,12 +80,7 @@ fun Context.hideKeyboard(view: View) {
 }
 
 suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (inputView.rootView.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
-            hideKeyboard(inputView)
-            delay(delayMillis)
-        }
-    } else {
+    if (inputView.rootView.rootWindowInsets?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
         hideKeyboard(inputView)
         delay(delayMillis)
     }
