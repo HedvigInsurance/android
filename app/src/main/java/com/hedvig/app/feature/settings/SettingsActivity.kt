@@ -86,7 +86,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                     requireContext().showAlert(
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
-                        positiveLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_OK,
+                        positiveLabel = R.string.ALERT_OK,
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                         positiveAction = {
                             marketManager.market = null
