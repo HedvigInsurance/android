@@ -79,8 +79,15 @@ fun Context.hideKeyboard(view: View) {
 }
 
 suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
-    hideKeyboard(inputView)
-    delay(delayMillis)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (inputView.rootView.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true) {
+            hideKeyboard(inputView)
+            delay(delayMillis)
+        }
+    } else {
+        hideKeyboard(inputView)
+        delay(delayMillis)
+    }
 }
 
 fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {
