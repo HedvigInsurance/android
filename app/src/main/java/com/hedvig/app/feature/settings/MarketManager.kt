@@ -57,5 +57,5 @@ class MarketManagerImpl(
     }
 
     override fun hasSelectedMarket() = sharedPreferences
-        .getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
+        .getString(Market.MARKET_SHARED_PREF, null) != null
 }

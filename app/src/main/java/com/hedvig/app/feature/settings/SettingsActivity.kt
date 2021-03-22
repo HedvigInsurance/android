@@ -90,10 +90,6 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
                         positiveAction = {
                             marketManager.market = null
-                            requireContext().storeBoolean(
-                                MarketingActivity.HAS_SELECTED_MARKET,
-                                false
-                            )
                             userViewModel.logout {
                                 requireContext().storeBoolean(
                                     LoginStatusService.IS_VIEWING_OFFER,
