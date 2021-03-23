@@ -34,11 +34,22 @@ fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
     )
 }
 
-fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) =
+fun TextView.onImeAction(
+    imeActionId: Int = EditorInfo.IME_ACTION_DONE,
+    triggerOnEnter: Boolean = true,
+    action: () -> Unit,
+) {
     setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
         if (actionId == imeActionId) {
             action()
             return@OnEditorActionListener true
         }
+        if (triggerOnEnter && actionId == EditorInfo.IME_NULL) {
+            action()
+            return@OnEditorActionListener true
+        }
         false
     })
+}
+// TODO: Add listener to enter-key as well.
+
