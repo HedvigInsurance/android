@@ -5,17 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- TODO: Fix style, text color in input is wrong -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/base_margin_triple"
-        android:hint="@string/simple_sign_login.text_field.label"
-        app:helperText="@string/simple_sign_login.text_field.helper_text"
         app:layout_constraintBottom_toTopOf="@id/signIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:helperText="@string/simple_sign_login.text_field.helper_text"
+        tools:hint="@string/simple_sign_login.text_field.label">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputText"

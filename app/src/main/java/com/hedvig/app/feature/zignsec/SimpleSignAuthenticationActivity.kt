@@ -298,7 +298,19 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
 
-            // TODO: Update texts based on market, when we have the translations
+
+            when (data?.market) {
+                Market.NO -> {
+                    input.setHint(R.string.simple_sign_login_text_field_label)
+                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text)
+                }
+                Market.DK -> {
+                    input.setHint(R.string.simple_sign_login_text_field_label_dk)
+                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
+                }
+                else -> {
+                }
+            }
 
             inputText.apply {
                 doOnTextChanged { text, _, _, _ -> model.setInput(text) }
