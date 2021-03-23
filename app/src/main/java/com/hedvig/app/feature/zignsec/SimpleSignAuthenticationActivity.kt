@@ -11,6 +11,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.os.bundleOf
+import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -43,6 +44,8 @@ import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.setHelperText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_zign_sec_authentication.*
@@ -216,7 +219,16 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        binding.toolbar.apply {
+            doOnApplyWindowInsets { view, insets, initialState ->
+                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+            }
+            setNavigationOnClickListener { finish() }
+        }
+        binding.container.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+        }
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(R.id.container, IdentityInputFragment.newInstance(data))
@@ -298,7 +310,6 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
-
             when (data?.market) {
                 Market.NO -> {
                     input.setHint(R.string.simple_sign_login_text_field_label)
@@ -316,13 +327,15 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
                 doOnTextChanged { text, _, _, _ -> model.setInput(text) }
                 onImeAction { startZignSecIfValid() }
             }
-            model.isValid.observe(viewLifecycleOwner) {
+            model.isValid.observe(viewLifecycleOwner) { isValid ->
                 if (model.isSubmitting.value != true) {
-                    signIn.isEnabled = it
+                    signIn.isEnabled = isValid
                 }
             }
             model.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
-                signIn.isEnabled = !isSubmitting
+                if (isSubmitting) {
+                    signIn.isEnabled = false
+                }
             }
 
             signIn.setHapticClickListener {
