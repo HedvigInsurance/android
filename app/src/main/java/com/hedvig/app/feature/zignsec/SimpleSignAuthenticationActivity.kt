@@ -40,6 +40,7 @@ import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.onImeAction
+import com.hedvig.app.util.extensions.setHelperText
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -297,7 +298,6 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
-
 
             when (data?.market) {
                 Market.NO -> {
