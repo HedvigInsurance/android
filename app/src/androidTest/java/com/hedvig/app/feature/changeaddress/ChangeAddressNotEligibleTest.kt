@@ -16,7 +16,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class ChangeAddressNotEligibleTest: TestCase() {
+class ChangeAddressNotEligibleTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
@@ -31,7 +31,7 @@ class ChangeAddressNotEligibleTest: TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() {
+    fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() = run {
         activityRule.launch(ChangeAddressActivity.newInstance(context()))
 
         ChangeAddressScreen {

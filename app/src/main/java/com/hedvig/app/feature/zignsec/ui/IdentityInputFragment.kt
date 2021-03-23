@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.IdentityInputFragmentBinding
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationData
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.util.extensions.onImeAction
@@ -35,11 +36,11 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
             when (data?.market) {
-                com.hedvig.app.feature.settings.Market.NO -> {
+                Market.NO -> {
                     input.setHint(com.hedvig.app.R.string.simple_sign_login_text_field_label)
                     input.setHelperText(com.hedvig.app.R.string.simple_sign_login_text_field_helper_text)
                 }
-                com.hedvig.app.feature.settings.Market.DK -> {
+                Market.DK -> {
                     input.setHint(com.hedvig.app.R.string.simple_sign_login_text_field_label_dk)
                     input.setHelperText(com.hedvig.app.R.string.simple_sign_login_text_field_helper_text_dk)
                 }
