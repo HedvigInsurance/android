@@ -129,8 +129,6 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.SubscribeToAuthStatusUseCase
-import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
-import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -285,7 +283,6 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
@@ -417,7 +414,6 @@ val repositoriesModule = module {
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
-    single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
