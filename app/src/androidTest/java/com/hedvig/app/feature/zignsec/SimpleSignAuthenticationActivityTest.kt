@@ -4,6 +4,7 @@ import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.text.KButton
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.screens.KScreen
@@ -14,6 +15,9 @@ import org.junit.Test
 class SimpleSignAuthenticationActivityTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(SimpleSignAuthenticationActivity::class.java)
+
+    @get:Rule
+    val apolloMockServerRule = ApolloMockServerRule()
 
     @Test
     fun shouldValidatePersonalIdentificationNumbersForDenmark() = run {

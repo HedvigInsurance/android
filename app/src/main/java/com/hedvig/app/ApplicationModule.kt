@@ -222,7 +222,7 @@ val applicationModule = module {
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
-                    BuildConfig.WS_GRAPHQL_URL,
+                    get<HedvigApplication>().graphqlSubscriptionUrl,
                     get<OkHttpClient>()
                 )
             )

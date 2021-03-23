@@ -4,6 +4,7 @@ import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
 import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
 import com.hedvig.app.TestApplication
+import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -17,6 +18,13 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
     MockWebServer().apply {
         dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
+                if (request.headers.find { it.first == "Upgrade" && it.second == "websocket" } != null) {
+                    return handleWebSocket()
+                }
+                return handleHttp(request)
+            }
+
+            private fun handleHttp(request: RecordedRequest): MockResponse {
                 val body = request.body.peek().readUtf8()
                 val bodyAsJson = JSONObject(body)
                 val query = bodyAsJson.getString("query")
@@ -44,6 +52,9 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
                     is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
                 }
             }
+
+            private fun handleWebSocket() = MockResponse()
+                .withWebSocketUpgrade(object : WebSocketListener() {})
         }
     }
 
