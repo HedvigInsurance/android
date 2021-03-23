@@ -126,9 +126,9 @@ import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import com.hedvig.app.feature.zignsec.StartDanishAuthUseCase
-import com.hedvig.app.feature.zignsec.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.SubscribeToAuthStatusUseCase
+import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
