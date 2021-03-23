@@ -10,7 +10,8 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.zignsec.ZignSecAuthenticationActivity
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -40,7 +41,7 @@ class EmbarkMenuTest : TestCase() {
     val marketRule = MarketRule(Market.NO)
 
     val authIntent = KIntent {
-        hasComponent(ZignSecAuthenticationActivity::class.java.name)
+        hasComponent(SimpleSignAuthenticationActivity::class.java.name)
     }
 
     val appInfoIntent = KIntent {
