@@ -45,7 +45,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_zign_sec_authentication.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -69,7 +68,6 @@ class StartDanishAuthUseCase(
             is QueryResult.Error -> SimpleSignStartAuthResult.Error
             is QueryResult.Success -> {
                 val redirectUrl = response.data.danishBankIdAuth.redirectUrl
-                val authState = apolloClient.subscribe(AuthStatusSubscription()).toFlow()
                 SimpleSignStartAuthResult.Success(redirectUrl)
             }
         }
@@ -91,7 +89,7 @@ class StartNorwegianAuthUseCase(
 class SubscribeToAuthStatusUseCase(
     private val apolloClient: ApolloClient,
 ) {
-    suspend operator fun invoke() = apolloClient.subscribe(AuthStatusSubscription()).toFlow()
+    operator fun invoke() = apolloClient.subscribe(AuthStatusSubscription()).toFlow()
 }
 
 class SimpleSignAuthenticationViewModel(
@@ -100,7 +98,6 @@ class SimpleSignAuthenticationViewModel(
     private val startNorwegianAuthUseCase: StartNorwegianAuthUseCase,
     private val subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
 ) : ViewModel() {
-    private var subscription: Job? = null
     private val _input = MutableLiveData("")
     val input: LiveData<String> = _input
     val isValid = input.map {
@@ -110,6 +107,9 @@ class SimpleSignAuthenticationViewModel(
             else -> false
         }
     }
+
+    private val _isSubmitting = MutableLiveData(false)
+    val isSubmitting: LiveData<Boolean> = _isSubmitting
 
     private val _zignSecUrl = MutableLiveData<String>()
     val zignSecUrl: LiveData<String> = _zignSecUrl
@@ -130,7 +130,6 @@ class SimpleSignAuthenticationViewModel(
     init {
         viewModelScope.launch {
             subscribeToAuthStatusUseCase().onEach { response ->
-                e { "status: ${response.data?.authStatus}" }
                 when (response.data?.authStatus?.status) {
                     AuthState.SUCCESS -> {
                         _events.postValue(Event.Success)
@@ -159,6 +158,10 @@ class SimpleSignAuthenticationViewModel(
     }
 
     fun startZignSec() {
+        if (isSubmitting.value == true) {
+            return
+        }
+        _isSubmitting.value = true
         when (data.market) {
             Market.NO -> {
                 val nationalIdentityNumber = input.value ?: return
@@ -186,8 +189,8 @@ class SimpleSignAuthenticationViewModel(
             SimpleSignStartAuthResult.Error -> {
                 _events.postValue(Event.Error)
             }
-
         }
+        _isSubmitting.postValue(false)
     }
 
     fun restart() {
@@ -297,9 +300,18 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
 
             // TODO: Update texts based on market, when we have the translations
 
-            inputText.doOnTextChanged { text, _, _, _ -> model.setInput(text) }
-            inputText.onImeAction { startZignSecIfValid() }
-            model.isValid.observe(viewLifecycleOwner) { signIn.isEnabled = it }
+            inputText.apply {
+                doOnTextChanged { text, _, _, _ -> model.setInput(text) }
+                onImeAction { startZignSecIfValid() }
+            }
+            model.isValid.observe(viewLifecycleOwner) {
+                if (model.isSubmitting.value != true) {
+                    signIn.isEnabled = it
+                }
+            }
+            model.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
+                signIn.isEnabled = !isSubmitting
+            }
 
             signIn.setHapticClickListener {
                 startZignSecIfValid()

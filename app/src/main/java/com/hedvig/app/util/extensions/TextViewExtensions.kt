@@ -1,6 +1,7 @@
 package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
+import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -39,17 +40,15 @@ fun TextView.onImeAction(
     triggerOnEnter: Boolean = true,
     action: () -> Unit,
 ) {
-    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, keyEvent ->
         if (actionId == imeActionId) {
             action()
             return@OnEditorActionListener true
         }
-        if (triggerOnEnter && actionId == EditorInfo.IME_NULL) {
+        if (triggerOnEnter && actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN) {
             action()
             return@OnEditorActionListener true
         }
         false
     })
 }
-// TODO: Add listener to enter-key as well.
-
