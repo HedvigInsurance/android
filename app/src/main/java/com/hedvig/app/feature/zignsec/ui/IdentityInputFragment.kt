@@ -13,6 +13,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationData
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.setHelperText
+import com.hedvig.app.util.extensions.setMaxLength
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -37,12 +38,16 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
         with(binding) {
             when (data?.market) {
                 Market.NO -> {
-                    input.setHint(com.hedvig.app.R.string.simple_sign_login_text_field_label)
-                    input.setHelperText(com.hedvig.app.R.string.simple_sign_login_text_field_helper_text)
+                    input.setHint(R.string.simple_sign_login_text_field_label)
+                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text)
+                    inputText.setMaxLength(11)
+                    signIn.setText(R.string.simple_sign_sign_in)
                 }
                 Market.DK -> {
-                    input.setHint(com.hedvig.app.R.string.simple_sign_login_text_field_label_dk)
-                    input.setHelperText(com.hedvig.app.R.string.simple_sign_login_text_field_helper_text_dk)
+                    input.setHint(R.string.simple_sign_login_text_field_label_dk)
+                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
+                    inputText.setMaxLength(10)
+                    signIn.setText(R.string.simple_sign_sign_in_dk)
                 }
                 else -> {
                 }
