@@ -39,14 +39,16 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
             adapter.submitList(
                 listOf(
-                    MultiAction.AddButton {
-                        adapter.submitList(
-                            adapter.currentList + MultiAction.Component("Garage", "36 sqm * water", ::removeComponent)
-                        )
-                    },
+                    MultiAction.AddButton(::showAddBuildingSheet),
                     MultiAction.Component("Garage", "36 sqm * water", ::removeComponent)
                 ))
         }
+    }
+
+    private fun showAddBuildingSheet() {
+        AddBuildingBottomSheet
+            .newInstance(AddBuildingParams(null, null, false))
+            .show(childFragmentManager, "bottomsheet")
     }
 
     private fun removeComponent() {

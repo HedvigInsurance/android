@@ -56,7 +56,6 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
-        android:enabled="false"
         android:text="@string/continue_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

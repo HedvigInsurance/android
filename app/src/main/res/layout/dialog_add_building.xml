@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/base_margin">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/bottom_sheet_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="Add building"
+        android:textAppearance="?textAppearanceHeadline5" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:hint="Building type"
+        android:orientation="horizontal"
+        app:boxBackgroundColor="?colorSurface"
+        app:endIconDrawable="@drawable/ic_expand">
+
+        <AutoCompleteTextView
+            android:id="@+id/filled_exposed_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:hint="Size">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@id/phoneNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            tools:hint="Size"
+            tools:text="12" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin"
+        android:padding="@dimen/base_margin"
+        android:text="Water"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+    <Button
+        android:id="@+id/continueButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:enabled="false"
+        android:text="Save building"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</LinearLayout>
