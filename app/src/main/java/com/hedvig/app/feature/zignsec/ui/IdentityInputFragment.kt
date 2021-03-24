@@ -49,6 +49,7 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
             }
 
             inputText.apply {
+                requestFocus()
                 doOnTextChanged { text, _, _, _ -> model.setInput(text) }
                 onImeAction { startZignSecIfValid() }
             }
