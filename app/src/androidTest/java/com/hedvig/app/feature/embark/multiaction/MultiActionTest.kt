@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.multiaction
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.app.feature.embark.screens.MultiActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTI_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -26,11 +25,21 @@ class MultiActionTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldRenderNumberAction() = run {
+    fun addBuildingButtonShouldShowBottomSheet() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
         MultiActionScreen {
+            multiActionList {
+                childAt<MultiActionScreen.AddBuildingButton>(0) {
+                    click()
+                }
+            }
+        }
 
+        AddBuildingBottomSheetScreen {
+            dropDownMenu {
+                isVisible()
+            }
         }
     }
 }

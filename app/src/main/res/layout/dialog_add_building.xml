@@ -24,6 +24,7 @@
         android:textAppearance="?textAppearanceHeadline5" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dropdown_menu"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

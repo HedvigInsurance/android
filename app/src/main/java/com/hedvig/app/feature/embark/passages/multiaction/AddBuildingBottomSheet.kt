@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAddBuildingBinding
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.android.parcel.Parcelize
-
 
 class AddBuildingBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(DialogAddBuildingBinding::bind)
