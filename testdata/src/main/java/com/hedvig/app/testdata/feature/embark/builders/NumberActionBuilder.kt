@@ -30,5 +30,6 @@ data class NumberActionBuilder(
         ),
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
+        asEmbarkMultiAction = null,
     )
 }

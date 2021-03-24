@@ -150,6 +150,42 @@ query EmbarkStory($name: String!, $locale: String!) {
             ...EmbarkLinkFragment
           }
         }
+        ... on EmbarkMultiAction {
+          data {
+            components {
+              ... on EmbarkNumberAction {
+                data {
+                  key
+                  placeholder
+                  unit
+                  label
+                  maxValue
+                  minValue
+                  link {
+                    ...EmbarkLinkFragment
+                  }
+                }
+              }
+              ... on EmbarkDropdownAction {
+                data {
+                  label
+                  key
+                  options {
+                    value
+                    text
+                  }
+                }
+              }
+              ... on EmbarkSwitchAction {
+                data {
+                  label
+                  key
+                  defaultValue
+                }
+              }
+            }
+          }
+        }
       }
       api {
         ...ApiFragment

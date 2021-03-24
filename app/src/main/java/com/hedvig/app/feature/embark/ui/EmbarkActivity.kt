@@ -24,6 +24,13 @@ import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
+import com.hedvig.app.feature.embark.passages.multiaction.Dropdown
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
+import com.hedvig.app.feature.embark.passages.multiaction.Number
+import com.hedvig.app.feature.embark.passages.multiaction.Option
+import com.hedvig.app.feature.embark.passages.multiaction.Switch
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
@@ -275,6 +282,46 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 datePickerAction.next.fragments.embarkLinkFragment.name
             )
             return DatePickerFragment.newInstance(params)
+        }
+
+        passage?.action?.asEmbarkMultiAction?.let { multiAction ->
+            val params = MultiActionParams(
+                passage.messages.map { it.fragments.messageFragment.text },
+                passage.name,
+                multiAction.data.components.map {
+                    MultiActionComponent(
+                        dropdown = it.asEmbarkDropdownAction?.data?.let { dropdownData ->
+                            Dropdown(
+                                dropdownData.key,
+                                dropdownData.label,
+                                dropdownData.options.map {
+                                    Option(it.text, it.value)
+                                }
+                            )
+                        },
+                        switch = it.asEmbarkSwitchAction?.data?.let { switchData ->
+                            Switch(
+                                switchData.key,
+                                switchData.label,
+                                switchData.defaultValue
+                            )
+                        },
+                        number = it.asEmbarkNumberAction1?.data?.let { numberData ->
+                            Number(
+                                numberData.key,
+                                numberData.label,
+                                numberData.placeholder,
+                                numberData.unit,
+                                numberData.maxValue,
+                                numberData.minValue,
+                                numberData.link.fragments.embarkLinkFragment.name,
+                                numberData.link.fragments.embarkLinkFragment.label,
+                            )
+                        }
+                    )
+                }
+            )
+            return MultiActionFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()

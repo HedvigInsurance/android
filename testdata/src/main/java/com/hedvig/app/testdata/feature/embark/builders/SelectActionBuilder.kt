@@ -18,6 +18,7 @@ data class SelectActionBuilder(
         asEmbarkNumberAction = null,
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
+        asEmbarkMultiAction = null,
     )
 }
 
