@@ -27,16 +27,11 @@ class MarketPickerMockActivity : MockActivity() {
         }
     )
     private var originalMarket: Market? = null
-    private var originalShouldOpenMarketSelected = false
-
     private val marketManager by inject<MarketManager>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
         originalMarket = marketManager.market
-        originalShouldOpenMarketSelected =
-            pref.getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
     }
 
     @SuppressLint("ApplySharedPref") // Needed
@@ -46,7 +41,6 @@ class MarketPickerMockActivity : MockActivity() {
         clickableItem("Market: SE /w Swedish") {
             marketManager.market = Market.SE
             setLanguage(Language.SV_SE)
-            storeBoolean(MarketingActivity.HAS_SELECTED_MARKET, true)
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
             )
@@ -54,7 +48,6 @@ class MarketPickerMockActivity : MockActivity() {
         clickableItem("Market: NO /w Norwegian") {
             marketManager.market = Market.NO
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
-            storeBoolean(MarketingActivity.HAS_SELECTED_MARKET, true)
             setLanguage(Language.NB_NO)
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -63,7 +56,6 @@ class MarketPickerMockActivity : MockActivity() {
         clickableItem("Market: not selected. SE IP Address") {
             marketManager.market = null
             removeLanguage()
-            pref.edit().remove(MarketingActivity.HAS_SELECTED_MARKET).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = true
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -72,7 +64,6 @@ class MarketPickerMockActivity : MockActivity() {
         clickableItem("Preselected geo market not avalible") {
             marketManager.market = null
             removeLanguage()
-            pref.edit().remove(MarketingActivity.HAS_SELECTED_MARKET).commit()
             MockMarketPickerViewModel.AVAILABLE_GEO_MARKET = false
             startActivity(
                 MarketingActivity.newInstance(this@MarketPickerMockActivity)
@@ -111,9 +102,5 @@ class MarketPickerMockActivity : MockActivity() {
         originalMarket?.let {
             marketManager.market = it
         }
-        storeBoolean(
-            MarketingActivity.HAS_SELECTED_MARKET,
-            originalShouldOpenMarketSelected
-        )
     }
 }
