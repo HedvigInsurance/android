@@ -22,7 +22,7 @@ class SimpleSignAuthenticationViewModel(
     private val data: SimpleSignAuthenticationData,
     private val startDanishAuthUseCase: StartDanishAuthUseCase,
     private val startNorwegianAuthUseCase: StartNorwegianAuthUseCase,
-    private val subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
+    subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
 ) : ViewModel() {
     private val _input = MutableLiveData("")
     val input: LiveData<String> = _input
@@ -54,25 +54,24 @@ class SimpleSignAuthenticationViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            subscribeToAuthStatusUseCase().onEach { response ->
-                when (response.data?.authStatus?.status) {
-                    AuthState.SUCCESS -> {
-                        _events.postValue(Event.Success)
-                    }
-                    AuthState.FAILED -> {
-                        _events.postValue(Event.Error)
-                    }
-                    else -> {
-                    }
+        subscribeToAuthStatusUseCase().onEach { response ->
+            when (response.data?.authStatus?.status) {
+                AuthState.SUCCESS -> {
+                    _events.postValue(Event.Success)
                 }
-            }
-                .catch { ex ->
-                    e(ex)
+                AuthState.FAILED -> {
                     _events.postValue(Event.Error)
                 }
-                .launchIn(this)
+                // INITIATED/IN_PROGRESS are not necessary to address, as this is entirely captured by the WebView-flow.
+                else -> {
+                }
+            }
         }
+            .catch { ex ->
+                e(ex)
+                _events.postValue(Event.Error)
+            }
+            .launchIn(viewModelScope)
     }
 
     fun setInput(text: CharSequence?) {
@@ -80,6 +79,10 @@ class SimpleSignAuthenticationViewModel(
     }
 
     fun authFailed() {
+        _events.value = Event.Error
+    }
+
+    fun invalidMarket() {
         _events.value = Event.Error
     }
 

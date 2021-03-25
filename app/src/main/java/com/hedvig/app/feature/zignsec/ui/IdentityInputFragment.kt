@@ -50,6 +50,8 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
                     signIn.setText(R.string.simple_sign_sign_in_dk)
                 }
                 else -> {
+                    model.invalidMarket()
+                    return
                 }
             }
 
