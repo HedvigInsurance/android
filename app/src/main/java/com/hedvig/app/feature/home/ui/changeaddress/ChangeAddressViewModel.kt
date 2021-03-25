@@ -33,9 +33,9 @@ class ChangeAddressViewModelImpl(
     }
 
     private fun fetchDataAndCreateState() {
+        _viewState.postValue(Loading)
         viewModelScope.launch {
-            _viewState.value = Loading
-            _viewState.value = createViewState()
+            _viewState.postValue(createViewState())
         }
     }
 
@@ -45,11 +45,12 @@ class ChangeAddressViewModelImpl(
         )
     }
 
-    private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState) = when (val upcomingAgreement = getUpcomingAgreement()) {
-        is UpcomingAgreementResult.NoUpcomingAgreementChange -> onNoUpcomingChange()
-        is UpcomingAgreementResult.UpcomingAgreement -> ChangeAddressInProgress(upcomingAgreement)
-        is UpcomingAgreementResult.Error -> UpcomingAgreementError(upcomingAgreement)
-    }
+    private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState) =
+        when (val upcomingAgreement = getUpcomingAgreement()) {
+            is UpcomingAgreementResult.NoUpcomingAgreementChange -> onNoUpcomingChange()
+            is UpcomingAgreementResult.UpcomingAgreement -> ChangeAddressInProgress(upcomingAgreement)
+            is UpcomingAgreementResult.Error -> UpcomingAgreementError(upcomingAgreement)
+        }
 
     private suspend fun getSelfChangeState() = when (val selfChangeEligibility = getSelfChangeEligibility()) {
         SelfChangeEligibilityResult.Eligible -> SelfChangeAddress
@@ -69,6 +70,6 @@ sealed class ViewState {
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
     data class ChangeAddressInProgress(
-        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
+        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement,
     ) : ViewState()
 }
