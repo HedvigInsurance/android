@@ -125,8 +125,10 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
-import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
-import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
+import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -220,7 +222,7 @@ val applicationModule = module {
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
-                    BuildConfig.WS_GRAPHQL_URL,
+                    get<HedvigApplication>().graphqlSubscriptionUrl,
                     get<OkHttpClient>()
                 )
             )
@@ -242,19 +244,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(context, market).language
+        getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -281,9 +283,9 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -412,7 +414,6 @@ val repositoriesModule = module {
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
-    single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
@@ -466,4 +467,7 @@ val localeManagerModule = module {
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get()) }
     single { GetSelfChangeEligibilityUseCase(get()) }
+    single { StartDanishAuthUseCase(get()) }
+    single { StartNorwegianAuthUseCase(get()) }
+    single { SubscribeToAuthStatusUseCase(get()) }
 }

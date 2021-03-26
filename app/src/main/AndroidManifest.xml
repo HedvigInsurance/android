@@ -36,13 +36,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.zignsec.ZignSecAuthenticationActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -293,10 +286,16 @@
             android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
             android:launchMode="singleTask" />
         <activity
-                android:name=".feature.home.ui.changeaddress.ChangeAddressActivity"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-                android:launchMode="singleTask"
-                android:windowSoftInputMode="adjustResize" />
+            android:name=".feature.home.ui.changeaddress.ChangeAddressActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

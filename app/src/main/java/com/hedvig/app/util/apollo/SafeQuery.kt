@@ -21,7 +21,7 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
 }
 
 sealed class QueryResult<T> {
-    data class Success<T>(val data: T): QueryResult<T>()
+    data class Success<T>(val data: T) : QueryResult<T>()
     sealed class Error<T> : QueryResult<T>() {
 
         abstract val message: String?

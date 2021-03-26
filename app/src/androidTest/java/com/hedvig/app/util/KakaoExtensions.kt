@@ -6,6 +6,7 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.test.espresso.assertion.ViewAssertions
 import com.agoda.kakao.bottomnav.KBottomNavigationView
+import com.agoda.kakao.common.utilities.getResourceString
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.picker.date.KDatePicker
@@ -62,3 +63,5 @@ fun KTextInputLayout.hasHelperText(text: String) {
         }
     }
 }
+
+fun KTextInputLayout.hasHelperText(@StringRes resId: Int) = hasHelperText(getResourceString(resId))

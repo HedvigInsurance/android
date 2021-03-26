@@ -1,36 +1,35 @@
-package com.hedvig.app.feature.zignsec
+package com.hedvig.app.feature.zignsec.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.webkit.HttpAuthHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.android.owldroid.type.AuthState
+import androidx.fragment.app.Fragment
+import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.util.extensions.viewBinding
-import e
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_sec_authentication) {
-
-    private val viewModel: ZignSecAuthViewModel by viewModel()
+class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authentication) {
     private val binding by viewBinding(ActivityZignSecAuthenticationBinding::bind)
+    private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.apply {
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    }
 
+    @SuppressLint("SetJavaScriptEnabled") // JavaScript is required for ZignSec to function.
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        with(binding) {
             danishBankIdContainer.apply {
                 settings.apply {
                     javaScriptEnabled = true
@@ -46,8 +45,7 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
                             return true
                         }
                         if (request?.url?.toString()?.contains("failure") == true) {
-                            // TODO: Add UI for the failure case
-                            e { "Failed to log in" }
+                            model.authFailed()
                             return true
                         }
                         request?.url?.toString()?.let { view?.loadUrl(it) }
@@ -64,35 +62,11 @@ class ZignSecAuthenticationActivity : AppCompatActivity(R.layout.activity_zign_s
                     }
                 }
             }
-        }
-
-        viewModel.authStatus.observe(this) { status ->
-            when (status) {
-                AuthState.SUCCESS -> {
-                    startActivity(
-                        LoggedInActivity.newInstance(
-                            this,
-                            withoutHistory = true
-                        )
-                    )
-                }
-                AuthState.FAILED -> {
-                    // TODO: Add UI for the failure case
-                    e { "Failed to log in" }
-                }
-                else -> {
-                    // No-op
-                }
-            }
-        }
-
-        viewModel.redirectUrl.observe(this) { url ->
-            binding.danishBankIdContainer.loadUrl(url)
+            model.zignSecUrl.observe(viewLifecycleOwner) { danishBankIdContainer.loadUrl(it) }
         }
     }
 
     companion object {
-        fun newInstance(context: Context) =
-            Intent(context, ZignSecAuthenticationActivity::class.java)
+        fun newInstance() = ZignSecWebViewFragment()
     }
 }

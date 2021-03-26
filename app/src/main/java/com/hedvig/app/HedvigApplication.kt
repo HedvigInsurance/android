@@ -150,5 +150,6 @@ open class HedvigApplication : Application() {
     }
 
     open val graphqlUrl = BuildConfig.GRAPHQL_URL
+    open val graphqlSubscriptionUrl = BuildConfig.WS_GRAPHQL_URL
     open val isTestBuild = false
 }

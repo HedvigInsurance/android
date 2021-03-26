@@ -33,6 +33,19 @@
         </item>
     </style>
 
+    <style name="Hedvig.Theme.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputLayout.OutlinedBox
+        </item>
+    </style>
+
+    <style name="ThemeOverlay.Hedvig.TextInputLayout.OutlinedBox" parent="">
+        <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText.OutlinedBox</item>
+    </style>
+
+    <style name="Hedvig.Theme.TextInputEditText.OutlinedBox" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
     <style name="Hedvig.Theme.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="materialThemeOverlay">
             @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
@@ -54,10 +67,6 @@
 
     <style name="ThemeOverlay.Hedvig.TextInputEditText" parent="">
         <item name="android:textColor">?colorPrimary</item>
-    </style>
-
-    <style name="Hedvig.Theme.TextInputEditText.OutlinedBox" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
