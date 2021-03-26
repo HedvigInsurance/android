@@ -8,6 +8,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
+import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
@@ -27,6 +28,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -109,6 +111,14 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 it.submitList(LOADING_STATE)
             }
 
+            swipeToRefresh.doOnApplyWindowInsets { _, insets, _ ->
+                swipeToRefresh.setProgressViewOffset(
+                    false,
+                    0,
+                    insets.systemWindowInsetTop + BASE_MARGIN_DOUBLE
+                )
+            }
+
             swipeToRefresh.setOnRefreshListener {
                 referralsViewModel.setRefreshing(true)
                 referralsViewModel.load()
@@ -153,13 +163,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                     R.string.REFERRAL_SMS_MESSAGE,
                                     incentive.format(requireContext(), marketManager.market),
                                     "${
-                                    BuildConfig.WEB_BASE_URL
+                                        BuildConfig.WEB_BASE_URL
                                     }/${
-                                    localeManager.defaultLocale().toWebLocaleTag()
+                                        localeManager.defaultLocale().toWebLocaleTag()
                                     }/forever/${
-                                    Uri.encode(
-                                        code
-                                    )
+                                        Uri.encode(
+                                            code
+                                        )
                                     }"
                                 )
                             )
