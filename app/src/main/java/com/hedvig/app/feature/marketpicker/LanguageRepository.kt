@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.makeLocaleString
+import com.hedvig.app.util.LocaleManager
 import e
 import i
 
@@ -17,13 +18,13 @@ class LanguageRepository(
     private val apolloClient: ApolloClient,
     private val marketManager: MarketManager,
     private val context: Context,
-    private val defaultLocale: Locale
+    private val localeManager: LocaleManager
 ) {
 
     fun uploadLanguage(language: Language) {
         language.apply(context).let {
             val acceptLanguage = makeLocaleString(it, marketManager.market)
-            uploadLanguage(acceptLanguage, defaultLocale)
+            uploadLanguage(acceptLanguage, localeManager.defaultLocale())
         }
     }
 
