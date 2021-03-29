@@ -20,8 +20,6 @@ class MultiActionViewModel(
         listOf(addButton) + components
     }
 
-    val continueEnabled: LiveData<Boolean> = _addedComponents.map { it.isNotEmpty() }
-
     val newComponent = LiveEvent<Component?>()
 
     fun onComponentCreated(component: Component) {

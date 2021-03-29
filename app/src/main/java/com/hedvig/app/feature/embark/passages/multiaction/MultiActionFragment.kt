@@ -54,7 +54,6 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
         }
 
         multiActionViewModel.components.observe(viewLifecycleOwner, adapter::submitList)
-        multiActionViewModel.continueEnabled.observe(viewLifecycleOwner, continueButton::setEnabled)
         multiActionViewModel.newComponent.observe(viewLifecycleOwner, ::showAddBuildingSheet)
 
         binding.continueButton

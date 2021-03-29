@@ -25,21 +25,37 @@ class MultiActionTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun addBuildingButtonShouldShowBottomSheet() = run {
+    fun addComponent() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
 
-        MultiActionScreen {
-            multiActionList {
-                childAt<MultiActionScreen.AddBuildingButton>(0) {
-                    click()
+        step("Press add building to display bottom sheet") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.AddBuildingButton>(0) {
+                        click()
+                    }
                 }
             }
         }
 
-        AddBuildingBottomSheetScreen {
-            dropDownMenu {
-                isVisible()
+        step("Add building") {
+            AddBuildingBottomSheetScreen {
+                dropDownMenu.click()
+                dropDownItem.click()
+                numberInput.typeText("23")
+                continueButton.click()
             }
         }
+
+        step("Check that added building is visible") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.Component>(1) {
+                        title.hasText("Garage")
+                    }
+                }
+            }
+        }
+
     }
 }
