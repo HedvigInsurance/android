@@ -22,27 +22,7 @@ class MultiActionViewModel(
 
     val continueEnabled: LiveData<Boolean> = _addedComponents.map { it.isNotEmpty() }
 
-    private val _newComponent = MutableLiveData<Component?>()
-    val newComponent: LiveData<Component?> = _newComponent.distinctUntilChanged()
-
-    fun onContinue(addToStore: (String, String) -> Unit) {
-        val componentData = multiActionParams.components.first()
-        _addedComponents.value?.forEach { addedComponent ->
-            componentData.number?.key?.let { numberKey ->
-                addToStore(numberKey, addedComponent.input)
-            }
-            componentData.dropdown?.key?.let { dropDownKey ->
-                addToStore(dropDownKey, addedComponent.selectedDropDown)
-            }
-            componentData.switch?.key?.let { switchKey ->
-                addToStore(switchKey, addedComponent.switch.toString())
-            }
-        }
-    }
-
-    private fun createNewComponent(state: Component? = null) {
-        _newComponent.value = state
-    }
+    val newComponent = LiveEvent<Component?>()
 
     fun onComponentCreated(component: Component) {
         _addedComponents.value = if (_addedComponents.value?.find { it.id == component.id } != null) {
@@ -58,8 +38,27 @@ class MultiActionViewModel(
             ?.let(::createNewComponent)
     }
 
+    private fun createNewComponent(state: Component? = null) {
+        newComponent.value = state
+    }
+
     fun onComponentRemoved(id: Long) {
         _addedComponents.value = _addedComponents.value?.filterNot { it.id == id }
+    }
+
+    fun onContinue(addToStore: (String, String) -> Unit) {
+        val componentData = multiActionParams.components.first()
+        _addedComponents.value?.forEach { addedComponent ->
+            componentData.number?.key?.let { numberKey ->
+                addToStore(numberKey, addedComponent.input)
+            }
+            componentData.dropdown?.key?.let { dropDownKey ->
+                addToStore(dropDownKey, addedComponent.selectedDropDown)
+            }
+            componentData.switch?.key?.let { switchKey ->
+                addToStore(switchKey, addedComponent.switch.toString())
+            }
+        }
     }
 }
 

@@ -18,7 +18,7 @@ class AddComponentViewModel(
 
     val input = MutableStateFlow(component?.input)
     val dropDownSelection = MutableStateFlow(component?.selectedDropDown)
-    val switchSelection = MutableStateFlow(component?.switch)
+    val switchSelection = MutableStateFlow(component?.switch ?: multiActionParams.components.first().switch?.defaultValue)
 
     val viewState: LiveData<ViewState> = combine(
         input.debounce(500),
@@ -40,6 +40,7 @@ class AddComponentViewModel(
         id = component?.id ?: UUID.randomUUID().mostSignificantBits,
         selectedDropDown = dropDownSelection.value ?: "",
         input = input.value ?: "",
+        inputUnit = multiActionParams.components.first().number?.unit ?: "",
         switch = switchSelection.value ?: false,
     )
 

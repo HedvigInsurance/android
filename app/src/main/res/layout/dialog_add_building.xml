@@ -36,6 +36,7 @@
         app:endIconDrawable="@drawable/ic_expand">
 
         <AutoCompleteTextView
+            android:textColor="@color/textColorSecondary"
             android:id="@+id/dropdownInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,6 +71,7 @@
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
         android:padding="@dimen/base_margin"
+        android:focusable="false"
         android:text="Water"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 

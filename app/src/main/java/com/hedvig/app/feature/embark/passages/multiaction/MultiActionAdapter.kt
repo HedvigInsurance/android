@@ -53,7 +53,7 @@ class ComponentViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
 
     fun bind(item: MultiAction.Component, clickListener: MultiActionAdapter.ClickListener) {
         title.text = item.selectedDropDown
-        subtitle.text = item.input
+        subtitle.text = "${item.input} ${item.inputUnit}"
         removeButton.setOnClickListener {
             clickListener.onComponentRemove(item.id)
         }

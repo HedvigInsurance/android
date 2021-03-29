@@ -15,6 +15,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAddBuildingBinding
 import com.hedvig.app.feature.embark.passages.multiaction.MultiAction
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
+import com.hedvig.app.util.extensions.hideKeyboard
+import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.android.synthetic.main.dialog_add_building.numberLayout
 import kotlinx.android.synthetic.main.picker_button.continueButton
@@ -62,12 +64,15 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             }
 
             componentSwitch.hint = component.switch?.label
-            componentSwitch.isEnabled = component.switch?.defaultValue ?: false
+            componentSwitch.isChecked = component.switch?.defaultValue ?: false
             componentSwitch.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.switchSelection.value = isChecked
             }
 
             numberLayout.hint = component.number?.label
+            numberInput.onImeAction {
+                requireContext().hideKeyboard(numberInput)
+            }
             numberInput.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable?) {}

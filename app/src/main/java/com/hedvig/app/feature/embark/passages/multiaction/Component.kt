@@ -13,6 +13,7 @@ sealed class MultiAction {
         val id: Long,
         val selectedDropDown: String,
         val input: String,
+        val inputUnit: String,
         val switch: Boolean,
     ) : MultiAction(), Parcelable
 }
