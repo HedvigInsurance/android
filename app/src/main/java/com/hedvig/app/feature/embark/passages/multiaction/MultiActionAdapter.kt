@@ -2,9 +2,7 @@ package com.hedvig.app.feature.embark.passages.multiaction
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +10,12 @@ import com.hedvig.app.R
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 
-class MultiActionAdapter : ListAdapter<MultiAction, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
+class MultiActionAdapter(private val clickListener: ClickListener) : ListAdapter<MultiAction, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
+
+    interface ClickListener {
+        fun onComponentClick(id: Long)
+        fun onComponentRemove(id: Long)
+    }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is MultiAction.AddButton -> R.layout.view_multi_action_add
@@ -28,7 +31,7 @@ class MultiActionAdapter : ListAdapter<MultiAction, MultiActionViewHolder>(Gener
     override fun onBindViewHolder(holder: MultiActionViewHolder, position: Int) = when (holder) {
         is ComponentViewHolder -> {
             val item = (getItem(position) as MultiAction.Component)
-            holder.bind(item)
+            holder.bind(item, clickListener)
         }
         is ButtonViewHolder -> {
             val item = (getItem(position) as MultiAction.AddButton)
@@ -48,28 +51,16 @@ class ComponentViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
     private val title = itemView.findViewById<TextView>(R.id.title)
     private val subtitle = itemView.findViewById<TextView>(R.id.subtitle)
 
-    fun bind(item: MultiAction.Component) {
-        title.text = item.title
-        subtitle.text = item.subtitle
+    fun bind(item: MultiAction.Component, clickListener: MultiActionAdapter.ClickListener) {
+        title.text = item.selectedDropDown.value
+        subtitle.text = item.input.value
         removeButton.setOnClickListener {
-            item.onRemove()
+            clickListener.onComponentRemove(item.id)
+        }
+        itemView.setOnClickListener {
+            clickListener.onComponentClick(item.id)
         }
     }
-
 }
 
-class ButtonViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
-
-}
-
-sealed class MultiAction {
-    data class AddButton(
-        val onClick: () -> Unit
-    ) : MultiAction()
-
-    data class Component(
-        val title: String,
-        val subtitle: String,
-        val onRemove: () -> Unit
-    ) : MultiAction()
-}
+class ButtonViewHolder(itemView: View) : MultiActionViewHolder(itemView)

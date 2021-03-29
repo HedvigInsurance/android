@@ -32,7 +32,7 @@ data class Option(
 
 @Parcelize
 data class Switch(
-    val text: String,
+    val key: String,
     val label: String,
     val defaultValue: Boolean
 ) : Parcelable
