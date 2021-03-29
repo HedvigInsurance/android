@@ -3,27 +3,22 @@ package com.hedvig.app.feature.embark.passages.multiaction.add
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.hedvig.app.feature.embark.passages.multiaction.ComponentState
 import com.hedvig.app.feature.embark.passages.multiaction.MultiAction
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.LiveEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.startWith
 import java.util.UUID
 
 class AddComponentViewModel(
     private val multiActionParams: MultiActionParams,
-    private val componentState: ComponentState?
+    private val component: MultiAction.Component?
 ) : ViewModel() {
 
-    val input = MutableStateFlow(componentState?.input)
-    val dropDownSelection = MutableStateFlow(componentState?.dropDownSelection)
-    val switchSelection = MutableStateFlow(componentState?.switch)
+    val input = MutableStateFlow(component?.input)
+    val dropDownSelection = MutableStateFlow(component?.selectedDropDown)
+    val switchSelection = MutableStateFlow(component?.switch)
 
     val viewState: LiveData<ViewState> = combine(
         input.debounce(500),
@@ -42,15 +37,9 @@ class AddComponentViewModel(
     }
 
     private fun createComponent() = MultiAction.Component(
-        id = componentState?.id ?: UUID.randomUUID().mostSignificantBits,
-        selectedDropDown = MultiAction.Component.KeyValue(
-            key = multiActionParams.components.first().dropdown?.key ?: "",
-            value = dropDownSelection.value ?: ""
-        ),
-        input = MultiAction.Component.KeyValue(
-            key = multiActionParams.components.first().number?.key ?: "",
-            value = input.value ?: ""
-        ),
+        id = component?.id ?: UUID.randomUUID().mostSignificantBits,
+        selectedDropDown = dropDownSelection.value ?: "",
+        input = input.value ?: "",
         switch = switchSelection.value ?: false,
     )
 

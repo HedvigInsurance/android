@@ -52,8 +52,8 @@ class ComponentViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
     private val subtitle = itemView.findViewById<TextView>(R.id.subtitle)
 
     fun bind(item: MultiAction.Component, clickListener: MultiActionAdapter.ClickListener) {
-        title.text = item.selectedDropDown.value
-        subtitle.text = item.input.value
+        title.text = item.selectedDropDown
+        subtitle.text = item.input
         removeButton.setOnClickListener {
             clickListener.onComponentRemove(item.id)
         }

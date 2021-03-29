@@ -11,16 +11,9 @@ sealed class MultiAction {
     @Parcelize
     data class Component(
         val id: Long,
-        val selectedDropDown: KeyValue,
-        val input: KeyValue,
+        val selectedDropDown: String,
+        val input: String,
         val switch: Boolean,
-    ) : MultiAction(), Parcelable {
-
-        @Parcelize
-        data class KeyValue(
-            val key: String,
-            val value: String,
-        ) : Parcelable
-    }
+    ) : MultiAction(), Parcelable
 }
 

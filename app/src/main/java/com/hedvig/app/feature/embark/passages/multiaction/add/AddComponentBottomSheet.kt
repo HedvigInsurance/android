@@ -13,10 +13,8 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAddBuildingBinding
-import com.hedvig.app.feature.embark.passages.multiaction.ComponentState
+import com.hedvig.app.feature.embark.passages.multiaction.MultiAction
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
-import com.hedvig.app.util.extensions.view.disable
-import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.android.synthetic.main.dialog_add_building.numberLayout
 import kotlinx.android.synthetic.main.picker_button.continueButton
@@ -25,7 +23,7 @@ import org.koin.core.parameter.parametersOf
 
 class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
-    private val componentState: ComponentState? by lazy {
+    private val componentState: MultiAction.Component? by lazy {
         requireArguments().getParcelable(COMPONENT_STATE)
     }
 
@@ -81,7 +79,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             })
 
             componentState?.let { state ->
-                dropdownInput.setText(state.dropDownSelection, false)
+                dropdownInput.setText(state.selectedDropDown, false)
                 numberInput.setText(state.input)
                 componentSwitch.isChecked = state.switch
                 continueButton.isEnabled = true
@@ -120,7 +118,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
         const val TAG = "changeDateBottomSheet"
 
         fun newInstance(
-            component: ComponentState?,
+            component: MultiAction.Component?,
             multiActionParams: MultiActionParams
         ) = AddComponentBottomSheet().apply {
             arguments = bundleOf(

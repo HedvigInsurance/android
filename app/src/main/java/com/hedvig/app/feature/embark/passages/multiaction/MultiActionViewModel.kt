@@ -4,7 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import com.hedvig.app.feature.embark.passages.multiaction.MultiAction.*
+import com.hedvig.app.util.LiveEvent
+import com.hedvig.app.util.extensions.replace
 
 class MultiActionViewModel(
     private val multiActionParams: MultiActionParams
@@ -16,14 +20,27 @@ class MultiActionViewModel(
         listOf(addButton) + components
     }
 
-    private val _newComponent = MutableLiveData<ComponentState?>()
-    val newComponent: LiveData<ComponentState?> = _newComponent
+    val continueEnabled: LiveData<Boolean> = _addedComponents.map { it.isNotEmpty() }
 
-    fun onContinue() {
+    private val _newComponent = MutableLiveData<Component?>()
+    val newComponent: LiveData<Component?> = _newComponent.distinctUntilChanged()
 
+    fun onContinue(addToStore: (String, String) -> Unit) {
+        val componentData = multiActionParams.components.first()
+        _addedComponents.value?.forEach { addedComponent ->
+            componentData.number?.key?.let { numberKey ->
+                addToStore(numberKey, addedComponent.input)
+            }
+            componentData.dropdown?.key?.let { dropDownKey ->
+                addToStore(dropDownKey, addedComponent.selectedDropDown)
+            }
+            componentData.switch?.key?.let { switchKey ->
+                addToStore(switchKey, addedComponent.switch.toString())
+            }
+        }
     }
 
-    private fun createNewComponent(state: ComponentState? = null) {
+    private fun createNewComponent(state: Component? = null) {
         _newComponent.value = state
     }
 
@@ -36,26 +53,13 @@ class MultiActionViewModel(
     }
 
     fun onComponentClicked(id: Long) {
-        _addedComponents.value?.find { it.id == id }?.let {
-            val state = ComponentState(
-                id = it.id,
-                dropDownSelection = it.selectedDropDown.value,
-                input = it.input.value,
-                switch = it.switch
-            )
-            createNewComponent(state)
-        }
+        _addedComponents.value
+            ?.find { it.id == id }
+            ?.let(::createNewComponent)
     }
 
     fun onComponentRemoved(id: Long) {
         _addedComponents.value = _addedComponents.value?.filterNot { it.id == id }
     }
-
-    fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): List<T> {
-        return map {
-            if (block(it)) newValue else it
-        }
-    }
-
 }
 
