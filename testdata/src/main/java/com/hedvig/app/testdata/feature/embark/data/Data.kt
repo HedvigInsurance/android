@@ -393,7 +393,8 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data2(
-                            placeholder = "First Placeholder",
+                            placeholder = "Placeholder",
+                            title = "Hint",
                             key = "FOO",
                             mask = null
                         )
@@ -401,6 +402,7 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data2(
                             placeholder = "Second Placeholder",
+                            title = "Second Hint",
                             key = "BAR",
                             mask = null
                         )
@@ -426,13 +428,15 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data2(
                             placeholder = "901124-1234",
+                            title = "Personal number",
                             key = "FOO",
                             mask = PERSONAL_NUMBER
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
                         data = EmbarkStoryQuery.Data2(
-                            placeholder = "Email",
+                            placeholder = "example@email.com",
+                            title = "Email",
                             key = "BAR",
                             mask = EMAIL
                         )

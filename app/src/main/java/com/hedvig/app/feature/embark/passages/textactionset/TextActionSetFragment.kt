@@ -13,7 +13,6 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
@@ -93,10 +92,11 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
     private fun textFieldData(data: TextActionSetParameter) =
         data.keys.mapIndexed { index, key ->
             TextFieldData(
-                key,
-                data.placeholders[index],
-                data.mask[index],
-                key?.let { model.getFromStore(it) },
+                key = key,
+                placeholder = data.placeholders[index],
+                hint = data.hints[index],
+                mask = data.mask[index],
+                prefill = key?.let { model.getFromStore(it) },
             )
         }
 

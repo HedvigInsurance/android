@@ -29,7 +29,8 @@ class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone:
         private val binding by viewBinding(EmbarkInputItemBinding::bind)
         fun bind(item: TextFieldData, position: Int, model: TextActionSetViewModel, onDone: () -> Unit) {
             binding.apply {
-                textField.hint = item.placeholder
+                textField.hint = item.hint
+                textField.placeholderText = item.placeholder
                 input.onImeAction {
                     if (model.isValid.value == true) {
                         onDone()
