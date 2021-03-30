@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -41,14 +42,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
         with(binding) {
             root.setEdgeToEdgeSystemUiFlags(true)
-
-            Insetter.builder().setOnApplyInsetsListener { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }.applyToView(toolbar)
-
-            Insetter.builder().setOnApplyInsetsListener { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.paddings.bottom + insets.stableInsetBottom)
-            }.applyToView(continueButton)
+            setupInsets()
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -56,6 +50,18 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         }
 
         observeViewModel()
+    }
+
+    private fun setupInsets() {
+        Insetter.builder().setOnApplyInsetsListener { view, insets, initialState ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = initialState.paddings.top + systemBars.top)
+        }.applyToView(binding.toolbar)
+
+        Insetter.builder().setOnApplyInsetsListener { view, insets, initialState ->
+            val navigationBars = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
+            view.updateMargin(bottom = initialState.paddings.bottom + navigationBars.bottom)
+        }.applyToView(binding.continueButton)
     }
 
     private fun observeViewModel() {
