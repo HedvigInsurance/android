@@ -1,10 +1,13 @@
 package com.hedvig.app.feature.embark
 
+import android.os.Build
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
+import android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.app.util.whenApiVersion
 import java.util.regex.Pattern
 
 const val PERSONAL_NUMBER = "PersonalNumber"
@@ -35,6 +38,9 @@ fun validationCheck(mask: String, text: String) = when (mask) {
 fun TextInputEditText.setInputType(mask: String) {
     if (mask == EMAIL) {
         inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        whenApiVersion(Build.VERSION_CODES.O) {
+            setAutofillHints(AUTOFILL_HINT_EMAIL_ADDRESS)
+        }
     } else if (mask == BIRTH_DATE ||
         mask == BIRTH_DATE_REVERSE ||
         mask == PERSONAL_NUMBER ||
