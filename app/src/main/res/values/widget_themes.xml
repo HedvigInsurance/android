@@ -137,6 +137,7 @@
     </style>
 
     <style name="ThemeOverlay.Hedvig.Embark.Chat.Self" parent="">
+        <item name="android:textColor">?colorOnPrimary</item>
         <item name="android:background">@drawable/embark_chat_bubble_self_background</item>
         <item name="android:paddingStart">@dimen/base_margin_double</item>
         <item name="android:paddingEnd">@dimen/base_margin_double</item>
