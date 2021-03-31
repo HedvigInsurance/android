@@ -2,24 +2,33 @@ package com.hedvig.app.feature.embark.passages.textactionset
 
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.passages.textaction.TextFieldData
+import com.hedvig.app.feature.embark.setInputType
+import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.util.extensions.hideKeyboard
+import com.hedvig.app.feature.embark.validationCheck
+import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
+import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
+import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
+import kotlinx.android.synthetic.main.embark_input_item.input
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -43,23 +52,17 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
 
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                inputRecycler.setupInsetsForIme(
+                inputContainer.setupInsetsForIme(
                     root = root,
                     textActionSubmit,
                     inputLayout
                 )
             }
+            val views = createInputViews()
+            inputContainer.addViews(views)
 
             messages.adapter = MessageAdapter(data.messages)
 
-            val adapter = TextInputSetAdapter(textActionSetViewModel) {
-                viewLifecycleScope.launch {
-                    saveAndAnimate(data)
-                    model.navigateToPassage(data.link)
-                }
-            }
-            adapter.submitList(textFieldData(data))
-            inputRecycler.adapter = adapter
             textActionSubmit.text = data.submitLabel
             textActionSetViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
 
@@ -77,7 +80,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
 
     private suspend fun saveAndAnimate(data: TextActionSetParameter) {
         context?.hideKeyboardWithDelay(
-            inputView = binding.inputRecycler,
+            inputView = binding.inputContainer,
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
         textActionSetViewModel.inputs.value?.let { inputs ->
@@ -90,15 +93,57 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
-    private fun textFieldData(data: TextActionSetParameter) =
-        data.keys.mapIndexed { index, key ->
-            TextFieldData(
-                key,
-                data.placeholders[index],
-                data.mask[index],
-                key?.let { model.getFromStore(it) },
-            )
+    private fun createInputViews(): List<View> {
+        return data.keys.mapIndexed { index, key ->
+            val inputView = LayoutInflater.from(requireContext()).inflate(R.layout.embark_input_item, binding.inputContainer, false)
+            val inputLayout = inputView.findViewById<TextInputLayout>(R.id.textField)
+            val inputEditText = inputView.findViewById<TextInputEditText>(R.id.input)
+
+            inputLayout.hint = data.placeholders[index]
+            val mask = data.mask[index]
+            mask?.let {
+                inputEditText.apply {
+                    setInputType(it)
+                    setValidationFormatter(it)
+                }
+            }
+            inputEditText.onChange { text ->
+                if (mask == null) {
+                    if (text.isBlank()) {
+                        textActionSetViewModel.updateIsValid(index, false)
+                    } else {
+                        textActionSetViewModel.updateIsValid(index, true)
+                    }
+                } else {
+                    if (text.isNotBlank() && validationCheck(mask, text)) {
+                        textActionSetViewModel.updateIsValid(index, true)
+                    } else {
+                        textActionSetViewModel.updateIsValid(index, false)
+                    }
+                }
+                textActionSetViewModel.setInputValue(index, text)
+            }
+
+            if (index < data.keys.size - 1) {
+                inputEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
+            } else {
+                inputEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+            }
+
+            inputEditText.onImeAction {
+                if (textActionSetViewModel.isValid.value == true) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate(data)
+                        model.navigateToPassage(data.link)
+                    }
+                }
+            }
+
+            key?.let(model::getFromStore)?.let(inputEditText::setText)
+            inputView
         }
+    }
+
 
     companion object {
         private const val DATA = "DATA"
