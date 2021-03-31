@@ -31,8 +31,9 @@ class TextActionTest : TestCase() {
     fun shouldRenderTextAction() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 
@@ -57,8 +58,9 @@ class TextActionTest : TestCase() {
     fun shouldPrefillTextActionWhenUserReturnsToPassage() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

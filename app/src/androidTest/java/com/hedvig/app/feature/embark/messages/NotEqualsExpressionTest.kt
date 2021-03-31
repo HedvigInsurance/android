@@ -32,8 +32,9 @@ class NotEqualsExpressionTest : TestCase() {
     fun shouldShowMessageForWhenWithNotEqualsExpression() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

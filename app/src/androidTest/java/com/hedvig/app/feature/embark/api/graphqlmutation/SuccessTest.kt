@@ -35,8 +35,9 @@ class SuccessTest : TestCase() {
     fun shouldRedirectAndSaveResultsWhenLoadingPassageWithGraphQLMutationApiThatIsSuccessful() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

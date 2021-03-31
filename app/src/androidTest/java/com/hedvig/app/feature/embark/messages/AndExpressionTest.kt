@@ -30,8 +30,9 @@ class AndExpressionTest : TestCase() {
     fun shouldShowMessageForWhenWithAndExpression() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

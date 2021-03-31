@@ -29,7 +29,7 @@ class OfferTest : TestCase() {
 
     @Test
     fun shouldOpenWebOfferWhenEncounteringExternalRedirect() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this::class.java.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this::class.java.name, storyTitle))
 
         onScreen<EmbarkScreen> {
             offer { stub() }

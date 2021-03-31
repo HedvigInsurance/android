@@ -30,8 +30,9 @@ class UnaryExpressionTest : TestCase() {
     fun shouldFilterOutMessagesWithExpressionTypeNever() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

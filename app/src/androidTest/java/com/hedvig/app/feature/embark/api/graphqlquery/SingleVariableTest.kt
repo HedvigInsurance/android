@@ -37,8 +37,9 @@ class SingleVariableTest : TestCase() {
     fun shouldCallGraphQLApiWithVariable() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

@@ -38,8 +38,9 @@ class GeneratedVariableTest : TestCase() {
     fun shouldCallGraphQLApiWithVariable() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                this.javaClass.name
+                    ApplicationProvider.getApplicationContext(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

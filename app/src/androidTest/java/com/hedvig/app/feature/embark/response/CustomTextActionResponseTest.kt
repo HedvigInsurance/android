@@ -34,8 +34,9 @@ class CustomTextActionResponseTest : TestCase() {
     fun shouldShowCustomResponseAfterSubmittingTextAction() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                this.javaClass.name
+                    ApplicationProvider.getApplicationContext(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

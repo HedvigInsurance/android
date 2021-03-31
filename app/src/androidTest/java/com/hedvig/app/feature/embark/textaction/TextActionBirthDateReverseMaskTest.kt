@@ -48,8 +48,9 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
     fun shouldSaveCorrectDataWhenMaskIsBirthDateReverse() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 
@@ -74,8 +75,9 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
     fun shouldReapplyMaskWhenReloadingDataFromStore() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 

@@ -44,7 +44,7 @@ class TrackTest : TestCase() {
 
     @Test
     fun shouldTrackWhenEnteringPassage() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle))
 
         onScreen<EmbarkScreen> {
             step("Check that initial passage-track is tracked") {

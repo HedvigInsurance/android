@@ -33,8 +33,9 @@ class TextActionSetValidation : TestCase() {
     fun textActionSetTest() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name
+                    context(),
+                    this.javaClass.name,
+                    storyTitle
             )
         )
 
