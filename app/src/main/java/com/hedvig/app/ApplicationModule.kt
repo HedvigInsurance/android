@@ -36,8 +36,8 @@ import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetViewModel
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionParameter
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -350,7 +350,7 @@ val moreOptionsModule = module {
 }
 
 val textActionSetModule = module {
-    viewModel { (data: TextActionSetParameter) -> TextActionSetViewModel(data) }
+    viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
 
 val numberActionModule = module {

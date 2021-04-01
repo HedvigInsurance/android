@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class TextActionSetParameter(
+data class TextActionParameter(
     val link: String,
     val placeholders: List<String?>,
     val keys: List<String?>,
@@ -20,7 +20,7 @@ data class TextActionSetParameter(
             data: EmbarkStoryQuery.TextSetData,
             passageName: String,
         ) =
-            TextActionSetParameter(
+            TextActionParameter(
                 link = data.link.fragments.embarkLinkFragment.name,
                 placeholders = data.textActions.map { it.data?.placeholder },
                 keys = data.textActions.map { it.data?.key },
@@ -28,6 +28,20 @@ data class TextActionSetParameter(
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
                 passageName = passageName,
                 mask = data.textActions.map { it.data?.mask }
+            )
+        fun from(
+            messages: List<String>,
+            data: EmbarkStoryQuery.TextData,
+            passageName: String,
+        ) =
+            TextActionParameter(
+                link = data.link.fragments.embarkLinkFragment.name,
+                placeholders = listOf(data.placeholder),
+                keys = listOf(data.key),
+                messages = messages,
+                submitLabel = data.link.fragments.embarkLinkFragment.label,
+                passageName = passageName,
+                mask = listOf(data.mask)
             )
     }
 }

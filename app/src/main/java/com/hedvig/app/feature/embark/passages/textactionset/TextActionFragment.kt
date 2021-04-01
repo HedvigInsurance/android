@@ -28,7 +28,6 @@ import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
-import kotlinx.android.synthetic.main.embark_input_item.input
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -38,12 +37,15 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
+/**
+ * Used for Embark actions TextAction and TextActionSet
+ */
+class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     private val model: EmbarkViewModel by sharedViewModel()
-    private val data: TextActionSetParameter
+    private val data: TextActionParameter
         get() = requireArguments().getParcelable(DATA)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
-    private val textActionSetViewModel: TextActionSetViewModel by viewModel { parametersOf(data) }
+    private val textActionSetViewModel: TextActionViewModel by viewModel { parametersOf(data) }
     private val binding by viewBinding(FragmentTextActionSetBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +80,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
         }
     }
 
-    private suspend fun saveAndAnimate(data: TextActionSetParameter) {
+    private suspend fun saveAndAnimate(data: TextActionParameter) {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputContainer,
             delayMillis = KEY_BOARD_DELAY_MILLIS
@@ -147,7 +149,7 @@ class TextActionSetFragment : Fragment(R.layout.fragment_text_action_set) {
 
     companion object {
         private const val DATA = "DATA"
-        fun newInstance(data: TextActionSetParameter) = TextActionSetFragment().apply {
+        fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(DATA, data)
             }
