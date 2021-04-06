@@ -26,7 +26,14 @@ data class ContractStatusFragmentBuilder(
         },
         asActiveStatus = if (status == ContractStatus.ACTIVE) {
             ContractStatusFragment.AsActiveStatus(
-                pastInception = LocalDate.now()
+                pastInception = LocalDate.now(),
+                upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
+                    newAgreement = ContractStatusFragment.NewAgreement(
+                        asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
+                            activeFrom = LocalDate.of(2021, 4, 6)
+                        )
+                    )
+                )
             )
         } else {
             null
