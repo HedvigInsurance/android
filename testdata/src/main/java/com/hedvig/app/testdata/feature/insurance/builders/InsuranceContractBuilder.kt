@@ -30,7 +30,14 @@ class InsuranceContractBuilder(
                     asPendingStatus = null,
                     asActiveInFutureStatus = null,
                     asActiveStatus = ContractStatusFragment.AsActiveStatus(
-                        pastInception = LocalDate.of(2020, 2, 1)
+                        pastInception = LocalDate.of(2020, 2, 1),
+                        upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
+                            newAgreement = ContractStatusFragment.NewAgreement(
+                                asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
+                                    activeFrom = LocalDate.of(2021, 4, 6)
+                                )
+                            )
+                        )
                     ),
                     asActiveInFutureAndTerminatedInFutureStatus = null,
                     asTerminatedInFutureStatus = null,
