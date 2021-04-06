@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -20,8 +21,8 @@ import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
-import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
@@ -84,6 +85,15 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 } else {
                     transitionToNextPassage(embarkData.navigationDirection, passage)
                 }
+            }
+
+            model.errorMessage.observe(this@EmbarkActivity) { message ->
+                AlertDialog.Builder(this@EmbarkActivity)
+                    .setTitle(R.string.error_dialog_title)
+                    .setMessage(message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
+                    .setPositiveButton(R.string.error_dialog_button) { _, _ -> this@EmbarkActivity.finish() }
+                    .create()
+                    .show()
             }
 
             progressToolbar.toolbar.apply {
@@ -203,19 +213,23 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             return PreviousInsurerFragment.newInstance(parameter)
         }
 
-        passage?.action?.asEmbarkNumberAction?.data?.let { numberAction ->
+        passage?.action?.asEmbarkNumberAction?.numberActionData?.let { numberAction ->
             return NumberActionFragment.newInstance(
                 NumberActionParams(
                     passage.messages.map { it.fragments.messageFragment.text },
                     passage.name,
-                    numberAction.key,
-                    numberAction.placeholder,
-                    numberAction.unit,
-                    numberAction.label,
-                    numberAction.maxValue,
-                    numberAction.minValue,
-                    numberAction.link.fragments.embarkLinkFragment.name,
-                    numberAction.link.fragments.embarkLinkFragment.label,
+                    listOf(
+                        NumberActionParams.NumberAction(
+                            key = numberAction.key,
+                            title = numberAction.label,
+                            placeholder = numberAction.placeholder,
+                            unit = numberAction.unit,
+                            maxValue = numberAction.maxValue,
+                            minValue = numberAction.minValue
+                        )
+                    ),
+                    link = numberAction.link.fragments.embarkLinkFragment.name,
+                    submitLabel = numberAction.link.fragments.embarkLinkFragment.label,
                 )
             )
         }

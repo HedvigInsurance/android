@@ -24,6 +24,7 @@ data class TextActionBuilder(
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,
+        asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
     )
 

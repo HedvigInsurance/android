@@ -82,7 +82,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           }
         }
         ... on EmbarkPreviousInsuranceProviderAction {
-          data {
+          previousInsurerData: data {
             next {
               ...EmbarkLinkFragment
             }
@@ -101,13 +101,20 @@ query EmbarkStory($name: String!, $locale: String!) {
           }
         }
         ... on EmbarkNumberAction {
-          data {
+          numberActionData: data {
             key
             placeholder
             unit
             label
             maxValue
             minValue
+            link {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkNumberActionSet {
+          numberActionSetData: data {
             link {
               ...EmbarkLinkFragment
             }

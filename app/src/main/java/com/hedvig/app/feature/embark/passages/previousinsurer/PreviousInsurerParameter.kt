@@ -25,10 +25,10 @@ data class PreviousInsurerParameter(
         ) =
             PreviousInsurerParameter(
                 messages = messages,
-                next = previousInsuranceAction.data.next.fragments.embarkLinkFragment.name,
-                skip = previousInsuranceAction.data.skip.fragments.embarkLinkFragment.name,
+                next = previousInsuranceAction.previousInsurerData.next.fragments.embarkLinkFragment.name,
+                skip = previousInsuranceAction.previousInsurerData.skip.fragments.embarkLinkFragment.name,
                 previousInsurers = previousInsuranceAction
-                    .data
+                    .previousInsurerData
                     .insuranceProviders
                     .map {
                         PreviousInsurer(
@@ -36,7 +36,7 @@ data class PreviousInsurerParameter(
                             it.logo.variants.fragments.iconVariantsFragment.light.svgUrl
                         )
                     },
-                storeKey = previousInsuranceAction.data.storeKey,
+                storeKey = previousInsuranceAction.previousInsurerData.storeKey,
             )
     }
 }

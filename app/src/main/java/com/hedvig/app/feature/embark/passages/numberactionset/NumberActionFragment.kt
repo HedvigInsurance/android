@@ -1,19 +1,24 @@
-package com.hedvig.app.feature.embark.passages.numberaction
+package com.hedvig.app.feature.embark.passages.numberactionset
 
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.R
-import com.hedvig.app.databinding.NumberActionFragmentBinding
+import com.hedvig.app.databinding.NumberActionSetFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction
@@ -30,9 +35,12 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
+/**
+ * Used for Embark actions NumberAction and NumberActionSet
+ */
+class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
     private val model: EmbarkViewModel by sharedViewModel()
-    private val binding by viewBinding(NumberActionFragmentBinding::bind)
+    private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
     private val data: NumberActionParams
         get() = requireArguments().getParcelable(PARAMS)
             ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
@@ -43,7 +51,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
 
         with(binding) {
             whenApiVersion(Build.VERSION_CODES.R) {
-                input.setupInsetsForIme(
+                inputLayout.setupInsetsForIme(
                     root = root,
                     inputLayout,
                     submit,
@@ -51,22 +59,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
             }
 
             messages.adapter = MessageAdapter(data.messages)
-            inputContainer.placeholderText = data.placeholder
-            data.label?.let { inputContainer.hint = it }
-            data.unit?.let { inputContainer.helperText = it }
-            input.doOnTextChanged { text, _, _, _ ->
-                numberActionViewModel.validate(text)
-            }
-            input.onImeAction {
-                if (numberActionViewModel.valid.value == true) {
-                    viewLifecycleScope.launch {
-                        saveAndAnimate()
-                        model.navigateToPassage(data.link)
-                    }
-                }
-            }
+            val views = createInputViews()
+            inputContainer.addViews(views)
+
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
-            model.getFromStore(data.key)?.let { input.setText(it) }
             submit.text = data.submitLabel
             submit
                 .hapticClicks()
@@ -77,20 +73,55 @@ class NumberActionFragment : Fragment(R.layout.number_action_fragment) {
             messages.doOnNextLayout {
                 startPostponedEnterTransition()
             }
+
+            numberActionViewModel.valid.observe(viewLifecycleOwner) {
+                submit.isEnabled = it
+            }
+        }
+    }
+
+    private fun createInputViews(): List<View> {
+        return data.numberActions.mapIndexed { index, numberAction ->
+            val inputView = LayoutInflater.from(requireContext()).inflate(R.layout.embark_input_item, binding.inputContainer, false)
+            val inputLayout = inputView.findViewById<TextInputLayout>(R.id.textField)
+            val inputEditText = inputView.findViewById<TextInputEditText>(R.id.input)
+
+            inputLayout.placeholderText = numberAction.placeholder
+
+            numberAction.title.let { inputLayout.hint = it }
+            numberAction.unit?.let { inputLayout.helperText = it }
+            inputEditText.doOnTextChanged { text, _, _, _ ->
+                numberActionViewModel.setInputValue(numberAction.key, text.toString())
+            }
+
+            inputEditText.onImeAction {
+                if (numberActionViewModel.valid.value == true) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate()
+                        model.navigateToPassage(data.link)
+                    }
+                }
+            }
+
+            if (index < data.numberActions.size - 1) {
+                inputEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
+            } else {
+                inputEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+            }
+
+            model.getFromStore(numberAction.key)?.let { inputEditText.setText(it) }
+            inputView
         }
     }
 
     private suspend fun saveAndAnimate() {
         context?.hideKeyboardWithDelay(
-            inputView = binding.input,
+            inputView = binding.inputLayout,
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
-
-        val inputText = binding.input.text.toString()
-        model.putInStore("${data.passageName}Result", inputText)
-        model.putInStore(data.key, inputText)
-        val responseText = model.preProcessResponse(data.passageName) ?: inputText
-        animateResponse(binding.response, responseText)
+        numberActionViewModel.onContinue(model::putInStore)
+        val responseText = model.preProcessResponse(data.passageName)
+        animateResponse(binding.response, responseText ?: "")
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 

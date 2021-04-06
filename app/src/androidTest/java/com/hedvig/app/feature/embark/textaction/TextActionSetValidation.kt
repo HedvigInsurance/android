@@ -1,5 +1,10 @@
 package com.hedvig.app.feature.embark.textaction
 
+<<<<<<< HEAD
+=======
+import androidx.test.espresso.matcher.ViewMatchers
+
+>>>>>>> 96f47468... Use NumberActionFragment for NumberAction and NumberActionSet
 import com.agoda.kakao.edit.KEditText
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen

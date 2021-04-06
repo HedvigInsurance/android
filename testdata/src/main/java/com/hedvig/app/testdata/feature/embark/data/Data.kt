@@ -464,6 +464,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkTextActionSet = null,
                     asEmbarkPreviousInsuranceProviderAction = null,
                     asEmbarkNumberAction = null,
+                    asEmbarkNumberActionSet = null,
                     asEmbarkDatePickerAction = null,
                 )
             )

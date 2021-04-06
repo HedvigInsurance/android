@@ -4,7 +4,7 @@ import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.text.KButton
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
+import com.hedvig.app.feature.embark.passages.textactionset.TextActionFragment
 import com.kaspersky.kaspresso.screens.KScreen
 
 object TextActionScreen : KScreen<TextActionScreen>() {

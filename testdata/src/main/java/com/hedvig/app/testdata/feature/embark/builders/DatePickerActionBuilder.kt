@@ -14,6 +14,7 @@ data class DatePickerActionBuilder(
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,
+        asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = EmbarkStoryQuery.AsEmbarkDatePickerAction(
             storeKey = key,
             label = label,
