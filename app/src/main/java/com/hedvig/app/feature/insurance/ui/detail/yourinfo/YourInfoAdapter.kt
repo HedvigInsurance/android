@@ -10,6 +10,7 @@ import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
 import com.hedvig.app.databinding.YourInfoChatButtonBinding
 import com.hedvig.app.databinding.YourInfoParagraphBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -25,12 +26,14 @@ class YourInfoAdapter :
         YourInfoModel.ChangeParagraph -> R.layout.change_paragraph
         YourInfoModel.OpenChatButton -> R.layout.your_info_chat_button
         is YourInfoModel.Row -> R.layout.contract_detail_row
+        is YourInfoModel.ChangeAddressButton -> R.layout.change_address_button
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_your_info_header -> ViewHolder.Header(parent)
         R.layout.your_info_paragraph -> ViewHolder.Paragraph(parent)
-        R.layout.your_info_chat_button -> ViewHolder.Button(parent)
+        R.layout.your_info_chat_button -> ViewHolder.ChatButton(parent)
+        R.layout.change_address_button -> ViewHolder.ChangeAddressButton(parent)
         R.layout.contract_detail_row -> ViewHolder.Row(parent)
         R.layout.change_paragraph -> ViewHolder.ChangeParagraph(parent)
         else -> throw Error("Invalid view type")
@@ -93,10 +96,10 @@ class YourInfoAdapter :
             }
         }
 
-        class Button(parent: ViewGroup) :
+        class ChatButton(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.your_info_chat_button)) {
             private val binding by viewBinding(YourInfoChatButtonBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
+            override fun bind(data: YourInfoModel) {
                 binding.root.apply {
                     setHapticClickListener {
                         context.startActivity(ChatActivity.newInstance(context, true))
@@ -104,5 +107,18 @@ class YourInfoAdapter :
                 }
             }
         }
+
+        class ChangeAddressButton(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.change_address_button)) {
+            private val binding by viewBinding(YourInfoChatButtonBinding::bind)
+            override fun bind(data: YourInfoModel) {
+                binding.root.apply {
+                    setHapticClickListener {
+                        context.startActivity(ChangeAddressActivity.newInstance(context))
+                    }
+                }
+            }
+        }
+
     }
 }

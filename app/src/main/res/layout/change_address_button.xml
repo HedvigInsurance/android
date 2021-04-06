@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/change_address_button"
+    style="@style/Hedvig.Button.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/base_margin"
+    android:padding="@dimen/base_margin_double"
+    android:text="@string/home_tab.editing_section_change_address_label" />
