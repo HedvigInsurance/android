@@ -434,6 +434,7 @@ class HomeAdapter(
                 } else {
                     if (data.pendingAddress != null) {
                         title.setHapticClickListener {
+                            // TODO String resources
                             MaterialAlertDialogBuilder(root.context)
                                 .setTitle("You already have a pending address change")
                                 .setMessage("You already have an offer for an address change to ${data.pendingAddress}")
