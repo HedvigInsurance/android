@@ -20,6 +20,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.android.synthetic.main.trustly_payin_details.pending
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -98,7 +99,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             )
         }
 
-        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
+        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
             if (homeData == null) {
                 return@observe
             }
@@ -154,9 +155,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BodyText.Terminated)
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    // Check if moving flow is completed but not accepted
+                    if (pendingAddress != null) {
+                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    }
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress)
+                        add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
@@ -168,6 +173,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    // Check if moving flow is completed but not accepted
+                    if (pendingAddress != null) {
+                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    }
                     addAll(listOfNotNull(*upcomingRenewals(successData.contracts).toTypedArray()))
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         add(HomeModel.ConnectPayin)
@@ -183,7 +192,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress)
+                        add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
