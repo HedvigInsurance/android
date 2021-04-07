@@ -155,7 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BodyText.Terminated)
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    // Check if moving flow is completed but not accepted
+                    // TODO Check if moving flow is completed but not accepted
                     if (pendingAddress != null) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
@@ -173,7 +173,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    // Check if moving flow is completed but not accepted
+                    // TODO Check if moving flow is completed but not accepted
                     if (pendingAddress != null) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
