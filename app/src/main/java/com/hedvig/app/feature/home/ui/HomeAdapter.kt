@@ -5,16 +5,19 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
-import com.hedvig.app.databinding.HomeChangeAddressBinding
+import com.hedvig.app.databinding.HomeChangeAddressButtonBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
@@ -27,7 +30,6 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.HomeModel.HowClaimsWork
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -62,7 +64,8 @@ class HomeAdapter(
         R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
-        R.layout.home_change_address -> ViewHolder.ChangeAddress(parent)
+        R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
+        R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent)
         R.layout.header_item_layout -> ViewHolder.Header(parent)
         else -> throw Error("Invalid view type")
     }
@@ -76,10 +79,11 @@ class HomeAdapter(
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
-        is HowClaimsWork -> R.layout.how_claims_work_button
+        is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
         is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
         is HomeModel.Header -> R.layout.header_item_layout
-        is HomeModel.ChangeAddress -> R.layout.home_change_address
+        is HomeModel.ChangeAddress -> R.layout.home_change_address_button
+        is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -374,7 +378,7 @@ class HomeAdapter(
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ): Any? = with(binding) {
-                if (data !is HowClaimsWork) {
+                if (data !is HomeModel.HowClaimsWork) {
                     return invalid(data)
                 }
                 val howClaimsWorkData = data.pages.mapIndexed { index, page ->
@@ -414,8 +418,8 @@ class HomeAdapter(
             }
         }
 
-        class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address)) {
-            private val binding by viewBinding(HomeChangeAddressBinding::bind)
+        class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address_button)) {
+            private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -424,8 +428,52 @@ class HomeAdapter(
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ): Any? = with(binding) {
-                changeAddressButton.setHapticClickListener {
-                    root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
+                if (data !is HomeModel.ChangeAddress) {
+                    invalid(data)
+                } else {
+                    if (data.pendingAddress != null) {
+                        title.setHapticClickListener {
+                            MaterialAlertDialogBuilder(root.context)
+                                .setTitle("You already have a pending address change")
+                                .setMessage("You already have an offer for an address change to ${data.pendingAddress}")
+                                .setPositiveButton("Go to pending offer") { _, _ ->
+                                    Toast.makeText(
+                                        root.context, "Go to pending offer not implemented", Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                .setNegativeButton("Change to new address") { _, _ ->
+                                    root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
+                                }
+                                .setNeutralButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                                .show()
+                        }
+                    } else {
+                        title.setHapticClickListener {
+                            root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
+                        }
+                    }
+                }
+            }
+        }
+
+        class PendingChange(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
+            private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                requestBuilder: RequestBuilder<PictureDrawable>,
+                tracker: HomeTracker,
+                marketManager: MarketManager,
+            ): Any? = with(binding) {
+                if (data !is HomeModel.PendingAddressChange) {
+                    return invalid(data)
+                }
+
+                paragraph.text = "Continue with your address change to ${data.address}"
+                continueButton.setHapticClickListener {
+                    root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
                 }
             }
         }

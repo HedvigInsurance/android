@@ -18,8 +18,12 @@ import kotlinx.coroutines.launch
 abstract class HomeViewModel : ViewModel() {
     protected val _homeData = MutableLiveData<Result<HomeQuery.Data>>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-    val data: LiveData<Pair<Result<HomeQuery.Data>?, PayinStatusQuery.Data?>> =
-        combineTuple(_homeData, _payinStatusData)
+    protected val _addressChangeInProgress = MutableLiveData( "New Test Address 123")
+    val data: LiveData<Triple<Result<HomeQuery.Data>?, PayinStatusQuery.Data?, String?>> = combineTuple(
+        _homeData,
+        _payinStatusData,
+        _addressChangeInProgress
+    )
 
     abstract fun load()
 }
@@ -43,6 +47,7 @@ class HomeViewModelImpl(
                     _homeData.postValue(Result.failure(e))
                 }
                 .launchIn(this)
+
             payinStatusRepository
                 .payinStatus()
                 .onEach { response ->
