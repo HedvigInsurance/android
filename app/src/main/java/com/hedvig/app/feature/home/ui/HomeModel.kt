@@ -57,5 +57,7 @@ sealed class HomeModel {
 
     data class Header(val text: String) : HomeModel()
 
-    object ChangeAddress : HomeModel()
+    data class PendingAddressChange(val address: String) : HomeModel()
+
+    data class ChangeAddress(val pendingAddress: String?) : HomeModel()
 }
