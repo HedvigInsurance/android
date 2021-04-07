@@ -437,6 +437,7 @@ class HomeAdapter(
                 } else {
                     if (data.pendingAddress != null && data.pendingAddress.isNotBlank()) {
                         title.setHapticClickListener {
+                            // TODO String resources
                             MaterialAlertDialogBuilder(root.context)
                                 .setTitle(R.string.home_tab_moving_info_card_title)
                                 .setMessage(
