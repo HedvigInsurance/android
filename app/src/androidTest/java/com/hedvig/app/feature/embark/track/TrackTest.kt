@@ -64,7 +64,8 @@ class TrackTest : TestCase() {
             }
             step("Check that track is called with all store data") {
                 verify(exactly = 1) {
-                    tracker.track("Enter second passage",
+                    tracker.track(
+                        "Enter second passage",
                         jsonEq(
                             jsonObjectOf(
                                 "FOO" to "BAR",
@@ -89,8 +90,10 @@ class TrackTest : TestCase() {
             }
             step("Check that track is called with specific keys, and that customData is merged in") {
                 verify(exactly = 1) {
-                    tracker.track("Enter third passage",
-                        jsonEq(jsonObjectOf("FOO" to "BAR", "CUSTOM" to "DATA")))
+                    tracker.track(
+                        "Enter third passage",
+                        jsonEq(jsonObjectOf("FOO" to "BAR", "CUSTOM" to "DATA"))
+                    )
                 }
             }
             step("Go back") {

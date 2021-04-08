@@ -2,7 +2,6 @@ package com.hedvig.app.feature.home
 
 import android.view.InputDevice
 import android.view.MotionEvent
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.GeneralClickAction
 import androidx.test.espresso.action.GeneralLocation
 import androidx.test.espresso.action.Press

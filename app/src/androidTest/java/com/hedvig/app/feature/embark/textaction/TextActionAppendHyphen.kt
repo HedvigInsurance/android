@@ -42,4 +42,3 @@ class TextActionAppendHyphen : TestCase() {
         }
     }
 }
-

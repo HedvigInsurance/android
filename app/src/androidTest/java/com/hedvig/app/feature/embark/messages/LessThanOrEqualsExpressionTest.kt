@@ -32,9 +32,9 @@ class LessThanOrEqualsExpressionTest : TestCase() {
     fun shouldShowMessageForWhenWithLessThanOrEqualsExpression() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    context(),
-                    this.javaClass.name,
-                    storyTitle
+                context(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 

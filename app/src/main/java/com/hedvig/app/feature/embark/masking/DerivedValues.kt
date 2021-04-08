@@ -7,7 +7,7 @@ import java.time.Period
 
 fun derivedValues(text: String, key: String, mask: String?, clock: Clock) = when (mask) {
     BIRTH_DATE_REVERSE -> listOf(
-        "${key}.Age" to Period.between(LocalDate.parse(text), LocalDate.now(clock)).years.toString()
+        "$key.Age" to Period.between(LocalDate.parse(text), LocalDate.now(clock)).years.toString()
     )
     else -> emptyList()
 }

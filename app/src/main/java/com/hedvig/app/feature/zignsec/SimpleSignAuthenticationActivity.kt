@@ -81,8 +81,10 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     }
 
     private fun restart() {
-        supportFragmentManager.popBackStack(supportFragmentManager.getBackStackEntryAt(0).id,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.popBackStack(
+            supportFragmentManager.getBackStackEntryAt(0).id,
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
     }
 
     private fun showWebView() {
@@ -107,4 +109,3 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
             }
     }
 }
-

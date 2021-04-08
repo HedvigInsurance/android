@@ -42,8 +42,10 @@ fun KTextInputLayout.hasPlaceholderText(text: String) {
     view.check { view, noViewFoundException ->
         if (view is TextInputLayout) {
             if (text != view.placeholderText) {
-                throw AssertionError("Expected placeholder text is $text," +
-                    " but actual is ${view.placeholderText}")
+                throw AssertionError(
+                    "Expected placeholder text is $text," +
+                        " but actual is ${view.placeholderText}"
+                )
             }
         } else {
             noViewFoundException?.let { throw AssertionError(it) }
@@ -55,8 +57,10 @@ fun KTextInputLayout.hasHelperText(text: String) {
     view.check { view, noViewFoundException ->
         if (view is TextInputLayout) {
             if (text != view.helperText) {
-                throw AssertionError("Expected helper text is $text," +
-                    " but actual is ${view.helperText}")
+                throw AssertionError(
+                    "Expected helper text is $text," +
+                        " but actual is ${view.helperText}"
+                )
             }
         } else {
             noViewFoundException?.let { throw AssertionError(it) }

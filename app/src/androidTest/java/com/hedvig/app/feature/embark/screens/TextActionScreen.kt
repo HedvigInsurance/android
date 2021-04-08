@@ -18,5 +18,4 @@ object TextActionScreen : KScreen<TextActionScreen>() {
     val settingsButton = KView { withText(R.string.profile_appSettingsSection_title) }
     val restartButton = KView { withText(R.string.EMBARK_RESTART_BUTTON) }
     val okButton = KView { withText(R.string.ALERT_OK) }
-
 }

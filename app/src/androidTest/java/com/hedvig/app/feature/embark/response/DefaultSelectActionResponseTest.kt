@@ -32,9 +32,9 @@ class DefaultSelectActionResponseTest : TestCase() {
     fun shouldShowResponseAfterSubmittingSelectAction() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    ApplicationProvider.getApplicationContext(),
-                    this.javaClass.name,
-                    storyTitle
+                ApplicationProvider.getApplicationContext(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 

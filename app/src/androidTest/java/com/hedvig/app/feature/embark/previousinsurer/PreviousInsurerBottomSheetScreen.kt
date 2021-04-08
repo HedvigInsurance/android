@@ -13,11 +13,14 @@ object PreviousInsurerBottomSheetScreen : KScreen<PreviousInsurerBottomSheetScre
     override val layoutId = null
     override val viewClass = PreviousInsurerBottomSheet::class.java
 
-    val recycler = KRecyclerView({
-        withId(R.id.recycler)
-    }, {
-        itemType(::PreviousInsurer)
-    })
+    val recycler = KRecyclerView(
+        {
+            withId(R.id.recycler)
+        },
+        {
+            itemType(::PreviousInsurer)
+        }
+    )
 
     class PreviousInsurer(parent: Matcher<View>) : KRecyclerItem<PreviousInsurer>(parent) {
         val text = KTextView(parent) { withId(R.id.text) }

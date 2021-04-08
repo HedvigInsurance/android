@@ -83,4 +83,3 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
             }
     }
 }
-

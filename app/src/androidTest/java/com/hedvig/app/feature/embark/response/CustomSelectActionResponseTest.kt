@@ -34,9 +34,9 @@ class CustomSelectActionResponseTest : TestCase() {
     fun shouldShowCustomResponseAfterSubmittingSelectAction() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    ApplicationProvider.getApplicationContext(),
-                    this.javaClass.name,
-                    storyTitle
+                ApplicationProvider.getApplicationContext(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 

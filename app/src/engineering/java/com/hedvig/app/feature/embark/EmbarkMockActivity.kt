@@ -49,10 +49,12 @@ import org.koin.dsl.module
 
 class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, moreOptionsModule)
-    override val mocks = listOf(module {
-        viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
-        viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
-    })
+    override val mocks = listOf(
+        module {
+            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
+            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+        }
+    )
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Date Picker Action")

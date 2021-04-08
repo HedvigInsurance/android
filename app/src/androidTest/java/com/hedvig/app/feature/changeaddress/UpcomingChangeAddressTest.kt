@@ -16,7 +16,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class UpcomingChangeAddressTest: TestCase() {
+class UpcomingChangeAddressTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)

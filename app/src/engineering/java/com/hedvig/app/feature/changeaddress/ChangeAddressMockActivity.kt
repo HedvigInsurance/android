@@ -41,18 +41,20 @@ class ChangeAddressMockActivity : MockActivity() {
             startActivity(ChangeAddressActivity.newInstance(context))
         }
         clickableItem("Upcoming address change") {
-            MockChangeAddressViewModel.mockedState = MutableLiveData(ViewState.ChangeAddressInProgress(
-                GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
-                    address = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Address(
-                        "Test street 1 ",
-                        postalCode = "Test 123 Postal code",
-                        city = "City of Test"
-                    ),
-                    squareMeters = 123,
-                    activeFrom = LocalDate.of(2021, 3, 15),
-                    addressType = R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT
+            MockChangeAddressViewModel.mockedState = MutableLiveData(
+                ViewState.ChangeAddressInProgress(
+                    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
+                        address = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Address(
+                            "Test street 1 ",
+                            postalCode = "Test 123 Postal code",
+                            city = "City of Test"
+                        ),
+                        squareMeters = 123,
+                        activeFrom = LocalDate.of(2021, 3, 15),
+                        addressType = R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT
+                    )
                 )
-            ))
+            )
             startActivity(ChangeAddressActivity.newInstance(context))
         }
         clickableItem("Loading") {
@@ -60,5 +62,4 @@ class ChangeAddressMockActivity : MockActivity() {
             startActivity(ChangeAddressActivity.newInstance(context))
         }
     }
-
 }

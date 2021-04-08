@@ -22,7 +22,8 @@ data class PreviousInsurerAction(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/if.svg"))
+                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/if.svg")
+                                    )
                                 )
                             )
                         )
@@ -34,7 +35,8 @@ data class PreviousInsurerAction(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/trygg_hansa.svg"))
+                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/trygg_hansa.svg")
+                                    )
                                 )
                             )
                         )
@@ -46,7 +48,8 @@ data class PreviousInsurerAction(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/folksam.svg"))
+                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/folksam.svg")
+                                    )
                                 )
                             )
                         )
@@ -54,8 +57,14 @@ data class PreviousInsurerAction(
                 ),
                 storeKey = storeKey,
                 next = EmbarkStoryQuery.Next(fragments = EmbarkStoryQuery.Next.Fragments(next)),
-                skip = EmbarkStoryQuery.Skip(fragments = EmbarkStoryQuery.Skip.Fragments(EmbarkLinkFragment(name = "test_skip",
-                    label = "Skip"))),
+                skip = EmbarkStoryQuery.Skip(
+                    fragments = EmbarkStoryQuery.Skip.Fragments(
+                        EmbarkLinkFragment(
+                            name = "test_skip",
+                            label = "Skip"
+                        )
+                    )
+                ),
             )
         ),
         asEmbarkNumberAction = null,

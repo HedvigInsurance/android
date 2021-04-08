@@ -13,7 +13,6 @@ import android.view.WindowInsetsAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.annotation.CheckResult
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
@@ -26,8 +25,6 @@ import com.hedvig.app.util.RootViewDeferringInsetsCallback
 import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -311,13 +308,15 @@ fun View.hapticClicks(): Flow<Unit> = callbackFlow {
     awaitClose { setOnClickListener(null) }
 }.conflate()
 
-fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) = setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-    if (actionId == imeActionId) {
-        action()
-        return@OnEditorActionListener true
+fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) = setOnEditorActionListener(
+    TextView.OnEditorActionListener { _, actionId, _ ->
+        if (actionId == imeActionId) {
+            action()
+            return@OnEditorActionListener true
+        }
+        false
     }
-    false
-})
+)
 
 @RequiresApi(Build.VERSION_CODES.R)
 fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
@@ -345,4 +344,3 @@ fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
         ControlFocusInsetsAnimationCallback(this)
     )
 }
-

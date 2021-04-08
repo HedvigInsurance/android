@@ -27,10 +27,12 @@ class EmbarkRepository(
             Request.Builder()
                 .url(application.graphqlUrl)
                 .header("Content-Type", "application/json")
-                .post(jsonObjectOfNotNull(
-                    "query" to query,
-                    variables?.let { "variables" to variables }
-                ).toString().toRequestBody())
+                .post(
+                    jsonObjectOfNotNull(
+                        "query" to query,
+                        variables?.let { "variables" to variables }
+                    ).toString().toRequestBody()
+                )
                 .build()
         ).await()
 }

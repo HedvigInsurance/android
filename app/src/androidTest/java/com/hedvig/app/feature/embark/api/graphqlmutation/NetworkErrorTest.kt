@@ -34,9 +34,9 @@ class NetworkErrorTest : TestCase() {
     fun shouldRedirectWhenLoadingPassageWithGraphQLMutationApiThatIsError() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    context(),
-                    this.javaClass.name,
-                    storyTitle
+                context(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 

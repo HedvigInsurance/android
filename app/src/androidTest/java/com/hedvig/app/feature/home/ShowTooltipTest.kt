@@ -65,4 +65,3 @@ class ShowTooltipTest : TestCase() {
             .putLong("shared_preference_last_open", lastOpenPrevValue).commit()
     }
 }
-

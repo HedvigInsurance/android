@@ -14,7 +14,6 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketPickerModule
-import com.hedvig.app.util.extensions.storeBoolean
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module

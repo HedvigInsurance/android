@@ -19,8 +19,10 @@ data class PreviousInsurerParameter(
     ) : Parcelable
 
     companion object {
-        fun from(messages: List<String>,
-                 previousInsuranceAction: EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction) =
+        fun from(
+            messages: List<String>,
+            previousInsuranceAction: EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction
+        ) =
             PreviousInsurerParameter(
                 messages = messages,
                 next = previousInsuranceAction.data.next.fragments.embarkLinkFragment.name,

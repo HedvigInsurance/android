@@ -34,9 +34,9 @@ class NetworkErrorTest : TestCase() {
     fun shouldRedirectWhenTriggeringGraphQLQueryAndNetworkErrorOccurs() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    context(),
-                    this.javaClass.name,
-                    storyTitle
+                context(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 
@@ -51,4 +51,3 @@ class NetworkErrorTest : TestCase() {
         }
     }
 }
-

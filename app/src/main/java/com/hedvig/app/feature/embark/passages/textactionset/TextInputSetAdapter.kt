@@ -15,7 +15,6 @@ import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 
-
 class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone: () -> Unit) :
     ListAdapter<TextFieldData, TextInputSetAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -65,4 +64,3 @@ class TextInputSetAdapter(val model: TextActionSetViewModel, private val onDone:
         }
     }
 }
-

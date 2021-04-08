@@ -34,9 +34,9 @@ class GraphQLErrorTest : TestCase() {
     fun shouldRedirectWhenTriggeringGraphQLQueryAndErrorOccurs() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
-                    context(),
-                    this.javaClass.name,
-                    storyTitle
+                context(),
+                this.javaClass.name,
+                storyTitle
             )
         )
 
