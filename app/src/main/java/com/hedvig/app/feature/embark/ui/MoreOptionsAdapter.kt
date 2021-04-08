@@ -119,4 +119,3 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         private const val COPYRIGHT = 5
     }
 }
-

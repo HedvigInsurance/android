@@ -40,15 +40,17 @@ fun TextView.onImeAction(
     triggerOnEnter: Boolean = true,
     action: () -> Unit,
 ) {
-    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, keyEvent ->
-        if (actionId == imeActionId) {
-            action()
-            return@OnEditorActionListener true
+    setOnEditorActionListener(
+        TextView.OnEditorActionListener { _, actionId, keyEvent ->
+            if (actionId == imeActionId) {
+                action()
+                return@OnEditorActionListener true
+            }
+            if (triggerOnEnter && actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN) {
+                action()
+                return@OnEditorActionListener true
+            }
+            false
         }
-        if (triggerOnEnter && actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN) {
-            action()
-            return@OnEditorActionListener true
-        }
-        false
-    })
+    )
 }

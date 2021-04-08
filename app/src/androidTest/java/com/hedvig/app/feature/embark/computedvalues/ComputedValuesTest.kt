@@ -29,7 +29,7 @@ class ComputedValuesTest : TestCase() {
 
     @Test
     fun shouldCorrectlyDisplayComputedValues() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle))
 
         step("Enter value in first passage and submit") {
             NumberActionScreen {

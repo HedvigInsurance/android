@@ -43,10 +43,12 @@ object TemplateExpressionCalculator {
 
             val matchResult = matchingTokenChecker.second.find(subExpr)
 
-            tokenStream.add(Token(
-                matchingTokenChecker.first,
-                payload = matchResult?.value ?: ""
-            ))
+            tokenStream.add(
+                Token(
+                    matchingTokenChecker.first,
+                    payload = matchResult?.value ?: ""
+                )
+            )
 
             cursor += matchResult?.groups?.get(0)?.value?.length ?: subExpr.length
         }

@@ -116,5 +116,4 @@ class ComputedValuesTest {
         val result = TemplateExpressionCalculator.evaluateTemplateExpression(expression, emptyStore)
         assertThat(result).isEqualTo("Unexpected number constant \"1337\"")
     }
-
 }

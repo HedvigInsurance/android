@@ -23,6 +23,7 @@ class EmbarkActivityTest : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
+                storyTitle,
             )
         )
         onScreen<EmbarkScreen> {

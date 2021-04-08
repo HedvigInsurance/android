@@ -27,6 +27,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.IllegalArgumentException
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
@@ -55,9 +56,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
 
             continueButton.setHapticClickListener {
-                viewModel.selectedQuoteType.value?.embarkStory?.name?.let { storyName ->
-                    startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName))
-                }
+                val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name ?: throw IllegalArgumentException("No story name found")
+                val storyTitle = viewModel.selectedQuoteType.value?.embarkStory?.title ?: throw IllegalArgumentException("No story title found")
+                startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName, storyTitle))
             }
             viewModel.data.observe(this@ChoosePlanActivity) { response ->
                 val bundles = response.getOrNull()

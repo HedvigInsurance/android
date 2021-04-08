@@ -11,7 +11,6 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -54,7 +53,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun loginButtonShouldOpenLoginMethod() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -72,7 +71,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun restartButtonShouldReloadEmbark() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -102,7 +101,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun appInfoButtonShouldStartMoreOptionsActivity() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -120,7 +119,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun settingsButtonShouldStartMoreOptionsActivity() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
         activityRule.launch(intent)
 
         TextActionScreen {

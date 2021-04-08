@@ -51,6 +51,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
+    private val storyTitle: String by lazy {
+        intent.getStringExtra(STORY_TITLE)
+            ?: throw IllegalArgumentException("Programmer error: STORY_TITLE not provided to ${this.javaClass.name}")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,8 +70,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
             }
 
-            progressToolbar.toolbar.title = storyName
             setupToolbarMenu(progressToolbar)
+            progressToolbar.toolbar.title = storyTitle
+            
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(progressToolbar)
@@ -255,12 +261,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
+        internal const val STORY_TITLE = "STORY_TITLE"
         internal const val PASSAGE_ANIMATION_DELAY_MILLIS = 150L
         internal const val KEY_BOARD_DELAY_MILLIS = 450L
 
-        fun newInstance(context: Context, storyName: String) =
+        fun newInstance(context: Context, storyName: String, storyTitle: String) =
             Intent(context, EmbarkActivity::class.java).apply {
                 putExtra(STORY_NAME, storyName)
+                putExtra(STORY_TITLE, storyTitle)
             }
     }
 }

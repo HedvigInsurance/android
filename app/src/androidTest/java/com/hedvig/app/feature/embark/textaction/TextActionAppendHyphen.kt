@@ -32,7 +32,7 @@ class TextActionAppendHyphen : TestCase() {
 
     @Test
     fun shouldAddHyphenToInput() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name"))
+        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", storyTitle))
 
         Screen.onScreen<EmbarkScreen> {
             textActionSubmit { isDisabled() }
@@ -42,4 +42,3 @@ class TextActionAppendHyphen : TestCase() {
         }
     }
 }
-

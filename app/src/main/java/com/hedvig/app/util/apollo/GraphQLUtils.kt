@@ -3,9 +3,7 @@ package com.hedvig.app.util.apollo
 import android.content.Context
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.type.Locale
-import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import org.javamoney.moneta.Money
 import java.math.BigDecimal

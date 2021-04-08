@@ -23,5 +23,4 @@ class PreviousInsurerViewModelImpl : PreviousInsurerViewModel() {
     override fun setPreviousInsurer(id: String) {
         _previousInsurer.value = id
     }
-
 }

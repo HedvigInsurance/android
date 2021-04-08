@@ -2,7 +2,6 @@ package com.hedvig.app.feature.embark.screens
 
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionFragment
 import com.kaspersky.kaspresso.screens.KScreen

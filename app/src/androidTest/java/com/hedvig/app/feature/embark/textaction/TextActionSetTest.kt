@@ -32,7 +32,8 @@ class TextActionSetTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 
@@ -80,7 +81,8 @@ class TextActionSetTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 

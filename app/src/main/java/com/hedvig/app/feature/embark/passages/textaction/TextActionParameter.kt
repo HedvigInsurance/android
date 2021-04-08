@@ -16,14 +16,14 @@ data class TextActionParameter(
 ) : Parcelable {
     companion object {
         fun from(messages: List<String>, data: EmbarkStoryQuery.TextData, passageName: String) =
-                TextActionParameter(
-                        link = data.link.fragments.embarkLinkFragment.name,
-                        hint = data.placeholder,
-                        messages = messages,
-                        submitLabel = data.link.fragments.embarkLinkFragment.label,
-                        key = data.key,
-                        passageName = passageName,
-                        mask = data.mask
-                )
+            TextActionParameter(
+                link = data.link.fragments.embarkLinkFragment.name,
+                hint = data.placeholder,
+                messages = messages,
+                submitLabel = data.link.fragments.embarkLinkFragment.label,
+                key = data.key,
+                passageName = passageName,
+                mask = data.mask
+            )
     }
 }

@@ -33,7 +33,8 @@ class DefaultTextActionResponseTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 

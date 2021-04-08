@@ -33,11 +33,13 @@ class TermsAdapter(
             button.setHapticClickListener {
                 tracker.openOfferLink(terms.displayName)
                 // TODO Quick fix for getting new terms and conditions
-                val uri = Uri.parse(if (marketManager.market == Market.SE && terms.type == InsuranceTermType.TERMS_AND_CONDITIONS) {
-                    "https://www.hedvig.com/se/villkor"
-                } else {
-                    terms.url
-                })
+                val uri = Uri.parse(
+                    if (marketManager.market == Market.SE && terms.type == InsuranceTermType.TERMS_AND_CONDITIONS) {
+                        "https://www.hedvig.com/se/villkor"
+                    } else {
+                        terms.url
+                    }
+                )
                 it.context.openUri(uri)
             }
         }

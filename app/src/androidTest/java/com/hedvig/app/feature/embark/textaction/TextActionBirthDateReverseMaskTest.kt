@@ -36,12 +36,16 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
     @get:Rule
     val mockModuleRule = KoinMockModuleRule(
         listOf(clockModule),
-        listOf(module {
-            single {
-                Clock.fixed(Instant.parse("2021-02-03T09:54:00.00Z"),
-                    ZoneId.of("Europe/Stockholm"))
+        listOf(
+            module {
+                single {
+                    Clock.fixed(
+                        Instant.parse("2021-02-03T09:54:00.00Z"),
+                        ZoneId.of("Europe/Stockholm")
+                    )
+                }
             }
-        })
+        )
     )
 
     @Test
@@ -49,7 +53,8 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 
@@ -75,7 +80,8 @@ class TextActionBirthDateReverseMaskTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 

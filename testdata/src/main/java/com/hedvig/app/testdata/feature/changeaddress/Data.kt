@@ -7,25 +7,29 @@ import com.hedvig.app.testdata.feature.changeaddress.builders.SelfChangeEligibil
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 
 val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
-    contracts = listOf(UpcomingAgreementQuery.Contract(
-        status = UpcomingAgreementQuery.Status(
-            asActiveStatus = null,
-            asTerminatedInFutureStatus = null,
-            asTerminatedTodayStatus = null,
+    contracts = listOf(
+        UpcomingAgreementQuery.Contract(
+            status = UpcomingAgreementQuery.Status(
+                asActiveStatus = null,
+                asTerminatedInFutureStatus = null,
+                asTerminatedTodayStatus = null,
+            )
         )
-    ))
+    )
 )
 
 val UPCOMING_AGREEMENT_SWEDISH_HOUSE = UpcomingAgreementQuery.Data(
-    contracts = listOf(UpcomingAgreementQuery.Contract(
-        status = UpcomingAgreementQuery.Status(
-            asActiveStatus = UpcomingAgreementQuery.AsActiveStatus(
-                upcomingAgreementChange = UpcomingAgreementBuilder().build()
-            ),
-            asTerminatedInFutureStatus = null,
-            asTerminatedTodayStatus = null,
+    contracts = listOf(
+        UpcomingAgreementQuery.Contract(
+            status = UpcomingAgreementQuery.Status(
+                asActiveStatus = UpcomingAgreementQuery.AsActiveStatus(
+                    upcomingAgreementChange = UpcomingAgreementBuilder().build()
+                ),
+                asTerminatedInFutureStatus = null,
+                asTerminatedTodayStatus = null,
+            )
         )
-    ))
+    )
 )
 
 val SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(SelfChangeEligibilityBuilder().build())
@@ -35,4 +39,3 @@ val BLOCKED_SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(
         blockers = listOf(SelfChangeBlocker.COINSURED_MISMATCH)
     ).build()
 )
-

@@ -31,7 +31,8 @@ class UnaryExpressionRedirectTest : TestCase() {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
-                this.javaClass.name
+                this.javaClass.name,
+                storyTitle
             )
         )
 

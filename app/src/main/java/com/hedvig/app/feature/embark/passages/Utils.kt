@@ -21,7 +21,6 @@ suspend fun animateResponse(responseView: TextView, responseText: String) = susp
         ?.addEndListener { _, _, _, _ ->
             if (continuation.isActive) {
                 continuation.resume(Unit) {
-
                 }
             }
         }

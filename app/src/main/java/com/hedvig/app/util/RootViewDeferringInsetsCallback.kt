@@ -65,7 +65,7 @@ class RootViewDeferringInsetsCallback(
     init {
         require(persistentInsetTypes and deferredInsetTypes == 0) {
             "persistentInsetTypes and deferredInsetTypes can not contain any of " +
-                    " same WindowInsets.Type values"
+                " same WindowInsets.Type values"
         }
     }
 

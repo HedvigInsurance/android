@@ -28,7 +28,7 @@ class GetSelfChangeEligibilityUseCase(
     }
 
     sealed class SelfChangeEligibilityResult {
-        object Eligible: SelfChangeEligibilityResult()
+        object Eligible : SelfChangeEligibilityResult()
         data class Blocked(val blockers: List<SelfChangeBlocker>?) : SelfChangeEligibilityResult()
         data class Error(val message: String?) : SelfChangeEligibilityResult()
     }

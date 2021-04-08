@@ -12,10 +12,8 @@ import com.hedvig.app.databinding.NumberActionFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.onImeAction

@@ -7,7 +7,7 @@ data class TextActionSetBuilder(
     private val link: EmbarkLinkFragment,
     private val textActions: List<EmbarkStoryQuery.TextAction>,
 
-    ) {
+) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
@@ -22,4 +22,3 @@ data class TextActionSetBuilder(
         asEmbarkDatePickerAction = null,
     )
 }
-

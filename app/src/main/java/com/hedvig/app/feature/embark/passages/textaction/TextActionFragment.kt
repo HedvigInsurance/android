@@ -23,11 +23,9 @@ import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.feature.embark.validationCheck
-import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
@@ -106,8 +104,8 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
                 } else {
                     textActionSubmit.isEnabled =
                         text.isNotEmpty() && validationCheck(
-                            data.mask, text
-                        )
+                        data.mask, text
+                    )
                 }
             }
 

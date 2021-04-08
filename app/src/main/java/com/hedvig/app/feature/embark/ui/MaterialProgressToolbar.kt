@@ -32,5 +32,4 @@ class MaterialProgressToolbar @JvmOverloads constructor(
             binding.progress.layoutParams.height
         )
     }
-
 }

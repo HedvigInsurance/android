@@ -17,23 +17,23 @@ const val BIRTH_DATE = "BirthDate"
 const val BIRTH_DATE_REVERSE = "BirthDateReverse"
 const val NORWEGIAN_POSTAL_CODE = "NorwegianPostalCode"
 
- val PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{4}\$", Pattern.CASE_INSENSITIVE)
- val SWEDISH_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{3} \\d{2}$", Pattern.CASE_INSENSITIVE)
- val EMAIL_REGEX: Pattern = Pattern.compile("^.+@.+\\..+\$", Pattern.CASE_INSENSITIVE)
- val NORWEGIAN_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{4}$", Pattern.CASE_INSENSITIVE)
- val BIRTH_DATE_REGEX: Pattern = Pattern.compile("^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", Pattern.CASE_INSENSITIVE)
- val BIRTH_DATE_REVERSE_REGEX: Pattern = Pattern.compile("^(0[1-9]|[12]\\d|3[01])-(0[1-9]|1[0-2])-[12]\\d{3}$", Pattern.CASE_INSENSITIVE)
- val ANY_REGEX: Pattern = Pattern.compile("^.*\$", Pattern.CASE_INSENSITIVE)
+val PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{4}\$", Pattern.CASE_INSENSITIVE)
+val SWEDISH_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{3} \\d{2}$", Pattern.CASE_INSENSITIVE)
+val EMAIL_REGEX: Pattern = Pattern.compile("^.+@.+\\..+\$", Pattern.CASE_INSENSITIVE)
+val NORWEGIAN_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{4}$", Pattern.CASE_INSENSITIVE)
+val BIRTH_DATE_REGEX: Pattern = Pattern.compile("^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", Pattern.CASE_INSENSITIVE)
+val BIRTH_DATE_REVERSE_REGEX: Pattern = Pattern.compile("^(0[1-9]|[12]\\d|3[01])-(0[1-9]|1[0-2])-[12]\\d{3}$", Pattern.CASE_INSENSITIVE)
+val ANY_REGEX: Pattern = Pattern.compile("^.*\$", Pattern.CASE_INSENSITIVE)
 
 fun validationCheck(mask: String, text: String) = when (mask) {
-        PERSONAL_NUMBER -> PERSONAL_NUMBER_REGEX
-        SWEDISH_POSTAL_CODE -> SWEDISH_POSTAL_CODE_REGEX
-        EMAIL -> EMAIL_REGEX
-        BIRTH_DATE -> BIRTH_DATE_REGEX
-        BIRTH_DATE_REVERSE -> BIRTH_DATE_REVERSE_REGEX
-        NORWEGIAN_POSTAL_CODE -> NORWEGIAN_POSTAL_CODE_REGEX
-        else -> ANY_REGEX
-    }.matcher(text).find()
+    PERSONAL_NUMBER -> PERSONAL_NUMBER_REGEX
+    SWEDISH_POSTAL_CODE -> SWEDISH_POSTAL_CODE_REGEX
+    EMAIL -> EMAIL_REGEX
+    BIRTH_DATE -> BIRTH_DATE_REGEX
+    BIRTH_DATE_REVERSE -> BIRTH_DATE_REVERSE_REGEX
+    NORWEGIAN_POSTAL_CODE -> NORWEGIAN_POSTAL_CODE_REGEX
+    else -> ANY_REGEX
+}.matcher(text).find()
 
 fun TextInputEditText.setInputType(mask: String) {
     if (mask == EMAIL) {

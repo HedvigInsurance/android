@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.referrals.editcode
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.apollographql.apollo.api.Error
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity

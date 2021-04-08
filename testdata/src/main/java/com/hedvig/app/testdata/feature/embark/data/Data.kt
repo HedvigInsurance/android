@@ -374,7 +374,8 @@ val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
             action = PreviousInsurerAction(
                 storeKey = "BAR",
-                next = STANDARD_FIRST_LINK).build()
+                next = STANDARD_FIRST_LINK
+            ).build()
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
@@ -509,20 +510,22 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
             .copy(
                 messages = listOf(
                     MessageBuilder(
-                        text = "Unary true test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.ALWAYS,
-                            text = "Unary true test"
-                        ).build()
-                    )
+                        text = "Unary true test",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                text = "Unary true test"
+                            ).build()
+                        )
                     ).build(),
                     MessageBuilder(
-                        text = "Unary false test", expressions = listOf(
-                        ExpressionBuilder(
-                            type = ExpressionBuilder.ExpressionType.NEVER,
-                            text = "Unary false test"
-                        ).build()
-                    )
+                        text = "Unary false test",
+                        expressions = listOf(
+                            ExpressionBuilder(
+                                type = ExpressionBuilder.ExpressionType.NEVER,
+                                text = "Unary false test"
+                            ).build()
+                        )
                     ).build()
                 )
             )
@@ -1331,9 +1334,13 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(
-                action = SelectActionBuilder(options = listOf(SelectOptionBuilder(
-                    link = LINK_TO_THIRD_PASSAGE,
-                ).build())).build(),
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = LINK_TO_THIRD_PASSAGE,
+                        ).build()
+                    )
+                ).build(),
                 tracks = listOf(
                     TrackBuilder("Enter second passage", includeAllKeys = true).build()
                 )
@@ -1342,15 +1349,16 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 tracks = listOf(
-                    TrackBuilder("Enter third passage",
+                    TrackBuilder(
+                        "Enter third passage",
                         keys = listOf("FOO"),
-                        customData = JSONObject("{\"CUSTOM\": \"DATA\"}")).build()
+                        customData = JSONObject("{\"CUSTOM\": \"DATA\"}")
+                    ).build()
                 )
             )
             .build()
     )
 ).build()
-
 
 val STORY_WITH_EXTERNAL_REDIRECT = EmbarkStoryDataBuilder(
     passages = listOf(
@@ -1401,4 +1409,3 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
         ).build(),
     )
 ).build()
-

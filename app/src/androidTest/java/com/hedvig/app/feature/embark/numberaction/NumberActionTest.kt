@@ -31,7 +31,7 @@ class NumberActionTest : TestCase() {
 
     @Test
     fun shouldRenderNumberAction() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle))
 
         NumberActionScreen {
             step("Check that labels match data") {
@@ -81,7 +81,7 @@ class NumberActionTest : TestCase() {
 
     @Test
     fun shouldPrefillNumberActionWhenUserReturnsToPassage() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle))
 
         NumberActionScreen {
             step("Fill out passage and submit") {

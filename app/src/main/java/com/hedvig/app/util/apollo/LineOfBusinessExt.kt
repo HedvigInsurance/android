@@ -28,4 +28,3 @@ fun DanishHomeContentLineOfBusiness.stringRes() = when (this) {
     DanishHomeContentLineOfBusiness.STUDENT_OWN -> R.string.DANISH_HOME_CONTENT_LOB_STUDENT_OWN
     DanishHomeContentLineOfBusiness.UNKNOWN__ -> null
 }
-

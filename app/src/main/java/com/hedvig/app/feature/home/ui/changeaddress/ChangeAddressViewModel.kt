@@ -14,7 +14,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import kotlinx.coroutines.launch
 
-abstract class ChangeAddressViewModel: ViewModel() {
+abstract class ChangeAddressViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     abstract val viewState: LiveData<ViewState>
     abstract fun reload()
