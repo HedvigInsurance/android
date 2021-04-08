@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:text="@string/CONTRACT_DETAIL_HOME_TITLE"
+        android:textAppearance="?textAppearanceHeadline6" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/base_margin_double"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <TextView
+            android:id="@+id/coinsured_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/CONTRACT_DETAIL_HOME_ADDRESS"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/address_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/address_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textAppearance="?textAppearanceBody1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/coinsured_label"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/base_margin_double"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <TextView
+            android:id="@+id/postcode_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/CONTRACT_DETAIL_HOME_POSTCODE"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/postcode_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/postcode_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textAppearance="?textAppearanceBody1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/postcode_label"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/base_margin_double"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <TextView
+            android:id="@+id/type_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/CONTRACT_DETAIL_HOME_TYPE"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/type_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/type_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textAppearance="?textAppearanceBody1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/type_label"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/base_margin_double"
+        android:paddingBottom="@dimen/base_margin_double">
+
+        <TextView
+            android:id="@+id/size_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/CONTRACT_DETAIL_HOME_SIZE"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/size_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/size_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textAppearance="?textAppearanceBody1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/size_label"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

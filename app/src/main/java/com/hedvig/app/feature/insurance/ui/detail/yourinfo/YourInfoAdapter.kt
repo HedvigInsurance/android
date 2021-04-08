@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
-import com.hedvig.app.databinding.ContractDetailRowBinding
-import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
+import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
+import com.hedvig.app.databinding.YourInfoChangeBinding
 import com.hedvig.app.databinding.YourInfoChatButtonBinding
-import com.hedvig.app.databinding.YourInfoParagraphBinding
+import com.hedvig.app.databinding.YourInfoCoinsuredBinding
+import com.hedvig.app.databinding.YourInfoHomeBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -18,25 +19,22 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
-class YourInfoAdapter :
-    ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
-        is YourInfoModel.Header -> R.layout.contract_detail_your_info_header
-        is YourInfoModel.Paragraph -> R.layout.your_info_paragraph
-        YourInfoModel.ChangeParagraph -> R.layout.change_paragraph
-        YourInfoModel.OpenChatButton -> R.layout.your_info_chat_button
-        is YourInfoModel.Row -> R.layout.contract_detail_row
+        is YourInfoModel.Home -> R.layout.your_info_home
         is YourInfoModel.ChangeAddressButton -> R.layout.change_address_button
+        YourInfoModel.Change -> R.layout.your_info_change
+        is YourInfoModel.Coinsured -> R.layout.your_info_coinsured
+        is YourInfoModel.PendingAddressChange -> R.layout.change_address_pending_change_card
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.contract_detail_your_info_header -> ViewHolder.Header(parent)
-        R.layout.your_info_paragraph -> ViewHolder.Paragraph(parent)
-        R.layout.your_info_chat_button -> ViewHolder.ChatButton(parent)
+        R.layout.your_info_home -> ViewHolder.Home(parent)
         R.layout.change_address_button -> ViewHolder.ChangeAddressButton(parent)
-        R.layout.contract_detail_row -> ViewHolder.Row(parent)
-        R.layout.change_paragraph -> ViewHolder.ChangeParagraph(parent)
+        R.layout.your_info_change -> ViewHolder.Change(parent)
+        R.layout.your_info_coinsured -> ViewHolder.Coinsured(parent)
+        R.layout.change_address_pending_change_card -> ViewHolder.PendingAddressChange(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -51,49 +49,26 @@ class YourInfoAdapter :
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class Header(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_your_info_header)) {
-            private val binding by viewBinding(ContractDetailYourInfoHeaderBinding::bind)
+        class Change(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_change)) {
+            private val binding by viewBinding(YourInfoChangeBinding::bind)
             override fun bind(data: YourInfoModel) = with(binding) {
-                if (data !is YourInfoModel.Header) {
-                    return invalid(data)
+                openChatButton.setHapticClickListener {
+                    root.context.startActivity(ChatActivity.newInstance(root.context, true))
                 }
-                root.setText(
-                    when (data) {
-                        YourInfoModel.Header.Details -> R.string.CONTRACT_DETAIL_HOME_TITLE
-                        YourInfoModel.Header.Coinsured -> R.string.CONTRACT_DETAIL_COINSURED_TITLE
-                        YourInfoModel.Header.Change -> R.string.insurance_details_view_your_info_edit_insurance_title
-                    }
-                )
             }
         }
 
-        class Row(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_detail_row)) {
-            private val binding by viewBinding(ContractDetailRowBinding::bind)
+        class Home(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_home)) {
+            private val binding by viewBinding(YourInfoHomeBinding::bind)
             override fun bind(data: YourInfoModel) = with(binding) {
-                if (data !is YourInfoModel.Row) {
-                    return invalid(data)
+                if (data !is YourInfoModel.Home) {
+                    invalid(data)
+                } else {
+                    addressValue.text = data.street
+                    postcodeValue.text = data.postalCode
+                    typeValue.text = data.type?.let(root.context::getString)
+                    sizeValue.text = data.size.toString()
                 }
-                label.text = data.label
-                content.text = data.content
-            }
-        }
-
-        class Paragraph(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.your_info_paragraph)) {
-            private val binding by viewBinding(YourInfoParagraphBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
-                if (data !is YourInfoModel.Paragraph) {
-                    return invalid(data)
-                }
-                root.text = data.text
-            }
-        }
-
-        class ChangeParagraph(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.change_paragraph)) {
-            override fun bind(data: YourInfoModel) {
             }
         }
 
@@ -107,8 +82,22 @@ class YourInfoAdapter :
             }
         }
 
-        class ChangeAddressButton(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.change_address_button)) {
+        class Coinsured(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_coinsured)) {
+            private val binding by viewBinding(YourInfoCoinsuredBinding::bind)
+            override fun bind(data: YourInfoModel) = with(binding) {
+                if (data !is YourInfoModel.Coinsured) {
+                    invalid(data)
+                } else {
+                    coinsuredAmount.text = when (data.amount) {
+                        0 -> root.context.getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ZERO_COINSURED)
+                        1 -> root.context.getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT_ONE_COINSURED)
+                        else -> root.context.getString(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, data.amount)
+                    }
+                }
+            }
+        }
+
+        class ChangeAddressButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.change_address_button)) {
             private val binding by viewBinding(ChangeAddressButtonBinding::bind)
             override fun bind(data: YourInfoModel) {
                 binding.root.setHapticClickListener {
@@ -117,5 +106,16 @@ class YourInfoAdapter :
             }
         }
 
+        class PendingAddressChange(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
+            private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
+            override fun bind(data: YourInfoModel) = with(binding) {
+                if (data !is YourInfoModel.PendingAddressChange) {
+                    invalid(data)
+                } else {
+                    continueButton.text = "See full update"
+                    paragraph.text = "Your insurance will be updated on ${data.upcomingAgreement?.activeFrom} to your new home on ${data.upcomingAgreement?.address?.street}."
+                }
+            }
+        }
     }
 }
