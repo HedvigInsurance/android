@@ -92,7 +92,7 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
             messages.adapter = MessageAdapter(data.messages)
 
-            filledTextField.hint = data.hint
+            input.hint = data.hint
             data.mask?.let { mask ->
                 input.apply {
                     setInputType(mask)
