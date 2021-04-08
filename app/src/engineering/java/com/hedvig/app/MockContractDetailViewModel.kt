@@ -1,13 +1,7 @@
 package com.hedvig.app
 
-import android.net.Uri
-import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewState
-import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
-import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
-import com.hedvig.app.feature.insurance.ui.detail.toModelItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
@@ -21,14 +15,19 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
             _data.postValue(Result.failure(Error()))
             return
         } else {
-            val contract = mockData.contracts.find { it.id == id }
-            contract?.let {
-                _data.value = Result.success(it)
-                _yourInfoList.value = listOf(
-                    YourInfoModel.PendingAddressChange(
+            mockData.contracts.find { it.id == id }?.let { _data.value = Result.success(it) } ?: run {
+                val list = yourInfoListItemBuilder.createYourInfoList(
+                    contract = mockData.contracts[0],
+                    upcomingAgreementResult = YourInfoModel.PendingAddressChange(
                         upcomingAgreement = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
-                            activeFrom = LocalDate.of(2021, 1, 30),
-                            address = "Test Address 12",
+                            address = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Address(
+                                street = "Test Address 12",
+                                postalCode = "11234",
+                                city = "Test City"
+                            ),
+                            squareMeters = 123,
+                            activeFrom = LocalDate.of(2021, 4, 8),
+                            addressType = R.string.SWEDISH_APARTMENT_LOB_RENT,
                             table = Table(
                                 title = "Mock Upcoming Agreement",
                                 sections = listOf(
@@ -71,29 +70,8 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                             )
                         )
                     )
-                ) + mockData.contracts[0].toModelItems()
-
-                _documentsList.value = listOfNotNull(
-                    it.currentAgreement.asAgreementCore?.certificateUrl?.let {
-                        DocumentItems.Document(
-                            titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
-                            subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
-                            uri = Uri.parse(it)
-                        )
-                    },
-                    it.termsAndConditions.url.let {
-                        DocumentItems.Document(
-                            titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-                            subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                            uri = Uri.parse(it)
-                        )
-                    }
                 )
-
-                _coverageViewState.value = CoverageViewState(
-                    createCoverageItems(it),
-                    createInsurableLimitsItems(it)
-                )
+                _yourInfoList.value = list
             }
         }
     }

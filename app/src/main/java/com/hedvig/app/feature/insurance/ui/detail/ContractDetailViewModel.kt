@@ -22,6 +22,7 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
+    val yourInfoListItemBuilder = YourInfoListItemBuilder()
 
     protected val _data = MutableLiveData<Result<InsuranceQuery.Contract>>()
     val data: LiveData<Result<InsuranceQuery.Contract>> = _data
@@ -42,7 +43,7 @@ abstract class ContractDetailViewModel : ViewModel() {
 class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
     private val chatRepository: ChatRepository,
-    private val marketManager: MarketManager,
+    private val marketManager: MarketManager
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
