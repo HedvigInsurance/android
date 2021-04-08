@@ -66,6 +66,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
 
             progressToolbar.toolbar.title = storyName
+            setupToolbarMenu(progressToolbar)
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(progressToolbar)
