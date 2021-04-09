@@ -41,7 +41,7 @@ class TextActionTest : TestCase() {
             onScreen<EmbarkScreen> {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
             }
-            input { hasHint("Test hint") }
+            input { edit { hasHint("Test hint") } }
             submitButton {
                 hasText("Another test passage")
                 isDisabled()

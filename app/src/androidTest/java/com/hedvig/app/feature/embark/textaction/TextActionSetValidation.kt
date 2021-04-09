@@ -9,6 +9,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.hasPlaceholderText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -44,8 +45,9 @@ class TextActionSetValidation : TestCase() {
             inputs {
                 childAt<TextActionSetScreen.Input>(0) {
                     input {
+                        hasPlaceholderText("901124-1234")
                         edit {
-                            hasHint("901124-1234")
+                            hasHint("Personal number")
                             typeText("9704071234")
                         }
                     }
@@ -55,6 +57,7 @@ class TextActionSetValidation : TestCase() {
             inputs {
                 childAt<TextActionSetScreen.Input>(1) {
                     input {
+                        hasPlaceholderText("example@email.com")
                         edit {
                             hasHint("Email")
                             typeText("email@hedvig.com")
