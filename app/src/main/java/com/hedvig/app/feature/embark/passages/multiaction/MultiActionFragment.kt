@@ -14,8 +14,10 @@ import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottom
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import dev.chrisbanes.insetter.Insetter
 import kotlinx.android.synthetic.main.picker_button.continueButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -34,11 +36,13 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
 
     private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
     private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
-
-
-
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Insetter.builder().setOnApplyInsetsListener { insetView, insets, initialState ->
+            insetView.updateMargin(bottom = initialState.paddings.bottom + insets.stableInsetBottom)
+        }.applyToView(binding.continueButton)
 
         setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
             if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
