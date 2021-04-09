@@ -11,8 +11,8 @@ import com.hedvig.app.feature.settings.MarketManager
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {
-    protected val _pickerSate = MutableLiveData<PickerState>()
-    val pickerState: LiveData<PickerState> = _pickerSate
+    protected val _pickerState = MutableLiveData<PickerState>()
+    val pickerState: LiveData<PickerState> = _pickerState
     abstract fun submitMarketAndReload(market: Market)
     abstract fun submitLanguageAndReload(language: Language)
 }
@@ -26,14 +26,14 @@ class MarketPickerViewModelImpl(
 ) : MarketPickerViewModel() {
 
     override fun submitMarketAndReload(market: Market) {
-        _pickerSate.value = _pickerSate.value?.let {
+        _pickerState.value = _pickerState.value?.let {
             updateState(market, market.toLanguage())
             PickerState(market, market.toLanguage())
         }
     }
 
     override fun submitLanguageAndReload(language: Language) {
-        _pickerSate.value = _pickerSate.value?.let {
+        _pickerState.value = _pickerState.value?.let {
             updateState(it.market, language)
             PickerState(it.market, language)
         }
@@ -56,8 +56,8 @@ class MarketPickerViewModelImpl(
 
     init {
         viewModelScope.launch {
-            val market = marketRepository.getMarket()
-            _pickerSate.value = PickerState(market, market.toLanguage())
+            val market = runCatching { marketRepository.getMarket() }.getOrNull() ?: return@launch
+            _pickerState.value = PickerState(market, market.toLanguage())
             marketManager.market = market
         }
     }

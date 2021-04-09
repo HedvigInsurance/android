@@ -1,9 +1,8 @@
 package com.hedvig.app.feature.splash
 
 import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -14,6 +13,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.extensions.isLoggedIn
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.stub
+import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.After
 import org.junit.Before
@@ -43,9 +43,6 @@ class NetworkErrorTest : TestCase() {
     @Test
     fun shouldNotCrashOnNetworkError() = run {
         activityRule.launch()
-        onScreen<SplashScreen> {
-            marketing { stub() }
-        }
     }
 
     @After
@@ -53,7 +50,10 @@ class NetworkErrorTest : TestCase() {
         context().setIsLoggedIn(previousLoginStatus)
     }
 
-    class SplashScreen : Screen<SplashScreen>() {
+    object SplashScreen : KScreen<SplashScreen>() {
+        override val layoutId = R.layout.activity_splash
+        override val viewClass = SplashActivity::class.java
+
         val marketing = KIntent { hasComponent(MarketingActivity::class.java.name) }
     }
 }
