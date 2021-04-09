@@ -38,24 +38,14 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:text="25 sqm * water" />
 
-        <FrameLayout
+        <ImageButton
             android:id="@+id/removeButton"
-            android:layout_width="42dp"
             style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="42dp"
             android:layout_height="42dp"
-            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_close_small"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_close"
-                app:tint="@color/grey_inactive"
-                tools:ignore="ContentDescription" />
-
-        </FrameLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
