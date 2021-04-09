@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ContractDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailYourInfoHeaderBinding
 import com.hedvig.app.databinding.YourInfoChatButtonBinding
@@ -100,22 +101,18 @@ class YourInfoAdapter :
             ViewHolder(parent.inflate(R.layout.your_info_chat_button)) {
             private val binding by viewBinding(YourInfoChatButtonBinding::bind)
             override fun bind(data: YourInfoModel) {
-                binding.root.apply {
-                    setHapticClickListener {
-                        context.startActivity(ChatActivity.newInstance(context, true))
-                    }
+                binding.root.setHapticClickListener {
+                    binding.root.context.startActivity(ChatActivity.newInstance(binding.root.context, true))
                 }
             }
         }
 
         class ChangeAddressButton(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.change_address_button)) {
-            private val binding by viewBinding(YourInfoChatButtonBinding::bind)
+            private val binding by viewBinding(ChangeAddressButtonBinding::bind)
             override fun bind(data: YourInfoModel) {
-                binding.root.apply {
-                    setHapticClickListener {
-                        context.startActivity(ChangeAddressActivity.newInstance(context))
-                    }
+                binding.root.setHapticClickListener {
+                    binding.root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
                 }
             }
         }
