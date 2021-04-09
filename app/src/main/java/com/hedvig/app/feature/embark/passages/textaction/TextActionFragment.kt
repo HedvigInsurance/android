@@ -2,30 +2,22 @@ package com.hedvig.app.feature.embark.passages.textaction
 
 import android.os.Build
 import android.os.Bundle
-import android.view.HapticFeedbackConstants
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
-import com.hedvig.app.databinding.FragmentEmbarkTextActionBinding
-import com.hedvig.app.feature.embark.BIRTH_DATE
-import com.hedvig.app.feature.embark.BIRTH_DATE_REVERSE
-import com.hedvig.app.feature.embark.EMAIL
+import com.hedvig.app.databinding.EmbarkInputItemBinding
+import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
-import com.hedvig.app.feature.embark.NORWEGIAN_POSTAL_CODE
-import com.hedvig.app.feature.embark.PERSONAL_NUMBER
-import com.hedvig.app.feature.embark.SWEDISH_POSTAL_CODE
-import com.hedvig.app.feature.embark.masking.derivedValues
-import com.hedvig.app.feature.embark.masking.remask
-import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
 import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.feature.embark.validationCheck
+import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.hapticClicks
@@ -34,93 +26,46 @@ import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
-import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
-import java.time.Clock
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
+/**
+ * Used for Embark actions TextAction and TextActionSet
+ */
+class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     private val model: EmbarkViewModel by sharedViewModel()
-    private val binding by viewBinding(FragmentEmbarkTextActionBinding::bind)
-
-    private val clock: Clock by inject()
+    private val data: TextActionParameter
+        get() = requireArguments().getParcelable(DATA)
+            ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+    private val textActionSetViewModel: TextActionViewModel by viewModel { parametersOf(data) }
+    private val binding by viewBinding(FragmentTextActionSetBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        val data = requireArguments().getParcelable<TextActionParameter>(DATA)
-
-        if (data == null) {
-            e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
-            return
-        }
-
-        when (data.mask) {
-            PERSONAL_NUMBER,
-            SWEDISH_POSTAL_CODE,
-            EMAIL,
-            BIRTH_DATE,
-            BIRTH_DATE_REVERSE,
-            NORWEGIAN_POSTAL_CODE,
-            null,
-            -> {
-            }
-            else -> {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.passageContainer, UpgradeAppFragment.newInstance())
-                    .commit()
-                return
-            }
-        }
-
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                input.setupInsetsForIme(
+                inputContainer.setupInsetsForIme(
                     root = root,
                     textActionSubmit,
-                    input
+                    inputLayout
                 )
             }
+            val views = createInputViews()
+            inputContainer.addViews(views)
 
             messages.adapter = MessageAdapter(data.messages)
 
-            input.hint = data.hint
-            data.mask?.let { mask ->
-                input.apply {
-                    setInputType(mask)
-                    setValidationFormatter(mask)
-                }
-            }
-
-            input.onChange { text ->
-                if (data.mask == null) {
-                    textActionSubmit.isEnabled = text.isNotEmpty()
-                } else {
-                    textActionSubmit.isEnabled =
-                        text.isNotEmpty() && validationCheck(
-                        data.mask, text
-                    )
-                }
-            }
-
-            input.onImeAction {
-                if (textActionSubmit.isEnabled) {
-                    viewLifecycleScope.launch {
-                        saveAndAnimate(data)
-                        model.navigateToPassage(data.link)
-                    }
-                }
-            }
-
-            model.getFromStore(data.key)?.let { input.setText(remask(it, data.mask)) }
-
             textActionSubmit.text = data.submitLabel
+            textActionSetViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
+
             textActionSubmit
                 .hapticClicks()
                 .mapLatest { saveAndAnimate(data) }
@@ -135,20 +80,64 @@ class TextActionFragment : Fragment(R.layout.fragment_embark_text_action) {
 
     private suspend fun saveAndAnimate(data: TextActionParameter) {
         context?.hideKeyboardWithDelay(
-            inputView = binding.input,
+            inputView = binding.inputContainer,
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
-        binding.textActionSubmit.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-        val inputText = binding.input.text.toString()
-        val unmasked = unmask(inputText, data.mask)
-        model.putInStore("${data.passageName}Result", unmasked)
-        model.putInStore(data.key, unmasked)
-        derivedValues(unmasked, data.key, data.mask, clock).forEach { (key, value) ->
-            model.putInStore(key, value)
+        textActionSetViewModel.inputs.value?.let { inputs ->
+            data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
+            val allInput = inputs.values.joinToString(" ")
+            model.putInStore("${data.passageName}Result", allInput)
+            val responseText = model.preProcessResponse(data.passageName) ?: allInput
+            animateResponse(binding.response, responseText)
         }
-        val responseText = model.preProcessResponse(data.passageName) ?: inputText
-        animateResponse(binding.response, responseText)
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
+    }
+
+    private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
+        val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
+
+        inputView.textField.hint = data.placeholders[index]
+        val mask = data.mask[index]
+        mask?.let {
+            inputView.input.apply {
+                setInputType(it)
+                setValidationFormatter(it)
+            }
+        }
+        inputView.input.onChange { text ->
+            if (mask == null) {
+                if (text.isBlank()) {
+                    textActionSetViewModel.updateIsValid(index, false)
+                } else {
+                    textActionSetViewModel.updateIsValid(index, true)
+                }
+            } else {
+                if (text.isNotBlank() && validationCheck(mask, text)) {
+                    textActionSetViewModel.updateIsValid(index, true)
+                } else {
+                    textActionSetViewModel.updateIsValid(index, false)
+                }
+            }
+            textActionSetViewModel.setInputValue(index, text)
+        }
+
+        if (index < data.keys.size - 1) {
+            inputView.input.imeOptions = EditorInfo.IME_ACTION_NEXT
+        } else {
+            inputView.input.imeOptions = EditorInfo.IME_ACTION_DONE
+        }
+
+        inputView.input.onImeAction {
+            if (textActionSetViewModel.isValid.value == true) {
+                viewLifecycleScope.launch {
+                    saveAndAnimate(data)
+                    model.navigateToPassage(data.link)
+                }
+            }
+        }
+
+        key?.let(model::getFromStore)?.let(inputView.input::setText)
+        inputView.root
     }
 
     companion object {

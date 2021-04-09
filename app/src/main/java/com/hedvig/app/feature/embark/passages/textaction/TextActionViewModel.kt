@@ -1,11 +1,11 @@
-package com.hedvig.app.feature.embark.passages.textactionset
+package com.hedvig.app.feature.embark.passages.textaction
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 
-class TextActionSetViewModel(data: TextActionSetParameter) : ViewModel() {
+class TextActionViewModel(data: TextActionParameter) : ViewModel() {
     private val _isValid = MutableLiveData((data.keys.indices).map { Pair(it, false) }.toMap())
     val isValid = _isValid.map { iv ->
         iv.values.all { it }

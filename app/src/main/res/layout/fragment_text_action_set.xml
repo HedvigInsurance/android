@@ -42,20 +42,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <FrameLayout
+        <LinearLayout
+            android:id="@+id/input_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/base_margin_double">
+            android:orientation="vertical"
+            android:padding="@dimen/base_margin_double" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/inputRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="2"
-                tools:listitem="@layout/embark_input_item" />
-
-        </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <Button

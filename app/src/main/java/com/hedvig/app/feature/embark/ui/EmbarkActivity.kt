@@ -28,8 +28,6 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetFragment
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionSetParameter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -188,12 +186,12 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         passage?.action?.asEmbarkTextActionSet?.let { textActionSet ->
             textActionSet.textSetData?.let { data ->
-                val parameter = TextActionSetParameter.from(
+                val parameter = TextActionParameter.from(
                     passage.messages.map { it.fragments.messageFragment.text },
                     data,
                     passage.name
                 )
-                return TextActionSetFragment.newInstance(parameter)
+                return TextActionFragment.newInstance(parameter)
             }
         }
 
