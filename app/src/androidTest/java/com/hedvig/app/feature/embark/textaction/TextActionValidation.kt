@@ -32,7 +32,7 @@ class TextActionValidation : TestCase() {
 
     @Test
     fun buttonShouldOnlyBeEnabledWhenValidEmailIsTyped() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", storyTitle))
+        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", ""))
 
         Screen.onScreen<EmbarkScreen> {
             textActionSubmit { isDisabled() }

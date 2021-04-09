@@ -33,7 +33,7 @@ class TextActionSetTest : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 
@@ -49,7 +49,6 @@ class TextActionSetTest : TestCase() {
                 childAt<TextActionSetScreen.Input>(0) {
                     input {
                         edit {
-
                             typeText("First Text")
                             hasHint("First Placeholder")
                         }
@@ -82,7 +81,7 @@ class TextActionSetTest : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 

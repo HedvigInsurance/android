@@ -53,7 +53,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun loginButtonShouldOpenLoginMethod() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -71,7 +71,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun restartButtonShouldReloadEmbark() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -101,7 +101,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun appInfoButtonShouldStartMoreOptionsActivity() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
 
         TextActionScreen {
@@ -119,7 +119,7 @@ class EmbarkMenuTest : TestCase() {
 
     @Test
     fun settingsButtonShouldStartMoreOptionsActivity() = run {
-        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, storyTitle)
+        val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
 
         TextActionScreen {
