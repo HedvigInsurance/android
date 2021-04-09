@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
-class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), MultiActionAdapter.ClickListener {
+class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
     private val model: EmbarkViewModel by sharedViewModel()
 
     private val multiActionParams: MultiActionParams by lazy {
@@ -36,7 +36,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
 
     private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
     private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -52,7 +52,10 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
             }
         }
 
-        val adapter = MultiActionAdapter(this)
+        val adapter = MultiActionAdapter(
+            multiActionViewModel::onComponentClicked,
+            multiActionViewModel::onComponentRemoved
+        )
         binding.apply {
             messages.adapter = MessageAdapter(multiActionParams.messages)
             componentContainer.adapter = adapter
@@ -79,14 +82,6 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
         AddComponentBottomSheet
             .newInstance(componentState, multiActionParams)
             .show(parentFragmentManager, BOTTOM_SHEET_TAG)
-    }
-
-    override fun onComponentClick(id: Long) {
-        multiActionViewModel.onComponentClicked(id)
-    }
-
-    override fun onComponentRemove(id: Long) {
-        multiActionViewModel.onComponentRemoved(id)
     }
 
     companion object {
