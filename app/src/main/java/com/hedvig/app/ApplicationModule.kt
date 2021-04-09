@@ -36,8 +36,8 @@ import com.hedvig.app.feature.embark.passages.numberaction.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberaction.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionParameter
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionViewModel
+import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel

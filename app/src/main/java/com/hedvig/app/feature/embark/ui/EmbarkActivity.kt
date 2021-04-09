@@ -26,8 +26,8 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFra
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionFragment
-import com.hedvig.app.feature.embark.passages.textactionset.TextActionParameter
+import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
+import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity

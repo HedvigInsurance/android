@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.textactionset
+package com.hedvig.app.feature.embark.passages.textaction
 
 import android.os.Build
 import android.os.Bundle
