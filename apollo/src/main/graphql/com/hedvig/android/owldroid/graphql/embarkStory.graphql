@@ -155,15 +155,7 @@ query EmbarkStory($name: String!, $locale: String!) {
             components {
               ... on EmbarkNumberAction {
                 data {
-                  key
-                  placeholder
-                  unit
-                  label
-                  maxValue
-                  minValue
-                  link {
-                    ...EmbarkLinkFragment
-                  }
+                  ...EmbarkNumberActionFragment
                 }
               }
               ... on EmbarkDropdownAction {
@@ -204,6 +196,18 @@ query EmbarkStory($name: String!, $locale: String!) {
         customData
       }
     }
+  }
+}
+
+fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
+  key
+  placeholder
+  unit
+  label
+  maxValue
+  minValue
+  link {
+    ...EmbarkLinkFragment
   }
 }
 

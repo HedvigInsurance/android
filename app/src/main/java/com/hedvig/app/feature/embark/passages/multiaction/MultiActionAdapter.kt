@@ -7,10 +7,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.ViewMultiActionComponentBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.viewBinding
 
-class MultiActionAdapter(private val clickListener: ClickListener) : ListAdapter<MultiAction, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
+class MultiActionAdapter(
+    private val clickListener: ClickListener
+) : ListAdapter<MultiAction, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
 
     interface ClickListener {
         fun onComponentClick(id: Long)
@@ -23,8 +27,8 @@ class MultiActionAdapter(private val clickListener: ClickListener) : ListAdapter
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.view_multi_action_component -> ComponentViewHolder(parent.inflate(R.layout.view_multi_action_component))
-        R.layout.view_multi_action_add -> ButtonViewHolder(parent.inflate(R.layout.view_multi_action_add))
+        R.layout.view_multi_action_component -> ComponentViewHolder(parent)
+        R.layout.view_multi_action_add -> ButtonViewHolder(parent)
         else -> throw Error("Invalid view type")
     }
 
@@ -45,16 +49,14 @@ class MultiActionAdapter(private val clickListener: ClickListener) : ListAdapter
 
 abstract class MultiActionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-class ComponentViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
+class ComponentViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.inflate(R.layout.view_multi_action_component)) {
 
-    private val removeButton = itemView.findViewById<FrameLayout>(R.id.removeButton)
-    private val title = itemView.findViewById<TextView>(R.id.title)
-    private val subtitle = itemView.findViewById<TextView>(R.id.subtitle)
+    private val binding by viewBinding(ViewMultiActionComponentBinding::bind)
 
     fun bind(item: MultiAction.Component, clickListener: MultiActionAdapter.ClickListener) {
-        title.text = item.selectedDropDown
-        subtitle.text = "${item.input} ${item.inputUnit}"
-        removeButton.setOnClickListener {
+        binding.title.text = item.selectedDropDown
+        binding.subtitle.text = "${item.input} ${item.inputUnit}"
+        binding.removeButton.setOnClickListener {
             clickListener.onComponentRemove(item.id)
         }
         itemView.setOnClickListener {
@@ -63,4 +65,4 @@ class ComponentViewHolder(itemView: View) : MultiActionViewHolder(itemView) {
     }
 }
 
-class ButtonViewHolder(itemView: View) : MultiActionViewHolder(itemView)
+class ButtonViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.inflate(R.layout.view_multi_action_add))

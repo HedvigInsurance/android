@@ -35,7 +35,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
     private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
     private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
 
-    private val adapter = MultiActionAdapter(this)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,6 +48,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action), Mul
             }
         }
 
+        val adapter = MultiActionAdapter(this)
         binding.apply {
             messages.adapter = MessageAdapter(multiActionParams.messages)
             componentContainer.adapter = adapter

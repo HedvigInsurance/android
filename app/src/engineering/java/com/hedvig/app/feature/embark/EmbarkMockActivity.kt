@@ -68,7 +68,7 @@ class EmbarkMockActivity : MockActivity() {
         header("Multi Action")
         clickableItem("Regular") {
             MockEmbarkViewModel.mockedData = STORY_WITH_MULTI_ACTION
-            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Multi action"))
         }
         header("Date Picker Action")
         clickableItem("Regular") {

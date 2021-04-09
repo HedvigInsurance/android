@@ -24,6 +24,7 @@ data class NumberActionSetBuilder(
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,
+        asEmbarkMultiAction = null,
         asEmbarkNumberActionSet = EmbarkStoryQuery.AsEmbarkNumberActionSet(
             numberActionSetData = EmbarkStoryQuery.NumberActionSetData(
                 numberActions = numberActions.map {

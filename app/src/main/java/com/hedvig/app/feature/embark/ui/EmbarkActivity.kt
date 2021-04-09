@@ -308,14 +308,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         },
                         number = it.asEmbarkNumberAction1?.data?.let { numberData ->
                             Number(
-                                numberData.key,
-                                numberData.label,
-                                numberData.placeholder,
-                                numberData.unit,
-                                numberData.maxValue,
-                                numberData.minValue,
-                                numberData.link.fragments.embarkLinkFragment.name,
-                                numberData.link.fragments.embarkLinkFragment.label,
+                                numberData.fragments.embarkNumberActionFragment.key,
+                                numberData.fragments.embarkNumberActionFragment.label,
+                                numberData.fragments.embarkNumberActionFragment.placeholder,
+                                numberData.fragments.embarkNumberActionFragment.unit,
+                                numberData.fragments.embarkNumberActionFragment.maxValue,
+                                numberData.fragments.embarkNumberActionFragment.minValue,
+                                numberData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
+                                numberData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
                             )
                         }
                     )
