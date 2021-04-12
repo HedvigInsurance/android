@@ -106,7 +106,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val offerIds = offerKeys.mapNotNull { key -> key?.let { model.getFromStore(it) } }
             showWebOffer(offerIds)
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId") ?: throw IllegalArgumentException("No id found for key quoteId")
+            val key = model.getFromStore("quoteId") ?: ""
             showWebOffer(listOf(key))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)

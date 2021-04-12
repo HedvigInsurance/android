@@ -1408,6 +1408,15 @@ val STORY_WITH_EXTERNAL_REDIRECT = EmbarkStoryDataBuilder(
     )
 ).build()
 
+val STORY_WITH_OFFER_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(offerRedirectKeys = listOf("123", "123"))
+            .build()
+    )
+).build()
+
 val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
     computedStoreValues = listOf(
         EmbarkStoryQuery.ComputedStoreValue(key = "BAR", value = "FOO + 3")

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.externalredirect
+package com.hedvig.app.feature.embark.redirect
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -15,7 +15,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class OfferTest : TestCase() {
+class ExternalRedirectOfferTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(EmbarkActivity::class.java)
 
