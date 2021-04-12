@@ -103,10 +103,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
         val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
         if (offerKeys != null && offerKeys.isNotEmpty()) {
-            val offerIds = offerKeys.map { key -> key?.let { model.getFromStore(it) } }
+            val offerIds = offerKeys.mapNotNull { key -> key?.let { model.getFromStore(it) } }
             showWebOffer(offerIds)
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId")
+            val key = model.getFromStore("quoteId") ?: throw IllegalArgumentException("No found for key quoteId")
             showWebOffer(listOf(key))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)
@@ -280,7 +280,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         return UpgradeAppFragment.newInstance()
     }
 
-    private fun showWebOffer(keys: List<String?>) {
+    private fun showWebOffer(keys: List<String>) {
         startActivityForResult(
             WebOnboardingActivity.newNoInstance(
                 this@EmbarkActivity,

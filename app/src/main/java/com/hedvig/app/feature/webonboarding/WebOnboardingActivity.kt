@@ -161,7 +161,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             context: Context,
             webPath: String?,
             offer: Boolean = false,
-            quoteId: List<String?>
+            quoteId: List<String>
         ): Intent {
             val intent = Intent(context, WebOnboardingActivity::class.java)
             intent.putExtra(WEB_PATH, webPath)
