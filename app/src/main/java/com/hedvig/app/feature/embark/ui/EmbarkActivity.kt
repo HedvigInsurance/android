@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
+import com.hedvig.app.feature.embark.EmbarkModel
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -71,7 +72,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
             setupToolbarMenu(progressToolbar)
             progressToolbar.toolbar.title = storyTitle
-            
+
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(progressToolbar)
@@ -80,11 +81,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 val passage = embarkData.passage
                 actionBar?.title = passage?.name
 
-                if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-                    showWebOffer()
-                } else {
-                    transitionToNextPassage(embarkData.navigationDirection, passage)
-                }
+                showNextView(embarkData, passage)
             }
 
             model.errorMessage.observe(this@EmbarkActivity) { message ->
@@ -100,6 +97,19 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 setOnMenuItemClickListener(::handleMenuItem)
                 setNavigationOnClickListener { finish() }
             }
+        }
+    }
+
+    private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
+        val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
+        if (offerKeys != null && offerKeys.isNotEmpty()) {
+            val offerIds = offerKeys.map { key -> key?.let { model.getFromStore(it) } }
+            showWebOffer(offerIds)
+        } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
+            val key = model.getFromStore("quoteId")
+            showWebOffer(listOf(key))
+        } else {
+            transitionToNextPassage(embarkData.navigationDirection, passage)
         }
     }
 
@@ -270,13 +280,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         return UpgradeAppFragment.newInstance()
     }
 
-    private fun showWebOffer() {
+    private fun showWebOffer(keys: List<String?>) {
         startActivityForResult(
             WebOnboardingActivity.newNoInstance(
                 this@EmbarkActivity,
                 "",
                 true,
-                model.getFromStore("quoteId")
+                keys
             ),
             REQUEST_OFFER
         )

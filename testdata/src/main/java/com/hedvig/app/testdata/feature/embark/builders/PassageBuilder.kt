@@ -41,6 +41,11 @@ data class PassageBuilder(
         tracks = tracks,
         externalRedirect = externalRedirect?.let {
             EmbarkStoryQuery.ExternalRedirect(data = EmbarkStoryQuery.Data1(location = it))
-        }
+        },
+        offerRedirect = EmbarkStoryQuery.OfferRedirect(
+            data = EmbarkStoryQuery.Data2(
+                keys = listOf()
+            )
+        )
     )
 }
