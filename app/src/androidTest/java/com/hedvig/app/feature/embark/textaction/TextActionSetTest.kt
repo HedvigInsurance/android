@@ -41,7 +41,6 @@ class TextActionSetTest : TestCase() {
                 "",
             )
         )
-
         TextActionSetScreen {
             onScreen<EmbarkScreen> {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }

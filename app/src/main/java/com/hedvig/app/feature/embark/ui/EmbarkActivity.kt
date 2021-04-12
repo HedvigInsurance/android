@@ -234,6 +234,27 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             )
         }
 
+        passage?.action?.asEmbarkNumberActionSet?.numberActionSetData?.let { numberActionSet ->
+            return NumberActionFragment.newInstance(
+                NumberActionParams(
+                    passage.messages.map { it.fragments.messageFragment.text },
+                    passage.name,
+                    numberActions = numberActionSet.numberActions.map { numberAction ->
+                        NumberActionParams.NumberAction(
+                            key = numberAction.data!!.key,
+                            title = numberAction.data!!.label,
+                            placeholder = numberAction.data!!.placeholder,
+                            unit = numberAction.data!!.unit,
+                            maxValue = numberAction.data!!.maxValue,
+                            minValue = numberAction.data!!.minValue
+                        )
+                    },
+                    link = numberActionSet.link.fragments.embarkLinkFragment.name,
+                    submitLabel = numberActionSet.link.fragments.embarkLinkFragment.label,
+                )
+            )
+        }
+
         passage?.action?.asEmbarkDatePickerAction?.let { datePickerAction ->
             val params = DatePickerParams(
                 passage.messages.map { it.fragments.messageFragment.text },

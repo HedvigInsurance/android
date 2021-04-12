@@ -15,6 +15,7 @@ import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.NumberActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
@@ -1300,6 +1301,43 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
         ).build()
     )
 ).build()
+
+val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = NumberActionSetBuilder(
+                    listOf(
+                        NumberActionSetBuilder.NumberAction(
+                            unit = "other people",
+                            placeholder = "1",
+                            label = "Co-insured",
+                            maxValue = 75,
+                            minValue = 1,
+                            title = "BAR",
+                        ),
+                        NumberActionSetBuilder.NumberAction(
+                            unit = "sqm",
+                            placeholder = "52",
+                            label = "House size",
+                            maxValue = 75,
+                            minValue = 1,
+                            title = "FOO",
+                        )
+                    ),
+                    link = STANDARD_FIRST_LINK
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
 
 val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
     passages = listOf(
