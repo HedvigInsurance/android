@@ -18,16 +18,18 @@ class EmbarkActivityTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun testErrorDialog() = run {
+    fun showsSpinnerWhileLoading() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                "",
+                "storyTitle",
             )
         )
         onScreen<EmbarkScreen> {
-            errorDialog { title { hasText("Error") } }
+            spinner {
+                isVisible()
+            }
         }
     }
 }
