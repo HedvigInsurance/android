@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.textaction
 
-import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.edit.KEditText
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
@@ -11,7 +10,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.hasPlaceholderText
+import com.hedvig.app.util.withHint
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -45,18 +44,16 @@ class TextActionSetValidation : TestCase() {
         TextActionSetScreen {
             submit { isDisabled() }
             val editTextPersonalNumber = KEditText {
-                withMatcher(ViewMatchers.withHint("901124-1234"))
+                withHint("901124-1234")
             }
             editTextPersonalNumber {
-                hasHint("901124-1234")
                 typeText("9704071234")
             }
             submit { isDisabled() }
             val editTextEmail = KEditText {
-                withMatcher(ViewMatchers.withHint("Email"))
+                withHint("example@email.com")
             }
             editTextEmail {
-                hasHint("Email")
                 typeText("email@hedvig.com")
             }
             submit { isEnabled() }

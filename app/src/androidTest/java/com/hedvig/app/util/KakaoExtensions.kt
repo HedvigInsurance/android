@@ -6,7 +6,9 @@ import android.widget.TextView
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.bottomnav.KBottomNavigationView
+import com.agoda.kakao.common.builders.ViewBuilder
 import com.agoda.kakao.common.utilities.getResourceString
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
@@ -79,3 +81,5 @@ fun KTextInputLayout.hasHelperText(text: String) {
 }
 
 fun KTextInputLayout.hasHelperText(@StringRes resId: Int) = hasHelperText(getResourceString(resId))
+
+fun ViewBuilder.withHint(hint: String) = withMatcher(ViewMatchers.withHint(hint))

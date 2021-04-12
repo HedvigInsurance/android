@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.textaction
 
-import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -13,7 +12,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.hasPlaceholderText
+import com.hedvig.app.util.withHint
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -30,8 +29,8 @@ class TextActionSetTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-    val editText1 = KEditText { withMatcher(ViewMatchers.withHint("First Placeholder"))}
-    val editText2 = KEditText { withMatcher(ViewMatchers.withHint("Second Placeholder"))}
+    val input1 = KEditText { withHint("Placeholder") }
+    val input2 = KEditText { withHint("Second Placeholder") }
 
     @Test
     fun textActionSetTest() = run {
@@ -51,13 +50,11 @@ class TextActionSetTest : TestCase() {
                 hasText("Another test passage")
                 isDisabled()
             }
-            editText1 {
+            input1 {
                 typeText("First Text")
-                hasHint("First Placeholder")
             }
             submit { isDisabled() }
-            editText2 {
-                hasHint("Second Placeholder")
+            input2 {
                 typeText("Second Text")
             }
             submit { click() }
@@ -81,8 +78,8 @@ class TextActionSetTest : TestCase() {
 
         TextActionSetScreen {
             step("Fill in data and submit") {
-                editText1 { replaceText("Test") }
-                editText2 { replaceText("Testerson") }
+                input1 { replaceText("Test") }
+                input2 { replaceText("Testerson") }
                 submit { click() }
             }
             step("Verify that previous passage is no longer shown") {
@@ -96,8 +93,8 @@ class TextActionSetTest : TestCase() {
             }
             step("Go back and verify that the previous answers are prefilled") {
                 pressBack()
-                editText1 { replaceText("Test") }
-                editText2 { replaceText("Testerson") }
+                input1 { replaceText("Test") }
+                input2 { replaceText("Testerson") }
             }
             step("Check that validation passes on prefilled input") {
                 submit { isEnabled() }
