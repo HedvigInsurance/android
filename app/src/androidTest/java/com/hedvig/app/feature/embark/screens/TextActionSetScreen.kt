@@ -15,13 +15,4 @@ object TextActionSetScreen : KScreen<TextActionSetScreen>() {
     override val viewClass = TextActionFragment::class.java
 
     val submit = KButton { withId(R.id.textActionSubmit) }
-
-    val inputs = KRecyclerView(
-        { withId(R.id.inputRecycler) },
-        { itemType(TextActionSetScreen::Input) }
-    )
-
-    class Input(parent: Matcher<View>) : KRecyclerItem<Input>(parent) {
-        val input = KTextInputLayout { withMatcher(parent) }
-    }
 }

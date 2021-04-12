@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.embark.textaction
 
+import androidx.test.espresso.matcher.ViewMatchers
+import com.agoda.kakao.edit.KEditText
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -42,28 +44,20 @@ class TextActionSetValidation : TestCase() {
 
         TextActionSetScreen {
             submit { isDisabled() }
-            inputs {
-                childAt<TextActionSetScreen.Input>(0) {
-                    input {
-                        hasPlaceholderText("901124-1234")
-                        edit {
-                            hasHint("Personal number")
-                            typeText("9704071234")
-                        }
-                    }
-                }
+            val editTextPersonalNumber = KEditText {
+                withMatcher(ViewMatchers.withHint("901124-1234"))
+            }
+            editTextPersonalNumber {
+                hasHint("901124-1234")
+                typeText("9704071234")
             }
             submit { isDisabled() }
-            inputs {
-                childAt<TextActionSetScreen.Input>(1) {
-                    input {
-                        hasPlaceholderText("example@email.com")
-                        edit {
-                            hasHint("Email")
-                            typeText("email@hedvig.com")
-                        }
-                    }
-                }
+            val editTextEmail = KEditText {
+                withMatcher(ViewMatchers.withHint("Email"))
+            }
+            editTextEmail {
+                hasHint("Email")
+                typeText("email@hedvig.com")
             }
             submit { isEnabled() }
         }

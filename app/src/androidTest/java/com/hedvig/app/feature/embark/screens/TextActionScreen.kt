@@ -11,7 +11,7 @@ object TextActionScreen : KScreen<TextActionScreen>() {
     override val layoutId = R.layout.fragment_embark_text_action
     override val viewClass = TextActionFragment::class.java
 
-    val input = KTextInputLayout { withId(R.id.filledTextField) }
+    val input = KTextInputLayout { withId(R.id.textField) }
     val submitButton = KButton { withId(R.id.textActionSubmit) }
     val loginButton = KView { withText(R.string.common_signin_button_text) }
     val appInfoButton = KView { withText(R.string.onboarding_contextual_menu_app_info_label) }
