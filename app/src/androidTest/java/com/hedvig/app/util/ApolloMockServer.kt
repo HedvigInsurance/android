@@ -4,6 +4,7 @@ import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.toJson
 import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
 import com.hedvig.app.TestApplication
+import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -54,7 +55,16 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
             }
 
             private fun handleWebSocket() = MockResponse()
-                .withWebSocketUpgrade(object : WebSocketListener() {})
+                .withWebSocketUpgrade(object : WebSocketListener() {
+                    override fun onMessage(webSocket: WebSocket, text: String) {
+                        val message = JSONObject(text)
+                        if (message.getString("type") == "connection_init") {
+                            webSocket.send(jsonObjectOf(
+                                "type" to "connection_ack"
+                            ).toString())
+                        }
+                    }
+                })
         }
     }
 

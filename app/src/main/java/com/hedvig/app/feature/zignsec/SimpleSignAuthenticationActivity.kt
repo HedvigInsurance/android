@@ -52,8 +52,6 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
 
         model.authStatus.observe(this) {
             when (it) {
-                AuthState.SUCCESS -> {
-                }
                 AuthState.FAILED -> {
                     showError()
                 }
