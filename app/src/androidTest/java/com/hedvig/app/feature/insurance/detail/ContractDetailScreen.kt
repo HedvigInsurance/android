@@ -68,6 +68,7 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             {
                 itemType(::Header)
                 itemType(::Row)
+                itemType(::ChangeAddressButton)
             }
         )
 
@@ -78,6 +79,10 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
         class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
             val label = KTextView(parent) { withId(R.id.label) }
             val content = KTextView(parent) { withId(R.id.content) }
+        }
+
+        class ChangeAddressButton(parent: Matcher<View>) : KRecyclerItem<ChangeAddressButton>(parent) {
+            val button = KButton { withMatcher(parent) }
         }
     }
 
