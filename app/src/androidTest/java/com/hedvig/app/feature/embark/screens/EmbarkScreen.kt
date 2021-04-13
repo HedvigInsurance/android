@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark.screens
 
 import android.content.Intent
 import android.view.View
-import com.agoda.kakao.common.views.KView
+import com.agoda.kakao.dialog.KAlertDialog
 import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -15,7 +15,6 @@ import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {
-    val spinner = KView { withId(R.id.loadingSpinnerLayout) }
     val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
 
     val response = KTextView { withId(R.id.response) }
@@ -49,4 +48,5 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val previousInsurerButton = KButton { withId(R.id.currentInsurerContainer) }
     val previousInsurerButtonLabel = KTextView { withId(R.id.currentInsurerLabel) }
+    val errorDialog = KAlertDialog()
 }

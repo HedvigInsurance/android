@@ -18,7 +18,7 @@ data class NumberActionBuilder(
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = EmbarkStoryQuery.AsEmbarkNumberAction(
-            data = EmbarkStoryQuery.Data4(
+            numberActionData = EmbarkStoryQuery.NumberActionData(
                 key = key,
                 placeholder = placeholder,
                 unit = unit,
@@ -28,6 +28,7 @@ data class NumberActionBuilder(
                 link = EmbarkStoryQuery.Link3(fragments = EmbarkStoryQuery.Link3.Fragments(embarkLinkFragment = link))
             )
         ),
+        asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
     )
 }

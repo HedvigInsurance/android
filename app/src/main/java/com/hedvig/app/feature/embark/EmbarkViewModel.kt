@@ -33,6 +33,9 @@ abstract class EmbarkViewModel(
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
 
+    protected val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
     abstract fun load(name: String)
 
     abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
@@ -534,11 +537,15 @@ class EmbarkViewModelImpl(
                 embarkRepository
                     .embarkStory(name)
             }
-
-            result.getOrNull()?.data?.let { d ->
-                storyData = d
-                setInitialState()
+            if (result.isFailure) {
+                _errorMessage.value = result.getOrNull()?.errors?.toString() ?: result.exceptionOrNull()?.message
+            } else {
+                result.getOrNull()?.data?.let { d ->
+                    storyData = d
+                    setInitialState()
+                }
             }
+
         }
     }
 

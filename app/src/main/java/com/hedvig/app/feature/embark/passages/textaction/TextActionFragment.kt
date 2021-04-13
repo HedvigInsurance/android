@@ -89,6 +89,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             inputView = binding.inputContainer,
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
+
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
                 key?.let {
