@@ -21,9 +21,11 @@ import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
+import java.lang.IllegalArgumentException
 import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
@@ -99,9 +101,19 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 Market.NO -> {
                     val isOffer = intent.getBooleanExtra(OFFER, false)
                     if (isOffer) {
-                        val encodedQuoteID = URLEncoder.encode(intent.getStringExtra(QUOTE_ID), UTF_8)
+                        val keys = intent.getStringArrayListExtra(QUOTE_ID)
+                            ?: throw IllegalArgumentException("No keys for offer!")
+
+                        val encodedQuoteIDs = keys.joinToString(
+                            separator = ",",
+                            prefix = "[",
+                            postfix = "]"
+                        ).let {
+                            URLEncoder.encode(it, UTF_8)
+                        }
+
                         webOnboarding.loadUrl(
-                            "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=%5B$encodedQuoteID%5D#token=$encodedToken"
+                            "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
                         )
                     } else {
                         val webPath = intent.getStringExtra(WEB_PATH)
@@ -145,11 +157,16 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
         internal const val OFFER = "OFFER"
         private const val QUOTE_ID = "QUOTE_ID"
 
-        fun newNoInstance(context: Context, webPath: String?, offer: Boolean = false, quoteId: String? = null): Intent {
+        fun newNoInstance(
+            context: Context,
+            webPath: String?,
+            offer: Boolean = false,
+            quoteId: List<String>
+        ): Intent {
             val intent = Intent(context, WebOnboardingActivity::class.java)
             intent.putExtra(WEB_PATH, webPath)
             intent.putExtra(OFFER, offer)
-            intent.putExtra(QUOTE_ID, quoteId)
+            intent.putExtra(QUOTE_ID, quoteId.toArrayList())
             return intent
         }
 

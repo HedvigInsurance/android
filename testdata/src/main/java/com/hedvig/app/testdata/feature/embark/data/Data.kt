@@ -394,7 +394,7 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data2(
+                        data = EmbarkStoryQuery.Data3(
                             placeholder = "Placeholder",
                             title = "Hint",
                             key = "FOO",
@@ -402,7 +402,7 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data2(
+                        data = EmbarkStoryQuery.Data3(
                             placeholder = "Second Placeholder",
                             title = "Second Hint",
                             key = "BAR",
@@ -428,7 +428,7 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data2(
+                        data = EmbarkStoryQuery.Data3(
                             placeholder = "901124-1234",
                             title = "Personal number",
                             key = "FOO",
@@ -436,7 +436,7 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                         )
                     ),
                     EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data2(
+                        data = EmbarkStoryQuery.Data3(
                             placeholder = "example@email.com",
                             title = "Email",
                             key = "BAR",
@@ -1404,6 +1404,15 @@ val STORY_WITH_EXTERNAL_REDIRECT = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(externalRedirect = EmbarkExternalRedirectLocation.OFFER)
+            .build()
+    )
+).build()
+
+val STORY_WITH_OFFER_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER.build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(offerRedirectKeys = listOf("123", "123"))
             .build()
     )
 ).build()

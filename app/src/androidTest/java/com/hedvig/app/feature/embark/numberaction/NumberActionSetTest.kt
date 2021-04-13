@@ -42,7 +42,7 @@ class NumberActionSetTest : TestCase() {
 
     @Test
     fun shouldRenderNumberAction() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
         NumberActionScreen {
             step("Check that labels match data") {
@@ -92,7 +92,7 @@ class NumberActionSetTest : TestCase() {
 
     @Test
     fun testMultipleInputs() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
         NumberActionScreen {
             input1 {
@@ -127,7 +127,7 @@ class NumberActionSetTest : TestCase() {
 
     @Test
     fun shouldPrefillNumberActionWhenUserReturnsToPassage() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
         NumberActionScreen {
             step("Fill out passage and submit") {

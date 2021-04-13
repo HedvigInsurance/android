@@ -13,6 +13,11 @@ query EmbarkStory($name: String!, $locale: String!) {
           location
         }
       }
+      offerRedirect {
+        data {
+          keys
+        }
+      }
       messages {
         ...MessageFragment
       }

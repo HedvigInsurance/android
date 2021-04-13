@@ -28,7 +28,7 @@ data class NumberActionSetBuilder(
             numberActionSetData = EmbarkStoryQuery.NumberActionSetData(
                 numberActions = numberActions.map {
                     EmbarkStoryQuery.NumberAction(
-                        data = EmbarkStoryQuery.Data3(
+                        data = EmbarkStoryQuery.Data4(
                             key = it.key,
                             placeholder = it.placeholder,
                             unit = it.unit,
