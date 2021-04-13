@@ -26,7 +26,7 @@ class MultiActionTest : TestCase() {
 
     @Test
     fun addComponent() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name))
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
         step("Press add building to display bottom sheet") {
             MultiActionScreen {

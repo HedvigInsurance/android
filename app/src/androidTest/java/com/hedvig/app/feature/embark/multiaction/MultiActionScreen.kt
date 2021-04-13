@@ -11,7 +11,7 @@ import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
 object MultiActionScreen : KScreen<MultiActionScreen>() {
-    override val layoutId = R.layout.number_action_fragment
+    override val layoutId = R.layout.number_action_set_fragment
     override val viewClass = MultiActionFragment::class.java
 
     val multiActionList = KRecyclerView(

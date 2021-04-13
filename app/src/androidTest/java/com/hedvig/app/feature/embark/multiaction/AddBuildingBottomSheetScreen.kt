@@ -13,7 +13,7 @@ object AddBuildingBottomSheetScreen : KScreen<AddBuildingBottomSheetScreen>() {
     override val layoutId = R.layout.dialog_add_building
     override val viewClass = AddComponentBottomSheet::class.java
 
-    val dropDownMenu = KTextView { withId(R.id.dropdown_menu) }
+    val dropDownMenu = KTextView { withId(R.id.dropdownLayout) }
     val dropDownItem = KView { withText("Garage") }
 
     val numberInput = KEditText { withId(R.id.numberInput) }
