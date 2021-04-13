@@ -2,16 +2,14 @@ package com.hedvig.app.feature.embark.passages.numberactionset
 
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.R
+import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.NumberActionSetFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
@@ -53,7 +51,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             whenApiVersion(Build.VERSION_CODES.R) {
                 inputLayout.setupInsetsForIme(
                     root = root,
-                    inputLayout,
+                    inputContainer,
                     submit,
                 )
             }
@@ -82,19 +80,16 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
 
     private fun createInputViews(): List<View> {
         return data.numberActions.mapIndexed { index, numberAction ->
-            val inputView = LayoutInflater.from(requireContext()).inflate(R.layout.embark_input_item, binding.inputContainer, false)
-            val inputLayout = inputView.findViewById<TextInputLayout>(R.id.textField)
-            val inputEditText = inputView.findViewById<TextInputEditText>(R.id.input)
+            val binding = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
 
-            inputLayout.placeholderText = numberAction.placeholder
-
-            numberAction.title.let { inputLayout.hint = it }
-            numberAction.unit?.let { inputLayout.helperText = it }
-            inputEditText.doOnTextChanged { text, _, _, _ ->
+            binding.input.hint = numberAction.placeholder
+            numberAction.title.let { binding.textField.hint = it }
+            numberAction.unit?.let { binding.textField.helperText = it }
+            binding.input.doOnTextChanged { text, _, _, _ ->
                 numberActionViewModel.setInputValue(numberAction.key, text.toString())
             }
 
-            inputEditText.onImeAction {
+            binding.input.onImeAction {
                 if (numberActionViewModel.valid.value == true) {
                     viewLifecycleScope.launch {
                         saveAndAnimate()
@@ -104,13 +99,13 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             }
 
             if (index < data.numberActions.size - 1) {
-                inputEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
+                binding.input.imeOptions = EditorInfo.IME_ACTION_NEXT
             } else {
-                inputEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.input.imeOptions = EditorInfo.IME_ACTION_DONE
             }
 
-            model.getFromStore(numberAction.key)?.let { inputEditText.setText(it) }
-            inputView
+            model.getFromStore(numberAction.key)?.let { binding.input.setText(it) }
+            binding.root
         }
     }
 
@@ -121,7 +116,8 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
         )
         numberActionViewModel.onContinue(model::putInStore)
         val responseText = model.preProcessResponse(data.passageName)
-        animateResponse(binding.response, responseText ?: "")
+        val allInput = numberActionViewModel.getAllInput()
+        animateResponse(binding.response, responseText ?: allInput ?: "")
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 

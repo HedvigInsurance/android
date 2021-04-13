@@ -40,6 +40,8 @@ class NumberActionViewModel(
         }
     }
 
+    fun getAllInput() = inputs.value?.map { it.input }?.joinToString(" ")
+
     data class NumberInput(
         val key: String,
         val input: String? = null,
