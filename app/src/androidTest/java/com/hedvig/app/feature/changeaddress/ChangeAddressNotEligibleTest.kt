@@ -4,7 +4,6 @@ import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.changeaddress.BLOCKED_SELF_CHANGE_ELIGIBILITY
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -19,7 +18,7 @@ import org.junit.Test
 class ChangeAddressNotEligibleTest : TestCase() {
 
     @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+    val activityRule = LazyActivityScenarioRule(ChangeAddressActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.textaction
 
+import com.agoda.kakao.edit.KEditText
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -9,6 +10,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.withHint
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -35,32 +37,24 @@ class TextActionSetValidation : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 
         TextActionSetScreen {
             submit { isDisabled() }
-            inputs {
-                childAt<TextActionSetScreen.Input>(0) {
-                    input {
-                        edit {
-                            hasHint("901124-1234")
-                            typeText("9704071234")
-                        }
-                    }
-                }
+            val editTextPersonalNumber = KEditText {
+                withHint("901124-1234")
+            }
+            editTextPersonalNumber {
+                typeText("9704071234")
             }
             submit { isDisabled() }
-            inputs {
-                childAt<TextActionSetScreen.Input>(1) {
-                    input {
-                        edit {
-                            hasHint("Email")
-                            typeText("email@hedvig.com")
-                        }
-                    }
-                }
+            val editTextEmail = KEditText {
+                withHint("example@email.com")
+            }
+            editTextEmail {
+                typeText("email@hedvig.com")
             }
             submit { isEnabled() }
         }

@@ -9,7 +9,7 @@
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
         android:imeOptions="actionDone"
+        android:importantForAutofill="no"
         android:inputType="textCapWords" />
 </com.google.android.material.textfield.TextInputLayout>

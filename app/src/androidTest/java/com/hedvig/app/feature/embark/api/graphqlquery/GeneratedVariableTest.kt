@@ -40,7 +40,7 @@ class GeneratedVariableTest : TestCase() {
             EmbarkActivity.newInstance(
                 ApplicationProvider.getApplicationContext(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 

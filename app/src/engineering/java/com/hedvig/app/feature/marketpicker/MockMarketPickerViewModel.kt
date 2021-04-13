@@ -11,13 +11,13 @@ import com.hedvig.app.util.extensions.getLanguage
 class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) : MarketPickerViewModel() {
 
     override fun submitMarketAndReload(market: Market) {
-        _pickerSate.value = _pickerSate.value?.let {
+        _pickerState.value = _pickerState.value?.let {
             PickerState(market, it.language)
         }
     }
 
     override fun submitLanguageAndReload(language: Language) {
-        _pickerSate.value = _pickerSate.value?.let {
+        _pickerState.value = _pickerState.value?.let {
             PickerState(it.market, language)
         }
     }
@@ -32,12 +32,12 @@ class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) 
                     Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
                 }
                 when (market) {
-                    Market.SE -> _pickerSate.postValue(PickerState(market, Language.EN_SE))
-                    Market.NO -> _pickerSate.postValue(PickerState(market, Language.EN_NO))
-                    Market.DK -> _pickerSate.postValue(PickerState(market, Language.EN_DK))
+                    Market.SE -> _pickerState.postValue(PickerState(market, Language.EN_SE))
+                    Market.NO -> _pickerState.postValue(PickerState(market, Language.EN_NO))
+                    Market.DK -> _pickerState.postValue(PickerState(market, Language.EN_DK))
                 }
             } catch (e: Exception) {
-                _pickerSate.postValue(
+                _pickerState.postValue(
                     PickerState(
                         Market.SE, Language.EN_SE
                     )
@@ -45,7 +45,7 @@ class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) 
             }
         } else {
             marketManager.market?.let { market ->
-                _pickerSate.postValue(
+                _pickerState.postValue(
                     PickerState(
                         market, context.getLanguage() ?: market.toLanguage()
                     )

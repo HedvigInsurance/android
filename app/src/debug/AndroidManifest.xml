@@ -88,7 +88,11 @@
 
         <activity android:name=".feature.payment.PaymentMockActivity" />
 
-        <activity android:name=".feature.changeaddress.ChangeAddressMockActivity"  />
+        <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
+
+        <meta-data
+            android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
+            android:value="true" />
 
     </application>
 

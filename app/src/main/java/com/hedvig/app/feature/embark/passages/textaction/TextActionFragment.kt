@@ -10,6 +10,9 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.masking.derivedValues
+import com.hedvig.app.feature.embark.masking.remask
+import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.setInputType
@@ -31,9 +34,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.time.Clock
 
 /**
  * Used for Embark actions TextAction and TextActionSet
@@ -45,6 +50,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     private val textActionSetViewModel: TextActionViewModel by viewModel { parametersOf(data) }
     private val binding by viewBinding(FragmentTextActionSetBinding::bind)
+    private val clock: Clock by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,7 +90,16 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
         textActionSetViewModel.inputs.value?.let { inputs ->
-            data.keys.zip(inputs.values).forEach { (key, input) -> key?.let { model.putInStore(it, input) } }
+            data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
+                key?.let {
+                    val mask = data.mask[index]
+                    val unmasked = unmask(input, mask)
+                    model.putInStore(key, unmasked)
+                    derivedValues(unmasked, key, mask, clock).forEach { (key, value) ->
+                        model.putInStore(key, value)
+                    }
+                }
+            }
             val allInput = inputs.values.joinToString(" ")
             model.putInStore("${data.passageName}Result", allInput)
             val responseText = model.preProcessResponse(data.passageName) ?: allInput
@@ -136,7 +151,9 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             }
         }
 
-        key?.let(model::getFromStore)?.let(inputView.input::setText)
+        key?.let(model::getFromStore)
+            ?.let { remask(it, mask) }
+            ?.let(inputView.input::setText)
         inputView.root
     }
 

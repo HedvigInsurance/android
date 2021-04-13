@@ -33,7 +33,7 @@ class MissingActionTest : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 

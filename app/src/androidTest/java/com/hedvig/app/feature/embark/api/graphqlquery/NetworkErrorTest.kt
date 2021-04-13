@@ -36,7 +36,7 @@ class NetworkErrorTest : TestCase() {
             EmbarkActivity.newInstance(
                 context(),
                 this.javaClass.name,
-                storyTitle
+                "",
             )
         )
 

@@ -4,7 +4,6 @@ import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.changeaddress.SELF_CHANGE_ELIGIBILITY
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_SWEDISH_HOUSE
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -19,7 +18,7 @@ import org.junit.Test
 class UpcomingChangeAddressTest : TestCase() {
 
     @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+    val activityRule = LazyActivityScenarioRule(ChangeAddressActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -31,7 +30,7 @@ class UpcomingChangeAddressTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() {
+    fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() = run {
         activityRule.launch(ChangeAddressActivity.newInstance(context()))
 
         ChangeAddressScreen {

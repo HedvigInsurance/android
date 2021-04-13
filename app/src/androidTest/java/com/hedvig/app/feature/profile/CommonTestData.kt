@@ -5,4 +5,5 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.market
 import org.javamoney.moneta.Money
 
-val defaultAmount = Money.of(349, "SEK").format(context(), market())
+val defaultAmount: String
+    get() = Money.of(349, "SEK").format(context(), market())
