@@ -17,4 +17,6 @@ sealed class YourInfoModel {
     object ChangeParagraph : YourInfoModel()
 
     object OpenChatButton : YourInfoModel()
+
+    object ChangeAddressButton : YourInfoModel()
 }

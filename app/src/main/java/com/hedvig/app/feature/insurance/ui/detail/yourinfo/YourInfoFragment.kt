@@ -32,7 +32,9 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                                 it.address.fragments.addressFragment,
                                 it.saType.stringRes()?.let(::getString) ?: "",
                                 it.squareMeters
-                            ) + coinsuredSection(it.numberCoInsured) +
+                            )
+                                + YourInfoModel.ChangeAddressButton
+                                + coinsuredSection(it.numberCoInsured) +
                                 changeSection()
 
                         )
