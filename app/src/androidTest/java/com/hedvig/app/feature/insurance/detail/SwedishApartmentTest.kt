@@ -65,10 +65,13 @@ class SwedishApartmentTest : TestCase() {
                             label { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE) }
                             content { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, 50) }
                         }
-                        childAt<ContractDetailScreen.YourInfoTab.Header>(5) {
+                        childAt<ContractDetailScreen.YourInfoTab.ChangeAddressButton>(5) {
+                            button.hasText(R.string.home_tab_editing_section_change_address_label)
+                        }
+                        childAt<ContractDetailScreen.YourInfoTab.Header>(6) {
                             text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                         }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(6) {
+                        childAt<ContractDetailScreen.YourInfoTab.Row>(7) {
                             label { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
                             content { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
                         }
