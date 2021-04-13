@@ -27,7 +27,7 @@ class EmbarkActivityTest : TestCase() {
             )
         )
         onScreen<EmbarkScreen> {
-            errorDialog.title.hasText("Error")
+            errorDialog { title { hasText("Error") } }
         }
     }
 }
