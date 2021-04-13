@@ -237,16 +237,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     passage.name,
                     listOf(
                         NumberActionParams.NumberAction(
-                            key = numberAction.key,
-                            title = numberAction.label,
-                            placeholder = numberAction.placeholder,
-                            unit = numberAction.unit,
-                            maxValue = numberAction.maxValue,
-                            minValue = numberAction.minValue
+                            key = numberAction.fragments.embarkNumberActionFragment.key,
+                            title = numberAction.fragments.embarkNumberActionFragment.label,
+                            placeholder = numberAction.fragments.embarkNumberActionFragment.placeholder,
+                            unit = numberAction.fragments.embarkNumberActionFragment.unit,
+                            maxValue = numberAction.fragments.embarkNumberActionFragment.maxValue,
+                            minValue = numberAction.fragments.embarkNumberActionFragment.minValue
                         )
                     ),
-                    link = numberAction.link.fragments.embarkLinkFragment.name,
-                    submitLabel = numberAction.link.fragments.embarkLinkFragment.label,
+                    link = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
+                    submitLabel = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
                 )
             )
         }
@@ -288,9 +288,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val params = MultiActionParams(
                 passage.messages.map { it.fragments.messageFragment.text },
                 passage.name,
-                multiAction.data.components.map {
+                multiAction.multiActionData.components.map {
                     MultiActionComponent(
-                        dropdown = it.asEmbarkDropdownAction?.data?.let { dropdownData ->
+                        dropdown = it.asEmbarkDropdownAction?.dropDownActionData?.let { dropdownData ->
                             Dropdown(
                                 dropdownData.key,
                                 dropdownData.label,
@@ -299,14 +299,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 }
                             )
                         },
-                        switch = it.asEmbarkSwitchAction?.data?.let { switchData ->
+                        switch = it.asEmbarkSwitchAction?.switchActionData?.let { switchData ->
                             Switch(
                                 switchData.key,
                                 switchData.label,
                                 switchData.defaultValue
                             )
                         },
-                        number = it.asEmbarkNumberAction1?.data?.let { numberData ->
+                        number = it.asEmbarkNumberAction1?.numberActionData?.let { numberData ->
                             Number(
                                 numberData.fragments.embarkNumberActionFragment.key,
                                 numberData.fragments.embarkNumberActionFragment.label,

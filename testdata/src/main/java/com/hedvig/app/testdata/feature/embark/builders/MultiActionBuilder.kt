@@ -17,11 +17,11 @@ data class MultiActionBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkNumberActionSet = null,
         asEmbarkMultiAction = EmbarkStoryQuery.AsEmbarkMultiAction(
-            data = EmbarkStoryQuery.Data4(
+            multiActionData = EmbarkStoryQuery.MultiActionData(
                 components = listOf(
                     EmbarkStoryQuery.Component(
                         asEmbarkDropdownAction = EmbarkStoryQuery.AsEmbarkDropdownAction(
-                            data = EmbarkStoryQuery.Data6(
+                            dropDownActionData = EmbarkStoryQuery.DropDownActionData(
                                 label = "Building type",
                                 key = "Building",
                                 options = listOf(
@@ -41,15 +41,15 @@ data class MultiActionBuilder(
                             )
                         ),
                         asEmbarkSwitchAction = EmbarkStoryQuery.AsEmbarkSwitchAction(
-                            data = EmbarkStoryQuery.Data7(
+                            switchActionData = EmbarkStoryQuery.SwitchActionData(
                                 label = "Water connected",
                                 key = "water",
                                 defaultValue = true
                             )
                         ),
                         asEmbarkNumberAction1 = EmbarkStoryQuery.AsEmbarkNumberAction1(
-                            data = EmbarkStoryQuery.Data5(
-                                fragments = EmbarkStoryQuery.Data5.Fragments(
+                            numberActionData = EmbarkStoryQuery.NumberActionData1(
+                                fragments = EmbarkStoryQuery.NumberActionData1.Fragments(
                                     EmbarkNumberActionFragment(
                                         label = "Size",
                                         key = "size",

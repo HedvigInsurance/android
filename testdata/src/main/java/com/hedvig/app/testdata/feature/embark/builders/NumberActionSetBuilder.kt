@@ -39,11 +39,12 @@ data class NumberActionSetBuilder(
                             title = it.title
                         )
                     )
-                }, link = EmbarkStoryQuery.Link4(
-                fragments = EmbarkStoryQuery.Link4.Fragments(
-                    embarkLinkFragment = link
-                )
-            )
+                },
+                link = EmbarkStoryQuery.Link3(
+                    fragments = EmbarkStoryQuery.Link3.Fragments(
+                        embarkLinkFragment = link
+                    )
+                ),
             )
         ),
         asEmbarkDatePickerAction = null,
