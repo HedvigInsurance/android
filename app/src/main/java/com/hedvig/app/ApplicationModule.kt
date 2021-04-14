@@ -31,6 +31,8 @@ import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkTrackerImpl
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.ValueStore
+import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
@@ -338,7 +340,11 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get()) }
+    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get(), get()) }
+}
+
+val valueStoreModule = module {
+    single<ValueStore> { ValueStoreImpl() }
 }
 
 val previousInsViewModel = module {

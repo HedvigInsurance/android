@@ -79,6 +79,7 @@ open class HedvigApplication : Application() {
                     localeManagerModule,
                     changeAddressModule,
                     useCaseModule,
+                    valueStoreModule,
                 )
             )
         }
