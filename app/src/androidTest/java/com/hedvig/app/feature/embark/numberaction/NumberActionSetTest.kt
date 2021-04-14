@@ -15,7 +15,6 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasHelperText
-import com.hedvig.app.util.hasPlaceholderText
 import com.hedvig.app.util.hasTextInputLayoutHintText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -52,7 +51,6 @@ class NumberActionSetTest : TestCase() {
                 }
                 input1 {
                     hasHint("Co-insured")
-                    hasPlaceholderText("1")
                     hasHelperText("other people")
                 }
             }
@@ -97,13 +95,11 @@ class NumberActionSetTest : TestCase() {
         NumberActionScreen {
             input1 {
                 hasHint("Co-insured")
-                hasPlaceholderText("1")
                 hasHelperText("other people")
             }
 
             input2 {
                 hasHint("House size")
-                hasPlaceholderText("52")
                 hasHelperText("sqm")
             }
 
