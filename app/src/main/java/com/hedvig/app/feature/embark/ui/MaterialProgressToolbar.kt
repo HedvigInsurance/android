@@ -26,10 +26,12 @@ class MaterialProgressToolbar @JvmOverloads constructor(
     }
 
     fun setProgress(progress: Percent) {
-        TransitionManager.beginDelayedTransition(this)
-        binding.progress.layoutParams = FrameLayout.LayoutParams(
-            (this.width * progress.toFraction()).toInt(),
-            binding.progress.layoutParams.height
-        )
+        binding.progress.post {
+            TransitionManager.beginDelayedTransition(this)
+            binding.progress.layoutParams = FrameLayout.LayoutParams(
+                (this.width * progress.toFraction()).toInt(),
+                binding.progress.layoutParams.height
+            )
+        }
     }
 }

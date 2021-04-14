@@ -340,7 +340,7 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { EmbarkViewModelImpl(get(), get(), get()) }
+    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), storyName) }
 }
 
 val valueStoreModule = module {
