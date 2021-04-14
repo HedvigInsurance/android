@@ -61,6 +61,8 @@
 
         <item name="textAppearanceCaption">@style/Hedvig.TextAppearance.Caption</item>
 
+        <item name="textAppearanceOverline">@style/Hedvig.TextAppearance.Overline</item>
+
         <!-- Widget styles -->
         <item name="appBarLayoutStyle">@style/Hedvig.Theme.AppBarLayout</item>
         <item name="toolbarStyle">@style/Hedvig.Theme.Toolbar</item>
