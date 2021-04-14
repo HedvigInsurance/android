@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.passages.numberactionset
 
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
@@ -98,6 +99,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
                 }
             }
 
+            binding.input.inputType = InputType.TYPE_CLASS_NUMBER
             if (index < data.numberActions.size - 1) {
                 binding.input.imeOptions = EditorInfo.IME_ACTION_NEXT
             } else {
