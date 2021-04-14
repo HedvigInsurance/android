@@ -308,16 +308,6 @@ fun View.hapticClicks(): Flow<Unit> = callbackFlow {
     awaitClose { setOnClickListener(null) }
 }.conflate()
 
-fun TextView.onImeAction(imeActionId: Int = EditorInfo.IME_ACTION_DONE, action: () -> Unit) = setOnEditorActionListener(
-    TextView.OnEditorActionListener { _, actionId, _ ->
-        if (actionId == imeActionId) {
-            action()
-            return@OnEditorActionListener true
-        }
-        false
-    }
-)
-
 @RequiresApi(Build.VERSION_CODES.R)
 fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
     val deferringListener = RootViewDeferringInsetsCallback(

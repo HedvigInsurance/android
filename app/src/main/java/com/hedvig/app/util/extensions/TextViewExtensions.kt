@@ -37,7 +37,7 @@ fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
 
 fun TextView.onImeAction(
     imeActionId: Int = EditorInfo.IME_ACTION_DONE,
-    triggerOnEnter: Boolean = true,
+    triggerOnEnter: Boolean = imeActionId == EditorInfo.IME_ACTION_DONE,
     action: () -> Unit,
 ) {
     setOnEditorActionListener(
