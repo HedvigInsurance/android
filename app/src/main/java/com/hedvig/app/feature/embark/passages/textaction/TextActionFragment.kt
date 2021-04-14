@@ -113,8 +113,8 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
 
         inputView.textField.isExpandedHintEnabled = false
-        inputView.textField.hint = data.hints.getOrNull(index)
-        inputView.input.hint = data.placeholders.getOrNull(index)
+        data.hints[index]?.let { inputView.textField.hint = it }
+        data.placeholders[index]?.let { inputView.textField.placeholderText = it }
         val mask = data.mask.getOrNull(index)
         mask?.let {
             inputView.input.apply {

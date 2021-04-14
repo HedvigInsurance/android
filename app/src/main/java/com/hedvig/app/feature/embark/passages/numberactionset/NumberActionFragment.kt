@@ -83,10 +83,11 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
         return data.numberActions.mapIndexed { index, numberAction ->
             val binding = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
 
-            numberAction.title.let { binding.textField.hint = it }
+            binding.textField.isExpandedHintEnabled = false
+            numberAction.title?.let { binding.textField.hint = it }
             numberAction.unit?.let { binding.textField.helperText = it }
 
-            binding.input.hint = numberAction.placeholder
+            binding.textField.placeholderText = numberAction.placeholder
             binding.input.doOnTextChanged { text, _, _, _ ->
                 numberActionViewModel.setInputValue(numberAction.key, text.toString())
             }
