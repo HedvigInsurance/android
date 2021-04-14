@@ -23,8 +23,8 @@ import com.hedvig.app.feature.embark.validationCheck
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.view.hapticClicks
-import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -139,13 +139,15 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             textActionSetViewModel.setInputValue(index, text)
         }
 
-        if (index < data.keys.size - 1) {
-            inputView.input.imeOptions = EditorInfo.IME_ACTION_NEXT
+        val imeOptions = if (index < data.keys.size - 1) {
+            EditorInfo.IME_ACTION_NEXT
         } else {
-            inputView.input.imeOptions = EditorInfo.IME_ACTION_DONE
+            EditorInfo.IME_ACTION_DONE
         }
 
-        inputView.input.onImeAction {
+        inputView.input.imeOptions = imeOptions
+
+        inputView.input.onImeAction(imeActionId = imeOptions) {
             if (textActionSetViewModel.isValid.value == true) {
                 viewLifecycleScope.launch {
                     saveAndAnimate(data)

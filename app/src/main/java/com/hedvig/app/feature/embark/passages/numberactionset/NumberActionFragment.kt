@@ -19,8 +19,8 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
+import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.view.hapticClicks
-import com.hedvig.app.util.extensions.view.onImeAction
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -90,20 +90,21 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             binding.input.doOnTextChanged { text, _, _, _ ->
                 numberActionViewModel.setInputValue(numberAction.key, text.toString())
             }
-            binding.input.onImeAction {
+
+            binding.input.inputType = InputType.TYPE_CLASS_NUMBER
+            val imeOptions = if (index < data.numberActions.size - 1) {
+                EditorInfo.IME_ACTION_NEXT
+            } else {
+                EditorInfo.IME_ACTION_DONE
+            }
+            binding.input.imeOptions = imeOptions
+            binding.input.onImeAction(imeActionId = imeOptions) {
                 if (numberActionViewModel.valid.value == true) {
                     viewLifecycleScope.launch {
                         saveAndAnimate()
                         model.navigateToPassage(data.link)
                     }
                 }
-            }
-
-            binding.input.inputType = InputType.TYPE_CLASS_NUMBER
-            if (index < data.numberActions.size - 1) {
-                binding.input.imeOptions = EditorInfo.IME_ACTION_NEXT
-            } else {
-                binding.input.imeOptions = EditorInfo.IME_ACTION_DONE
             }
 
             model.getFromStore(numberAction.key)?.let { binding.input.setText(it) }
