@@ -8,6 +8,7 @@ import kotlinx.android.parcel.Parcelize
 data class TextActionParameter(
     val link: String,
     val placeholders: List<String?>,
+    val hints: List<String?>,
     val keys: List<String?>,
     val messages: List<String>,
     val submitLabel: String,
@@ -23,6 +24,7 @@ data class TextActionParameter(
             TextActionParameter(
                 link = data.link.fragments.embarkLinkFragment.name,
                 placeholders = data.textActions.map { it.data?.placeholder },
+                hints = data.textActions.map { it.data?.title },
                 keys = data.textActions.map { it.data?.key },
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
@@ -37,6 +39,7 @@ data class TextActionParameter(
             TextActionParameter(
                 link = data.link.fragments.embarkLinkFragment.name,
                 placeholders = listOf(data.placeholder),
+                hints = emptyList(),
                 keys = listOf(data.key),
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,

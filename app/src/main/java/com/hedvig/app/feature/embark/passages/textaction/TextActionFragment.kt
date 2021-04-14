@@ -112,8 +112,10 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
         val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
 
-        inputView.input.hint = data.placeholders[index]
-        val mask = data.mask[index]
+        inputView.textField.isExpandedHintEnabled = false
+        inputView.textField.hint = data.hints.getOrNull(index)
+        inputView.input.hint = data.placeholders.getOrNull(index)
+        val mask = data.mask.getOrNull(index)
         mask?.let {
             inputView.input.apply {
                 setInputType(it)
