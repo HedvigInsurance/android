@@ -9,6 +9,9 @@ import android.webkit.CookieManager
 import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.view.isVisible
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
@@ -84,6 +87,17 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     realm: String?,
                 ) {
                     handler?.proceed("hedvig", "hedvig1234")
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+
+                    if (loadingIndicator.isVisible) {
+                        TransitionManager.beginDelayedTransition(container, MaterialFadeThrough())
+
+                        loadingIndicator.isVisible = false
+                        webOnboarding.isVisible = true
+                    }
                 }
             }
 
