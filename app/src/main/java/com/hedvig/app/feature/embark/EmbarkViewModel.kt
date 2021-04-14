@@ -29,6 +29,7 @@ import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
+    private val valueStore: ValueStore
 ) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
@@ -42,14 +43,12 @@ abstract class EmbarkViewModel(
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
 
-    private lateinit var valueStore: ValueStore
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
     protected fun setInitialState() {
         storyData.embarkStory?.let { story ->
-            val computedValues = story.getComputedValues()
-            valueStore = ValueStore(computedValues)
+            valueStore.computedValues = story.getComputedValues()
 
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
@@ -529,7 +528,8 @@ abstract class EmbarkViewModel(
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     tracker: EmbarkTracker,
-) : EmbarkViewModel(tracker) {
+    valueStore: ValueStore
+) : EmbarkViewModel(tracker, valueStore) {
 
     override fun load(name: String) {
         viewModelScope.launch {
