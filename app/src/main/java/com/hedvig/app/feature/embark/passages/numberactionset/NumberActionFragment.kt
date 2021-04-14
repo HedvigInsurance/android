@@ -49,10 +49,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
 
         with(binding) {
             whenApiVersion(Build.VERSION_CODES.R) {
-                inputLayout.setupInsetsForIme(
+                inputContainer.setupInsetsForIme(
                     root = root,
-                    inputContainer,
                     submit,
+                    inputLayout,
                 )
             }
 
