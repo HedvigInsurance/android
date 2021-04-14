@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -25,7 +26,6 @@ import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
-import java.lang.IllegalArgumentException
 import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
@@ -87,48 +87,59 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 }
             }
 
-            val localePath = when (localeManager.defaultLocale()) {
-                Locale.NB_NO -> "/no"
-                Locale.EN_NO -> "/no-en"
-                Locale.DA_DK -> "/dk"
-                Locale.EN_DK -> "/dk-en"
-                else -> "/no"
-            }
-
-            val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
-
-            when (marketManager.market) {
-                Market.NO -> {
-                    val isOffer = intent.getBooleanExtra(OFFER, false)
-                    if (isOffer) {
-                        val keys = intent.getStringArrayListExtra(QUOTE_ID)
-                            ?: throw IllegalArgumentException("No keys for offer!")
-
-                        val encodedQuoteIDs = keys.joinToString(
-                            separator = ",",
-                            prefix = "[",
-                            postfix = "]"
-                        ).let {
-                            URLEncoder.encode(it, UTF_8)
-                        }
-
-                        webOnboarding.loadUrl(
-                            "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
-                        )
-                    } else {
-                        val webPath = intent.getStringExtra(WEB_PATH)
-                        webOnboarding.loadUrl(
-                            "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
-                        )
-                    }
+            if (savedInstanceState == null) {
+                webOnboarding.clearCache(true)
+                CookieManager.getInstance().removeAllCookies {
+                    load()
                 }
-                Market.DK -> webOnboarding.loadUrl(
-                    "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
-                )
-                else -> webOnboarding.loadUrl(
-                    "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
-                )
+            } else {
+                load()
             }
+        }
+    }
+
+    fun load() = with(binding) {
+        val localePath = when (localeManager.defaultLocale()) {
+            Locale.NB_NO -> "/no"
+            Locale.EN_NO -> "/no-en"
+            Locale.DA_DK -> "/dk"
+            Locale.EN_DK -> "/dk-en"
+            else -> "/no"
+        }
+
+        val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
+
+        when (marketManager.market) {
+            Market.NO -> {
+                val isOffer = intent.getBooleanExtra(OFFER, false)
+                if (isOffer) {
+                    val keys = intent.getStringArrayListExtra(QUOTE_ID)
+                        ?: throw IllegalArgumentException("No keys for offer!")
+
+                    val encodedQuoteIDs = keys.joinToString(
+                        separator = ",",
+                        prefix = "[",
+                        postfix = "]"
+                    ).let {
+                        URLEncoder.encode(it, UTF_8)
+                    }
+
+                    webOnboarding.loadUrl(
+                        "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
+                    )
+                } else {
+                    val webPath = intent.getStringExtra(WEB_PATH)
+                    webOnboarding.loadUrl(
+                        "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
+                    )
+                }
+            }
+            Market.DK -> webOnboarding.loadUrl(
+                "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+            )
+            else -> webOnboarding.loadUrl(
+                "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+            )
         }
     }
 
@@ -161,7 +172,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             context: Context,
             webPath: String?,
             offer: Boolean = false,
-            quoteId: List<String>
+            quoteId: List<String>,
         ): Intent {
             val intent = Intent(context, WebOnboardingActivity::class.java)
             intent.putExtra(WEB_PATH, webPath)
