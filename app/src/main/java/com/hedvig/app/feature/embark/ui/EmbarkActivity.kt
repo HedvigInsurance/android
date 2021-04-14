@@ -40,26 +40,26 @@ import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
-    private val model: EmbarkViewModel by viewModel()
-    private val binding by viewBinding(ActivityEmbarkBinding::bind)
-    private val marketManager: MarketManager by inject()
-
-    private val storyName: String by lazy {
-        intent.getStringExtra(STORY_NAME)
-            ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
-    }
 
     private val storyTitle: String by lazy {
         intent.getStringExtra(STORY_TITLE)
             ?: throw IllegalArgumentException("Programmer error: STORY_TITLE not provided to ${this.javaClass.name}")
     }
 
+    private val storyName: String by lazy {
+        intent.getStringExtra(STORY_NAME)
+            ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
+    }
+
+    private val model: EmbarkViewModel by viewModel { parametersOf(storyName) }
+    private val binding by viewBinding(ActivityEmbarkBinding::bind)
+    private val marketManager: MarketManager by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        model.load(storyName)
 
         binding.apply {
 
@@ -145,7 +145,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.settings_alert_restart_onboarding_title)
             .setMessage(R.string.settings_alert_restart_onboarding_description)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> model.load(storyName) }
+            .setPositiveButton(R.string.ALERT_OK) { _, _ -> model.fetchStory(storyName) }
             .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
             .show()
     }

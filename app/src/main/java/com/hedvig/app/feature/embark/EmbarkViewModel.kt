@@ -37,7 +37,7 @@ abstract class EmbarkViewModel(
     protected val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    abstract fun load(name: String)
+    abstract fun fetchStory(name: String)
 
     abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
 
@@ -528,14 +528,18 @@ abstract class EmbarkViewModel(
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     tracker: EmbarkTracker,
-    valueStore: ValueStore
+    valueStore: ValueStore,
+    storyName: String
 ) : EmbarkViewModel(tracker, valueStore) {
 
-    override fun load(name: String) {
+    init {
+        fetchStory(storyName)
+    }
+
+    override fun fetchStory(name: String) {
         viewModelScope.launch {
             val result = runCatching {
-                embarkRepository
-                    .embarkStory(name)
+                embarkRepository.embarkStory(name)
             }
             if (result.isFailure) {
                 _errorMessage.value = result.getOrNull()?.errors?.toString() ?: result.exceptionOrNull()?.message
