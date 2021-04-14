@@ -155,7 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (FeatureFlag.MOVING_FLOW.enabled) {
-                        add(HomeModel.Header("Change address"))
+                        add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress)
                     }
                 }
@@ -182,7 +182,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         )
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
-                        add(HomeModel.Header("Change address"))
+                        add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress)
                     }
                 }

@@ -1,16 +1,13 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.android.owldroid.fragment.AddressFragment
-import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
-import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
-import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.util.apollo.stringRes
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
@@ -33,7 +30,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.saType.displayName(requireContext()),
+                                it.saType.stringRes()?.let(::getString) ?: "",
                                 it.squareMeters
                             ) + coinsuredSection(it.numberCoInsured) +
                                 changeSection()
@@ -56,7 +53,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.nhcType?.displayName(requireContext()) ?: "",
+                                it.nhcType?.stringRes()?.let(::getString) ?: "",
                                 it.squareMeters
                             ) + coinsuredSection(it.numberCoInsured) +
                                 changeSection()
@@ -67,7 +64,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
                         (adapter as? YourInfoAdapter)?.submitList(
                             homeSection(
                                 it.address.fragments.addressFragment,
-                                it.dhcType?.displayName(requireContext()) ?: "",
+                                it.dhcType?.stringRes()?.let(::getString) ?: "",
                                 it.squareMeters
                             ) + coinsuredSection(it.numberCoInsured) +
                                 changeSection()
@@ -139,43 +136,4 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
         YourInfoModel.ChangeParagraph,
         YourInfoModel.OpenChatButton
     )
-
-    companion object {
-
-        internal fun SwedishApartmentLineOfBusiness.displayName(context: Context) = when (this) {
-            SwedishApartmentLineOfBusiness.RENT -> context.getString(R.string.SWEDISH_APARTMENT_LOB_RENT)
-            SwedishApartmentLineOfBusiness.BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_BRF)
-            SwedishApartmentLineOfBusiness.STUDENT_RENT -> context.getString(
-                R.string.SWEDISH_APARTMENT_LOB_STUDENT_RENT
-            )
-            SwedishApartmentLineOfBusiness.STUDENT_BRF -> context.getString(R.string.SWEDISH_APARTMENT_LOB_STUDENT_BRF)
-            SwedishApartmentLineOfBusiness.UNKNOWN__ -> ""
-        }
-
-        internal fun NorwegianHomeContentLineOfBusiness.displayName(context: Context) =
-            when (this) {
-                NorwegianHomeContentLineOfBusiness.RENT -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT)
-                NorwegianHomeContentLineOfBusiness.OWN -> context.getString(R.string.NORWEIGIAN_HOME_CONTENT_LOB_OWN)
-                NorwegianHomeContentLineOfBusiness.YOUTH_RENT -> context.getString(
-                    R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_RENT
-                )
-                NorwegianHomeContentLineOfBusiness.YOUTH_OWN -> context.getString(
-                    R.string.NORWEIGIAN_HOME_CONTENT_LOB_STUDENT_OWN
-                )
-                NorwegianHomeContentLineOfBusiness.UNKNOWN__ -> ""
-            }
-
-        internal fun DanishHomeContentLineOfBusiness.displayName(context: Context) =
-            when (this) {
-                DanishHomeContentLineOfBusiness.RENT -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_RENT)
-                DanishHomeContentLineOfBusiness.OWN -> context.getString(R.string.DANISH_HOME_CONTENT_LOB_OWN)
-                DanishHomeContentLineOfBusiness.STUDENT_RENT -> context.getString(
-                    R.string.DANISH_HOME_CONTENT_LOB_STUDENT_RENT
-                )
-                DanishHomeContentLineOfBusiness.STUDENT_OWN -> context.getString(
-                    R.string.DANISH_HOME_CONTENT_LOB_STUDENT_OWN
-                )
-                DanishHomeContentLineOfBusiness.UNKNOWN__ -> ""
-            }
-    }
 }

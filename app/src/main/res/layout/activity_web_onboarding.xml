@@ -17,7 +17,7 @@
             android:id="@+id/openSettings"
             style="@style/ToolbarIcon.Start"
             android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-            app:srcCompat="@drawable/ic_settings" />
+            app:srcCompat="@drawable/ic_profile_settings" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -40,9 +40,26 @@
 
     </FrameLayout>
 
-    <com.hedvig.app.ui.view.SafeWebView
-        android:id="@+id/webOnboarding"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <com.hedvig.app.ui.view.SafeWebView
+            android:id="@+id/webOnboarding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
 
 </LinearLayout>

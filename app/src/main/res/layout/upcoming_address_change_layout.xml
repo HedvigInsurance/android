@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/upcoming_address_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double">
+
+    <TextView
+        android:id="@+id/address_change_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/moving_intro.existing_move.upcoming_address_change_title"
+        android:textAppearance="?textAppearanceHeadline6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/address_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/CONTRACT_DETAIL_HOME_ADDRESS"
+        android:textAppearance="?textAppearanceBody1"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/address_change_title" />
+
+    <TextView
+        android:id="@+id/address_label"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="end"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/address_title"
+        app:layout_constraintTop_toBottomOf="@id/address_change_title"
+        tools:text="Askergatan 128 B" />
+
+    <TextView
+        android:id="@+id/postal_code_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/CONTRACT_DETAIL_HOME_POSTCODE"
+        android:textAppearance="?textAppearanceBody1"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/address_label" />
+
+    <TextView
+        android:id="@+id/postal_code_label"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="end"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/address_title"
+        app:layout_constraintTop_toBottomOf="@id/address_label"
+        tools:text="113 89" />
+
+    <TextView
+        android:id="@+id/type_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/CONTRACT_DETAIL_HOME_TYPE"
+        android:textAppearance="?textAppearanceBody1"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/postal_code_label" />
+
+    <TextView
+        android:id="@+id/type_label"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="end"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/address_title"
+        app:layout_constraintTop_toBottomOf="@id/postal_code_label"
+        tools:text="Rental" />
+
+    <TextView
+        android:id="@+id/living_space_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/CONTRACT_DETAIL_HOME_SIZE"
+        android:textAppearance="?textAppearanceBody1"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/type_label" />
+
+    <TextView
+        android:id="@+id/living_space_label"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="end"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/address_title"
+        app:layout_constraintTop_toBottomOf="@id/type_label"
+        tools:text="48 sqm" />
+
+    <TextView
+        android:id="@+id/date_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="NO_LOKALISE_KEY"
+        android:textAppearance="?textAppearanceBody1"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/living_space_label" />
+
+    <TextView
+        android:id="@+id/date_label"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:gravity="end"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/address_title"
+        app:layout_constraintTop_toBottomOf="@id/living_space_label"
+        tools:text="2020-03-4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

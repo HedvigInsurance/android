@@ -61,6 +61,8 @@ open class HedvigApplication : Application() {
                     repositoriesModule,
                     localeBroadcastManagerModule,
                     trackerModule,
+                    embarkModule,
+                    previousInsViewModel,
                     marketPickerTrackerModule,
                     whatsNewModule,
                     marketManagerModule,
@@ -68,9 +70,16 @@ open class HedvigApplication : Application() {
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
-                    onboardingModule,
+                    moreOptionsModule,
+                    textActionSetModule,
+                    numberActionSetModule,
                     choosePlanModule,
-                    localeManagerModule
+                    clockModule,
+                    embarkTrackerModule,
+                    localeManagerModule,
+                    changeAddressModule,
+                    useCaseModule,
+                    valueStoreModule,
                 )
             )
         }
@@ -142,5 +151,6 @@ open class HedvigApplication : Application() {
     }
 
     open val graphqlUrl = BuildConfig.GRAPHQL_URL
+    open val graphqlSubscriptionUrl = BuildConfig.WS_GRAPHQL_URL
     open val isTestBuild = false
 }

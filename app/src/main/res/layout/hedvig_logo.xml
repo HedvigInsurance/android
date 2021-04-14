@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/pager_indicator_hedvig_logo_size"
     android:layout_height="@dimen/pager_indicator_hedvig_logo_size"
+    android:layout_marginStart="2dp"
     android:contentDescription="@null"
     app:srcCompat="@drawable/ic_hedvig_h"
-    tools:layout_gravity="center"
-    app:tint="@color/gray" />
+    app:tint="@color/gray"
+    tools:layout_gravity="center" />

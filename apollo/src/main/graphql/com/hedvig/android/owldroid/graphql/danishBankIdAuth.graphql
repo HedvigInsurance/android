@@ -1,5 +1,5 @@
-mutation DanishAuth {
-  danishBankIdAuth {
+mutation DanishAuth($personalIdentificationNumber: String!) {
+  danishBankIdAuth(personalNumber: $personalIdentificationNumber) {
     redirectUrl
   }
 }

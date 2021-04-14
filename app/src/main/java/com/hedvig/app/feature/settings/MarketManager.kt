@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.hedvig.app.HedvigApplication
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.shouldOverrideFeatureFlags
 
 interface MarketManager {
@@ -57,5 +56,5 @@ class MarketManagerImpl(
     }
 
     override fun hasSelectedMarket() = sharedPreferences
-        .getBoolean(MarketingActivity.HAS_SELECTED_MARKET, false)
+        .getString(Market.MARKET_SHARED_PREF, null) != null
 }

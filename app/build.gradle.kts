@@ -29,7 +29,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "5.0.6"
+        versionName = "5.1.0"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -178,11 +178,12 @@ dependencies {
     implementation("com.google.android.material:material:1.3.0")
     implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
     implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.core:core-ktx:1.5.0-beta03")
     implementation("com.google.android:flexbox:2.0.1")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.3.0-rc01")
     implementation("androidx.browser:browser:1.3.0")
 
     // Android lifecycle
@@ -202,6 +203,7 @@ dependencies {
     val okhttp3_version = "4.9.1"
     implementation("com.squareup.okhttp3:logging-interceptor:$okhttp3_version")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:$okhttp3_version")
+    implementation("ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0")
 
     // Firebase
     implementation("com.google.android.gms:play-services-base:17.6.0")
@@ -268,6 +270,7 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     // test
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test:rules:1.3.0")
@@ -278,6 +281,7 @@ dependencies {
     androidTestImplementation(
         "com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}"
     )
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
     androidTestImplementation("org.koin:koin-test:$koin_version")
     androidTestImplementation("io.mockk:mockk-android:1.10.6")

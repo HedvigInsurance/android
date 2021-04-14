@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/app_settings"
+        android:icon="@drawable/ic_settings_marketing"
+        android:title="@string/profile.appSettingsSection.title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/app_info"
+        android:icon="@drawable/ic_info_more_options"
+        android:title="@string/onboarding_contextual_menu.app_info_label"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/login"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/common_signin_button_text"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/restart"
+        android:icon="@drawable/ic_restart_chat"
+        android:title="@string/EMBARK_RESTART_BUTTON"
+        app:showAsAction="never" />
+</menu>

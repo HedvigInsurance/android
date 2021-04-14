@@ -23,9 +23,29 @@ class ChoosePlanTest : TestCase() {
     )
 
     @Test
-    fun chooseTravelBundle() = run {
+    fun chooseContentsPlan() = run {
         activityRule.launch()
         ChoosePlanScreen {
+            contents { stub() }
+            recycler {
+                childAt<ChoosePlanScreen.Card>(1) {
+                    radioButton {
+                        isNotChecked()
+                        click()
+                        isChecked()
+                    }
+                }
+            }
+            continueButton { click() }
+            contents { intended() }
+        }
+    }
+
+    @Test
+    fun chooseTravelPlan() = run {
+        activityRule.launch()
+        ChoosePlanScreen {
+            travel { stub() }
             recycler {
                 childAt<ChoosePlanScreen.Card>(2) {
                     radioButton {
@@ -35,9 +55,8 @@ class ChoosePlanTest : TestCase() {
                     }
                 }
             }
-            intent { stub() }
             continueButton { click() }
-            intent { intended() }
+            travel { intended() }
         }
     }
 }

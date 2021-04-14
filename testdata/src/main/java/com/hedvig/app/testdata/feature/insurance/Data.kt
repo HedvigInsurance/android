@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.insurance
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.feature.insurance.builders.InsuranceContractBuilder
 
@@ -27,5 +28,17 @@ val INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS = InsuranceQuery.Data(
         InsuranceContractBuilder(type = TypeOfContract.DK_HOME_CONTENT_OWN).build(),
         InsuranceContractBuilder(type = TypeOfContract.DK_TRAVEL).build(),
         InsuranceContractBuilder(type = TypeOfContract.DK_ACCIDENT).build(),
+    )
+)
+val INSURANCE_DATA_PENDING_CONTRACT = InsuranceQuery.Data(
+    contracts = listOf(
+        InsuranceContractBuilder(
+            type = TypeOfContract.DK_HOME_CONTENT_OWN,
+            agreementStatus = AgreementStatus.PENDING,
+        ).build(),
+        InsuranceContractBuilder(
+            type = TypeOfContract.DK_ACCIDENT,
+            agreementStatus = AgreementStatus.ACTIVE,
+        ).build(),
     )
 )

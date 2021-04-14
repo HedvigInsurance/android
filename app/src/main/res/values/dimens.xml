@@ -2,6 +2,7 @@
 
     <dimen name="base_margin_half">4dp</dimen>
     <dimen name="base_margin">8dp</dimen>
+    <dimen name="base_margin_and_a_half">12dp</dimen>
     <dimen name="base_margin_double">16dp</dimen>
     <dimen name="base_margin_triple">24dp</dimen>
     <dimen name="base_margin_quadruple">32dp</dimen>
@@ -145,7 +146,11 @@
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
+    <dimen name="embark_select_action_min_height">80dp</dimen>
+    <dimen name="embark_chat_bubble_max_width">250dp</dimen>
     <dimen name="plan_card_height">130dp</dimen>
     <dimen name="more_options_list_item_height">48dp</dimen>
     <dimen name="member_id_min_length">80dp</dimen>
+    <dimen name="insurer_logo_width">28dp</dimen>
+    <dimen name="insurer_logo_height">28dp</dimen>
 </resources>

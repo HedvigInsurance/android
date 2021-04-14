@@ -18,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.Duration
 
 class ShowTooltipTest : TestCase() {
 
@@ -66,6 +65,3 @@ class ShowTooltipTest : TestCase() {
             .putLong("shared_preference_last_open", lastOpenPrevValue).commit()
     }
 }
-
-val Int.seconds: Duration
-    get() = Duration.ofSeconds(this.toLong())

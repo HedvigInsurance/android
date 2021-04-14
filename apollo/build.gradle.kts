@@ -12,7 +12,8 @@ apollo {
             "LocalDate" to "java.time.LocalDate",
             "Upload" to "com.apollographql.apollo.api.FileUpload",
             "PaymentMethodsResponse" to "com.adyen.checkout.base.model.PaymentMethodsApiResponse",
-            "CheckoutPaymentsAction" to "kotlin.String"
+            "CheckoutPaymentsAction" to "kotlin.String",
+            "JSONString" to "org.json.JSONObject"
         )
     )
 }

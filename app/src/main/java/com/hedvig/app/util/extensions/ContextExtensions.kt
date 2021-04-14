@@ -27,11 +27,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
+import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
@@ -72,6 +74,14 @@ fun Context.compatDrawable(@DrawableRes drawable: Int) =
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
+    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
+        hideKeyboard(inputView)
+        delay(delayMillis)
+    }
 }
 
 fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {

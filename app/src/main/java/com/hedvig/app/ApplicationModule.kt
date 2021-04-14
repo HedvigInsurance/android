@@ -26,10 +26,28 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.embark.EmbarkRepository
+import com.hedvig.app.feature.embark.EmbarkTracker
+import com.hedvig.app.feature.embark.EmbarkTrackerImpl
+import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.ValueStore
+import com.hedvig.app.feature.embark.ValueStoreImpl
+import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
+import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
+import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
@@ -109,8 +127,10 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
-import com.hedvig.app.feature.zignsec.ZignSecAuthRepository
-import com.hedvig.app.feature.zignsec.ZignSecAuthViewModel
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
+import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -127,6 +147,7 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
+import java.time.Clock
 import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
@@ -203,7 +224,7 @@ val applicationModule = module {
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
-                    BuildConfig.WS_GRAPHQL_URL,
+                    get<HedvigApplication>().graphqlSubscriptionUrl,
                     get<OkHttpClient>()
                 )
             )
@@ -264,16 +285,13 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { ZignSecAuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { DatePickerViewModel() }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {
     viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
-}
-
-val onboardingModule = module {
-    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
 }
 
 val marketPickerModule = module {
@@ -321,6 +339,30 @@ val adyenModule = module {
     viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
+val embarkModule = module {
+    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), storyName) }
+}
+
+val valueStoreModule = module {
+    single<ValueStore> { ValueStoreImpl() }
+}
+
+val previousInsViewModel = module {
+    viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
+}
+
+val moreOptionsModule = module {
+    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
+}
+
+val textActionSetModule = module {
+    viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
+}
+
+val numberActionSetModule = module {
+    viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
+}
+
 val referralsModule = module {
     viewModel<ReferralsViewModel> {
         ReferralsViewModelImpl(
@@ -341,6 +383,10 @@ val connectPaymentModule = module {
 
 val trustlyModule = module {
     viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get()) }
+}
+
+val changeAddressModule = module {
+    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
 }
 
 val serviceModule = module {
@@ -370,10 +416,10 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
+    single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
-    single { ZignSecAuthRepository(get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
@@ -416,6 +462,18 @@ val notificationModule = module {
     single { PaymentNotificationManager(get()) }
 }
 
+val clockModule = module { single { Clock.systemDefaultZone() } }
+
+val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
+
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }
+}
+
+val useCaseModule = module {
+    single { GetUpcomingAgreementUseCase(get()) }
+    single { GetSelfChangeEligibilityUseCase(get()) }
+    single { StartDanishAuthUseCase(get()) }
+    single { StartNorwegianAuthUseCase(get()) }
+    single { SubscribeToAuthStatusUseCase(get()) }
 }

@@ -19,6 +19,7 @@ class InsuranceContractBuilder(
             renewalDate = LocalDate.now(),
             draftCertificateUrl = "https://www.example.com"
         ),
+    private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
 ) {
 
     fun build() = InsuranceQuery.Contract(
@@ -44,7 +45,7 @@ class InsuranceContractBuilder(
         currentAgreement = InsuranceQuery.CurrentAgreement(
             asAgreementCore = InsuranceQuery.AsAgreementCore(
                 certificateUrl = "https://www.example.com",
-                status = AgreementStatus.ACTIVE,
+                status = agreementStatus,
             ),
             asSwedishApartmentAgreement = if (type == TypeOfContract.SE_APARTMENT_RENT) {
                 InsuranceQuery.AsSwedishApartmentAgreement(

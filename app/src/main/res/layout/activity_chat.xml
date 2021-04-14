@@ -73,7 +73,7 @@
             android:id="@+id/settings"
             style="@style/ToolbarIcon.End"
             android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-            app:srcCompat="@drawable/ic_settings" />
+            app:srcCompat="@drawable/ic_profile_settings" />
 
     </FrameLayout>
 
