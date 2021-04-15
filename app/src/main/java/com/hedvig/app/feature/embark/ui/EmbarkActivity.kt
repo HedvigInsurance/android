@@ -95,7 +95,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
             progressToolbar.toolbar.apply {
                 setOnMenuItemClickListener(::handleMenuItem)
-                setNavigationOnClickListener { finish() }
+                setNavigationOnClickListener { onBackPressed() }
             }
         }
     }
