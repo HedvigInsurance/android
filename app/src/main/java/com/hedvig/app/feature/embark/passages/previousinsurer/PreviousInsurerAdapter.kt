@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
+import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
@@ -16,13 +17,14 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class PreviousInsurerAdapter(
+    context: Context,
     previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>,
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val onInsurerClicked: (String) -> Unit
 ) : ListAdapter<PreviousInsurerItem, PreviousInsurerAdapter.PreviousInsurerViewHolder>(GenericDiffUtilItemCallback()) {
 
     init {
-        submitList(listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() })
+        submitList(listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() } + PreviousInsurerItem.Insurer(context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION), null))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -54,9 +56,11 @@ class PreviousInsurerAdapter(
 
             override fun bind(item: PreviousInsurerItem) {
                 (item as? PreviousInsurerItem.Insurer)?.let {
-                    requestBuilder
-                        .load(Uri.parse(com.hedvig.app.BuildConfig.BASE_URL + item.icon))
-                        .into(binding.icon)
+                    item.icon?.let { iconUrl ->
+                        requestBuilder
+                            .load(Uri.parse(com.hedvig.app.BuildConfig.BASE_URL + iconUrl))
+                            .into(binding.icon)
+                    }
 
                     binding.text.text = item.name
                     binding.root.setHapticClickListener {
