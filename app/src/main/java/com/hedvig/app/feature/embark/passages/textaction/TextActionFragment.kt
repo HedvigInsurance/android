@@ -93,7 +93,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
                 key?.let {
-                    val mask = data.mask[index]
+                    val mask = data.mask.getOrNull(index)
                     val unmasked = unmask(input, mask)
                     model.putInStore(key, unmasked)
                     derivedValues(unmasked, key, mask, clock).forEach { (key, value) ->
@@ -111,10 +111,10 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
     private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
         val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
-
+    
         inputView.textField.isExpandedHintEnabled = false
-        data.hints[index]?.let { inputView.textField.hint = it }
-        data.placeholders[index]?.let { inputView.textField.placeholderText = it }
+        data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
+        data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
         val mask = data.mask.getOrNull(index)
         mask?.let {
             inputView.input.apply {
