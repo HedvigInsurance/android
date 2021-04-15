@@ -12,6 +12,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
+import com.hedvig.app.util.ShakeHandler
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
@@ -116,6 +117,7 @@ open class HedvigApplication : Application() {
         }
 
         if (isDebug()) {
+            ShakeHandler().configureAndStart(this)
             Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(FirebaseCrashlyticsLogExceptionTree())
