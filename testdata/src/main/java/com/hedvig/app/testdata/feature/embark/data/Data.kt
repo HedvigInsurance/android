@@ -1338,7 +1338,6 @@ val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
     )
 ).build()
 
-
 val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
@@ -1455,5 +1454,32 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
                 key = "BAR"
             ).build()
         ).build(),
+    )
+).build()
+
+val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK, keyValues = listOf("FOO" to "BAR")).build(),
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = LINK_TO_THIRD_PASSAGE.name,
+                        expression = ExpressionBuilder(ExpressionBuilder.ExpressionType.EQUALS,
+                            key = "FOO",
+                            value = "BAR").build()
+                    ).build())
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER.build(),
     )
 ).build()
