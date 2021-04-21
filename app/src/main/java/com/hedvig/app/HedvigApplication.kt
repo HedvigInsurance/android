@@ -117,7 +117,6 @@ open class HedvigApplication : Application() {
         }
 
         if (isDebug()) {
-            ShakeHandler().configureAndStart(this)
             Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(FirebaseCrashlyticsLogExceptionTree())
