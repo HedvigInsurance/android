@@ -24,42 +24,34 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
   newAgreement {
     ... on SwedishApartmentAgreement {
       address {
-        street
-        postalCode
-        city
+        ...AddressFragment
       }
       squareMeters
       activeFrom
-      type
+      saType: type
     }
     ... on SwedishHouseAgreement {
       address {
-        street
-        postalCode
-        city
+        ...AddressFragment
       }
       squareMeters
       activeFrom
     }
     ... on NorwegianHomeContentAgreement {
       address {
-        street
-        postalCode
-        city
+        ...AddressFragment
       }
       squareMeters
       activeFrom
-      type
+      nhcType: type
     }
     ... on DanishHomeContentAgreement {
       address {
-        street
-        postalCode
-        city
+        ...AddressFragment
       }
       squareMeters
       activeFrom
-      type
+      dhcType: type
     }
   }
 }

@@ -38,20 +38,20 @@ class GetUpcomingAgreementUseCase(
         return asSwedishApartmentAgreement?.let {
             UpcomingAgreement(
                 address = UpcomingAgreement.Address(
-                    street = it.address.street,
-                    postalCode = it.address.postalCode,
-                    city = it.address.city
+                    street = it.address.fragments.addressFragment.street,
+                    postalCode = it.address.fragments.addressFragment.postalCode,
+                    city = it.address.fragments.addressFragment.city
                 ),
                 squareMeters = it.squareMeters,
                 activeFrom = it.activeFrom,
-                addressType = it.type.stringRes()
+                addressType = it.saType.stringRes()
             )
         } ?: asSwedishHouseAgreement?.let {
             UpcomingAgreement(
                 address = UpcomingAgreement.Address(
-                    street = it.address.street,
-                    postalCode = it.address.postalCode,
-                    city = it.address.city
+                    street = it.address.fragments.addressFragment.street,
+                    postalCode = it.address.fragments.addressFragment.postalCode,
+                    city = it.address.fragments.addressFragment.city
                 ),
                 squareMeters = it.squareMeters,
                 activeFrom = it.activeFrom,
@@ -60,24 +60,24 @@ class GetUpcomingAgreementUseCase(
         } ?: asNorwegianHomeContentAgreement?.let {
             UpcomingAgreement(
                 address = UpcomingAgreement.Address(
-                    street = it.address.street,
-                    postalCode = it.address.postalCode,
-                    city = it.address.city
+                    street = it.address.fragments.addressFragment.street,
+                    postalCode = it.address.fragments.addressFragment.postalCode,
+                    city = it.address.fragments.addressFragment.city
                 ),
                 squareMeters = it.squareMeters,
                 activeFrom = it.activeFrom,
-                addressType = it.type?.stringRes()
+                addressType = it.nhcType?.stringRes()
             )
         } ?: asDanishHomeContentAgreement?.let {
             UpcomingAgreement(
                 address = UpcomingAgreement.Address(
-                    street = it.address.street,
-                    postalCode = it.address.postalCode,
-                    city = it.address.city
+                    street = it.address.fragments.addressFragment.street,
+                    postalCode = it.address.fragments.addressFragment.postalCode,
+                    city = it.address.fragments.addressFragment.city
                 ),
                 squareMeters = it.squareMeters,
                 activeFrom = it.activeFrom,
-                addressType = it.type?.stringRes()
+                addressType = it.dhcType?.stringRes()
             )
         }
     }

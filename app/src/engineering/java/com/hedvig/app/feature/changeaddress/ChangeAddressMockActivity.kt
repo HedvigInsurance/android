@@ -23,7 +23,7 @@ class ChangeAddressMockActivity : MockActivity() {
     override fun adapter() = genericDevelopmentAdapter {
         header("Change address")
         clickableItem("Eligible") {
-            MockChangeAddressViewModel.mockedState = MutableLiveData(ViewState.SelfChangeAddress)
+            MockChangeAddressViewModel.mockedState = MutableLiveData(ViewState.SelfChangeAddress("embarkTestId"))
             startActivity(ChangeAddressActivity.newInstance(context))
         }
         clickableItem("Error") {
