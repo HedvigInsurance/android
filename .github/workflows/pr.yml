@@ -113,6 +113,18 @@ jobs:
           EOT
         env:
           MIXPANEL_PROJECT_TOKEN: ${{ secrets.MIXPANEL_PROJECT_TOKEN_TEST }}
+      - name: Create Shake secret
+        run: |
+          cat <<EOT > app/src/debug/res/values/shake.xml
+          <?xml version="1.0" encoding="utf-8" ?>
+          <resources>
+              <string name="SHAKE_CLIENT_ID" translatable="false">${SHAKE_CLIENT_ID}</string>
+              <string name="SHAKE_CLIENT_SECRET" translatable="false">${SHAKE_CLIENT_SECRET}</string>
+          </resources>
+          EOT
+        env:
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
