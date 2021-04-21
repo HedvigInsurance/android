@@ -2,10 +2,12 @@ package com.hedvig.app.util
 
 import android.app.Activity
 import android.app.Instrumentation
+import android.view.View
 import android.widget.TextView
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.bottomnav.KBottomNavigationView
 import com.agoda.kakao.common.builders.ViewBuilder
@@ -16,6 +18,7 @@ import com.agoda.kakao.picker.date.KDatePicker
 import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KTextView
 import com.google.android.material.textfield.TextInputLayout
+import org.hamcrest.Description
 import java.time.LocalDate
 
 fun KTextInputLayout.hasError(@StringRes resId: Int, vararg formatArgs: Any) =
@@ -83,3 +86,15 @@ fun KTextInputLayout.hasHelperText(text: String) {
 fun KTextInputLayout.hasHelperText(@StringRes resId: Int) = hasHelperText(getResourceString(resId))
 
 fun ViewBuilder.withHint(hint: String) = withMatcher(ViewMatchers.withHint(hint))
+
+class TextInputLayoutPlaceholderMatcher(
+    private val placeholder: String,
+) : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
+    override fun describeTo(description: Description) {
+        description.appendText("with placeholder: $placeholder")
+    }
+
+    override fun matchesSafely(item: TextInputLayout) = item.placeholderText == placeholder
+}
+
+fun ViewBuilder.withPlaceholder(placeholder: String) = withMatcher(TextInputLayoutPlaceholderMatcher(placeholder))
