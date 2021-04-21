@@ -63,7 +63,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
                 viewModel.dropDownSelection.value = dropDownOptions[position]
             }
 
-            componentSwitch.hint = component.switch?.label
+            componentSwitch.text = component.switch?.label
             componentSwitch.isChecked = component.switch?.defaultValue ?: false
             componentSwitch.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.switchSelection.value = isChecked
