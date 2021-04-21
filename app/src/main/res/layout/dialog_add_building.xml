@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="Add building"
+        android:text="@string/embark.multiaction.add_building_button"
         android:textAppearance="?textAppearanceHeadline5" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -30,17 +30,17 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
-        android:hint="Building type"
         android:orientation="horizontal"
         app:boxBackgroundColor="?colorSurface"
-        app:endIconDrawable="@drawable/ic_expand">
+        app:endIconDrawable="@drawable/ic_expand"
+        tools:hint="Building type">
 
         <AutoCompleteTextView
-            android:textColor="@color/textColorSecondary"
             android:id="@+id/dropdownInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
+            android:textColor="@color/textColorSecondary"
             tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
-        android:hint="Size">
+        tools:hint="Size">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/numberInput"
@@ -70,10 +70,10 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin"
-        android:padding="@dimen/base_margin"
         android:focusable="false"
-        android:text="Water"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+        android:padding="@dimen/base_margin"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        tools:text="Water" />
 
     <Button
         android:id="@+id/continueButton"
@@ -85,7 +85,7 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
-        android:text="Save building"
+        android:text="@string/general_save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
