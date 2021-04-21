@@ -156,7 +156,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             }
         }
 
-        key?.let(model::getFromStore)
+        key?.let(model::getPrefillFromStore)
             ?.let { remask(it, mask) }
             ?.let(inputView.input::setText)
         inputView.root

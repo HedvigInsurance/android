@@ -29,7 +29,7 @@ import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
-    private val valueStore: ValueStore
+    private val valueStore: ValueStore,
 ) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
@@ -71,6 +71,8 @@ abstract class EmbarkViewModel(
         valueStore.put(key, value)
     }
 
+    fun getPrefillFromStore(key: String) = valueStore.getPrefill(key)
+
     fun getFromStore(key: String) = valueStore.get(key)
 
     fun navigateToPassage(passageName: String) {
@@ -97,7 +99,10 @@ abstract class EmbarkViewModel(
                     return
                 }
             }
-            _data.value?.passage?.name?.let { backStack.push(it) }
+            _data.value?.passage?.name?.let {
+                valueStore.commitVersion()
+                backStack.push(it)
+            }
             val model = EmbarkModel(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.FORWARDS,
@@ -258,6 +263,7 @@ abstract class EmbarkViewModel(
             )
             _data.postValue(model)
 
+            valueStore.rollbackVersion()
             return true
         }
         return false
@@ -529,7 +535,7 @@ class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
-    storyName: String
+    storyName: String,
 ) : EmbarkViewModel(tracker, valueStore) {
 
     init {

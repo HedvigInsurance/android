@@ -108,7 +108,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
                 }
             }
 
-            model.getFromStore(numberAction.key)?.let { binding.input.setText(it) }
+            model.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
             binding.root
         }
     }
