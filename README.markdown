@@ -8,15 +8,17 @@
     - `lokalise.properties`
 3. Acquire Mixpanel credentials (you can find them in 1Password), place in the following paths:
     - `app/src/${debug|staging|release}/res/values/mixpanel.xml`
-3. Download the schema (required to consume any changes in schema as well):
+4. Acquire Shake credentials (you can find them in 1Password), place in the following paths:
+    - `app/src/${debug|staging}/res/values/shake.xml`
+5. Download the schema (required to consume any changes in schema as well):
 ```bash
 $ ./gradlew apollo:downloadApolloSchema
 ```
-4. Download lokalise translations (required to consume latest translations as well):
+6. Download lokalise translations (required to consume latest translations as well):
 ```bash
 $ ./gradlew app:downloadStrings
 ```
-5. Build and install via Android Studio
+7. Build and install via Android Studio
 
 ## Build Types
 
