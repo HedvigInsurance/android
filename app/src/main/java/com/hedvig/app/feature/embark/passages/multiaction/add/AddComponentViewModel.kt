@@ -31,8 +31,8 @@ class AddComponentViewModel(
     private fun validateSate(input: String?, dropDownSelection: String?) = when {
         input == null || dropDownSelection == null -> ViewState.NoSelection
         input.isBlank() -> ViewState.Error.NoInput
-        input.toInt() < multiActionParams.components.firstOrNull()?.number?.minValue ?: 0 -> ViewState.Error.MinInput
-        input.toInt() > multiActionParams.components.firstOrNull()?.number?.maxValue ?: 0 -> ViewState.Error.MaxInput
+        input.toInt() < multiActionParams.components.firstOrNull { it.number != null }?.number?.minValue ?: 0 -> ViewState.Error.MinInput
+        input.toInt() > multiActionParams.components.firstOrNull { it.number != null }?.number?.maxValue ?: 0 -> ViewState.Error.MaxInput
         else -> ViewState.Valid
     }
 

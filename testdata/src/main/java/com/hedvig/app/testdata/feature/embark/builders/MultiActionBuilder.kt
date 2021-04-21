@@ -26,20 +26,24 @@ data class MultiActionBuilder(
                                 key = "Building",
                                 options = listOf(
                                     EmbarkStoryQuery.Option1(
-                                        value = "Garage",
+                                        value = "GarageVal",
                                         text = "Garage"
                                     ),
                                     EmbarkStoryQuery.Option1(
-                                        value = "Attefall",
+                                        value = "AttefallVal",
                                         text = "Attefall",
                                     ),
                                     EmbarkStoryQuery.Option1(
-                                        value = "Friggebod",
+                                        value = "FriggebodVal",
                                         text = "Friggebod"
                                     )
                                 )
                             )
                         ),
+                        asEmbarkSwitchAction = null,
+                        asEmbarkNumberAction1 = null
+                    ),
+                    EmbarkStoryQuery.Component(
                         asEmbarkSwitchAction = EmbarkStoryQuery.AsEmbarkSwitchAction(
                             switchActionData = EmbarkStoryQuery.SwitchActionData(
                                 label = "Water connected",
@@ -47,6 +51,10 @@ data class MultiActionBuilder(
                                 defaultValue = true
                             )
                         ),
+                        asEmbarkDropdownAction = null,
+                        asEmbarkNumberAction1 = null
+                    ),
+                    EmbarkStoryQuery.Component(
                         asEmbarkNumberAction1 = EmbarkStoryQuery.AsEmbarkNumberAction1(
                             numberActionData = EmbarkStoryQuery.NumberActionData1(
                                 fragments = EmbarkStoryQuery.NumberActionData1.Fragments(
@@ -65,7 +73,9 @@ data class MultiActionBuilder(
                                     )
                                 )
                             )
-                        )
+                        ),
+                        asEmbarkDropdownAction = null,
+                        asEmbarkSwitchAction = null
                     )
                 )
             )

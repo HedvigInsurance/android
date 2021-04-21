@@ -14,10 +14,9 @@ object AddBuildingBottomSheetScreen : KScreen<AddBuildingBottomSheetScreen>() {
     override val viewClass = AddComponentBottomSheet::class.java
 
     val dropDownMenu = KTextView { withId(R.id.dropdownLayout) }
-    val dropDownItem = KView { withText("Garage") }
+    val dropDownInput = KEditText { withId(R.id.dropdownInput) }
 
+    val numberLayout = KTextInputLayout { withId(R.id.numberLayout) }
     val numberInput = KEditText { withId(R.id.numberInput) }
-
-    val continueButton = KButton { withId(R.id.continueButton) }
 
 }

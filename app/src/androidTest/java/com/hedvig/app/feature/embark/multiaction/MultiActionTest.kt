@@ -1,5 +1,16 @@
 package com.hedvig.app.feature.embark.multiaction
 
+import android.view.KeyEvent
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.hasErrorText
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import com.agoda.kakao.common.views.KView
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTI_ACTION
@@ -25,6 +36,66 @@ class MultiActionTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
+    fun errorInput() = run {
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
+
+        step("Press add building to display bottom sheet") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.AddBuildingButton>(0) {
+                        click()
+                    }
+                }
+            }
+        }
+
+        step("Input more than max value") {
+            AddBuildingBottomSheetScreen {
+                dropDownMenu {
+                    click()
+                }
+
+                onView(withText("Attefall"))
+                    .inRoot(RootMatchers.isPlatformPopup())
+                    .perform(click());
+
+                numberInput {
+                    typeText("15000")
+                }
+
+                numberLayout {
+                    hasError("Max input")
+                }
+            }
+        }
+
+        step("Input less than min value") {
+            AddBuildingBottomSheetScreen {
+                numberInput {
+                    clearText()
+                    typeText("5")
+                }
+
+                numberLayout {
+                    hasError("Min input")
+                }
+
+                numberInput {
+                    pressImeAction()
+                }
+            }
+        }
+
+        step("Continue button is disabled") {
+            MultiActionScreen {
+                continueButton {
+                    isDisabled()
+                }
+            }
+        }
+    }
+
+    @Test
     fun addComponent() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
@@ -40,10 +111,25 @@ class MultiActionTest : TestCase() {
 
         step("Add building") {
             AddBuildingBottomSheetScreen {
-                dropDownMenu.click()
-                dropDownItem.click()
-                numberInput.typeText("23")
-                continueButton.click()
+                dropDownMenu {
+                    click()
+                }
+
+                onView(withText("Attefall"))
+                    .inRoot(RootMatchers.isPlatformPopup())
+                    .perform(click());
+
+                numberInput {
+                    typeText("23")
+                    pressImeAction()
+                }
+            }
+
+            MultiActionScreen {
+                continueButton {
+                    isEnabled()
+                    click()
+                }
             }
         }
 
@@ -51,11 +137,10 @@ class MultiActionTest : TestCase() {
             MultiActionScreen {
                 multiActionList {
                     childAt<MultiActionScreen.Component>(1) {
-                        title.hasText("Garage")
+                        title.hasText("Attefall")
                     }
                 }
             }
         }
-
     }
 }

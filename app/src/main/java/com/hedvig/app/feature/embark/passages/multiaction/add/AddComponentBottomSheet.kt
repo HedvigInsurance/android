@@ -16,7 +16,7 @@ import com.hedvig.app.databinding.DialogAddBuildingBinding
 import com.hedvig.app.feature.embark.passages.multiaction.MultiAction
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.extensions.hideKeyboard
-import com.hedvig.app.util.extensions.view.onImeAction
+import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.android.synthetic.main.dialog_add_building.numberLayout
 import kotlinx.android.synthetic.main.picker_button.continueButton

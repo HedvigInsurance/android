@@ -43,6 +43,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="42dp"
             android:layout_height="42dp"
+            android:contentDescription="@string/general_close_button"
             app:srcCompat="@drawable/ic_close_small"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
