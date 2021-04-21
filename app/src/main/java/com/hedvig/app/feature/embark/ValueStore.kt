@@ -9,12 +9,15 @@ interface ValueStore {
     fun rollbackVersion()
     fun put(key: String, value: String)
     fun get(key: String): String?
+    fun getPrefill(key: String): String?
     fun toMap(): Map<String, String>
 }
 
 class ValueStoreImpl : ValueStore {
     private val storedValues = Stack<HashMap<String, String>>().apply { push(hashMapOf()) }
     private val stage = HashMap<String, String>()
+
+    private val prefillValues = HashMap<String, String>()
 
     override var computedValues: Map<String, String>? = null
     override fun commitVersion() {
@@ -28,6 +31,7 @@ class ValueStoreImpl : ValueStore {
 
     override fun put(key: String, value: String) {
         stage[key] = value
+        prefillValues[key] = value
     }
 
     override fun get(key: String): String? {
@@ -35,6 +39,8 @@ class ValueStoreImpl : ValueStore {
             TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek())
         } ?: storedValues.peek()[key] ?: stage[key]
     }
+
+    override fun getPrefill(key: String) = get(key) ?: prefillValues[key]
 
     override fun toMap(): Map<String, String> {
         return storedValues.peek().toMap() + stage

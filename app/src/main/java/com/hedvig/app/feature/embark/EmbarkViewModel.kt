@@ -71,6 +71,8 @@ abstract class EmbarkViewModel(
         valueStore.put(key, value)
     }
 
+    fun getPrefillFromStore(key: String) = valueStore.getPrefill(key)
+
     fun getFromStore(key: String) = valueStore.get(key)
 
     fun navigateToPassage(passageName: String) {

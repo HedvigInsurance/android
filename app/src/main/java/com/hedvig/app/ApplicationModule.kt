@@ -246,19 +246,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(context, market).language
+        getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -344,7 +344,7 @@ val embarkModule = module {
 }
 
 val valueStoreModule = module {
-    single<ValueStore> { ValueStoreImpl() }
+    factory<ValueStore> { ValueStoreImpl() }
 }
 
 val previousInsViewModel = module {
