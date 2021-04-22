@@ -5,6 +5,9 @@ import com.hedvig.app.util.jsonObjectOf
 import org.json.JSONObject
 
 class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, ValueStoreImpl()) {
+    init {
+        fetchStory("")
+    }
 
     override fun fetchStory(name: String) {
         if (!shouldLoad) {
