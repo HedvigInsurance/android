@@ -281,6 +281,19 @@ abstract class EmbarkViewModel(
         response.fragments.messageFragment?.let { message ->
             preProcessMessage(message)?.let { return it.text }
         }
+
+        response.asEmbarkResponseExpression?.let { exp ->
+            preProcessMessage(
+                MessageFragment(
+                    text = exp.text,
+                    expressions = exp.expressions.map {
+                        MessageFragment.Expression(
+                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
+                        )
+                    }
+                )
+            )?.let { return it.text }
+        }
         return null
     }
 

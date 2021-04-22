@@ -23,6 +23,12 @@ query EmbarkStory($name: String!, $locale: String!) {
       }
       response {
         ...MessageFragment
+        ... on EmbarkResponseExpression {
+          text
+          expressions {
+            ...ExpressionFragment
+          }
+        }
       }
       redirects {
         ... on EmbarkRedirectUnaryExpression {
@@ -45,7 +51,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           passedExpressionKey
           passedExpressionValue
           subExpressions {
-            ...SubExpressionFragment
+            ...ExpressionFragment
           }
         }
       }
