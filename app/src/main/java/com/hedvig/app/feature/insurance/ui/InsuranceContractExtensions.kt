@@ -57,8 +57,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
 
                 it.upcomingAgreementChange?.newAgreement?.asSwedishApartmentAgreement?.activeFrom?.let { upcomingChangeDate ->
                     firstStatusPill.show()
-                    // TODO Add lokalise string res
-                    firstStatusPill.setText("To be updated on $upcomingChangeDate")
+                    firstStatusPill.text = root.context.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, upcomingChangeDate)
                 }
 
                 when (typeOfContract) {
